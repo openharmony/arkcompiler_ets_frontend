@@ -722,4 +722,4 @@
     }
   }
 }
-TypeError: fn(): int in B cannot override fn(): void in A because overriding return type is not compatible with the other return type. [function_implicit_return_type4.ets:22:21]
+TypeError: fn(): int in B cannot override fn(): void in A because overriding return type is not compatible with the other return type. [function_implicit_return_type4.sts:22:21]

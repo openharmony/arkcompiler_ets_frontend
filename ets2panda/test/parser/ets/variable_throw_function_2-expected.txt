@@ -453,4 +453,4 @@
     }
   }
 }
-TypeError: Functions that can throw exceptions cannot be assigned to non throwing functions. [variable_throw_function_2.ets:19:36]
+TypeError: Functions that can throw exceptions cannot be assigned to non throwing functions. [variable_throw_function_2.sts:19:36]

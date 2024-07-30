@@ -37,7 +37,7 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -70,7 +70,7 @@ TEST_F(ASTVerifierTest, ExtensionFunction)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -95,7 +95,7 @@ TEST_F(ASTVerifierTest, Imports)
         import * as Time from "std/time";
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -121,7 +121,7 @@ TEST_F(ASTVerifierTest, TSQualifiedName)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 

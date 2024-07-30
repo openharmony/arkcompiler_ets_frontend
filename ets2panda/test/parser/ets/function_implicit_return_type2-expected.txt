@@ -453,4 +453,4 @@
     }
   }
 }
-TypeError: Type '() => void' cannot be assigned to type '(p1: Int) => Int' [function_implicit_return_type2.ets:17:27]
+TypeError: Type '() => void' cannot be assigned to type '(p1: Int) => Int' [function_implicit_return_type2.sts:17:27]

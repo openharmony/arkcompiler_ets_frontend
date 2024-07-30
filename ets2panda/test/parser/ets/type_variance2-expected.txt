@@ -1,1 +1,1 @@
-SyntaxError: Variance modifier is not allowed here. [type_variance2.ets:17:15]
+SyntaxError: Variance modifier is not allowed here. [type_variance2.sts:17:15]

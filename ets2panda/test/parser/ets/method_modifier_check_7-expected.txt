@@ -395,4 +395,4 @@
     }
   }
 }
-TypeError: Invalid method modifier(s): a static method can't have abstract, final or override modifier. [method_modifier_check_7.ets:17:5]
+TypeError: Invalid method modifier(s): a static method can't have abstract, final or override modifier. [method_modifier_check_7.sts:17:5]

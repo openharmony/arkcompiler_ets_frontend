@@ -1,1 +1,1 @@
-SyntaxError: Only 'throws' can be used with function types [functionTypeRethrows.ets:16:33]
+SyntaxError: Only 'throws' can be used with function types [functionTypeRethrows.sts:16:33]

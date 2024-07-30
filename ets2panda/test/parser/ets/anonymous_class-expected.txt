@@ -661,4 +661,4 @@
     }
   }
 }
-TypeError: Inner class cannot have static methods [anonymous_class.ets:19:9]
+TypeError: Inner class cannot have static methods [anonymous_class.sts:19:9]

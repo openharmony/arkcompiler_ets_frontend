@@ -572,4 +572,4 @@
     }
   }
 }
-TypeError: 'Native' modifier is invalid for Accessors [setter_native.ets:18:21]
+TypeError: 'Native' modifier is invalid for Accessors [setter_native.sts:18:21]

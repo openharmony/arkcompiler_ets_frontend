@@ -343,4 +343,4 @@
     }
   }
 }
-TypeError: Index fractional part should be zero. [array_new_failed.ets:17:19]
+TypeError: Index fractional part should be zero. [array_new_failed.sts:17:19]

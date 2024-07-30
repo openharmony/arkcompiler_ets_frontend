@@ -200,4 +200,4 @@
     }
   }
 }
-TypeError: 'void' used as type annotation. [void_as_value_neg_2.ets:15:8]
+TypeError: 'void' used as type annotation. [void_as_value_neg_2.sts:15:8]

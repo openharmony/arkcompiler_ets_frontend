@@ -859,4 +859,4 @@
     }
   }
 }
-TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingMethodCheck2.ets:26:5]
+TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingMethodCheck2.sts:26:5]

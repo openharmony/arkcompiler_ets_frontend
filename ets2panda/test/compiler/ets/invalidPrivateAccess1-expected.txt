@@ -840,4 +840,4 @@
     }
   }
 }
-TypeError: Property a is not visible here. [invalidPrivateAccess1.ets:24:19]
+TypeError: Property a is not visible here. [invalidPrivateAccess1.sts:24:19]

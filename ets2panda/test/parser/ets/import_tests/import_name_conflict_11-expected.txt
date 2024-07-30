@@ -423,4 +423,4 @@
     }
   }
 }
-SyntaxError: Function 'bar' is already defined with different type. [import_name_conflict_11.ets:16:19]
+SyntaxError: Function 'bar' is already defined with different type. [import_name_conflict_11.sts:16:19]

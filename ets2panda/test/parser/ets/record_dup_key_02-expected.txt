@@ -578,4 +578,4 @@
     }
   }
 }
-TypeError: An object literal cannot multiple properties with same name [record_dup_key_02.ets:17:37]
+TypeError: An object literal cannot multiple properties with same name [record_dup_key_02.sts:17:37]

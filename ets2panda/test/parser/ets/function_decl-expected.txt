@@ -408,4 +408,4 @@
     }
   }
 }
-TypeError: Function with a non void return type must return a value. [function_decl.ets:16:10]
+TypeError: Function with a non void return type must return a value. [function_decl.sts:16:10]

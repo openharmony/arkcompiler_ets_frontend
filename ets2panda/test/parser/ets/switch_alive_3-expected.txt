@@ -600,4 +600,4 @@
     }
   }
 }
-Warning: Possible fall-through into case [switch_alive_3.ets:21:3]
+Warning: Possible fall-through into case [switch_alive_3.sts:21:3]

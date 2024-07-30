@@ -479,4 +479,4 @@
     }
   }
 }
-TypeError: Type 'int' cannot be assigned to type '() => Int|null' [etsObjectToString4.ets:18:29]
+TypeError: Type 'int' cannot be assigned to type '() => Int|null' [etsObjectToString4.sts:18:29]

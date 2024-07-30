@@ -443,4 +443,4 @@
     }
   }
 }
-TypeError: 'bar1' type does not exist. [import_alias_2.ets:19:21]
+TypeError: 'bar1' type does not exist. [import_alias_2.sts:19:21]

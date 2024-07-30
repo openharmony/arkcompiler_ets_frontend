@@ -289,4 +289,4 @@
     }
   }
 }
-TypeError: Circular type alias reference [test_type_alias10.ets:17:1]
+TypeError: Circular type alias reference [test_type_alias10.sts:17:1]

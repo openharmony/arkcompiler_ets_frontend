@@ -1750,4 +1750,4 @@
     }
   }
 }
-TypeError: Property 'num' does not exist on type 'A' [union_types_2.ets:33:7]
+TypeError: Property 'num' does not exist on type 'A' [union_types_2.sts:33:7]

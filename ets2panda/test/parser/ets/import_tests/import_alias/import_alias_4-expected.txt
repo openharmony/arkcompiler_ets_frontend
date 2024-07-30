@@ -374,4 +374,4 @@
     }
   }
 }
-TypeError: Property 'goo1' does not exist on type 'export' [import_alias_4.ets:19:9]
+TypeError: Property 'goo1' does not exist on type 'export' [import_alias_4.sts:19:9]

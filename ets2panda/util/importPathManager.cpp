@@ -36,7 +36,7 @@ constexpr size_t SUPPORTED_EXTENSIONS_SIZE = 2;
 
 static bool IsCompitableExtension(const std::string &extension)
 {
-    return extension == ".ets" || extension == ".ts";
+    return extension == ".sts" || extension == ".ts";
 }
 
 StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath) const
@@ -158,7 +158,7 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, bool isDe
 
     if (isDefaultImport) {
         int position = resolvedPath.Mutf8().find_last_of(pathDelimiter_);
-        if (resolvedPath.Substr(position + 1, resolvedPath.Length()).Is("Object.ets")) {
+        if (resolvedPath.Substr(position + 1, resolvedPath.Length()).Is("Object.sts")) {
             parseList_.emplace(parseList_.begin(), ParseInfo {resolvedPath, false});
             return;
         }
@@ -238,7 +238,7 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
 
     if (ark::os::file::File::IsDirectory(realPath.Mutf8())) {
         // Supported index files: keep this checking order
-        std::array<std::string, SUPPORTED_INDEX_FILES_SIZE> supportedIndexFiles = {"index.ets", "index.ts"};
+        std::array<std::string, SUPPORTED_INDEX_FILES_SIZE> supportedIndexFiles = {"index.sts", "index.ts"};
         for (const auto &indexFile : supportedIndexFiles) {
             std::string indexFilePath = realPath.Mutf8() + pathDelimiter_.data() + indexFile;
             if (ark::os::file::File::IsRegularFile(indexFilePath)) {
@@ -250,7 +250,7 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
     }
 
     // Supported extensions: keep this checking order
-    std::array<std::string, SUPPORTED_EXTENSIONS_SIZE> supportedExtensions = {".ets", ".ts"};
+    std::array<std::string, SUPPORTED_EXTENSIONS_SIZE> supportedExtensions = {".sts", ".ts"};
 
     for (const auto &extension : supportedExtensions) {
         if (ark::os::file::File::IsRegularFile(path.Mutf8() + extension)) {

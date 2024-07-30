@@ -553,4 +553,4 @@
     }
   }
 }
-TypeError: Property 'toString' does not exist on type 'double' [primitive_type_method_2.ets:17:12]
+TypeError: Property 'toString' does not exist on type 'double' [primitive_type_method_2.sts:17:12]

@@ -1110,4 +1110,4 @@
     }
   }
 }
-TypeError: Derived is not abstract and does not implement setter for instance_field property in Interface [missing_implementation_1.ets:20:36]
+TypeError: Derived is not abstract and does not implement setter for instance_field property in Interface [missing_implementation_1.sts:20:36]

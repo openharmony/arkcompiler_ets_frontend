@@ -609,4 +609,4 @@
     }
   }
 }
-TypeError: Type 'A<Int>|null' is not compatible with the enclosing method's return type 'int' [etsObjectToString0.ets:20:12]
+TypeError: Type 'A<Int>|null' is not compatible with the enclosing method's return type 'int' [etsObjectToString0.sts:20:12]

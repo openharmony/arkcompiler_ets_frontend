@@ -462,4 +462,4 @@
     }
   }
 }
-TypeError: Property 'bar' does not exist on type 'check_exported_2' [check_exported_1.ets:20:9]
+TypeError: Property 'bar' does not exist on type 'check_exported_2' [check_exported_1.sts:20:9]

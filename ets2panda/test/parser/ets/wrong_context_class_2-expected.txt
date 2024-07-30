@@ -498,4 +498,4 @@
     }
   }
 }
-TypeError: Class name "a" used in the wrong context [wrong_context_class_2.ets:23:9]
+TypeError: Class name "a" used in the wrong context [wrong_context_class_2.sts:23:9]

@@ -555,4 +555,4 @@
     }
   }
 }
-Warning: Finally clause cannot complete normally [throwInFinallyBlock.ets:21:17]
+Warning: Finally clause cannot complete normally [throwInFinallyBlock.sts:21:17]

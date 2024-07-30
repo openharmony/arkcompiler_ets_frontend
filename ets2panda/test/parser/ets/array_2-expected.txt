@@ -1,1 +1,1 @@
-SyntaxError: Unexpected token, expected ',' or ']' [array_2.ets:16:25]
+SyntaxError: Unexpected token, expected ',' or ']' [array_2.sts:16:25]

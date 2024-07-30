@@ -352,4 +352,4 @@
     }
   }
 }
-TypeError: Cannot infer type for x because class composite needs an explicit target type [objectLiteralNoContextType.ets:16:5]
+TypeError: Cannot infer type for x because class composite needs an explicit target type [objectLiteralNoContextType.sts:16:5]

@@ -901,4 +901,4 @@
     }
   }
 }
-TypeError: The operands of strict equality are not compatible with each other [referenceEqualityNotCastable_n.ets:22:11]
+TypeError: The operands of strict equality are not compatible with each other [referenceEqualityNotCastable_n.sts:22:11]

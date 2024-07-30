@@ -1001,4 +1001,4 @@
     }
   }
 }
-TypeError: Type 'undefined' cannot be assigned to type 'Double' [partialType_3_neg.ets:26:20]
+TypeError: Type 'undefined' cannot be assigned to type 'Double' [partialType_3_neg.sts:26:20]

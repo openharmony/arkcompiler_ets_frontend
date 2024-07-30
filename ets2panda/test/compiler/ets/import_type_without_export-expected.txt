@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./export_type.ets",
+        "value": "./export_type.sts",
         "loc": {
           "start": {
             "line": 16,
@@ -737,4 +737,4 @@
     }
   }
 }
-SyntaxError: Cannot import 'C', imported type imports only exported types. [import_type_without_export.ets:16:25]
+SyntaxError: Cannot import 'C', imported type imports only exported types. [import_type_without_export.sts:16:25]

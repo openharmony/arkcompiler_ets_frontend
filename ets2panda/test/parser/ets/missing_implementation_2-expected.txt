@@ -1182,4 +1182,4 @@
     }
   }
 }
-TypeError: Derived is not abstract and does not implement getter for instance_field property in Interface [missing_implementation_2.ets:20:36]
+TypeError: Derived is not abstract and does not implement getter for instance_field property in Interface [missing_implementation_2.sts:20:36]

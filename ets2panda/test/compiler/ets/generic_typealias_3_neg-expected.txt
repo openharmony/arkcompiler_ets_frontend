@@ -524,4 +524,4 @@
     }
   }
 }
-TypeError: Type alias declaration is not generic, but type parameters were provided [generic_typealias_3_neg.ets:20:19]
+TypeError: Type alias declaration is not generic, but type parameters were provided [generic_typealias_3_neg.sts:20:19]

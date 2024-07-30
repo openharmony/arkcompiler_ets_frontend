@@ -791,4 +791,4 @@
     }
   }
 }
-TypeError: Property 'hasSting' does not exist on type 'Dog' [optional_chaining_invalid_property.ets:26:21]
+TypeError: Property 'hasSting' does not exist on type 'Dog' [optional_chaining_invalid_property.sts:26:21]

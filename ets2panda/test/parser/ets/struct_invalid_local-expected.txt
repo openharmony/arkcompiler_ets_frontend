@@ -1,1 +1,1 @@
-SyntaxError: Illegal start of expression [struct_invalid_local.ets:17:5]
+SyntaxError: Illegal start of expression [struct_invalid_local.sts:17:5]

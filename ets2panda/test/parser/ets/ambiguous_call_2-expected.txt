@@ -1871,4 +1871,4 @@
     }
   }
 }
-TypeError: Call to `goo` is ambiguous as `2` versions of `goo` are available: `goo(i: int, p1: I1, s: String): void` and `goo(i: int, p2: I5, s: String): void` [ambiguous_call_2.ets:27:5]
+TypeError: Call to `goo` is ambiguous as `2` versions of `goo` are available: `goo(i: int, p1: I1, s: String): void` and `goo(i: int, p2: I5, s: String): void` [ambiguous_call_2.sts:27:5]

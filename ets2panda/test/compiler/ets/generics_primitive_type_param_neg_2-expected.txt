@@ -1135,4 +1135,4 @@
     }
   }
 }
-TypeError: Property 'unboxed' does not exist on type 'B' [generics_primitive_type_param_neg_2.ets:25:15]
+TypeError: Property 'unboxed' does not exist on type 'B' [generics_primitive_type_param_neg_2.sts:25:15]

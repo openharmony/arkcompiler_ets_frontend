@@ -46,7 +46,7 @@ protected:
 
 TEST_F(Es2PandaLibTest, NoError)
 {
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, "function main() {}", "no-error.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, "function main() {}", "no-error.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);  // don't produce any object files
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ASM_GENERATED);
     impl_->DestroyContext(ctx);
@@ -55,11 +55,11 @@ TEST_F(Es2PandaLibTest, NoError)
 TEST_F(Es2PandaLibTest, TypeError)
 {
     es2panda_Context *ctx =
-        impl_->CreateContextFromString(cfg_, "function main() { let x: int = \"\" }", "type-error.ets");
+        impl_->CreateContextFromString(cfg_, "function main() { let x: int = \"\" }", "type-error.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ERROR);
     ASSERT_EQ(std::string(impl_->ContextErrorMessage(ctx)),
-              "TypeError: Type 'string' cannot be assigned to type 'int'[type-error.ets:1,32]");
+              "TypeError: Type 'string' cannot be assigned to type 'int'[type-error.sts:1,32]");
     impl_->DestroyContext(ctx);
 }
 
@@ -75,7 +75,7 @@ function main() {
     console.log(c.n + 1) // type error, but not syntax error
 }
 )XXX";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "list-ids.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "list-ids.sts");
     ctx = impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 

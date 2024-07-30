@@ -515,4 +515,4 @@
     }
   }
 }
-TypeError: 'classVal' is a static property of 'A' [property-access-field-1.ets:20:21]
+TypeError: 'classVal' is a static property of 'A' [property-access-field-1.sts:20:21]

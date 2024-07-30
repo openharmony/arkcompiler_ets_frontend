@@ -263,4 +263,4 @@
     }
   }
 }
-TypeError: Type alias generic parameter 'T' is not used in type annotation [generic_typealias_10_neg.ets:16:14]
+TypeError: Type alias generic parameter 'T' is not used in type annotation [generic_typealias_10_neg.sts:16:14]

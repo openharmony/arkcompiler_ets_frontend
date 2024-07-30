@@ -438,4 +438,4 @@
     }
   }
 }
-TypeError: Cannot use type 'void' as value.  [voidTypeInBinaryOperation.ets:20:19]
+TypeError: Cannot use type 'void' as value.  [voidTypeInBinaryOperation.sts:20:19]

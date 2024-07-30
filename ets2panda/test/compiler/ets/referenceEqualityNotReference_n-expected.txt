@@ -517,4 +517,4 @@
     }
   }
 }
-TypeError: Both operands have to be reference types [referenceEqualityNotReference_n.ets:19:11]
+TypeError: Both operands have to be reference types [referenceEqualityNotReference_n.sts:19:11]

@@ -685,4 +685,4 @@
     }
   }
 }
-TypeError: Signature constructor(): void is not visible here. [invalidPrivateAccess2.ets:25:24]
+TypeError: Signature constructor(): void is not visible here. [invalidPrivateAccess2.sts:25:24]

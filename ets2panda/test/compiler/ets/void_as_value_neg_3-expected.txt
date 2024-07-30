@@ -540,4 +540,4 @@
     }
   }
 }
-TypeError: Unresolved reference void [void_as_value_neg_3.ets:18:11]
+TypeError: Unresolved reference void [void_as_value_neg_3.sts:18:11]

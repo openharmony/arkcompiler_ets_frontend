@@ -576,4 +576,4 @@
     }
   }
 }
-TypeError: 'foo' is an instance property of 'A' [property-access-method-2.ets:21:11]
+TypeError: 'foo' is an instance property of 'A' [property-access-method-2.sts:21:11]

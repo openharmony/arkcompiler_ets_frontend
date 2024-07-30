@@ -1824,4 +1824,4 @@
     }
   }
 }
-TypeError: Cannot cast type 'Int[][]' to 'Long[][]' [cast_expressions10.ets:25:26]
+TypeError: Cannot cast type 'Int[][]' to 'Long[][]' [cast_expressions10.sts:25:26]

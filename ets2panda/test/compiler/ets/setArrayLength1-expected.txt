@@ -730,4 +730,4 @@
     }
   }
 }
-TypeError: Setting the length of an array is not permitted [setArrayLength1.ets:22:5]
+TypeError: Setting the length of an array is not permitted [setArrayLength1.sts:22:5]

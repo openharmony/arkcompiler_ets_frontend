@@ -473,4 +473,4 @@
     }
   }
 }
-TypeError: Unresolved reference foo [import_all_alias_2.ets:20:9]
+TypeError: Unresolved reference foo [import_all_alias_2.sts:20:9]

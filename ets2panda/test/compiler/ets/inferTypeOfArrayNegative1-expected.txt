@@ -438,4 +438,4 @@
     }
   }
 }
-TypeError: Union type is not implemented yet! [inferTypeOfArrayNegative1.ets:16:5]
+TypeError: Union type is not implemented yet! [inferTypeOfArrayNegative1.sts:16:5]

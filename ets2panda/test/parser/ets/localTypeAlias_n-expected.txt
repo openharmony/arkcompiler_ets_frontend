@@ -418,4 +418,4 @@
     }
   }
 }
-SyntaxError: Cannot find type 'a'. [localTypeAlias_n.ets:20:12]
+SyntaxError: Cannot find type 'a'. [localTypeAlias_n.sts:20:12]

@@ -577,4 +577,4 @@
     }
   }
 }
-TypeError: Object literal may only specify known properties [record_init_check.ets:18:34]
+TypeError: Object literal may only specify known properties [record_init_check.sts:18:34]

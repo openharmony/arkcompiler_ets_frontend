@@ -1085,4 +1085,4 @@
     }
   }
 }
-TypeError: Cannot obtain iterator type in 'for-of' statement. [for_of_missing_iterator_type.ets:22:10]
+TypeError: Cannot obtain iterator type in 'for-of' statement. [for_of_missing_iterator_type.sts:22:10]

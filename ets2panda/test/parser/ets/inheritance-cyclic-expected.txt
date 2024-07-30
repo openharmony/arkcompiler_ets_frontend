@@ -859,4 +859,4 @@
     }
   }
 }
-TypeError: Cyclic inheritance involving A. [inheritance-cyclic.ets:16:7]
+TypeError: Cyclic inheritance involving A. [inheritance-cyclic.sts:16:7]

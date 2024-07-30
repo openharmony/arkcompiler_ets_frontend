@@ -1103,4 +1103,4 @@
     }
   }
 }
-TypeError: Source element type 'double' is not assignable to the loop iterator type 'float'. [for_of_02.ets:30:3]
+TypeError: Source element type 'double' is not assignable to the loop iterator type 'float'. [for_of_02.sts:30:3]

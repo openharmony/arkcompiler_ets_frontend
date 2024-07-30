@@ -427,4 +427,4 @@
     }
   }
 }
-TypeError: Assert message must be string [assert_bad.ets:18:20]
+TypeError: Assert message must be string [assert_bad.sts:18:20]

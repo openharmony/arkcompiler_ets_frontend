@@ -804,4 +804,4 @@
     }
   }
 }
-TypeError: Bad operand type, the types of the operands must be numeric type or String. [inferTypeOfArrayNegative2.ets:19:9]
+TypeError: Bad operand type, the types of the operands must be numeric type or String. [inferTypeOfArrayNegative2.sts:19:9]

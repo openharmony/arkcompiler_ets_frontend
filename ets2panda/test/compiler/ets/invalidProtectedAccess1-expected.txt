@@ -840,4 +840,4 @@
     }
   }
 }
-TypeError: Property a is not visible here. [invalidProtectedAccess1.ets:24:19]
+TypeError: Property a is not visible here. [invalidProtectedAccess1.sts:24:19]

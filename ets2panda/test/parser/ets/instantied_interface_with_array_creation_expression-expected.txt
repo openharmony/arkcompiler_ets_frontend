@@ -383,4 +383,4 @@
     }
   }
 }
-TypeError: Cannot use array creation expression with abstract classes and interfaces. [instantied_interface_with_array_creation_expression.ets:19:3]
+TypeError: Cannot use array creation expression with abstract classes and interfaces. [instantied_interface_with_array_creation_expression.sts:19:3]

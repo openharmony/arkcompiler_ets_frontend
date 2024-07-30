@@ -1,1 +1,1 @@
-SyntaxError: Main overload is not enabled [main_entry_point_5.ets:20:10]
+SyntaxError: Main overload is not enabled [main_entry_point_5.sts:20:10]

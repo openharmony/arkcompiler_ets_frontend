@@ -698,4 +698,4 @@
     }
   }
 }
-TypeError: Type A|Double is not assignable to constraint type Numeric|String [recordKeyTypeCheck02.ets:19:18]
+TypeError: Type A|Double is not assignable to constraint type Numeric|String [recordKeyTypeCheck02.sts:19:18]

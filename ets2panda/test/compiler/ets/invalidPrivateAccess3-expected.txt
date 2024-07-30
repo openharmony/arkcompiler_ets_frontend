@@ -1103,4 +1103,4 @@
     }
   }
 }
-TypeError: Signature foo(): void is not visible here. [invalidPrivateAccess3.ets:35:5]
+TypeError: Signature foo(): void is not visible here. [invalidPrivateAccess3.sts:35:5]

@@ -798,4 +798,4 @@
     }
   }
 }
-TypeError: Type B is not assignable to constraint type A<B> [TypeError_recursive_parameter_1.ets:17:18]
+TypeError: Type B is not assignable to constraint type A<B> [TypeError_recursive_parameter_1.sts:17:18]

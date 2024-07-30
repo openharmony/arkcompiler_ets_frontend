@@ -1,1 +1,1 @@
-SyntaxError: Invalid Type [type_references.ets:19:10]
+SyntaxError: Invalid Type [type_references.sts:19:10]

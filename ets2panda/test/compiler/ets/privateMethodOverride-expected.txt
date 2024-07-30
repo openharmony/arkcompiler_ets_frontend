@@ -679,4 +679,4 @@
     }
   }
 }
-TypeError: Method foo(): void in B not overriding any method [privateMethodOverride.ets:22:24]
+TypeError: Method foo(): void in B not overriding any method [privateMethodOverride.sts:22:24]
