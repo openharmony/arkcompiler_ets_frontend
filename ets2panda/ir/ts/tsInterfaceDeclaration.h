@@ -38,7 +38,7 @@ public:
         TSInterfaceBody *body;
         bool isStatic;
         bool isExternal;
-        Language lang;
+        es2panda::Language lang;
     };
     // NOLINTEND(cppcoreguidelines-pro-type-member-init)
 
