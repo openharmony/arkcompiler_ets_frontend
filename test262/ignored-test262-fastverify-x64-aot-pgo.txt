@@ -25,19 +25,6 @@ test262/data/test_es2021/built-ins/RegExp/match-indices/indices-array-unicode-ma
 test262/data/test_es2021/language/expressions/template-literal/literal-expr-primitive.js
 # --- end of Issue #17864
 
-#18277
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-block-labeled-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-else-braceless-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-block-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-do-while-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-else-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-while-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-if-braceless-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-if-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/new-covered-expression-is-valid.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/top-level-empty-str-is-valid-assign-expr.js
-# --- end of Issue #18277
-
 #18300
 test262/data/test_es2021/language/expressions/object/method.js
 # --- end of Issue #18300
