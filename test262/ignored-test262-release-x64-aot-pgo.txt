@@ -9,8 +9,5 @@ test262/data/test_es2021/built-ins/encodeURI/S15.1.3.3_A2.3_T1.js
 # Issue #18161
 test262/data/test_es2021/built-ins/Array/prototype/copyWithin/coerced-values-start-change-target.js
 
-# Issue #18302
-test262/data/test_es2021/built-ins/TypedArrayConstructors/internals/Set/conversion-operation.js
-
 # Issue #18400
 test262/data/other_tests/language/expressions/class/elements/multiple-definitions-rs-static-async-generator-method-privatename-identifier.js
