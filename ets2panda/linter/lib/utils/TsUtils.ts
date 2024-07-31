@@ -1895,6 +1895,15 @@ export class TsUtils {
     if (sym && sym.getFlags() & ts.SymbolFlags.TypeAlias) {
       const typeDecl = TsUtils.getDeclaration(sym);
       if (typeDecl && ts.isTypeAliasDeclaration(typeDecl)) {
+        const typeArgs = (typeNode as ts.TypeReferenceNode).typeArguments;
+        if (
+          typeArgs &&
+          !typeArgs.every((typeArg) => {
+            return this.isSendableTypeNode(typeArg);
+          })
+        ) {
+          return false;
+        }
         return this.isSendableTypeNode(typeDecl.type, isShared);
       }
     }
