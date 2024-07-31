@@ -1595,7 +1595,7 @@ def add_directory_for_debug(runners, args):
 def add_cmd_for_aop_transform(runners, args):
     runner = AopTransform(args)
 
-    aop_file_path = path.join(runner.test_root, "/aop/")
+    aop_file_path = path.join(runner.test_root, "aop")
     lib_suffix = '.so'
     #cpp src, deal type, result compare str, abc compare str
     msg_list = [
@@ -1607,25 +1607,26 @@ def add_cmd_for_aop_transform(runners, args):
         ["".join(["no_exist", lib_suffix]), "dirct_use", "Failed to find file", ""],
         ["error_suffix.xxx", "direct_use", "aop transform file suffix support", ""]
     ]
-    for i in range(0, len(msg_list)):
-        cpp_file = ''.join([aop_file_path, msg_list[i][0]])
-        if msg_list[i][1] == 'compile':
+    for msg in msg_list:
+        cpp_file = path.join(aop_file_path, msg[0])
+        if msg[1] == 'compile':
             lib_file = cpp_file.replace('.cpp', lib_suffix)
             remove_file = lib_file
             runner.add_cmd(["g++", "--share", "-o", lib_file, cpp_file], "", "", "")
-        elif msg_list[i][1] == 'copy_lib':
+        elif msg[1] == 'copy_lib':
             lib_file = cpp_file.replace('.cpp', lib_suffix)
             remove_file = lib_file
             if not os.path.exists(lib_file):
-                with open(cpp_file, "rb") as source_file:
-                    with open(lib_file, "wb") as target_file:
-                        target_file.write(source_file.read())
-        elif msg_list[i][1] == 'direct_use':
+                with open(cpp_file, "r") as source_file:
+                    fd = os.open(lib_file, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
+                    target_file = os.fdopen(fd, 'w')
+                    target_file.write(source_file.read)
+        elif msg[1] == 'direct_use':
             lib_file = cpp_file
             remove_file = ""
 
         js_file = path.join(aop_file_path, "test_aop.js")
-        runner.add_cmd([runner.es2panda, "--merge-abc", "--transform-lib", lib_file, js_file], msg_list[i][2], msg_list[i][3], remove_file)
+        runner.add_cmd([runner.es2panda, "--merge-abc", "--transform-lib", lib_file, js_file], msg[2], msg[3], remove_file)
 
     runners.append(runner)
 
