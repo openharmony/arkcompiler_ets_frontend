@@ -110,30 +110,40 @@ diff --git a/lib/reporters/simple.js b/lib/reporters/simple.js
 index 08f9a55..a386924 100644
 --- a/lib/reporters/simple.js
 +++ b/lib/reporters/simple.js
-@@ -1,5 +1,6 @@
+@@ -1,22 +1,30 @@
  'use strict';
  const path = require('path');
 +const fs = require('fs');
  const saveCompiledTest = require('../saveCompiledTest');
- 
++var xmlbuilder = require('xmlbuilder');
+
  function simpleReporter(results, opts) {
-@@ -12,11 +13,13 @@ function simpleReporter(results, opts) {
- 
+   let passed = 0;
+   let failed = 0;
+   let lastPassed = true;
++  let xmll = xmlbuilder.create("testsuite");
++  xmll.att("name", "Test 262");
+
+   results.on('pass', function (test) {
+     passed++;
+
      clearPassed();
      lastPassed = true;
 -    process.stdout.write(`PASS ${test.file}`);
 +    let mess = `PASS ${test.file} (${test.scenario})\n`
 +    console.log(mess);
-+    writeStatistics(mess,opts);
- 
++    writeStatistics(mess, opts);
++
++    xmll.ele("testcase").att("name", test.file);
+
      if (opts.saveCompiledTests && !opts.saveOnlyFailed) {
        test.savedTestPath = saveCompiledTest(test, opts);
 -      process.stdout.write(`\nSaved compiled passed test as ${test.savedTestPath}\n`);
 +      // process.stdout.write(`\nSaved compiled passed test as ${test.savedTestPath}\n`);
      }
    });
- 
-@@ -24,14 +27,21 @@ function simpleReporter(results, opts) {
+
+@@ -24,14 +32,27 @@
      failed++;
      clearPassed();
      lastPassed = false;
@@ -146,8 +156,14 @@ index 08f9a55..a386924 100644
 +    console.log(mess);
 +    console.log(`${test.result.message}`);
      console.log('');
- 
-+    writeStatistics(mess,opts);
+
++    writeStatistics(mess, opts);
++
++    var tc = xmll.ele("testcase");
++    tc.att("name", test.file);
++    var ff = tc.ele("failure");
++    var cd = `error message = ${test.result.message}\nOUT: ${test.result.stdout}\nERR: ${test.result.stderr}`
++    ff.cdata(cd)
 +
      if (opts.saveCompiledTests) {
        test.savedTestPath = saveCompiledTest(test, opts);
@@ -156,9 +172,21 @@ index 08f9a55..a386924 100644
      }
 +
    });
- 
+
    results.on('end', function () {
-@@ -52,6 +62,29 @@ function simpleReporter(results, opts) {
+@@ -40,6 +61,11 @@
+     console.log(`Ran ${(passed + failed)} tests`);
+     console.log(`${passed} passed`);
+     console.log(`${failed} failed`);
++
++    xmll.att("tests", passed + failed);
++    xmll.att("failures", failed);
++
++    fs.writeFileSync(path.join(opts.tempDir,"result.xml"), xmll.end({pretty: true}));
+   });
+
+   function clearPassed() {
+@@ -52,6 +78,29 @@
        }
      }
    }
@@ -175,9 +203,9 @@ index 08f9a55..a386924 100644
 +    fs.writeFileSync(savedTestPath, `  ${test.result.message}`);
 +  }
 +
-+  function writeStatistics(data,opts) {
++  function writeStatistics(data, opts) {
 +    let save_file = path.join(opts.tempDir,"result.txt");
-+    fs.appendFile(save_file,data,'utf8',function(err){
++    fs.appendFile(save_file, data, 'utf8', function(err){
 +      if(err)
 +      {
 +          console.error(err);
@@ -186,7 +214,7 @@ index 08f9a55..a386924 100644
 +  }
 +
  }
- 
+
  module.exports = simpleReporter;
 diff --git a/lib/saveCompiledTest.js b/lib/saveCompiledTest.js
 index c233adb..7739946 100644
@@ -239,4 +267,17 @@ index e7cb695..38a113c 100644
    }
 -};
 +};
+diff --git a/package.json b/package.json
+--- a/package.json	(revision 9c499f028eb24e67781435c0bb442e00343eb39d)
++++ b/package.json	(date 1721307847458)
+@@ -15,7 +15,8 @@
+     "minimatch": "^3.0.4",
+     "rxjs": "^6.4.0",
+     "test262-stream": "^1.3.0",
+-    "yargs": "^13.2.2"
++    "yargs": "^13.2.2",
++    "xmlbuilder": "^15.1.1"
+   },
+   "author": "Brian Terlson",
+   "license": "BSD-3-Clause",
 \ No newline at end of file
