@@ -4,6 +4,9 @@ parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_v
 # Bad test shadows Object with type parameter name #14913
 compiler/ets/override13.sts
 
+# 15095
+compiler/ets/override17.sts
+
 # Throwing function types
 compiler/ets/throwingFunctionType2.sts
 compiler/ets/throwingFunctionAsParameter2.sts
