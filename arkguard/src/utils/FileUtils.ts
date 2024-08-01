@@ -183,4 +183,10 @@ export class FileUtils {
     const absPath: string = path.join(path.dirname(configPath), relativePath);
     return this.toUnixPath(absPath);
   }
+
+  public static deleteFile(filePath: string): void {
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
+  }
 }

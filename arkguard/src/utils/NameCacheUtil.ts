@@ -19,9 +19,9 @@ export const NAME_CACHE_SUFFIX: string = '.cache.json';
 export const PROPERTY_CACHE_FILE: string = 'property.cache.json';
 export const IDENTIFIER_CACHE: string = 'IdentifierCache';
 export const MEM_METHOD_CACHE: string = 'MemberMethodCache';
-const spaceOfNameCache: number = 2;
+export const spaceOfNameCache: number = 2;
 
-export function writeCache(cache: Map<string, string>, destFileName: string): void {
+export function writeCache(cache: Map<string, string> | undefined, destFileName: string): void {
   // convert map to json string
   if (!cache) {
     return;
@@ -42,7 +42,7 @@ export function readCache(filePath: string): Object | undefined {
   return JSON.parse(cacheString);
 }
 
-export function getMapFromJson(jsonObj: Object): Map<string, string> {
+export function getMapFromJson(jsonObj: Object | undefined): Map<string, string> {
   if (jsonObj === undefined) {
     return new Map<string, string>();
   }
