@@ -113,6 +113,8 @@ protected:
     static bool CheckIteratorInterfaceForObject(checker::ETSChecker *checker, checker::ETSObjectType *obj);
 
 private:
+    checker::Type *CreateUnionIteratorTypes(checker::ETSChecker *checker, checker::Type *exprType);
+
     AstNode *left_;
     Expression *right_;
     Statement *body_;

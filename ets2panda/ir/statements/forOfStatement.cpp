@@ -22,6 +22,28 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
+
+checker::Type *ForOfStatement::CreateUnionIteratorTypes(checker::ETSChecker *checker, checker::Type *exprType)
+{
+    ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
+
+    for (auto it : exprType->AsETSUnionType()->ConstituentTypes()) {
+        if (it->IsETSStringType()) {
+            types.push_back(checker->GetGlobalTypesHolder()->GlobalCharType());
+        } else if (it->IsETSObjectType()) {
+            types.push_back(this->CheckIteratorMethodForObject(checker, it->AsETSObjectType()));
+        } else if (it->IsETSArrayType()) {
+            types.push_back(it->AsETSArrayType()->ElementType()->Instantiate(checker->Allocator(), checker->Relation(),
+                                                                             checker->GetGlobalTypesHolder()));
+            types.back()->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+        } else {
+            return nullptr;
+        }
+    }
+
+    return checker->CreateETSUnionType(std::move(types));
+}
+
 void ForOfStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (auto *transformedNode = cb(left_); left_ != transformedNode) {
@@ -226,18 +248,7 @@ checker::Type *ForOfStatement::CheckIteratorMethod(checker::ETSChecker *const ch
         }
 
         if (exprType->IsETSUnionType()) {
-            auto *const returnType = CheckIteratorMethodForObject(
-                checker, exprType->AsETSUnionType()->ConstituentTypes()[0]->AsETSObjectType());
-
-            if (returnType != nullptr &&
-                exprType->AsETSUnionType()->AllOfConstituentTypes([this, checker, returnType](
-                                                                      checker::Type *const constituentType) -> bool {
-                    return constituentType->IsETSObjectType() &&
-                           checker->Relation()->IsIdenticalTo(
-                               returnType, CheckIteratorMethodForObject(checker, constituentType->AsETSObjectType()));
-                })) {
-                return returnType;
-            }
+            return this->CreateUnionIteratorTypes(checker, exprType);
         }
     }
 

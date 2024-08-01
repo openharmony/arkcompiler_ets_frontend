@@ -2025,7 +2025,9 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     checker::Type *iterType = GetIteratorType(checker, elemType, st->Left());
     auto *const relation = checker->Relation();
     relation->SetFlags(checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
-    relation->SetNode(checker->AllocNode<ir::SuperExpression>());  // Dummy node to avoid assertion!
+    relation->SetNode(st->Left()->IsVariableDeclaration()
+                          ? st->Left()->AsVariableDeclaration()->Declarators().front()->Id()
+                          : st->Left()->AsIdentifier());
 
     if (!relation->IsAssignableTo(elemType, iterType)) {
         std::stringstream ss {};
