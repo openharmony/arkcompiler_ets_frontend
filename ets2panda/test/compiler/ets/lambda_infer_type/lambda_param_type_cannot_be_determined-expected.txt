@@ -627,4 +627,4 @@
     }
   }
 }
-TypeError: The type of parameter 'value' cannot be determined [lambda_param_type_cannot_be_determined.ets:19:10]
+TypeError: The type of parameter 'value' cannot be determined [lambda_param_type_cannot_be_determined.sts:19:10]

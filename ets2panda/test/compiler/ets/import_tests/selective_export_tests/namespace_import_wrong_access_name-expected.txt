@@ -547,4 +547,4 @@
     }
   }
 }
-TypeError: Cannot find imported element 'TestClass' exported with alias [namespace_import_wrong_access_name.ets:18:24]
+TypeError: Cannot find imported element 'TestClass' exported with alias [namespace_import_wrong_access_name.sts:18:24]

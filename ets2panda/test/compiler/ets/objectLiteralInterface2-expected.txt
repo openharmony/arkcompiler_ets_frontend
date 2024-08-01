@@ -1534,4 +1534,4 @@
     }
   }
 }
-TypeError: Object literal cannot be of typed interface type [objectLiteralInterface2.ets:21:28]
+TypeError: Object literal cannot be of typed interface type [objectLiteralInterface2.sts:21:28]

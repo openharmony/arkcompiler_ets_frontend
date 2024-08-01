@@ -976,4 +976,4 @@
     }
   }
 }
-TypeError: Interface has methods [objectLiteralInterface3.ets:21:12]
+TypeError: Interface has methods [objectLiteralInterface3.sts:21:12]
