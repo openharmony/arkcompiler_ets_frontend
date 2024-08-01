@@ -423,4 +423,4 @@
     }
   }
 }
-SyntaxError: Class 'Point' is already defined with different type. [import_name_conflict_9.ets:16:21]
+SyntaxError: Class 'Point' is already defined with different type. [import_name_conflict_9.sts:16:21]

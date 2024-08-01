@@ -375,4 +375,4 @@
     }
   }
 }
-SyntaxError: Cannot find type 'FunctioN'. [interface.ets:17:39]
+SyntaxError: Cannot find type 'FunctioN'. [interface.sts:17:39]

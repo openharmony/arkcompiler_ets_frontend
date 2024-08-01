@@ -223,4 +223,4 @@
     }
   }
 }
-SyntaxError: Use the default import syntax to import a default exported element [import_name_3.ets:16:35]
+SyntaxError: Use the default import syntax to import a default exported element [import_name_3.sts:16:35]

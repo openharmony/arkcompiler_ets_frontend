@@ -1037,4 +1037,4 @@
     }
   }
 }
-TypeError: Cannot override non-private method of the class Object from an interface. [override18.ets:17:13]
+TypeError: Cannot override non-private method of the class Object from an interface. [override18.sts:17:13]

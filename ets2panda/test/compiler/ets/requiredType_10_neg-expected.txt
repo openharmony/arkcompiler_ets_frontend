@@ -1016,4 +1016,4 @@
     }
   }
 }
-TypeError: Class property 'b_fld' needs to be initialized for required type. [requiredType_10_neg.ets:25:29]
+TypeError: Class property 'b_fld' needs to be initialized for required type. [requiredType_10_neg.sts:25:29]

@@ -1501,4 +1501,4 @@
     }
   }
 }
-TypeError: Type B|D|C is not assignable to constraint type A<B|D|C> [recursive_union_neg_1.ets:19:18]
+TypeError: Type B|D|C is not assignable to constraint type A<B|D|C> [recursive_union_neg_1.sts:19:18]

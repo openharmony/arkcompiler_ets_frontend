@@ -1,1 +1,1 @@
-SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [identifierReference6.ets:19:10]
+SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [identifierReference6.sts:19:10]

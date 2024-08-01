@@ -521,4 +521,4 @@
     }
   }
 }
-TypeError: Call to 'super' must be first statement in constructor [launch_super_ctor.ets:21:12]
+TypeError: Call to 'super' must be first statement in constructor [launch_super_ctor.sts:21:12]

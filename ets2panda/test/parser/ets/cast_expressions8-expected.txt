@@ -880,4 +880,4 @@
     }
   }
 }
-TypeError: Cannot cast type 'int[]' to 'Int[]' [cast_expressions8.ets:21:22]
+TypeError: Cannot cast type 'int[]' to 'Int[]' [cast_expressions8.sts:21:22]

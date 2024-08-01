@@ -523,4 +523,4 @@
     }
   }
 }
-TypeError: Type 'string' cannot be assigned to type 'double' [inferTypeOfArrayNegative3.ets:17:8]
+TypeError: Type 'string' cannot be assigned to type 'double' [inferTypeOfArrayNegative3.sts:17:8]

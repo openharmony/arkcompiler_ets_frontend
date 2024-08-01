@@ -1095,4 +1095,4 @@
     }
   }
 }
-TypeError: Method 'foo' is declared in I1 and IBase interfaces. [InterfaceWithDefaultFunction1.ets:19:26]
+TypeError: Method 'foo' is declared in I1 and IBase interfaces. [InterfaceWithDefaultFunction1.sts:19:26]

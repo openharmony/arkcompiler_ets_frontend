@@ -743,4 +743,4 @@
     }
   }
 }
-TypeError: Type 'A|null' cannot be assigned to type 'Object' [n_assignNullableFromFunctionToNonNullable.ets:23:22]
+TypeError: Type 'A|null' cannot be assigned to type 'Object' [n_assignNullableFromFunctionToNonNullable.sts:23:22]

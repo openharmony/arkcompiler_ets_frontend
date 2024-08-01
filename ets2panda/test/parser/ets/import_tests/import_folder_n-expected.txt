@@ -208,4 +208,4 @@
     }
   }
 }
-SyntaxError: Cannot find index.[ets|ts] or package module in folder: ./folderWithoutIndexOrPackage [import_folder_n.ets:16:22]
+SyntaxError: Cannot find index.[sts|ts] or package module in folder: ./folderWithoutIndexOrPackage [import_folder_n.sts:16:22]

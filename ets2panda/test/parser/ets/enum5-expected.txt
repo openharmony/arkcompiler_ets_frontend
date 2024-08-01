@@ -1,1 +1,1 @@
-SyntaxError: Missing comma between enum constants [enum5.ets:18:3]
+SyntaxError: Missing comma between enum constants [enum5.sts:18:3]

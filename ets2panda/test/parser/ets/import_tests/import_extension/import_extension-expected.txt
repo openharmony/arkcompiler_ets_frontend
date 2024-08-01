@@ -77,7 +77,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./import_extension_2.ets",
+        "value": "./import_extension_2.sts",
         "loc": {
           "start": {
             "line": 17,

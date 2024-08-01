@@ -389,4 +389,4 @@
     }
   }
 }
-TypeError: Ambiguous reference to 'foo' [import_17.ets:20:5]
+TypeError: Ambiguous reference to 'foo' [import_17.sts:20:5]

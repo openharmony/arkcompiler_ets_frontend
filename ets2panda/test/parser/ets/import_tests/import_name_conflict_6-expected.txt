@@ -360,4 +360,4 @@
     }
   }
 }
-SyntaxError: Class 'Point' is already defined. [import_name_conflict_6.ets:16:21]
+SyntaxError: Class 'Point' is already defined. [import_name_conflict_6.sts:16:21]

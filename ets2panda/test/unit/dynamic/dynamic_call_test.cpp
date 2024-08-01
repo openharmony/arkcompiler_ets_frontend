@@ -47,7 +47,7 @@ public:
     {
         auto dynamicType = Allocator()->New<checker::ETSDynamicType>(Allocator(), "test", "test", obj,
                                                                      checker::ETSObjectFlags::NO_OPTS, nullptr,
-                                                                     Language::FromString("ets").value(), false);
+                                                                     Language::FromString("sts").value(), false);
         if (obj->IsETSTypeReference()) {
             obj = obj->AsETSTypeReference()->Part()->Name();
         }

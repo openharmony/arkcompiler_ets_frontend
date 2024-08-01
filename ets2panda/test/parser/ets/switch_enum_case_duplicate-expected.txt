@@ -3558,4 +3558,4 @@
     }
   }
 }
-TypeError: Case duplicate [switch_enum_case_duplicate.ets:25:14]
+TypeError: Case duplicate [switch_enum_case_duplicate.sts:25:14]

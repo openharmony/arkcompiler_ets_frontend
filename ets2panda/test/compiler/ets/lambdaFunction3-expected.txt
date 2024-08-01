@@ -558,4 +558,4 @@
     }
   }
 }
-TypeError: Type '(b: int) => void' cannot be assigned to type '(p1: String) => void' [lambdaFunction3.ets:18:39]
+TypeError: Type '(b: int) => void' cannot be assigned to type '(p1: String) => void' [lambdaFunction3.sts:18:39]

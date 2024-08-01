@@ -286,4 +286,4 @@
     }
   }
 }
-TypeError: Bad return type, main enable only void or int type. [main_entry_point_2.ets:17:5]
+TypeError: Bad return type, main enable only void or int type. [main_entry_point_2.sts:17:5]

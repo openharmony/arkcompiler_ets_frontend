@@ -663,4 +663,4 @@
     }
   }
 }
-TypeError: Cannot inherit from class A, because method name is inherited with a different declaration type [invalidInheritance4.ets:20:17]
+TypeError: Cannot inherit from class A, because method name is inherited with a different declaration type [invalidInheritance4.sts:20:17]

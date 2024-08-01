@@ -479,4 +479,4 @@
     }
   }
 }
-TypeError: Constant expression required [swtich_not_const.ets:20:9]
+TypeError: Constant expression required [swtich_not_const.sts:20:9]

@@ -3091,4 +3091,4 @@
     }
   }
 }
-TypeError: Cannot refer to enum members through variable. [enum9.ets:19:30]
+TypeError: Cannot refer to enum members through variable. [enum9.sts:19:30]

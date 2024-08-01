@@ -592,4 +592,4 @@
     }
   }
 }
-TypeError: Type 'A' cannot be assigned to type 'A$partial' [partialType_1_neg.ets:28:26]
+TypeError: Type 'A' cannot be assigned to type 'A$partial' [partialType_1_neg.sts:28:26]

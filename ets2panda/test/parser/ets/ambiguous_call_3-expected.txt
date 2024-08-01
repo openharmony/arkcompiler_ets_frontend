@@ -1125,4 +1125,4 @@
     }
   }
 }
-TypeError: Call to `goo` is ambiguous as `2` versions of `goo` are available: `goo(p2: B): void` and `goo(p1: I1): void` [ambiguous_call_3.ets:23:5]
+TypeError: Call to `goo` is ambiguous as `2` versions of `goo` are available: `goo(p2: B): void` and `goo(p1: I1): void` [ambiguous_call_3.sts:23:5]

@@ -1,1 +1,1 @@
-SyntaxError: Unexpected token, expected: '=>'. [function_implicit_return_type.ets:23:29]
+SyntaxError: Unexpected token, expected: '=>'. [function_implicit_return_type.sts:23:29]

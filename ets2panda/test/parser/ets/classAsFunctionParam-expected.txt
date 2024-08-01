@@ -648,4 +648,4 @@
     }
   }
 }
-TypeError: Class or interface 'C' cannot be used as object [classAsFunctionParam.ets:23:10]
+TypeError: Class or interface 'C' cannot be used as object [classAsFunctionParam.sts:23:10]

@@ -572,4 +572,4 @@
     }
   }
 }
-TypeError: Cannot infer type for cb because method reference needs an explicit target type [FunctionType5.ets:20:5]
+TypeError: Cannot infer type for cb because method reference needs an explicit target type [FunctionType5.sts:20:5]

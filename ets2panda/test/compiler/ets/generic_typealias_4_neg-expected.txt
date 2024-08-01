@@ -608,4 +608,4 @@
     }
   }
 }
-TypeError: Wrong number of type parameters for generic type alias [generic_typealias_4_neg.ets:20:19]
+TypeError: Wrong number of type parameters for generic type alias [generic_typealias_4_neg.sts:20:19]

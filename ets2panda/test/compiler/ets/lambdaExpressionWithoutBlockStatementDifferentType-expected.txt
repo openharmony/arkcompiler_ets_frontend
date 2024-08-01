@@ -487,4 +487,4 @@
     }
   }
 }
-TypeError: Type '() => String' cannot be assigned to type '() => Int' [lambdaExpressionWithoutBlockStatementDifferentType.ets:17:28]
+TypeError: Type '() => String' cannot be assigned to type '() => Int' [lambdaExpressionWithoutBlockStatementDifferentType.sts:17:28]

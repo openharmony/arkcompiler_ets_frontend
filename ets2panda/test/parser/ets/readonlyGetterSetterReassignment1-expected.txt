@@ -1160,4 +1160,4 @@
     }
   }
 }
-TypeError: Cannot assign to this property because it is readonly. [readonlyGetterSetterReassignment1.ets:29:14]
+TypeError: Cannot assign to this property because it is readonly. [readonlyGetterSetterReassignment1.sts:29:14]

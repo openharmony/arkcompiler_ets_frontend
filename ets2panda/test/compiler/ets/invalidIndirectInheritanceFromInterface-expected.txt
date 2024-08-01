@@ -1278,4 +1278,4 @@
     }
   }
 }
-TypeError: This expression is not callable. [invalidIndirectInheritanceFromInterface.ets:28:15]
+TypeError: This expression is not callable. [invalidIndirectInheritanceFromInterface.sts:28:15]

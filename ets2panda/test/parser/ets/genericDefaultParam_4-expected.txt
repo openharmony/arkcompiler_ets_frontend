@@ -884,4 +884,4 @@
     }
   }
 }
-TypeError: Type 'string' is not compatible with type 'Double' at index 1 [genericDefaultParam_4.ets:23:28]
+TypeError: Type 'string' is not compatible with type 'Double' at index 1 [genericDefaultParam_4.sts:23:28]

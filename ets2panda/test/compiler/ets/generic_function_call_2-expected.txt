@@ -954,4 +954,4 @@
     }
   }
 }
-TypeError: Type 'B' is not compatible with type 'A' at index 1 [generic_function_call_2.ets:24:9]
+TypeError: Type 'B' is not compatible with type 'A' at index 1 [generic_function_call_2.sts:24:9]

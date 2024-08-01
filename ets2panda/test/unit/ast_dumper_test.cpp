@@ -48,7 +48,7 @@ struct TestParams {
     std::string_view fileName;
 
     static constexpr int ARGS_COUNT_DEFAULT = 1;
-    static constexpr std::string_view FILE_NAME_DEFAULT = "dummy.ets";
+    static constexpr std::string_view FILE_NAME_DEFAULT = "dummy.sts";
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -93,7 +93,7 @@ TestParams DumpEtsSrcSimple()
     auto es2pandaPath = test::utils::PandaExecutablePathGetter {}.Get();
     auto argsList =
         es2pandaPath +
-        "--extension=ets "
+        "--extension=sts "
         "--dump-ets-src-before-phases=\"plugins-after-parse:lambda-lowering:checker:plugins-after-check:generate-"
         "ts-"
         "declarations:op-assignment:tuple-lowering:union-property-access:plugins-after-lowering\"";

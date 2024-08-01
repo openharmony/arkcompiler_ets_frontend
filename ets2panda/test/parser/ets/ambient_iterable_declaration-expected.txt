@@ -547,4 +547,4 @@
     }
   }
 }
-TypeError: The return type of '$_iterator' must be a type that implements Iterator interface. [ambient_iterable_declaration.ets:18:22]
+TypeError: The return type of '$_iterator' must be a type that implements Iterator interface. [ambient_iterable_declaration.sts:18:22]

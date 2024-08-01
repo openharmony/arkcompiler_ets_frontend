@@ -656,4 +656,4 @@
     }
   }
 }
-TypeError: Cannot make a static reference to the non-static type T [typeVarReferenceFromStaticContext.ets:18:24]
+TypeError: Cannot make a static reference to the non-static type T [typeVarReferenceFromStaticContext.sts:18:24]

@@ -630,4 +630,4 @@
     }
   }
 }
-TypeError: B is not abstract and does not override abstract method foo(): void in A [interfaceMethodNotOverridden.ets:20:22]
+TypeError: B is not abstract and does not override abstract method foo(): void in A [interfaceMethodNotOverridden.sts:20:22]

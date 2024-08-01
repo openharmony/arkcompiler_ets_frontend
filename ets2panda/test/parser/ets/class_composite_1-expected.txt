@@ -407,4 +407,4 @@
     }
   }
 }
-TypeError: Class composite must be constructed separately before referring their members. [class_composite_1.ets:17:9]
+TypeError: Class composite must be constructed separately before referring their members. [class_composite_1.sts:17:9]

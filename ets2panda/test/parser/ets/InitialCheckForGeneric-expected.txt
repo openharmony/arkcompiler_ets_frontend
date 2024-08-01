@@ -855,6 +855,6 @@
     }
   }
 }
-Warning: Variable 'u' is used before being assigned. [InitialCheckForGeneric.ets:20:31]
-Warning: Variable 'v' is used before being assigned. [InitialCheckForGeneric.ets:20:34]
-TypeError: There were errors during assign analysis (2) [InitialCheckForGeneric.ets:1:1]
+Warning: Variable 'u' is used before being assigned. [InitialCheckForGeneric.sts:20:31]
+Warning: Variable 'v' is used before being assigned. [InitialCheckForGeneric.sts:20:34]
+TypeError: There were errors during assign analysis (2) [InitialCheckForGeneric.sts:1:1]

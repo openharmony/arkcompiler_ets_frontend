@@ -358,4 +358,4 @@
     }
   }
 }
-TypeError: Function bar is already declared. [import_name_conflict_5.ets:16:7]
+TypeError: Function bar is already declared. [import_name_conflict_5.sts:16:7]

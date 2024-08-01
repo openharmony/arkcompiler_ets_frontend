@@ -441,4 +441,4 @@
     }
   }
 }
-TypeError: Argument must be an instance of 'Exception' or 'Error' [tryCatchErrorIncorrectParamType.ets:19:14]
+TypeError: Argument must be an instance of 'Exception' or 'Error' [tryCatchErrorIncorrectParamType.sts:19:14]

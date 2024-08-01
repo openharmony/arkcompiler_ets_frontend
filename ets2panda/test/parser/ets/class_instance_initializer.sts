@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.ets;
+package com.huawei.migrationtool.test.sts;
 
 class A  {
     a: int = 1;

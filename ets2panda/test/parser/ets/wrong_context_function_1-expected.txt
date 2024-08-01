@@ -396,4 +396,4 @@
     }
   }
 }
-TypeError: Function name "a" used in the wrong context [wrong_context_function_1.ets:22:5]
+TypeError: Function name "a" used in the wrong context [wrong_context_function_1.sts:22:5]

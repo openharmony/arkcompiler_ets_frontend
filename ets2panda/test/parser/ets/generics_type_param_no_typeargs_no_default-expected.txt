@@ -1001,4 +1001,4 @@
     }
   }
 }
-TypeError: Type 'Base<T>' is generic but type argument were not provided. [generics_type_param_no_typeargs_no_default.ets:18:11]
+TypeError: Type 'Base<T>' is generic but type argument were not provided. [generics_type_param_no_typeargs_no_default.sts:18:11]

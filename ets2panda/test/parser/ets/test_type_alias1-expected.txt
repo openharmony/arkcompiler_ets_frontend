@@ -1,1 +1,1 @@
-SyntaxError: Identifier expected [test_type_alias1.ets:16:6]
+SyntaxError: Identifier expected [test_type_alias1.sts:16:6]

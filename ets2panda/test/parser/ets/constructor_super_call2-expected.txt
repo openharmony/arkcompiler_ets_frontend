@@ -551,4 +551,4 @@
     }
   }
 }
-TypeError: Must call super constructor [constructor_super_call2.ets:21:16]
+TypeError: Must call super constructor [constructor_super_call2.sts:21:16]

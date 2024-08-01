@@ -395,4 +395,4 @@
     }
   }
 }
-TypeError: Invalid method modifier(s): a final method can't have abstract, static or native modifier. [method_modifier_check_10.ets:17:5]
+TypeError: Invalid method modifier(s): a final method can't have abstract, static or native modifier. [method_modifier_check_10.sts:17:5]

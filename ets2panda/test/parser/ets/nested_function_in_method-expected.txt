@@ -1,1 +1,1 @@
-SyntaxError: Nested functions are not allowed [nested_function_in_method.ets:20:9]
+SyntaxError: Nested functions are not allowed [nested_function_in_method.sts:20:9]

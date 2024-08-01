@@ -384,4 +384,4 @@
     }
   }
 }
-SyntaxError: Cannot find type 'CommonStruct0'. [StructTest3.ets:1:1]
+SyntaxError: Cannot find type 'CommonStruct0'. [StructTest3.sts:1:1]

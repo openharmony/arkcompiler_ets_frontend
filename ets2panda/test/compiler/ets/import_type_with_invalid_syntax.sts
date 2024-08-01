@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-import {foo} from "./import_extension_1";
-import {goo} from "./import_extension_2.ets";
+import type * from './export_type.sts'
 
-function main(): void {
-    let bar = foo + goo;
-}
+let a = new A();
+class C implements B {};
+let c = new C()

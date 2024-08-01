@@ -1001,4 +1001,4 @@
     }
   }
 }
-TypeError: Class property 'fld3' needs to be initialized for required type. [requiredType_7_neg.ets:23:30]
+TypeError: Class property 'fld3' needs to be initialized for required type. [requiredType_7_neg.sts:23:30]

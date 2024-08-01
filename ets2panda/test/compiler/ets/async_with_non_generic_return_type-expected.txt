@@ -453,4 +453,4 @@
     }
   }
 }
-TypeError: Return type of async function must be 'Promise'. [async_with_non_generic_return_type.ets:18:19]
+TypeError: Return type of async function must be 'Promise'. [async_with_non_generic_return_type.sts:18:19]

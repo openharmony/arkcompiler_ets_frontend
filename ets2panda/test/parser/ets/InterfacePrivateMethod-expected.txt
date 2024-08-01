@@ -1181,4 +1181,4 @@
     }
   }
 }
-TypeError: Cannot reference 'this' in this context. [InterfacePrivateMethod.ets:21:16]
+TypeError: Cannot reference 'this' in this context. [InterfacePrivateMethod.sts:21:16]

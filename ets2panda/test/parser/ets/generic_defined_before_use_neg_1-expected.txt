@@ -510,4 +510,4 @@
     }
   }
 }
-TypeError: Type Parameter T3 should be defined before use. [generic_defined_before_use_neg_1.ets:16:12]
+TypeError: Type Parameter T3 should be defined before use. [generic_defined_before_use_neg_1.sts:16:12]

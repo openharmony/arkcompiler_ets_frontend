@@ -414,4 +414,4 @@
     }
   }
 }
-TypeError: No matching construct signature for std.core.Byte(int) [validate_signatures_throw_type_error.ets:17:19]
+TypeError: No matching construct signature for std.core.Byte(int) [validate_signatures_throw_type_error.sts:17:19]

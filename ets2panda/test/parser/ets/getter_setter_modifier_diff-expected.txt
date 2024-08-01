@@ -532,4 +532,4 @@
     }
   }
 }
-TypeError: Getter and setter methods must have the same accessor modifiers [getter_setter_modifier_diff.ets:18:18]
+TypeError: Getter and setter methods must have the same accessor modifiers [getter_setter_modifier_diff.sts:18:18]

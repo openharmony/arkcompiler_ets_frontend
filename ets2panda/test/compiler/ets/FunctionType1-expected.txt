@@ -987,4 +987,4 @@
     }
   }
 }
-TypeError: Type '(a: int, b: int) => int' cannot be assigned to type '(p1: Int, p2: Int) => void' [FunctionType1.ets:26:12]
+TypeError: Type '(a: int, b: int) => int' cannot be assigned to type '(p1: Int, p2: Int) => void' [FunctionType1.sts:26:12]

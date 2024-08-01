@@ -745,4 +745,4 @@
     }
   }
 }
-TypeError: Cannot cast type 'A' to 'B' [cast_expressions2.ets:21:12]
+TypeError: Cannot cast type 'A' to 'B' [cast_expressions2.sts:21:12]

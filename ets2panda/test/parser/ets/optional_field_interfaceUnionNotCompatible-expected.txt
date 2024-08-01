@@ -1778,4 +1778,4 @@
     }
   }
 }
-TypeError: field(): Object|undefined in C cannot override field(): undefined|String|Double in I because overriding return type is not compatible with the other return type. [optional_field_interfaceUnionNotCompatible.ets:25:13]
+TypeError: field(): Object|undefined in C cannot override field(): undefined|String|Double in I because overriding return type is not compatible with the other return type. [optional_field_interfaceUnionNotCompatible.sts:25:13]

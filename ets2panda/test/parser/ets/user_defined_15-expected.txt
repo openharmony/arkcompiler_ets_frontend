@@ -1,1 +1,1 @@
-SyntaxError: Cannot be used as user-defined type. [user_defined_15.ets:16:7]
+SyntaxError: Cannot be used as user-defined type. [user_defined_15.sts:16:7]

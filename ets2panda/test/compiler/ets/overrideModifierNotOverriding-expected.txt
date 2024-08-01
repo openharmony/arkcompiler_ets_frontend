@@ -737,4 +737,4 @@
     }
   }
 }
-TypeError: Method foo(a: int): int in B not overriding any method [overrideModifierNotOverriding.ets:23:24]
+TypeError: Method foo(a: int): int in B not overriding any method [overrideModifierNotOverriding.sts:23:24]

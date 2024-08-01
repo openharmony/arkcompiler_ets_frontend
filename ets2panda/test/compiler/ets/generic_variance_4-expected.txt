@@ -1147,4 +1147,4 @@
     }
   }
 }
-TypeError: Type 'A1<A>' cannot be assigned to type 'A1<B>' [generic_variance_4.ets:23:21]
+TypeError: Type 'A1<A>' cannot be assigned to type 'A1<B>' [generic_variance_4.sts:23:21]

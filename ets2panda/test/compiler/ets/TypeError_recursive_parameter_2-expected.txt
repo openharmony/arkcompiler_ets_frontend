@@ -908,4 +908,4 @@
     }
   }
 }
-TypeError: Type P2 is not assignable to constraint type A<P1,P2> [TypeError_recursive_parameter_2.ets:18:19]
+TypeError: Type P2 is not assignable to constraint type A<P1,P2> [TypeError_recursive_parameter_2.sts:18:19]

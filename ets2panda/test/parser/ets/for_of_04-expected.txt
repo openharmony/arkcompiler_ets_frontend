@@ -1,1 +1,1 @@
-SyntaxError: Type annotation is not allowed when existing variable is used as loop iterator in 'for' statement. [for_of_04.ets:20:9]
+SyntaxError: Type annotation is not allowed when existing variable is used as loop iterator in 'for' statement. [for_of_04.sts:20:9]

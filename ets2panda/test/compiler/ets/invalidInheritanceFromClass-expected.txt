@@ -1178,4 +1178,4 @@
     }
   }
 }
-TypeError: This expression is not callable. [invalidInheritanceFromClass.ets:25:15]
+TypeError: This expression is not callable. [invalidInheritanceFromClass.sts:25:15]

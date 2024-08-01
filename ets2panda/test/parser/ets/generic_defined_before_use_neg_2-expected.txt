@@ -426,4 +426,4 @@
     }
   }
 }
-TypeError: Type Parameter F should be defined before use. [generic_defined_before_use_neg_2.ets:15:19]
+TypeError: Type Parameter F should be defined before use. [generic_defined_before_use_neg_2.sts:15:19]

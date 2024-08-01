@@ -967,4 +967,4 @@
     }
   }
 }
-TypeError: Type '(p: B) => B' cannot be assigned to type '(p1: A) => A' [function_subtyping_3.ets:20:26]
+TypeError: Type '(p: B) => B' cannot be assigned to type '(p1: A) => A' [function_subtyping_3.sts:20:26]

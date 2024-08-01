@@ -1025,4 +1025,4 @@
     }
   }
 }
-TypeError: (...numbers: double[]) => void is not compatible with type T [TypeInferFunc.ets:22:14]
+TypeError: (...numbers: double[]) => void is not compatible with type T [TypeInferFunc.sts:22:14]
