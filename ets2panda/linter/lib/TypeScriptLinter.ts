@@ -114,7 +114,7 @@ export class TypeScriptLinter {
      * some syntax elements are ArkTs-specific and are only implemented inside patched
      * compiler, so we initialize those handlers if corresponding properties do exist
      */
-    const etsComponentExpression: ts.SyntaxKind | undefined = (ts.SyntaxKind as any).EtsComponentExpression;
+    const etsComponentExpression: ts.SyntaxKind | undefined = ts.SyntaxKind.EtsComponentExpression;
     if (etsComponentExpression) {
       this.handlersMap.set(etsComponentExpression, this.handleEtsComponentExpression);
     }
@@ -491,7 +491,7 @@ export class TypeScriptLinter {
       return;
     }
     const arrayLitNode = node as ts.ArrayLiteralExpression;
-    let noContextTypeForArrayLiteral = false;
+    let emptyContextTypeForArrayLiteral = false;
 
     const arrayLitType = this.tsTypeChecker.getContextualType(arrayLitNode);
     if (arrayLitType && this.tsUtils.typeContainsSendableClassOrInterface(arrayLitType)) {
@@ -511,7 +511,7 @@ export class TypeScriptLinter {
           !this.tsUtils.isDynamicLiteralInitializer(arrayLitNode) &&
           !this.tsUtils.isObjectLiteralAssignable(elementContextType, element)
         ) {
-          noContextTypeForArrayLiteral = true;
+          emptyContextTypeForArrayLiteral = true;
           break;
         }
       }
@@ -519,7 +519,7 @@ export class TypeScriptLinter {
         this.checkAssignmentMatching(element, elementContextType, element, true);
       }
     }
-    if (noContextTypeForArrayLiteral) {
+    if (emptyContextTypeForArrayLiteral) {
       this.incrementCounters(node, FaultID.ArrayLiteralNoContextType);
     }
   }
