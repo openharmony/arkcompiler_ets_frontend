@@ -234,7 +234,8 @@ ir::Statement *ETSParser::ParseIdentKeyword()
     ASSERT(token.Type() == lexer::TokenType::LITERAL_IDENT);
     switch (token.KeywordType()) {
         case lexer::TokenType::KEYW_STRUCT: {
-            return ParseTypeDeclaration(false);
+            // Remove this ThrowSyntaxError when struct is implemented in #12726
+            ThrowSyntaxError("Struct types are not supported yet!");
         }
         case lexer::TokenType::KEYW_TYPE: {
             return ParseTypeAliasDeclaration();

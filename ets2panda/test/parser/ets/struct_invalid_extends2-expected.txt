@@ -1,1 +1,1 @@
-SyntaxError: struct declaration cannot extends form other class [struct_invalid_extends2.sts:23:1]
+SyntaxError: Struct types are not supported yet! [struct_invalid_extends2.sts:20:1]
