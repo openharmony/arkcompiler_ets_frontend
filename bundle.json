@@ -24,7 +24,6 @@
                 "bounds_checking_function"
             ],
             "third_party": [
-                "bounds_checking_function",
                 "icu",
                 "protobuf"
             ]
