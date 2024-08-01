@@ -177,15 +177,18 @@ def run_subprocess_with_beta3(test_obj, cmd):
     has_target_api = False
     has_version_12 = False
     has_sub_version = False
+    is_es2abc_cmd = False
 
     for param in cmd:
+        if "es2abc" in param:
+            is_es2abc_cmd = True
         if "--target-api-sub-version" in param:
             has_sub_version = True
         if "--target-api-version" in param:
             has_target_api = True
         if "12" in param:
             has_version_12 = True
-    if not has_target_api or (has_version_12 and not has_sub_version):
+    if is_es2abc_cmd and (not has_target_api or (has_version_12 and not has_sub_version)):
         cmd.append("--target-api-sub-version=beta3")
     if test_obj:
         test_obj.log_cmd(cmd)
@@ -1620,7 +1623,7 @@ def add_cmd_for_aop_transform(runners, args):
                 with open(cpp_file, "r") as source_file:
                     fd = os.open(lib_file, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
                     target_file = os.fdopen(fd, 'w')
-                    target_file.write(source_file.read)
+                    target_file.write(source_file.read())
         elif msg[1] == 'direct_use':
             lib_file = cpp_file
             remove_file = ""
