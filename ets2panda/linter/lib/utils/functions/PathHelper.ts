@@ -14,10 +14,27 @@
  */
 
 import * as npath from 'node:path';
+import type * as ts from 'typescript';
 
 export function pathContainsDirectory(path: string, dir: string): boolean {
   for (const pathDir of npath.dirname(path).split(npath.sep)) {
     if (pathDir === dir) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const srcFilePathComponents = new Map<ts.SourceFile, string[]>();
+
+export function srcFilePathContainsDirectory(srcFile: ts.SourceFile, dir: string): boolean {
+  let pathComps = srcFilePathComponents.get(srcFile);
+  if (!pathComps) {
+    pathComps = npath.dirname(npath.normalize(srcFile.fileName)).split(npath.sep);
+    srcFilePathComponents.set(srcFile, pathComps);
+  }
+  for (const subdir of pathComps) {
+    if (subdir === dir) {
       return true;
     }
   }
