@@ -1473,6 +1473,8 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/language/import/syntax", "js",
                          ["--parse-only", "--module", "--target-api-sub-version=beta3"])
+    runner.add_directory("parser/js/language/import/syntax/beta2", "js",
+                         ["--parse-only", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/js/language/import", "ts",
                          ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class", "ts",
