@@ -283,20 +283,18 @@ public:
     std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                                    lexer::TokenType operationType, lexer::SourcePosition pos,
                                                    bool forcePromotion = false);
-    checker::Type *CheckBinaryOperatorMulDivMod(ir::Expression *left, ir::Expression *right,
-                                                lexer::TokenType operationType, lexer::SourcePosition pos,
-                                                bool isEqualOp, checker::Type *leftType, checker::Type *rightType,
-                                                Type *unboxedL, Type *unboxedR);
-    checker::Type *CheckBinaryOperatorPlus(ir::Expression *left, ir::Expression *right, lexer::TokenType operationType,
-                                           lexer::SourcePosition pos, bool isEqualOp, checker::Type *leftType,
-                                           checker::Type *rightType, Type *unboxedL, Type *unboxedR);
-    checker::Type *CheckBinaryOperatorShift(ir::Expression *left, ir::Expression *right, lexer::TokenType operationType,
-                                            lexer::SourcePosition pos, bool isEqualOp, checker::Type *leftType,
-                                            checker::Type *rightType, Type *unboxedL, Type *unboxedR);
-    checker::Type *CheckBinaryOperatorBitwise(ir::Expression *left, ir::Expression *right,
-                                              lexer::TokenType operationType, lexer::SourcePosition pos, bool isEqualOp,
-                                              checker::Type *leftType, checker::Type *rightType, Type *unboxedL,
-                                              Type *unboxedR);
+    checker::Type *CheckBinaryOperatorMulDivMod(
+        std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
+        std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
+    checker::Type *CheckBinaryOperatorPlus(
+        std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
+        std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
+    checker::Type *CheckBinaryOperatorShift(
+        std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
+        std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
+    checker::Type *CheckBinaryOperatorBitwise(
+        std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
+        std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
     checker::Type *CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                               lexer::SourcePosition pos, checker::Type *leftType,
                                               checker::Type *rightType, Type *unboxedL, Type *unboxedR);
@@ -375,9 +373,10 @@ public:
                                                 TypeRelationFlag flags);
     Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos,
                                                TypeRelationFlag resolveFlags = TypeRelationFlag::NONE);
-    Signature *ValidateSignature(Signature *signature, const ir::TSTypeParameterInstantiation *typeArguments,
-                                 const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
-                                 TypeRelationFlag initialFlags, const std::vector<bool> &argTypeInferenceRequired);
+    Signature *ValidateSignature(
+        std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
+        const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
+        const std::vector<bool> &argTypeInferenceRequired);
     bool ValidateSignatureRequiredParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                          TypeRelationFlag flags, const std::vector<bool> &argTypeInferenceRequired,
                                          bool throwError);
@@ -396,11 +395,9 @@ public:
     Signature *FindMostSpecificSignature(const ArenaVector<Signature *> &signatures,
                                          const ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
                                          size_t paramCount);
-    void EvaluateMostSpecificSearch(Type *&mostSpecificType, Signature *&prevSig, const lexer::SourcePosition &pos,
-                                    Signature *sig, Type *sigType);
-    void SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig, const lexer::SourcePosition &pos,
-                                      size_t argumentsSize, size_t paramCount, size_t idx, Signature *sig,
-                                      bool lookForClassType);
+    void SearchAmongMostSpecificTypes(
+        Type *&mostSpecificType, Signature *&prevSig,
+        std::tuple<const lexer::SourcePosition &, size_t, size_t, size_t, Signature *> info, bool lookForClassType);
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);

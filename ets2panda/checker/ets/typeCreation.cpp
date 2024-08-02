@@ -600,8 +600,8 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
 
     auto [lang, hasDecl] = CheckForDynamicLang(declNode, assemblerName);
     if (lang.IsDynamic()) {
-        return Allocator()->New<ETSDynamicType>(Allocator(), name, assemblerName, declNode, flags, Relation(), lang,
-                                                hasDecl);
+        return Allocator()->New<ETSDynamicType>(Allocator(), std::make_tuple(name, assemblerName, lang),
+                                                std::make_tuple(declNode, flags, Relation()), hasDecl);
     }
 
     return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName,
