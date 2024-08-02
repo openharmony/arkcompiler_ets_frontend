@@ -22,7 +22,7 @@ export function isDebug(projectConfig: any): boolean {
 }
 
 export function isFileExist(filePath: string): boolean {
-  let exist = false;
+  let exist = true;
   try {
     fs.accessSync(filePath, fs.constants.F_OK);
   } catch (err) {
