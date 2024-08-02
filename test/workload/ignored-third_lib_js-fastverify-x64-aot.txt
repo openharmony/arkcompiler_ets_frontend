@@ -22,11 +22,3 @@ commonmark-js_test
 
 #18487
 pako_test
-
-#18153
-textEncoding_test
-crypto-js_test
-lodash_test
-rxjs_test
-asn-one_test
-zxing-text-encoding_test

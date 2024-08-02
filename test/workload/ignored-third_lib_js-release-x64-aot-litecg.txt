@@ -3,12 +3,17 @@
 # Issue #18340
 Drools_test
 
-# Issue #18153
+#18517
 js-joda_test
+
+#18484
 jBox2d_test
 
 #18444
 jmespath_test
+
+#18383
+memory-cache_test
 
 #18424
 pcx_test
