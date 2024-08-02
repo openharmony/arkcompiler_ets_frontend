@@ -114,6 +114,8 @@ public:
     void BuildMethodDefinition(ir::MethodDefinition *methodDef);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
+    bool DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
+                            const ir::StringLiteral *const importPath, bool overloadAllowed);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
     ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &sourceName,
                                                       const ir::StringLiteral *importPath);

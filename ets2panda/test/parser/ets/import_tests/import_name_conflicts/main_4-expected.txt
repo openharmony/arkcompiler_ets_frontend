@@ -5,15 +5,15 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./re_export_4",
+        "value": "./imported_module_2.sts",
         "loc": {
           "start": {
             "line": 16,
-            "column": 22
+            "column": 24
           },
           "end": {
             "line": 16,
-            "column": 37
+            "column": 49
           }
         }
       },
@@ -22,7 +22,7 @@
           "type": "ImportNamespaceSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "all",
+            "name": "foo_1",
             "decorators": [],
             "loc": {
               "start": {
@@ -31,7 +31,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 16
+                "column": 18
               }
             }
           },
@@ -42,7 +42,7 @@
             },
             "end": {
               "line": 16,
-              "column": 16
+              "column": 18
             }
           }
         }
@@ -54,7 +54,79 @@
         },
         "end": {
           "line": 16,
-          "column": 37
+          "column": 49
+        }
+      }
+    },
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "./imported_module_1.sts",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 21
+          },
+          "end": {
+            "line": 17,
+            "column": 46
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "foo_1",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 9
+              },
+              "end": {
+                "line": 17,
+                "column": 14
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "foo_1",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 9
+              },
+              "end": {
+                "line": 17,
+                "column": 14
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 17,
+              "column": 9
+            },
+            "end": {
+              "line": 17,
+              "column": 14
+            }
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1
+        },
+        "end": {
+          "line": 17,
+          "column": 46
         }
       }
     },
@@ -181,11 +253,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 18,
+                  "line": 19,
                   "column": 10
                 },
                 "end": {
-                  "line": 18,
+                  "line": 19,
                   "column": 14
                 }
               }
@@ -205,11 +277,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
+                      "line": 19,
                       "column": 10
                     },
                     "end": {
-                      "line": 18,
+                      "line": 19,
                       "column": 14
                     }
                   }
@@ -222,122 +294,48 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 18,
+                      "line": 19,
                       "column": 19
                     },
                     "end": {
-                      "line": 18,
+                      "line": 19,
                       "column": 23
                     }
                   }
                 },
                 "body": {
                   "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "all",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 20,
-                                "column": 5
-                              },
-                              "end": {
-                                "line": 20,
-                                "column": 8
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "foo",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 20,
-                                "column": 9
-                              },
-                              "end": {
-                                "line": 20,
-                                "column": 12
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 20,
-                              "column": 5
-                            },
-                            "end": {
-                              "line": 20,
-                              "column": 12
-                            }
-                          }
-                        },
-                        "arguments": [],
-                        "optional": false,
-                        "loc": {
-                          "start": {
-                            "line": 20,
-                            "column": 5
-                          },
-                          "end": {
-                            "line": 20,
-                            "column": 14
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 20,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 20,
-                          "column": 15
-                        }
-                      }
-                    }
-                  ],
+                  "statements": [],
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 1
+                      "column": 24
                     },
                     "end": {
-                      "line": 21,
-                      "column": 2
+                      "line": 19,
+                      "column": 26
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 18,
+                    "line": 19,
                     "column": 14
                   },
                   "end": {
-                    "line": 21,
-                    "column": 2
+                    "line": 19,
+                    "column": 26
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 18,
+                  "line": 19,
                   "column": 14
                 },
                 "end": {
-                  "line": 21,
-                  "column": 2
+                  "line": 19,
+                  "column": 26
                 }
               }
             },
@@ -345,12 +343,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
+                "line": 19,
                 "column": 1
               },
               "end": {
-                "line": 21,
-                "column": 2
+                "line": 19,
+                "column": 26
               }
             }
           }
@@ -384,9 +382,9 @@
       "column": 1
     },
     "end": {
-      "line": 22,
+      "line": 20,
       "column": 1
     }
   }
 }
-SyntaxError: Function 'foo' is already defined. [import_4.sts:17:1]
+SyntaxError: Function 'foo_1' is already defined with different type. [main_4.sts:17:21]

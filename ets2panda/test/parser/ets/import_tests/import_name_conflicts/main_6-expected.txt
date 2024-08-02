@@ -5,15 +5,15 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./re_export_4",
+        "value": "./imported_module_2.sts",
         "loc": {
           "start": {
-            "line": 16,
-            "column": 22
+            "line": 17,
+            "column": 20
           },
           "end": {
-            "line": 16,
-            "column": 37
+            "line": 17,
+            "column": 45
           }
         }
       },
@@ -22,27 +22,99 @@
           "type": "ImportNamespaceSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "all",
+            "name": "c",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 13
+              },
+              "end": {
+                "line": 17,
+                "column": 14
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 17,
+              "column": 8
+            },
+            "end": {
+              "line": 17,
+              "column": 14
+            }
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1
+        },
+        "end": {
+          "line": 17,
+          "column": 46
+        }
+      }
+    },
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "./imported_module_1.sts",
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 24
+          },
+          "end": {
+            "line": 16,
+            "column": 49
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "c",
             "decorators": [],
             "loc": {
               "start": {
                 "line": 16,
-                "column": 13
+                "column": 16
               },
               "end": {
                 "line": 16,
-                "column": 16
+                "column": 17
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "dbl",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9
+              },
+              "end": {
+                "line": 16,
+                "column": 12
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 8
+              "column": 9
             },
             "end": {
               "line": 16,
-              "column": 16
+              "column": 17
             }
           }
         }
@@ -54,7 +126,7 @@
         },
         "end": {
           "line": 16,
-          "column": 37
+          "column": 50
         }
       }
     },
@@ -181,11 +253,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 18,
+                  "line": 20,
                   "column": 10
                 },
                 "end": {
-                  "line": 18,
+                  "line": 20,
                   "column": 14
                 }
               }
@@ -205,11 +277,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
+                      "line": 20,
                       "column": 10
                     },
                     "end": {
-                      "line": 18,
+                      "line": 20,
                       "column": 14
                     }
                   }
@@ -218,19 +290,6 @@
                 "async": false,
                 "expression": false,
                 "params": [],
-                "returnType": {
-                  "type": "ETSPrimitiveType",
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 19
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 23
-                    }
-                  }
-                },
                 "body": {
                   "type": "BlockStatement",
                   "statements": [
@@ -242,31 +301,31 @@
                           "type": "MemberExpression",
                           "object": {
                             "type": "Identifier",
-                            "name": "all",
+                            "name": "console",
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 20,
+                                "line": 21,
                                 "column": 5
                               },
                               "end": {
-                                "line": 20,
-                                "column": 8
+                                "line": 21,
+                                "column": 12
                               }
                             }
                           },
                           "property": {
                             "type": "Identifier",
-                            "name": "foo",
+                            "name": "log",
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 20,
-                                "column": 9
+                                "line": 21,
+                                "column": 13
                               },
                               "end": {
-                                "line": 20,
-                                "column": 12
+                                "line": 21,
+                                "column": 16
                               }
                             }
                           },
@@ -274,69 +333,85 @@
                           "optional": false,
                           "loc": {
                             "start": {
-                              "line": 20,
+                              "line": 21,
                               "column": 5
                             },
                             "end": {
-                              "line": 20,
-                              "column": 12
+                              "line": 21,
+                              "column": 16
                             }
                           }
                         },
-                        "arguments": [],
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "c",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 17
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 18
+                              }
+                            }
+                          }
+                        ],
                         "optional": false,
                         "loc": {
                           "start": {
-                            "line": 20,
+                            "line": 21,
                             "column": 5
                           },
                           "end": {
-                            "line": 20,
-                            "column": 14
+                            "line": 21,
+                            "column": 19
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 20,
+                          "line": 21,
                           "column": 5
                         },
                         "end": {
-                          "line": 20,
-                          "column": 15
+                          "line": 21,
+                          "column": 20
                         }
                       }
                     }
                   ],
                   "loc": {
                     "start": {
-                      "line": 19,
-                      "column": 1
+                      "line": 20,
+                      "column": 17
                     },
                     "end": {
-                      "line": 21,
+                      "line": 22,
                       "column": 2
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 18,
+                    "line": 20,
                     "column": 14
                   },
                   "end": {
-                    "line": 21,
+                    "line": 22,
                     "column": 2
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 18,
+                  "line": 20,
                   "column": 14
                 },
                 "end": {
-                  "line": 21,
+                  "line": 22,
                   "column": 2
                 }
               }
@@ -345,11 +420,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
+                "line": 20,
                 "column": 1
               },
               "end": {
-                "line": 21,
+                "line": 22,
                 "column": 2
               }
             }
@@ -385,8 +460,8 @@
     },
     "end": {
       "line": 22,
-      "column": 1
+      "column": 2
     }
   }
 }
-SyntaxError: Function 'foo' is already defined. [import_4.sts:17:1]
+SyntaxError: Variable 'c' is already defined with different type. [main_6.sts:16:24]

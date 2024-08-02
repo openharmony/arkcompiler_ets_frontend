@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import {dbl as floatingPointNumber} from "import_tests/packages";
-import {flt as floatingPointNumber} from "import_tests/packages";
+import * as foo_1 from "./imported_module_2.sts"
+import {foo_1} from "./imported_module_1.sts"
 
-// Throw error because floatingPointNumber is for multiple value.
+function main() : void {}

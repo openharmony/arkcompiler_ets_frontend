@@ -17,6 +17,3 @@ compiler/ets/throwingFunctionAsParameter2.sts
 # 15642
 compiler/ets/etsObjectToString4.sts
 compiler/ets/generic_variance_1.sts
-
-# Duplicated import name
-parser/ets/import_tests/import_name_conflict_1.sts
