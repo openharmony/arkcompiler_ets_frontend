@@ -3116,6 +3116,20 @@ ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *speci
     return nullptr;
 }
 
+void ParserImpl::VerifySupportLazyImportVersion()
+{
+    if (!util::Helpers::IsSupportLazyImportVersion(program_.TargetApiVersion(), program_.GetTargetApiSubVersion())) {
+        std::string errMessage = "Current configuration does not support using lazy import. Lazy import can be "
+            "used in the beta3 version of API 12 or higher versions.\n"
+            "Solutions: > Check the compatibleSdkVersion and compatibleSdkVersionStage in build-profile.json5."
+            "> If compatibleSdkVersion is set to API 12, then compatibleSdkVersionStage needs to be configured "
+            "as beta3."
+            "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
+            "target-api-sub-version options are correctly configured.";
+        ThrowSyntaxError(errMessage);
+    }
+}
+
 ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
 {
     char32_t nextChar = lexer_->Lookahead();
@@ -3138,12 +3152,12 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
     lexer_->NextToken();  // eat import
 
     bool isLazy = false;
-    if (!util::Helpers::IsDefaultApiVersion(program_.TargetApiVersion(), program_.GetTargetApiSubVersion()) &&
-        lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_LAZY) {
+    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_LAZY) {
         const auto savedPos = lexer_->Save();
         lexer_->NextToken();  // eat lazy
         // only support import lazy {xxx} from '...'
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            VerifySupportLazyImportVersion();
             isLazy = true;
         } else {
             lexer_->Rewind(savedPos);
