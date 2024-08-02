@@ -41,6 +41,7 @@ public:
 
     [[nodiscard]] bool IsETSParser() const noexcept override;
 
+    ir::ImportSpecifier *GetTriggeringCCTORSpecifier(util::StringView localName, util::StringView importedName);
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
 
 public:
@@ -249,7 +250,7 @@ private:
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
-    std::vector<Program *> ParseSources();
+    std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     ArenaVector<ir::ImportSpecifier *> ParseNamedSpecifiers();
     ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);

@@ -25,15 +25,15 @@ bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *prog
     auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser());
     imports.ParseDefaultSources();
     auto extSrcs = program->ExternalSources();
-    for (auto &[_, ext_programs] : extSrcs) {
-        (void)_;
-        imports.HandleGlobalStmts(ext_programs);
-        globalClass.InitGlobalClass(ext_programs);
+    for (auto &[package, extPrograms] : extSrcs) {
+        auto triggeringCCtorMethodsAndPrograms = imports.HandleGlobalStmts(extPrograms, &globalClass);
+        globalClass.InitGlobalClass(extPrograms, &triggeringCCtorMethodsAndPrograms);
     }
+
     ArenaVector<parser::Program *> mainModule(program->Allocator()->Adapter());
     mainModule.emplace_back(program);
-    imports.HandleGlobalStmts(mainModule);
-    globalClass.InitGlobalClass(mainModule);
+    auto triggeringCCtorMethodsAndPrograms = imports.HandleGlobalStmts(mainModule, &globalClass);
+    globalClass.InitGlobalClass(mainModule, &triggeringCCtorMethodsAndPrograms);
     return true;
 }
 

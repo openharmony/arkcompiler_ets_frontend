@@ -661,12 +661,14 @@ std::vector<std::string> &Helpers::StdLib()
 
 bool Helpers::IsStdLib(const parser::Program *program)
 {
-    const auto &stdlib = StdLib();
+    auto stdlib = StdLib();
 
     // NOTE(rsipka): early check: if program is not a package module then it is not part of the stdlib either
     if (!program->IsPackageModule()) {
         return false;
     }
+
+    stdlib.emplace_back("std/math/consts");
 
     auto fileFolder = program->ModuleName().Mutf8();
     std::replace(fileFolder.begin(), fileFolder.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),

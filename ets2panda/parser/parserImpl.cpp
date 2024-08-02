@@ -86,6 +86,7 @@ void ParserImpl::ParseProgram(ScriptKind kind)
     blockStmt->SetRange({startLoc, lexer_->GetToken().End()});
 
     program_->SetAst(blockStmt);
+    program_->SetDeclarationModuleInfo();
 }
 
 bool ParserImpl::InAmbientContext()

@@ -41,6 +41,8 @@ enum class ScriptKind { SCRIPT, MODULE, STDLIB };
 class Program {
 public:
     using ExternalSource = ArenaUnorderedMap<util::StringView, ArenaVector<Program *>>;
+    using DirectExternalSource = ArenaUnorderedMap<util::StringView, ArenaVector<Program *>>;
+
     using ETSNolintsCollectionMap = ArenaUnorderedMap<const ir::AstNode *, ArenaSet<ETSWarnings>>;
 
     template <typename T>
@@ -54,6 +56,7 @@ public:
         : allocator_(allocator),
           varbinder_(varbinder),
           externalSources_(allocator_->Adapter()),
+          directExternalSources_(allocator_->Adapter()),
           extension_(varbinder->Extension()),
           etsnolintCollection_(allocator_->Adapter())
     {
@@ -169,6 +172,16 @@ public:
         return externalSources_;
     }
 
+    DirectExternalSource &DirectExternalSources()
+    {
+        return directExternalSources_;
+    }
+
+    const DirectExternalSource &DirectExternalSources() const
+    {
+        return directExternalSources_;
+    }
+
     void SetSource(const util::StringView &sourceCode, const util::StringView &sourceFilePath,
                    const util::StringView &sourceFileFolder)
     {
@@ -202,6 +215,11 @@ public:
         return moduleInfo_.isPackageModule;
     }
 
+    bool IsDeclarationModule() const
+    {
+        return moduleInfo_.isDeclModule;
+    }
+
     bool OmitModuleName() const
     {
         return moduleInfo_.omitModuleName;
@@ -227,6 +245,15 @@ public:
         return isASTchecked_;
     }
 
+    bool IsStdLib() const
+    {
+        // NOTE (hurton): temporary solution, needs rework when std sources are renamed
+        return (ModuleName().Mutf8().rfind("std.", 0) == 0) || (ModuleName().Mutf8().rfind("escompat", 0) == 0) ||
+               (FileName().Is("etsstdlib"));
+    }
+
+    void SetDeclarationModuleInfo();
+
     varbinder::ClassScope *GlobalClassScope();
     const varbinder::ClassScope *GlobalClassScope() const;
 
@@ -251,6 +278,7 @@ private:
         util::StringView moduleName;
         bool isPackageModule;
         bool omitModuleName;  // unclear naming, used to determine the entry point without --ets-module option
+        bool isDeclModule = false;
         // NOLINTEND(misc-non-private-member-variables-in-classes)
     };
 
@@ -263,6 +291,7 @@ private:
     util::StringView sourceFileFolder_ {};
     util::StringView resolvedFilePath_ {};
     ExternalSource externalSources_;
+    DirectExternalSource directExternalSources_;
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     bool entryPoint_ {};

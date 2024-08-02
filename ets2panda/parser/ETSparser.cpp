@@ -112,8 +112,9 @@ void ETSParser::ParseProgram(ScriptKind kind)
     }
     auto script = ParseETSGlobalScript(startLoc, statements);
 
-    AddExternalSource(ParseSources());
+    AddExternalSource(ParseSources(true));
     GetProgram()->SetAst(script);
+    GetProgram()->SetDeclarationModuleInfo();
 }
 
 ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
@@ -164,11 +165,26 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseDefaultSources(std::stri
     return statements;
 }
 
-std::vector<Program *> ETSParser::ParseSources()
+ir::ImportSpecifier *ETSParser::GetTriggeringCCTORSpecifier(util::StringView localName, util::StringView importedName)
+{
+    auto *local = AllocNode<ir::Identifier>(localName, Allocator());
+    auto *imported = AllocNode<ir::Identifier>(importedName, Allocator());
+    return AllocNode<ir::ImportSpecifier>(imported, local);
+}
+
+std::vector<Program *> ETSParser::ParseSources(bool firstSource)
 {
     std::vector<Program *> programs;
 
     auto &parseList = importPathManager_->ParseList();
+
+    ArenaVector<util::StringView> directImportsFromMainSource(Allocator()->Adapter());
+
+    if (firstSource) {
+        for (auto pl : parseList) {
+            directImportsFromMainSource.emplace_back(pl.sourcePath);
+        }
+    }
 
     // This parse list `paths` can grow in the meantime, so keep this index-based iteration
     // NOLINTNEXTLINE(modernize-loop-convert)
@@ -200,7 +216,16 @@ std::vector<Program *> ETSParser::ParseSources()
         importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
         auto newProg = ParseSource(
             {parseList[idx].sourcePath.Utf8(), extSrc->View().Utf8(), parseList[idx].sourcePath.Utf8(), false});
-
+        if (std::find_if(directImportsFromMainSource.begin(), directImportsFromMainSource.end(),
+                         [newProg](util::StringView sv) { return sv.Compare(newProg->AbsoluteName()) == 0; }) !=
+            directImportsFromMainSource.end()) {
+            const util::StringView name =
+                newProg->Ast()->Statements().empty() ? newProg->FileName() : newProg->ModuleName();
+            if (GetProgram()->DirectExternalSources().count(name) == 0) {
+                GetProgram()->DirectExternalSources().emplace(name, Allocator()->Adapter());
+            }
+            GetProgram()->DirectExternalSources().at(name).emplace_back(newProg);
+        }
         programs.emplace_back(newProg);
         GetContext().SetLanguage(currentLang);
     }
@@ -225,6 +250,7 @@ parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
     }
     auto script = ParseETSGlobalScript(startLoc, statements);
     program->SetAst(script);
+    GetProgram()->SetDeclarationModuleInfo();
     return program;
 }
 

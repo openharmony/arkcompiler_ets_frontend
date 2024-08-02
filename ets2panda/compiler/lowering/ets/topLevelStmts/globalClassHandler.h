@@ -24,6 +24,10 @@ namespace ark::es2panda::compiler {
 
 class GlobalClassHandler {
 public:
+    using TriggeringCCtorMethodProgramPair = std::pair<util::StringView, parser::Program *>;
+    using TriggeringCCtorMethodsAndPrograms =
+        ArenaUnorderedMap<util::StringView, ArenaVector<TriggeringCCtorMethodProgramPair>>;
+
     struct GlobalStmts {
         parser::Program *program;
         ArenaVector<ir::Statement *> statements;
@@ -35,7 +39,12 @@ public:
      * Result - creation of global class and _$init$_ method
      * @param programs - vector of files in module
      */
-    void InitGlobalClass(const ArenaVector<parser::Program *> &programs);
+    void InitGlobalClass(const ArenaVector<parser::Program *> &programs,
+                         const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethods);
+    util::UString ReplaceSpecialCharacters(util::UString *word) const;
+    util::StringView FormTriggeringCCtorMethodName(util::StringView importPath) const;
+
+    constexpr static std::string_view TRIGGER_CCTOR = "_$trigger_cctor$_";
 
 private:
     /**
@@ -43,10 +52,20 @@ private:
      * @param program program of module
      * @param init_statements statements which should be executed
      */
-    void InitCallToCCTOR(parser::Program *program, const ArenaVector<GlobalStmts> &initStatements,
-                         bool mainExists = false, bool topLevelStatementsExist = false);
+
+    void AddTriggerCctrMethodsToInit(ir::BlockStatement *blockBody,
+                                     const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms);
+    void InitCallToCCTOR(parser::Program *program,
+                         const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms,
+                         const ArenaVector<GlobalStmts> &initStatements, bool mainExists = false,
+                         bool topLevelStatementsExist = false, bool triggeringCCtorMethodExists = false);
 
 private:
+    ir::MethodDefinition *CreateAndFillTopLevelMethod(
+        parser::Program *program,
+        const GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms,
+        const ArenaVector<GlobalClassHandler::GlobalStmts> &initStatements, const std::string_view name,
+        bool exportFunction = false);
     void InitGlobalClass(ir::ClassDefinition *classDef, parser::ScriptKind scriptKind);
     ir::ClassDeclaration *CreateGlobalClass();
     ir::ClassStaticBlock *CreateCCtor(const ArenaVector<ir::AstNode *> &properties, const lexer::SourcePosition &loc,
