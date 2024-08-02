@@ -95,6 +95,11 @@ abstract class BasePrinter {
     const eventData = this.getCurrentEventData();
     this.print(eventData);
   }
+
+  // Only used for ut
+  getOutputPath(): string {
+    return this.outputPath;
+  }
 }
 
 export class TimeTracker extends BasePrinter {
@@ -106,7 +111,7 @@ export class TimeTracker extends BasePrinter {
   private maxMemoryFile: string = '';
 
   startEvent(eventName: string, timeSumPrinter?: TimeSumPrinter, currentFile?: string): void {
-    this.eventStack.set(eventName, {start: Date.now(), duration: 0, startMemory: process.memoryUsage().heapUsed, 
+    this.eventStack.set(eventName, {start: Date.now(), duration: 0, startMemory: process.memoryUsage().heapUsed,
       endMemory: 0, memoryUsage: 0});
     timeSumPrinter?.addEventDuration(eventName, 0);
     if (eventName === EventList.CREATE_AST) {
@@ -124,7 +129,7 @@ export class TimeTracker extends BasePrinter {
     const eventEndMemory = process.memoryUsage().heapUsed;
     const eventStartMemory = this.eventStack.get(eventName).startMemory;
     const memoryUsage = eventEndMemory - eventStartMemory;
-    
+
     if (isFilesPrinter) {
       this.filesTimeSum += duration;
 
@@ -143,7 +148,7 @@ export class TimeTracker extends BasePrinter {
         this.maxMemoryFile = eventName;
       }
     }
-    
+
     this.eventStack.get(eventName).duration = duration;
     this.eventStack.get(eventName).endMemory = eventEndMemory;
     this.eventStack.get(eventName).memoryUsage = memoryUsage;
@@ -178,7 +183,7 @@ export class TimeTracker extends BasePrinter {
     return eventData;
   }
 
-  private formatEvent(eventName: string, duration: number, startMemory: number, endMemory: number, 
+  private formatEvent(eventName: string, duration: number, startMemory: number, endMemory: number,
     memoryUsage: number, depth: number): string {
     const indent = INDENT.repeat(depth);
     const formattedDuration = duration.toFixed(SIG_FIGS) + 's';
@@ -187,6 +192,31 @@ export class TimeTracker extends BasePrinter {
     const formatttedMemoryUsage  = memoryUsage.toFixed(SIG_FIGS) + 'MB';
     return `${indent}${eventName}: timeCost:${formattedDuration} startMemory:${formatttedStartMemory} `+
     `endMemory:${formatttedEndMemory} memoryUsage:${formatttedMemoryUsage}\n`;
+  }
+
+  // Only used for ut
+  getEventStack(): Map<string, TimeAndMemInfo> {
+    return this.eventStack;
+  }
+
+  getFilesTimeSum(): number {
+    return this.filesTimeSum;
+  }
+
+  getMaxTimeUsage(): number {
+    return this.maxTimeUsage;
+  }
+
+  getMaxTimeFile(): string {
+    return this.maxTimeFile;
+  }
+
+  getMaxMemoryUsage(): number {
+    return this.maxMemoryUsage;
+  }
+
+  getMaxMemoryFile(): string {
+    return this.maxMemoryFile;
   }
 }
 
@@ -216,5 +246,9 @@ export class TimeSumPrinter extends BasePrinter {
     const indent = INDENT.repeat(depth);
     const formattedDuration = duration.toFixed(SIG_FIGS) + 's';
     return `${indent}${eventName}: ${formattedDuration}\n`;
+  }
+
+  getEventSum(): Map<string, number> {
+    return this.eventSum;
   }
 }
