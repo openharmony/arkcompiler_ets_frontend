@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-import {ListUtil} from '../../../src/utils/ListUtil';
-import {describe, it} from 'mocha';
-import {assert} from 'chai';
+import { ListUtil } from '../../../src/utils/ListUtil';
+import { describe, it } from 'mocha';
+import { assert, expect } from 'chai';
 
 describe('unit test for ListUtil.ts', function () {
   describe('get init list test', function () {
@@ -147,5 +147,42 @@ describe('unit test for ListUtil.ts', function () {
         assert.strictEqual(value, expectedArr[index]);
       });
     });
+  });
+});
+
+describe('ListUtil.uniqueMergeList', () => {
+  it('should return an empty list when all lists are empty', () => {
+    const result = ListUtil.uniqueMergeList([], [], []);
+    expect(result).to.deep.equal([]);
+  });
+
+  it('should return unique elements when merging two lists with no common elements', () => {
+    const result = ListUtil.uniqueMergeList(['a', 'b'], ['c', 'd']);
+    expect(result).to.deep.equal(['a', 'b', 'c', 'd']);
+  });
+
+  it('should return unique elements when merging two lists with some common elements', () => {
+    const result = ListUtil.uniqueMergeList(['a', 'b', 'c'], ['b', 'c', 'd']);
+    expect(result).to.deep.equal(['a', 'b', 'c', 'd']);
+  });
+
+  it('should return unique elements when merging three lists with some common elements', () => {
+    const result = ListUtil.uniqueMergeList(['a', 'b'], ['b', 'c'], ['c', 'd']);
+    expect(result).to.deep.equal(['a', 'b', 'c', 'd']);
+  });
+
+  it('should handle null or undefined inputs gracefully', () => {
+    const result = ListUtil.uniqueMergeList(['a', 'b'], undefined, ['b', 'c']);
+    expect(result).to.deep.equal(['a', 'b', 'c']);
+  });
+
+  it('should return a list with unique elements from a single list', () => {
+    const result = ListUtil.uniqueMergeList(['a', 'b', 'a', 'c', 'b'], []);
+    expect(result).to.deep.equal(['a', 'b', 'c']);
+  });
+
+  it('should return a list with undefied third list', () => {
+    const result = ListUtil.uniqueMergeList(['a', 'b'], ['c', 'd'], undefined);
+    expect(result).to.deep.equal(['a', 'b', 'c', 'd']);
   });
 });
