@@ -16,7 +16,6 @@
 import type {ClassElement, Expression, Identifier, Node, ObjectBindingPattern, SourceFile, StructDeclaration} from 'typescript';
 import {
   SyntaxKind,
-  factory,
   getModifiers,
   isBinaryExpression,
   isBindingElement,
@@ -129,13 +128,25 @@ export class NodeUtils {
 
     return NodeUtils.isInClassDeclaration(node.parent);
   }
+  
+  public static isInClassDeclarationForTest(node: Node | undefined): boolean {
+    return NodeUtils.isInClassDeclaration(node);
+  }
 
   private static isInExpression(node: Node | undefined): boolean {
     return !!node && NodeUtils.isInOperator(node);
   }
 
+  public static isInExpressionForTest(node: Node | undefined): boolean {
+    return NodeUtils.isInExpression(node);
+  }
+
   private static isInOperator(node: Node): boolean {
     return isBinaryExpression(node) && node.operatorToken.kind === SyntaxKind.InKeyword;
+  }
+
+  public static isInOperatorForTest(node: Node | undefined): boolean {
+    return NodeUtils.isInOperator(node);
   }
 
   public static isElementAccessNode(node: Node): boolean {
