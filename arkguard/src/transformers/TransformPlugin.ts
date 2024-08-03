@@ -35,7 +35,6 @@ export interface TransformPlugin {
 // Problem description: because the property temp is obfuscated, a node update occurs, causing -keep-global-name A to be invalid.
 export enum TransformerOrder {
   SHORTHAND_PROPERTY_TRANSFORMER,
-  SIMPLIFY_TRANSFORMER,
   RENAME_IDENTIFIER_TRANSFORMER,
   VIRTUAL_CONSTRUCTOR_TRANSFORMER,
   DISABLE_CONSOLE_TRANSFORMER,

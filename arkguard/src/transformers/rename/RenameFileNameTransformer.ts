@@ -91,9 +91,6 @@ namespace secharmony {
     }
 
     let nameGeneratorOption: NameGeneratorOptions = {};
-    if (profile.mNameGeneratorType === NameGeneratorType.HEX) {
-      nameGeneratorOption.hexWithPrefixSuffix = true;
-    }
 
     generator = getNameGenerator(profile.mNameGeneratorType, nameGeneratorOption);
     let configReservedFileNameOrPath: string[] = profile?.mReservedFileNames ?? [];

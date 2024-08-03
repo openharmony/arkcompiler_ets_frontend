@@ -17,15 +17,6 @@ export interface NameGeneratorOptions {
   // common
   reservedNames?: Set<string>;
 
-  // hex name generator
-  hexLength?: number;
-  hexWithPrefixSuffix?: boolean;
-
-  // dictionary name generator
-  dictionaryList?: string[];
-
-  // underline name generator
-  underlineMaxLength?: number;
 }
 
 /**
