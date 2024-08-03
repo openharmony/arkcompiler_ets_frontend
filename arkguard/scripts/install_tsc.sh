@@ -23,16 +23,14 @@ if [ ! -d "../arkguard" ]; then
 fi
 
 TYPESCRIPT_ROOT_DIR="../../../third_party/typescript"
-old_work_dir=`pwd`
+old_work_dir=$(pwd)
 
 echo "-----------------------------start building typescript-----------------------------"
 cd $TYPESCRIPT_ROOT_DIR
-npm install
-npm run build
-package_name=`npm pack | grep "ohos-typescript"`
+package_name=$(npm pack | grep "ohos-typescript")
 echo $package_name
 tar -xvf $package_name
-current_dir=`pwd`
+current_dir=$(pwd)
 package_path="$current_dir/package"
 echo "-----------------------------end building typescript-----------------------------"
 
@@ -40,5 +38,7 @@ cd $old_work_dir
 target_dir=./node_modules/typescript
 
 echo "move $package_path to override $target_dir"
-rm -r $target_dir
+
+rm -rf $target_dir
 mv $package_path $target_dir
+echo "------------------------------------finished-------------------------------------"
