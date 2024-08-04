@@ -22,6 +22,7 @@ test262/data/test_es2021/built-ins/Array/prototype/concat/Array.prototype.concat
 test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
 test262/data/test_es2021/intl402/fallback-locales-are-supported.js
 test262/data/test_es2021/intl402/NumberFormat/constructor-unit.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/supportedLocalesOf/locales-invalid.js
 test262/data/test_es2021/intl402/Segmenter/constructor/supportedLocalesOf/locales-invalid.js
 test262/data/test_es2021/intl402/String/prototype/localeCompare/returns-same-results-as-Collator.js
 test262/data/test_es2021/intl402/supportedLocalesOf-consistent-with-resolvedOptions.js
@@ -49,6 +50,12 @@ test262/data/test_es2021/built-ins/encodeURI/S15.1.3.3_A1.3_T1.js
 test262/data/test_es2021/built-ins/encodeURI/S15.1.3.3_A2.3_T1.js
 # --- end of Issue #17827
 
+
+#18438
+test262/data/test_es2021/language/statements/for-await-of/ticks-with-async-iter-resolved-promise-and-constructor-lookup-two.js
+test262/data/test_es2021/language/statements/for-await-of/ticks-with-sync-iter-resolved-promise-and-constructor-lookup.js
+test262/data/test_es2021/language/statements/async-generator/return-undefined-implicit-and-explicit.js
+
 #18379
 test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-date-time-components.js
 test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-dayPeriod.js
@@ -68,6 +75,7 @@ test262/data/test_es2021/intl402/PluralRules/prototype/resolvedOptions/propertie
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/preferred-variant.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-canonical.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/complex-region-subtag-replacement.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/complex-language-subtag-replacement.js
 
 
 #18382

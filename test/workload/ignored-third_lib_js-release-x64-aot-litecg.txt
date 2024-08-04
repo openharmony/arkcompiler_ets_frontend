@@ -7,8 +7,14 @@ Drools_test
 js-joda_test
 jBox2d_test
 
+#18444
+jmespath_test
+
 #18424
 pcx_test
 
 #18425
 gson_test
+
+#18437
+zxing_test
