@@ -1251,31 +1251,45 @@ util::StringView ETSChecker::FindPropNameForNamespaceImport(const util::StringVi
     return originalName;
 }
 
-void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,
-                                              ir::ETSImportDeclaration *importDecl)
+// Helps to prevent searching for the imported file among external sources if it is the entry program
+static parser::Program *SelectEntryOrExternalProgram(varbinder::ETSBinder *etsBinder,
+                                                     const util::StringView &importPath)
 {
-    auto *etsBinder = static_cast<varbinder::ETSBinder *>(VarBinder());
+    if (importPath.Is(etsBinder->GetGlobalRecordTable()->Program()->AbsoluteName().Mutf8())) {
+        return etsBinder->GetGlobalRecordTable()->Program();
+    }
 
     auto programList = etsBinder->GetProgramList(importPath);
     ASSERT(!programList.empty());
+    return programList.front();
+}
 
+void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,
+                                              ir::ETSImportDeclaration *importDecl)
+{
+    parser::Program *program =
+        SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(VarBinder()), importPath);
     // Check imported properties before assigning them to module object
-    programList.front()->Ast()->Check(this);
+    if (!program->IsASTChecked()) {
+        // NOTE: helps to avoid endless loop in case of recursive imports that uses all bindings
+        program->MarkASTAsChecked();
+        program->Ast()->Check(this);
+    }
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
-        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticFieldScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
-        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticMethodScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticDeclScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, programList.front()->GlobalClassScope()->InstanceDeclScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, programList.front()->GlobalClassScope()->TypeAliasScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings());
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType)
@@ -2528,15 +2542,13 @@ void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclarati
 ETSObjectType *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident)
 {
     auto importPath = importDecl->ResolvedSource()->Str();
-
-    auto programList = VarBinder()->AsETSBinder()->GetProgramList(importPath);
-    ASSERT(!programList.empty());
-
-    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(programList.front()->ModuleName());
+    parser::Program *program =
+        SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(VarBinder()), importPath);
+    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(program->ModuleName());
     ASSERT(!syntheticNames.empty());
-
     auto assemblerName = syntheticNames[0];
-    if (!programList.front()->OmitModuleName()) {
+
+    if (!program->OmitModuleName()) {
         assemblerName = util::UString(assemblerName.Mutf8()
                                           .append(compiler::Signatures::METHOD_SEPARATOR)
                                           .append(compiler::Signatures::ETS_GLOBAL),
