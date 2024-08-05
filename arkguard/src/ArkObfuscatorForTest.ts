@@ -20,7 +20,7 @@ import {
   performancePrinter,
   renameIdentifierModule
 } from './ArkObfuscator';
-import { readProjectProperties } from './common/ApiReader';
+import { readProjectProperties } from './common/ApiReaderForTest';
 import { FileUtils } from './utils/FileUtils';
 import { EventList } from './utils/PrinterUtils';
 import { handleReservedConfig } from './utils/TransformUtil';
@@ -46,12 +46,19 @@ import type { IOptions } from './configs/IOptions';
 
 const JSON_TEXT_INDENT_LENGTH: number = 2;
 
+interface OutPathObj {
+  outputPath: string;
+  relativePath: string;
+}
+
 export class ArkObfuscatorForTest extends ArkObfuscator {
   // A list of source file path
   private readonly mSourceFiles: string[];
 
   // Path of obfuscation configuration file.
   private readonly mConfigPath: string;
+
+  private mTestType: string | undefined = undefined;
 
   constructor(sourceFiles?: string[], configPath?: string) {
     super();
@@ -61,6 +68,10 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
 
   public get configPath(): string {
     return this.mConfigPath;
+  }
+
+  public setTestType(testType: string | undefined): void {
+    this.mTestType = testType;
   }
 
   /**
@@ -86,12 +97,9 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     if (!path.isAbsolute(this.mCustomProfiles.mOutputDir)) {
       this.mCustomProfiles.mOutputDir = path.join(path.dirname(this.mConfigPath), this.mCustomProfiles.mOutputDir);
     }
-    if (this.mCustomProfiles.mOutputDir && !fs.existsSync(this.mCustomProfiles.mOutputDir)) {
-      fs.mkdirSync(this.mCustomProfiles.mOutputDir);
-    }
 
     performancePrinter?.filesPrinter?.startEvent(EventList.ALL_FILES_OBFUSCATION);
-    readProjectProperties(this.mSourceFiles, this.mCustomProfiles);
+    readProjectProperties(this.mSourceFiles, structuredClone(this.mCustomProfiles), this);
     const propertyCachePath = path.join(this.mCustomProfiles.mOutputDir, 
                                         path.basename(this.mSourceFiles[0])); // Get dir name
     this.readPropertyCache(propertyCachePath);
@@ -201,9 +209,6 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     // there is no need to create directory because the directory names will be obfuscated.
     if (!this.mCustomProfiles.mRenameFileName?.mEnable) {
       newDir = path.join(this.mCustomProfiles.mOutputDir, currentDir);
-      if (!fs.existsSync(newDir)) {
-        fs.mkdirSync(newDir);
-      }
     }
 
     const fileNames: string[] = fs.readdirSync(dirName);
@@ -228,6 +233,7 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     const fileName: string = FileUtils.getFileName(sourceFilePath);
     const config = this.mCustomProfiles;
     if (this.isObfsIgnoreFile(fileName)) {
+      fs.mkdirSync(outputDir, { recursive: true });
       fs.copyFileSync(sourceFilePath, path.join(outputDir, fileName));
       return;
     }
@@ -257,33 +263,56 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
       return;
     }
     if (outputDir && mixedInfo) {
-      // the writing file is for the ut.
+      const outputPathObj: OutPathObj = this.getOutputPath(sourceFilePath, mixedInfo);
+      this.writeContent(outputPathObj.outputPath, outputPathObj.relativePath, mixedInfo);
+    }
+  }
+
+  private getOutputPath(sourceFilePath: string, mixedInfo: ObfuscationResultType): OutPathObj {
+    const config = this.mCustomProfiles;
+    if (this.mTestType === 'grammar') {
       const testCasesRootPath = path.join(__dirname, '../', 'test/grammar');
       let relativePath = '';
-      let resultPath = '';
       if (config.mRenameFileName?.mEnable && mixedInfo.filePath) {
         relativePath = mixedInfo.filePath.replace(testCasesRootPath, '');
       } else {
         relativePath = sourceFilePath.replace(testCasesRootPath, '');
       }
-      resultPath = path.join(config.mOutputDir, relativePath);
-      fs.mkdirSync(path.dirname(resultPath), { recursive: true });
-      fs.writeFileSync(resultPath, mixedInfo.content);
-
-      if (config.mEnableSourceMap && mixedInfo.sourceMap) {
-        fs.writeFileSync(path.join(resultPath + '.map'),
-          JSON.stringify(mixedInfo.sourceMap, null, JSON_TEXT_INDENT_LENGTH));
-      }
-
-      if (config.mEnableNameCache) {
-        this.produceNameCache(mixedInfo.nameCache, resultPath);
-      }
-
-      if (mixedInfo.unobfuscationNameMap) {
-        this.loadunobfuscationNameMap(mixedInfo, relativePath);
-      }
+      const resultPath = path.join(config.mOutputDir, relativePath);
+      return {outputPath: resultPath, relativePath: relativePath};
+    } else if (this.mTestType === 'combinations') {
+      const outputDir = this.mCustomProfiles.mOutputDir;
+      const directory = outputDir.substring(0, outputDir.lastIndexOf('/') + 1);
+      const sourceBaseDir = directory.replace('local/combinations', 'combinations');
+      const relativePath = sourceFilePath.replace(sourceBaseDir, '');
+      const resultPath = path.join(this.mCustomProfiles.mOutputDir, relativePath);
+      return {outputPath: resultPath, relativePath: relativePath};
+    } else {
+      throw new Error('Please select a test type')
     }
   }
+
+  private writeContent(outputPath: string, relativePath: string, mixedInfo: ObfuscationResultType): void {
+    if (!fs.existsSync(path.dirname(outputPath))) {
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    }
+
+    fs.writeFileSync(outputPath, mixedInfo.content);
+
+    if (this.mCustomProfiles.mEnableSourceMap && mixedInfo.sourceMap) {
+      fs.writeFileSync(path.join(outputPath + '.map'),
+        JSON.stringify(mixedInfo.sourceMap, null, JSON_TEXT_INDENT_LENGTH));
+    }
+
+    if (this.mCustomProfiles.mEnableNameCache && this.mCustomProfiles.mEnableNameCache) {
+      this.produceNameCache(mixedInfo.nameCache, outputPath);
+    }
+
+    if (mixedInfo.unobfuscationNameMap) {
+      this.loadunobfuscationNameMap(mixedInfo, relativePath);
+    }
+  }
+
   private loadunobfuscationNameMap(mixedInfo: ObfuscationResultType, relativePath: string): void {
     let arrayObject: Record<string, string[]> = {};
     // The type of unobfuscationNameMap's value is Set, convert Set to Array.

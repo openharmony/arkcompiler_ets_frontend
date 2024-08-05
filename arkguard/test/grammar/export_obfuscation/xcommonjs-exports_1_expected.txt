@@ -12,21 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let e5 = 1;
-exports.u3 = e5;
-exports.v3 = 2;
-exports.g4 = function () {
+let d5 = 1;
+exports.t3 = d5;
+exports.u3 = 2;
+exports.f4 = function () {
     return 'Hello, world!';
 };
-class f5 {
-    h4 = '00001';
-    i4 = { j4: 'jack3', l4: 12 };
+class e5 {
+    g4 = '00001';
+    h4 = { i4: 'jack3', j4: 12 };
 }
-exports.f5 = f5;
-exports.s4 = class {
-    t4 = 11;
-    u4 = 15;
-    v4() {
-        return this.u4;
+exports.e5 = e5;
+exports.r4 = class {
+    s4 = 11;
+    t4 = 15;
+    u4() {
+        return this.t4;
     }
 };

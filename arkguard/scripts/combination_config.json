@@ -1,0 +1,56 @@
+{
+  "basicGrammar": {
+    "enableOptions": {
+      "mNameObfuscation": {
+        "mRenameProperties": true,
+        "mKeepStringProperty": false,
+        "mTopLevel": true
+      },
+      "mExportObfuscation": true
+    },
+    "inputDirs": [
+      "../test/combinations/basic_grammar/01_export_import_cases"
+    ],
+    "outputDir": "../test/local/combinations/basic_grammar",
+    "whitelist": {
+      "export": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": ["nsFoo"],
+          "mReservedProperties": []
+        }
+      },
+      "prop+export": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [],
+          "mReservedProperties": ["var1", "var3", "addFunc", "reduceFunc", "moduleAlias", "moduleAlias_2", "typeAlias1"]
+        }
+      },
+      "prop+strProp+export": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [],
+          "mReservedProperties": ["var1", "var3", "addFunc", "reduceFunc", "moduleAlias", "moduleAlias_2", "typeAlias1"]
+        }
+      },
+      "strProp+top+export": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": ["var1", "var3", "addFunc", "reduceFunc", "typeAlias1", "moduleAlias", "moduleAlias_2",
+            "nsFoo"],
+          "mReservedProperties": []
+        }
+      },
+      "top+export": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": ["var1", "var3", "addFunc", "reduceFunc", "typeAlias1", "moduleAlias", "moduleAlias_2",
+            "nsFoo"],
+          "mReservedProperties": []
+        }
+      },
+      "strProp+export":{
+        "mNameObfuscation": {
+          "mReservedToplevelNames": ["nsFoo"],
+          "mReservedProperties": []
+        }
+      }
+    }
+  }
+}

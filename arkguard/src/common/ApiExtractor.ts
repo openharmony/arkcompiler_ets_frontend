@@ -735,54 +735,6 @@ export namespace ApiExtractor {
   }
 
   /**
-   * parse common project or file to extract exported api list
-   * @return reserved api names
-   */
-  export function parseCommonProject(projectPath: string, customProfiles: IOptions, scanningApiType: ApiType): string[] {
-    mPropertySet.clear();
-    if (fs.lstatSync(projectPath).isFile()) {
-      if (projectPath.endsWith('.ets') || projectPath.endsWith('.ts') || projectPath.endsWith('.js')) {
-        parseFile(projectPath, scanningApiType);
-      }
-    } else {
-      traverseApiFiles(projectPath, scanningApiType);
-    }
-
-    let reservedProperties: string[] = [...mPropertySet];
-    mPropertySet.clear();
-    return reservedProperties;
-  }
-
-  /**
-   * only for ut
-   * parse api of third party libs like libs in node_modules
-   * @param libPath
-   */
-  export function parseThirdPartyLibs(libPath: string, scanningApiType: ApiType): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
-    mPropertySet.clear();
-    mExportNames.clear();
-    if (fs.lstatSync(libPath).isFile()) {
-      if (libPath.endsWith('.ets') || libPath.endsWith('.ts') || libPath.endsWith('.js')) {
-        parseFile(libPath, scanningApiType);
-      }
-    } else {
-      const filesAndfolders = fs.readdirSync(libPath);
-      for (let subPath of filesAndfolders) {
-        traverseApiFiles(path.join(libPath, subPath), scanningApiType);
-      }
-    }
-    let reservedLibExportNames: string[] = undefined;
-    if (scanProjectConfig.mExportObfuscation) {
-      reservedLibExportNames = [...mExportNames];
-      mExportNames.clear();
-    }
-    const reservedProperties: string[] = [...mPropertySet];
-    mPropertySet.clear();
-
-    return {reservedProperties: reservedProperties, reservedLibExportNames: reservedLibExportNames};
-  }
-
-  /**
    * save api json object to file
    * @private
    */

@@ -38,7 +38,6 @@ const minParametersNum: number = 3;
   }
 
   initOptionsSetting();
-
   let configPath: string = program.opts()?.configPath;
   configPath = path.resolve(configPath);
   let fileList: Array<string> = [];
@@ -56,6 +55,9 @@ const minParametersNum: number = 3;
     obfuscator.setWriteOriginalFile(true);
   }
 
+  let testType: string | undefined = program.opts()?.testType;
+  obfuscator.setTestType(testType);
+
   UnitTestUtil.initKeepPathConfig(obfuscator.customProfiles, obfuscator.configPath);
   performancePrinter?.iniPrinter?.endEvent(EventList.OBFUSCATION_INITIALIZATION);
   if (!initSuccess) {
@@ -72,6 +74,7 @@ function initOptionsSetting(): void {
     .usage('Usage: SecHarmony [input files] [options]')
     .option('-v, --version', 'show version information.')
     .option('--inplace', 'write the ofuscated content to the original file')
+    .option('--test-type <type>', 'Indicates the type of test case, must be either "grammar" or "combinations"')
     .option('-cp, --config-path <dir>', 'obfuscation configuration for open harmony application.')
     .parse();
 }
