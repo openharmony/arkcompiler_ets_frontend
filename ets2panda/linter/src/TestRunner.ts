@@ -17,14 +17,14 @@ import { Logger } from '../lib/Logger';
 import { LoggerImpl } from './LoggerImpl';
 Logger.init(new LoggerImpl());
 
-import { TypeScriptLinter } from '../lib/TypeScriptLinter';
-import { lint } from '../lib/LinterRunner';
-import { parseCommandLine } from './CommandLineParser';
-import type { Autofix } from '../lib/autofixes/Autofixer';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { lint } from '../lib/LinterRunner';
+import { TypeScriptLinter } from '../lib/TypeScriptLinter';
+import type { Autofix } from '../lib/autofixes/Autofixer';
+import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions } from './Compiler';
 
 const TEST_DIR = 'test';
@@ -50,6 +50,8 @@ RESULT_EXT[Mode.AUTOFIX] = '.autofix.json';
 const AUTOFIX_SKIP_EXT = '.autofix.skip';
 const ARGS_CONFIG_EXT = '.args.json';
 const DIFF_EXT = '.diff';
+const testExtensionSts = '.sts';
+const testExtensionDSts = '.d.sts';
 
 function runTests(testDirs: string[]): number {
 
@@ -73,29 +75,48 @@ function runTests(testDirs: string[]): number {
       return (
         x.trimEnd().endsWith(ts.Extension.Ts) && !x.trimEnd().endsWith(ts.Extension.Dts) ||
         x.trimEnd().endsWith(ts.Extension.Tsx) ||
-        x.trimEnd().endsWith(ts.Extension.Ets)
+        x.trimEnd().endsWith(ts.Extension.Ets) ||
+        x.trimEnd().endsWith(testExtensionSts) && !x.trimEnd().endsWith(testExtensionDSts)
       );
     });
     Logger.info(`\nProcessing "${testDir}" directory:\n`);
     // Run each test in Default and Autofix mode:
-    for (const testFile of testFiles) {
-      if (runTest(testDir, testFile, Mode.DEFAULT)) {
-        failed++;
-        hasComparisonFailures = true;
-      } else {
-        passed++;
-      }
-      if (runTest(testDir, testFile, Mode.AUTOFIX)) {
-        failed++;
-        hasComparisonFailures = true;
-      } else {
-        passed++;
-      }
-    }
+    [passed, failed, hasComparisonFailures] = runTestFiles(testFiles, testDir);
   }
   Logger.info(`\nSUMMARY: ${passed + failed} total, ${passed} passed or skipped, ${failed} failed.`);
   Logger.info(failed > 0 ? '\nTEST FAILED' : '\nTEST SUCCESSFUL');
   process.exit(hasComparisonFailures ? -1 : 0);
+}
+
+function runTestFiles(testFiles: string[], testDir: string): [number, number, boolean] {
+  let hasComparisonFailures = false;
+  let passed = 0;
+  let failed = 0;
+  for (const testFile of testFiles) {
+    let renamed = false;
+    let tsName = testFile;
+    if (testFile.includes(testExtensionSts)) {
+      renamed = true;
+      tsName = testFile.replace(testExtensionSts, ts.Extension.Ts);
+      fs.renameSync(path.join(testDir, testFile), path.join(testDir, tsName));
+    }
+    if (runTest(testDir, tsName, Mode.DEFAULT)) {
+      failed++;
+      hasComparisonFailures = true;
+    } else {
+      passed++;
+    }
+    if (runTest(testDir, tsName, Mode.AUTOFIX)) {
+      failed++;
+      hasComparisonFailures = true;
+    } else {
+      passed++;
+    }
+    if (renamed) {
+      fs.renameSync(path.join(testDir, tsName), path.join(testDir, testFile));
+    }
+  }
+  return [passed, failed, hasComparisonFailures];
 }
 
 function parseArgs(testDir: string, testFile: string, mode: Mode): CommandLineOptions {
