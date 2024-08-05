@@ -34,6 +34,7 @@ test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-let-as
 test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-let-obj-ptrn-rest-skip-non-enumerable.js
 test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-var-obj-ptrn-id-init-skipped.js
 test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-var-async-obj-ptrn-prop-id-init-skipped.js
+test262/data/test_es2021/built-ins/FinalizationRegistry/length.js
 
 #18300
 test262/data/test_es2021/language/expressions/object/method.js

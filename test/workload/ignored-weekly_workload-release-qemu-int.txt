@@ -4,3 +4,6 @@ box2d
 pdfjs
 raytrace
 # --- end of Issue #18483
+
+#18672
+json-parse-inspector
