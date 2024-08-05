@@ -18,6 +18,9 @@ mathjs_test
 #18487
 pako_test
 
+#18424
+pcx_test
+
 #18437
 zxing_test
 
@@ -34,10 +37,3 @@ crypto-js_test
 lodash_test
 Matrix_test
 dom4j_test
-
-
-#18153
-textEncoding_test
-rxjs_test
-rebound_test
-sm-crypto_test

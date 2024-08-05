@@ -14,9 +14,3 @@ mathjs_test
 
 #18331
 validator_test
-
-#18153
-textEncoding_test
-crypto-js_test
-lodash_test
-rxjs_test
