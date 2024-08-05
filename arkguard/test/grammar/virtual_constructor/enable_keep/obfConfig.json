@@ -15,7 +15,9 @@
     },
     "mKeepFileSourceCode": {
         "mKeepSourceOfPaths": [
-            "./struct_test_keep.d.ets"
+            "./struct_test_keep.d.ets",
+            "./virtualTest_keep1.d.ets",
+            "./virtualTest_keep2.d.ets"
         ],
         "mkeepFilesAndDependencies": []
     },
