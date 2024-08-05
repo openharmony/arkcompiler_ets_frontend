@@ -105,7 +105,7 @@ function containViewPU(heritageClauses: NodeArray<HeritageClause>): boolean {
  * used to ignore user defined ui component class property name
  * @param classNode
  */
-export function isViewPUBasedClass(classNode: ClassDeclaration): boolean {
+export function isViewPUBasedClass(classNode: ClassDeclaration | undefined): boolean {
   if (!classNode) {
     return false;
   }
