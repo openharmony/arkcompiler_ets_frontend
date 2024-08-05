@@ -29,7 +29,8 @@ import {
   isArrowFunction,
   isGetAccessor,
   isSetAccessor,
-  isPropertyDeclaration
+  isPropertyDeclaration,
+  getOriginalNode
 } from 'typescript';
 
 import type {
@@ -681,7 +682,7 @@ namespace secharmony {
     function analyzeFunctionLike(node: FunctionLikeDeclaration): void {
       // For example, the constructor of the StructDeclaration, inserted by arkui, will add a virtual attribute.
       // @ts-ignore
-      if (node.virtual) {
+      if (getOriginalNode(node).virtual) {
         return;
       }
       let scopeName: string = (node?.name as Identifier)?.text ?? '$' + current.children.length;
@@ -768,7 +769,7 @@ namespace secharmony {
         // Class members are seen as attribute names, and  the reference of external symbols can be renamed as the same
         node.members?.forEach((elm: ClassElement) => {
           // @ts-ignore
-          if (elm?.symbol && !elm.virtual) {
+          if (elm?.symbol && !getOriginalNode(elm).virtual) {
             current.addDefinition(elm.symbol);
           }
         });

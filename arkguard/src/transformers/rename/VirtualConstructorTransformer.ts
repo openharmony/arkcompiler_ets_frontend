@@ -19,7 +19,8 @@ import {
   setParentRecursive,
   visitEachChild,
   isConstructorDeclaration,
-  isSourceFile
+  isSourceFile,
+  getOriginalNode
 } from 'typescript';
   
 import type {
@@ -75,8 +76,9 @@ function removeVirtualConstructor(node: Node, context: TransformationContext): N
 }
 
 function isVirtualConstructor(node: Node): boolean {
+  const originalNode = getOriginalNode(node);
   //@ts-ignore
-  return isConstructorDeclaration(node) && node.virtual;
+  return isConstructorDeclaration(originalNode) && originalNode.virtual;
 }
   
 export = secharmony;
