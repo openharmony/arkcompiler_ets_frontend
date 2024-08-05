@@ -289,6 +289,7 @@ void Checker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *ri
 
 void Checker::ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo, bool isAsSrcLeftType)
 {
+    CHECK_NOT_NULL(target);
     if (isAsSrcLeftType || !target->HasTypeFlag(TypeFlag::LITERAL)) {
         ThrowTypeError({"Type '", AsSrc(source), "' is not assignable to type '", target, "'."}, lineInfo);
     }
@@ -471,6 +472,7 @@ Type *Checker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] const ir::T
     if (!resolvedType) {
         ObjectDescriptor *desc = allocator_->New<ObjectDescriptor>(allocator_);
         resolvedType = allocator_->New<InterfaceType>(allocator_, var->Name(), desc);
+        CHECK_NOT_NULL(resolvedType);
         resolvedType->SetVariable(var);
         var->SetTsType(resolvedType);
     }

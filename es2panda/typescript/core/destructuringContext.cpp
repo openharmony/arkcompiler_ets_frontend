@@ -138,7 +138,9 @@ void DestructuringContext::HandleAssignmentPattern(const ir::AssignmentExpressio
 
     if (validateDefault && assignmentPattern->Right()->IsObjectExpression() &&
         assignmentPattern->Left()->IsObjectPattern()) {
-        ValidateObjectLiteralType(defaultType->AsObjectType(), assignmentPattern->Left()->AsObjectPattern());
+        if (defaultType != nullptr && assignmentPattern != nullptr && assignmentPattern->Left() != nullptr) {
+            ValidateObjectLiteralType(defaultType->AsObjectType(), assignmentPattern->Left()->AsObjectPattern());
+        }
     }
 
     Type *initType = inferedType;
@@ -159,17 +161,7 @@ void DestructuringContext::HandleAssignmentPattern(const ir::AssignmentExpressio
     }
 
     if (assignmentPattern->Left()->IsIdentifier()) {
-        if (inAssignment_) {
-            HandleDestructuringAssignment(assignmentPattern->Left()->AsIdentifier(), initType, defaultType);
-            return;
-        }
-
-        if (validateTypeAnnotation_ && !checker_->IsTypeAssignableTo(defaultType, inferedType)) {
-            checker_->ThrowAssignmentError(defaultType, inferedType, assignmentPattern->Left()->Start());
-        }
-
-        SetInferedTypeForVariable(assignmentPattern->Left()->AsIdentifier()->Variable(), inferedType,
-                                  assignmentPattern->Start());
+        HandleIdentifierPattern(assignmentPattern, initType, inferedType, defaultType);
         return;
     }
 
@@ -186,6 +178,22 @@ void DestructuringContext::HandleAssignmentPattern(const ir::AssignmentExpressio
         checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr);
     nextContext.SetInferedType(inferedType);
     nextContext.Start();
+}
+
+void DestructuringContext::HandleIdentifierPattern(const ir::AssignmentExpression *assignmentPattern, Type *initType,
+                                                   Type *inferedType, Type *defaultType)
+{
+    if (inAssignment_) {
+        HandleDestructuringAssignment(assignmentPattern->Left()->AsIdentifier(), initType, defaultType);
+        return;
+    }
+
+    if (validateTypeAnnotation_ && !checker_->IsTypeAssignableTo(defaultType, inferedType)) {
+        checker_->ThrowAssignmentError(defaultType, inferedType, assignmentPattern->Left()->Start());
+    }
+
+    SetInferedTypeForVariable(assignmentPattern->Left()->AsIdentifier()->Variable(), inferedType,
+                              assignmentPattern->Start());
 }
 
 void ArrayDestructuringContext::ValidateInferedType()
@@ -317,6 +325,7 @@ Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
         util::StringView memberIndex = util::Helpers::ToStringView(checker_->Allocator(), iterIndex);
         auto *memberVar =
             binder::Scope::CreateVar(checker_->Allocator(), memberIndex, binder::VariableFlags::PROPERTY, nullptr);
+        CHECK_NOT_NULL(memberVar);
         memberVar->SetTsType(tupleElementType);
         elementFlags.push_back(memberFlag);
         desc->properties.push_back(memberVar);
@@ -541,6 +550,7 @@ Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *objType)
         if (!it->HasFlag(binder::VariableFlags::INFERED_IN_PATTERN)) {
             auto *memberVar =
                 binder::Scope::CreateVar(checker_->Allocator(), it->Name(), binder::VariableFlags::NONE, nullptr);
+            CHECK_NOT_NULL(memberVar);
             memberVar->SetTsType(it->TsType());
             memberVar->AddFlag(it->Flags());
             desc->properties.push_back(memberVar);

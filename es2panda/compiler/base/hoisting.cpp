@@ -29,6 +29,7 @@ static void StoreModuleVarOrLocalVar(PandaGen *pg, binder::ScopeFindResult &resu
     if (decl->IsImportOrExportDecl()) {
         ASSERT(pg->Scope()->IsModuleScope());
         auto *var = pg->Scope()->FindLocal(decl->Name());
+        CHECK_NOT_NULL(var);
         ASSERT(var->IsModuleVariable());
         pg->StoreModuleVariable(decl->Node(), var->AsModuleVariable());
     } else {
@@ -50,6 +51,7 @@ static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl 
     }
 
     auto *funcScope = scope->EnclosingFunctionVariableScope();
+    CHECK_NOT_NULL(funcScope);
     if (scope->HasParamScope() && funcScope->ParamScope()->HasParam(decl->Name())) {
         return;
     }
@@ -91,9 +93,9 @@ static void HoistNameSpaceImports(PandaGen *pg)
         ASSERT(moduleRecord != nullptr);
         for (auto nameSpaceEntry : moduleRecord->GetNamespaceImportEntries()) {
             auto *var = pg->TopScope()->FindLocal(nameSpaceEntry->localName_);
-            ASSERT(var != nullptr);
+            CHECK_NOT_NULL(var);
             auto *node = var->Declaration()->Node();
-            ASSERT(node != nullptr);
+            CHECK_NOT_NULL(node);
             pg->GetModuleNamespace(node, nameSpaceEntry->moduleRequestIdx_);
             pg->StoreVar(node, {nameSpaceEntry->localName_, pg->TopScope(), 0, var}, true);
         }

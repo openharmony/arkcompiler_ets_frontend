@@ -20,7 +20,7 @@
 
 namespace panda::es2panda::checker {
 
-enum class ElementFlags {
+enum class ElementFlags : uint8_t {
     NO_OPTS = 0,
     REQUIRED = 1 << 0,  // T
     OPTIONAL = 1 << 1,  // T?

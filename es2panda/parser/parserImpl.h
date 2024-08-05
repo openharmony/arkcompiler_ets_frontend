@@ -36,7 +36,7 @@
 #include <unordered_set>
 
 namespace panda::es2panda::lexer {
-enum class TokenFlags;
+enum class TokenFlags : uint8_t;
 enum class TokenType;
 class LexerPosition;
 class Token;
@@ -117,7 +117,7 @@ class VariableDeclarator;
 enum class PropertyKind;
 enum class TSTupleKind;
 enum class MethodDefinitionKind;
-enum class ModifierFlags;
+enum class ModifierFlags : uint16_t;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda::parser {

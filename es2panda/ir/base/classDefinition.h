@@ -38,7 +38,7 @@ class LocalScope;
 
 namespace panda::es2panda::ir {
 
-enum class FieldType {
+enum class FieldType : uint16_t {
     NONE = 0,
     NUMBER = (1 << 0),
     STRING = (1 << 1),

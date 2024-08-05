@@ -64,6 +64,7 @@ public:
 
     void AddConstituentType(Type *type, TypeRelation *relation)
     {
+        CHECK_NOT_NULL(type);
         if ((HasConstituentFlag(TypeFlag::NUMBER) && type->IsNumberLiteralType()) ||
             (HasConstituentFlag(TypeFlag::STRING) && type->IsStringLiteralType()) ||
             (HasConstituentFlag(TypeFlag::BIGINT) && type->IsBigintLiteralType()) ||

@@ -250,6 +250,7 @@ checker::Type *ArrayExpression::Check(checker::Checker *checker) const
                 tupleMember->AddFlag(binder::VariableFlags::READONLY);
             }
 
+            CHECK_NOT_NULL(tupleMember);
             tupleMember->SetTsType(*it);
             desc->properties.push_back(tupleMember);
         }

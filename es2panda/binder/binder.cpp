@@ -260,6 +260,7 @@ void Binder::InstantiateArguments()
     auto *iter = scope_;
     while (true) {
         Scope *scope = iter->IsFunctionParamScope() ? iter : iter->EnclosingVariableScope();
+        CHECK_NOT_NULL(scope);
 
         const auto *node = scope->Node();
 

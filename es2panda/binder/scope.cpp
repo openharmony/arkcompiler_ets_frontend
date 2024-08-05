@@ -471,6 +471,7 @@ bool Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl 
 
 bool ParamScope::AddParam(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags)
 {
+    CHECK_NOT_NULL(newDecl);
     ASSERT(newDecl->IsParameterDecl());
 
     if (currentVariable) {
@@ -490,6 +491,7 @@ std::tuple<ParameterDecl *, const ir::AstNode *> ParamScope::AddParamDecl(ArenaA
     const auto [name, pattern] = util::Helpers::ParamName(allocator, param, params_.size());
 
     auto *decl = NewDecl<ParameterDecl>(allocator, name);
+    CHECK_NOT_NULL(decl);
 
     if (!AddParam(allocator, FindLocal(name), decl, VariableFlags::VAR)) {
         return {decl, param};

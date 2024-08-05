@@ -71,7 +71,9 @@ void CallExpression::CompileSuperCall(compiler::PandaGen *pg, bool containsSprea
         compiler::RegScope paramScope(pg);
         compiler::VReg argsObj {};
         // arguments_ is only ...args
-        if (util::Helpers::GetContainingConstructor(this)->HasFlag(ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR)) {
+        const ir::ScriptFunction *constructorFunc = util::Helpers::GetContainingConstructor(this);
+        CHECK_NOT_NULL(constructorFunc);
+        if (constructorFunc->HasFlag(ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR)) {
             argsObj = pg->AllocReg();
             arguments_[0]->AsSpreadElement()->Argument()->Compile(pg);
             pg->StoreAccumulator(this, argsObj);

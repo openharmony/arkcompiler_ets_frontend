@@ -105,6 +105,7 @@ checker::Type *TSInterfaceDeclaration::Check(checker::Checker *checker) const
             checker::ObjectDescriptor *desc =
                 checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
             resolvedType = checker->Allocator()->New<checker::InterfaceType>(checker->Allocator(), id_->Name(), desc);
+            CHECK_NOT_NULL(resolvedType);
             resolvedType->SetVariable(var);
             var->SetTsType(resolvedType);
         }

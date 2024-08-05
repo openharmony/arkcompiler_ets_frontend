@@ -61,6 +61,7 @@ checker::Type *ArrowFunctionExpression::Check(checker::Checker *checker) const
         funcVar->SetTsType(funcType);
     }
 
+    CHECK_NOT_NULL(signature);
     signature->SetReturnType(checker->HandleFunctionReturn(func_));
 
     if (!func_->Body()->IsExpression()) {

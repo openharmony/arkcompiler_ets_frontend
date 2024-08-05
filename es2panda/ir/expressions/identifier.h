@@ -34,7 +34,7 @@ class Variable;
 
 namespace panda::es2panda::ir {
 
-enum class IdentifierFlags {
+enum class IdentifierFlags : uint8_t {
     NONE,
     OPTIONAL = 1 << 0,
     REFERENCE = 1 << 1,
