@@ -1201,9 +1201,7 @@ void ASParser::ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNo
 void ASParser::ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                    ir::Expression *propName, ir::ScriptFunction *func)
 {
-    if (func->Params().size() != 1) {
-        ThrowSyntaxError("Setter must have exactly one formal parameter");
-    }
+    ValidateGetterSetter(ir::MethodDefinitionKind::SET, func->Params().size());
 
     if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
         ir::ModifierFlags access = GetAccessability(desc->modifiers);

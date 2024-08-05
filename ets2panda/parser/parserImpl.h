@@ -366,6 +366,7 @@ protected:
     virtual ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc,
                                                    const ArenaVector<ir::AstNode *> &properties,
                                                    ir::Expression *propName, lexer::SourcePosition *propEnd);
+    void ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number) const;
     virtual void ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                      ir::Expression *propName, ir::ScriptFunction *func);
     virtual void ValidateClassGetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,

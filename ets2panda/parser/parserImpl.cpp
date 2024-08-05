@@ -418,22 +418,31 @@ void ParserImpl::ValidateClassMethodStart(ClassElementDescriptor *desc, [[maybe_
     }
 }
 
+void ParserImpl::ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number) const
+{
+    if (methodDefinition == ir::MethodDefinitionKind::SET) {
+        if (number != 1) {
+            ThrowSyntaxError("Setter must have exactly one formal parameter");
+        }
+    } else if (methodDefinition == ir::MethodDefinitionKind::GET) {
+        if (number != 0) {
+            ThrowSyntaxError("Getter must not have formal parameters");
+        }
+    }
+}
+
 void ParserImpl::ValidateClassSetter([[maybe_unused]] ClassElementDescriptor *desc,
                                      [[maybe_unused]] const ArenaVector<ir::AstNode *> &properties,
                                      [[maybe_unused]] ir::Expression *propName, ir::ScriptFunction *func)
 {
-    if (func->Params().size() != 1) {
-        ThrowSyntaxError("Setter must have exactly one formal parameter");
-    }
+    ValidateGetterSetter(ir::MethodDefinitionKind::SET, func->Params().size());
 }
 
 void ParserImpl::ValidateClassGetter([[maybe_unused]] ClassElementDescriptor *desc,
                                      [[maybe_unused]] const ArenaVector<ir::AstNode *> &properties,
                                      [[maybe_unused]] ir::Expression *propName, ir::ScriptFunction *func)
 {
-    if (!func->Params().empty()) {
-        ThrowSyntaxError("Getter must not have formal parameters");
-    }
+    ValidateGetterSetter(ir::MethodDefinitionKind::GET, func->Params().size());
 }
 
 ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElementDescriptor *desc,
