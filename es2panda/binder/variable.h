@@ -205,7 +205,7 @@ public:
     }
 
 private:
-    uint32_t index_;
+    uint32_t index_ {0};
 };
 
 class EnumVariable : public Variable {

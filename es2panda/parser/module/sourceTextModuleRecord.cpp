@@ -36,6 +36,7 @@ namespace panda::es2panda::parser {
     // import defaultExport from 'test.js'
     void SourceTextModuleRecord::AddImportEntry(SourceTextModuleRecord::ImportEntry *entry)
     {
+        CHECK_NOT_NULL(entry);
         ASSERT(entry != nullptr);
         ASSERT(!entry->importName_.Empty());
         ASSERT(!entry->localName_.Empty());
@@ -63,6 +64,7 @@ namespace panda::es2panda::parser {
     // export default ...
     bool SourceTextModuleRecord::AddLocalExportEntry(SourceTextModuleRecord::ExportEntry *entry)
     {
+        CHECK_NOT_NULL(entry);
         ASSERT(entry->importName_.Empty());
         ASSERT(!entry->localName_.Empty());
         ASSERT(!entry->exportName_.Empty());
@@ -86,6 +88,7 @@ namespace panda::es2panda::parser {
     // import { x } from 'test.js'; export { x }
     bool SourceTextModuleRecord::AddIndirectExportEntry(SourceTextModuleRecord::ExportEntry *entry)
     {
+        CHECK_NOT_NULL(entry);
         ASSERT(entry != nullptr);
         ASSERT(!entry->importName_.Empty());
         ASSERT(!entry->exportName_.Empty());
@@ -128,6 +131,7 @@ namespace panda::es2panda::parser {
 
     bool SourceTextModuleRecord::CheckImplicitIndirectExport(SourceTextModuleRecord::ExportEntry *exportEntry)
     {
+        CHECK_NOT_NULL(exportEntry);
         ASSERT(exportEntry != nullptr);
         ASSERT(!exportEntry->localName_.Empty());
         auto regularImport = regularImportEntries_.find(exportEntry->localName_);
@@ -158,6 +162,7 @@ namespace panda::es2panda::parser {
     void SourceTextModuleRecord::ConvertLocalExportToIndirect(SourceTextModuleRecord::ImportEntry *importEntry,
                                                               SourceTextModuleRecord::ExportEntry *exportEntry)
     {
+        CHECK_NOT_NULL(importEntry);
         ASSERT(exportEntry->importName_.Empty());
         ASSERT(exportEntry->moduleRequestIdx_ == -1);
         ASSERT(!importEntry->importName_.Empty());

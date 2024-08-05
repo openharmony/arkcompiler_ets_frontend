@@ -24,7 +24,7 @@
 
 namespace panda::es2panda::lexer {
 
-enum class TokenFlags {
+enum class TokenFlags : uint8_t {
     NONE,
     NEW_LINE = (1 << 0),
     HAS_ESCAPE = (1 << 2),

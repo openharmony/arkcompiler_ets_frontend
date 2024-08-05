@@ -420,28 +420,7 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleOrNamespaceDelaration(const le
 
     auto localCtx = binder::LexicalScope<binder::TSModuleScope>(Binder(), exportBindings);
 
-    bool isInstantiated = false;
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
-        lexer_->NextToken();
-        lexer::SourcePosition moduleStart = lexer_->GetToken().Start();
-        body = ParseTsModuleOrNamespaceDelaration(moduleStart, false, true);
-        isInstantiated = body->AsTSModuleDeclaration()->IsInstantiated();
-    } else {
-        body = ParseTsModuleBlock();
-        auto statements = body->AsTSModuleBlock()->Statements();
-        for (auto *it : statements) {
-            auto statement = it;
-            if (statement->IsExportNamedDeclaration()) {
-                statement = statement->AsExportNamedDeclaration()->Decl();
-            }
-            if (statement != nullptr &&
-                !statement->IsTSInterfaceDeclaration() && !statement->IsTSTypeAliasDeclaration() &&
-                (!statement->IsTSModuleDeclaration() || statement->AsTSModuleDeclaration()->IsInstantiated())) {
-                isInstantiated = true;
-                break;
-            }
-        }
-    }
+    bool isInstantiated = IsInstantiatedInTsModuleBlock(&body);
     if (isDeclare) {
         isInstantiated = false;
     }
@@ -455,6 +434,33 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleOrNamespaceDelaration(const le
     res->Declaration()->AsNamespaceDecl()->Add(moduleDecl);
 
     return moduleDecl;
+}
+
+bool ParserImpl::IsInstantiatedInTsModuleBlock(ir::Statement **body)
+{
+    bool isInstantiated = false;
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
+        lexer_->NextToken();
+        lexer::SourcePosition moduleStart = lexer_->GetToken().Start();
+        *body = ParseTsModuleOrNamespaceDelaration(moduleStart, false, true);
+        isInstantiated = (*body)->AsTSModuleDeclaration()->IsInstantiated();
+    } else {
+        *body = ParseTsModuleBlock();
+        auto statements = (*body)->AsTSModuleBlock()->Statements();
+        for (auto *it : statements) {
+            auto statement = it;
+            if (LIKELY(statement != nullptr) && statement->IsExportNamedDeclaration()) {
+                statement = statement->AsExportNamedDeclaration()->Decl();
+            }
+            if (statement != nullptr && !statement->IsTSInterfaceDeclaration() &&
+                !statement->IsTSTypeAliasDeclaration() &&
+                (!statement->IsTSModuleDeclaration() || statement->AsTSModuleDeclaration()->IsInstantiated())) {
+                isInstantiated = true;
+                break;
+            }
+        }
+    }
+    return isInstantiated;
 }
 
 ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const lexer::SourcePosition &startLoc,
@@ -487,7 +493,7 @@ ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const 
         auto *scope = Binder()->GetScope();
         auto name = id->Name();
         auto *var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
-        ASSERT(var != nullptr);
+        CHECK_NOT_NULL(var);
         var->AsImportEqualsVariable()->SetScope(scope);
         if (isExport && scope->IsTSModuleScope()) {
             scope->AsTSModuleScope()->AddExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name, var);
@@ -3047,7 +3053,7 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
             decl->BindNode(local);
             auto *scope = Binder()->GetScope();
             auto *var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(local->Name());
-            ASSERT(var != nullptr);
+            CHECK_NOT_NULL(var);
             var->AsImportEqualsVariable()->SetScope(scope);
         }
 

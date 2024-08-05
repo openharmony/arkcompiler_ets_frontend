@@ -61,6 +61,7 @@ checker::Type *FunctionExpression::Check(checker::Checker *checker) const
         funcVar->SetTsType(funcType);
     }
 
+    CHECK_NOT_NULL(signature);
     signature->SetReturnType(checker->HandleFunctionReturn(func_));
 
     func_->Body()->Check(checker);
