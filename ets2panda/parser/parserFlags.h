@@ -60,6 +60,7 @@ enum class ExpressionParseFlags : uint32_t {
     POTENTIAL_CLASS_LITERAL = 1U << 11U,
     IN_FOR = 1U << 12U,
     INSTANCEOF = 1U << 13U,
+    POTENTIAL_NEW_ARRAY = 1U << 14U
 };
 
 enum class StatementParsingFlags : uint32_t {

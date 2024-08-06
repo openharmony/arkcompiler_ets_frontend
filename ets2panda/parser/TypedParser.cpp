@@ -15,6 +15,7 @@
 
 #include "TypedParser.h"
 
+#include "parser/parserImpl.h"
 #include "parser/parserStatusContext.h"
 #include "varbinder/privateBinding.h"
 #include "lexer/lexer.h"
@@ -1158,8 +1159,10 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
             Lexer()->NextToken();
             break;
         default:
+            if ((flags & ExpressionParseFlags::POTENTIAL_NEW_ARRAY) != 0) {
+                return expr;
+            }
             ThrowSyntaxError("Identifier expected");
-            break;
     }
 
     expr->AsIdentifier()->SetReference();
@@ -1269,6 +1272,8 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
 
+    const bool inPotentialNewArray = (*options & TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY) != 0;
+    *options &= ~TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY;
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat '<'
 
@@ -1278,6 +1283,10 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
         typeParamInst = ParseTypeParametersFormatPlaceholder();
     } else {
         typeParamInst = ParseTypeParameterInstantiationImpl(options);
+    }
+
+    if (inPotentialNewArray) {
+        *options |= TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY;
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {

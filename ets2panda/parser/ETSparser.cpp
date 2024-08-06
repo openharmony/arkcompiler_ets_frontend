@@ -756,6 +756,10 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ETSParser::Pars
         flags |= ExpressionParseFlags::POTENTIAL_CLASS_LITERAL;
     }
 
+    if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY) != 0) {
+        flags |= ExpressionParseFlags::POTENTIAL_NEW_ARRAY;
+    }
+
     auto *typeName = ParseQualifiedName(flags);
     if (typeName == nullptr) {
         return {nullptr, nullptr};
