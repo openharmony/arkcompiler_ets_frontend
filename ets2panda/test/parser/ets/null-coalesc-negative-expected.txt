@@ -458,35 +458,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 24,
-                          "column": 16
-                        },
-                        "end": {
-                          "line": 24,
-                          "column": 20
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 24,
-                        "column": 16
-                      },
-                      "end": {
-                        "line": 24,
-                        "column": 22
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 24,
@@ -494,7 +466,7 @@
                     },
                     "end": {
                       "line": 24,
-                      "column": 22
+                      "column": 20
                     }
                   }
                 },
@@ -1073,35 +1045,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 32,
-                          "column": 18
-                        },
-                        "end": {
-                          "line": 32,
-                          "column": 22
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 32,
-                        "column": 18
-                      },
-                      "end": {
-                        "line": 32,
-                        "column": 24
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 32,
@@ -1109,7 +1053,7 @@
                     },
                     "end": {
                       "line": 32,
-                      "column": 24
+                      "column": 22
                     }
                   }
                 },
@@ -1630,4 +1574,5 @@
     }
   }
 }
-TypeError: Property 'increment' does not exist on type 'A' [null-coalesc-negative.sts:37:5]
+TypeError: Property 'increment' does not exist on type 'C' [null-coalesc-negative.sts:37:5]
+TypeError: Member type must be the same for all union objects. [null-coalesc-negative.sts:37:3]

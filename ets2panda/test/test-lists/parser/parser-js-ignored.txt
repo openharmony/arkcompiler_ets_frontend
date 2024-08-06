@@ -4,9 +4,6 @@ parser/ets/import_tests/import_recursive.sts
 parser/ets/import_tests/packages/recursive/subpackage/subpackage_module_1.sts
 parser/ets/import_tests/packages/recursive/subpackage_module_1.sts
 
-# Requires smart casts
-parser/ets/null-coalesc-negative.sts
-
 # Lambda tests, disabled because crash during compiler
 parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_variable.sts
 
