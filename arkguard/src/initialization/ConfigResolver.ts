@@ -731,9 +731,9 @@ export function readNameCache(nameCachePath: string, logger: any): void {
     const fileContent = fs.readFileSync(nameCachePath, 'utf-8');
     const nameCache: {
       compileSdkVersion?: string;
-      [key: string]: string;
-      PropertyCache?: any;
-      FileNameCache?: any;
+      [key: string]: Object;
+      PropertyCache?: Object;
+      FileNameCache?: Object;
     } = JSON.parse(fileContent);
     if (nameCache.PropertyCache) {
       PropCollections.historyMangledTable = getMapFromJson(nameCache.PropertyCache);
@@ -745,7 +745,7 @@ export function readNameCache(nameCachePath: string, logger: any): void {
     const { compileSdkVersion, PropertyCache, FileNameCache, ...rest } = nameCache;
     Object.keys(rest).forEach((key) => {
       nameCacheMap.set(key, rest[key]);
-    })
+    });
   } catch (err) {
     logger.error(`Failed to open ${nameCachePath}. Error message: ${err}`);
   }
