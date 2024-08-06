@@ -15,7 +15,7 @@
 
 import fs from 'fs';
 
-import { DEBUG } from "./CommonObject";
+import { DEBUG } from './CommonObject';
 
 export function isDebug(projectConfig: any): boolean {
   return projectConfig.buildMode.toLowerCase() === DEBUG;
