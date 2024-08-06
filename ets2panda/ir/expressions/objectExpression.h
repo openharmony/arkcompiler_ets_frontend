@@ -112,6 +112,9 @@ public:
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *CheckPattern(checker::TSChecker *checker);
 
+    bool CheckAssignmentPattern(Property *prop, varbinder::Variable *&bindingVar, checker::Type *&patternParamType,
+                                checker::TSChecker *checker, varbinder::LocalVariable *foundVar);
+
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);

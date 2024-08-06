@@ -474,11 +474,12 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
     return true;
 }
 
-Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeParameterInstantiation *typeArguments,
-                                         const ArenaVector<ir::Expression *> &arguments,
-                                         const lexer::SourcePosition &pos, TypeRelationFlag flags,
-                                         const std::vector<bool> &argTypeInferenceRequired)
+Signature *ETSChecker::ValidateSignature(
+    std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
+    const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
+    const std::vector<bool> &argTypeInferenceRequired)
 {
+    auto [signature, typeArguments, flags] = info;
     Signature *substitutedSig = MaybeSubstituteTypeParameters(this, signature, typeArguments, arguments, pos, flags);
     if (substitutedSig == nullptr) {
         return nullptr;
@@ -605,8 +606,8 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
                 !IsSignatureAccessible(sig, Context().ContainingClass(), Relation())) {
                 continue;
             }
-            auto *concreteSig =
-                ValidateSignature(sig, typeArguments, arguments, pos, relationFlags, argTypeInferenceRequired);
+            auto *concreteSig = ValidateSignature(std::make_tuple(sig, typeArguments, relationFlags), arguments, pos,
+                                                  argTypeInferenceRequired);
             if (concreteSig == nullptr) {
                 continue;
             }
@@ -757,26 +758,11 @@ static void InitMostSpecificType(const ArenaVector<Signature *> &signatures, [[m
     }
 }
 
-void ETSChecker::EvaluateMostSpecificSearch(Type *&mostSpecificType, Signature *&prevSig,
-                                            const lexer::SourcePosition &pos, Signature *sig, Type *sigType)
+void ETSChecker::SearchAmongMostSpecificTypes(
+    Type *&mostSpecificType, Signature *&prevSig,
+    std::tuple<const lexer::SourcePosition &, size_t, size_t, size_t, Signature *> info, bool lookForClassType)
 {
-    if (Relation()->IsAssignableTo(sigType, mostSpecificType)) {
-        mostSpecificType = sigType;
-        prevSig = sig;
-    } else if (sigType->IsETSObjectType() && mostSpecificType->IsETSObjectType() &&
-               !Relation()->IsAssignableTo(mostSpecificType, sigType)) {
-        auto funcName = sig->Function()->Id()->Name();
-        ThrowTypeError({"Call to `", funcName, "` is ambiguous as `2` versions of `", funcName, "` are available: `",
-                        funcName, prevSig, "` and `", funcName, sig, "`"},
-                       pos);
-    }
-}
-
-void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig,
-                                              const lexer::SourcePosition &pos, const size_t argumentsSize,
-                                              const size_t paramCount, const size_t idx, Signature *sig,
-                                              const bool lookForClassType)
-{
+    auto [pos, argumentsSize, paramCount, idx, sig] = info;
     if (lookForClassType && argumentsSize == ULONG_MAX) {
         [[maybe_unused]] const bool equalParamSize = sig->Params().size() == paramCount;
         ASSERT(equalParamSize);
@@ -788,7 +774,16 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
         if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
             return;
         }
-        EvaluateMostSpecificSearch(mostSpecificType, prevSig, pos, sig, sigType);
+        if (Relation()->IsAssignableTo(sigType, mostSpecificType)) {
+            mostSpecificType = sigType;
+            prevSig = sig;
+        } else if (sigType->IsETSObjectType() && mostSpecificType->IsETSObjectType() &&
+                   !Relation()->IsAssignableTo(mostSpecificType, sigType)) {
+            auto funcName = sig->Function()->Id()->Name();
+            ThrowTypeError({"Call to `", funcName, "` is ambiguous as `2` versions of `", funcName,
+                            "` are available: `", funcName, prevSig, "` and `", funcName, sig, "`"},
+                           pos);
+        }
     }
 }
 
@@ -834,10 +829,12 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
 
         InitMostSpecificType(signatures, mostSpecificType, prevSig, i);
         for (auto *sig : signatures) {
-            SearchAmongMostSpecificTypes(mostSpecificType, prevSig, pos, argumentsSize, paramCount, i, sig, true);
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
+                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), true);
         }
         for (auto *sig : signatures) {
-            SearchAmongMostSpecificTypes(mostSpecificType, prevSig, pos, argumentsSize, paramCount, i, sig, false);
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
+                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), false);
         }
 
         for (auto *sig : signatures) {

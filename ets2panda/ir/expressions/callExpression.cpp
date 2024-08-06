@@ -149,7 +149,7 @@ CallExpression *CallExpression::Clone(ArenaAllocator *const allocator, AstNode *
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-void CallExpression::SetTypeParams(TSTypeParameterInstantiation *const typeParams) noexcept
+void CallExpression::SetTypeParams(TSTypeParameterInstantiation *typeParams) noexcept
 {
     typeParams_ = typeParams;
     if (typeParams_ != nullptr) {

@@ -315,19 +315,19 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
                 (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
                 return std::make_pair(typeAnnotation, false);
             }
-            break;
+            return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::LITERAL_NULL: {
             typeAnnotation = AllocNode<ir::ETSNullType>();
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
-            break;
+            return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::KEYW_UNDEFINED: {
             typeAnnotation = AllocNode<ir::ETSUndefinedType>();
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
-            break;
+            return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             auto startLoc = Lexer()->GetToken().Start();
@@ -347,26 +347,17 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             }
 
             ParseRightParenthesis(options, typeAnnotation, savedPos);
-            break;
+            return std::make_pair(typeAnnotation, true);
         }
-        case lexer::TokenType::PUNCTUATOR_FORMAT: {
-            typeAnnotation = ParseTypeFormatPlaceholder();
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            typeAnnotation = ParseETSTupleType(options);
-            break;
-        }
-        case lexer::TokenType::KEYW_THIS: {
-            typeAnnotation = ParseThisType(options);
-            break;
-        }
-        default: {
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_FORMAT:
+            return std::make_pair(ParseTypeFormatPlaceholder(), true);
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
+            return std::make_pair(ParseETSTupleType(options), true);
+        case lexer::TokenType::KEYW_THIS:
+            return std::make_pair(ParseThisType(options), true);
+        default:
+            return std::make_pair(typeAnnotation, true);
     }
-
-    return std::make_pair(typeAnnotation, true);
 }
 
 ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)

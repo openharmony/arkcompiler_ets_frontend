@@ -99,11 +99,8 @@ void GlobalTypesHolder::AddTSSpecificTypes(ArenaAllocator *allocator)
     globalTypes_[static_cast<size_t>(GlobalTypeId::ERROR_TYPE)] = allocator->New<AnyType>();
 }
 
-GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMappings_(allocator->Adapter())
+void GlobalTypesHolder::AddEtsSpecificTypes(ArenaAllocator *allocator)
 {
-    // TS specific types
-    AddTSSpecificTypes(allocator);
-
     // ETS specific types
     globalTypes_[static_cast<size_t>(GlobalTypeId::BYTE)] = allocator->New<ByteType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::SHORT)] = allocator->New<ShortType>();
@@ -117,7 +114,10 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_NULL)] = allocator->New<ETSNullType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED)] = allocator->New<ETSUndefinedType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_WILDCARD)] = allocator->New<WildcardType>();
+}
 
+void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
+{
     builtinNameMappings_.emplace("Boolean", GlobalTypeId::ETS_BOOLEAN_BUILTIN);
     builtinNameMappings_.emplace("Byte", GlobalTypeId::ETS_BYTE_BUILTIN);
     builtinNameMappings_.emplace("Char", GlobalTypeId::ETS_CHAR_BUILTIN);
@@ -157,6 +157,17 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("FloatBox", GlobalTypeId::ETS_FLOAT_BOX_BUILTIN);
     builtinNameMappings_.emplace("DoubleBox", GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN);
     builtinNameMappings_.emplace("never", GlobalTypeId::ETS_NEVER_BUILTIN);
+}
+
+GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMappings_(allocator->Adapter())
+{
+    // TS specific types
+    AddTSSpecificTypes(allocator);
+
+    // ETS specific types
+    AddEtsSpecificTypes(allocator);
+
+    AddEtsSpecificBuiltinTypes();
 
     // ETS escompat layer
     AddETSEscompatLayer();
@@ -164,11 +175,8 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     // ETS functional types
     for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
          id < static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
-        std::stringstream ss;
-        ss << "Function";
-        ss << nargs;
-
-        builtinNameMappings_.emplace(util::UString(ss.str(), allocator).View(), static_cast<GlobalTypeId>(id));
+        builtinNameMappings_.emplace(util::UString("Function" + std::to_string(nargs), allocator).View(),
+                                     static_cast<GlobalTypeId>(id));
     }
 
     builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);

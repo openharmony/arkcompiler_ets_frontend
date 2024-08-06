@@ -45,9 +45,9 @@ public:
 
     ir::Expression *MarkChainDynamic(ir::Expression *obj)
     {
-        auto dynamicType = Allocator()->New<checker::ETSDynamicType>(Allocator(), "test", "test", obj,
-                                                                     checker::ETSObjectFlags::NO_OPTS, nullptr,
-                                                                     Language::FromString("sts").value(), false);
+        auto dynamicType = Allocator()->New<checker::ETSDynamicType>(
+            Allocator(), std::make_tuple("test", "test", Language::FromString("sts").value()),
+            std::make_tuple(obj, checker::ETSObjectFlags::NO_OPTS, nullptr), false);
         if (obj->IsETSTypeReference()) {
             obj = obj->AsETSTypeReference()->Part()->Name();
         }

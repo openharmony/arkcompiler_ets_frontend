@@ -257,7 +257,7 @@ private:
     ir::MethodDefinition *ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
                                                        ir::ClassDefinitionModifiers modifiers,
                                                        ir::ModifierFlags memberModifiers);
-    ir::MethodDefinition *ParseInterfaceGetterSetterMethod(ir::ModifierFlags modifiers);
+    ir::MethodDefinition *ParseInterfaceGetterSetterMethod(const ir::ModifierFlags modifiers);
     ir::Statement *ParseIdentKeyword();
     ir::Statement *ParseTypeDeclaration(bool allowStatic = false);
     ir::Statement *ParseTypeDeclarationAbstractFinal(bool allowStatic, ir::ClassDefinitionModifiers modifiers);
@@ -453,6 +453,9 @@ private:
     friend class InnerSourceParser;
 
 private:
+    std::optional<ir::Expression *> GetPostPrimaryExpression(ir::Expression *returnExpression,
+                                                             lexer::SourcePosition startLoc, bool ignoreCallExpression,
+                                                             [[maybe_unused]] bool *isChainExpression);
     parser::Program *globalProgram_;
     std::vector<ir::AstNode *> insertingNodes_ {};
     std::unique_ptr<util::ImportPathManager> importPathManager_ {nullptr};
