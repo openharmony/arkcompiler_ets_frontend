@@ -21,11 +21,9 @@ test262/data/test_es2021/language/identifiers/start-unicode-10.0.0.js
 test262/data/test_es2021/language/identifiers/start-unicode-10.0.0-escaped.js
 # --- end of Issue #17827
 
-#18438
+#18761
 test262/data/test_es2021/language/arguments-object/10.6-7-1.js
 test262/data/test_es2021/language/expressions/in/S8.12.6_A2_T2.js
-# --- end of Issue #18438
-#18438
 test262/data/test_es2021/built-ins/Array/isArray/15.4.3.2-2-1.js
 test262/data/test_es2021/built-ins/Array/isArray/15.4.3.2-2-2.js
 test262/data/test_es2021/built-ins/Array/prototype/concat/S15.4.4.4_A3_T1.js
@@ -794,7 +792,7 @@ test262/data/test_es2021/language/statements/function/S13.2.2_A2.js
 test262/data/test_es2021/language/statements/function/S13.2_A7_T1.js
 test262/data/test_es2021/language/statements/function/S13.2_A7_T2.js
 test262/data/test_es2021/language/statements/function/S13_A19_T2.js
-# --- end of Issue #18438
+# --- end of Issue #18761
 
 #18596
 test262/data/test_es2021/annexB/built-ins/escape/to-string-observe.js
