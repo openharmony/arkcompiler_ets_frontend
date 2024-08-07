@@ -87,15 +87,28 @@ void Compiler::CheckOptionsAndFileForAbcInput(const std::string &fname, const Co
 
 panda::pandasm::Program *Compiler::CompileAbcFile(const std::string &fname, const CompilerOptions &options)
 {
-    CheckOptionsAndFileForAbcInput(fname, options);
-    return abcToAsmCompiler_->CompileAbcFile();
+    try {
+        CheckOptionsAndFileForAbcInput(fname, options);
+        return abcToAsmCompiler_->CompileAbcFile();
+    } catch (const class Error &e) {
+        std::cerr << e.TypeString() << ": " << e.Message();
+        std::cerr << " [" << fname << "]" << std::endl;
+        throw;
+    }
 }
 
 void Compiler::CompileAbcFileInParallel(const std::string &fname, const CompilerOptions &options,
                                         std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
                                         panda::ArenaAllocator *allocator)
 {
-    CheckOptionsAndFileForAbcInput(fname, options);
+    try {
+        CheckOptionsAndFileForAbcInput(fname, options);
+    } catch (const class Error &e) {
+        std::cerr << e.TypeString() << ": " << e.Message();
+        std::cerr << " [" << fname << "]" << std::endl;
+        throw;
+    }
+
     auto *compileAbcClassQueue = new compiler::CompileAbcClassQueue(options.abcClassThreadCount,
                                                                     options,
                                                                     *abcToAsmCompiler_,
