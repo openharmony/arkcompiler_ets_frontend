@@ -399,4 +399,14 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DummyNode *node) const
 {
     UNREACHABLE();
 }
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NamespaceDeclaration *expr) const
+{
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NamespaceDefinition *expr) const
+{
+    UNREACHABLE();
+}
 }  // namespace ark::es2panda::checker

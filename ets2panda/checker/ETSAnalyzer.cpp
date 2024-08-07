@@ -24,6 +24,7 @@
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "types/ts/undefinedType.h"
+#include "ir/statements/namespaceDeclaration.h"
 
 namespace ark::es2panda::checker {
 
@@ -1629,6 +1630,18 @@ checker::Type *ETSAnalyzer::Check(ir::NullLiteral *expr) const
         expr->SetTsType(checker->GlobalETSNullType());
     }
     return expr->TsType();
+}
+
+checker::Type *ETSAnalyzer::Check(ir::NamespaceDeclaration *st) const
+{
+    ETSChecker *checker = GetETSChecker();
+    st->Definition()->Check(checker);
+    return nullptr;
+}
+
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::NamespaceDefinition *st) const
+{
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::NumberLiteral *expr) const

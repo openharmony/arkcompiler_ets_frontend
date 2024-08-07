@@ -33,6 +33,7 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/spreadElement.h"
+#include "ir/statements/namespaceDeclaration.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/dummyNode.h"
@@ -582,7 +583,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
                 ThrowSyntaxError("Namespaces are declare only");
             }
             GetContext().Status() |= ParserStatus::IN_NAMESPACE;
-            auto *ns = ParseClassDeclaration(modifiers, ir::ModifierFlags::STATIC);
+            auto *ns = ParseNamespaceDeclaration(ir::ModifierFlags::DECLARE | ir::ModifierFlags::EXPORT);
             GetContext().Status() &= ~ParserStatus::IN_NAMESPACE;
             return ns;
         }

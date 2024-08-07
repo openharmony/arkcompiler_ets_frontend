@@ -32,6 +32,7 @@
 #include "ir/ets/etsReExportDeclaration.h"
 #include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
+#include "ir/statements/namespaceDeclaration.h"
 
 namespace ark::es2panda::ir::visitor {
 

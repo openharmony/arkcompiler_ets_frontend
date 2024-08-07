@@ -411,6 +411,11 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ClassDefinition *ParseClassDefinition(ir::ClassDefinitionModifiers modifiers,
                                               ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
+    bool CheckInNamespaceContextIsExported();
+    ir::NamespaceDeclaration *ParseNamespaceDeclaration(ir::ModifierFlags flags);
+    ir::NamespaceDefinition *ParseNamespaceDefinition(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
+    using NamespaceBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
+    NamespaceBody ParseNamespaceBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseEnumDeclaration(bool isConst = false, bool isStatic = false) override;
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
