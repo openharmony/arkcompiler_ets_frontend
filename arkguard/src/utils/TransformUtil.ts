@@ -74,7 +74,7 @@ export function collectIdentifiersAndStructs(sourceFile: SourceFile, context: Tr
       structs.push(node);
     }
     // @ts-ignore
-    if (node.virtual) {
+    if (getOriginalNode(node).virtual) {
       return node;
     }
     if (!isIdentifier(node) || !node.parent) {
