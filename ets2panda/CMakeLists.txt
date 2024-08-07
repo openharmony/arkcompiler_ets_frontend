@@ -55,7 +55,7 @@ endif()
 
 if(NOT PANDA_PRODUCT_BUILD)
   execute_process(
-    COMMAND date "+%Y-%m-%d %H:%M:%S"
+    COMMAND date "+%Y-%m-%d_%H:%M:%S"
     OUTPUT_VARIABLE CURRENT_DATE
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
@@ -66,9 +66,11 @@ if(NOT PANDA_PRODUCT_BUILD)
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
 
-  add_definitions(-DES2PANDA_DATE="${CURRENT_DATE}")
-  add_definitions(-DES2PANDA_HASH="${LAST_COMMIT_HASH}")
-  endif()
+  set_source_files_properties(
+    util/options.cpp
+    PROPERTIES COMPILE_DEFINITIONS "ES2PANDA_DATE=\"${CURRENT_DATE}\";ES2PANDA_HASH=\"${LAST_COMMIT_HASH}\""
+  )
+endif()
 
 add_custom_command(
   OUTPUT ${GENERATED_STAMP}
