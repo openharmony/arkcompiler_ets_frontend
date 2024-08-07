@@ -158,6 +158,9 @@ public:
     static util::StringView FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func);
     static void CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specifiers,
                                   const ir::ImportSpecifier *specifier, const std::string &fileName);
+    static void CheckDefaultImportedName(const ArenaVector<ir::ImportDefaultSpecifier *> &specifiers,
+                                         const ir::ImportDefaultSpecifier *specifier, const std::string &fileName);
+    static void CheckDefaultImport(const ArenaVector<ir::ETSImportDeclaration *> &statements);
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
 

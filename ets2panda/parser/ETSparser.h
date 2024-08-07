@@ -20,6 +20,7 @@
 #include "util/importPathManager.h"
 #include "TypedParser.h"
 #include "ir/base/classDefinition.h"
+#include <utility>
 
 namespace ark::es2panda::ir {
 class ETSPackageDeclaration;
@@ -252,7 +253,8 @@ private:
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
     std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
-    ArenaVector<ir::ImportSpecifier *> ParseNamedSpecifiers();
+    bool IsDefaultImport();
+    std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> ParseNamedSpecifiers();
     ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
     parser::Program *ParseSource(const SourceFile &sourceFile);

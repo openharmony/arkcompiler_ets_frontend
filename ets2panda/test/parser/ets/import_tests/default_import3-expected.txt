@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token. 'as' keyword is expected. [default_import3.sts:16:16]

@@ -121,8 +121,7 @@ keywords:
 
   - name: 'default'
     token: KEYW_DEFAULT
-    keyword: [js, ts, as]
-    keyword_like: [ets]
+    keyword: [js, ts, as, ets]
 
   - name: 'delete'
     token: KEYW_DELETE
