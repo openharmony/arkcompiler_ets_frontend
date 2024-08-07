@@ -12,6 +12,9 @@ js-joda_test
 #18342
 mathjs_test
 
+#18481
+rxjs_test
+
 #18331
 validator_test
 

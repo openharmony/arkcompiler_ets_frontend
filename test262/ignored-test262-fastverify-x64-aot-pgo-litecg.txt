@@ -23,6 +23,8 @@ test262/data/test_es2021/language/identifiers/start-unicode-10.0.0-escaped.js
 
 #18481
 test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-valid.js
+test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-var-obj-ptrn-id-init-skipped.js
+test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-let-obj-ptrn-rest-skip-non-enumerable.js
 
 #18300
 test262/data/test_es2021/language/expressions/object/method.js
