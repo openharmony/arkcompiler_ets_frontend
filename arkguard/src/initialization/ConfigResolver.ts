@@ -538,6 +538,11 @@ export class ObConfigResolver {
   private getSystemApiCache(systemConfigs: MergedConfig, systemApiCachePath: string): void {
     ApiExtractor.mPropertySet.clear();
     ApiExtractor.mSystemExportSet.clear();
+
+    interface ArkUIWhitelist {
+      ReservedPropertyNames: string[]
+    }
+    let arkUIWhitelist: ArkUIWhitelist = { ReservedPropertyNames: [] };
     const sdkApis: string[] = sortAndDeduplicateStringArr(this.sourceObConfig.sdkApis);
     for (let apiPath of sdkApis) {
       this.getSdkApiCache(apiPath);
@@ -545,14 +550,18 @@ export class ObConfigResolver {
       if (fs.existsSync(UIPath)) {
         this.getUIApiCache(UIPath);
       }
+      const arkUIWhitelistPath: string = path.join(apiPath, '../build-tools/ets-loader/obfuscateWhiteList.json5');
+      if (fs.existsSync(arkUIWhitelistPath)) {
+        arkUIWhitelist = JSON5.parse(fs.readFileSync(arkUIWhitelistPath, 'utf-8'));
+      }
     }
     let systemApiContent: SystemApiContent = {};
 
     if (systemConfigs.options.enablePropertyObfuscation) {
       const savedNameAndPropertyList: string[] = sortAndDeduplicateStringArr([...ApiExtractor.mPropertySet]);
       systemApiContent.ReservedNames = savedNameAndPropertyList;
-      systemApiContent.ReservedPropertyNames = savedNameAndPropertyList;
-      systemConfigs.reservedPropertyNames.push(...savedNameAndPropertyList);
+      systemApiContent.ReservedPropertyNames = [...savedNameAndPropertyList, ...arkUIWhitelist.ReservedPropertyNames];
+      systemConfigs.reservedPropertyNames.push(...savedNameAndPropertyList, ...arkUIWhitelist.ReservedPropertyNames);
       systemConfigs.reservedNames.push(...savedNameAndPropertyList);
     }
     if (systemConfigs.options.enableToplevelObfuscation && systemConfigs.options.enableExportObfuscation) {
