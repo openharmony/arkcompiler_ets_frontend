@@ -9,6 +9,9 @@ js-joda_test
 #18484
 jBox2d_test
 
+#18629
+jsDiff_test
+
 #18444
 jmespath_test
 

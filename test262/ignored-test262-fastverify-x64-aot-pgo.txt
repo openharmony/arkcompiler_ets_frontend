@@ -23,9 +23,14 @@ test262/data/test_es2021/built-ins/RegExp/match-indices/indices-array-unicode-ma
 
 #18481
 test262/data/test_es2021/built-ins/Array/prototype/flatMap/this-value-ctor-object-species-custom-ctor.js
+test262/data/test_es2021/built-ins/Array/prototype/sort/stability-513-elements.js
 test262/data/test_es2021/built-ins/Object/defineProperties/15.2.3.7-6-a-95.js
+test262/data/test_es2021/built-ins/Object/defineProperty/15.2.3.6-4-22.js
+test262/data/test_es2021/built-ins/Object/defineProperty/15.2.3.6-4-346.js
+test262/data/test_es2021/intl402/BigInt/prototype/toLocaleString/returns-same-results-as-NumberFormat.js
 test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-valid.js
 test262/data/test_es2021/intl402/NumberFormat/prototype/format/format-fraction-digits.js
+test262/data/test_es2021/language/statements/for-await-of/async-gen-dstr-const-async-obj-ptrn-prop-id-init-skipped.js
 test262/data/test_es2021/language/statements/for-await-of/async-func-decl-dstr-obj-rest-skip-non-enumerable.js
 
 #18300
@@ -43,6 +48,7 @@ test262/data/test_es2021/built-ins/Array/prototype/reduce/15.4.4.21-7-8.js
 test262/data/test_es2021/built-ins/Array/prototype/reduceRight/15.4.4.22-7-9.js
 test262/data/test_es2021/built-ins/Array/prototype/reduceRight/15.4.4.22-10-3.js
 test262/data/test_es2021/built-ins/Array/prototype/map/15.4.4.19-9-6.js
+test262/data/test_es2021/language/statements/for-await-of/async-gen-decl-dstr-obj-prop-put-prop-ref-no-get.js
 # --- end of Issue #18438
 
 #18360
