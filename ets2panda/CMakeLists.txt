@@ -119,6 +119,7 @@ set(ES2PANDA_LIB_SRC
   ast_verifier/checkInfiniteLoop.cpp
   ast_verifier/everyChildHasValidParent.cpp
   ast_verifier/everyChildInParentRange.cpp
+  ast_verifier/getterSetterValidation.cpp
   ast_verifier/helpers.cpp
   ast_verifier/identifierHasVariable.cpp
   ast_verifier/importExportAccessValid.cpp

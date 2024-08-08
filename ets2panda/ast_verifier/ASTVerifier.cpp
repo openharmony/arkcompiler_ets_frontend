@@ -20,6 +20,7 @@
 #include "ast_verifier/checkContext.h"
 #include "ast_verifier/everyChildHasValidParent.h"
 #include "ast_verifier/everyChildInParentRange.h"
+#include "ast_verifier/getterSetterValidation.h"
 #include "ast_verifier/identifierHasVariable.h"
 #include "ast_verifier/nodeHasParent.h"
 #include "ast_verifier/nodeHasSourceRange.h"
@@ -54,6 +55,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
     AddInvariant<VariableNameIdentifierNameSame>(allocator, "VariableNameIdentifierNameSame");
     AddInvariant<CheckAbstractMethod>(allocator, "CheckAbstractMethod");
+    AddInvariant<GetterSetterValidation>(allocator, "GetterSetterValidation");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)

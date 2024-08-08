@@ -63,6 +63,7 @@ public:
             accumulatedChecks_.insert("ImportExportAccessValid");
             accumulatedChecks_.insert("VariableNameIdentifierNameSameForAll");
             accumulatedChecks_.insert("CheckAbstractMethodForAll");
+            accumulatedChecks_.insert("GetterSetterValidationForAll");
         }
     }
 
