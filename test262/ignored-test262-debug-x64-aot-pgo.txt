@@ -1,9 +1,5 @@
 # Known failure list for test262 - debug-x64-aot-pgo
 
-#18481
-test262/data/test_es2021/built-ins/Object/defineProperty/15.2.3.6-4-48.js
-test262/data/test_es2021/built-ins/Object/keys/15.2.3.14-2-6.js
-
 #18412
 test262/data/test_es2021/language/computed-property-names/class/method/constructor-can-be-getter.js
 test262/data/test_es2021/language/computed-property-names/class/method/constructor-can-be-setter.js
