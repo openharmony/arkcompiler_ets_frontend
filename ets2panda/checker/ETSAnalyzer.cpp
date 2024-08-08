@@ -2348,12 +2348,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
     if (expr->TsTypeOrError() == nullptr) {
         ETSChecker *checker = GetETSChecker();
         auto exprType = expr->expr_->Check(checker);
-        if (!exprType->PossiblyETSNullish()) {
-            checker->ThrowTypeError(
-                "Bad operand type, the operand of the non-nullish expression must be a nullish type",
-                expr->Expr()->Start());
-        }
-
         //  If the actual [smart] type is definitely 'null' or 'undefined' then probably CTE should be thrown.
         //  Anyway we'll definitely obtain NullPointerException at runtime.
         if (exprType->DefinitelyETSNullish()) {
@@ -2361,7 +2355,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
                 "Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'.",
                 expr->Expr()->Start());
         }
-
         expr->SetTsType(checker->GetNonNullishType(exprType));
     }
     expr->SetOriginalType(expr->TsType());
