@@ -155,6 +155,7 @@ public:
     static void RemoveProgramsRedundantData(std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
         const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation);
     static bool IsDefaultApiVersion(int apiVersion, std::string subApiVersion);
+    static bool IsSupportLazyImportVersion(int apiVersion, std::string subApiVersion);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;
