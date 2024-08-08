@@ -25,6 +25,8 @@ test262/data/other_tests/language/expressions/compound-assignment/left-hand-side
 test262/data/other_tests/language/statements/class/elements/privatefieldget-success-2.js
 test262/data/other_tests/language/statements/class/elements/privatefield-on-proxy.js
 test262/data/other_tests/language/statements/class/elements/privategetter-on-proxy.js
+
+#18548
 test262/data/other_tests/language/statements/class/elements/privatemethods-on-proxy.js
 
 #18521

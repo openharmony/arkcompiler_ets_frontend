@@ -1,0 +1,1 @@
+# Known failures list for app-workload - fastverify-x64-aot

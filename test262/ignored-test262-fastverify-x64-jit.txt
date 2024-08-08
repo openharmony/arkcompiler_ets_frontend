@@ -1,0 +1,2 @@
+#17827
+test262/data/test_es2021/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-returns-throws.js
