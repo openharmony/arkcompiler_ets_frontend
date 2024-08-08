@@ -21,7 +21,7 @@ import {
   isConstructorDeclaration,
   isSourceFile
 } from 'typescript';
-  
+
 import type {
   ClassElement,
   Node,
@@ -37,7 +37,7 @@ import type {IOptions} from '../../configs/IOptions';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {performancePrinter} from '../../ArkObfuscator';
 import {EventList} from '../../utils/PrinterUtils';
-  
+
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
     'name': 'VirtualConstructorTransformerFactory',
@@ -62,13 +62,13 @@ function virtualConstructorTransformer(node: SourceFile, context: Transformation
       performancePrinter.timeSumPrinter);
   return parentNodes;
 }
-  
+
 function removeVirtualConstructor(node: Node, context: TransformationContext): Node {
   if (isStructDeclaration(node)) {
     const tempStructMembers: ClassElement[] = node.members.filter((member) => !isVirtualConstructor(member));
     const structMembersWithoutVirtualConstructor = factory.createNodeArray(tempStructMembers);
 
-    return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses, 
+    return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses,
       structMembersWithoutVirtualConstructor);
   }
   return visitEachChild(node, (childNode) => removeVirtualConstructor(childNode, context), context);
@@ -78,6 +78,5 @@ function isVirtualConstructor(node: Node): boolean {
   //@ts-ignore
   return isConstructorDeclaration(node) && node.virtual;
 }
-  
+
 export = secharmony;
-  
