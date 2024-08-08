@@ -26,10 +26,6 @@ test262/data/test_es2021/built-ins/Object/defineProperties/15.2.3.7-6-a-95.js
 test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-valid.js
 test262/data/test_es2021/built-ins/Array/prototype/flatMap/this-value-ctor-object-species-custom-ctor.js
 
-#17884
-test262/data/test_es2021/language/expressions/template-literal/literal-expr-primitive.js
-# --- end of Issue #17864
-
 #18300
 test262/data/test_es2021/language/expressions/object/method.js
 # --- end of Issue #18300
