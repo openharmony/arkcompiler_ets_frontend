@@ -29,13 +29,15 @@ std::string Base64Encode(const std::string &inputString)
     for (size_t i = 0, j = 0; i < encodedRes.length() - 2; i += TRANSFORMED_CHAR_NUM, j += TO_TRANSFORM_CHAR_NUM) {
         // convert three 8bit into four 6bit; then add two 0 bit in each 6 bit
         // former 00 + first 6 bits of the first char
-        encodedRes[i] = base64CharSet[(inputString[j] & 0xff) >> 2];
+        encodedRes[i] = base64CharSet[(static_cast<unsigned int>(inputString[j]) & 0xff) >> 2];
         // 00 + the last 2 bits of the first char + the first 4 bits of the second char
-        encodedRes[i + 1] = base64CharSet[(inputString[j] & 0x03) << 4 | (inputString[j + 1] & 0xf0) >> 4];
+        encodedRes[i + 1] = base64CharSet[(static_cast<unsigned int>(inputString[j]) & 0x03) << 4 |
+            (static_cast<unsigned int>(inputString[j + 1]) & 0xf0) >> 4];
         // 00 + last 4 bits of the second char + the first 2 bits of the third char
-        encodedRes[i + 2] = base64CharSet[(inputString[j + 1] & 0x0f) << 2 | (inputString[j + 2] & 0xc0) >> 6];
+        encodedRes[i + 2] = base64CharSet[(static_cast<unsigned int>(inputString[j + 1]) & 0x0f) << 2 |
+            (static_cast<unsigned int>(inputString[j + 2]) & 0xc0) >> 6];
         // 00 + the last 6 bits of the third char
-        encodedRes[i + 3] = base64CharSet[inputString[j + 2] & 0x3f];
+        encodedRes[i + 3] = base64CharSet[static_cast<unsigned int>(inputString[j + 2]) & 0x3f];
     }
     switch (strLen % TO_TRANSFORM_CHAR_NUM) {
         // the original string is less than three bytes, and the missing place is filled with '=' to patch four bytes
@@ -97,7 +99,7 @@ std::string Base64Decode(const std::string &base64String)
             return "";
         }
         // the last 6 bit of the first char + the 2~3 bit of the second char(first 4 bit - 00)
-        decodedRes[j] = (firstChar << 2) | (secondChar >> 4);
+        decodedRes[j] = (static_cast<unsigned int>(firstChar) << 2) | (static_cast<unsigned int>(secondChar) >> 4);
         if (j == decodedStrLen - 1) {
             break;
         }
@@ -105,7 +107,7 @@ std::string Base64Decode(const std::string &base64String)
             return "";
         }
         // the last 4 bit of the second char +  the 2~5 bit of the third char(first 6 bit - 00)
-        decodedRes[j + 1] = (secondChar << 4) | (thirdChar >> 2);
+        decodedRes[j + 1] = (static_cast<unsigned int>(secondChar) << 4) | (static_cast<unsigned int>(thirdChar) >> 2);
         if (j + 1 == decodedStrLen - 1) {
             break;
         }
@@ -113,7 +115,7 @@ std::string Base64Decode(const std::string &base64String)
             return "";
         }
         // the last 2 bit of the third char + the last 6 bit of the fourth char
-        decodedRes[j + 2] = (thirdChar << 6) | fourthChar;
+        decodedRes[j + 2] = (static_cast<unsigned int>(thirdChar) << 6) | static_cast<unsigned int>(fourthChar);
     }
     return decodedRes;
 }

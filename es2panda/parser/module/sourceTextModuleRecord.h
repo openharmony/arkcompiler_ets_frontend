@@ -110,6 +110,7 @@ public:
     int AddModuleRequest(Args &&... args)
     {
         const auto *record = allocator_->New<ModuleRequestRecord>(std::forward<Args>(args)...);
+        CHECK_NOT_NULL(record);
         return AddModuleRequest(*record);
     }
     int AddModuleRequest(const ModuleRequestRecord record);

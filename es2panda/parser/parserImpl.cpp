@@ -2974,6 +2974,7 @@ ir::MethodDefinition *ParserImpl::CreateImplicitMethod(ir::Expression *superClas
 
     auto *paramScope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
     auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
+    CHECK_NOT_NULL(scope);
     ASSERT(paramScope != nullptr);
     ASSERT(scope != nullptr);
 

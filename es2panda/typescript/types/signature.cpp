@@ -21,6 +21,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
 {
     checker::SignatureInfo *copiedInfo = allocator->New<checker::SignatureInfo>(signatureInfo_, allocator);
 
+    CHECK_NOT_NULL(copiedInfo);
     for (auto *it : copiedInfo->params) {
         it->SetTsType(it->TsType()->Instantiate(allocator, relation, globalTypes));
     }

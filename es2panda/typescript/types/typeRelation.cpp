@@ -55,6 +55,8 @@ RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target,
         return result_;
     }
 
+    CHECK_NOT_NULL(source);
+    CHECK_NOT_NULL(target);
     RelationKey relationKey {source->Id(), target->Id()};
     auto res = holder.cached.find(relationKey);
     if (res == holder.cached.end()) {
@@ -147,6 +149,7 @@ bool TypeRelation::IsComparableTo(Type *source, Type *target)
         }
 
         result_ = RelationResult::FALSE;
+        CHECK_NOT_NULL(target);
         target->Compare(this, source);
         checker_->ComparableResults().cached.insert(
             {{source->Id(), target->Id()}, {result_, RelationType::COMPARABLE}});

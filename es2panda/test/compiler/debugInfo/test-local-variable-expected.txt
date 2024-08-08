@@ -273,6 +273,14 @@
           "name": "j",
           "signature": "any",
           "signatureType": "any",
+          "reg": 7,
+          "start": 11,
+          "length": 2
+        },
+        {
+          "name": "j",
+          "signature": "any",
+          "signatureType": "any",
           "reg": 6,
           "start": 8,
           "length": 7
@@ -284,14 +292,6 @@
           "reg": 5,
           "start": 8,
           "length": 7
-        },
-        {
-          "name": "j",
-          "signature": "any",
-          "signatureType": "any",
-          "reg": 7,
-          "start": 11,
-          "length": 2
         },
         {
           "name": "j",

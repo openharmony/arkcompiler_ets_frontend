@@ -84,7 +84,7 @@ private:
     Expression *id_;
     Expression *init_;
     // TODO(xucheng): don't use now, it will be used in type checker later
-    bool definite_;
+    bool definite_ {false};
 };
 
 }  // namespace panda::es2panda::ir

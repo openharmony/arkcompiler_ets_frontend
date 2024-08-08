@@ -69,6 +69,11 @@ static uint32_t DigitValue(char32_t cp)
     return (cp - LEX_CHAR_0);
 }
 
+static void ThrowError(const std::string_view &message)
+{
+    throw RegExpError(message);
+}
+
 static uint32_t HexValue(char32_t cp)
 {
     if (IsDecimalDigit(cp)) {
@@ -78,15 +83,11 @@ static uint32_t HexValue(char32_t cp)
     constexpr auto OFFSET = 10;
 
     if (cp < LEX_CHAR_LOWERCASE_A) {
+        ASSERT(cp >= LEX_CHAR_UPPERCASE_A);
         return cp - LEX_CHAR_UPPERCASE_A + OFFSET;
     }
 
     return (cp - LEX_CHAR_LOWERCASE_A + OFFSET);
-}
-
-static void ThrowError(const std::string_view &message)
-{
-    throw RegExpError(message);
 }
 
 void RegExpParser::ParsePattern()

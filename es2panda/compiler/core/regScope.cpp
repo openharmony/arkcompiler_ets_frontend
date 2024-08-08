@@ -49,10 +49,6 @@ void RegScope::DebuggerCloseScope()
     }
 
     pg_->scope_->SetScopeEnd(pg_->insns_.back());
-    auto *debugInfo = &pg_->debugInfo_.variableDebugInfo;
-    if (std::find(debugInfo->begin(), debugInfo->end(), pg_->scope_) == debugInfo->end()) {
-        debugInfo->push_back(pg_->scope_);
-    }
 }
 
 // LocalRegScope
@@ -71,12 +67,16 @@ LocalRegScope::LocalRegScope(PandaGen *pg, binder::Scope *scope) : RegScope(pg)
         }
     }
 
+    auto *debugInfo = &pg_->debugInfo_.variableDebugInfo;
+    if (pg_->IsDebug() && std::find(debugInfo->begin(), debugInfo->end(), pg_->scope_) == debugInfo->end()) {
+        debugInfo->push_back(pg_->scope_);
+    }
     insStartIndex_ = pg_->insns_.size();
 
     Hoisting::Hoist(pg_);
 }
 
-LocalRegScope::~LocalRegScope()
+LocalRegScope::~LocalRegScope() noexcept
 {
     if (!prevScope_) {
         return;
@@ -127,7 +127,7 @@ FunctionRegScope::FunctionRegScope(PandaGen *pg) : RegScope(pg), envScope_(pg->A
     pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
 }
 
-FunctionRegScope::~FunctionRegScope()
+FunctionRegScope::~FunctionRegScope() noexcept
 {
     if (pg_->IsDebug()) {
         pg_->topScope_->SetScopeStart(pg_->insns_.front());

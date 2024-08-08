@@ -487,7 +487,7 @@ ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const 
         auto *scope = Binder()->GetScope();
         auto name = id->Name();
         auto *var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
-        ASSERT(var != nullptr);
+        CHECK_NOT_NULL(var);
         var->AsImportEqualsVariable()->SetScope(scope);
         if (isExport && scope->IsTSModuleScope()) {
             scope->AsTSModuleScope()->AddExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name, var);
@@ -3047,7 +3047,7 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
             decl->BindNode(local);
             auto *scope = Binder()->GetScope();
             auto *var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(local->Name());
-            ASSERT(var != nullptr);
+            CHECK_NOT_NULL(var);
             var->AsImportEqualsVariable()->SetScope(scope);
         }
 

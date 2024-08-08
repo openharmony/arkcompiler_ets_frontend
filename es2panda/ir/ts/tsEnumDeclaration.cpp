@@ -117,7 +117,7 @@ binder::EnumMemberResult EvaluateUnaryExpression(checker::Checker *checker, bind
             return -std::get<double>(value);
         }
         case lexer::TokenType::PUNCTUATOR_TILDE: {
-            return static_cast<double>(~ToInt(std::get<double>(value)));
+            return static_cast<double>(~ToUInt(std::get<double>(value)));
         }
         default: {
             break;
@@ -167,10 +167,10 @@ binder::EnumMemberResult EvaluateBinaryExpression(checker::Checker *checker, bin
                 return static_cast<double>(ToUInt(std::get<double>(left)) ^ ToUInt(std::get<double>(right)));
             }
             case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT: {
-                return static_cast<double>(ToInt(std::get<double>(left)) << ToUInt(std::get<double>(right)));
+                return static_cast<double>(ToUInt(std::get<double>(left)) << ToUInt(std::get<double>(right)));
             }
             case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT: {
-                return static_cast<double>(ToInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
+                return static_cast<double>(ToUInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
             }
             case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
                 return static_cast<double>(ToUInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
@@ -267,6 +267,7 @@ void AddEnumValueDeclaration(checker::Checker *checker, double number, binder::E
 
     if (!res) {
         auto *decl = checker->Allocator()->New<binder::EnumDecl>(memberStr);
+        CHECK_NOT_NULL(decl);
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindEnumMemberVariable(memberStr);
@@ -370,7 +371,8 @@ checker::Type *TSEnumDeclaration::InferType(checker::Checker *checker, bool isCo
     for (size_t i = 0; i < localsSize; i++) {
         const util::StringView &currentName = enumScope->Decls()[i]->Name();
         binder::Variable *currentVar = enumScope->FindEnumMemberVariable(currentName);
-        ASSERT(currentVar && currentVar->IsEnumVariable());
+        CHECK_NOT_NULL(currentVar);
+        ASSERT(currentVar->IsEnumVariable());
         InferEnumVariableType(checker, currentVar->AsEnumVariable(), &value, &initNext, &isLiteralEnum, isConst,
                               computedExpr);
     }
@@ -394,6 +396,7 @@ checker::Type *TSEnumDeclaration::Check(checker::Checker *checker) const
     if (!enumVar->TsType()) {
         checker::ScopeContext scopeCtx(checker, scope_);
         checker::Type *enumType = InferType(checker, isConst_);
+        CHECK_NOT_NULL(enumType);
         enumType->SetVariable(enumVar);
         enumVar->SetTsType(enumType);
     }

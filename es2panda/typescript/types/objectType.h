@@ -37,7 +37,7 @@ class IndexInfo;
 OBJECT_TYPE_MAPPING(DECLARE_OBJECT_TYPENAMES)
 #undef DECLARE_OBJECT_TYPENAMES
 
-enum class ObjectFlags {
+enum class ObjectFlags : uint8_t {
     NO_OPTS = 0,
     CHECK_EXCESS_PROPS = 1 << 0,
     RESOLVED_MEMBERS = 1 << 1,

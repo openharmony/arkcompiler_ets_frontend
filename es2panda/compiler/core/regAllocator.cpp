@@ -57,6 +57,7 @@ uint16_t RegAllocator::GetSpillRegsCount() const
 
 void RegAllocator::UpdateIcSlot(IRNode *node)
 {
+    CHECK_NOT_NULL(node);
     auto inc = node->SetIcSlot(pg_->GetCurrentSlot());
     if (node->InlineCacheEnabled() && (inc == 0) && !pg_->IsIcOverFlow()) {
         pg_->SetIcOverFlow();
@@ -72,6 +73,7 @@ Label *RegAllocator::AllocLabel(std::string &&id)
 
 void RegAllocator::Run(IRNode *ins)
 {
+    CHECK_NOT_NULL(ins);
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
     auto regCnt = ins->Registers(&regs);
     if (regCnt == 0) {

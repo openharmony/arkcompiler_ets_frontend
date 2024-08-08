@@ -279,7 +279,9 @@ void PandaGen::CopyFunctionArguments(const ir::AstNode *node)
 
 LiteralBuffer *PandaGen::NewLiteralBuffer()
 {
-    return allocator_->New<LiteralBuffer>(allocator_);
+    LiteralBuffer *buf = allocator_->New<LiteralBuffer>(allocator_);
+    CHECK_NOT_NULL(buf);
+    return buf;
 }
 
 int32_t PandaGen::AddLiteralBuffer(LiteralBuffer *buf)
@@ -1292,7 +1294,7 @@ void PandaGen::CallThis(const ir::AstNode *node, VReg startReg, size_t argCount)
             break;
         }
         default: {
-            int64_t actualArgs = argCount - 1;
+            int64_t actualArgs = static_cast<int64_t>(argCount - 1);
             if (actualArgs <= util::Helpers::MAX_INT8) {
                 ra_.EmitRange<Callthisrange>(node, argCount, 0, actualArgs, thisReg);
                 break;
@@ -1621,7 +1623,7 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
     if (buf->IsEmpty()) {
         CreateEmptyArray(node);
     } else {
-        uint32_t bufIdx = AddLiteralBuffer(buf);
+        uint32_t bufIdx = static_cast<uint32_t>(AddLiteralBuffer(buf));
         CreateArrayWithBuffer(node, bufIdx);
     }
 
