@@ -17,10 +17,6 @@ compiler/ets/override13.sts
 compiler/ets/throwingFunctionType2.sts
 compiler/ets/throwingFunctionAsParameter2.sts
 
-# 15276
-parser/ets/n_overrideWithNullable.sts
-parser/ets/nullableType.sts
-
 # 15642
 compiler/ets/etsObjectToString4.sts
 compiler/ets/generic_variance_1.sts

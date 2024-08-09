@@ -20,8 +20,8 @@ function main() {
     let a = new A();
     let b = new B();
 
-    similarParam(a);
-    similarParam<B>(b);
+    assert(similarParam(a) == 1);
+    assert(similarParam<B>(b) == 0);
 }
 
 function similarParam(a : A) : int {
