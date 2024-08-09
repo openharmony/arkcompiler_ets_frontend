@@ -22,9 +22,18 @@ test262/data/test_es2021/language/identifiers/start-unicode-10.0.0-escaped.js
 # --- end of Issue #17827
 
 #18481
+test262/data/test_es2021/built-ins/AsyncGeneratorPrototype/return/length.js
+test262/data/test_es2021/built-ins/Array/prototype/flatMap/this-value-ctor-object-species-custom-ctor.js
+test262/data/test_es2021/built-ins/Array/prototype/sort/stability-513-elements.js
+test262/data/test_es2021/built-ins/Object/defineProperties/15.2.3.7-6-a-98.js
 test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-valid.js
-test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-var-obj-ptrn-id-init-skipped.js
+test262/data/test_es2021/intl402/NumberFormat/prototype/format/format-fraction-digits-precision.js
+test262/data/test_es2021/language/expressions/async-generator/yield-star-next-then-non-callable-symbol-fulfillpromise.js
+test262/data/test_es2021/language/statements/for-await-of/async-gen-dstr-let-async-obj-ptrn-rest-skip-non-enumerable.js
+test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-let-async-obj-ptrn-rest-skip-non-enumerable.js
 test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-let-obj-ptrn-rest-skip-non-enumerable.js
+test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-var-obj-ptrn-id-init-skipped.js
+test262/data/test_es2021/language/statements/for-await-of/async-func-dstr-var-async-obj-ptrn-prop-id-init-skipped.js
 
 #18300
 test262/data/test_es2021/language/expressions/object/method.js
