@@ -814,7 +814,7 @@ export namespace ApiExtractor {
     mExportNames.clear();
     projectPaths.forEach(path => {
       parseFile(path, scanningApiType);
-    })
+    });
     let reservedProperties: string[] = [];
     let reservedExportNames: string[] = [];
     if (scanProjectConfig.mPropertyObfuscation) {

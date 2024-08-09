@@ -67,8 +67,8 @@ import { handleReservedConfig } from './utils/TransformUtil';
 export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
 export type { ReservedNameInfo } from './utils/TransformUtil';
 
-export { initObfuscationConfig } from './initialization/Initializer'
-export { nameCacheMap } from './initialization/CommonObject'
+export { initObfuscationConfig } from './initialization/Initializer';
+export { nameCacheMap } from './initialization/CommonObject';
 export {
   collectResevedFileNameInIDEConfig, // For running unit test.
   enableObfuscatedFilePathConfig,
@@ -82,7 +82,7 @@ export {
   ObConfigResolver,
   readNameCache,
   writeObfuscationNameCache
-} from './initialization/ConfigResolver'
+} from './initialization/ConfigResolver';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
 export const renameFileNameModule = require('./transformers/rename/RenameFileNameTransformer');
