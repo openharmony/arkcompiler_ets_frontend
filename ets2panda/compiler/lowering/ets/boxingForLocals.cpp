@@ -90,6 +90,7 @@ static ArenaSet<varbinder::Variable *> FindModified(public_lib::Context *ctx, ir
             if (assignment->Left()->IsIdentifier()) {
                 ASSERT(assignment->Left()->Variable() != nullptr);
                 auto *var = assignment->Left()->Variable();
+                var->AddFlag(varbinder::VariableFlags::INITIALIZED);
                 modified.insert(var);
             }
         }
@@ -148,6 +149,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     newVar->SetTsType(boxedType);
 
     newDeclarator->Id()->AsIdentifier()->SetVariable(newVar);
+    newVar->AddFlag(varbinder::VariableFlags::INITIALIZED);
     newVar->SetScope(scope);
     scope->EraseBinding(newVar->Name());
     scope->InsertBinding(newVar->Name(), newVar);
@@ -197,6 +199,7 @@ static ir::AstNode *HandleVariableDeclarator(public_lib::Context *ctx, ir::Varia
     auto *newDecl = allocator->New<varbinder::ConstDecl>(oldVar->Name(), newDeclarator);
     auto *newVar = allocator->New<varbinder::LocalVariable>(newDecl, oldVar->Flags());
     newDeclarator->Id()->AsIdentifier()->SetVariable(newVar);
+    newVar->AddFlag(varbinder::VariableFlags::INITIALIZED);
     newVar->SetScope(scope);
 
     scope->EraseBinding(oldVar->Name());
@@ -277,6 +280,8 @@ static ir::AstNode *HandleAssignment(public_lib::Context *ctx, ir::AssignmentExp
     auto *oldVar = ass->Left()->AsIdentifier()->Variable();
     auto *newVar = varsMap.find(oldVar)->second;
     auto *scope = newVar->GetScope();
+    newVar->AddFlag(varbinder::VariableFlags::INITIALIZED);
+
     auto *res = parser->CreateFormattedExpression("@@I1.set(@@E2 as @@T3) as @@T4", newVar->Name(), ass->Right(),
                                                   oldVar->TsType(), ass->TsType());
     res->SetParent(ass->Parent());
@@ -361,8 +366,25 @@ bool BoxingForLocals::Perform(public_lib::Context *ctx, parser::Program *program
 
 bool BoxingForLocals::Postcondition([[maybe_unused]] public_lib::Context *ctx, parser::Program const *program)
 {
-    (void)program;
-    return true;
+    for (auto &[_, ext_programs] : program->ExternalSources()) {
+        (void)_;
+        for (auto *extProg : ext_programs) {
+            if (!Postcondition(ctx, extProg)) {
+                return false;
+            }
+        }
+    }
+
+    return !program->Ast()->IsAnyChild([](const ir::AstNode *node) {
+        if (node->IsAssignmentExpression() && node->AsAssignmentExpression()->Left()->IsIdentifier()) {
+            auto asExpr = node->AsAssignmentExpression();
+            auto var = asExpr->Left()->AsIdentifier()->Variable();
+            if (var != nullptr && var->IsLocalVariable() && !var->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
+                return true;
+            }
+        }
+        return false;
+    });
 }
 
 }  // namespace ark::es2panda::compiler
