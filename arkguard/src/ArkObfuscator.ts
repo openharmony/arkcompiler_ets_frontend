@@ -35,7 +35,7 @@ import type {
 
 import path from 'path';
 
-import { PropCollections } from './utils/CommonCollections';
+import { LocalVariableCollections, PropCollections } from './utils/CommonCollections';
 import type { IOptions } from './configs/IOptions';
 import { FileUtils } from './utils/FileUtils';
 import { TransformerManager } from './transformers/TransformerManager';
@@ -56,6 +56,7 @@ import {
 } from './utils/NameCacheUtil';
 import { ListUtil } from './utils/ListUtil';
 import { needReadApiInfo, readProjectPropertiesByCollectedPaths } from './common/ApiReader';
+import type { ReseverdSetForArkguard } from './common/ApiReader';
 import { ApiExtractor } from './common/ApiExtractor';
 import esInfo from './configs/preset/es_reserved_properties.json';
 import { EventList, TimeSumPrinter, TimeTracker } from './utils/PrinterUtils';
@@ -64,11 +65,14 @@ export { FileUtils } from './utils/FileUtils';
 export { MemoryUtils } from './utils/MemoryUtils';
 import { TypeUtils } from './utils/TypeUtils';
 import { handleReservedConfig } from './utils/TransformUtil';
+import { UnobfuscationCollections } from './utils/CommonCollections';
+export { UnobfuscationCollections } from './utils/CommonCollections';
 export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
 export type { ReservedNameInfo } from './utils/TransformUtil';
+export type { ReseverdSetForArkguard } from './common/ApiReader';
 
 export { initObfuscationConfig } from './initialization/Initializer';
-export { nameCacheMap } from './initialization/CommonObject';
+export { nameCacheMap, unobfuscationNamesObj } from './initialization/CommonObject';
 export {
   collectResevedFileNameInIDEConfig, // For running unit test.
   enableObfuscatedFilePathConfig,
@@ -81,7 +85,8 @@ export {
   MergedConfig,
   ObConfigResolver,
   readNameCache,
-  writeObfuscationNameCache
+  writeObfuscationNameCache,
+  writeUnobfuscationContent
 } from './initialization/ConfigResolver';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
@@ -103,6 +108,8 @@ export let performancePrinter: PerformancePrinter = {
 // When the module is compiled, call this function to clear global collections.
 export function clearGlobalCaches(): void {
   PropCollections.clearPropsCollections();
+  UnobfuscationCollections.clear();
+  LocalVariableCollections.clear();
   renameFileNameModule.clearCaches();
 }
 
@@ -111,6 +118,7 @@ export type ObfuscationResultType = {
   sourceMap?: RawSourceMap;
   nameCache?: { [k: string]: string | {} };
   filePath?: string;
+  unobfuscationNameMap?: Map<string, Set<string>>;
 };
 
 const JSON_TEXT_INDENT_LENGTH: number = 2;
@@ -143,31 +151,26 @@ export class ArkObfuscator {
     this.mWriteOriginalFile = flag;
   }
 
-  public addReservedProperties(newReservedProperties: string[]): void {
-    if (newReservedProperties.length === 0) {
-      return;
+  // Pass the collected whitelists related to property obfuscation to Arkguard.
+  public addReservedSetForPropertyObf(properties: ReseverdSetForArkguard): void {
+    if (properties.structPropertySet && properties.structPropertySet.size > 0) {
+      UnobfuscationCollections.reservedStruct = properties.structPropertySet;
     }
-    const nameObfuscationConfig = this.mCustomProfiles.mNameObfuscation;
-    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(newReservedProperties,
-      nameObfuscationConfig?.mReservedProperties);
+    if (properties.stringPropertySet && properties.stringPropertySet.size > 0) {
+      UnobfuscationCollections.reservedStrProp = properties.stringPropertySet;
+    }
+    if (properties.exportNameAndPropSet && properties.exportNameAndPropSet.size > 0) {
+      UnobfuscationCollections.reservedExportNameAndProp = properties.exportNameAndPropSet;
+    }
+    if (properties.enumPropertySet && properties.enumPropertySet.size > 0) {
+      UnobfuscationCollections.reservedEnum = properties.enumPropertySet;
+    }
   }
 
-  public addReservedNames(newReservedNames: string[]): void {
-    if (newReservedNames.length === 0) {
-      return;
+  public addReservedSetForDefaultObf(properties: ReseverdSetForArkguard): void {
+    if (properties.exportNameSet && properties.exportNameSet.size > 0) {
+      UnobfuscationCollections.reservedExportName = properties.exportNameSet;
     }
-    const nameObfuscationConfig = this.mCustomProfiles.mNameObfuscation;
-    nameObfuscationConfig.mReservedNames = ListUtil.uniqueMergeList(newReservedNames,
-      nameObfuscationConfig?.mReservedNames);
-  }
-
-  public addReservedToplevelNames(newReservedGlobalNames: string[]): void {
-    if (newReservedGlobalNames.length === 0) {
-      return;
-    }
-    const nameObfuscationConfig = this.mCustomProfiles.mNameObfuscation;
-    nameObfuscationConfig.mReservedToplevelNames = ListUtil.uniqueMergeList(newReservedGlobalNames,
-      nameObfuscationConfig.mReservedToplevelNames);
   }
 
   public setKeepSourceOfPaths(mKeepSourceOfPaths: Set<string>): void {
@@ -248,11 +251,15 @@ export class ArkObfuscator {
     this.mTransformers = new TransformerManager(this.mCustomProfiles).getTransformers();
 
     if (needReadApiInfo(this.mCustomProfiles)) {
-      this.mCustomProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(
-        this.mCustomProfiles.mNameObfuscation.mReservedProperties,
-        this.mCustomProfiles.mNameObfuscation.mReservedNames,
-        [...esInfo.es2015, ...esInfo.es2016, ...esInfo.es2017, ...esInfo.es2018, ...esInfo.es2019, ...esInfo.es2020,
-          ...esInfo.es2021]);
+      // if -enable-property-obfuscation or -enable-export-obfuscation, collect language reserved keywords.
+      let languageSet: Set<string> = new Set();
+      for (const key of Object.keys(esInfo)) {
+        const valueArray = esInfo[key];
+        valueArray.forEach((element: string) => {
+          languageSet.add(element);
+        });
+      }
+      UnobfuscationCollections.reservedLangForProperty = languageSet;
     }
 
     return true;
@@ -458,9 +465,17 @@ export class ArkObfuscator {
     result.filePath = ast.fileName;
     result.content = this.mTextWriter.getText();
 
+    if (this.mCustomProfiles.mUnobfuscationOption?.mPrintKeptNames) {
+      this.handleUnobfuscationNames(result);
+    }
+
     if (this.mCustomProfiles.mEnableSourceMap && sourceMapGenerator) {
       this.handleSourceMapAndNameCache(sourceMapGenerator, sourceFilePath, result, previousStageSourceMap);
     }
+  }
+
+  private handleUnobfuscationNames(result: ObfuscationResultType): void {
+    result.unobfuscationNameMap = new Map(UnobfuscationCollections.unobfuscatedNamesMap);
   }
 
   private handleSourceMapAndNameCache(sourceMapGenerator: SourceMapGenerator, sourceFilePath: string,
@@ -504,5 +519,6 @@ export class ArkObfuscator {
       PropCollections.globalMangledTable.clear();
       PropCollections.newlyOccupiedMangledProps.clear();
     }
+    UnobfuscationCollections.unobfuscatedNamesMap.clear();
   }
 }

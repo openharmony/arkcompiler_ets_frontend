@@ -20,7 +20,6 @@ import {ApiExtractor} from './ApiExtractor';
 import {ListUtil} from '../utils/ListUtil';
 import type {IOptions} from '../configs/IOptions';
 import { stringPropsSet, structPropsSet, enumPropsSet } from '../utils/OhsUtil';
-import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 
 export const scanProjectConfig: {
   mPropertyObfuscation?: boolean,
@@ -134,14 +133,22 @@ function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean
   scanProjectConfig.mkeepFilesAndDependencies = customProfiles.mKeepFileSourceCode?.mkeepFilesAndDependencies;
   scanProjectConfig.isHarCompiled = isHarCompiled;
 }
+
+export interface ReseverdSetForArkguard {
+  structPropertySet: Set<string> | undefined;
+  stringPropertySet: Set<string> | undefined;
+  exportNameAndPropSet: Set<string> | undefined;
+  exportNameSet: Set<string> | undefined;
+  enumPropertySet: Set<string> | undefined;
+}
+
 /**
  * read project reserved properties by collected paths
  * @param filesForCompilation set collection of files
  * @param customProfiles
  */
-export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>, customProfiles: IOptions, isHarCompiled: boolean): {
-  projectAndLibsReservedProperties: string[];
-  libExportNames: string[]} {
+export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>,
+  customProfiles: IOptions, isHarCompiled: boolean): ReseverdSetForArkguard {
   const ApiType = ApiExtractor.ApiType;
   let scanningCommonType = undefined;
   let scanningLibsType = undefined;
@@ -160,49 +167,39 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   stringPropsSet.clear();
 
   const exportWhiteList = ApiExtractor.parseFileByPaths(filesForCompilation, scanningCommonType);
-  const exportNamesAndProperties: string[] = exportWhiteList.reservedProperties;
-  const exportNames: string[] = exportWhiteList.reservedExportNames;
+  const exportNamesAndProperties: Set<string> | undefined = exportWhiteList.reservedExportPropertyAndName;
+  const exportNames: Set<string> | undefined = exportWhiteList.reservedExportNames;
 
-  const nameObfuscationConfig = customProfiles.mNameObfuscation;
+  // if -enable-property-obfuscation, collect structPropsSet, exportNamesAndProperties and
+  // stringPropsSet(if -enable-string-property-obufscation is not enabled) as whitelists.
+  let exportNameAndPropSet: Set<string>;
+  let structPropertySet: Set<string>;
+  let stringPropertySet: Set<string>;
+  let enumPropertySet: Set<string>;
   if (isEnabledPropertyObfuscation(customProfiles)) {
-    mergeReservedProperties(nameObfuscationConfig, exportNamesAndProperties);
+    exportNameAndPropSet = new Set(exportNamesAndProperties);
+    structPropertySet = new Set(structPropsSet);
+    enumPropertySet = new Set(enumPropsSet);
+    if (scanProjectConfig.mKeepStringProperty) {
+      stringPropertySet = new Set(stringPropsSet);
+    }
   }
   structPropsSet.clear();
   stringPropsSet.clear();
   enumPropsSet.clear();
 
+  let exportNameSet: Set<string>;
   if (scanProjectConfig.mExportObfuscation) {
-    mergeReservedNames(nameObfuscationConfig, exportNames);
+    exportNameSet = new Set(exportNames);
   }
 
   return {
-    projectAndLibsReservedProperties: nameObfuscationConfig.mReservedProperties ?? [],
-    libExportNames: nameObfuscationConfig.mReservedNames ?? []
+    structPropertySet: structPropertySet,
+    stringPropertySet: stringPropertySet,
+    exportNameAndPropSet: exportNameAndPropSet,
+    exportNameSet: exportNameSet,
+    enumPropertySet: enumPropertySet,
   };
-}
-
-function mergeReservedProperties(nameObfuscationConfig: INameObfuscationOption, exportNamesAndProperties: string[]): void {
-  if (exportNamesAndProperties.length > 0) {
-    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(exportNamesAndProperties, nameObfuscationConfig.mReservedProperties);
-  }
-
-  if (scanProjectConfig.mKeepStringProperty && stringPropsSet.size > 0) {
-    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...stringPropsSet], nameObfuscationConfig.mReservedProperties);
-  }
-
-  if (enumPropsSet.size > 0) {
-    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...enumPropsSet], nameObfuscationConfig.mReservedProperties);
-  }
-
-  if (structPropsSet.size > 0) {
-    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...structPropsSet], nameObfuscationConfig.mReservedProperties);
-  }
-}
-
-function mergeReservedNames(nameObfuscationConfig: INameObfuscationOption, exportNames: string[]): void {
-  if (exportNames.length > 0) {
-    nameObfuscationConfig.mReservedNames = ListUtil.uniqueMergeList(exportNames, nameObfuscationConfig.mReservedNames);
-  }
 }
 
 function readThirdPartyLibProperties(projectPath: string, scanningApiType: ApiExtractor.ApiType): {reservedProperties: string[];

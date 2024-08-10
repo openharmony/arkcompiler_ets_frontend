@@ -48,3 +48,20 @@ export function sortAndDeduplicateStringArr(arr: string[]) : string[] {
   }
   return tmpArr;
 }
+
+export function mergeSet(set1: Set<string>, set2: Set<string>): Set<string> {
+  if (set1.size > 0 && set2.size > 0) {
+    return new Set([...set1, ...set2]);
+  }
+  if (set1.size > 0) {
+    return set1;
+  }
+  return set2;
+}
+
+export function convertSetToArray(reservedSet: Set<string> | undefined): string[] {
+  if (!reservedSet) {
+    return [];
+  }
+  return Array.from(reservedSet);
+}

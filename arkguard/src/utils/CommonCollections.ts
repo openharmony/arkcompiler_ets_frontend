@@ -15,6 +15,8 @@
 
 // This records the collections related to property obfuscation.
 export namespace PropCollections {
+  // whether enable property obfuscation
+  export let enablePropertyObfuscation: boolean = false;
   // global mangled properties table used by all files in a project
   export let globalMangledTable: Map<string, string> = new Map();
   // used for property cache
@@ -34,5 +36,57 @@ export namespace PropCollections {
     universalReservedProperties = [];
     newlyOccupiedMangledProps.clear();
     mangledPropsInNameCache.clear();
+  }
+}
+
+// This records the collections related to whitelists
+export namespace UnobfuscationCollections {
+  // printKeptName: by user configuration, it decides whether to print unobfuscation names and whitelists.
+  export let printKeptName: boolean = false;
+  // whitelist
+  export let reservedSdkApiForProp: Set<string> = new Set();
+  export let reservedSdkApiForGlobal: Set<string> = new Set();
+  export let reservedSdkApiForLocal: Set<string> = new Set();
+  export let reservedStruct: Set<string>  = new Set();
+  export let reservedLangForProperty: Set<string> = new Set();
+  // declare global {}
+  // In the above syntax, 'global' is named '__global' in tsc.
+  export let reservedLangForTopLevel: Set<string> = new Set(['__global']); // Will not add new elements anymore
+  export let reservedExportName: Set<string> = new Set();
+  export let reservedExportNameAndProp: Set<string> = new Set();
+  export let reservedStrProp: Set<string> = new Set();
+  export let reservedEnum: Set<string> = new Set();
+  
+  // The mapping between the unobfuscated names and their reasons.
+  export let unobfuscatedPropMap: Map<string, Set<string>> = new Map();
+  export let unobfuscatedNamesMap: Map<string, Set<string>> = new Map();
+
+  // The mapping between wildcards and regular expressions
+  export let reservedWildcardMap: Map<RegExp, string> = new Map();
+
+  export function clear(): void {
+    printKeptName = false;
+    reservedSdkApiForProp.clear();
+    reservedSdkApiForGlobal.clear();
+    reservedSdkApiForLocal.clear();
+    reservedStruct.clear();
+    reservedLangForProperty.clear();
+    reservedExportName.clear();
+    reservedExportNameAndProp.clear();
+    reservedStrProp.clear();
+    reservedEnum.clear();
+    unobfuscatedPropMap.clear();
+    unobfuscatedNamesMap.clear();
+  }
+}
+
+export namespace LocalVariableCollections {
+  export let reservedStruct: Set<string> = new Set(); 
+  export let reservedConfig: Set<string> = new Set(); // Obtain the name from the user-configured .d.ts file
+  export let reservedLangForLocal: Set<string> = new Set(['this', '__global']); // Will not add new elements anymore
+
+  export function clear(): void {
+    reservedStruct.clear();
+    reservedConfig.clear();
   }
 }

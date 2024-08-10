@@ -18,6 +18,8 @@ import path from 'path';
 
 import { ArkObfuscator } from '../ArkObfuscator';
 import { collectResevedFileNameInIDEConfig, MergedConfig, ObConfigResolver, readNameCache } from './ConfigResolver';
+import { readProjectPropertiesByCollectedPaths } from '../common/ApiReader';
+import type { ReseverdSetForArkguard } from '../common/ApiReader';
 import { type IOptions } from '../configs/IOptions';
 
 export const printerConfig = {
@@ -81,7 +83,11 @@ function initArkGuardConfig(
       mTopLevel: mergedObConfig.options.enableToplevelObfuscation,
       mReservedToplevelNames: mergedObConfig.reservedGlobalNames,
       mUniversalReservedProperties: mergedObConfig.universalReservedPropertyNames,
-      mUniversalReservedToplevelNames: mergedObConfig.universalReservedGlobalNames,
+      mUniversalReservedToplevelNames: mergedObConfig.universalReservedGlobalNames
+    },
+    mUnobfuscationOption: {
+      mPrintKeptNames: mergedObConfig.options.printKeptNames,
+      mPrintPath: mergedObConfig.options.printKeptNamesPath
     },
     mRemoveDeclarationComments: {
       mEnable: mergedObConfig.options.removeComments,
