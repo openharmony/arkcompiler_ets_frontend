@@ -83,6 +83,38 @@ describe('test for ApiExtractor', function () {
       assert.strictEqual(ApiExtractor.mPropertySet.size === 0, true);
       clearAll();
     });
+
+    it('doubleUnderscoreTest', function () {
+      let doubleUnderscoreTestAst: string = 'test/ut/utils/apiTest_visitExport/doubleUnderscoreTest.d.ts';
+      collectApi(doubleUnderscoreTestAst);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__Admin'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___Admin'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__Moderator'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___Moderator'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__User'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___User'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__name'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___name'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__Admin'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___Admin'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__age'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___age'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__greet'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___greet'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__typeProp1'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___typeProp1'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__typeProp2'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___typeProp2'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__speak'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___speak'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__appName'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___appName'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__version'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___version'), false);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('__logDetails'), true);
+      assert.strictEqual(ApiExtractor.mPropertySet.has('___logDetails'), false);
+      clearAll();
+    });
   });
 
   describe('test for visitPropertyAndName', function () {

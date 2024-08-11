@@ -1,0 +1,13 @@
+{
+  "IdentifierCache": {
+    "__PersonDetails#$0#__first": "a",
+    "__PersonDetails#$0#__last": "b",
+    "__PersonDetails#$0#__years": "c",
+    "__BaseClass#$0#__identifier": "d"
+  },
+  "MemberMethodCache": {
+    "__BaseClass:19:21": "__BaseClass",
+    "__PersonDetails:29:33": "__PersonDetails",
+    "__CustomTest:37:41": "__CustomTest"
+  }
+}

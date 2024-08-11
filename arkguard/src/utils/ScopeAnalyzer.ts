@@ -458,7 +458,7 @@ namespace secharmony {
         if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
           let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
           if (!propertySymbol) {
-            noSymbolIdentifier.add(propetyNameNode.escapedText as string);
+            noSymbolIdentifier.add(propetyNameNode.text);
           } else {
             current.addDefinition(propertySymbol);
           }
@@ -532,7 +532,7 @@ namespace secharmony {
       if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
         let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
         if (!propertySymbol) {
-          noSymbolIdentifier.add(propetyNameNode.escapedText as string);
+          noSymbolIdentifier.add(propetyNameNode.text);
         }
       }
       forEachChild(node, analyzeScope);
@@ -677,7 +677,7 @@ namespace secharmony {
         }
 
         current.defs.forEach((def) => {
-          if (isIdentifier(param.name) && (def.name === param.name.escapedText)) {
+          if (isIdentifier(param.name) && (def.name === param.name.text)) {
             current.defs.delete(def);
             current.mangledNames.add(def.name);
           }
@@ -883,7 +883,7 @@ namespace secharmony {
       }
 
       if (!symbol) {
-        current.mangledNames.add(node.escapedText.toString());
+        current.mangledNames.add(node.text);
         return;
       }
 
@@ -959,7 +959,7 @@ namespace secharmony {
 
       const sym: Symbol | undefined = checker.getSymbolAtLocation(node);
       if (!sym) {
-        current.mangledNames.add((node as Identifier).escapedText.toString());
+        current.mangledNames.add((node as Identifier).text);
       }
     }
 
