@@ -1,0 +1,9 @@
+{
+  "IdentifierCache": {
+    "BasicClass#$0#__name": "a"
+  },
+  "MemberMethodCache": {
+    "BasicClass:19:21": "BasicClass",
+    "TestClass3:25:29": "TestClass3"
+  }
+}
