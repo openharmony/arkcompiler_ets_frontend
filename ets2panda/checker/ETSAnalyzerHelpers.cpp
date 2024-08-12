@@ -304,6 +304,9 @@ checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *funct
     expr->Arguments().insert(expr->Arguments().begin(), memberExpr->Object());
     auto *signature =
         checker->ResolveCallExpressionAndTrailingLambda(functionType->CallSignatures(), expr, expr->Start());
+    if (signature == nullptr) {
+        return nullptr;
+    }
     if (!signature->Function()->IsExtensionMethod()) {
         checker->ThrowTypeError({"Property '", memberExpr->Property()->AsIdentifier()->Name(),
                                  "' does not exist on type '", memberExpr->ObjType()->Name(), "'"},

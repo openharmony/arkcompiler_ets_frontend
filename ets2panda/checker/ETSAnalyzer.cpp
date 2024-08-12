@@ -102,6 +102,10 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 
     auto *func = st->Function();
     checker->BuildFunctionSignature(func);
+    if (func->Signature() == nullptr) {
+        st->SetTsType(checker->GlobalTypeError());
+        return st->TsTypeOrError();
+    }
     st->SetTsType(checker->BuildNamedFunctionType(func));
     checker::ScopeContext scopeCtx(checker, func->Scope());
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
@@ -408,6 +412,11 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
     } else {
         auto *signature = checker->ResolveConstructExpression(calleeObj, expr->GetArguments(), expr->Start());
 
+        if (signature == nullptr) {
+            expr->SetTsType(checker->GlobalTypeError());
+            return expr->TsTypeOrError();
+        }
+
         checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
 
         checker->ValidateSignatureAccessibility(calleeObj, nullptr, signature, expr->Start());
@@ -643,7 +652,6 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     if (expr->TsTypeOrError() != nullptr) {
         return expr->TsTypeOrError();
     }
-
     checker::ScopeContext scopeCtx(checker, expr->Function()->Scope());
 
     if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
@@ -672,6 +680,10 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     checker->Context().SetContainingLambda(expr);
 
     checker->BuildFunctionSignature(expr->Function(), false);
+    if (expr->Function()->Signature() == nullptr) {
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsTypeOrError();
+    }
     auto *signature = expr->Function()->Signature();
 
     checker->Context().SetContainingSignature(signature);
@@ -925,6 +937,10 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     }
 
     checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
+    if (signature == nullptr) {
+        return nullptr;
+    }
+
     if (signature->Function()->IsExtensionMethod()) {
         checker->ThrowTypeError({"No matching call signature"}, expr->Start());
     }
@@ -959,6 +975,10 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
 
     checker::Signature *signature =
         ResolveSignature(checker, expr, calleeType, isFunctionalInterface, isUnionTypeWithFunctionalInterface);
+
+    if (signature == nullptr) {
+        return checker->GlobalTypeError();
+    }
 
     checker->CheckObjectLiteralArguments(signature, expr->Arguments());
 
@@ -1026,6 +1046,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         expr->SetTsType(checker->GlobalTypeError());
         return checker->GlobalTypeError();
     }
+
     if (expr->Callee() != oldCallee) {
         // If it is a static invoke, the callee will be transformed from an identifier to a member expression
         // Type check the callee again for member expression
@@ -1043,6 +1064,10 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         returnType = expr->Signature()->ReturnType();
     } else {
         returnType = GetReturnType(expr, calleeType);
+    }
+    if (returnType->IsTypeError()) {
+        expr->SetTsType(returnType);
+        return expr->TsTypeOrError();
     }
 
     if (expr->Signature()->RestVar() != nullptr) {
@@ -1065,6 +1090,11 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCallReturn(expr->Signature()));
     if (expr->UncheckedType() != nullptr) {
         checker->ComputeApparentType(returnType);
+    }
+
+    if (returnType->IsTypeError()) {
+        expr->SetTsType(returnType);
+        return expr->TsTypeOrError();
     }
 
     CheckVoidTypeExpression(checker, expr);

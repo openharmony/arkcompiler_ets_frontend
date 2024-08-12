@@ -13,15 +13,19 @@
  * limitations under the License.
  */
 
-class A {
-    static invoke(a: int): int {
-        return a;
-    }
+function main() : void
+{
+    foo(5);
 }
 
-function main() {
-    A()
+function foo() : int
+{
+    return 1;
 }
 
-/* @@? 23:5 Error TypeError: Expected 1 arguments, got 0.  */
-/* @@? 23:5 Error TypeError: No matching call signature  */
+function foo(a : int = 5) : int
+{
+    return a;
+}
+
+/* @@? 26:1 Error TypeError: Function foo is already declared.  */
