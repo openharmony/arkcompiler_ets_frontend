@@ -14,3 +14,17 @@
  */
 
 const enum Comparison { LessThan = -1, EqualTo = 0, GreaterThan = 1 };
+
+function main() : void {
+    let c1 = Comparison.LessThan;
+    assert(c1 == Comparison.LessThan);
+    assert(c1.getValue() == -1);
+
+    let c2 = Comparison.EqualTo;
+    assert(c2 == Comparison.EqualTo);
+    assert(c2.getValue() == 0);
+
+    let c3 = Comparison.GreaterThan;
+    assert(c3 == Comparison.GreaterThan);
+    assert(c3.getValue() == 1);
+}

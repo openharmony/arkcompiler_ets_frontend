@@ -140,6 +140,15 @@ ir::Statement *ETSParser::ParseEnumDeclaration(bool isConst, bool isStatic)
     return declNode;
 }
 
+ir::Statement *ETSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
+{
+    if ((flags & VariableParsingFlags::CONST) == 0) {
+        ThrowSyntaxError("Variable declaration expected.");
+    }
+
+    return ParseEnumDeclaration(true);
+}
+
 // NOLINTBEGIN(cert-err58-cpp)
 static std::string const DUPLICATE_ENUM_VALUE = "Duplicate enum initialization value "s;
 static std::string const INVALID_ENUM_TYPE = "Invalid enum initialization type"s;

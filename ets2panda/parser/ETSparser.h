@@ -399,6 +399,7 @@ private:
                                               ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseEnumDeclaration(bool isConst = false, bool isStatic = false) override;
+    ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
     ir::Expression *ParseLaunchExpression(ExpressionParseFlags flags);
     void ValidateInstanceOfExpression(ir::Expression *expr);
     void ValidateRestParameter(ir::Expression *param) override;
