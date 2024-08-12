@@ -31,16 +31,6 @@ ETSGen *ETSCompiler::GetETSGen() const
     return static_cast<ETSGen *>(GetCodeGen());
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::NamedType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::PrefixAssertionExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile(const ir::CatchClause *st) const
 {
     ETSGen *etsg = GetETSGen();
@@ -49,11 +39,6 @@ void ETSCompiler::Compile(const ir::CatchClause *st) const
     auto lref = compiler::ETSLReference::Create(etsg, st->Param(), true);
     lref.SetValue();
     st->Body()->Compile(etsg);
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDefinition *node) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ClassProperty *st) const
@@ -80,71 +65,11 @@ void ETSCompiler::Compile(const ir::ClassProperty *st) const
     }
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ClassStaticBlock *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::Decorator *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::MetaProperty *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::MethodDefinition *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::Property *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::SpreadElement *expr) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile(const ir::TemplateElement *expr) const
 {
     ETSGen *etsg = GetETSGen();
     etsg->LoadAccumulatorString(expr, expr->Cooked());
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSIndexSignature *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSMethodSignature *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSScript *node) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
@@ -171,16 +96,6 @@ void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
     ETSGen *etsg = GetETSGen();
     etsg->LoadAccumulatorNull(node, node->TsType());
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), node->TsType()));
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSTuple *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
@@ -413,11 +328,6 @@ void ETSCompiler::Compile(const ir::ETSNewMultiDimArrayInstanceExpression *expr)
     etsg->SetAccumulatorType(expr->TsType());
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSPackageDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile(const ir::ETSParameterExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -429,16 +339,6 @@ void ETSCompiler::Compile(const ir::ETSParameterExpression *expr) const
     }
 
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSPrimitiveType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSStructDeclaration *node) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ETSTypeReference *node) const
@@ -453,21 +353,6 @@ void ETSCompiler::Compile(const ir::ETSTypeReferencePart *node) const
     ETSGen *etsg = GetETSGen();
     node->Name()->Compile(etsg);
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), node->TsType()));
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSNullType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSUndefinedType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSUnionType *node) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) const
@@ -512,12 +397,6 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
 
     etsg->LoadAccumulator(expr, arr);
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ArrowFunctionExpression *expr) const
-{
-    // Should have been handled by LambdaLowering
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
@@ -1036,21 +915,6 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
     etsg->SetAccumulatorType(expr->TsType());
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ChainExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ClassExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSReExportDeclaration *stmt) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile(const ir::ConditionalExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -1070,16 +934,6 @@ void ETSCompiler::Compile(const ir::ConditionalExpression *expr) const
     etsg->ApplyConversion(expr->Alternate());
     etsg->SetLabel(expr, endLabel);
     etsg->SetAccumulatorType(expr->TsType());
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::DirectEvalExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::FunctionExpression *expr) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::Identifier *expr) const
@@ -1102,11 +956,6 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
     }
 
     etsg->SetAccumulatorType(smartType);
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) const
-{
-    UNREACHABLE();
 }
 
 bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr)
@@ -1256,11 +1105,6 @@ bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGe
     return false;
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::NewExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -1308,16 +1152,6 @@ void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile(const ir::SequenceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -1332,11 +1166,6 @@ void ETSCompiler::Compile(const ir::SuperExpression *expr) const
     etsg->LoadThis(expr);
     etsg->SetAccumulatorType(etsg->GetAccumulatorType()->AsETSObjectType()->SuperType());
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TaggedTemplateExpression *expr) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::TemplateLiteral *expr) const
@@ -1406,17 +1235,6 @@ void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::UpdateExpression *expr) const
-{
-    // Should have been handled by OpAssignment lowering.
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::YieldExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::BigIntLiteral *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -1476,61 +1294,11 @@ void ETSCompiler::Compile(const ir::NumberLiteral *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::RegExpLiteral *expr) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile(const ir::StringLiteral *expr) const
 {
     ETSGen *etsg = GetETSGen();
     etsg->LoadAccumulatorString(expr, expr->Str());
     etsg->SetAccumulatorType(expr->TsType());
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::UndefinedLiteral *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ExportAllDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ExportDefaultDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ExportNamedDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ExportSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ImportDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ImportDefaultSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ImportNamespaceSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ImportSpecifier *st) const
-{
-    UNREACHABLE();
 }
 
 static void ThrowError(compiler::ETSGen *const etsg, const ir::AssertStatement *st)
@@ -1618,11 +1386,6 @@ void ETSCompiler::Compile(const ir::ContinueStatement *st) const
     CompileImpl(st, etsg);
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::DebuggerStatement *st) const
-{
-    UNREACHABLE();
-}
-
 void CompileImpl(const ir::DoWhileStatement *self, ETSGen *etsg)
 {
     auto *startLabel = etsg->AllocLabel();
@@ -1655,11 +1418,6 @@ void ETSCompiler::Compile(const ir::ExpressionStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
     st->GetExpression()->Compile(etsg);
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::ForInStatement *st) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ForOfStatement *st) const
@@ -1745,11 +1503,6 @@ void ETSCompiler::Compile(const ir::ForUpdateStatement *st) const
 
     etsg->Branch(st, startLabel);
     etsg->SetLabel(st, labelTarget.BreakTarget());
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::FunctionDeclaration *st) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::IfStatement *st) const
@@ -1847,11 +1600,6 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     }
 
     etsg->ReturnAcc(st);
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::SwitchCaseStatement *st) const
-{
-    UNREACHABLE();
 }
 
 static void CompileImpl(const ir::SwitchStatement *self, ETSGen *etsg)
@@ -1984,11 +1732,6 @@ void ETSCompiler::Compile(const ir::WhileStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
     CompileImpl(st, etsg);
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
-{
-    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::TSArrayType *node) const
@@ -2158,117 +1901,7 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), targetType));
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSBigintKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSBooleanKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSClassImplements *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSConditionalType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSConstructorType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSEnumDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSEnumMember *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSExternalModuleReference *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSFunctionType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSImportEqualsDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSImportType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSIndexedAccessType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSInferType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceBody *expr) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const {}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceHeritage *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSIntersectionType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSLiteralType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSMappedType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSModuleBlock *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSModuleDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSNamedTupleMember *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSNeverKeyword *node) const
-{
-    UNREACHABLE();
-}
 
 void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 {
@@ -2300,120 +1933,5 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->OriginalType()));
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSNullKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSNumberKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSObjectKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSParameterProperty *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSParenthesizedType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSQualifiedName *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSStringKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSThisType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTupleType *node) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const {}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAssertion *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeLiteral *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeOperator *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameter *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterDeclaration *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterInstantiation *expr) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypePredicate *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeQuery *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeReference *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSUndefinedKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSUnionType *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSUnknownKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSVoidKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile([[maybe_unused]] const ir::DummyNode *node) const
-{
-    UNREACHABLE();
-}
 }  // namespace ark::es2panda::compiler

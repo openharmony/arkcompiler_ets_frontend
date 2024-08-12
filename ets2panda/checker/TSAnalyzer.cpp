@@ -25,16 +25,6 @@ TSChecker *TSAnalyzer::GetTSChecker() const
     return static_cast<TSChecker *>(GetChecker());
 }
 
-// from as folder
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NamedType *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::PrefixAssertionExpression *expr) const
-{
-    UNREACHABLE();
-}
 // from base folder
 checker::Type *TSAnalyzer::Check(ir::CatchClause *st) const
 {
@@ -62,51 +52,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassDefinition *node) con
     return checker->GlobalAnyType();
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassProperty *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassStaticBlock *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::Decorator *st) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::MetaProperty *expr) const
 {
     TSChecker *checker = GetTSChecker();
     // NOTE: aszilagyi.
     return checker->GlobalAnyType();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::MethodDefinition *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ScriptFunction *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SpreadElement *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TemplateElement *expr) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSIndexSignature *node) const
@@ -224,106 +174,6 @@ checker::Type *TSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
     node->SetTsType(placeholderObj);
     return placeholderObj;
 }
-// from ets folder
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSScript *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSClassLiteral *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSFunctionType *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSImportDeclaration *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSLaunchExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNewArrayInstanceExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNewClassInstanceExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNewMultiDimArrayInstanceExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSPackageDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSParameterExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSPrimitiveType *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSStructDeclaration *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ETSTuple *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReference *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReferencePart *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ETSNullType *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ETSUndefinedType *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ETSUnionType *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSWildcardType *node) const
-{
-    UNREACHABLE();
-}
-// compile methods for EXPRESSIONS in alphabetical order
 
 static void GetSpreadElementType(checker::TSChecker *checker, checker::Type *spreadType,
                                  ArenaVector<checker::Type *> &elementTypes, const lexer::SourcePosition &loc)
@@ -661,12 +511,6 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::BlockExpression *st) const
-{
-    (void)st;
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::CallExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
@@ -688,11 +532,6 @@ checker::Type *TSAnalyzer::Check(ir::ChainExpression *expr) const
     return expr->expression_->Check(checker);
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::ConditionalExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
@@ -705,11 +544,6 @@ checker::Type *TSAnalyzer::Check(ir::ConditionalExpression *expr) const
     checker::Type *alternateType = expr->Alternate()->Check(checker);
 
     return checker->CreateUnionType({consequentType, alternateType});
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DirectEvalExpression *expr) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::FunctionExpression *expr) const
@@ -763,11 +597,6 @@ checker::Type *TSAnalyzer::Check(ir::Identifier *expr) const
 
     expr->SetTsType(checker->GetTypeOfVariable(expr->Variable()));
     return expr->TsType();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) const
-{
-    UNREACHABLE();
 }
 
 void TSAnalyzer::CheckComputed(ir::MemberExpression *expr, checker::Type *indexType) const
@@ -1245,11 +1074,6 @@ checker::Type *TSAnalyzer::Check(ir::BooleanLiteral *expr) const
     return expr->Value() ? checker->GlobalTrueType() : checker->GlobalFalseType();
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::CharLiteral *expr) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NullLiteral *expr) const
 {
     TSChecker *checker = GetTSChecker();
@@ -1290,58 +1114,6 @@ checker::Type *TSAnalyzer::Check(ir::StringLiteral *expr) const
     return newStrLiteralType;
 }
 
-checker::Type *TSAnalyzer::Check(ir::UndefinedLiteral *expr) const
-{
-    (void)expr;
-    UNREACHABLE();
-}
-
-// compile methods for MODULE-related nodes in alphabetical order
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportAllDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportDefaultDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportNamedDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportDefaultSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportNamespaceSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportSpecifier *st) const
-{
-    UNREACHABLE();
-}
-// compile methods for STATEMENTS in alphabetical order
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AssertStatement *st) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::BlockStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
@@ -1357,22 +1129,6 @@ checker::Type *TSAnalyzer::Check(ir::BlockStatement *st) const
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::BreakStatement *st) const
 {
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ContinueStatement *st) const
-{
-    (void)st;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DebuggerStatement *st) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::DoWhileStatement *st) const
@@ -1396,16 +1152,6 @@ checker::Type *TSAnalyzer::Check(ir::ExpressionStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
     return st->GetExpression()->Check(checker);
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ForInStatement *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ForOfStatement *st) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::ForUpdateStatement *st) const
@@ -1469,11 +1215,6 @@ checker::Type *TSAnalyzer::Check(ir::IfStatement *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::LabelledStatement *st) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
@@ -1503,11 +1244,6 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
     }
 
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SwitchCaseStatement *st) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::SwitchStatement *st) const
@@ -1542,11 +1278,6 @@ checker::Type *TSAnalyzer::Check(ir::SwitchStatement *st) const
     }
 
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ThrowStatement *st) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TryStatement *st) const
@@ -1770,21 +1501,6 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSBigintKeyword *node) con
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSBooleanKeyword *node) const
 {
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSClassImplements *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSConditionalType *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSReExportDeclaration *node) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSConstructorType *node) const
@@ -2130,16 +1846,6 @@ checker::Type *TSAnalyzer::Check(ir::TSEnumDeclaration *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSEnumMember *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSExternalModuleReference *expr) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::TSFunctionType *node) const
 {
     TSChecker *checker = GetTSChecker();
@@ -2152,16 +1858,6 @@ checker::Type *TSAnalyzer::Check(ir::TSFunctionType *node) const
         checker->Allocator()->New<checker::Signature>(signatureInfo, node->ReturnType()->GetType(checker));
 
     return checker->CreateFunctionTypeWithSignature(callSignature);
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSImportEqualsDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSImportType *node) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSIndexedAccessType *node) const
@@ -2187,11 +1883,6 @@ checker::Type *TSAnalyzer::Check(ir::TSIndexedAccessType *node) const
 
     checker->ThrowTypeError("Type has no matching signature for type 'string'", node->Start());
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSInferType *node) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSInterfaceBody *expr) const
@@ -2278,36 +1969,11 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSInterfaceHeritage *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSIntersectionType *node) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::TSLiteralType *node) const
 {
     TSChecker *checker = GetTSChecker();
     node->GetType(checker);
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSMappedType *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSModuleBlock *st) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSModuleDeclaration *st) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSNamedTupleMember *node) const
@@ -2322,11 +1988,6 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSNeverKeyword *node) cons
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSNonNullExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSNullKeyword *node) const
 {
     return nullptr;
@@ -2335,16 +1996,6 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSNullKeyword *node) const
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSNumberKeyword *node) const
 {
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSObjectKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSParameterProperty *expr) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSParenthesizedType *node) const
@@ -2382,11 +2033,6 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSStringKeyword *node) con
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSThisType *node) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::TSTupleType *node) const
 {
     TSChecker *checker = GetTSChecker();
@@ -2405,11 +2051,6 @@ checker::Type *TSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypeAssertion *expr) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *TSAnalyzer::Check(ir::TSTypeLiteral *node) const
 {
     TSChecker *checker = GetTSChecker();
@@ -2422,31 +2063,6 @@ checker::Type *TSAnalyzer::Check(ir::TSTypeLiteral *node) const
     checker->CheckIndexConstraints(type);
 
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypeOperator *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypeParameter *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypeParameterDeclaration *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypeParameterInstantiation *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypePredicate *node) const
-{
-    UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSTypeQuery *node) const
@@ -2491,10 +2107,5 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSUnknownKeyword *node) co
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) const
 {
     return nullptr;
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DummyNode *node) const
-{
-    UNREACHABLE();
 }
 }  // namespace ark::es2panda::checker
