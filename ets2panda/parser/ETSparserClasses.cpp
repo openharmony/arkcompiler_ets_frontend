@@ -862,7 +862,11 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
 
     ir::TypeNode *typeAnnotation = nullptr;
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
+        // interfaces3.sts
         LogSyntaxError("Interface fields must have type annotation.");
+
+        Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
+        Lexer()->NextToken();  // additional check
     }
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     typeAnnotation = ParseTypeAnnotation(&options);
@@ -1157,7 +1161,10 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
         Lexer()->NextToken();
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_FUNCTION) {
+            // async_function_bas.sts
             LogSyntaxError({isAsync ? "'async'" : "'native'", " flags must be used for functions only at top-level."});
+
+            Lexer()->GetToken().SetTokenType(lexer::TokenType::KEYW_FUNCTION);
         }
     }
     return std::make_pair(memberModifiers, startLoc);

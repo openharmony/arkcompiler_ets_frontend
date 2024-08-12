@@ -277,6 +277,7 @@ ir::Expression *TSParser::ParseFunctionParameter()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS) {
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+        Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
     }
 
     lexer::SourcePosition parameterStart = Lexer()->GetToken().Start();
@@ -447,6 +448,9 @@ ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Express
         }
         case lexer::TokenType::LITERAL_IDENT: {
             ir::Expression *identRef = ParsePrimaryExpression();
+            if (identRef == nullptr) {
+                return nullptr;
+            }
             ASSERT(identRef->IsIdentifier());
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {

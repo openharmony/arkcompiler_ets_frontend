@@ -17,6 +17,6 @@
 flags: [module]
 ---*/
 
-import("foo")
+import("foo");
 var a = import("bar");
 import "foobar";

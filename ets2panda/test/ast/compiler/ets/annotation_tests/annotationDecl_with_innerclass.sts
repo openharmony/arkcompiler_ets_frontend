@@ -19,4 +19,4 @@
 
 
 /* @@? 17:5 Error SyntaxError: Identifier expected, got ''.  */
-/* @@? 17:5 Error SyntaxError: Unexpected token.  */
+/* @@? 17:11 Error SyntaxError: Missing type annotation for property.  */

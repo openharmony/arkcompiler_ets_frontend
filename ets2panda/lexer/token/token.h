@@ -74,6 +74,11 @@ public:
         type_ = type;
     }
 
+    void SetTokenStr(util::StringView error)
+    {
+        src_ = error;
+    }
+
     TokenType KeywordType() const
     {
         return keywordType_;

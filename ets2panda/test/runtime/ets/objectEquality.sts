@@ -38,7 +38,7 @@ function arrayEquality(): void {
 }
 
 function functiontypeEquality(): void {
-  let a : (x : double, y : double) : double;
+  let a : (x : double, y : double) => double;
   let b = a;
   assert (a == b);
 }

@@ -17,4 +17,5 @@
 declare class Foo {
     a() b()
 }
-/* @@? 18:9 Error SyntaxError: ';' expected.  */
+/* @@? 18:9 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 18:10 Error SyntaxError: Unexpected token in class property  */

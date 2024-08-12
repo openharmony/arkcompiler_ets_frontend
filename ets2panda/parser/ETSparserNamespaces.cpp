@@ -91,7 +91,8 @@ ETSParser::NamespaceBody ETSParser::ParseNamespaceBody(ir::ClassDefinitionModifi
         Lexer()->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
         properties = std::move(ParseAstNodesArrayFormatPlaceholder());
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            ThrowSyntaxError("Expected a '}'");
+            LogSyntaxError("Expected a '}'");
+            UNREACHABLE();
         }
     } else {
         while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {

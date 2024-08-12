@@ -15,4 +15,6 @@
 
 
 var a: { new a()}
-/* @@? 17:14 Error SyntaxError: ',' expected  */
+
+/* @@? 17:14 Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@? 17:14 Error SyntaxError: Unexpected token in property key  */

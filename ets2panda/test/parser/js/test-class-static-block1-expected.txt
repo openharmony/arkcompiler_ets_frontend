@@ -1,0 +1,2 @@
+SyntaxError: Unexpected token, expected: ';'. [test-class-static-block1.js:17:13]
+SyntaxError: Unexpected token '}' [test-class-static-block1.js:20:1]

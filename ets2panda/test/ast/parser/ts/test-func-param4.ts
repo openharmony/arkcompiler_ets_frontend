@@ -17,4 +17,4 @@
 class A {
     get foo(this) { return; }
 }
-/* @@? 18:17 Error SyntaxError: 'get' and 'set' accessors cannot declare 'this' parameters  */
+/* @@? 19:1 Error SyntaxError: Getter must not have formal parameters  */

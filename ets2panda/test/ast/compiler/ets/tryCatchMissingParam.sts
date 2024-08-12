@@ -16,9 +16,12 @@
 function main(): void {
     try {
         throw new Exception();
-    } catch () {
+    } catch (^) {
         //Do something.
     }
 }
 
 /* @@? 19:14 Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */
+/* @@? 1:1 Node {
+    "type": "Program"
+}  */

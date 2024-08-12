@@ -476,7 +476,7 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        ThrowSyntaxError("Unexpected token.");
+        LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
     }
 
     const auto &label = lexer_->GetToken().Ident();
@@ -529,7 +529,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        ThrowSyntaxError("Unexpected token.");
+        LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
     }
 
     const auto &label = lexer_->GetToken().Ident();
@@ -558,12 +558,20 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
     ir::Statement *body = ParseStatement();
 
     if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_WHILE) {
-        ThrowSyntaxError("Missing 'while' keyword in a 'DoWhileStatement'");
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+            // do {} (true)
+            LogSyntaxError("Unexpected token, expected: 'while'.");  // just skip the token
+        } else {
+            // do {} whle (true)
+            LogExpectedToken(lexer::TokenType::KEYW_WHILE);
+            lexer_->NextToken();
+        }
+    } else {
+        lexer_->NextToken();
     }
 
-    lexer_->NextToken();
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        ThrowSyntaxError("Missing left parenthesis in a 'DoWhileStatement'");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     }
 
     lexer_->NextToken();
@@ -571,7 +579,7 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
     ir::Expression *test = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        ThrowSyntaxError("Missing right parenthesis in a 'DoWhileStatement'");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     }
 
     auto *doWhileStatement = AllocNode<ir::DoWhileStatement>(body, test);
@@ -612,8 +620,10 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
             funcDecl->SetRange(func->Range());
             return funcDecl;
         }
-
-        ThrowSyntaxError("Unexpected token, expected identifier after 'function' keyword");
+        // test exists for ts extension
+        LogSyntaxError("Unexpected token, expected identifier after 'function' keyword");
+        lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+        lexer_->GetToken().SetTokenStr(ERROR_LITERAL);
     }
 
     CheckRestrictedBinding();
@@ -735,7 +745,7 @@ std::tuple<ForStatementKind, ir::Expression *, ir::Expression *> ParserImpl::Par
         } else {
             rightNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA | ExpressionParseFlags::IN_FOR);
             if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-                ThrowSyntaxError("Unexpected token, expected ';' in 'ForStatement'.");
+                LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
             }
             lexer_->NextToken();
         }
@@ -819,7 +829,7 @@ std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> 
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-        ThrowSyntaxError("Unexpected token, expected ';' in 'ForStatement'.");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
     }
 
     lexer_->NextToken();
@@ -829,7 +839,8 @@ std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> 
     } else {
         rightNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA | ExpressionParseFlags::IN_FOR);
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-            ThrowSyntaxError("Unexpected token, expected ';' in 'ForStatement'.");
+            // unexpected_token_53.sts
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
         }
         lexer_->NextToken();
     }
@@ -855,7 +866,7 @@ std::tuple<ir::Expression *, ir::Expression *> ParserImpl::ParseForUpdate(bool i
     } else {
         rightNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA | ExpressionParseFlags::IN_FOR);
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-            ThrowSyntaxError("Unexpected token, expected ';' in 'ForStatement'.");
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
         }
         lexer_->NextToken();
     }
@@ -877,7 +888,9 @@ std::tuple<ir::Expression *, ir::AstNode *> ParserImpl::ParseForLoopInitializer(
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        ThrowSyntaxError(MISSING_LEFT_IN_FOR, lexer_->GetToken().Start());
+        // missing_in_for_statement_1.sts
+        LogSyntaxError(MISSING_LEFT_IN_FOR, lexer_->GetToken().Start());
+        lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     }
     lexer_->NextToken();
 
@@ -968,7 +981,9 @@ ir::Statement *ParserImpl::ParseForStatement()
         lexer_->NextToken();
     }
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        ThrowSyntaxError(MISSING_RIGHT_IN_FOR, lexer_->GetToken().Start());
+        // missing_in_for_statement_2.sts
+        LogSyntaxError(MISSING_RIGHT_IN_FOR, lexer_->GetToken().Start());
+        lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     }
     lexer_->NextToken();
 
@@ -997,14 +1012,18 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
     lexer_->NextToken();
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        ThrowSyntaxError("Missing left parenthesis in an 'IfStatement'");
+        // missing_in_if_statement_2.sts
+        LogSyntaxError("Expected left parenthesis in an 'IfStatement'");
+        lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     }
 
     lexer_->NextToken();
     ir::Expression *test = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        ThrowSyntaxError("Missing right parenthesis in an 'IfStatement'");
+        // missing_in_if_statement_1.sts
+        LogSyntaxError("Expected right parenthesis in an 'IfStatement'");
+        lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     }
 
     lexer_->NextToken();
@@ -1248,10 +1267,8 @@ ir::Expression *ParserImpl::ParseCatchParam()
         ParseCatchParamTypeAnnotation(param);
     }
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        LogSyntaxError({"Unexpected token '", lexer::TokenToString(lexer_->GetToken().Type()), "', expected ')'"});
-    } else {
-        lexer_->NextToken();  // eat ')'
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        lexer_->NextToken();
     }
 
     return param;
@@ -1282,7 +1299,7 @@ ir::Statement *ParserImpl::ParseTryStatement()
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer::SourcePosition endLoc = lexer_->GetToken().End();
 
-    lexer_->NextToken();
+    lexer_->NextToken();  // eat 'try'
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         LogSyntaxError({"Unexpected token '", lexer::TokenToString(lexer_->GetToken().Type()), "', expected '{'"});
@@ -1292,6 +1309,13 @@ ir::Statement *ParserImpl::ParseTryStatement()
 
     if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CATCH &&
         lexer_->GetToken().Type() != lexer::TokenType::KEYW_FINALLY) {
+        /*  If we are here, there are two options:
+            1. there is neither 'catch', nor 'finally';
+            2. we made typo and got identifier instead of a first keyword after Try statement.
+            So, this check does not work if we write Try, Catch statements and then make a mistake
+            -> only setting current token as 'catch' is a possible option to fix most cases
+            Test exixts for ts extension only: catch_or_finally_1.ts
+        */
         LogSyntaxError("Missing catch or finally clause");
     }
 
@@ -1307,6 +1331,7 @@ ir::Statement *ParserImpl::ParseTryStatement()
 
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_FINALLY) {
         lexer_->NextToken();  // eat 'finally' keyword
+
         finallyClause = ParseBlockStatement();
         endLoc = finallyClause->End();
     }
@@ -1567,20 +1592,21 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
     return exportDeclaration;
 }
 
-ir::Identifier *ParserImpl::ParseNamedExport(const lexer::Token &exportedToken)
+ir::Identifier *ParserImpl::ParseNamedExport(lexer::Token *exportedToken)
 {
-    if (exportedToken.Type() != lexer::TokenType::LITERAL_IDENT) {
-        LogSyntaxError(
-            {"Unexpected token '", lexer::TokenToString(exportedToken.Type()), "', expected an identifier."});
-        return nullptr;
+    if (exportedToken->Type() != lexer::TokenType::LITERAL_IDENT) {
+        // test exists for js and ts extensions
+        LogSyntaxError("Unexpected token, expected an identifier.");
+        exportedToken->SetTokenType(lexer::TokenType::LITERAL_IDENT);
+        exportedToken->SetTokenStr(ERROR_LITERAL);
     }
 
-    CheckRestrictedBinding(exportedToken.KeywordType());
+    CheckRestrictedBinding(exportedToken->KeywordType());
 
-    const util::StringView &exportedString = exportedToken.Ident();
+    const util::StringView &exportedString = exportedToken->Ident();
 
     auto *exported = AllocNode<ir::Identifier>(exportedString, Allocator());
-    exported->SetRange(exportedToken.Loc());
+    exported->SetRange(exportedToken->Loc());
 
     return exported;
 }
@@ -1593,10 +1619,9 @@ ir::ExportAllDeclaration *ParserImpl::ParseExportAllDeclaration(const lexer::Sou
 
     if (CheckModuleAsModifier()) {
         lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
-        exported = ParseNamedExport(lexer_->GetToken());
+        exported = ParseNamedExport(&lexer_->GetToken());
         lexer_->NextToken();  // eat exported name
     }
-
     ir::StringLiteral *source = ParseFromClause();
     if (source == nullptr) {  // Error processing.
         return nullptr;
@@ -1620,7 +1645,8 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-            LogSyntaxError({"Unexpected token '", lexer::TokenToString(lexer_->GetToken().Type()), "'."});
+            // test exists for ts extension only
+            LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
         }
 
         lexer::Token localToken = lexer_->GetToken();
@@ -1633,10 +1659,10 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
 
         if (CheckModuleAsModifier()) {
             lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat `as` literal
-            exported = ParseNamedExport(lexer_->GetToken());
+            exported = ParseNamedExport(&lexer_->GetToken());
             lexer_->NextToken();  // eat exported name
         } else {
-            exported = ParseNamedExport(localToken);
+            exported = ParseNamedExport(&localToken);
         }
 
         if (exported != nullptr) {  // Error processing.
@@ -1760,7 +1786,7 @@ void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
 
     lexer_->NextToken();  // eat `as` literal
 
-    ir::Identifier *local = ParseNamedImport(lexer_->GetToken());
+    ir::Identifier *local = ParseNamedImport(&lexer_->GetToken());
 
     auto *specifier = AllocNode<ir::ImportNamespaceSpecifier>(local);
     specifier->SetRange({namespaceStart, lexer_->GetToken().End()});
@@ -1769,16 +1795,18 @@ void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
     lexer_->NextToken();  // eat local name
 }
 
-ir::Identifier *ParserImpl::ParseNamedImport(const lexer::Token &importedToken)
+ir::Identifier *ParserImpl::ParseNamedImport(lexer::Token *importedToken)
 {
-    if (importedToken.Type() != lexer::TokenType::LITERAL_IDENT) {
-        ThrowSyntaxError("Unexpected token");
+    if (importedToken->Type() != lexer::TokenType::LITERAL_IDENT) {
+        LogSyntaxError("Unexpected token, expected an identifier.");
+        importedToken->SetTokenType(lexer::TokenType::LITERAL_IDENT);
+        importedToken->SetTokenStr(ERROR_LITERAL);
     }
 
-    CheckRestrictedBinding(importedToken.KeywordType());
+    CheckRestrictedBinding(importedToken->KeywordType());
 
-    auto *local = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
-    local->SetRange(importedToken.Loc());
+    auto *local = AllocNode<ir::Identifier>(importedToken->Ident(), Allocator());
+    local->SetRange(importedToken->Loc());
 
     return local;
 }
@@ -1789,7 +1817,8 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-            ThrowSyntaxError("Unexpected token");
+            // test exists for ts extension only
+            LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
         }
 
         lexer::Token importedToken = lexer_->GetToken();
@@ -1801,10 +1830,10 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
 
         if (CheckModuleAsModifier()) {
             lexer_->NextToken();  // eat `as` literal
-            local = ParseNamedImport(lexer_->GetToken());
+            local = ParseNamedImport(&lexer_->GetToken());
             lexer_->NextToken();  // eat local name
         } else {
-            local = ParseNamedImport(importedToken);
+            local = ParseNamedImport(&importedToken);
         }
 
         auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
@@ -1821,7 +1850,7 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
 
 ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers)
 {
-    ir::Identifier *local = ParseNamedImport(lexer_->GetToken());
+    ir::Identifier *local = ParseNamedImport(&lexer_->GetToken());
     lexer_->NextToken();  // eat local name
 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
@@ -1840,18 +1869,20 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
 ir::StringLiteral *ParserImpl::ParseFromClause(bool requireFrom)
 {
     if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
+        // unexpected_token_5.ts
         if (requireFrom) {
-            LogSyntaxError(
-                {"Unexpected token '", lexer::TokenToString(lexer_->GetToken().Type()), "', expected 'from'."});
+            LogExpectedToken(lexer::TokenType::KEYW_FROM);
+            lexer_->NextToken();  // eat `from` literal
         }
     } else {
         lexer_->NextToken();  // eat `from` literal
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
-        LogSyntaxError(
-            {"Unexpected token '", lexer::TokenToString(lexer_->GetToken().Type()), "', expected 'string literal'."});
-        return nullptr;
+        // test exists for ts extension only
+        LogExpectedToken(lexer::TokenType::LITERAL_STRING);
+        lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_STRING);
+        lexer_->GetToken().SetTokenStr(ERROR_LITERAL);
     }
 
     auto *source = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());

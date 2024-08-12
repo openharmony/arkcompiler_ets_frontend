@@ -15,4 +15,5 @@
 
 #a
 
-/* @@? 19:1 Error SyntaxError: Unexpected private identifier  */
+/* @@? 20:1 Error SyntaxError: Unexpected private identifier  */
+/* @@? 20:1 Error SyntaxError: Unexpected token 'eos'.  */

@@ -18,4 +18,5 @@ class Foo {
     var a = 3;
 }
 
-/* @@? 18:9 Error SyntaxError: ';' expected.  */
+/* @@? 18:9 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 18:11 Error SyntaxError: Unexpected token in class property  */
