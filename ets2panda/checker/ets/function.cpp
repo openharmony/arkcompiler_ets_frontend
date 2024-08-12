@@ -1014,13 +1014,16 @@ checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition 
 
     bool isConstructSig = method->IsConstructor();
 
+    method->Function()->Id()->SetVariable(method->Id()->Variable());
     BuildFunctionSignature(method->Function(), isConstructSig);
     if (method->Function()->Signature() == nullptr) {
         return nullptr;
     }
     auto *funcType = BuildNamedFunctionType(method->Function());
     std::vector<checker::ETSFunctionType *> overloads;
+
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
+        currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
         BuildFunctionSignature(currentFunc->Function(), isConstructSig);
         if (currentFunc->Function()->Signature() == nullptr) {
             return nullptr;
