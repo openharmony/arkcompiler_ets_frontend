@@ -82,9 +82,10 @@ import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
 import {
-  needToReservedTopLevel,
+  isInTopLevelWhitelist,
+  isInLocalWhitelist,
   isReservedLocalVariable,
-  needToReservedLocal,
+  isReservedTopLevel,
   recordHistoryUnobfuscatedNames
 } from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
@@ -243,7 +244,7 @@ namespace secharmony {
           const path: string = scope.loc + '#' + original;
           // No allow to rename reserved names.
           if (!Reflect.has(def, 'obfuscateAsProperty') &&
-            needToReservedLocal(original, UnobfuscationCollections.unobfuscatedNamesMap, path) ||
+            isInLocalWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, path) ||
             (!exportObfuscation && scope.exportNames.has(def.name)) ||
             isSkippedGlobal(openTopLevel, scope)) {
             scope.mangledNames.add(mangled);
@@ -279,7 +280,7 @@ namespace secharmony {
       }
 
       function getPropertyMangledName(original: string, nameWithScope: string): string {
-        if (needToReservedTopLevel(original, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope)) {
+        if (isInTopLevelWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope)) {
           return original;
         }
 
@@ -287,7 +288,7 @@ namespace secharmony {
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {
           let tmpName = generator.getName();
-          if (needToReservedTopLevel(tmpName) ||
+          if (isReservedTopLevel(tmpName) ||
             tmpName === original) {
             continue;
           }
@@ -643,31 +644,34 @@ namespace secharmony {
     }
 
     function initWhitelist(): void {
+      if (isInitializedReservedList) {
+        return;
+      }
       if (profile?.mRenameProperties) {
         PropCollections.enablePropertyObfuscation = true;
-        if (!isInitializedReservedList) {
-          const tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
-          tmpReservedProps.forEach(item => {
-            PropCollections.reservedProperties.add(item);
-          });
-          PropCollections.mangledPropsInNameCache = new Set(PropCollections.historyMangledTable?.values());
-          PropCollections.universalReservedProperties = profile?.mUniversalReservedProperties ?? [];
-          UnobfuscationCollections.reservedLangForTopLevel.forEach(element => {
-            UnobfuscationCollections.reservedLangForProperty.add(element);
-          });
-          UnobfuscationCollections.reservedExportName.forEach(element => {
-            UnobfuscationCollections.reservedExportNameAndProp.add(element);
-          });
-          UnobfuscationCollections.reservedSdkApiForGlobal.forEach(element => {
-            UnobfuscationCollections.reservedSdkApiForProp.add(element);
-          });
-          isInitializedReservedList = true;
+        const tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
+        tmpReservedProps.forEach(item => {
+          PropCollections.reservedProperties.add(item);
+        });
+        PropCollections.mangledPropsInNameCache = new Set(PropCollections.historyMangledTable?.values());
+        if (profile?.mUniversalReservedProperties) {
+          PropCollections.universalReservedProperties = [...profile.mUniversalReservedProperties];
         }
+        UnobfuscationCollections.reservedLangForTopLevel.forEach(element => {
+          UnobfuscationCollections.reservedLangForProperty.add(element);
+        });
+        UnobfuscationCollections.reservedExportName.forEach(element => {
+          UnobfuscationCollections.reservedExportNameAndProp.add(element);
+        });
+        UnobfuscationCollections.reservedSdkApiForGlobal.forEach(element => {
+          UnobfuscationCollections.reservedSdkApiForProp.add(element);
+        });
       }
       LocalVariableCollections.reservedConfig = new Set(profile?.mReservedNames ?? []);
       LocalVariableCollections.reservedStruct = new Set();
       profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
       profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
+      isInitializedReservedList = true;
     }
   };
 

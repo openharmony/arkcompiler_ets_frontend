@@ -56,7 +56,7 @@ import {NodeUtils} from '../../utils/NodeUtils';
 import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
-import { needToReservedProperty, recordReservedName } from '../../utils/TransformUtil';
+import { isInPropertyWhitelist, recordReservedName, isReservedProperty } from '../../utils/TransformUtil';
 import {
   classInfoInMemberMethodCache,
   nameCache
@@ -165,7 +165,7 @@ namespace secharmony {
         }
 
         let original: string = node.text;
-        if (needToReservedProperty(original, UnobfuscationCollections.unobfuscatedPropMap)) {
+        if (isInPropertyWhitelist(original, UnobfuscationCollections.unobfuscatedPropMap)) {
           return node;
         }
 
@@ -203,7 +203,7 @@ namespace secharmony {
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {
           let tmpName = generator.getName();
-          if (needToReservedProperty(tmpName) ||
+          if (isReservedProperty(tmpName) ||
             tmpName === original) {
             continue;
           }

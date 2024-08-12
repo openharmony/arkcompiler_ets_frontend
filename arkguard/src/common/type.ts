@@ -47,6 +47,16 @@ export interface MangledSymbolInfo {
   originalNameWithScope: string
 }
 
+/**
+ * FilePathObj:
+ * buildFilePath - the absolute path of the source file in the cache directory
+ * relativeFilePath - the relative path of the source file in the module directory
+ */
+export interface FilePathObj {
+  buildFilePath: string,
+  relativeFilePath: string
+}
+
 export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
 export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
 

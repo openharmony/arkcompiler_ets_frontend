@@ -247,7 +247,8 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     let content: string = FileUtils.readFile(sourceFilePath);
     this.readNameCache(sourceFilePath, outputDir);
     performancePrinter?.filesPrinter?.startEvent(sourceFilePath);
-    const mixedInfo: ObfuscationResultType = await this.obfuscate(content, sourceFilePath);
+    let filePath = { buildFilePath: sourceFilePath, relativeFilePath: sourceFilePath };
+    const mixedInfo: ObfuscationResultType = await this.obfuscate(content, filePath);
     performancePrinter?.filesPrinter?.endEvent(sourceFilePath, undefined, true);
 
     if (this.mWriteOriginalFile && mixedInfo) {

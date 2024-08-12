@@ -21,6 +21,3 @@ export let nameCacheMap: Map<string, string | {}> = new Map();
 
 // Record all unobfuscated names and reasons for each file.
 export let unobfuscationNamesObj: Object = {};
-
-// Record all unobfuscated properties and reasons.
-export let globalUnobfuscatedPropMap: Map<string, string[]> = new Map();
