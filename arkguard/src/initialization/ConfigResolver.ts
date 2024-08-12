@@ -58,6 +58,7 @@ enum OptionType {
   PRINT_KEPT_NAMES,
   APPLY_NAMECACHE,
 }
+export { OptionType as OptionTypeForTest };
 
 type SystemApiContent = {
   ReservedPropertyNames?: string[];
@@ -116,6 +117,7 @@ class ObOptions {
     }
   }
 }
+export const ObOptionsForTest = ObOptions;
 
 export class MergedConfig {
   options: ObOptions = new ObOptions();
@@ -260,6 +262,10 @@ export class ObConfigResolver {
     }
   }
 
+  public getSelfConfigsForTest(selfConfigs: MergedConfig): void {
+    return this.getSelfConfigs(selfConfigs);
+  }
+
   private getConfigByPath(path: string, configs: MergedConfig): void {
     let fileContent = undefined;
     try {
@@ -269,6 +275,10 @@ export class ObConfigResolver {
       throw err;
     }
     this.handleConfigContent(fileContent, configs, path);
+  }
+  
+  public getConfigByPathForTest(path: string, configs: MergedConfig): void {
+    return this.getConfigByPath(path, configs);
   }
 
   private handleReservedArray(mergedConfigs: MergedConfig): void {
@@ -283,6 +293,10 @@ export class ObConfigResolver {
       mergedConfigs.universalReservedGlobalNames = globalReservedInfo.universalReservedArray;
       mergedConfigs.reservedGlobalNames = globalReservedInfo.specificReservedArray;
     }
+  }
+
+  public handleReservedArrayForTest(mergedConfigs: MergedConfig): void {
+    return this.handleReservedArray(mergedConfigs);
   }
 
   // obfuscation options
@@ -356,6 +370,10 @@ export class ObConfigResolver {
       default:
         return OptionType.NONE;
     }
+  }
+
+  public getTokenTypeForTest(token: string): OptionType {
+    return this.getTokenType(token);
   }
 
   private handleConfigContent(data: string, configs: MergedConfig, configPath: string): void {
@@ -477,6 +495,9 @@ export class ObConfigResolver {
     this.resolveKeepConfig(keepConfigs, configs, configPath);
   }
 
+  public handleConfigContentForTest(data: string, configs: MergedConfig, configPath: string): void {
+    return this.handleConfigContent(data, configs, configPath);
+  } 
   // get absolute path
   private resolvePath(configPath: string, token: string): string {
     if (path.isAbsolute(token)) {
@@ -484,6 +505,10 @@ export class ObConfigResolver {
     }
     const configDirectory = path.dirname(configPath);
     return path.resolve(configDirectory, token);
+  }
+
+  public resolvePathForTest(configPath: string, token: string): string {
+    return this.resolvePath(configPath, token);
   }
 
   // get names in .d.ts files and add them into reserved list
@@ -599,6 +624,10 @@ export class ObConfigResolver {
     ApiExtractor.mSystemExportSet.clear();
   }
 
+  public getSystemApiCacheForTest(systemConfigs: MergedConfig, systemApiCachePath: string): void {
+    return this.getSystemApiCache(systemConfigs, systemApiCachePath);
+  }
+
   private getSdkApiCache(sdkApiPath: string): void {
     ApiExtractor.traverseApiFiles(sdkApiPath, ApiExtractor.ApiType.API);
     const componentPath: string = path.join(sdkApiPath, '../component');
@@ -635,6 +664,10 @@ export class ObConfigResolver {
     }
   }
 
+  public getDependencyConfigsForTest(sourceObConfig: any, dependencyConfigs: MergedConfig): void {
+    return this.getDependencyConfigs(sourceObConfig, dependencyConfigs);
+  }
+
   private getSystemApiConfigsByCache(systemApiCachePath: string): void {
     let systemApiContent: {
       ReservedPropertyNames?: string[];
@@ -652,10 +685,18 @@ export class ObConfigResolver {
     }
   }
 
+  public getSystemApiConfigsByCacheForTest(systemApiCachePath: string): void {
+    return this.getSystemApiConfigsByCache(systemApiCachePath);
+  }
+
   private getSelfConsumerConfig(selfConsumerConfig: MergedConfig): void {
     for (const path of this.sourceObConfig.selfConfig.consumerRules) {
       this.getConfigByPath(path, selfConsumerConfig);
     }
+  }
+
+  public getSelfConsumerConfigForTest(selfConsumerConfig: MergedConfig): void {
+    return this.getSelfConsumerConfig(selfConsumerConfig);
   }
 
   private getMergedConfigs(selfConfigs: MergedConfig, dependencyConfigs: MergedConfig): MergedConfig {
@@ -666,6 +707,10 @@ export class ObConfigResolver {
     return selfConfigs;
   }
 
+  public getMergedConfigsForTest(selfConfigs: MergedConfig, dependencyConfigs: MergedConfig): MergedConfig {
+    return this.getMergedConfigs(selfConfigs, dependencyConfigs);
+  }
+
   private genConsumerConfigFiles(
     sourceObConfig: any,
     selfConsumerConfig: MergedConfig,
@@ -674,6 +719,14 @@ export class ObConfigResolver {
     selfConsumerConfig.merge(dependencyConfigs);
     selfConsumerConfig.sortAndDeduplicate();
     this.writeConsumerConfigFile(selfConsumerConfig, sourceObConfig.exportRulePath);
+  }
+
+  public genConsumerConfigFilesForTest(
+    sourceObConfig: any,
+    selfConsumerConfig: MergedConfig,
+    dependencyConfigs: MergedConfig,
+  ): void {
+    return this.genConsumerConfigFiles(sourceObConfig, selfConsumerConfig, dependencyConfigs);
   }
 
   public writeConsumerConfigFile(selfConsumerConfig: MergedConfig, outpath: string): void {
@@ -837,7 +890,8 @@ export function getArkguardNameCache(
   return writeContent;
 }
 
-function fillNameCache(table: Map<string, string>, nameCache: Map<string, string>): void {
+// export fillNameCache function
+export function fillNameCache(table: Map<string, string>, nameCache: Map<string, string>): void {
   if (table) {
     for (const [key, value] of table.entries()) {
       nameCache.set(key, value);
