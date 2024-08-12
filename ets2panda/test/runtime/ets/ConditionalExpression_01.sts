@@ -26,7 +26,7 @@ function main() {
   assert (y2 == 3.0);
   assert (z2 == 4.0);
 
-  let x3 = (): int | undefined => { return 5.1; }();
+  let x3 = (): int | undefined => { return 5; }();
   let y3: int = !x3 ? 3.1 : x3;
   let z3: int = x3 ? x3 : 4.1;
   assert (y3 == 5);

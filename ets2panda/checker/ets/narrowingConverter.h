@@ -168,6 +168,15 @@ private:
 
         if (Source()->HasTypeFlag(TypeFlag::CONSTANT)) {
             SType value = reinterpret_cast<SourceType *>(Source())->GetValue();
+            if (!Relation()->InCastingContext() && Source()->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT) &&
+                Target()->HasTypeFlag(TypeFlag::ETS_INTEGRAL)) {
+                auto narrowedValue = CalculateNarrowedValue<TType, SType>(Target(), Source(), value);
+                if (narrowedValue != value) {
+                    Relation()->Result(RelationResult::ERROR);
+                    return;
+                }
+            }
+
             if (Relation()->InCastingContext() || util::Helpers::IsTargetFitInSourceRange<TType, SType>(value)) {
                 auto narrowedValue = CalculateNarrowedValue<TType, SType>(Target(), Source(), value);
                 TargetType *newType = Checker()->Allocator()->New<TargetType>(narrowedValue);
