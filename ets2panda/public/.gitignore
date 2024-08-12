@@ -1,0 +1,10 @@
+__pycache__
+gen
+newYaml.yaml
+config
+.pylintrc
+linter.sh
+format.sh
+mypy.ini
+.rubocop.yml
+.rubocop_todo.yml

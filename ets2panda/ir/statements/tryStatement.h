@@ -18,6 +18,8 @@
 
 #include "compiler/core/labelPair.h"
 #include "ir/statement.h"
+#include "util/helpers.h"
+#include <memory>
 
 namespace ark::es2panda::checker {
 class TSAnalyzer;
@@ -46,6 +48,24 @@ public:
           finalizer_(finalizer),
           finalizerInsertions_(std::move(finalizerInsertions))
     {
+    }
+
+    // Special constructor need by ArktsPluginAPI
+    explicit TryStatement(BlockStatement *block, ArenaVector<CatchClause *> &&catchClauses, BlockStatement *finalizer,
+                          ArenaVector<compiler::LabelPair> finalizerInsertionsLabelPair,
+                          ArenaVector<Statement *> finalizerInsertionsStatement)
+        : Statement(AstNodeType::TRY_STATEMENT),
+          block_(block),
+          catchClauses_(std::move(catchClauses)),
+          finalizer_(finalizer),
+          finalizerInsertions_(catchClauses_.get_allocator())
+    {
+        ASSERT(finalizerInsertionsLabelPair.size() == finalizerInsertionsStatement.size());
+
+        for (uint64_t i = 0; i < finalizerInsertionsLabelPair.size(); i++) {
+            finalizerInsertions_.push_back(
+                std::make_pair(finalizerInsertionsLabelPair[i], finalizerInsertionsStatement[i]));
+        }
     }
 
     friend class checker::TSAnalyzer;

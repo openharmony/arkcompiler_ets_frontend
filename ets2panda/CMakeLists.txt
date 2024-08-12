@@ -533,6 +533,8 @@ set(ES2PANDA_LIB_SRC
   test/utils/panda_executable_path_getter.cpp
 )
 
+# libes2panda does not include bytecode optimizer, because it is used in
+# libarkruntime, and conflict with JIT setup ensues
 panda_add_library(es2panda-lib ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_LIB_SRC})
 add_dependencies(es2panda-lib isa_gen_es2panda es2panda_keywords es2panda_signatures)
 
@@ -575,35 +577,8 @@ endif()
 panda_add_sanitizers(TARGET es2panda-lib SANITIZERS
   ${PANDA_SANITIZERS_LIST})
 
-# libes2panda does not include bytecode optimizer, because it is used in
-# libarkruntime, and conflict with JIT setup ensues
-set(ES2PANDA_PUBLIC_SOURCES
-  public/es2panda_lib.cpp
-  util/generateBin.cpp
-  util/options.cpp
-  util/plugin.cpp
-)
-
-
-panda_add_library(es2panda-public ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_PUBLIC_SOURCES})
-add_dependencies(es2panda-public es2panda-lib arkbytecodeopt)
-
-panda_target_include_directories(es2panda-public
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-  PRIVATE ${OUTPUT_DIR}
-)
-
-panda_target_compile_options(es2panda-public
-  PRIVATE -fexceptions -Werror=shadow
-)
-
-panda_target_link_libraries(es2panda-public
-  PUBLIC arkbase es2panda-lib
-  PRIVATE arkbytecodeopt
-)
-
-panda_add_sanitizers(TARGET es2panda-public SANITIZERS
-  ${PANDA_SANITIZERS_LIST})
+SET(ES2PANDA_LIB_DIR public)
+add_subdirectory(${ES2PANDA_LIB_DIR})
 
 add_subdirectory(aot)
 add_subdirectory(declgen_ets2ts)

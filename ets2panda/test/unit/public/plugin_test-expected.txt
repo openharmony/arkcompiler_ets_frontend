@@ -1,0 +1,21 @@
+Hi there!
+After parse
+GoodGreeter
+name
+string
+invoke
+invoke
+constructor
+constructor
+name
+a
+GoodGreeter
+main
+m
+n
+console
+log
+m
+n
+After check
+After lowerings

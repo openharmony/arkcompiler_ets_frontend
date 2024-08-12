@@ -1,0 +1,398 @@
+Hi there!
+---
+After parse:
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "GoodGreeter",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "name",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "ETSTypeReference",
+  "part": {
+    "type": "ETSTypeReferencePart",
+    "name": {
+      "type": "Identifier",
+      "name": "string",
+      "decorators": []
+    }
+  }
+}
+---
+Found Expression:
+{
+  "type": "ETSTypeReferencePart",
+  "name": {
+    "type": "Identifier",
+    "name": "string",
+    "decorators": []
+  }
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "string",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "invoke",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "FunctionExpression",
+  "function": {
+    "type": "ScriptFunction",
+    "id": {
+      "type": "Identifier",
+      "name": "invoke",
+      "decorators": []
+    },
+    "generator": false,
+    "async": false,
+    "expression": false,
+    "params": [],
+    "returnType": {
+      "type": "ETSPrimitiveType"
+    },
+    "body": {
+      "type": "BlockStatement",
+      "statements": [
+        {
+          "type": "ReturnStatement",
+          "argument": {
+            "type": "NumberLiteral",
+            "value": 5
+          }
+        }
+      ]
+    }
+  }
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "invoke",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "ETSPrimitiveType"
+}
+---
+Found Expression:
+{
+  "type": "NumberLiteral",
+  "value": 5
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "constructor",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "FunctionExpression",
+  "function": {
+    "type": "ScriptFunction",
+    "id": {
+      "type": "Identifier",
+      "name": "constructor",
+      "decorators": []
+    },
+    "generator": false,
+    "async": false,
+    "expression": false,
+    "params": [],
+    "body": {
+      "type": "BlockStatement",
+      "statements": [
+        {
+          "type": "ExpressionStatement",
+          "expression": {
+            "type": "AssignmentExpression",
+            "operator": "=",
+            "left": {
+              "type": "MemberExpression",
+              "object": {
+                "type": "ThisExpression"
+              },
+              "property": {
+                "type": "Identifier",
+                "name": "name",
+                "decorators": []
+              },
+              "computed": false,
+              "optional": false
+            },
+            "right": {
+              "type": "StringLiteral",
+              "value": "hello"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "constructor",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "AssignmentExpression",
+  "operator": "=",
+  "left": {
+    "type": "MemberExpression",
+    "object": {
+      "type": "ThisExpression"
+    },
+    "property": {
+      "type": "Identifier",
+      "name": "name",
+      "decorators": []
+    },
+    "computed": false,
+    "optional": false
+  },
+  "right": {
+    "type": "StringLiteral",
+    "value": "hello"
+  }
+}
+---
+Found Expression:
+{
+  "type": "MemberExpression",
+  "object": {
+    "type": "ThisExpression"
+  },
+  "property": {
+    "type": "Identifier",
+    "name": "name",
+    "decorators": []
+  },
+  "computed": false,
+  "optional": false
+}
+---
+Found Expression:
+{
+  "type": "ThisExpression"
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "name",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "StringLiteral",
+  "value": "hello"
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "a",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "CallExpression",
+  "callee": {
+    "type": "Identifier",
+    "name": "GoodGreeter",
+    "decorators": []
+  },
+  "arguments": [],
+  "optional": false
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "GoodGreeter",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "main",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "m",
+  "typeAnnotation": {
+    "type": "ETSPrimitiveType"
+  },
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "ETSPrimitiveType"
+}
+---
+Found Expression:
+{
+  "type": "NumberLiteral",
+  "value": 1
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "n",
+  "typeAnnotation": {
+    "type": "ETSPrimitiveType"
+  },
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "ETSPrimitiveType"
+}
+---
+Found Expression:
+{
+  "type": "NumberLiteral",
+  "value": 2
+}
+---
+Found Expression:
+{
+  "type": "CallExpression",
+  "callee": {
+    "type": "MemberExpression",
+    "object": {
+      "type": "Identifier",
+      "name": "console",
+      "decorators": []
+    },
+    "property": {
+      "type": "Identifier",
+      "name": "log",
+      "decorators": []
+    },
+    "computed": false,
+    "optional": false
+  },
+  "arguments": [
+    {
+      "type": "BinaryExpression",
+      "operator": "+",
+      "left": {
+        "type": "Identifier",
+        "name": "m",
+        "decorators": []
+      },
+      "right": {
+        "type": "Identifier",
+        "name": "n",
+        "decorators": []
+      }
+    }
+  ],
+  "optional": false
+}
+---
+Found Expression:
+{
+  "type": "MemberExpression",
+  "object": {
+    "type": "Identifier",
+    "name": "console",
+    "decorators": []
+  },
+  "property": {
+    "type": "Identifier",
+    "name": "log",
+    "decorators": []
+  },
+  "computed": false,
+  "optional": false
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "console",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "log",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "BinaryExpression",
+  "operator": "+",
+  "left": {
+    "type": "Identifier",
+    "name": "m",
+    "decorators": []
+  },
+  "right": {
+    "type": "Identifier",
+    "name": "n",
+    "decorators": []
+  }
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "m",
+  "decorators": []
+}
+---
+Found Expression:
+{
+  "type": "Identifier",
+  "name": "n",
+  "decorators": []
+}
+---
+After check:
+---
+After lowerings:
+---

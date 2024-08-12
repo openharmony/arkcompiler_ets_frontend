@@ -1,0 +1,196 @@
+Hi there!
+---
+After parse:
+---
+class GoodGreeter {
+  public name: string;
+  
+  public static invoke(): int {
+    return 5;
+  }
+  
+  public constructor() {
+    this.name = "hello";
+  }
+  
+}
+
+let a = GoodGreeter()
+function main() {
+  let m: int = 1;
+  let n: int = 2;
+  console.log((m + n));
+}
+
+---
+class GoodGreeter {
+  public name: string;
+  
+  public static invoke(): int {
+    return 5;
+  }
+  
+  public constructor() {
+    this.name = "hello";
+  }
+  
+}
+
+---
+class GoodGreeter {
+  public name: string;
+  
+  public static invoke(): int {
+    return 5;
+  }
+  
+  public constructor() {
+    this.name = "hello";
+  }
+  
+}
+
+---
+GoodGreeter
+---
+public name: string;
+
+---
+name
+---
+string
+---
+string
+---
+string
+---
+public static invoke(): int {
+  return 5;
+}
+
+---
+invoke
+---
+(): int {
+  return 5;
+}
+
+---
+(): int {
+  return 5;
+}
+
+---
+invoke
+---
+int
+---
+return 5;
+---
+return 5;
+---
+5
+---
+public constructor() {
+  this.name = "hello";
+}
+
+---
+constructor
+---
+() {
+  this.name = "hello";
+}
+
+---
+() {
+  this.name = "hello";
+}
+
+---
+constructor
+---
+this.name = "hello";
+---
+this.name = "hello";
+---
+this.name = "hello"
+---
+this.name
+---
+this
+---
+name
+---
+"hello"
+---
+let a = GoodGreeter()
+---
+a = GoodGreeter()
+---
+a
+---
+GoodGreeter()
+---
+GoodGreeter
+---
+function main() {
+  let m: int = 1;
+  let n: int = 2;
+  console.log((m + n));
+}
+
+---
+() {
+  let m: int = 1;
+  let n: int = 2;
+  console.log((m + n));
+}
+
+---
+main
+---
+let m: int = 1;
+let n: int = 2;
+console.log((m + n));
+---
+let m: int = 1;
+---
+m: int = 1
+---
+m
+---
+int
+---
+1
+---
+let n: int = 2;
+---
+n: int = 2
+---
+n
+---
+int
+---
+2
+---
+console.log((m + n));
+---
+console.log((m + n))
+---
+console.log
+---
+console
+---
+log
+---
+(m + n)
+---
+m
+---
+n
+---
+After check:
+---
+After lowerings:
+---
