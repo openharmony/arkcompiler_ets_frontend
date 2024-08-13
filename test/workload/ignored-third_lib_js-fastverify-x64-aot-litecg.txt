@@ -21,10 +21,6 @@ jsDiff_test
 #18342
 mathjs_test
 
-#18481
-bignumber_test
-libphonenumber_test
-
 #18487
 pako_test
 
