@@ -17,12 +17,12 @@
  * Export: a, b, c, d, e
  * Expect toplevel elements to avoid being obfuscated as a, b, c, d, e, since they're export elements
  */
-let g = 1;
-function f(): void { }
-class h {
+let u = 1;
+function t(): void { }
+class v {
 }
-namespace i { }
-type j = {};
+namespace w { }
+type x = {};
 export let a = 1;
 export let b = 1;
 export let c = 1;

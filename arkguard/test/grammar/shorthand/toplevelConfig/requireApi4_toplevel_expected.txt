@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import f1 from 'assert';
-const { areaTest: g1, circumferenceTest: h1 } = require('./exportsApi4_toplevel');
-const { PI: i1 } = Math;
-f1(g1(3) == 9 * i1, 'success');
-f1(h1(2) == 4 * i1, 'success');
+import d1 from 'assert';
+const { areaTest: e1, circumferenceTest: f1 } = require('./exportsApi4_toplevel');
+const { PI: g1 } = Math;
+d1(e1(3) == 9 * g1, 'success');
+d1(f1(2) == 4 * g1, 'success');

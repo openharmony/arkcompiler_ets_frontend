@@ -1,6 +1,5 @@
 {
   "IdentifierCache": {
-    "#default": "default",
     "#PI": "PI",
     "#Student": "h",
     "#Lesson": "i",
@@ -14,6 +13,7 @@
     "subtract#b": "q",
     "add#a": "r",
     "add#b": "s",
+    "#add:17:19": "add",
     "#subtract:21:23": "g",
     "#multiply:25:27": "multiply"
   },

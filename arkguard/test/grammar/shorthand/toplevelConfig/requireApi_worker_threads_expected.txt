@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 // 顶层作用域
-const { Worker: l1, isMainThread: m1, parentPort: n1, workerData: o1, MessagePort: p1 } = require('worker_threads');
+const { Worker: j1, isMainThread: k1, parentPort: l1, workerData: m1, MessagePort: n1 } = require('worker_threads');
 // 非顶层作用域
-function j1() {
-    const { resourceLimits: s1, threadId: t1, BroadcastChannel: u1 } = require('worker_threads');
+function h1() {
+    const { resourceLimits: q1, threadId: r1, BroadcastChannel: s1 } = require('worker_threads');
+    let t1 = q1;
+    let u1 = r1;
     let v1 = s1;
-    let w1 = t1;
-    let x1 = u1;
 }
-j1();
-function k1() {
-    let q1 = l1;
-    let r1 = o1;
+h1();
+function i1() {
+    let o1 = j1;
+    let p1 = m1;
 }
-k1();
+i1();

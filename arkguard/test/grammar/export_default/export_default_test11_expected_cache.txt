@@ -1,0 +1,8 @@
+{
+  "IdentifierCache": {
+    "#ComplexTest": "m"
+  },
+  "MemberMethodCache": {
+    "complexFunc:18:18": "o"
+  }
+}

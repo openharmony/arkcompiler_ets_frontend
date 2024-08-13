@@ -3,9 +3,8 @@
     "#consoleInFunctionExp": "h",
     "#ConsoleInClass": "i",
     "#ConsoleInClass2": "j",
-    "#__function": "k",
     "#consoleInArrowFunc:16:18": "g",
-    "#funExp:20:22": "l"
+    "#funExp:20:22": "k"
   },
   "MemberMethodCache": {
     "ConsoleInClass:25:27": "i",

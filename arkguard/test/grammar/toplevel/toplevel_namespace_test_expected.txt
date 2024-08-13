@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let l2 = 1;
-namespace m2 {
-    export let f2 = l2;
+let m2 = 1;
+namespace n2 {
+    export let f2 = m2;
     export function b() { }
 }
 export let var2 = 1;

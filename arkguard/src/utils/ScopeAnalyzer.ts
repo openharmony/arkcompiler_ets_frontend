@@ -318,7 +318,23 @@ namespace secharmony {
         if (def.exportSymbol) {
           current.exportNames.add(def.name);
           root.fileExportNames.add(def.name);
-          current.addDefinition(def.exportSymbol, true);
+          if (def.exportSymbol.name === def.name) {
+            /* For export declaration, `def` and its `exportSymbol` has same name,
+                eg. export class Ability {}
+                  def.name: "Ability"
+                  def.exportSymbol.name: "Ability"
+                Collect the `def.exportSymbol` since import symbol is asscociated with it.
+            */
+            current.addDefinition(def.exportSymbol, true);
+          } else {
+            /* For default exports, `def` and its `exportSymbol` has different name,
+                eg. export default class Ability {}
+                  def.name: "Ability"
+                  def.exportSymbol.name: "default"
+              Collect the `def` symbol since we should obfuscate "Ability" instead of "default".
+            */
+            current.addDefinition(def);
+          }
         } else {
           current.addDefinition(def);
         }
@@ -705,7 +721,11 @@ namespace secharmony {
       if ((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent)) {
         symbol = checker.getSymbolAtLocation(node.name ? node.name : node.parent.name);
       } else {
-        symbol = checker.getSymbolAtLocation(node.name);
+        if (isFunctionDeclaration(node)) {
+          symbol = NodeUtils.findSymbolOfIdentifier(checker, node.name);
+        } else {
+          symbol = checker.getSymbolAtLocation(node.name);
+        }
       }
       if (symbol) {
         Reflect.set(symbol, 'isFunction', true);
@@ -719,8 +739,14 @@ namespace secharmony {
        * }
        * // the above getaccessor and setaccessor were obfuscated as identifiers.
        */
-      if (!(isGetAccessor(node) || isSetAccessor(node)) && node.symbol && current.parent && !current.parent.defs.has(node.symbol)) {
-        current.parent.defs.add(node.symbol);
+      if (!(isGetAccessor(node) || isSetAccessor(node)) && symbol && current.parent && !current.parent.defs.has(symbol)) {
+        /*
+          Handle the case when `FunctionLikeDeclaration` node is as initializer of variable declaration.
+          eg. const foo = function bar() {};
+          The `current` scope is the function's scope, the `current.parent` scope is where the function is defined.
+          `foo` has already added in the parent scope, we need to add `bar` here too.
+         */
+        current.parent.defs.add(symbol);
       }
 
       if (isFunctionDeclaration(node) || isMethodDeclaration(node)) {
@@ -850,7 +876,7 @@ namespace secharmony {
       let symbol: Symbol = null;
 
       try {
-        symbol = checker.getSymbolAtLocation(node);
+        symbol = NodeUtils.findSymbolOfIdentifier(checker, node);
       } catch (e) {
         console.error(e);
         return;

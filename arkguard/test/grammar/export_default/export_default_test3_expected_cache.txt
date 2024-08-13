@@ -1,0 +1,11 @@
+{
+  "IdentifierCache": {
+    "#DefaultClass": "v",
+    "#PIValue": "l",
+    "#helloMessage": "k",
+    "#cls": "i"
+  },
+  "MemberMethodCache": {
+    "testFunc:18:18": "j"
+  }
+}

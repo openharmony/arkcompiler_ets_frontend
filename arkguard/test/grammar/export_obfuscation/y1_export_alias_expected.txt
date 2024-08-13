@@ -15,13 +15,13 @@
 export function m5() {
     return '11';
 }
-interface n5 {
-    q5: number;
+interface o5 {
+    r5: number;
 }
-class o5 {
-    r5: number = 2;
+class p5 {
+    s5: number = 2;
 }
-export default function fooOrignal2() {
+export default function n5() {
     return 22;
 }
-export { n5, o5 as p5 };
+export { o5, p5 as q5 };
