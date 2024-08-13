@@ -1,4 +1,4 @@
-export default class Student {
+export default class h {
     name: string;
     l: number;
     constructor(e1: string, f1: number) {
@@ -16,13 +16,13 @@ class c1 {
 interface i {
     id: number;
     m: string;
-    q: Student[];
+    q: h[];
 }
 ;
 export type d1 = {
     m: number;
     name: string;
 };
-export type j = Student;
+export type j = h;
 export type { c1 };
 export { i };

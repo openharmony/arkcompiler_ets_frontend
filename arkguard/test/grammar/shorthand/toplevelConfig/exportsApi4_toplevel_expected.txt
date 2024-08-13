@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 const { PI: l } = Math;
-exports.areaTest = (p) => l * p ** 2;
-exports.circumferenceTest = (o) => 2 * l * o;
+exports.areaTest = (n) => l * n ** 2;
+exports.circumferenceTest = (m) => 2 * l * m;

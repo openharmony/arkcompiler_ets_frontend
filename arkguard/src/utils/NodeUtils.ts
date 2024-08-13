@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-import type {ClassElement, Expression, Identifier, Node, ObjectBindingPattern, SourceFile, StructDeclaration} from 'typescript';
+import type {Expression, Identifier, Node, ObjectBindingPattern, SourceFile, TypeChecker} from 'typescript';
 import {
+  Symbol,
   SyntaxKind,
   getModifiers,
   isBinaryExpression,
@@ -39,7 +40,7 @@ import {
   isPropertySignature,
   isQualifiedName,
   isSetAccessor,
-  isVariableDeclaration
+  isVariableDeclaration,
 } from 'typescript';
 import { isParameterPropertyModifier } from './OhsUtil';
 import { Extension } from '../common/type';
@@ -230,5 +231,27 @@ export class NodeUtils {
       return true;
     }
     return false;
+  }
+
+  public static findSymbolOfIdentifier(checker: TypeChecker, node: Identifier): Symbol | undefined {
+    let sym: Symbol | undefined = checker.getSymbolAtLocation(node);
+    if (!sym || (sym && sym.name !== 'default')) {
+      return sym;
+    }
+    /* Handle default exports, eg. export default class Ability {};
+       The expected symbol we want to find to obfuscate is named "Ability",
+       but `getSymbolAtLocation` will return the symbol named "default", so we need to continue to search.
+    */
+    let localSyms: Symbol[] = checker.getSymbolsInScope(node, sym.flags);
+    for (let i = 0; i < localSyms.length; i++) {
+      const localSym = localSyms[i];
+      // `localSym` named "Ability" has property `exportSymbol` named "default" that we find by `getSymbolAtLocation`,
+      // So the `localSym` is what we want to obfuscate.
+      if (localSym && localSym.name === node.escapedText && localSym.exportSymbol === sym) {
+        sym = localSym;
+        break;
+      }
+    }
+    return sym;
   }
 }

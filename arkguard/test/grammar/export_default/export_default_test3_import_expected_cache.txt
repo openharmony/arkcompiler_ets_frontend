@@ -1,0 +1,7 @@
+{
+  "IdentifierCache": {
+    "#DefaultClassAlias": "a1",
+    "#cls": "i"
+  },
+  "MemberMethodCache": {}
+}

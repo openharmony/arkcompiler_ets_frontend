@@ -15,15 +15,15 @@
 /**
  * we should avoid get an obfuscated name as f2, g2, h2
  */
-type d2 = number;
-declare class e2 {
+type e2 = number;
+declare class i2 {
 }
-declare function c2();
-declare namespace i2 { }
-type j2 = number;
+declare function d2();
+declare namespace j2 { }
+type k2 = number;
 declare module "testModule" {
     import { f2, g2, h2 } from "fs";
-    let var1: d2;
-    let var2: j2;
-    let var3: e2;
+    let var1: e2;
+    let var2: k2;
+    let var3: i2;
 }

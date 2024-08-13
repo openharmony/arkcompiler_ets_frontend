@@ -18,9 +18,9 @@
  * Expect toplevel elements to avoid being obfuscated as a1, b1, c1, d1, e1, since they're export elements
  */
 import { b1, a1, c1, d1, e1 } from './toplevel_import_test2';
-let g1 = 1;
-function f1(): void { }
-class h1 {
+let h1 = 1;
+function g1(): void { }
+class i1 {
 }
-namespace i1 { }
-type j1 = {};
+namespace j1 { }
+type k1 = {};
