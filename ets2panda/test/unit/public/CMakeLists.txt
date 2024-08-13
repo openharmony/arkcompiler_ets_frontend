@@ -11,6 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ets2panda_add_gtest(ast_builder_test
+    CPP_SOURCES ast_builder_test.cpp
+)
+
 ets2panda_add_gtest(es2panda_public_test
     CPP_SOURCES es2panda_public_test.cpp
 )
