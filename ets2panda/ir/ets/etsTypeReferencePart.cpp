@@ -95,23 +95,46 @@ checker::Type *ETSTypeReferencePart::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
+checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *const checker,
+                                                         const Identifier *const ident)
+{
+    if ((ident->Variable() != nullptr) && (ident->Variable()->Declaration()->IsTypeAliasDecl())) {
+        return checker->HandleTypeAlias(name_, typeParams_);
+    }
+
+    if (ident->Name() == compiler::Signatures::UNDEFINED) {
+        return checker->GlobalETSUndefinedType();
+    }
+
+    if (ident->Name() == compiler::Signatures::NULL_LITERAL) {
+        return checker->GlobalETSNullType();
+    }
+
+    if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
+        ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
+        return checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
+    }
+
+    if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
+        auto *const baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
+        if (baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
+            checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
+            return ctx.Result();
+        }
+
+        return baseType;
+    }
+
+    return nullptr;
+}
+
 checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 {
     if (prev_ == nullptr) {
         if (name_->IsIdentifier()) {
-            const auto ident = name_->AsIdentifier();
-            if ((ident->Variable() != nullptr) && (ident->Variable()->Declaration()->IsTypeAliasDecl())) {
-                SetTsType(checker->HandleTypeAlias(name_, typeParams_));
-            } else if (ident->Name() == compiler::Signatures::UNDEFINED) {
-                SetTsType(checker->GlobalETSUndefinedType());
-            } else if (ident->Name() == compiler::Signatures::NULL_LITERAL) {
-                SetTsType(checker->GlobalETSNullType());
-            } else if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME ||
-                       ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
-                       ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
-                SetTsType(checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8()));
-            }
+            SetTsType(HandleInternalTypes(checker, name_->AsIdentifier()));
         }
+
         if (TsType() == nullptr) {
             checker::Type *baseType = checker->GetReferencedTypeBase(name_);
 

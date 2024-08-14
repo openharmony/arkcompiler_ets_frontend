@@ -625,7 +625,6 @@ public:
                                          const std::string_view &utilityType);
     // Partial
     Type *HandlePartialType(Type *typeToBePartial);
-    Type *HandlePartialTypeNode(ir::TypeNode *typeParamNode);
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
     ir::ClassDefinition *CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition,
                                                        const ir::ClassDefinition *classDef);
@@ -648,7 +647,6 @@ public:
     void MakePropertiesReadonly(ETSObjectType *classType);
     // Required
     Type *HandleRequiredType(Type *typeToBeRequired);
-    Type *HandleRequiredTypeNode(ir::TypeNode *typeParamNode);
     void MakePropertiesNonNullish(ETSObjectType *classType);
     template <PropertyType PROP_TYPE>
     void MakePropertyNonNullish(ETSObjectType *classType, varbinder::LocalVariable *prop);
