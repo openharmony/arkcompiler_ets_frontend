@@ -375,8 +375,12 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::Identif
     }
     functionContext.AddFlag(throwMarker);
 
-    // clang-format off
     bool isDeclare = InAmbientContext();
+    if (functionContext.IsAsync() && isDeclare) {
+        ThrowSyntaxError("The modifier async cannot be used in an ambient context.");
+    }
+
+    // clang-format off
     ir::ModifierFlags mFlags = isDeclare ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE;
     ir::ScriptFunctionFlags funcFlags =
         isDeclare ? (functionContext.Flags() | ir::ScriptFunctionFlags::EXTERNAL) : functionContext.Flags();

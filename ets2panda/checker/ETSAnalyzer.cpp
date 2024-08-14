@@ -138,7 +138,9 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             }
         }
 
-        ComposeAsyncImplMethod(checker, node);
+        if (node->Function()->HasBody()) {
+            ComposeAsyncImplMethod(checker, node);
+        }
     }
 }
 

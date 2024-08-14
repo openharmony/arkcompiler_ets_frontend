@@ -15,6 +15,4 @@
 
 declare async function foo(): Promise<void>
 
-function main(): void {
-
-}
+/* @@? 19:1 Error SyntaxError: The modifier async cannot be used in an ambient context.  */
