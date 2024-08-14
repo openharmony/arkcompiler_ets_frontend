@@ -563,36 +563,38 @@ void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeRe
 {
     auto typeName = typeReference->TypeName();
     ASSERT(typeName != nullptr);
+    if (!typeName->IsIdentifier()) {
+        fieldType |= FieldType::GENERIC;
+        return;
+    }
 
-    if (typeName->IsIdentifier()) {
-        util::StringView propertyName = typeName->AsIdentifier()->Name();
-        binder::ScopeFindResult result = scope_->Find(propertyName);
+    util::StringView propertyName = typeName->AsIdentifier()->Name();
+    binder::ScopeFindResult result = scope_->Find(propertyName);
 
-        // identify import type
-        parser::SourceTextModuleRecord *moduleRecord = pg->Binder()->Program()->TypeModuleRecord();
-        const auto &regularImportEntries = moduleRecord->GetRegularImportEntries();
-        if (regularImportEntries.find(propertyName) != regularImportEntries.end()) {
-            fieldType |= FieldType::GENERIC;
+    // identify import type
+    parser::SourceTextModuleRecord *moduleRecord = pg->Binder()->Program()->TypeModuleRecord();
+    const auto &regularImportEntries = moduleRecord->GetRegularImportEntries();
+    if (regularImportEntries.find(propertyName) != regularImportEntries.end()) {
+        fieldType |= FieldType::GENERIC;
+        return;
+    }
+
+    if (IsTypeParam(propertyName) || (result.variable != nullptr && result.variable->IsModuleVariable())) {
+        fieldType |= FieldType::GENERIC;
+        return;
+    }
+
+    // ts enum type
+    const ir::AstNode *declNode = GetDeclNodeFromIdentifier(typeName->AsIdentifier());
+    if (declNode != nullptr) {
+        auto originalNode = declNode->Original();
+        if (originalNode && originalNode->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
+            fieldType |= FieldType::STRING | FieldType::NUMBER;
             return;
-        }
-
-        if (IsTypeParam(propertyName) || (result.variable != nullptr && result.variable->IsModuleVariable())) {
-            fieldType |= FieldType::GENERIC;
-            return;
-        }
-
-        const ir::AstNode *declNode = GetDeclNodeFromIdentifier(typeName->AsIdentifier());
-
-        if (declNode != nullptr) {
-            auto originalNode = declNode->Original();
-            if (originalNode && originalNode->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
-                fieldType |= FieldType::STRING | FieldType::NUMBER;
-                return;
-            }
         }
     }
-    // sendable class / sendable interface will be TS_TYPE_REF
-    // other types that are not sendable type will be restricted in the linter
+
+    // sendable class and sendable fuction
     fieldType |= FieldType::TS_TYPE_REF;
 }
 
