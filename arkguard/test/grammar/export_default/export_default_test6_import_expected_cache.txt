@@ -1,0 +1,7 @@
+{
+  "IdentifierCache": {
+    "#AnonymousDefaultClass": "d1",
+    "#cls": "i"
+  },
+  "MemberMethodCache": {}
+}

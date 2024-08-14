@@ -1,0 +1,6 @@
+{
+  "IdentifierCache": {
+    "#anonymousDefaultGenFunction": "f1"
+  },
+  "MemberMethodCache": {}
+}

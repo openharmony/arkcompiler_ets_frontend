@@ -3,23 +3,23 @@ class a1 {
     public e1(): number {
         return this.data.length;
     }
-    public getData(x1: number): string {
-        return this.data[x1];
+    public getData(u1: number): string {
+        return this.data[u1];
     }
 }
 class b1 {
-    create(s1: string, t1: any, u1: any, v1: any, w1: any): void { }
+    create(p1: string, q1: any, r1: any, s1: any, t1: any): void { }
     ;
 }
 let c1: b1 = new b1();
 class d1 {
-    constructor(q1, r1) {
+    constructor(n1, o1) {
         this.source = new a1();
-        this.f1(q1);
+        this.f1(n1);
     }
-    f1(p1) {
-        if (p1.source !== undefined) {
-            this.source = p1.source;
+    f1(m1) {
+        if (m1.source !== undefined) {
+            this.source = m1.source;
         }
     }
     g1() { }
@@ -28,15 +28,15 @@ class d1 {
     h1() {
         this.g1();
         {
-            const e1 = (k1, l1?: number) => {
-                const m1 = k1;
+            const e1 = (i1, j1?: number) => {
+                const k1 = i1;
                 {
-                    const n1 = () => {
+                    const l1 = () => {
                     };
-                    n1();
+                    l1();
                 }
             };
-            const f1 = (i1: string, j1?: number) => j1?.toString() + i1;
+            const f1 = (g1: string, h1?: number) => h1?.toString() + g1;
             c1.create("1", this, this.source, e1, f1);
         }
     }

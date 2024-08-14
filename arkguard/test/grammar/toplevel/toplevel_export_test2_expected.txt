@@ -17,14 +17,14 @@
  * Export: l, k, m, n, o, p, q, r
  * Expect toplevel elements to avoid being obfuscated as l, k, m, n, o, p, q, r, since they're export elements
  */
-let t = 1;
-function s(): void { }
-class u {
+let z = 1;
+function y(): void { }
+class a1 {
 }
-namespace v { }
-type w = {};
-interface x {
+namespace b1 { }
+type c1 = {};
+interface d1 {
 }
-let y = 1;
-namespace z { }
-export { t as l, s as k, u as m, v as n, w as o, x as p, y as q, z as r };
+let e1 = 1;
+namespace f1 { }
+export { z as l, y as k, a1 as m, b1 as n, c1 as o, d1 as p, e1 as q, f1 as r };
