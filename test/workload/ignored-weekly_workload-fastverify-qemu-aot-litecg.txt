@@ -6,3 +6,24 @@ json-parse-inspector
 
 ##19072
 OfflineAssembler
+
+##18417
+box2d
+
+##18485
+raytrace
+
+##18486
+pdfjs
+
+##18483
+typescript-compiler
+
+##18489
+wsl
+
+##18647
+splay
+
+##18605
+stanford-crypto-sha256

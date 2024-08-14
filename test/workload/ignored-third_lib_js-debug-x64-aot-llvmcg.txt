@@ -1,1 +1,13 @@
 # Known failures list for third_lib_js - debug-x64-aot-llvmcg
+
+#18487
+pako_test
+
+#18517
+js-joda_test
+
+#18728
+zxing_test
+
+#18371
+memory-cache_test

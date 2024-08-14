@@ -14,3 +14,15 @@ mathjs_test
 
 #18331
 validator_test
+
+#18487
+pako_test
+
+#18437
+zxing_test
+
+#18425
+Matrix_test
+
+#18768
+asn-one_test

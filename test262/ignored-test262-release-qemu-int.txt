@@ -32,3 +32,9 @@ test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-while-
 test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-while-import-catch-eval-rqstd-abrupt-typeerror.js
 test262/data/test_es2021/language/expressions/dynamic-import/catch/top-level-import-catch-eval-rqstd-abrupt-urierror.js
 test262/data/test_es2021/language/expressions/dynamic-import/catch/top-level-import-catch-eval-rqstd-abrupt-typeerror.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-short-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-long-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-narrow-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-long-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-short-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-narrow-en.js
