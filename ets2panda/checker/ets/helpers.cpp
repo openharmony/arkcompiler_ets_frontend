@@ -1677,39 +1677,6 @@ Type *ETSChecker::MaybeUnboxExpression(ir::Expression *expr)
     return primitive;
 }
 
-util::StringView ETSChecker::TypeToName(Type *type) const
-{
-    auto typeKind = TypeKind(type);
-    switch (typeKind) {
-        case TypeFlag::ETS_BOOLEAN: {
-            return "boolean";
-        }
-        case TypeFlag::BYTE: {
-            return "byte";
-        }
-        case TypeFlag::CHAR: {
-            return "char";
-        }
-        case TypeFlag::SHORT: {
-            return "short";
-        }
-        case TypeFlag::INT: {
-            return "int";
-        }
-        case TypeFlag::LONG: {
-            return "long";
-        }
-        case TypeFlag::FLOAT: {
-            return "float";
-        }
-        case TypeFlag::DOUBLE: {
-            return "number";
-        }
-        default:
-            UNREACHABLE();
-    }
-}
-
 void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> const &cases)
 {
     //  Just to avoid extra nesting level

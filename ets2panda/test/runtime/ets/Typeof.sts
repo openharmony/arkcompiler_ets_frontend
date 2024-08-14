@@ -48,14 +48,16 @@ function main() {
   let x05: long
   let x06: float
   let x07: double
+  let x08: bigint
   assert(typeof x00 == "boolean")
-  assert(typeof x01 == "byte")
-  assert(typeof x02 == "char")
-  assert(typeof x03 == "short")
-  assert(typeof x04 == "int")
-  assert(typeof x05 == "long")
-  assert(typeof x06 == "float")
+  assert(typeof x01 == "number")
+  assert(typeof x02 == "number")
+  assert(typeof x03 == "number")
+  assert(typeof x04 == "number")
+  assert(typeof x05 == "number")
+  assert(typeof x06 == "number")
   assert(typeof x07 == "number")
+  assert(typeof x08 == "bigint")
 
   let x000: Boolean
   let x001: Byte
@@ -65,14 +67,16 @@ function main() {
   let x005: Long
   let x006: Float
   let x007: Double
+  let x008: BigInt
   assert(typeof x000 == "boolean")
-  assert(typeof x001 == "byte")
-  assert(typeof x002 == "char")
-  assert(typeof x003 == "short")
-  assert(typeof x004 == "int")
-  assert(typeof x005 == "long")
-  assert(typeof x006 == "float")
+  assert(typeof x001 == "number")
+  assert(typeof x002 == "number")
+  assert(typeof x003 == "number")
+  assert(typeof x004 == "number")
+  assert(typeof x005 == "number")
+  assert(typeof x006 == "number")
   assert(typeof x007 == "number")
+  assert(typeof x008 == "bigint")
 
   let x0 = new Boolean()
   let x1 = new Byte()
@@ -82,14 +86,16 @@ function main() {
   let x5 = new Long()
   let x6 = new Float()
   let x7 = new Double()
+  let x8 = new BigInt()
   assert(typeof x0 == "boolean")
-  assert(typeof x1 == "byte")
-  assert(typeof x2 == "char")
-  assert(typeof x3 == "short")
-  assert(typeof x4 == "int")
-  assert(typeof x5 == "long")
-  assert(typeof x6 == "float")
+  assert(typeof x1 == "number")
+  assert(typeof x2 == "number")
+  assert(typeof x3 == "number")
+  assert(typeof x4 == "number")
+  assert(typeof x5 == "number")
+  assert(typeof x6 == "number")
   assert(typeof x7 == "number")
+  assert(typeof x8 == "bigint")
 
   // ---------------
   // ids with literals
@@ -138,13 +144,14 @@ function main() {
   // exprs with numbers (objects)
 
   assert(typeof new Boolean() == "boolean")
-  assert(typeof new Byte() == "byte")
-  assert(typeof new Char() == "char")
-  assert(typeof new Short() == "short")
-  assert(typeof new Int() == "int")
-  assert(typeof new Long() == "long")
-  assert(typeof new Float() == "float")
+  assert(typeof new Byte() == "number")
+  assert(typeof new Char() == "number")
+  assert(typeof new Short() == "number")
+  assert(typeof new Int() == "number")
+  assert(typeof new Long() == "number")
+  assert(typeof new Float() == "number")
   assert(typeof new Number() == "number")
+  assert(typeof new BigInt() == "bigint")
 
   // ---------------
   // exprs with literals
@@ -153,6 +160,7 @@ function main() {
   assert(typeof undefined == "undefined")
   assert(typeof true == "boolean")
   assert(typeof false == "boolean")
+  assert(typeof 1n == "bigint")
 
   // ---------------
   // exprs with objects and enums
@@ -167,5 +175,8 @@ function main() {
   assert(typeof ("123" + "124") == "string")
   x004 = 9
   x4 = 6
-  assert(typeof (x4 + x004) == "int")
+  assert(typeof (x4 + x004) == "number")
+  x8 = 1n
+  x08 = new BigInt(10)
+  assert(typeof (x8 + x08) == "bigint")
 }

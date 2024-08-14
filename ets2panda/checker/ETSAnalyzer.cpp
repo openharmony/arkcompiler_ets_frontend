@@ -1492,6 +1492,66 @@ checker::Type *ETSAnalyzer::Check(ir::ThisExpression *expr) const
     return expr->TsType();
 }
 
+// Get string literal type as potential typeof result type with respect to spec p.7.17
+static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *checker)
+{
+    if (auto unboxed = checker->MaybePrimitiveBuiltinType(argType);
+        unboxed->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        switch (checker->TypeKind(unboxed)) {
+            case TypeFlag::ETS_BOOLEAN: {
+                return checker->CreateETSStringLiteralType("boolean");
+            }
+            case TypeFlag::BYTE:
+            case TypeFlag::CHAR:
+            case TypeFlag::SHORT:
+            case TypeFlag::INT:
+            case TypeFlag::LONG:
+            case TypeFlag::FLOAT:
+            case TypeFlag::DOUBLE: {
+                return checker->CreateETSStringLiteralType("number");
+            }
+            default:
+                UNREACHABLE();
+        }
+    }
+    if (argType->IsETSUndefinedType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("undefined"));
+    }
+    if (argType->IsETSArrayType() || argType->IsETSNullType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("object"));
+    }
+    if (argType->IsETSIntEnumType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("number"));
+    }
+    if (argType->IsETSStringType() || argType->IsETSStringEnumType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("string"));
+    }
+    if (argType->IsETSBigIntType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("bigint"));
+    }
+    if (argType->IsETSFunctionType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("function"));
+    }
+
+    return checker->GlobalBuiltinETSStringType();
+}
+
+static checker::Type *ComputeTypeOfType(ETSChecker *checker, checker::Type *argType)
+{
+    checker::Type *ret = nullptr;
+    ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
+    if (argType->IsETSUnionType()) {
+        for (auto *it : argType->AsETSUnionType()->ConstituentTypes()) {
+            checker::Type *elType = ComputeTypeOfType(checker, it);
+            types.push_back(elType);
+        }
+        ret = checker->CreateETSUnionType(std::move(types));
+    } else {
+        ret = GetTypeOfStringType(argType, checker);
+    }
+    return ret;
+}
+
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TypeofExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1500,7 +1560,7 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TypeofExpression *expr) c
     }
 
     expr->Argument()->Check(checker);
-    expr->SetTsType(GetETSChecker()->GlobalBuiltinETSStringType());
+    expr->SetTsType(ComputeTypeOfType(checker, expr->Argument()->TsType()));
     return expr->TsType();
 }
 

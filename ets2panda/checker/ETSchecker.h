@@ -546,7 +546,6 @@ public:
     void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
-    util::StringView TypeToName(Type *type) const;
     Type *MaybeBoxExpression(ir::Expression *expr);
     Type *MaybeUnboxExpression(ir::Expression *expr);
     Type *MaybePromotedBuiltinType(Type *type) const;

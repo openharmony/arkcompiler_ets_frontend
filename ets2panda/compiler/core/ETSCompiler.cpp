@@ -1197,31 +1197,10 @@ void ETSCompiler::Compile(const ir::ThisExpression *expr) const
 void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    checker::ETSChecker const *checker = etsg->Checker();
     ir::Expression *arg = expr->Argument();
-
     arg->Compile(etsg);
-    // NOTE(vpukhov): infer result type in analyzer
-    auto argType = arg->TsType();
-    if (auto unboxed = checker->MaybePrimitiveBuiltinType(argType);
-        unboxed->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        etsg->LoadAccumulatorString(expr, checker->TypeToName(unboxed));
-        return;
-    }
-    if (argType->IsETSUndefinedType()) {
-        etsg->LoadAccumulatorString(expr, "undefined");
-        return;
-    }
-    if (argType->IsETSArrayType() || argType->IsETSNullType()) {
-        etsg->LoadAccumulatorString(expr, "object");
-        return;
-    }
-    if (argType->IsETSIntEnumType()) {
-        etsg->LoadAccumulatorString(expr, "number");
-        return;
-    }
-    if (argType->IsETSStringType() || argType->IsETSStringEnumType()) {
-        etsg->LoadAccumulatorString(expr, "string");
+    if (expr->TsType()->IsETSStringType() && expr->TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
+        etsg->LoadAccumulatorString(expr, expr->TsType()->AsETSStringType()->GetValue());
         return;
     }
     auto argReg = etsg->AllocReg();
