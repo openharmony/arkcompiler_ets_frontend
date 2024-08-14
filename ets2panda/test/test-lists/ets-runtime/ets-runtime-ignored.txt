@@ -78,3 +78,7 @@ annotation_tests/Muti-AnnotationsDefineAndUseForClass.sts
 # 15276
 n_overrideWithNullable.sts
 nullableType.sts
+
+#Issue 17949
+#SyntaxError: Cannot find type 'C'.
+lambdaWithLocalClassAccess.sts
