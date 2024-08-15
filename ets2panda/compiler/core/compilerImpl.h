@@ -64,6 +64,7 @@ public:
     }
 
     static void DumpAsm(const ark::pandasm::Program *prog);
+    static std::string GetPhasesList(const ScriptExtension ext);
 
     ark::pandasm::Program *Emit(public_lib::Context *context);
 

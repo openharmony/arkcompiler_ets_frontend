@@ -85,6 +85,11 @@ bool Compiler::IsAnyError() const noexcept
     return compiler_->IsAnyError();
 }
 
+std::string Compiler::GetPhasesList() const
+{
+    return compiler::CompilerImpl::GetPhasesList(ext_);
+}
+
 void Compiler::DumpAsm(const pandasm::Program *prog)
 {
     compiler::CompilerImpl::DumpAsm(prog);

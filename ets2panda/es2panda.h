@@ -256,6 +256,8 @@ public:
         return error_;
     }
 
+    std::string GetPhasesList() const;
+
     std::vector<util::Plugin> const &Plugins()
     {
         return plugins_;
