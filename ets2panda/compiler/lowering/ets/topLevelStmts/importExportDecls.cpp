@@ -141,7 +141,8 @@ GlobalClassHandler::TriggeringCCtorMethodsAndPrograms ImportExportDecls::HandleG
 
             ASSERT(!originalName.Empty());
 
-            if (fieldMap_.find(originalName) == fieldMap_.end() && !isType) {
+            if (fieldMap_.find(originalName) == fieldMap_.end() && !isType &&
+                importedSpecifiersForExportCheck_.count(originalName) == 0) {
                 util::ErrorHandler::ThrowSyntaxError(
                     varbinder_->Program(), "Cannot find name '" + originalName.Mutf8() + "' to export", startLoc);
             }
@@ -168,16 +169,19 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
 void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView originalFieldName, util::StringView exportName,
                                                        lexer::SourcePosition startLoc)
 {
-    ir::AstNode *field = fieldMap_.find(originalFieldName)->second;
-    if ((field->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
-        // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
-        // element using its original name and also an alias, like: export {test_func, test_func as foo}.
-        util::ErrorHandler::ThrowSyntaxError(
-            varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
-            startLoc);
-    }
+    auto fieldItem = fieldMap_.find(originalFieldName);
+    if (fieldItem != fieldMap_.end()) {
+        ir::AstNode *field = fieldItem->second;
+        if ((field->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
+            // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
+            // element using its original name and also an alias, like: export {test_func, test_func as foo}.
+            util::ErrorHandler::ThrowSyntaxError(
+                varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
+                startLoc);
+        }
 
-    field->AddModifier(ir::ModifierFlags::EXPORT);
+        field->AddModifier(ir::ModifierFlags::EXPORT);
+    }
 
     if (exportName != originalFieldName) {
         if (auto declItem = fieldMap_.find(exportName); declItem != fieldMap_.end()) {
@@ -190,7 +194,10 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
                     "The given name '" + exportName.Mutf8() + "' is already used in another export", startLoc);
             }
         }
-        field->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+
+        if (fieldItem != fieldMap_.end()) {
+            fieldItem->second->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+        }
     }
 }
 
@@ -232,6 +239,15 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
             util::ErrorHandler::ThrowSyntaxError(
                 varbinder_->Program(),
                 "The given name '" + local->Name().Mutf8() + "' is already used in another export", local->Start());
+        }
+    }
+}
+
+void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl)
+{
+    for (ir::AstNode *spec : importDecl->AsETSImportDeclaration()->Specifiers()) {
+        if (spec->IsImportSpecifier()) {
+            importedSpecifiersForExportCheck_.emplace(spec->AsImportSpecifier()->Imported()->Name());
         }
     }
 }

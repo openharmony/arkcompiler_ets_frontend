@@ -87,6 +87,7 @@ private:
     void VisitClassDeclaration(ir::ClassDeclaration *classDecl) override;
     void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl) override;
     void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl) override;
+    void VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl) override;
 
 private:
     varbinder::ETSBinder *varbinder_ {nullptr};
@@ -94,6 +95,7 @@ private:
     std::map<util::StringView, lexer::SourcePosition> exportNameMap_;
     std::set<util::StringView> exportedTypes_;
     parser::ETSParser *parser_ {nullptr};
+    std::set<util::StringView> importedSpecifiersForExportCheck_;
 };
 }  // namespace ark::es2panda::compiler
 
