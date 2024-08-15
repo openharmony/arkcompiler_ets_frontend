@@ -179,7 +179,6 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
                 varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
                 startLoc);
         }
-
         field->AddModifier(ir::ModifierFlags::EXPORT);
     }
 
