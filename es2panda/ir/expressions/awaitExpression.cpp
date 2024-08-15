@@ -49,7 +49,6 @@ void AwaitExpression::Compile(compiler::PandaGen *pg) const
 
 checker::Type *AwaitExpression::Check(checker::Checker *checker) const
 {
-    // TODO(aszilagyi)
     return checker->GlobalAnyType();
 }
 

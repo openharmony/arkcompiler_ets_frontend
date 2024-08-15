@@ -189,7 +189,6 @@ ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         const auto startPos = lexer_->Save();
 
-        // TODO(rsipka): ParseTsGenericArrowFunction and ParseTsTypeAssertion might be in a common function
         ir::Expression *expr = nullptr;
         try {
             expr = ParseTsGenericArrowFunction();
@@ -2360,7 +2359,6 @@ ir::SequenceExpression *ParserImpl::ParseSequenceExpression(ir::Expression *star
 ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
 {
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        // TODO(rsipka): negative cases are not covered, probably this is not a complete solution yet
         return ParseTsTypeAssertion(flags);
     }
 
