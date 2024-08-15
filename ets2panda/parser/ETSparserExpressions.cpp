@@ -572,7 +572,7 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS);
     Lexer()->NextToken();
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *type = ParseTypeAnnotation(&options);
 
     auto *asExpression = AllocNode<ir::TSAsExpression>(primaryExpr, type, false);
@@ -633,7 +633,7 @@ ir::Expression *ETSParser::ParseNewExpression()
 
     Lexer()->NextToken();  // eat new
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *baseTypeReference = ParseBaseTypeReference(&options);
     ir::TypeNode *typeReference = baseTypeReference;
     if (typeReference == nullptr) {

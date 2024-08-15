@@ -13,10 +13,13 @@
  * limitations under the License.
  */
 
-package mypack;
+function (): void {
+}
 
-let wont_exist: number = 8;
+function (): {
+    return 77;
+}
 
-this file will contain parse error, but compilation of 'package_module_1' is not aborted, file is just ignored
-
-/* @@? 20:6 Error SyntaxError: Unexpected token: 'identification literal'. */
+/* @@? 16:10 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
+/* @@? 19:10 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
+/* @@? 19:14 Error SyntaxError: Invalid Type */

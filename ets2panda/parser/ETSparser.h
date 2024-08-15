@@ -308,6 +308,7 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
+    bool ParseTriplePeriod(bool spreadTypePresent);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
     std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const;
@@ -390,6 +391,8 @@ private:
     ir::ClassDefinition *CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
                                                                ir::TypeNode *typeReference,
                                                                ir::TypeNode *baseTypeReference);
+    ir::Identifier *CreateInvokeIdentifier();
+
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();

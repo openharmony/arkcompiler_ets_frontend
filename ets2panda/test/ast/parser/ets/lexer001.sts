@@ -14,4 +14,4 @@
  */
 
 1
-/* @@? 16:1 Error SyntaxError: Unexpected token: ''.  */
+/* @@? 16:1 Error SyntaxError: Unexpected token: 'number literal'.  */

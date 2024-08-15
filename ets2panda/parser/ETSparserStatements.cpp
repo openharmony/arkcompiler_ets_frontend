@@ -165,7 +165,9 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
     switch (token.Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
             result = ParseFunctionDeclaration(false, memberModifiers);
-            result->SetStart(startLoc);
+            if (result != nullptr) {  // Error processing.
+                result->SetStart(startLoc);
+            }
             break;
         }
         case lexer::TokenType::KEYW_CONST: {
@@ -236,10 +238,12 @@ ir::DebuggerStatement *ETSParser::ParseDebuggerStatement()
     ThrowUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
 }
 
-ir::Statement *ETSParser::ParseFunctionStatement([[maybe_unused]] const StatementParsingFlags flags)
+ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags flags)
 {
     ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
-    ThrowSyntaxError("Nested functions are not allowed");
+    LogSyntaxError("Nested functions are not allowed");
+    ParserImpl::ParseFunctionStatement(flags);  // Try to parse function body but skip result.
+    return nullptr;
 }
 
 ir::Statement *ETSParser::ParseAssertStatement()

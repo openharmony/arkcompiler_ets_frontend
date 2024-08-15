@@ -13,10 +13,25 @@
  * limitations under the License.
  */
 
-package mypack;
+class A {
+    function f(): int {
+        return 55
+    }
 
-let wont_exist: number = 8;
+    let x: number = 7
+    let y = "abc"
 
-this file will contain parse error, but compilation of 'package_module_1' is not aborted, file is just ignored
+    a: number = "abc"
+    b: int = 44
+}
 
-/* @@? 20:6 Error SyntaxError: Unexpected token: 'identification literal'. */
+class 77 {}
+
+class {}
+
+/* @@? 17:5 Error SyntaxError: Identifier expected, got 'function'. */
+/* @@? 21:5 Error SyntaxError: Identifier expected, got 'let'. */
+/* @@? 22:5 Error SyntaxError: Identifier expected, got 'let'. */
+/* @@? 28:7 Error SyntaxError: Identifier expected, got 'number literal'. */
+/* @@? 30:7 Error SyntaxError: Identifier expected, got '{'. */
+/* @@? 30:8 Error SyntaxError: Unexpected token, expected: '{'. */

@@ -124,7 +124,7 @@ ir::Expression *TSParser::ParsePotentialAsExpression(ir::Expression *expr)
 
     Lexer()->NextToken();  // eat 'as'
     TypeAnnotationParsingOptions options =
-        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::ALLOW_CONST;
+        TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::ALLOW_CONST;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
     bool isConst = false;
@@ -193,7 +193,7 @@ ir::AnnotatedExpression *TSParser::ParsePatternElementGetReturnNode(ExpressionPa
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
                 Lexer()->NextToken();  // eat ':'
-                TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+                TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
                 returnNode->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
             }
             return returnNode;
@@ -415,7 +415,7 @@ private:
         ir::TypeNode *returnTypeAnnotation = nullptr;
         if (lexer->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             lexer->NextToken();  // eat ':'
-            TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+            TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
             returnTypeAnnotation = parser->ParseTypeAnnotation(&options);
         }
 
@@ -500,7 +500,7 @@ ir::AnnotatedExpression *TSParser::ParseVariableDeclaratorKey(VariableParsingFla
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         init->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
     }
 
@@ -550,7 +550,7 @@ void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNod
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         returnNode->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
     }
 
@@ -587,7 +587,7 @@ ir::Expression *TSParser::ParseArrowFunctionRestParameter(lexer::SourcePosition 
 
     Lexer()->NextToken();
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *returnTypeAnnotation = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
@@ -605,7 +605,7 @@ ir::Expression *TSParser::ParseArrowFunctionNoParameter(lexer::SourcePosition st
 {
     Lexer()->NextToken();
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *returnTypeAnnotation = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
@@ -630,7 +630,7 @@ ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
         return ParseArrowFunctionRestParameter(start);

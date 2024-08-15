@@ -16,7 +16,7 @@
 class A {
   name = c'A'
 }
-open class B extends A {
+class B extends A {
   name = c'B'
 }
 class C extends B {

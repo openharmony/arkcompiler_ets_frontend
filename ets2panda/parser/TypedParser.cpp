@@ -158,7 +158,7 @@ ir::TSTypeAssertion *TypedParser::ParseTypeAssertion()
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat '<'
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
@@ -222,7 +222,7 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
     ir::TypeNode *returnTypeAnnotation = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         returnTypeAnnotation = ParseTypeAnnotation(&options);
     }
 
@@ -367,7 +367,7 @@ ir::TypeNode *TypedParser::ParseFunctionReturnType(ParserStatus status)
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options =
-            TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::RETURN_TYPE;
+            TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::RETURN_TYPE;
         return ParseTypeAnnotation(&options);
     }
 
@@ -390,7 +390,7 @@ ir::TypeNode *TypedParser::ParseInterfaceExtendsElement()
 
     ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         typeParamInst = ParseTypeParameterInstantiation(&options);
         heritageEnd = typeParamInst->End();
     }
@@ -429,7 +429,7 @@ ArenaVector<ir::TSInterfaceHeritage *> TypedParser::ParseInterfaceExtendsClause(
 ir::TSTypeParameterDeclaration *TypedParser::ParseFunctionTypeParameters()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto options = TypeAnnotationParsingOptions::THROW_ERROR;
+        auto options = TypeAnnotationParsingOptions::REPORT_ERROR;
         return ParseTypeParameterDeclaration(&options);
     }
 
@@ -444,10 +444,13 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
     Lexer()->NextToken();  // eat interface keyword
 
     auto id = ExpectIdentifier(true);
+    if (id == nullptr) {  // Error processing.
+        return nullptr;
+    }
 
     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto options = TypeAnnotationParsingOptions::THROW_ERROR;
+        auto options = TypeAnnotationParsingOptions::REPORT_ERROR;
         typeParamDecl = ParseTypeParameterDeclaration(&options);
     }
 
@@ -532,9 +535,10 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         ir::AstNode *member = ParseTypeLiteralOrInterfaceMember();
-        if (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
-            member->AsMethodDefinition()->Function()->IsOverload() &&
-            member->AsMethodDefinition()->Function()->Body() != nullptr) {
+        // Error processing.
+        if (member == nullptr || (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
+                                  member->AsMethodDefinition()->Function()->IsOverload() &&
+                                  member->AsMethodDefinition()->Function()->Body() != nullptr)) {
             continue;
         }
 
@@ -667,17 +671,17 @@ ir::Statement *TypedParser::ParseEnumDeclaration(bool isConst, [[maybe_unused]] 
 ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOptions *options)
 {
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    bool throwError = ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0;
+    bool reportError = ((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT || Lexer()->GetToken().IsDefinableTypeName()) {
-        if (!throwError) {
+        if (!reportError) {
             return nullptr;
         }
 
         ThrowSyntaxError("Type parameter declaration expected");
     }
 
-    if (throwError) {
+    if (reportError) {
         CheckIfTypeParameterNameIsReserved();
     }
 
@@ -690,8 +694,8 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
 
     TypeAnnotationParsingOptions newOptions = TypeAnnotationParsingOptions::NO_OPTS;
 
-    if (throwError) {
-        newOptions |= TypeAnnotationParsingOptions::THROW_ERROR;
+    if (reportError) {
+        newOptions |= TypeAnnotationParsingOptions::REPORT_ERROR;
     }
 
     ir::TypeNode *constraint = nullptr;
@@ -725,7 +729,7 @@ ir::AstNode *TypedParser::ParseTypeParameterDeclarationImpl(TypeAnnotationParsin
         ir::TSTypeParameter *currentParam = ParseTypeParameter(&newOptions);
 
         if (currentParam == nullptr) {
-            ASSERT((newOptions & TypeAnnotationParsingOptions::THROW_ERROR) == 0);
+            ASSERT((newOptions & TypeAnnotationParsingOptions::REPORT_ERROR) == 0);
             return nullptr;
         }
 
@@ -770,7 +774,7 @@ ir::TSTypeParameterDeclaration *TypedParser::ParseTypeParameterDeclaration(TypeA
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
-        if ((*options & TypeAnnotationParsingOptions::THROW_ERROR) == 0) {
+        if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
         ThrowSyntaxError("Expected closing '>'.");
@@ -809,7 +813,7 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> TypedParser::Pa
             Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
         }
 
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         superTypeParams = ParseTypeParameterInstantiation(&options);
     }
 
@@ -827,7 +831,7 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> TypedParser::Pa
             Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
         }
 
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         implTypeParams = ParseTypeParameterInstantiation(&options);
     }
 
@@ -894,7 +898,7 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
 
     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto options = TypeAnnotationParsingOptions::THROW_ERROR;
+        auto options = TypeAnnotationParsingOptions::REPORT_ERROR;
         typeParamDecl = ParseTypeParameterDeclaration(&options);
     }
 
@@ -1290,7 +1294,7 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
-        if ((*options & TypeAnnotationParsingOptions::THROW_ERROR) == 0) {
+        if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
         ThrowSyntaxError("Expected closing '>'.");
@@ -1320,7 +1324,9 @@ ir::Statement *TypedParser::ParseDeclareAndDecorators(StatementParsingFlags flag
     ir::Statement *stmt = TypedParser::ParseStatement(flags);
 
     GetContext().Status() &= ~ParserStatus::IN_AMBIENT_CONTEXT;
-    AddDecorators(stmt, decorators);
+    if (stmt != nullptr) {  // Error processing.
+        AddDecorators(stmt, decorators);
+    }
 
     return stmt;
 }
@@ -1388,7 +1394,7 @@ void TypedParser::ParsePotentialOptionalFunctionParameter(ir::AnnotatedExpressio
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         returnNode->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
     }
 }

@@ -16,4 +16,5 @@
 
 function function1(is: number | string): (number | string) is number { return };
 
-/* @@? 17:63 Error SyntaxError: Unexpected token  */
+/* @@? 17:63 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 17:72 Error SyntaxError: return keyword should be used in function body */

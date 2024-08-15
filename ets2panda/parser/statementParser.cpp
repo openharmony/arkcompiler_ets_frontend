@@ -230,8 +230,12 @@ ir::Statement *ParserImpl::ParseFunctionStatement(StatementParsingFlags flags)
         return ParseFunctionDeclaration(false, ParserStatus::NO_OPTS);
     }
 
-    ArenaVector<ir::Statement *> stmts(Allocator()->Adapter());
     auto *funcDecl = ParseFunctionDeclaration(false, ParserStatus::NO_OPTS);
+    if (funcDecl == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
+    ArenaVector<ir::Statement *> stmts(Allocator()->Adapter());
     stmts.push_back(funcDecl);
 
     auto *localBlockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(stmts));
@@ -329,17 +333,16 @@ void ParserImpl::CheckFunctionDeclaration(StatementParsingFlags flags)
 
 void ParserImpl::ConsumeSemicolon(ir::Statement *statement)
 {
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
+    auto tokenType = lexer_->GetToken().Type();
+    if (tokenType == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
         statement->SetEnd(lexer_->GetToken().End());
         lexer_->NextToken();
         return;
     }
 
-    if (!lexer_->GetToken().NewLine()) {
-        if (lexer_->GetToken().Type() != lexer::TokenType::EOS &&
-            lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            ThrowSyntaxError("Unexpected token");
-        }
+    if (!lexer_->GetToken().NewLine() && tokenType != lexer::TokenType::EOS &&
+        tokenType != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        LogSyntaxError({"Unexpected token '", TokenToString(tokenType), "'."});
     }
 }
 
@@ -357,7 +360,9 @@ ArenaVector<ir::Statement *> ParserImpl::ParseStatementList(StatementParsingFlag
         (flags & StatementParsingFlags::GLOBAL) != 0 ? lexer::TokenType::EOS : lexer::TokenType::PUNCTUATOR_RIGHT_BRACE;
 
     while (lexer_->GetToken().Type() != endType) {
-        statements.push_back(ParseStatement(flags));
+        if (auto statement = ParseStatement(flags); statement != nullptr) {  // Error processing.
+            statements.push_back(statement);
+        }
     }
 
     return statements;

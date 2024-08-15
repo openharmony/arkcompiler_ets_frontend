@@ -37,7 +37,7 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     ALLOW_CONST = 1U << 1U,
     IN_INTERSECTION = 1U << 2U,
     RESTRICT_EXTENDS = 1U << 3U,
-    THROW_ERROR = 1U << 4U,
+    REPORT_ERROR = 1U << 4U,
     CAN_BE_TS_TYPE_PREDICATE = 1U << 5U,
     BREAK_AT_NEW_LINE = 1U << 6U,
     RETURN_TYPE = 1U << 7U,
