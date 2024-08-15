@@ -105,8 +105,13 @@ bool IsAllowedNarrowingReferenceConversionObjectObject(TypeRelation *const relat
     // 6. S is an interface type, T is a class type, and T names a class that is marked as final and that
     //    implements the interface named by S.
     relation->Result(false);
-    return (source->HasObjectFlag(ETSObjectFlags::INTERFACE) && target->HasObjectFlag(ETSObjectFlags::CLASS) &&
-            target->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(target, source));
+    if (source->HasObjectFlag(ETSObjectFlags::INTERFACE) && target->HasObjectFlag(ETSObjectFlags::CLASS) &&
+        target->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(target, source)) {
+        return true;
+    }
+
+    auto *const etsChecker = relation->GetChecker()->AsETSChecker();
+    return relation->IsIdenticalTo(etsChecker->GetNonConstantType(source), etsChecker->GetNonConstantType(target));
 }
 
 bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *const source, Type *const target)

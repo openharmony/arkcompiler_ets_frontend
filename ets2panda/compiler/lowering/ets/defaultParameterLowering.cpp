@@ -161,7 +161,7 @@ ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefin
     auto *paramInst = CreateTypeParameterInstantiation(method, ctx);
     callExpression = checker->AllocNode<ir::CallExpression>(accessor != nullptr ? accessor : callee,
                                                             std::move(funcCallArgs), paramInst, false, false);
-    callExpression->SetStart(method->Start());  // NOTE: Used to locate the original node when an error occurs
+    callExpression->SetRange(method->Range());  // NOTE: Used to locate the original node when an error occurs
     ir::Statement *stmt = nullptr;
     if ((method->Function()->ReturnTypeAnnotation() != nullptr) ||
         ((method->Function()->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {

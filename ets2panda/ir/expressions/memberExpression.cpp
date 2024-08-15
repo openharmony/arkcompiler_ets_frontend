@@ -247,6 +247,18 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
     return TsTypeOrError();
 }
 
+checker::Type *MemberExpression::SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType)
+{
+    SetObjectType(objectType);
+    auto [resType, resVar] = ResolveObjectMember(checker);
+    if (resType == nullptr) {
+        SetTsType(checker->GlobalTypeError());
+        return checker->GlobalTypeError();
+    }
+    SetPropVar(resVar);
+    return AdjustType(checker, resType);
+}
+
 bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
 {
     std::size_t index;

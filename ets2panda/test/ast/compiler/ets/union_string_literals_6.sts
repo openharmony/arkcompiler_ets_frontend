@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,14 +13,15 @@
  * limitations under the License.
  */
 
-let func: (a: int, b: int) => void;
-
-function func2(): (a: int, b: int) => void {
-    return func;
+function id<T>(v: Object): T {
+    return v as T
 }
 
-function main(): void {
-    func2()(1, "foo");
+function main() {
+    let s = id<"a"|"b"|"c">("d")
+    if (s == "d") {
+        console.log(s)
+    }
 }
 
-/* @@? 23:16 Error TypeError: Type '"foo"' is not compatible with type 'Int' at index 2  */
+/* @@? 22:9 Error TypeError: Operator '==' cannot be applied to types '"a"|"b"|"c"' and '"d"'. */

@@ -94,7 +94,7 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
             return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
         }
     }
-    return lub;
+    return checker->GetNonConstantType(lub);
 }
 
 void ETSUnionType::Identical(TypeRelation *relation, Type *other)
@@ -297,18 +297,25 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
             ct->AsETSEnumType()->GetDecl()->BoxedClass()->Check(checker);
             ct = ct->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
         } else {
-            ct = checker->MaybePromotedBuiltinType(checker->GetNonConstantTypeFromPrimitiveType(ct));
+            ct = checker->MaybePromotedBuiltinType(ct);
         }
     }
     // Reduce subtypes
     for (auto cmpIt = types.begin(); cmpIt != types.end(); ++cmpIt) {
         for (auto it = std::next(cmpIt); it != types.end();) {
-            if (auto merged = TryMergeTypes(relation, *cmpIt, *it); merged) {
-                *cmpIt = *merged;
-                it = types.erase(it);
-            } else {
-                it++;
+            auto merged = TryMergeTypes(relation, *cmpIt, *it);
+            if (!merged) {
+                ++it;
+                continue;
             }
+
+            if (merged == *cmpIt) {
+                it = types.erase(it);
+                continue;
+            }
+
+            cmpIt = types.erase(cmpIt);
+            it = std::next(cmpIt);
         }
     }
 }
@@ -734,4 +741,28 @@ bool ETSUnionType::HasNullishType(const ETSChecker *checker) const
 {
     return HasType(checker->GlobalETSNullType()) || HasType(checker->GlobalETSUndefinedType());
 }
+
+bool ETSUnionType::IsOverlapWith(TypeRelation *relation, Type *type)
+{
+    // NOTE(aakmaev): replace this func with intersection type when it will be implemented
+    for (auto const &ct : ConstituentTypes()) {
+        if (type->IsETSUnionType() && type->AsETSUnionType()->IsOverlapWith(relation, ct)) {
+            return true;
+        }
+        if (relation->IsSupertypeOf(ct, type) || relation->IsSupertypeOf(type, ct)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+ArenaVector<Type *> ETSUnionType::GetNonConstantTypes(ETSChecker *checker, const ArenaVector<Type *> &types)
+{
+    ArenaVector<Type *> nonConstTypes(checker->Allocator()->Adapter());
+    for (const auto &ct : types) {
+        nonConstTypes.push_back(checker->GetNonConstantType(ct));
+    }
+    return nonConstTypes;
+}
+
 }  // namespace ark::es2panda::checker

@@ -48,6 +48,7 @@
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsScript.h"
+#include "ir/ets/etsStringLiteralType.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNullishTypes.h"
@@ -373,6 +374,12 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
         }
         case lexer::TokenType::KEYW_UNDEFINED: {
             typeAnnotation = AllocNode<ir::ETSUndefinedType>();
+            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+            return std::make_pair(typeAnnotation, true);
+        }
+        case lexer::TokenType::LITERAL_STRING: {
+            typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);

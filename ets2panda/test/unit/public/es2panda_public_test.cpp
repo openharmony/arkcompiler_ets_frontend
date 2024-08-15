@@ -59,7 +59,7 @@ TEST_F(Es2PandaLibTest, TypeError)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ERROR);
     ASSERT_EQ(std::string(impl_->ContextErrorMessage(ctx)),
-              "TypeError: Type 'string' cannot be assigned to type 'int'[type-error.sts:1,32]");
+              "TypeError: Type '\"\"' cannot be assigned to type 'int'[type-error.sts:1,32]");
     impl_->DestroyContext(ctx);
 }
 

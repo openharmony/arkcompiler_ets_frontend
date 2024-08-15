@@ -600,13 +600,8 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
                      ir::Expression *stArgument)
 {
     //  First (or single) return statement in the function:
-    funcReturnType = stArgument == nullptr ? checker->GlobalVoidType() : stArgument->Check(checker);
-    if (funcReturnType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-        // remove CONSTANT type modifier if exists
-        funcReturnType =
-            funcReturnType->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
-        funcReturnType->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
-    }
+    funcReturnType =
+        stArgument == nullptr ? checker->GlobalVoidType() : checker->GetNonConstantType(stArgument->Check(checker));
     /*
     when st_argment is ArrowFunctionExpression, need infer type for st_argment
     example code:
@@ -667,7 +662,7 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
             checker->SetArrayPreferredTypeForNestedMemberExpressions(stArgument->AsMemberExpression(), funcReturnType);
         }
 
-        checker::Type *argumentType = stArgument->Check(checker);
+        checker::Type *argumentType = checker->GetNonConstantType(stArgument->Check(checker));
 
         //  previous return statement(s) don't have any value
         if (funcReturnType->IsETSVoidType() && !argumentType->IsETSVoidType()) {
@@ -679,13 +674,6 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
         const auto name = containingFunc->Scope()->InternalName().Mutf8();
         if (!CheckArgumentVoidType(funcReturnType, checker, name, st)) {
             return;
-        }
-
-        // remove CONSTANT type modifier if exists
-        if (argumentType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-            argumentType =
-                argumentType->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
-            argumentType->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
         }
 
         auto *const relation = checker->Relation();

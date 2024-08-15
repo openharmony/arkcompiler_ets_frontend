@@ -21,6 +21,7 @@
 #include "compiler/base/lreference.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
+#include "checker/ETSchecker.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
 #include "parser/ETSparser.h"
 
@@ -69,6 +70,7 @@ void ETSCompiler::Compile(const ir::TemplateElement *expr) const
 {
     ETSGen *etsg = GetETSGen();
     etsg->LoadAccumulatorString(expr, expr->Cooked());
+    etsg->SetAccumulatorType(expr->TsType());
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
@@ -648,8 +650,7 @@ void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
     compiler::RegScope rs(etsg);
     compiler::VReg lhs = etsg->AllocReg();
 
-    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS &&
-        (expr->Left()->TsType()->IsETSStringType() || expr->Right()->TsType()->IsETSStringType())) {
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS && expr->OperationType()->IsETSStringType()) {
         etsg->BuildString(expr);
         return;
     }

@@ -17,4 +17,4 @@ interface Document {
   createElement(tagName: "div"):  HTMLDivElement;
   createElement(tagName: "span"): HTMLSpanElement;
 }
-/* @@? 17:26 Error SyntaxError: Invalid Type  */
+/* @@? 17:35 Error SyntaxError: Cannot find type 'HTMLDivElement'. */

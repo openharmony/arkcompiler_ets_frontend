@@ -293,6 +293,10 @@ public:
     std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                                    lexer::TokenType operationType, lexer::SourcePosition pos,
                                                    bool forcePromotion = false);
+    std::tuple<Type *, Type *> CheckArithmeticOperations(
+        ir::Expression *expr,
+        std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
+        std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
     checker::Type *CheckBinaryOperatorMulDivMod(
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
@@ -500,7 +504,7 @@ public:
     Type *HandleTypeAlias(ir::Expression *name, const ir::TSTypeParameterInstantiation *typeParams);
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
-    Type *GetNonConstantTypeFromPrimitiveType(Type *type) const;
+    Type *GetNonConstantType(Type *type);
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);

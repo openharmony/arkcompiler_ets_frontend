@@ -316,10 +316,18 @@ bool ETSChecker::IsConstantExpression(ir::Expression *expr, Type *type)
     return (type->HasTypeFlag(TypeFlag::CONSTANT) && (expr->IsIdentifier() || expr->IsMemberExpression()));
 }
 
-Type *ETSChecker::GetNonConstantTypeFromPrimitiveType(Type *type) const
+Type *ETSChecker::GetNonConstantType(Type *type)
 {
     if (type->IsETSStringType()) {
         return GlobalBuiltinETSStringType();
+    }
+
+    if (type->IsETSBigIntType()) {
+        return GlobalETSBigIntType();
+    }
+
+    if (type->IsETSUnionType()) {
+        return CreateETSUnionType(ETSUnionType::GetNonConstantTypes(this, type->AsETSUnionType()->ConstituentTypes()));
     }
 
     if (!type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {

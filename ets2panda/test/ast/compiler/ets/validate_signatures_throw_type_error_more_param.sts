@@ -17,4 +17,4 @@ function main() : void {
     let e: Float = new Float(6,"3");
 }
 
-/* @@? 17:20 Error TypeError: No matching construct signature for std.core.Float(int, string)  */
+/* @@? 17:20 Error TypeError: No matching construct signature for std.core.Float(int, "3")  */

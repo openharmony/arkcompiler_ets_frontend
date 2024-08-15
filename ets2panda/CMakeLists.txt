@@ -337,6 +337,7 @@ set(ES2PANDA_LIB_SRC
   ir/ets/etsPrimitiveType.cpp
   ir/ets/etsNullishTypes.cpp
   ir/ets/etsScript.cpp
+  ir/ets/etsStringLiteralType.cpp
   ir/ets/etsTuple.cpp
   ir/ets/etsTypeReference.cpp
   ir/ets/etsTypeReferencePart.cpp

@@ -46,6 +46,7 @@
 #include "ir/ets/etsParameterExpression.h"
 #include "ir/ets/etsPrimitiveType.h"
 #include "ir/ets/etsScript.h"
+#include "ir/ets/etsStringLiteralType.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"

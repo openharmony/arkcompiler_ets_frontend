@@ -285,6 +285,7 @@ libes2panda_sources = [
   "ir/ets/etsPrimitiveType.cpp",
   "ir/ets/etsReExportDeclaration.cpp",
   "ir/ets/etsScript.cpp",
+  "ir/ets/etsStringLiteralType.cpp",
   "ir/ets/etsStructDeclaration.cpp",
   "ir/ets/etsTuple.cpp",
   "ir/ets/etsTypeReference.cpp",

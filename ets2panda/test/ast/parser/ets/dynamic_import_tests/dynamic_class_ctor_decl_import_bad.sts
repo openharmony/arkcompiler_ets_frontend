@@ -22,4 +22,4 @@ import { A } from "dynamic_import_tests/modules/module"
 function main(): void {
     let x = new A("abc", 10)
 }
-/* @@? 23:19 Error TypeError: Type 'string' is not compatible with type 'double' at index 1  */
+/* @@? 23:19 Error TypeError: Type '"abc"' is not compatible with type 'double' at index 1  */

@@ -560,6 +560,12 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSUndefinedType *node) c
     return nullptr;
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSStringLiteralType *node) const
+{
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
+}
+
 // compile methods for EXPRESSIONS in alphabetical order
 
 checker::Type *ETSAnalyzer::GetPreferredType(ir::ArrayExpression *expr) const
@@ -690,7 +696,9 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
         }
 
         const bool isPreferredTuple = expr->preferredType_->IsETSTupleType();
-        auto *targetElementType = expr->GetPreferredType()->AsETSArrayType()->ElementType();
+        // NOTE(aakmaev): Need to rework type inference of array literal (#19096 internal issue)
+        auto *targetElementType =
+            checker->GetNonConstantType(expr->GetPreferredType()->AsETSArrayType()->ElementType());
         Type *targetElementTypeSecondary = nullptr;
         if (isPreferredTuple && !isArray) {
             targetElementTypeSecondary = expr->GetPreferredType()->AsETSTupleType()->ElementType();
@@ -1265,7 +1273,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     checker->Context().CombineSmartCasts(consequentSmartCasts);
 
     if (checker->IsTypeIdenticalTo(consequentType, alternateType)) {
-        expr->SetTsType(checker->GetNonConstantTypeFromPrimitiveType(consequentType));
+        expr->SetTsType(checker->GetNonConstantType(consequentType));
     } else {
         //  If possible and required update number literal type to the proper value (identical to left-side type)
         if (alternate->IsNumberLiteral() &&
@@ -1303,19 +1311,6 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
         checker->Context().CheckIdentifierSmartCastCondition(expr);
     }
     return expr->TsTypeOrError();
-}
-
-checker::Type *ETSAnalyzer::SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr,
-                                             ETSObjectType *objectType) const
-{
-    expr->SetObjectType(objectType);
-    auto [resType, resVar] = expr->ResolveObjectMember(checker);
-    if (resType == nullptr) {
-        expr->SetTsType(checker->GlobalTypeError());
-        return checker->GlobalTypeError();
-    }
-    expr->SetPropVar(resVar);
-    return expr->AdjustType(checker, resType);
 }
 
 std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *baseType, ir::MemberExpression *expr,
@@ -1363,7 +1358,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     ASSERT(!expr->IsOptional());
 
     ETSChecker *checker = GetETSChecker();
-    auto *baseType = checker->GetApparentType(expr->Object()->Check(checker));
+    auto *baseType = checker->GetNonConstantType(checker->GetApparentType(expr->Object()->Check(checker)));
     //  Note: don't use possible smart cast to null-like types.
     //        Such situation should be correctly resolved in the subsequent lowering.
     if (baseType->DefinitelyETSNullish() && expr->Object()->IsIdentifier()) {
@@ -1396,11 +1391,11 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
             return expr->AdjustType(checker, checker->GlobalIntType());
         }
 
-        return SetAndAdjustType(checker, expr, checker->GlobalETSObjectType());
+        return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
     }
 
     if (baseType->IsETSObjectType()) {
-        return SetAndAdjustType(checker, expr, baseType->AsETSObjectType());
+        return expr->SetAndAdjustType(checker, baseType->AsETSObjectType());
     }
 
     if (baseType->IsETSEnumType()) {
