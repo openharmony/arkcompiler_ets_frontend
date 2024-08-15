@@ -74,6 +74,16 @@ describe('test for TypeUtils', function () {
     it('functional test', function () {
       const checker = TypeUtils.createChecker(sourceFile);
       assert.notEqual(checker, undefined);
+
+      const checker1 = TypeUtils.createChecker(jsSourceFile);
+      assert.notEqual(checker1, undefined);
+    });
+
+    describe('test for function tsToJs', function () {
+      it('functional test', function () {
+        TypeUtils.tsToJs(sourceFile);
+        assert.strictEqual(sourceFile.fileName, 'demo.js');
+      });
     });
   });
 });
