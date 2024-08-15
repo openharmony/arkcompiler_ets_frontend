@@ -45,6 +45,9 @@ public:
 
     ir::Expression *MarkChainDynamic(ir::Expression *obj)
     {
+        if (obj == nullptr) {
+            return nullptr;
+        }
         auto dynamicType = Allocator()->New<checker::ETSDynamicType>(
             Allocator(), std::make_tuple("test", "test", Language::FromString("sts").value()),
             std::make_tuple(obj, checker::ETSObjectFlags::NO_OPTS, nullptr), false);

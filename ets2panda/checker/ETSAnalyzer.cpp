@@ -1827,9 +1827,11 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     if (exprType->IsETSStringType()) {
         elemType = checker->GetGlobalTypesHolder()->GlobalCharType();
     } else if (exprType->IsETSArrayType()) {
-        elemType = exprType->AsETSArrayType()->ElementType()->Instantiate(checker->Allocator(), checker->Relation(),
-                                                                          checker->GetGlobalTypesHolder());
-        elemType->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+        if (elemType = exprType->AsETSArrayType()->ElementType()->Instantiate(checker->Allocator(), checker->Relation(),
+                                                                              checker->GetGlobalTypesHolder());
+            elemType != nullptr) {
+            elemType->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+        }
     } else if (exprType->IsETSObjectType() || exprType->IsETSUnionType() || exprType->IsETSTypeParameter()) {
         elemType = st->CheckIteratorMethod(checker);
     }
@@ -1848,11 +1850,8 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
 
     if (!relation->IsAssignableTo(elemType, iterType)) {
         std::stringstream ss {};
-        ss << "Source element type '";
-        elemType->ToString(ss);
-        ss << "' is not assignable to the loop iterator type '";
-        iterType->ToString(ss);
-        ss << "'.";
+        ss << "Source element type '" << elemType->ToString() << "' is not assignable to the loop iterator type '"
+           << iterType->ToString() << "'.";
         checker->ThrowTypeError(ss.str(), st->Start());
     }
 
