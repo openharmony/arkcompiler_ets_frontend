@@ -12,16 +12,14 @@ test262/data/other_tests/language/expressions/compound-assignment/left-hand-side
 #18519
 test262/data/other_tests/built-ins/parseFloat/S15.1.2.3_A1_T2.js
 
-#18520
-test262/data/other_tests/built-ins/Math/pow/applying-the-exp-operator_A8.js
-test262/data/other_tests/built-ins/Math/pow/applying-the-exp-operator_A7.js
-test262/data/other_tests/built-ins/Number/isInteger/arg-is-not-number.js
-test262/data/other_tests/built-ins/Number/isSafeInteger/arg-is-not-number.js
+#18691
 test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-add.js
 test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-div.js
 test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-mult.js
 test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-rshift.js
 test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-srshift.js
+
+#18690
 test262/data/other_tests/language/statements/class/elements/privatefieldget-success-2.js
 test262/data/other_tests/language/statements/class/elements/privatefield-on-proxy.js
 test262/data/other_tests/language/statements/class/elements/privategetter-on-proxy.js
