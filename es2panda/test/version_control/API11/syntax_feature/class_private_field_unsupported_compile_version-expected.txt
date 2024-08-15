@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token in class property [class_private_field.js:17:5]

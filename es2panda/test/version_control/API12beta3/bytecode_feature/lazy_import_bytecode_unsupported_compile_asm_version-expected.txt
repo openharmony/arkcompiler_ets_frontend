@@ -1,0 +1,1 @@
+SyntaxError: Current configuration does not support using lazy import. Lazy import can be used in the beta3 version of API 12 or higher versions.
