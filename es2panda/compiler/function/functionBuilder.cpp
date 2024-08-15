@@ -123,7 +123,6 @@ VReg FunctionBuilder::FunctionReg(const ir::ScriptFunction *node) const
 void FunctionBuilder::Await(const ir::AstNode *node)
 {
     if (BuilderKind() == BuilderType::NORMAL) {
-        // TODO(frobert): Implement top-level await
         PandaGen::Unimplemented();
     }
 

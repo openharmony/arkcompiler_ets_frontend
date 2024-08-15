@@ -131,7 +131,7 @@ C++
 struct Ins {
     size_t line_number = 0;
     uint32_t column_number = 0;
-    std::string whole_line = "";  // TODO(mbolshov): redundant given file and line_number
+    std::string whole_line = "";
     size_t bound_left = 0;
     size_t bound_right = 0;
 }

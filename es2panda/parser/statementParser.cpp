@@ -1637,7 +1637,6 @@ ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosi
 
     const util::StringView &actualLabel = pos.token.Ident();
 
-    // TODO(frobert) : check correctness
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AWAIT && context_.IsModule()) {
         ThrowSyntaxError("'await' is a reserved identifier in module code", pos.token.Start());
     }
@@ -1944,7 +1943,6 @@ ir::TryStatement *ParserImpl::ParseTryStatement()
     return tryStatement;
 }
 
-// TODO(frobert) : merge into lexer::LexerNextTokenFlags
 void ParserImpl::ValidateDeclaratorId(bool isDeclare)
 {
     if (context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT) {
