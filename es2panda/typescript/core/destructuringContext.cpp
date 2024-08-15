@@ -126,6 +126,7 @@ void DestructuringContext::ValidateObjectLiteralType(ObjectType *objType, const 
 void DestructuringContext::HandleAssignmentPattern(const ir::AssignmentExpression *assignmentPattern, Type *inferedType,
                                                    bool validateDefault)
 {
+    CHECK_NOT_NULL(assignmentPattern);
     if (!assignmentPattern->Left()->IsArrayPattern()) {
         checker_->RemoveStatus(CheckerStatus::FORCE_TUPLE);
     }

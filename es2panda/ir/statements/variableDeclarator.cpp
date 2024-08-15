@@ -71,7 +71,9 @@ void VariableDeclarator::Compile(compiler::PandaGen *pg) const
 
 static void CheckSimpleVariableDeclaration(checker::Checker *checker, const ir::VariableDeclarator *declarator)
 {
+    CHECK_NOT_NULL(declarator);
     binder::Variable *bindingVar = declarator->Id()->AsIdentifier()->Variable();
+    CHECK_NOT_NULL(bindingVar);
     checker::Type *previousType = bindingVar->TsType();
     const ir::Expression *typeAnnotation = declarator->Id()->AsIdentifier()->TypeAnnotation();
     const ir::Expression *initializer = declarator->Init();

@@ -271,7 +271,8 @@ void AddEnumValueDeclaration(checker::Checker *checker, double number, binder::E
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindEnumMemberVariable(memberStr);
-        ASSERT(res && res->IsEnumVariable());
+        CHECK_NOT_NULL(res);
+        ASSERT(res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         enumVar->AsEnumVariable()->SetBackReference();
         enumVar->SetTsType(checker->GlobalStringType());
@@ -291,17 +292,15 @@ void InferEnumVariableType(checker::Checker *checker, binder::EnumVariable *vari
 {
     const ir::Expression *init = variable->Declaration()->Node()->AsTSEnumMember()->Init();
 
-    if (!init && *initNext) {
-        checker->ThrowTypeError("Enum member must have initializer.", variable->Declaration()->Node()->Start());
+    if (!init) {
+        if (*initNext) {
+            checker->ThrowTypeError("Enum member must have initializer.", variable->Declaration()->Node()->Start());
+        } else {
+            variable->SetValue(++(*value));
+            AddEnumValueDeclaration(checker, *value, variable);
+            return;
+        }
     }
-
-    if (!init && !*initNext) {
-        variable->SetValue(++(*value));
-        AddEnumValueDeclaration(checker, *value, variable);
-        return;
-    }
-
-    ASSERT(init);
 
     if (IsComputedEnumMember(init)) {
         if (*isLiteralEnum) {

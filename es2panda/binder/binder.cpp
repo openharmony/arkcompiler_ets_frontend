@@ -312,17 +312,16 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
         }
     }
 
+    if (res.variable == nullptr) {
+        return;
+    }
+
     if (res.level != 0) {
-        ASSERT(res.variable);
         if (!res.variable->Declaration()->IsDeclare() && !ident->Parent()->IsTSTypeReference() &&
             !ident->Parent()->IsTSTypeQuery() && !(bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM)) {
             util::Concurrent::ProcessConcurrent(Program()->GetLineIndex(), ident, res, program_);
             res.variable->SetLexical(res.scope, program_->PatchFixHelper());
         }
-    }
-
-    if (res.variable == nullptr) {
-        return;
     }
 
     auto decl = res.variable->Declaration();

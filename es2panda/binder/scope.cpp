@@ -289,7 +289,7 @@ util::StringView ClassScope::GetSelfScopeName()
         return util::UString(scopeName.str(), allocator_).View();
     }
     // To get the name for anonymous class
-    if (node_->Parent() && node_->Parent()->Parent()) {
+    if (node_ && node_->Parent() && node_->Parent()->Parent()) {
         scopeName << util::Helpers::GetName(allocator_, node_->Parent()->Parent());
         return util::UString(scopeName.str(), allocator_).View();
     }
