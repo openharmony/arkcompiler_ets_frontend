@@ -114,6 +114,7 @@ panda_gen(
 set(ES2PANDA_LIB_SRC
   ast_verifier/ASTVerifier.cpp
   ast_verifier/arithmeticOperationValid.cpp
+  ast_verifier/checkAbstractMethod.cpp
   ast_verifier/checkContext.cpp
   ast_verifier/checkInfiniteLoop.cpp
   ast_verifier/everyChildHasValidParent.cpp

@@ -71,6 +71,10 @@ ets2panda_add_gtest(ast_verifier_check_infinite_loop_test
     CPP_SOURCES ast_verifier_check_infinite_loop_test.cpp
 )
 
+ets2panda_add_gtest(ast_verifier_check_abstract_call_test
+    CPP_SOURCES ast_verifier_check_abstract_call_test.cpp
+)
+
 panda_add_library(e2p_test_plugin SHARED e2p_test_plugin.c)
 panda_target_include_directories(e2p_test_plugin
     PRIVATE "${ES2PANDA_PATH}"

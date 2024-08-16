@@ -15,6 +15,7 @@
 
 #include "ASTVerifier.h"
 #include "ast_verifier/sequenceExpressionHasLastType.h"
+#include "ast_verifier/checkAbstractMethod.h"
 #include "ast_verifier/checkInfiniteLoop.h"
 #include "ast_verifier/checkContext.h"
 #include "ast_verifier/everyChildHasValidParent.h"
@@ -52,6 +53,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
     AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
     AddInvariant<VariableNameIdentifierNameSame>(allocator, "VariableNameIdentifierNameSame");
+    AddInvariant<CheckAbstractMethod>(allocator, "CheckAbstractMethod");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)
