@@ -176,6 +176,10 @@ namespace secharmony {
     }
   }
 
+  export function updateImportOrExportDeclarationForTest(node: ImportDeclaration | ExportDeclaration): ImportDeclaration | ExportDeclaration {
+    return updateImportOrExportDeclaration(node);
+  }
+
   function isImportCall(n: Node): n is ImportCall {
     return n.kind === SyntaxKind.CallExpression && (<CallExpression>n).expression.kind === SyntaxKind.ImportKeyword;
   }
@@ -205,6 +209,10 @@ namespace secharmony {
       packageName = getAtBundlePgkName(filePath);
     }
     return localPackageSet && localPackageSet.has(packageName);
+  }
+
+  export function isLocalDependencyOhmUrlForTest(filePath: string): boolean {
+    return isLocalDependencyOhmUrl(filePath);
   }
 
   function getAtBundlePgkName(ohmUrl: string): string {
@@ -290,6 +298,10 @@ namespace secharmony {
     const mangleFilePath = mangleFileName(filePathWithoutSuffix);
     return mangleFilePath + extension;
   }
+
+  export function getMangleIncompletePathForTest(orignalPath: string): string {
+    return getMangleIncompletePath(orignalPath);
+  };
 
   export function mangleOhmUrl(ohmUrl: string): string {
     let mangledOhmUrl: string;
@@ -398,7 +410,7 @@ function tryValidateFileExisting(importPath: string): PathAndExtension | undefin
   } else {
     fileAbsPath = path.join(path.dirname(orignalFilePathForSearching), importPath);
   }
-  
+
   const filePathExtensionLess: string = path.normalize(fileAbsPath);
   for (let ext of extensionOrder) {
     const targetPath = filePathExtensionLess + ext;
