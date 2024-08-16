@@ -86,6 +86,9 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
         return;
     }
 
+    if (accType->IsIntType() && expr->TsType()->IsETSEnumType()) {
+        return;
+    }
     ASSERT_PRINT(false, std::string("Type mismatch after Expression::Compile: ") + accType->ToString() +
                             " instead of " + expr->TsType()->ToString());
 }

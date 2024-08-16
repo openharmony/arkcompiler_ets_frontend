@@ -1072,6 +1072,15 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     return expr->TsType();
 }
 
+static void HandleTestedTypes(SmartCastTypes testedTypes, ETSChecker *checker)
+{
+    if (testedTypes.has_value()) {
+        for (auto [variable, consequentType, _] : *testedTypes) {
+            checker->ApplySmartCast(variable, consequentType);
+        }
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 {
     if (expr->TsTypeOrError() != nullptr) {
@@ -1083,15 +1092,15 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     SmartCastArray smartCasts = checker->Context().EnterTestExpression();
     checker->CheckTruthinessOfType(expr->Test());
     SmartCastTypes testedTypes = checker->Context().ExitTestExpression();
-    if (testedTypes.has_value()) {
-        for (auto [variable, consequentType, _] : *testedTypes) {
-            checker->ApplySmartCast(variable, consequentType);
-        }
-    }
+    HandleTestedTypes(testedTypes, checker);
 
     auto *consequent = expr->Consequent();
     auto *consequentType = consequent->Check(checker);
 
+    if (consequentType->IsETSEnumType()) {
+        consequent->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+        consequentType = consequentType->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
+    }
     SmartCastArray consequentSmartCasts = checker->Context().CloneSmartCasts();
     checker->Context().RestoreSmartCasts(smartCasts);
 
@@ -1103,6 +1112,11 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 
     auto *alternate = expr->Alternate();
     auto *alternateType = alternate->Check(checker);
+
+    if (alternateType->IsETSEnumType()) {
+        alternate->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+        alternateType = alternateType->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
+    }
 
     // Here we need to combine types from consequent and alternate if blocks.
     checker->Context().CombineSmartCasts(consequentSmartCasts);
@@ -2313,6 +2327,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 
     if (enumVar->TsTypeOrError() == nullptr) {
         checker::Type *etsEnumType = nullptr;
+        Check(st->BoxedClass());
         if (auto *const itemInit = st->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
             etsEnumType = checker->CreateEnumIntTypeFromEnumDeclaration(st);
         } else if (itemInit->IsStringLiteral()) {

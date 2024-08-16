@@ -749,13 +749,26 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
                                                        lexer::SourcePosition pos)
 {
     auto *leftType = left->TsType();
-    if (!IsReferenceType(leftType)) {
-        LogTypeError("Left-hand side of nullish-coalescing expression must be a reference type.", pos);
+    if (!IsReferenceType(leftType) && !leftType->IsETSEnumType()) {
+        LogTypeError("Left-hand side of nullish-coalescing expression must be a reference or enum type.", pos);
         return leftType;
     }
 
-    leftType = GetNonNullishType(leftType);
-    auto *rightType = MaybeBoxExpression(right);
+    auto *rightType = right->TsType();
+
+    if (leftType->IsETSEnumType()) {
+        left->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+        leftType = leftType->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
+    } else {
+        leftType = GetNonNullishType(leftType);
+    }
+
+    if (rightType->IsETSEnumType()) {
+        right->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+        rightType = rightType->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
+    } else {
+        rightType = MaybeBoxExpression(right);
+    }
 
     if (IsTypeIdenticalTo(leftType, rightType)) {
         return leftType;

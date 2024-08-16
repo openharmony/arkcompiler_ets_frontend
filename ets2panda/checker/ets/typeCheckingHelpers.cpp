@@ -576,6 +576,9 @@ Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable 
     }
 
     auto *const enumDecl = var->Declaration()->Node()->AsTSEnumDeclaration();
+    if (enumDecl->BoxedClass()->TsTypeOrError() == nullptr) {
+        BuildBasicClassProperties(enumDecl->BoxedClass());
+    }
     if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
         return CreateEnumIntTypeFromEnumDeclaration(enumDecl);
     } else if (itemInit->IsStringLiteral()) {  // NOLINT(readability-else-after-return)
