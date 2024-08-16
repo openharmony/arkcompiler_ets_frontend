@@ -33,10 +33,8 @@ zxing_test
 #18331
 validator_test
 
-#18484
+#18546
 jBox2d_test
-commonmark-js_test
-pdfview_test
 
 #18425
 gson_test
