@@ -1262,9 +1262,10 @@ export class TsUtils {
   }
 
   static getParameterPropertiesHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
-    const params = (nodeOrComment as ts.ConstructorDeclaration).parameters;
-    if (params.length) {
-      return [params[0].getStart(), params[params.length - 1].getEnd()];
+    const param = nodeOrComment as ts.ParameterDeclaration;
+    const modifier = TsUtils.getAccessModifier(ts.getModifiers(param));
+    if (modifier !== undefined) {
+      return [modifier.getStart(), modifier.getEnd()];
     }
     return undefined;
   }

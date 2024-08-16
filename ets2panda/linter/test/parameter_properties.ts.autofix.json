@@ -49,8 +49,105 @@
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
         },
         {
+            "line": 19,
+            "column": 5,
+            "problem": "ParameterProperties",
+            "autofix": [
+                {
+                    "start": 622,
+                    "end": 622,
+                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n"
+                },
+                {
+                    "start": 639,
+                    "end": 664,
+                    "replacementText": "x: number"
+                },
+                {
+                    "start": 670,
+                    "end": 689,
+                    "replacementText": "y: number"
+                },
+                {
+                    "start": 695,
+                    "end": 712,
+                    "replacementText": "z: number"
+                },
+                {
+                    "start": 717,
+                    "end": 719,
+                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 20,
+            "column": 5,
+            "problem": "ParameterProperties",
+            "autofix": [
+                {
+                    "start": 622,
+                    "end": 622,
+                    "replacementText": "public readonly x: number;\nprotected y: number;\nprivate z: number;\n"
+                },
+                {
+                    "start": 639,
+                    "end": 664,
+                    "replacementText": "x: number"
+                },
+                {
+                    "start": 670,
+                    "end": 689,
+                    "replacementText": "y: number"
+                },
+                {
+                    "start": 695,
+                    "end": 712,
+                    "replacementText": "z: number"
+                },
+                {
+                    "start": 717,
+                    "end": 719,
+                    "replacementText": "{\n    this.x = x;\n    this.y = y;\n    this.z = z;\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
             "line": 34,
-            "column": 15,
+            "column": 26,
+            "problem": "ParameterProperties",
+            "autofix": [
+                {
+                    "start": 870,
+                    "end": 870,
+                    "replacementText": "public w: string;\nprivate readonly r: number[];\n"
+                },
+                {
+                    "start": 893,
+                    "end": 913,
+                    "replacementText": "w = 'default'"
+                },
+                {
+                    "start": 927,
+                    "end": 967,
+                    "replacementText": "r: number[] = [1, 2, 3]"
+                },
+                {
+                    "start": 969,
+                    "end": 1021,
+                    "replacementText": "{\n    this.w = w;\n    this.r = r;\n    console.log(q, this.w, e, this.r, this.f);\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 34,
+            "column": 60,
             "problem": "ParameterProperties",
             "autofix": [
                 {
@@ -94,6 +191,13 @@
         {
             "line": 47,
             "column": 15,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 47,
+            "column": 33,
             "problem": "ParameterProperties",
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"

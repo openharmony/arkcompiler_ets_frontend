@@ -2476,18 +2476,19 @@ export class TypeScriptLinter {
 
   private handleConstructorDeclaration(node: ts.Node): void {
     const ctorDecl = node as ts.ConstructorDeclaration;
-    if (
-      ctorDecl.parameters.some((x) => {
-        return this.tsUtils.hasAccessModifier(x);
-      })
-    ) {
-      let paramTypes: ts.TypeNode[] | undefined;
-      if (ctorDecl.body) {
-        paramTypes = this.collectCtorParamTypes(ctorDecl);
-      }
-
-      const autofix = this.autofixer?.fixCtorParameterProperties(ctorDecl, paramTypes);
-      this.incrementCounters(node, FaultID.ParameterProperties, autofix);
+    const paramProperties = ctorDecl.parameters.filter((x) => {
+      return this.tsUtils.hasAccessModifier(x);
+    });
+    if (paramProperties.length === 0) {
+      return;
+    }
+    let paramTypes: ts.TypeNode[] | undefined;
+    if (ctorDecl.body) {
+      paramTypes = this.collectCtorParamTypes(ctorDecl);
+    }
+    const autofix = this.autofixer?.fixCtorParameterProperties(ctorDecl, paramTypes);
+    for (const param of paramProperties) {
+      this.incrementCounters(param, FaultID.ParameterProperties, autofix);
     }
   }
 
