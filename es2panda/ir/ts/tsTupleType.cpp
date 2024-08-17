@@ -48,6 +48,7 @@ checker::Type *TSTupleType::GetType(checker::Checker *checker) const
     }
 
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    CHECK_NOT_NULL(desc);
     checker::NamedTupleMemberPool namedMembers;
     ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
     checker::ElementFlags combinedFlags = checker::ElementFlags::NO_OPTS;

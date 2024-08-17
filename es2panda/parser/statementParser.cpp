@@ -431,11 +431,13 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleOrNamespaceDelaration(const le
         auto statements = body->AsTSModuleBlock()->Statements();
         for (auto *it : statements) {
             auto statement = it;
+            if (statement == nullptr) {
+                continue;
+            }
             if (statement->IsExportNamedDeclaration()) {
                 statement = statement->AsExportNamedDeclaration()->Decl();
             }
-            if (statement != nullptr &&
-                !statement->IsTSInterfaceDeclaration() && !statement->IsTSTypeAliasDeclaration() &&
+            if (!statement->IsTSInterfaceDeclaration() && !statement->IsTSTypeAliasDeclaration() &&
                 (!statement->IsTSModuleDeclaration() || statement->AsTSModuleDeclaration()->IsInstantiated())) {
                 isInstantiated = true;
                 break;

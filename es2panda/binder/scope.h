@@ -1380,6 +1380,7 @@ VariableType *Scope::CreateVar(ArenaAllocator *allocator, util::StringView name,
     auto *decl = allocator->New<DeclType>(name);
     CHECK_NOT_NULL(decl);
     auto *variable = allocator->New<VariableType>(decl, flags);
+    CHECK_NOT_NULL(variable);
     decl->BindNode(node);
     return variable;
 }
