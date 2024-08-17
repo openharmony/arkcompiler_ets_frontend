@@ -36,7 +36,8 @@ import {
   isFunctionExpression,
   isArrowFunction,
   isVariableDeclaration,
-  isPropertyAssignment
+  isPropertyAssignment,
+  isPrivateIdentifier
 } from 'typescript';
 
 import type {
@@ -536,11 +537,25 @@ namespace secharmony {
         } else {
           gotNode = node;
         }
-        let escapedText: string = gotNode.name?.escapedText;
-        if (!escapedText) {
+
+        let isIdentifierNode: boolean = gotNode.name && (isIdentifier(gotNode.name) || isPrivateIdentifier(gotNode.name));
+        let valueName: string = '';
+
+        if (isIdentifierNode) {
+          // The original method for retrieving method names used gotNode.name.escapedText. This approach limited the collection
+          // of method records in MemberMethodCache to cases where gotNode.name was an Identifier or PrivateIdentifier.
+          // To address the issue where method names starting with double underscores were transformed to start with triple underscores,
+          // we changed the retrieval method to use gotNode.name.text instead of escapedText. However, this change introduced the possibility
+          // of collecting method records when gotNode.name is a NumericLiteral or StringLiteral, which is not desired.
+          // To avoid altering the collection specifications of MemberMethodCache, we restricted the collection scenarios 
+          // to match the original cases where only identifiers and private identifiers are collected.
+          valueName = gotNode.name.text;
+        } 
+
+        if (valueName === '') {
           return;
         }
-        let valueName: string = escapedText.toString();
+
         let originalName: string = valueName;
         let keyName = originalName + lineAndColum;
         if (node.kind === SyntaxKind.Constructor && classMangledName.has(gotNode.name)) {
@@ -566,8 +581,8 @@ namespace secharmony {
         let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
         let mangledPropertyNameOfNoSymbolImportExport = '';
         if (!sym) {
-          if (exportObfuscation && noSymbolIdentifier.has(node.escapedText as string) && trySearchImportExportSpecifier(node)) {
-            mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(node.escapedText as string);
+          if (exportObfuscation && noSymbolIdentifier.has(node.text) && trySearchImportExportSpecifier(node)) {
+            mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(node.text);
           } else {
             return node;
           }
@@ -618,8 +633,7 @@ namespace secharmony {
       /**
        * import {A as B} from 'modulename';
        * import {C as D} from 'modulename';
-       * export {E as F};
-       * above A、C、F have no symbol, so deal with them specially.
+       * above A、C have no symbol, so deal with them specially.
        */
       function mangleNoSymbolImportExportPropertyName(original: string): string {
         const path: string = '#' + original;
