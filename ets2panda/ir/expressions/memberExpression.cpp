@@ -162,6 +162,9 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
     }
 
     auto *const literalType = enumInterface->LookupConstant(checker, object_, property_->AsIdentifier());
+    if (literalType == nullptr) {
+        return {nullptr, nullptr};
+    }
     return {literalType, literalType->GetMemberVar()};
 }
 

@@ -179,17 +179,19 @@ ETSEnumType *ETSEnumType::LookupConstant(ETSChecker *const checker, const ir::Ex
     if (!IsEnumTypeExpression(expression)) {
         if (expression->IsIdentifier() &&
             expression->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
-            checker->ThrowTypeError({"Cannot refer to enum members through type alias."}, prop->Start());
+            checker->LogTypeError({"Cannot refer to enum members through type alias."}, prop->Start());
         } else if (IsLiteralType()) {
-            checker->ThrowTypeError({"Cannot refer to enum members through variable."}, prop->Start());
+            checker->LogTypeError({"Cannot refer to enum members through variable."}, prop->Start());
         } else {
-            checker->ThrowTypeError({"Enum constant does not have property '", prop->Name(), "'."}, prop->Start());
+            checker->LogTypeError({"Enum constant does not have property '", prop->Name(), "'."}, prop->Start());
         }
+        return nullptr;
     }
 
     auto *const member = FindMember(prop->Name());
     if (member == nullptr) {
-        checker->ThrowTypeError({"No enum constant named '", prop->Name(), "' in enum '", this, "'"}, prop->Start());
+        checker->LogTypeError({"No enum constant named '", prop->Name(), "' in enum '", this, "'"}, prop->Start());
+        return nullptr;
     }
     // clang-format off
     auto *const enumInterface = [enumType =
@@ -370,7 +372,8 @@ ETSFunctionType *ETSEnumType::LookupConstantMethod(ETSChecker *const checker, co
         return getNameMethod_.memberProxyType;
     }
 
-    checker->ThrowTypeError({"No enum item method called '", prop->Name(), "'"}, prop->Start());
+    checker->LogTypeError({"No enum item method called '", prop->Name(), "'"}, prop->Start());
+    return nullptr;
 }
 
 ETSFunctionType *ETSEnumType::LookupTypeMethod(ETSChecker *const checker, const ir::Identifier *const prop) const
@@ -385,7 +388,8 @@ ETSFunctionType *ETSEnumType::LookupTypeMethod(ETSChecker *const checker, const 
         return getValueOfMethod_.memberProxyType;
     }
 
-    checker->ThrowTypeError({"No enum type method called '", prop->Name(), "'"}, prop->Start());
+    checker->LogTypeError({"No enum type method called '", prop->Name(), "'"}, prop->Start());
+    return nullptr;
 }
 
 }  // namespace ark::es2panda::checker

@@ -53,6 +53,8 @@ private:
     checker::Type *GetCallExpressionReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
     checker::Type *SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr, ETSObjectType *objectType) const;
     checker::Type *UnwrapPromiseType(checker::Type *type) const;
+    checker::Type *GetSmartType(ir::AssignmentExpression *expr, checker::Type *leftType,
+                                checker::Type *rightType) const;
     bool CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
                                          checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                          ETSChecker *checker) const;

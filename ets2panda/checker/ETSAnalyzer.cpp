@@ -795,6 +795,35 @@ static bool IsInvalidArrayLengthAssignment(ir::AssignmentExpression *const expr,
     return false;
 }
 
+checker::Type *ETSAnalyzer::GetSmartType(ir::AssignmentExpression *expr, checker::Type *leftType,
+                                         checker::Type *rightType) const
+{
+    ETSChecker *checker = GetETSChecker();
+    checker::Type *smartType = leftType;
+
+    if (expr->Left()->IsIdentifier()) {
+        //  Now try to define the actual type of Identifier so that smart cast can be used in further checker processing
+        smartType = checker->ResolveSmartType(rightType, leftType);
+        auto const *const variable = expr->Target();
+
+        //  Add/Remove/Modify smart cast for identifier
+        //  (excluding the variables defined at top-level scope or captured in lambda-functions!)
+        auto const *const variableScope = variable->GetScope();
+        auto const topLevelVariable =
+            variableScope != nullptr && (variableScope->IsGlobalScope() || (variableScope->Parent() != nullptr &&
+                                                                            variableScope->Parent()->IsGlobalScope()));
+        if (!topLevelVariable) {
+            if (checker->Relation()->IsIdenticalTo(leftType, smartType)) {
+                checker->Context().RemoveSmartCast(variable);
+            } else {
+                expr->Left()->SetTsType(smartType);
+                checker->Context().SetSmartCast(variable, smartType);
+            }
+        }
+    }
+    return smartType;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 {
     if (expr->TsTypeOrError() != nullptr) {
@@ -824,6 +853,10 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     }
 
     auto [rightType, relationNode] = CheckAssignmentExprOperatorType(expr, leftType);
+    if (rightType == nullptr) {
+        expr->SetTsType(checker->GlobalTypeError());
+        return checker->GlobalTypeError();
+    }
 
     const checker::Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(leftType);
     const checker::Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(rightType);
@@ -831,28 +864,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     checker::AssignmentContext(checker->Relation(), relationNode, rightType, leftType, expr->Right()->Start(),
                                {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
 
-    checker::Type *smartType = leftType;
-
-    if (expr->Left()->IsIdentifier()) {
-        //  Now try to define the actual type of Identifier so that smart cast can be used in further checker processing
-        smartType = checker->ResolveSmartType(rightType, leftType);
-        auto const *const variable = expr->Target();
-
-        //  Add/Remove/Modify smart cast for identifier
-        //  (excluding the variables defined at top-level scope or captured in lambda-functions!)
-        auto const *const variableScope = variable->GetScope();
-        auto const topLevelVariable =
-            variableScope != nullptr && (variableScope->IsGlobalScope() || (variableScope->Parent() != nullptr &&
-                                                                            variableScope->Parent()->IsGlobalScope()));
-        if (!topLevelVariable) {
-            if (checker->Relation()->IsIdenticalTo(leftType, smartType)) {
-                checker->Context().RemoveSmartCast(variable);
-            } else {
-                expr->Left()->SetTsType(smartType);
-                checker->Context().SetSmartCast(variable, smartType);
-            }
-        }
-    }
+    checker::Type *smartType = GetSmartType(expr, leftType, rightType);
 
     expr->SetTsType(smartType);
     return expr->TsTypeOrError();
@@ -1394,8 +1406,8 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (baseType->IsETSEnumType()) {
         auto [memberType, memberVar] = expr->ResolveEnumMember(checker, baseType);
         expr->SetPropVar(memberVar);
-        expr->Property()->SetTsType(memberType);
-        return expr->AdjustType(checker, memberType);
+        expr->Property()->SetTsType(memberType == nullptr ? checker->GlobalTypeError() : memberType);
+        return expr->AdjustType(checker, expr->Property()->TsTypeOrError());
     }
 
     if (baseType->IsETSUnionType()) {

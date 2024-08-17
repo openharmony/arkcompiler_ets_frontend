@@ -114,7 +114,7 @@ static void AmbiguousUnionOperation(TypeRelation *relation)
 {
     auto checker = relation->GetChecker()->AsETSChecker();
     if (!relation->NoThrow()) {
-        checker->ThrowTypeError({"Ambiguous union type operation"}, relation->GetNode()->Start());
+        checker->LogTypeError({"Ambiguous union type operation"}, relation->GetNode()->Start());
     }
     conversion::Forbidden(relation);
 }

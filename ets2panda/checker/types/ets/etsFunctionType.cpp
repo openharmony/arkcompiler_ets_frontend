@@ -166,9 +166,11 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
     if (!(target->Function()->IsThrowing() || target->HasSignatureFlag(SignatureFlags::THROWS))) {
         if (match->Function()->IsThrowing() || match->Function()->IsRethrowing() ||
             match->HasSignatureFlag(SignatureFlags::THROWS) || match->HasSignatureFlag(SignatureFlags::RETHROWS)) {
-            relation->GetChecker()->ThrowTypeError(
+            relation->GetChecker()->LogTypeError(
                 "Functions that can throw exceptions cannot be assigned to non throwing functions.",
                 relation->GetNode()->Start());
+            relation->Result(false);
+            return;
         }
     }
 
