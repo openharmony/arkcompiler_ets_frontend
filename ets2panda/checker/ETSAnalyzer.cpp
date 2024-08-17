@@ -15,6 +15,7 @@
 
 #include "ETSAnalyzer.h"
 
+#include "types/signature.h"
 #include "util/helpers.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/castingContext.h"
@@ -99,7 +100,8 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
     }
 
     auto *func = st->Function();
-    st->SetTsType(checker->BuildFunctionSignature(func));
+    checker->BuildFunctionSignature(func);
+    st->SetTsType(checker->BuildNamedFunctionType(func));
     checker::ScopeContext scopeCtx(checker, func->Scope());
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass());
@@ -641,25 +643,6 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
         return expr->TsTypeOrError();
     }
 
-    auto *funcType = checker->BuildFunctionSignature(expr->Function(), false);
-
-    auto sigInfos = checker->ComposeSignatureInfosForArrowFunction(expr);
-
-    for (auto &sigInfo : sigInfos) {
-        auto sig = checker->ComposeSignature(expr->Function(), sigInfo,
-                                             funcType->CallSignatures().front()->ReturnType(), nullptr);
-        sig->AddSignatureFlag(funcType->CallSignatures().front()->GetFlags());
-        funcType->AddCallSignature(sig);
-    }
-
-    if (expr->Function()->IsAsyncFunc()) {
-        auto *retType = expr->Function()->Signature()->ReturnType();
-        if (!retType->IsETSObjectType() ||
-            retType->AsETSObjectType()->GetOriginalBaseType() != checker->GlobalBuiltinPromiseType()) {
-            checker->ThrowTypeError("Return type of async lambda must be 'Promise'", expr->Function()->Start());
-        }
-    }
-
     checker::ScopeContext scopeCtx(checker, expr->Function()->Scope());
 
     if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
@@ -683,13 +666,34 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass());
+
     checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
-    checker->Context().SetContainingSignature(funcType->CallSignatures()[0]);
     checker->Context().SetContainingLambda(expr);
 
+    checker->BuildFunctionSignature(expr->Function(), false);
+    auto *signature = expr->Function()->Signature();
+
+    checker->Context().SetContainingSignature(signature);
     expr->Function()->Body()->Check(checker);
 
+    ArenaVector<Signature *> signatures(checker->Allocator()->Adapter());
+    signatures.push_back(signature);
+    for (auto &sigInfo : checker->ComposeSignatureInfosForArrowFunction(expr)) {
+        auto sig = checker->ComposeSignature(expr->Function(), sigInfo, signature->ReturnType(), nullptr);
+        sig->AddSignatureFlag(signature->GetFlags());
+        signatures.push_back(sig);
+    }
+
+    auto *funcType = checker->CreateETSFunctionType(expr->Function(), std::move(signatures), nullptr);
     checker->Context().SetContainingSignature(nullptr);
+
+    if (expr->Function()->IsAsyncFunc()) {
+        auto *retType = signature->ReturnType();
+        if (!retType->IsETSObjectType() ||
+            retType->AsETSObjectType()->GetOriginalBaseType() != checker->GlobalBuiltinPromiseType()) {
+            checker->ThrowTypeError("Return type of async lambda must be 'Promise'", expr->Function()->Start());
+        }
+    }
 
     expr->SetTsType(funcType);
     return expr->TsType();

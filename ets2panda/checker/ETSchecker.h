@@ -261,9 +261,12 @@ public:
     ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ArenaVector<Signature *> &signatures);
+    ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, ArenaVector<Signature *> &&signature,
+                                           util::StringView name);
     ETSExtensionFuncHelperType *CreateETSExtensionFuncHelperType(ETSFunctionType *classMethodType,
                                                                  ETSFunctionType *extensionFunctionType);
     ETSObjectType *FunctionTypeToFunctionalInterfaceType(Signature *signature);
+    Type *ResolveFunctionalInterfaces(ArenaVector<Signature *> &signatures);
     ETSTypeParameter *CreateTypeParameter();
     ETSObjectType *CreateETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType, size_t dim);
@@ -427,7 +430,8 @@ public:
     ArenaVector<SignatureInfo *> ComposeSignatureInfosForArrowFunction(ir::ArrowFunctionExpression *arrowFuncExpr);
     void SetParamForSignatureInfoOfArrowFunction(SignatureInfo *signatureInfo, ir::ETSParameterExpression *param);
     void ValidateMainSignature(ir::ScriptFunction *func);
-    checker::ETSFunctionType *BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig = false);
+    void BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig = false);
+    checker::ETSFunctionType *BuildNamedFunctionType(ir::ScriptFunction *func);
     checker::ETSFunctionType *BuildMethodSignature(ir::MethodDefinition *method);
     Signature *CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *target, ETSFunctionType *source);
     static Signature *GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef);

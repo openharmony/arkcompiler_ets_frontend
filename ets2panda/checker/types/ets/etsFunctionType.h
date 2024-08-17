@@ -24,14 +24,15 @@ namespace ark::es2panda::checker {
 
 class ETSFunctionType : public Type {
 public:
+    explicit ETSFunctionType(ETSChecker *checker, util::StringView name, ArenaVector<Signature *> &&signatures);
+
     explicit ETSFunctionType(util::StringView name, Signature *signature, ArenaAllocator *allocator)
-        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name)
+        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name), funcInterface_(nullptr)
     {
         callSignatures_.push_back(signature);
     }
-
     explicit ETSFunctionType(util::StringView name, ArenaAllocator *allocator)
-        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name)
+        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name), funcInterface_(nullptr)
     {
     }
 
@@ -48,6 +49,11 @@ public:
     util::StringView Name() const
     {
         return name_;
+    }
+
+    Type *FunctionalInterface() const
+    {
+        return funcInterface_;
     }
 
     void AddCallSignature(Signature *signature)
@@ -103,7 +109,7 @@ public:
 
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
     {
-        UNREACHABLE();
+        funcInterface_->ToAssemblerType(ss);
     }
 
     void ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const override
@@ -126,6 +132,7 @@ private:
     ArenaVector<Signature *> callSignatures_;
     util::StringView name_;
     Signature *refSignature_ {};
+    Type *const funcInterface_;
 };
 }  // namespace ark::es2panda::checker
 

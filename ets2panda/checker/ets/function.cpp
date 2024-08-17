@@ -1003,11 +1003,12 @@ checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition 
 
     bool isConstructSig = method->IsConstructor();
 
-    auto *funcType = BuildFunctionSignature(method->Function(), isConstructSig);
-
+    BuildFunctionSignature(method->Function(), isConstructSig);
+    auto *funcType = BuildNamedFunctionType(method->Function());
     std::vector<checker::ETSFunctionType *> overloads;
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
-        auto *const overloadType = BuildFunctionSignature(currentFunc->Function(), isConstructSig);
+        BuildFunctionSignature(currentFunc->Function(), isConstructSig);
+        auto *const overloadType = BuildNamedFunctionType(currentFunc->Function());
         CheckIdenticalOverloads(funcType, overloadType, currentFunc);
         currentFunc->SetTsType(overloadType);
         funcType->AddCallSignature(currentFunc->Function()->Signature());
@@ -1306,7 +1307,7 @@ static void AddSignatureFlags(const ir::ScriptFunction *const func, Signature *c
     }
 }
 
-checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
+void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
 {
     bool isArrow = func->IsArrow();
     auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
@@ -1329,18 +1330,17 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
     } else {
         signature->AddSignatureFlag(SignatureFlags::CALL);
     }
-
-    auto *funcType = CreateETSFunctionType(func, signature, funcName);
     func->SetSignature(signature);
-    funcType->SetVariable(nameVar);
-    VarBinder()->AsETSBinder()->BuildFunctionName(func);
-
     AddSignatureFlags(func, signature);
+    VarBinder()->AsETSBinder()->BuildFunctionName(func);
+}
 
-    if (!isArrow) {
-        nameVar->SetTsType(funcType);
-    }
-
+checker::ETSFunctionType *ETSChecker::BuildNamedFunctionType(ir::ScriptFunction *func)
+{
+    ASSERT(!func->IsArrow());
+    auto *nameVar = func->Id()->Variable();
+    auto *funcType = CreateETSFunctionType(func, func->Signature(), nameVar->Name());
+    funcType->SetVariable(nameVar);
     return funcType;
 }
 

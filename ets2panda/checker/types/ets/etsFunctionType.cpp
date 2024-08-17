@@ -22,6 +22,14 @@
 
 namespace ark::es2panda::checker {
 
+ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView name, ArenaVector<Signature *> &&signatures)
+    : Type(TypeFlag::FUNCTION),
+      callSignatures_(std::move(signatures)),
+      name_(name),
+      funcInterface_(checker->ResolveFunctionalInterfaces(callSignatures_))
+{
+}
+
 Signature *ETSFunctionType::FirstAbstractSignature()
 {
     for (auto *it : callSignatures_) {

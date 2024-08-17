@@ -702,26 +702,12 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         ThrowTypeError("Cannot get the expression type", init->Start());
     }
 
-    bool isUnionFunction = false;
-
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
-        if (initType->AsETSFunctionType()->CallSignatures().size() == 1) {
-            annotationType =
-                FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignatures().front());
-        } else {
-            ArenaVector<Type *> types(Allocator()->Adapter());
-
-            for (auto &signature : initType->AsETSFunctionType()->CallSignatures()) {
-                types.push_back(FunctionTypeToFunctionalInterfaceType(signature));
-            }
-
-            annotationType = CreateETSUnionType(std::move(types));
-            isUnionFunction = true;
-        }
+        annotationType = initType->AsETSFunctionType()->FunctionalInterface();
         bindingVar->SetTsType(annotationType);
     }
     if (annotationType != nullptr) {
-        CheckAnnotationTypeForVariableDeclaration(annotationType, isUnionFunction, init, initType);
+        CheckAnnotationTypeForVariableDeclaration(annotationType, annotationType->IsETSUnionType(), init, initType);
 
         // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
         // are assigned with CONSTANT, which would not be correct. (After feature supported)
