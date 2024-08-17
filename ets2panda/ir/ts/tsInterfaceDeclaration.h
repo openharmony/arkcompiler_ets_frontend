@@ -38,7 +38,7 @@ public:
         TSInterfaceBody *body;
         bool isStatic;
         bool isExternal;
-        Language lang;
+        es2panda::Language lang;
     };
     // NOLINTEND(cppcoreguidelines-pro-type-member-init)
 
@@ -167,6 +167,21 @@ public:
         return lang_;
     }
 
+    ClassDeclaration *GetAnonClass() noexcept
+    {
+        return anonClass_;
+    }
+
+    ClassDeclaration *GetAnonClass() const noexcept
+    {
+        return anonClass_;
+    }
+
+    void SetAnonClass(ClassDeclaration *anonClass) noexcept
+    {
+        anonClass_ = anonClass;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;
@@ -192,6 +207,7 @@ private:
     bool isStatic_;
     bool isExternal_;
     es2panda::Language lang_;
+    ClassDeclaration *anonClass_ {nullptr};
 };
 }  // namespace ark::es2panda::ir
 

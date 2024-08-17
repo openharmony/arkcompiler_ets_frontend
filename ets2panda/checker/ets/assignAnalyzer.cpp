@@ -1005,9 +1005,9 @@ void AssignAnalyzer::AnalyzeCond(const ir::AstNode *node)
     ASSERT(node->IsExpression());
     const ir::Expression *expr = node->AsExpression();
 
-    if (expr->TsType() != nullptr && expr->TsType()->IsETSBooleanType() &&
-        expr->TsType()->HasTypeFlag(TypeFlag::CONSTANT)) {
-        const ETSBooleanType *condType = expr->TsType()->AsETSBooleanType();
+    if (auto etype = expr->TsTypeOrError();
+        etype != nullptr && etype->IsETSBooleanType() && etype->HasTypeFlag(TypeFlag::CONSTANT)) {
+        const ETSBooleanType *condType = etype->AsETSBooleanType();
         if (inits_.IsReset()) {
             Merge();
         }

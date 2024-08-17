@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+#
+# This is a script for running a minimal reasonable set of tests
+# during front-end development. Can be used for a quick self-check.
+# Definitely not a substitute / equivalent of the full CI run.
+# Can be dropped to your favorite location in $PATH to be invoked
+# as a CLI tool. Try --help if not sure how to proceed.
+#
+
+ROOT_DIR=
+BUILD_DIR=
+BRANCH_NAME=
+BUILD_TYPE=Debug
+DO_CONFIGURE=no
+DO_CLEAN=no
+BUILD_TARGETS=
+RUN_FUNC_SUITE=no
+RUN_CTS=no
+PARSER=
+RUN_CLANG_TIDY=yes
+PARENT_BRANCH=
+
+function print_help
+{
+    HELP_MESSAGE="
+    Options:
+
+    --root-dir=REQUIRED
+    --build-dir=REQUIRED
+
+    [--branch=BRANCH_NAME]
+    [--build-type=CMAKE_BUILD_TYPE]
+    [--build-clean]
+    [--configure]
+    [--build=TARGET1 --build=TARGET2 ...]
+    [--run-func-suite]
+    [--run-cts]
+    [--parser]
+    [--run-clang_tidy=yes/no]
+
+    Notes:
+    * --build-type should correspond to the main project's build
+      types, i.e.: Debug, FastVerify, Release.
+    * --build can be repeated to build several targets (correspond
+      to the main project's build targets).
+    * --run-clang_tidy set to "yes" by default.
+    "
+    echo "$HELP_MESSAGE"
+}
+
+for opt in "$@"
+do
+    case $opt in
+    -h|--help)
+        print_help
+        exit 0
+        ;;
+    --root-dir=*)
+        ROOT_DIR=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --build-dir=*)
+        BUILD_DIR=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --build-type=*)
+        BUILD_TYPE=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --branch=*)
+        BRANCH_NAME=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --configure)
+        DO_CONFIGURE=yes
+        ;;
+    --build-clean)
+        DO_CLEAN=yes
+        ;;
+    --build=*)
+        build_target=${opt//[-a-zA-Z0-9]*=/}
+        BUILD_TARGETS="${BUILD_TARGETS} ${build_target}"
+        ;;
+    --run-func-suite)
+        RUN_FUNC_SUITE=yes
+        ;;
+    --run-cts)
+        RUN_CTS=yes
+        ;;
+    --parser)
+        PARSER=yes
+        ;;
+    --run-clang_tidy=*)
+        $RUN_CLANG_TIDY=$opt
+        ;;
+    *)
+        echo "Error: Unsupported flag $opt" >&2
+        exit 1
+        ;;
+    esac
+done
+
+set -e
+
+if [[ ! -d "${ROOT_DIR}" ]]; then
+    echo 'Fatal: --root-dir is missing or invalid'
+    exit 1
+fi
+
+if [[ "${BUILD_DIR}" == '' ]]; then
+    echo 'Fatal: --build-dir is missing'
+    exit 1
+fi
+
+mkdir -p "$BUILD_DIR"
+if [[ "$DO_CLEAN" == 'yes' ]]; then
+    pushd "$BUILD_DIR"
+        rm -rf *
+    popd
+fi
+
+RUNTIME_CORE_DIR=${ROOT_DIR}/runtime_core
+ETS_FRONTEND_DIR=${ROOT_DIR}/ets_frontend
+CLANG_TIDY_DIRS=(${RUNTIME_CORE_DIR} ${ETS_FRONTEND_DIR})
+if [[ "${BRANCH_NAME}" != '' ]]; then
+    for dir in "${CLANG_TIDY_DIRS[@]}"
+    do
+        pushd $dir
+            git checkout "${BRANCH_NAME}"
+        popd
+    done
+fi
+
+STATIC_CORE_DIR=${ROOT_DIR}/runtime_core/static_core
+TEST_RUNNER=${STATIC_CORE_DIR}/tests/tests-u-runner/runner.sh
+CLANG_TIDY_CHECK=${STATIC_CORE_DIR}/scripts/clang-tidy/clang_tidy_check.py
+
+if [[ "$RUN_CLANG_TIDY" == 'yes' ]]; then
+    for dir in "${CLANG_TIDY_DIRS[@]}"
+    do
+        pushd $dir > /dev/null
+        echo $dir
+        while [[ "$PARENT_BRANCH" == '' || $i != 25 ]]
+        do
+            i=1
+            branch=$(git show-branch | sed "s/].*//" | grep "\*" | grep -v "$(git rev-parse --abbrev-ref HEAD)" | head -n${i} | sed "s/^.*\[//" | sed 's/[\^~].*//')
+            if [[ "$branch" == 'fe_dev_stable' || "$branch" == 'master' ]]; then
+                PARENT_BRANCH=$branch
+                echo "PARENT_BRANCH = $branch"
+                FILE_NAME_FILTER=$(git diff --name-only $PARENT_BRANCH | sed -rn "/^.*(\.(c|cpp|h))$/p" | sed ':a;N;$!ba;s/\n/\|/g')
+                echo "$FILE_NAME_FILTER"
+                if [[ $FILE_NAME_FILTER != '' ]]; then
+                    ${CLANG_TIDY_CHECK} --filename-filter=${FILE_NAME_FILTER} "$STATIC_CORE_DIR" "$BUILD_DIR"
+                else
+                    echo "Nothing to check"
+                fi
+                break
+            fi
+            i=$i+1
+            PARENT_BRANCH=
+        done
+        if [[ "$PARENT_BRANCH" == '' ]]; then
+            echo "Parent branch for $dir not found. All files will be checked"
+            ${CLANG_TIDY_CHECK} "$STATIC_CORE_DIR" "$BUILD_DIR"
+        fi
+        PARENT_BRANCH=
+        popd > /dev/null
+    done
+fi
+
+if [[ "${DO_CONFIGURE}" == 'yes' ]]; then
+    pushd ${BUILD_DIR}
+        cmake -GNinja \
+            -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain/host_clang_14.cmake \
+            -DPANDA_ETS_INTEROP_JS=ON \
+            -DPANDA_WITH_ECMASCRIPT=OFF \
+            -DPANDA_WITH_ETS=ON \
+            "$STATIC_CORE_DIR"
+    popd
+fi
+
+if [[ "$BUILD_TARGETS" != '' ]]; then
+    pushd "$BUILD_DIR"
+        ninja ${BUILD_TARGETS}
+    popd
+fi
+
+if [[ "$RUN_FUNC_SUITE" == 'yes' ]]; then
+    # Func tests INT:
+    ${TEST_RUNNER} --build-dir "$BUILD_DIR" \
+        --processes=all --force-generate \
+        --ets-func-tests
+
+    # Func tests JIT:
+    ${TEST_RUNNER} --build-dir "$BUILD_DIR" \
+        --processes=all --force-generate \
+        --ets-func-tests --jit --ark-args='--compiler-ignore-failures=false'
+fi
+
+if [[ "$RUN_CTS" == 'yes' ]]; then
+    # ArkTS CTS:
+    ${TEST_RUNNER} --build-dir "$BUILD_DIR" \
+        --processes=all --force-generate \
+        --ets-cts
+fi
+
+if [[ "$PARSER" == 'yes' ]]; then
+    # Pasrer:
+    ${TEST_RUNNER} --build-dir "$BUILD_DIR" \
+        --processes=all --force-generate \
+        --parser --no-js
+fi

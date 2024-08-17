@@ -17,7 +17,6 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/types/type.h"
-#include "compiler/core/ASTVerifier.h"
 #include "compiler/lowering/util.h"
 #include "ir/astNode.h"
 #include "ir/expression.h"

@@ -140,6 +140,15 @@ ir::Statement *ETSParser::ParseEnumDeclaration(bool isConst, bool isStatic)
     return declNode;
 }
 
+ir::Statement *ETSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
+{
+    if ((flags & VariableParsingFlags::CONST) == 0) {
+        ThrowSyntaxError("Variable declaration expected.");
+    }
+
+    return ParseEnumDeclaration(true);
+}
+
 // NOLINTBEGIN(cert-err58-cpp)
 static std::string const DUPLICATE_ENUM_VALUE = "Duplicate enum initialization value "s;
 static std::string const INVALID_ENUM_TYPE = "Invalid enum initialization type"s;
@@ -205,7 +214,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
 void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
 {
-    checker::ETSEnumType::ValueType currentValue {};
+    checker::ETSIntEnumType::ValueType currentValue {};
 
     // Lambda to parse enum member (maybe with initializer)
     auto const parseMember = [this, &members, &currentValue]() {
@@ -235,11 +244,11 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
             if (minusSign) {
                 ordinal->Number().Negate();
             }
-            if (!ordinal->Number().CanGetValue<checker::ETSEnumType::ValueType>()) {
+            if (!ordinal->Number().CanGetValue<checker::ETSIntEnumType::ValueType>()) {
                 ThrowSyntaxError(INVALID_ENUM_VALUE);
             }
 
-            currentValue = ordinal->Number().GetValue<checker::ETSEnumType::ValueType>();
+            currentValue = ordinal->Number().GetValue<checker::ETSIntEnumType::ValueType>();
 
             endLoc = ordinal->End();
         } else {

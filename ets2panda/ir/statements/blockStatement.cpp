@@ -34,6 +34,20 @@ void BlockStatement::TransformChildren(const NodeTransformer &cb, std::string_vi
     }
 }
 
+AstNode *BlockStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    ArenaVector<Statement *> statements(allocator->Adapter());
+
+    for (auto *statement : this->statements_) {
+        statements.push_back(statement->Clone(allocator, parent)->AsStatement());
+    }
+
+    auto retVal = util::NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator, allocator, std::move(statements));
+    retVal->SetParent(parent);
+
+    return retVal;
+}
+
 void BlockStatement::Iterate(const NodeTraverser &cb) const
 {
     // This will survive pushing element to the back of statements_ in the process

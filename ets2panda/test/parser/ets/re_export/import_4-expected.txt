@@ -389,4 +389,4 @@
     }
   }
 }
-SyntaxError: Ambiguous import "foo" has multiple matching exports [import_4.sts:16:1]
+SyntaxError: Function 'foo' is already defined. [import_4.sts:17:1]

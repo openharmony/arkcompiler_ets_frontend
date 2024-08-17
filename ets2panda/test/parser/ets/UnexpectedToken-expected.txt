@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token 'let'. [UnexpectedToken.sts:18:25]

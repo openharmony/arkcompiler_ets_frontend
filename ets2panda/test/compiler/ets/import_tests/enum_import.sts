@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-import { Color, Commands } from "./enum_export";
+import { Color, Commands, C } from "./enum_export";
 
 function main() {
-    console.log(Color.Blue.getValue());
-    console.log(Commands.Open.getValue());
+    console.log(Color.Blue.valueOf());
+    console.log(Commands.Open.valueOf());
 }

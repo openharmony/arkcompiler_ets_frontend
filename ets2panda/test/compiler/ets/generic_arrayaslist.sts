@@ -129,7 +129,7 @@ class ArrayAsListt<T> implements Listt<T> {
         assert false: "Not implemented: internal issue with calling equals";
 
         for (let i = 0; i < this.curSize; ++i) {
-            if ((this.data[i] as Object).equals(e as Object)) {
+            if (__runtimeEquals(this.data[i], e)) {
                 return true;
             }
         }

@@ -20,11 +20,12 @@
 #include "varbinder/recordTable.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsReExportDeclaration.h"
+#include "ir/expressions/identifier.h"
+#include "ir/module/importSpecifier.h"
 #include "parser/program/program.h"
 #include "util/importPathManager.h"
 
 namespace ark::es2panda::varbinder {
-
 using AliasesByExportedNames = ArenaMap<util::StringView, util::StringView>;
 using ModulesToExportedNamesWithAliases = ArenaMap<util::StringView, AliasesByExportedNames>;
 
@@ -48,7 +49,7 @@ public:
           reExportImports_(Allocator()->Adapter()),
           dynamicImportVars_(Allocator()->Adapter()),
           importSpecifiers_(Allocator()->Adapter()),
-          selectiveExportsWithAlias_(Allocator()->Adapter())
+          selectiveExportAliasMultimap_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
     }
@@ -113,6 +114,8 @@ public:
     void BuildMethodDefinition(ir::MethodDefinition *methodDef);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
+    bool DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
+                            const ir::StringLiteral *const importPath, bool overloadAllowed);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
     ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &sourceName,
                                                       const ir::StringLiteral *importPath);
@@ -223,9 +226,57 @@ public:
 
     void ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *scope);
 
-    void AddExportSelectiveAlias(const util::StringView &path, const util::StringView &key,
-                                 const util::StringView &value);
-    util::StringView GetExportSelectiveAliasValue(util::StringView const &path, util::StringView const &key) const;
+    bool CheckForRedeclarationError(const util::StringView &localName, Variable *const var,
+                                    const ir::StringLiteral *const importPath);
+
+    bool AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
+                                 util::StringView const &value)
+    {
+        if (auto foundMap = selectiveExportAliasMultimap_.find(path); foundMap != selectiveExportAliasMultimap_.end()) {
+            return foundMap->second.insert({key, value}).second;
+        }
+
+        ArenaMap<util::StringView, util::StringView> map(Allocator()->Adapter());
+        bool insertResult = map.insert({key, value}).second;
+        selectiveExportAliasMultimap_.insert({path, map});
+        return insertResult;
+    }
+
+    [[nodiscard]] const ModulesToExportedNamesWithAliases &GetSelectiveExportAliasMultimap() const noexcept
+    {
+        return selectiveExportAliasMultimap_;
+    }
+
+    util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName)
+    {
+        if (auto relatedMap = selectiveExportAliasMultimap_.find(pathAsKey);
+            relatedMap != selectiveExportAliasMultimap_.end()) {
+            if (auto item = relatedMap->second.find(aliasName); item != relatedMap->second.end()) {
+                return item->second;
+            }
+        }
+
+        return "";
+    }
+
+    util::StringView FindLocalNameForImport(const ir::ImportSpecifier *const importSpecifier,
+                                            util::StringView &imported, const ir::StringLiteral *const importPath)
+    {
+        if (importSpecifier->Local() != nullptr) {
+            auto checkImportPathAndName = [&importPath, &imported](const auto &savedSpecifier) {
+                return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
+            };
+            if (!std::any_of(importSpecifiers_.begin(), importSpecifiers_.end(), checkImportPathAndName)) {
+                TopScope()->EraseBinding(imported);
+            }
+
+            importSpecifiers_.emplace_back(importPath->Str(), imported);
+
+            return importSpecifier->Local()->Name();
+        }
+
+        return imported;
+    }
 
 private:
     void BuildClassDefinitionImpl(ir::ClassDefinition *classDef);
@@ -250,7 +301,7 @@ private:
     ir::Identifier *thisParam_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;
     ir::AstNode *defaultExport_ {};
-    ModulesToExportedNamesWithAliases selectiveExportsWithAlias_;
+    ModulesToExportedNamesWithAliases selectiveExportAliasMultimap_;
 
     friend class RecordTableContext;
 };

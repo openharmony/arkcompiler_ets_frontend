@@ -217,6 +217,16 @@ public:
         entryPoint_ = true;
     }
 
+    void MarkASTAsChecked()
+    {
+        isASTchecked_ = true;
+    }
+
+    bool IsASTChecked() const
+    {
+        return isASTchecked_;
+    }
+
     varbinder::ClassScope *GlobalClassScope();
     const varbinder::ClassScope *GlobalClassScope() const;
 
@@ -258,6 +268,7 @@ private:
     bool entryPoint_ {};
     ETSNolintsCollectionMap etsnolintCollection_;
     ModuleInfo moduleInfo_ {};
+    bool isASTchecked_ {};
 };
 }  // namespace ark::es2panda::parser
 

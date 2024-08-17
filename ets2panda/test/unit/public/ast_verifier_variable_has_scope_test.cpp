@@ -14,10 +14,7 @@
  */
 
 #include "ast_verifier_test.h"
-#include "checker/ETSchecker.h"
-#include "ir/expressions/identifier.h"
 #include "ir/astNode.h"
-#include "parser/ETSparser.h"
 
 #include <gtest/gtest.h>
 
@@ -79,6 +76,72 @@ TEST_F(ASTVerifierTest, TestUnions)
     )";
 
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("VariableHasScopeForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        type BenchmarkFunc = () => void;
+
+        function main() {
+            const arr: number[] = [1, 2, 3, 4];
+            const ITERATE_FUNC: BenchmarkFunc = () => {
+                const length = arr.length;
+            };
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("VariableHasScopeForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, AsyncLambda)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        let fs: ((p: int) => int)[]
+        function foo(i: int): ((p: int) => int) {
+            return fs[i]
+        }
+
+        function main() {
+            fs = [
+                (p: int): int => p + 1,
+            ]
+
+            let ps: Object = new Object()
+            ps = launch foo(0)
+
+            let cnt = 0
+            cnt += (await ps as Promise<(p: int) => int>)(0)
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 

@@ -150,9 +150,9 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
 std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(checker::ETSChecker *checker,
                                                                                            checker::Type *type) const
 {
-    auto const *const enumInterface = [type]() -> checker::ETSEnumInterface const * {
-        if (type->IsETSEnumType()) {
-            return type->AsETSEnumType();
+    auto const *const enumInterface = [type]() -> checker::ETSEnumType const * {
+        if (type->IsETSIntEnumType()) {
+            return type->AsETSIntEnumType();
         }
         return type->AsETSStringEnumType();
     }();
@@ -170,6 +170,10 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
 {
     auto resolveRes = checker->ResolveMemberReference(this, objType_);
     switch (resolveRes.size()) {
+        case 0U: {
+            /* resolution failed, error already reported */
+            return {nullptr, nullptr};
+        }
         case 1U: {
             if (resolveRes[0]->Kind() == checker::ResolvedKind::PROPERTY) {
                 auto var = resolveRes[0]->Variable()->AsLocalVariable();
@@ -210,7 +214,7 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
             addPropType(ResolveObjectMember(checker).first);
-        } else if (apparent->IsETSEnumType() || apparent->IsETSStringEnumType()) {
+        } else if (apparent->IsETSEnumType()) {
             addPropType(ResolveEnumMember(checker, apparent).first);
         } else {
             checker->ThrowTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
@@ -239,7 +243,7 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
     return TsType();
 }
 
-void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
+bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
 {
     std::size_t index;
 
@@ -248,14 +252,16 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
     if (number.IsInteger()) {
         auto const value = number.GetLong();
         if (value < 0) {
-            checker->ThrowTypeError("Index value cannot be less than zero.", property_->Start());
+            checker->LogTypeError("Index value cannot be less than zero.", property_->Start());
+            return false;
         }
         index = static_cast<std::size_t>(value);
     } else if (number.IsReal()) {
         double value = number.GetDouble();
         double fraction = std::modf(value, &value);
         if (value < 0.0 || fraction >= std::numeric_limits<double>::epsilon()) {
-            checker->ThrowTypeError("Index value cannot be less than zero or fractional.", property_->Start());
+            checker->LogTypeError("Index value cannot be less than zero or fractional.", property_->Start());
+            return false;
         }
         index = static_cast<std::size_t>(value);
     } else {
@@ -263,8 +269,11 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
     }
 
     if (object_->IsArrayExpression() && object_->AsArrayExpression()->Elements().size() <= index) {
-        checker->ThrowTypeError("Index value cannot be greater than or equal to the array size.", property_->Start());
+        checker->LogTypeError("Index value cannot be greater than or equal to the array size.", property_->Start());
+        return false;
     }
+
+    return true;
 }
 
 checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *checker)
@@ -326,8 +335,11 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
 {
     ASSERT(baseType->IsETSTupleType());
 
-    auto *const tupleTypeAtIdx = baseType->AsETSTupleType()->GetTypeAtIndex(
-        checker->GetTupleElementAccessValue(Property()->TsType(), Property()->Start()));
+    auto idxIfAny = checker->GetTupleElementAccessValue(Property()->TsType(), Property()->Start());
+    if (!idxIfAny.has_value()) {
+        return nullptr;
+    }
+    auto *const tupleTypeAtIdx = baseType->AsETSTupleType()->GetTypeAtIndex(*idxIfAny);
 
     if ((!Parent()->IsAssignmentExpression() || Parent()->AsAssignmentExpression()->Left() != this) &&
         (!Parent()->IsUpdateExpression())) {
@@ -344,41 +356,49 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
 
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    if (baseType->IsETSArrayType() || baseType->IsETSDynamicType()) {
-        if (!baseType->IsETSTupleType()) {
-            checker->ValidateArrayIndex(property_);
+    if (baseType->IsETSDynamicType()) {
+        checker->ValidateArrayIndex(property_);
+        return checker->GlobalBuiltinDynamicType(baseType->AsETSDynamicType()->Language());
+    }
+
+    if (baseType->IsETSArrayType()) {
+        auto *dflt = baseType->AsETSArrayType()->ElementType();
+        if (!baseType->IsETSTupleType() && !checker->ValidateArrayIndex(property_)) {
+            // error already reported to log
+            return dflt;
         }
 
-        if (baseType->IsETSTupleType()) {
-            checker->ValidateTupleIndex(baseType->AsETSTupleType(), this);
-        } else if (baseType->IsETSArrayType() && property_->IsNumberLiteral()) {
-            // Check if the index value is inside array bounds if it is defined explicitly
-            CheckArrayIndexValue(checker);
+        if (baseType->IsETSTupleType() && !checker->ValidateTupleIndex(baseType->AsETSTupleType(), this)) {
+            // error reported to log
+            return dflt;
+        }
+
+        // Check if the index value is inside array bounds if it is defined explicitly
+        if (property_->IsNumberLiteral() && !CheckArrayIndexValue(checker)) {
+            // error reported to log
+            return dflt;
         }
 
         // NOTE: apply capture conversion on this type
-        if (baseType->IsETSArrayType()) {
-            if (baseType->IsETSTupleType()) {
-                return CheckTupleAccessMethod(checker, baseType);
-            }
-
-            if (object_->IsArrayExpression() && property_->IsNumberLiteral()) {
-                auto const number = property_->AsNumberLiteral()->Number().GetLong();
-                return object_->AsArrayExpression()->Elements()[number]->Check(checker);
-            }
-
-            return baseType->AsETSArrayType()->ElementType();
+        if (baseType->IsETSTupleType()) {
+            auto *res = CheckTupleAccessMethod(checker, baseType);
+            return (res == nullptr) ? dflt : res;
         }
 
-        // Dynamic
-        return checker->GlobalBuiltinDynamicType(baseType->AsETSDynamicType()->Language());
+        return dflt;
     }
 
     if (baseType->IsETSObjectType()) {
         SetObjectType(baseType->AsETSObjectType());
         return CheckIndexAccessMethod(checker);
     }
-
+    if ((baseType->IsETSEnumType()) && (kind_ == MemberExpressionKind::ELEMENT_ACCESS)) {
+        property_->Check(checker);
+        if (property_->TsType()->IsETSEnumType()) {
+            AddAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME);
+            return checker->GlobalBuiltinETSStringType();
+        }
+    }
     checker->ThrowTypeError("Indexed access is not supported for such expression type.", Object()->Start());
 }
 

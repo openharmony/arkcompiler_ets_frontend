@@ -21,8 +21,7 @@
 
 /*
   /*
-    nested block
-  */
+    block
 */
 
 /*

@@ -223,7 +223,7 @@ private:
     checker::Type *TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType,
                                        checker::Type *commonPropType);
 
-    void CheckArrayIndexValue(checker::ETSChecker *checker) const;
+    bool CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
     checker::Type *CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType);
 

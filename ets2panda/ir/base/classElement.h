@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_CLASS_ELEMENT_H
 
 #include "ir/statement.h"
+#include "ir/typed.h"
 
 namespace ark::es2panda::ir {
 class Expression;

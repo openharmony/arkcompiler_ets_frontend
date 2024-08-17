@@ -1,1 +1,1 @@
-SyntaxError: Cannot be used as user-defined type. [user_defined_18.sts:16:8]
+SyntaxError: Struct types are not supported yet! [user_defined_18.sts:16:1]

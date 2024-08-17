@@ -509,3 +509,4 @@
   }
 }
 TypeError: 'this' cannot be referenced from a static context [thisReferenceFromStaticContext.sts:18:9]
+TypeError: 'a' is a static property of 'Klass' [thisReferenceFromStaticContext.sts:18:14]

@@ -358,10 +358,6 @@ void CheckerContext::CheckSmartCastEqualityCondition(ir::BinaryExpression *const
 
         if (testedType->DefinitelyETSNullish()) {
             testCondition_ = {variable, testedType, negate, strict};
-        } else if (!negate || !strict) {
-            // NOTE: we cannot say anything about variable from the expressions like 'x !== "str"'
-            testedType = parent_->AsETSChecker()->ResolveSmartType(testedType, variable->TsType());
-            testCondition_ = {variable, testedType, negate, strict};
         }
     }
 }

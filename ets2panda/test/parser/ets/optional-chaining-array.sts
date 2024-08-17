@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-let arr: Int[] | null = [1, 4, 5];
+let arr: Int[] | null = [1, 4, 5] as Int[];
 let test = arr?.[1] ?? "unknown";
 
 let arr2: String[] | null;

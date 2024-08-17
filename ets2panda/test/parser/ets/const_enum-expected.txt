@@ -1,1 +1,0 @@
-SyntaxError: Variable declaration expected. [const_enum.sts:16:7]

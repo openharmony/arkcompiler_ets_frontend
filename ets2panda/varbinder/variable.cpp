@@ -15,11 +15,13 @@
 
 #include "variable.h"
 
+#include "checker/types/type.h"
 #include "varbinder/scope.h"
 
 #include <utility>
 
 namespace ark::es2panda::varbinder {
+
 LocalVariable::LocalVariable(Decl *decl, VariableFlags flags) : Variable(decl, flags)
 {
     if (decl->IsConstDecl() || decl->IsReadonlyDecl()) {

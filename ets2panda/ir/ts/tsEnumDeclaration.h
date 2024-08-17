@@ -100,6 +100,16 @@ public:
         internalName_ = internalName;
     }
 
+    ir::ClassDefinition *BoxedClass() const
+    {
+        return boxedClass_;
+    }
+
+    void SetBoxedClass(ir::ClassDefinition *const wrapperClass)
+    {
+        boxedClass_ = wrapperClass;
+    }
+
     bool IsConst() const
     {
         return isConst_;
@@ -152,6 +162,7 @@ private:
     Identifier *key_;
     ArenaVector<AstNode *> members_;
     util::StringView internalName_;
+    ir::ClassDefinition *boxedClass_ {nullptr};
     bool isConst_;
     bool isDeclare_;
 };

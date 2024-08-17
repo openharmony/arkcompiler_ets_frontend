@@ -71,39 +71,39 @@ enum class TypeFlag : uint64_t {
     ETS_VOID = 1ULL << 43ULL,            // ETS void type
     ETS_OBJECT = 1ULL << 44ULL,          // ETS class or interface type
     ETS_ARRAY = 1ULL << 45ULL,           // ETS array type
-    SYNTHETIC = 1ULL << 46ULL,           // synthetic type created by the checker for specific checks
-    WILDCARD = 1ULL << 47ULL,            // new A<?>()
-    ETS_TYPE_PARAMETER = 1ULL << 48ULL,  // ETS type parameter
-    ETS_TYPE_REFERENCE = 1ULL << 49ULL,  // ETS type reference
-    GENERIC = 1ULL << 50ULL,             // ETS Generic
-    ETS_ENUM = 1ULL << 51ULL,            // ETS Enum
-    ETS_STRING_ENUM = 1ULL << 52ULL,     // ETS string-type Enumeration
-    ETS_DYNAMIC_FLAG = 1ULL << 53ULL,    // ETS Dynamic flag
-    GETTER = 1ULL << 54ULL,              // ETS Getter
-    SETTER = 1ULL << 55ULL,              // ETS Setter
-    ETS_EXTENSION_FUNC_HELPER = 1ULL << 56ULL,    // ETS Extension Function Helper
-    ETS_UNION = 1ULL << 57ULL,                    // ETS union
-    ETS_TUPLE = 1ULL << 58ULL,                    // ETS tuple type
-    ETS_NULL = 1ULL << 59ULL,                     // ETS null
-    ETS_UNDEFINED = 1ULL << 60ULL,                // ETS undefined
-    ETS_NONNULLISH = 1ULL << 61ULL,               // ETS nonnullish type parameter
-    ETS_READONLY = 1ULL << 62ULL,                 // ETS readonly type parameter
-    ETS_REQUIRED_TYPE_PARAMETER = 1ULL << 63ULL,  // ETS Required type parameter
+    WILDCARD = 1ULL << 46ULL,            // new A<?>()
+    ETS_TYPE_PARAMETER = 1ULL << 47ULL,  // ETS type parameter
+    ETS_TYPE_REFERENCE = 1ULL << 48ULL,  // ETS type reference
+    GENERIC = 1ULL << 49ULL,             // ETS Generic
+    ETS_INT_ENUM = 1ULL << 50ULL,        // ETS Enum
+    ETS_STRING_ENUM = 1ULL << 51ULL,     // ETS string-type Enumeration
+    ETS_DYNAMIC_FLAG = 1ULL << 52ULL,    // ETS Dynamic flag
+    GETTER = 1ULL << 53ULL,              // ETS Getter
+    SETTER = 1ULL << 54ULL,              // ETS Setter
+    ETS_EXTENSION_FUNC_HELPER = 1ULL << 55ULL,    // ETS Extension Function Helper
+    ETS_UNION = 1ULL << 56ULL,                    // ETS union
+    ETS_TUPLE = 1ULL << 57ULL,                    // ETS tuple type
+    ETS_NULL = 1ULL << 58ULL,                     // ETS null
+    ETS_UNDEFINED = 1ULL << 59ULL,                // ETS undefined
+    ETS_NONNULLISH = 1ULL << 60ULL,               // ETS nonnullish type parameter
+    ETS_READONLY = 1ULL << 61ULL,                 // ETS readonly type parameter
+    ETS_REQUIRED_TYPE_PARAMETER = 1ULL << 62ULL,  // ETS Required type parameter
+    TYPE_ERROR = 1ULL << 63ULL,                   // type error
     ETS_DYNAMIC_TYPE = ETS_OBJECT | ETS_DYNAMIC_FLAG,
     ETS_DYNAMIC_FUNCTION_TYPE = FUNCTION | ETS_DYNAMIC_FLAG,
     ETS_TYPE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_VOID | ETS_OBJECT | ETS_ARRAY |
-               WILDCARD | ETS_TYPE_PARAMETER | ETS_ENUM | ETS_STRING_ENUM | ETS_DYNAMIC_TYPE | ETS_UNION | ETS_NULL |
-               ETS_UNDEFINED | ETS_NONNULLISH | ETS_READONLY,
+               WILDCARD | ETS_TYPE_PARAMETER | ETS_INT_ENUM | ETS_STRING_ENUM | ETS_DYNAMIC_TYPE | ETS_UNION |
+               ETS_NULL | ETS_UNDEFINED | ETS_NONNULLISH | ETS_READONLY,
     ETS_PRIMITIVE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN,
-    ETS_PRIMITIVE_RETURN = ETS_PRIMITIVE | ETS_ENUM,
+    ETS_PRIMITIVE_RETURN = ETS_PRIMITIVE | ETS_INT_ENUM,
     ETS_ARRAY_INDEX = BYTE | SHORT | INT,
     ETS_INTEGRAL = BYTE | CHAR | SHORT | INT | LONG,
     ETS_FLOATING_POINT = FLOAT | DOUBLE,
     ETS_NUMERIC = BYTE | SHORT | INT | LONG | ETS_FLOATING_POINT,
-    ETS_CONVERTIBLE_TO_NUMERIC = ETS_NUMERIC | CHAR | ETS_ENUM,
+    ETS_CONVERTIBLE_TO_NUMERIC = ETS_NUMERIC | CHAR | ETS_INT_ENUM,
     ETS_ARRAY_OR_OBJECT = ETS_ARRAY | ETS_OBJECT,
     ETS_WIDE_NUMERIC = LONG | DOUBLE,
-    VALID_SWITCH_TYPE = BYTE | SHORT | INT | CHAR | LONG | ETS_ENUM | ETS_STRING_ENUM,
+    VALID_SWITCH_TYPE = BYTE | SHORT | INT | CHAR | LONG | ETS_INT_ENUM | ETS_STRING_ENUM,
     NARROWABLE_TO_FLOAT = DOUBLE,
     NARROWABLE_TO_LONG = FLOAT | NARROWABLE_TO_FLOAT,
     NARROWABLE_TO_INT = LONG | NARROWABLE_TO_LONG,
@@ -140,7 +140,7 @@ enum class TypeFlag : uint64_t {
     UNIT = LITERAL | UNIQUE_SYMBOL | UNDEFINED | NULL_TYPE,
     GETTER_SETTER = GETTER | SETTER,
     CONDITION_EXPRESSION_TYPE = ETS_NULL | ETS_UNDEFINED | ETS_OBJECT | ETS_ARRAY | ETS_UNION | CONSTANT | BYTE | CHAR |
-                                SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_ENUM | ETS_STRING_ENUM
+                                SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_INT_ENUM | ETS_STRING_ENUM
 };
 
 }  // namespace ark::es2panda::checker

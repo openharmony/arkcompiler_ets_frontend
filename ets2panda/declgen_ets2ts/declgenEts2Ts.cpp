@@ -75,7 +75,12 @@ void TSDeclGen::Generate()
         } else if (globalStatement->IsTSEnumDeclaration()) {
             GenEnumDeclaration(globalStatement->AsTSEnumDeclaration());
         } else if (globalStatement->IsClassDeclaration()) {
-            GenClassDeclaration(globalStatement->AsClassDeclaration());
+            // The classes generated for enums starts with '#' but those are invalid names and
+            // not requred for the ts code
+            if (globalStatement->AsClassDeclaration()->Definition()->Ident()->Name().Mutf8().find('#') ==
+                std::string::npos) {
+                GenClassDeclaration(globalStatement->AsClassDeclaration());
+            }
         } else if (globalStatement->IsTSInterfaceDeclaration()) {
             GenInterfaceDeclaration(globalStatement->AsTSInterfaceDeclaration());
         } else if (globalStatement->IsTSTypeAliasDeclaration()) {
@@ -153,7 +158,7 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NONNULLISH:
         case checker::TypeFlag::ETS_READONLY:
-        case checker::TypeFlag::ETS_ENUM:
+        case checker::TypeFlag::ETS_INT_ENUM:
             Out(checkerType->ToString());
             return;
         case checker::TypeFlag::ETS_OBJECT:
@@ -266,7 +271,7 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
     GenFunctionBody(methodDef, sig, isConstructor, isSetter);
 }
 
-void TSDeclGen::GenEnumType(const checker::ETSEnumType *enumType)
+void TSDeclGen::GenEnumType(const checker::ETSIntEnumType *enumType)
 {
     for (auto *member : enumType->GetMembers()) {
         Out(INDENT);
@@ -472,8 +477,8 @@ void TSDeclGen::GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl)
     Out("enum ", enumName, " {");
     OutEndl();
 
-    ASSERT(enumDecl->TsType()->IsETSEnumType());
-    GenEnumType(enumDecl->TsType()->AsETSEnumType());
+    ASSERT(enumDecl->TsType()->IsETSIntEnumType());
+    GenEnumType(enumDecl->TsType()->AsETSIntEnumType());
 
     Out("}");
     OutEndl();

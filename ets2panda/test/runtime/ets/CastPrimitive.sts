@@ -81,5 +81,16 @@ function main(): void {
   i = false;
   assert i as boolean == false;
 
+  assert 4294967296.0 as byte == -1;
+  assert 4294967296.0 as char == c'\uFFFF';
+  assert 4294967296.0 as short == -1;
+  assert 4294967296.0 as int == Int.MAX_VALUE;
+  assert 4294967296.0 as long == 4294967296;
+  assert -4294967296.0 as byte == 0;
+  assert -4294967296.0 as char == c'\u0000';
+  assert -4294967296.0 as short == 0;
+  assert -4294967296.0 as int == Int.MIN_VALUE;
+  assert -4294967296.0 as long == -4294967296;
+
   return;
 }

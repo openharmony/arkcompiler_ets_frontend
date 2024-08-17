@@ -15,12 +15,8 @@
 
 class A {
   fn<T>(t: T): T { return t; }
-  fn2<T>(t: T): T { return t; }
 }
 
 class B extends A {
   override fn<Object>(t: Object): Object { return t; }
-
-  // return-type-substitutable.
-  override fn2<Object>(t: Object): String { return t.toString(); }
 }

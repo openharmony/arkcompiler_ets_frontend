@@ -960,4 +960,3 @@
     }
   }
 }
-TypeError: Function foo is already declared. [rest_parameter_02.sts:20:1]

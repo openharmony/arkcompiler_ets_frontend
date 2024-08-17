@@ -35,8 +35,8 @@ class A {
     }
 
     foo() {
-        let a = this.sub.getValue();
-        let b = this.shape.getValue();
+        let a = this.sub.valueOf();
+        let b = this.shape.valueOf();
     }
 }
 

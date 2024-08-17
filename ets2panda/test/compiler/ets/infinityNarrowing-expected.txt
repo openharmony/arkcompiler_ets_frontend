@@ -424,3 +424,4 @@
     }
   }
 }
+TypeError: Type 'double' cannot be assigned to type 'byte' [infinityNarrowing.sts:17:30]

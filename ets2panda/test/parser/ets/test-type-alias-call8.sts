@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-import type { Callback } from './test-type-alias-call3.sts';
+
+import type { Callback } from './test-type-alias-call7';
 class A {
     public callback: Callback
     public increment(){

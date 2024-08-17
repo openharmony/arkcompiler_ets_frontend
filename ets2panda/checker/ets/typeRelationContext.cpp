@@ -60,24 +60,6 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
     return false;
 }
 
-bool InstantiationContext::ValidateTypeArg(Type *constraintType, Type *typeArg)
-{
-    // NOTE: #14993 enforce IsETSReferenceType
-    if (typeArg->IsWildcardType()) {
-        return true;
-    }
-
-    if (typeArg->IsETSVoidType() && constraintType->IsETSUnionType()) {
-        for (auto const it : constraintType->AsETSUnionType()->ConstituentTypes()) {
-            if (it->IsETSUndefinedType() || it->IsETSVoidType()) {
-                return true;
-            }
-        }
-    }
-
-    return checker_->Relation()->IsAssignableTo(typeArg, constraintType);
-}
-
 void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs)
 {
     ArenaVector<Type *> typeArgTypes(checker_->Allocator()->Adapter());

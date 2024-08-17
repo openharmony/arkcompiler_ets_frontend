@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_TS_TYPE_ALIAS_DECLARATION_H
 
 #include "ir/statement.h"
+#include "ir/typed.h"
 
 namespace ark::es2panda::varbinder {
 class Variable;

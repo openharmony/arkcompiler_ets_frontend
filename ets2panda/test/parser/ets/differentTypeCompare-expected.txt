@@ -212,7 +212,7 @@
                     },
                     "end": {
                       "line": 16,
-                      "column": 34
+                      "column": 31
                     }
                   }
                 },
@@ -222,7 +222,7 @@
                   "loc": {
                     "start": {
                       "line": 16,
-                      "column": 35
+                      "column": 32
                     },
                     "end": {
                       "line": 17,
@@ -666,4 +666,4 @@
     }
   }
 }
-TypeError: Bad operand type, the types of the operands must be numeric or boolean type. [differentTypeCompare.sts:23:9]
+TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. [differentTypeCompare.sts:23:9]

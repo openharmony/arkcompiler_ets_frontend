@@ -187,7 +187,7 @@ void SetTypesForScriptFunction(checker::ETSChecker *const checker, ir::ScriptFun
 ETSEnumType::Method ETSChecker::MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
                                            bool buildPorxyParam, Type *returnType, bool buildProxy)
 {
-    auto function = FindFunction(compiler::EnumLoweringPhase::GetQualifiedName(this, enumDecl, name));
+    auto function = FindFunction(enumDecl, name);
     if (function == nullptr) {
         return {};
     }
@@ -204,12 +204,16 @@ ETSEnumType::Method ETSChecker::MakeMethod(ir::TSEnumDeclaration const *const en
             buildProxy ? MakeProxyFunctionType(this, name, {}, function, returnType) : nullptr};
 }
 
-[[nodiscard]] ir::ScriptFunction *ETSChecker::FindFunction(const util::UString &name)
+[[nodiscard]] ir::ScriptFunction *ETSChecker::FindFunction(ir::TSEnumDeclaration const *const enumDecl,
+                                                           const std::string_view &name)
 {
-    auto globalClass = Program()->GlobalClass();
-    for (auto m : globalClass->Body()) {  // NOTE: Temporal solution until the methods are moved to separate classes.
+    if (enumDecl->BoxedClass() == nullptr) {
+        return nullptr;
+    }
+
+    for (auto m : enumDecl->BoxedClass()->Body()) {
         if (m->IsMethodDefinition()) {
-            if (m->AsMethodDefinition()->Id()->Name() == name.View()) {
+            if (m->AsMethodDefinition()->Id()->Name() == name) {
                 return m->AsMethodDefinition()->Function();
             }
         }
@@ -217,8 +221,10 @@ ETSEnumType::Method ETSChecker::MakeMethod(ir::TSEnumDeclaration const *const en
     return nullptr;
 }
 
-ETSEnumType *ETSChecker::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+template <typename EnumType>
+EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
 {
+    static_assert(std::is_same_v<EnumType, ETSIntEnumType> || std::is_same_v<EnumType, ETSStringEnumType>);
     SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass(),
                                      Context().ContainingSignature());
 
@@ -226,7 +232,9 @@ ETSEnumType *ETSChecker::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclara
     ASSERT(enumVar != nullptr);
 
     checker::ETSEnumType::UType ordinal = -1;
-    auto *const enumType = Allocator()->New<checker::ETSEnumType>(enumDecl, ordinal++);
+    auto *const enumType = Allocator()->New<EnumType>(enumDecl, ordinal++);
+    auto *const boxedEnumType = enumDecl->BoxedClass()->TsType();
+
     enumType->SetVariable(enumVar);
     enumVar->SetTsType(enumType);
 
@@ -234,18 +242,28 @@ ETSEnumType *ETSChecker::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclara
         MakeMethod(enumDecl, ETSEnumType::GET_NAME_METHOD_NAME, false, GlobalETSStringLiteralType());
     enumType->SetGetNameMethod(getNameMethod);
 
-    auto valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, true, enumType);
-    enumType->SetValueOfMethod(valueOfMethod);
+    auto getValueOfMethod = MakeMethod(enumDecl, ETSEnumType::GET_VALUE_OF_METHOD_NAME, true, enumType);
+    enumType->SetGetValueOfMethod(getValueOfMethod);
 
     auto const fromIntMethod = MakeMethod(enumDecl, ETSEnumType::FROM_INT_METHOD_NAME, false, enumType, false);
     enumType->SetFromIntMethod(fromIntMethod);
 
-    auto const getValueMethod = MakeMethod(enumDecl, ETSEnumType::GET_VALUE_METHOD_NAME, false, GlobalIntType());
-    enumType->SetGetValueMethod(getValueMethod);
+    auto const boxedFromIntMethod =
+        MakeMethod(enumDecl, ETSEnumType::BOXED_FROM_INT_METHOD_NAME, false, boxedEnumType, false);
+    enumType->SetBoxedFromIntMethod(boxedFromIntMethod);
+
+    auto const unboxMethod = MakeMethod(enumDecl, ETSEnumType::UNBOX_METHOD_NAME, false, enumType, false);
+    enumType->SetUnboxMethod(unboxMethod);
 
     auto const toStringMethod =
         MakeMethod(enumDecl, ETSEnumType::TO_STRING_METHOD_NAME, false, GlobalETSStringLiteralType());
     enumType->SetToStringMethod(toStringMethod);
+
+    ETSEnumType::Method valueOfMethod = toStringMethod;
+    if (std::is_same_v<EnumType, ETSIntEnumType>) {
+        valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, false, GlobalIntType());
+    }
+    enumType->SetValueOfMethod(valueOfMethod);
 
     auto const valuesMethod =
         MakeMethod(enumDecl, ETSEnumType::VALUES_METHOD_NAME, false, CreateETSArrayType(enumType));
@@ -253,59 +271,30 @@ ETSEnumType *ETSChecker::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclara
 
     for (auto *const member : enumType->GetMembers()) {
         auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enumLiteralType =
-            Allocator()->New<checker::ETSEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
+        auto *const enumLiteralType = Allocator()->New<EnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
         enumLiteralType->SetVariable(memberVar);
         memberVar->SetTsType(enumLiteralType);
 
-        enumLiteralType->SetGetValueMethod(getValueMethod);
         enumLiteralType->SetGetNameMethod(getNameMethod);
+        enumLiteralType->SetGetValueOfMethod(getValueOfMethod);
+        enumLiteralType->SetFromIntMethod(fromIntMethod);
+        enumLiteralType->SetBoxedFromIntMethod(boxedFromIntMethod);
+        enumLiteralType->SetUnboxMethod(unboxMethod);
+        enumLiteralType->SetValueOfMethod(valueOfMethod);
         enumLiteralType->SetToStringMethod(toStringMethod);
+        enumLiteralType->SetValuesMethod(valuesMethod);
     }
     return enumType;
 }
 
-ETSStringEnumType *ETSChecker::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+ETSIntEnumType *ETSChecker::CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
 {
-    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
-    ASSERT(enumVar != nullptr);
+    return CreateEnumTypeFromEnumDeclaration<ETSIntEnumType>(enumDecl);
+}
 
-    checker::ETSEnumType::UType ordinal = -1;
-    auto *const enumType = Allocator()->New<checker::ETSStringEnumType>(enumDecl, ordinal++);
-    enumType->SetVariable(enumVar);
-    enumVar->SetTsType(enumType);
-
-    auto const getNameMethod =
-        MakeMethod(enumDecl, ETSEnumType::GET_NAME_METHOD_NAME, false, GlobalETSStringLiteralType());
-    enumType->SetGetNameMethod(getNameMethod);
-
-    auto valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, true, enumType);
-    enumType->SetValueOfMethod(valueOfMethod);
-
-    auto const fromIntMethod = MakeMethod(enumDecl, ETSEnumType::FROM_INT_METHOD_NAME, false, enumType, false);
-    enumType->SetFromIntMethod(fromIntMethod);
-
-    auto const toStringMethod =
-        MakeMethod(enumDecl, ETSEnumType::TO_STRING_METHOD_NAME, false, GlobalETSStringLiteralType());
-    enumType->SetGetValueMethod(toStringMethod);
-    enumType->SetToStringMethod(toStringMethod);
-
-    auto const valuesMethod =
-        MakeMethod(enumDecl, ETSEnumType::VALUES_METHOD_NAME, false, CreateETSArrayType(enumType));
-    enumType->SetValuesMethod(valuesMethod);
-
-    for (auto *const member : enumType->GetMembers()) {
-        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enumLiteralType =
-            Allocator()->New<checker::ETSStringEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
-        enumLiteralType->SetVariable(memberVar);
-        memberVar->SetTsType(enumLiteralType);
-
-        enumLiteralType->SetGetValueMethod(toStringMethod);
-        enumLiteralType->SetGetNameMethod(getNameMethod);
-        enumLiteralType->SetToStringMethod(toStringMethod);
-    }
-    return enumType;
+ETSStringEnumType *ETSChecker::CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+{
+    return CreateEnumTypeFromEnumDeclaration<ETSStringEnumType>(enumDecl);
 }
 
 Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)

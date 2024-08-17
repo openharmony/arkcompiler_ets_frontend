@@ -110,6 +110,10 @@ void ClassProperty::Dump(ir::SrcDumper *dumper) const
         key_->Dump(dumper);
     }
 
+    if (IsOptionalDeclaration()) {
+        dumper->Add("?");
+    }
+
     if (typeAnnotation_ != nullptr) {
         dumper->Add(": ");
         typeAnnotation_->Dump(dumper);
@@ -121,6 +125,7 @@ void ClassProperty::Dump(ir::SrcDumper *dumper) const
     }
 
     dumper->Add(";");
+    dumper->Endl();
 }
 
 void ClassProperty::Compile(compiler::PandaGen *pg) const

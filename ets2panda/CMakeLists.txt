@@ -55,7 +55,7 @@ endif()
 
 if(NOT PANDA_PRODUCT_BUILD)
   execute_process(
-    COMMAND date "+%Y-%m-%d %H:%M:%S"
+    COMMAND date "+%Y-%m-%d_%H:%M:%S"
     OUTPUT_VARIABLE CURRENT_DATE
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
@@ -66,9 +66,11 @@ if(NOT PANDA_PRODUCT_BUILD)
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
 
-  add_definitions(-DES2PANDA_DATE="${CURRENT_DATE}")
-  add_definitions(-DES2PANDA_HASH="${LAST_COMMIT_HASH}")
-  endif()
+  set_source_files_properties(
+    util/options.cpp
+    PROPERTIES COMPILE_DEFINITIONS "ES2PANDA_DATE=\"${CURRENT_DATE}\";ES2PANDA_HASH=\"${LAST_COMMIT_HASH}\""
+  )
+endif()
 
 add_custom_command(
   OUTPUT ${GENERATED_STAMP}
@@ -110,6 +112,25 @@ panda_gen(
 )
 
 set(ES2PANDA_LIB_SRC
+  ast_verifier/ASTVerifier.cpp
+  ast_verifier/arithmeticOperationValid.cpp
+  ast_verifier/checkContext.cpp
+  ast_verifier/checkInfiniteLoop.cpp
+  ast_verifier/everyChildHasValidParent.cpp
+  ast_verifier/everyChildInParentRange.cpp
+  ast_verifier/helpers.cpp
+  ast_verifier/identifierHasVariable.cpp
+  ast_verifier/importExportAccessValid.cpp
+  ast_verifier/nodeHasParent.cpp
+  ast_verifier/nodeHasSourceRange.cpp
+  ast_verifier/nodeHasType.cpp
+  ast_verifier/referenceTypeAnnotationIsNull.cpp
+  ast_verifier/forLoopCorrectlyInitialized.cpp
+  ast_verifier/modifierAccessValid.cpp
+  ast_verifier/sequenceExpressionHasLastType.cpp
+  ast_verifier/variableHasEnclosingScope.cpp
+  ast_verifier/variableHasScope.cpp
+  ast_verifier/variableNameIdentifierNameSame.cpp
   es2panda.cpp
   varbinder/ASBinder.cpp
   varbinder/TSBinder.cpp
@@ -130,7 +151,6 @@ set(ES2PANDA_LIB_SRC
   compiler/base/literals.cpp
   compiler/base/lreference.cpp
   compiler/base/optionalChain.cpp
-  compiler/core/ASTVerifier.cpp
   compiler/core/codeGen.cpp
   compiler/core/compileJob.cpp
   compiler/core/compileQueue.cpp
@@ -138,6 +158,7 @@ set(ES2PANDA_LIB_SRC
   compiler/core/dynamicContext.cpp
   compiler/core/emitter.cpp
   compiler/core/JSCompiler.cpp
+  compiler/core/JSCompilerUnreachable.cpp
   compiler/core/JSemitter.cpp
   compiler/core/envScope.cpp
   compiler/core/function.cpp
@@ -149,6 +170,7 @@ set(ES2PANDA_LIB_SRC
   compiler/core/regScope.cpp
   compiler/core/regSpiller.cpp
   compiler/core/ETSCompiler.cpp
+  compiler/core/ETSCompilerUnrechable.cpp
   compiler/core/ETSemitter.cpp
   compiler/core/ETSGen.cpp
   compiler/core/ETSfunction.cpp
@@ -165,6 +187,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/scopesInit/scopesInitPhase.cpp
   compiler/lowering/phase.cpp
   compiler/lowering/plugin_phase.cpp
+  compiler/lowering/resolveIdentifiers.cpp
   compiler/lowering/util.cpp
   compiler/lowering/ets/topLevelStmts/importExportDecls.cpp
   compiler/lowering/ets/topLevelStmts/globalClassHandler.cpp
@@ -192,9 +215,11 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/structLowering.cpp
   compiler/lowering/ets/defaultParameterLowering.cpp
   compiler/lowering/ets/objectLiteralLowering.cpp
+  compiler/lowering/ets/interfaceObjectLiteralLowering.cpp
   compiler/lowering/ets/stringComparison.cpp
   compiler/lowering/ets/stringConstructorLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
+  compiler/lowering/ets/enumPostCheckLowering.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp
@@ -394,10 +419,12 @@ set(ES2PANDA_LIB_SRC
   checker/checkerContext.cpp
   checker/ETSAnalyzer.cpp
   checker/ETSAnalyzerHelpers.cpp
+  checker/ETSAnalyzerUnreachable.cpp
   checker/ETSchecker.cpp
   checker/TSchecker.cpp
   checker/ASchecker.cpp
   checker/TSAnalyzer.cpp
+  checker/TSAnalyzerUnreachable.cpp
   checker/JSchecker.cpp
   checker/typeChecker/TypeChecker.cpp
   checker/ets/aliveAnalyzer.cpp
@@ -413,7 +440,6 @@ set(ES2PANDA_LIB_SRC
   checker/ets/function.cpp
   checker/ets/validateHelpers.cpp
   checker/ets/typeCheckingHelpers.cpp
-  checker/ets/enum.cpp
   checker/ets/helpers.cpp
   checker/ets/narrowingConverter.cpp
   checker/ets/narrowingWideningConverter.cpp
@@ -494,6 +520,7 @@ set(ES2PANDA_LIB_SRC
   util/arktsconfig.cpp
   util/bitset.cpp
   util/errorHandler.cpp
+  util/errorLogger.cpp
   util/helpers.cpp
   util/importPathManager.cpp
   util/path.cpp

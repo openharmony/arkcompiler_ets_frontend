@@ -1116,3 +1116,4 @@
   }
 }
 TypeError: 'xyz' is a static property of 'C' [interface_static_function_2.sts:34:7]
+TypeError: No matching call signature [interface_static_function_2.sts:34:5]

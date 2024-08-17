@@ -31,17 +31,6 @@ PandaGen *JSCompiler::GetPandaGen() const
     return static_cast<PandaGen *>(GetCodeGen());
 }
 
-// from as folder
-void JSCompiler::Compile([[maybe_unused]] const ir::NamedType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::PrefixAssertionExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 // from base folder
 void JSCompiler::Compile(const ir::CatchClause *st) const
 {
@@ -417,21 +406,6 @@ void JSCompiler::Compile(const ir::ClassDefinition *node) const
     pg->LoadAccumulator(node, classReg);
 }
 
-void JSCompiler::Compile([[maybe_unused]] const ir::ClassProperty *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ClassStaticBlock *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::Decorator *st) const
-{
-    UNREACHABLE();
-}
-
 void JSCompiler::Compile(const ir::MetaProperty *expr) const
 {
     PandaGen *pg = GetPandaGen();
@@ -444,155 +418,6 @@ void JSCompiler::Compile(const ir::MetaProperty *expr) const
         // NOTE
         pg->Unimplemented();
     }
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::MethodDefinition *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::Property *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::SpreadElement *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TemplateElement *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSIndexSignature *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSMethodSignature *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *node) const
-{
-    UNREACHABLE();
-}
-// from ets folder
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSScript *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSClassLiteral *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile(const ir::ETSTuple *expr) const
-{
-    (void)expr;
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSReExportDeclaration *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewArrayInstanceExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewClassInstanceExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSPackageDeclaration *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSParameterExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSPrimitiveType *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSStructDeclaration *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReference *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReferencePart *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile(const ir::ETSNullType *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile(const ir::ETSUndefinedType *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile(const ir::ETSUnionType *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *expr) const
-{
-    UNREACHABLE();
 }
 
 // JSCompiler::compile methods for EXPRESSIONS in alphabetical order
@@ -723,12 +548,6 @@ static compiler::VReg CreateSpreadArguments(compiler::PandaGen *pg, const ir::Ca
     pg->CreateArray(expr, expr->Arguments(), argsObj);
 
     return argsObj;
-}
-
-void JSCompiler::Compile(const ir::BlockExpression *expr) const
-{
-    (void)expr;
-    UNREACHABLE();
 }
 
 void CompileSuperExprWithoutSpread(PandaGen *pg, const ir::CallExpression *expr)
@@ -1168,16 +987,6 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
     pg->LoadAccumulator(expr, objReg);
 }
 
-void JSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 void JSCompiler::Compile(const ir::SequenceExpression *expr) const
 {
     PandaGen *pg = GetPandaGen();
@@ -1402,11 +1211,6 @@ void JSCompiler::Compile(const ir::BooleanLiteral *expr) const
     pg->LoadConst(expr, expr->Value() ? compiler::Constant::JS_TRUE : compiler::Constant::JS_FALSE);
 }
 
-void JSCompiler::Compile([[maybe_unused]] const ir::CharLiteral *expr) const
-{
-    UNREACHABLE();
-}
-
 void JSCompiler::Compile(const ir::NullLiteral *expr) const
 {
     PandaGen *pg = GetPandaGen();
@@ -1439,12 +1243,6 @@ void JSCompiler::Compile(const ir::StringLiteral *expr) const
     pg->LoadAccumulatorString(expr, expr->Str());
 }
 
-void JSCompiler::Compile(const ir::UndefinedLiteral *expr) const
-{
-    (void)expr;
-    UNREACHABLE();
-}
-
 // Compile methods for MODULE-related nodes in alphabetical order
 void JSCompiler::Compile([[maybe_unused]] const ir::ExportAllDeclaration *st) const {}
 
@@ -1465,32 +1263,7 @@ void JSCompiler::Compile(const ir::ExportNamedDeclaration *st) const
     st->Decl()->Compile(pg);
 }
 
-void JSCompiler::Compile([[maybe_unused]] const ir::ExportSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
 void JSCompiler::Compile([[maybe_unused]] const ir::ImportDeclaration *st) const {}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ImportDefaultSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ImportNamespaceSpecifier *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::ImportSpecifier *st) const
-{
-    UNREACHABLE();
-}
-// Compile methods for STATEMENTS in alphabetical order
-void JSCompiler::Compile([[maybe_unused]] const ir::AssertStatement *st) const
-{
-    UNREACHABLE();
-}
 
 void JSCompiler::Compile(const ir::BlockStatement *st) const
 {
@@ -1740,11 +1513,6 @@ void JSCompiler::Compile(const ir::ReturnStatement *st) const
     }
 }
 
-void JSCompiler::Compile([[maybe_unused]] const ir::SwitchCaseStatement *st) const
-{
-    UNREACHABLE();
-}
-
 static void CompileImpl(const ir::SwitchStatement *self, PandaGen *cg)
 {
     compiler::LocalRegScope lrs(cg, self->Scope());
@@ -1953,261 +1721,5 @@ void JSCompiler::Compile(const ir::WhileStatement *st) const
 {
     PandaGen *pg = GetPandaGen();
     CompileImpl(st, pg);
-}
-
-// from ts folder
-void JSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSAsExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSBigintKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSBooleanKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSClassImplements *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSConditionalType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSConstructorType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSEnumDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSEnumMember *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSExternalModuleReference *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSFunctionType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSImportEqualsDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSImportType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSIndexedAccessType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSInferType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceBody *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceHeritage *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSIntersectionType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSLiteralType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSMappedType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSModuleBlock *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSModuleDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSNamedTupleMember *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSNeverKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSNonNullExpression *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSNullKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSNumberKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSObjectKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSParameterProperty *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSParenthesizedType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSQualifiedName *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSStringKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSThisType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTupleType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeAssertion *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeLiteral *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeOperator *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameter *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterDeclaration *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterInstantiation *expr) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypePredicate *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeQuery *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeReference *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSUndefinedKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSUnionType *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSUnknownKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::TSVoidKeyword *node) const
-{
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile([[maybe_unused]] const ir::DummyNode *node) const
-{
-    UNREACHABLE();
 }
 }  // namespace ark::es2panda::compiler

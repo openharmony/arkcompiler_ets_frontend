@@ -51,7 +51,7 @@ find . -type f -name '*abc' | sort --version-sort > "$ACTUAL"
 popd &> /dev/null
 
 set +e
-/usr/bin/diff "$EXPECTED" "$ACTUAL"
+diff "$EXPECTED" "$ACTUAL"
 RES=$?
 set -e
 if [ "$RES" -ne 0 ]; then
@@ -62,7 +62,7 @@ if [ "$RES" -ne 0 ]; then
     echo "How to reproduce:"
     echo "(cd $(pwd) && $CMD)"
     echo "(cd $(realpath $TSCONFIG_DIR) && find . -type f -name '*abc' | sort > $(pwd)/actual.txt)"
-    echo "/usr/bin/diff $(realpath $EXPECTED) $(pwd)/actual.txt"
+    echo "diff $(realpath $EXPECTED) $(pwd)/actual.txt"
 fi
 rm "$ACTUAL"
 rm -r "$BUILD"

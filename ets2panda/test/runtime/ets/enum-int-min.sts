@@ -16,6 +16,6 @@
 enum Enum { first = -2147483648, second }
 
 function main() {
-    assert Enum.first.getValue() == -2147483648
-    assert Enum.second.getValue() == -2147483647
+    assert Enum.first.valueOf() == -2147483648
+    assert Enum.second.valueOf() == -2147483647
 }

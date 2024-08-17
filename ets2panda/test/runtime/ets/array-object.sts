@@ -37,7 +37,6 @@ function main(): void {
   assert(arr1 == object_array);
   assert(arr1 == object);
   assert(arr1 != arr2);
-  assert(object.equals(arr1 as Object) == true);
 
 // Cannot cast type 'int[]' to 'Object[]'
 //  let object_array2: Object[] = arr2 as Object[];

@@ -54,21 +54,30 @@ namespace {
     return checker->AllocNode<ir::ETSTypeReference>(referencePart);
 }
 
-ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::ClassDefinition *globalClass,
+ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::ClassDefinition *enumClass,
                                     varbinder::ETSBinder *const varbinder, ir::Identifier *const ident,
                                     ir::ScriptFunction *const function)
 {
     auto *const functionExpr = checker->AllocNode<ir::FunctionExpression>(function);
     auto *const identClone = ident->Clone(checker->Allocator(), nullptr);
+
     auto *const methodDef = checker->AllocNode<ir::MethodDefinition>(
-        ir::MethodDefinitionKind::METHOD, identClone, functionExpr,
-        ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC, checker->Allocator(), false);
-    methodDef->SetParent(globalClass);
-    globalClass->Body().push_back(methodDef);
+        ir::MethodDefinitionKind::METHOD, identClone, functionExpr, function->Modifiers(), checker->Allocator(), false);
+    methodDef->SetParent(enumClass);
+    enumClass->Body().push_back(methodDef);
+
+    auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
+        varbinder, enumClass->Scope()->AsClassScope()->StaticMethodScope());
+
     auto *const methodVar = std::get<1>(varbinder->NewVarDecl<varbinder::FunctionDecl>(
         methodDef->Start(), checker->Allocator(), methodDef->Id()->Name(), methodDef));
-    methodVar->AddFlag(varbinder::VariableFlags::STATIC | varbinder::VariableFlags::SYNTHETIC |
-                       varbinder::VariableFlags::METHOD);
+
+    varbinder::VariableFlags varFlags = varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD;
+    if ((function->Modifiers() & ir::ModifierFlags::STATIC) != 0) {
+        varFlags |= varbinder::VariableFlags::STATIC;
+    }
+
+    methodVar->AddFlag(varFlags);
     methodDef->Function()->Id()->SetVariable(methodVar);
     methodDef->Id()->SetVariable(methodVar);
     return methodDef;
@@ -76,112 +85,86 @@ ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::Clas
 
 }  // namespace
 
-[[nodiscard]] ir::ScriptFunction *EnumLoweringPhase::MakeFunction(varbinder::FunctionParamScope *const paramScope,
-                                                                  ArenaVector<ir::Expression *> &&params,
-                                                                  ArenaVector<ir::Statement *> &&body,
-                                                                  ir::TypeNode *const returnTypeAnnotation,
-                                                                  const ir::TSEnumDeclaration *const enumDecl)
+[[nodiscard]] ir::ScriptFunction *EnumLoweringPhase::MakeFunction(FunctionInfo &&functionInfo)
 {
     auto *const functionScope =
-        varbinder_->Allocator()->New<varbinder::FunctionScope>(checker_->Allocator(), paramScope);
-    functionScope->BindParamScope(paramScope);
-    paramScope->BindFunctionScope(functionScope);
-    auto *const bodyBlock = checker_->AllocNode<ir::BlockStatement>(checker_->Allocator(), std::move(body));
-    bodyBlock->SetScope(functionScope);
+        varbinder_->Allocator()->New<varbinder::FunctionScope>(Allocator(), functionInfo.paramScope);
+    functionScope->BindParamScope(functionInfo.paramScope);
+    functionInfo.paramScope->BindFunctionScope(functionScope);
+    ir::BlockStatement *bodyBlock = nullptr;
 
-    auto flags = ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC;
-
-    if (enumDecl->IsDeclare()) {
-        flags |= ir::ModifierFlags::DECLARE;
+    if (functionInfo.enumDecl->IsDeclare()) {
+        functionInfo.flags |= ir::ModifierFlags::DECLARE;
+    } else {
+        bodyBlock = checker_->AllocNode<ir::BlockStatement>(Allocator(), std::move(functionInfo.body));
+        bodyBlock->SetScope(functionScope);
     }
     // clang-format off
     auto *const function = checker_->AllocNode<ir::ScriptFunction>(
-        checker_->Allocator(), ir::ScriptFunction::ScriptFunctionData {
-            bodyBlock, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation),
-            ir::ScriptFunctionFlags::METHOD, flags, enumDecl->IsDeclare()});
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {
+            bodyBlock,
+            ir::FunctionSignature(nullptr, std::move(functionInfo.params), functionInfo.returnTypeAnnotation),
+            ir::ScriptFunctionFlags::METHOD, functionInfo.flags, functionInfo.enumDecl->IsDeclare()});
     // clang-format on
     function->SetScope(functionScope);
 
-    varbinder_->AsETSBinder()->AddCompilableFunction(function);
-    paramScope->BindNode(function);
+    if (!function->Declare()) {
+        varbinder_->AsETSBinder()->AddCompilableFunction(function);
+    }
+    functionInfo.paramScope->BindNode(function);
     functionScope->BindNode(function);
 
     return function;
 }
 
-void EnumLoweringPhase::AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const node)
+util::UString EnumLoweringPhase::GetEnumClassName(checker::ETSChecker *checker,
+                                                  const ir::TSEnumDeclaration *const enumDecl)
 {
-    if (node != nullptr && !node->IsProgram()) {
-        AppendParentNames(qualifiedName, node->Parent());
-        if (node->IsTSInterfaceDeclaration()) {
-            qualifiedName.Append(node->AsTSInterfaceDeclaration()->Id()->Name());
-        } else if (node->IsClassDefinition()) {
-            qualifiedName.Append(node->AsClassDefinition()->Ident()->Name());
-        } else {
-            ASSERT(node->IsClassDeclaration() || node->IsTSInterfaceBody());
-            return;
-        }
-        qualifiedName.Append('#');
-    }
-}
-
-util::UString EnumLoweringPhase::GetQualifiedName(checker::ETSChecker *checker,
-                                                  const ir::TSEnumDeclaration *const enumDecl,
-                                                  const util::StringView &name)
-{
-    util::UString qualifiedName(util::StringView("#"), checker->Allocator());
-    AppendParentNames(qualifiedName, enumDecl->Parent());
-    qualifiedName.Append(enumDecl->Key()->Name());
-    qualifiedName.Append('#');
-    qualifiedName.Append(name);
-    return qualifiedName;
-}
-
-[[nodiscard]] ir::Identifier *EnumLoweringPhase::MakeQualifiedIdentifier(const ir::TSEnumDeclaration *const enumDecl,
-                                                                         const util::StringView &name)
-{
-    return checker_->AllocNode<ir::Identifier>(GetQualifiedName(checker_, enumDecl, name).View(),
-                                               checker_->Allocator());
+    util::UString className(util::StringView("#"), checker->Allocator());
+    className.Append(enumDecl->Key()->Name());
+    return className;
 }
 
 template <typename ElementMaker>
 [[nodiscard]] ir::Identifier *EnumLoweringPhase::MakeArray(const ir::TSEnumDeclaration *const enumDecl,
-                                                           ir::ClassDefinition *globalClass,
+                                                           ir::ClassDefinition *const enumClass,
                                                            const util::StringView &name,
                                                            ir::TypeNode *const typeAnnotation,
                                                            ElementMaker &&elementMaker)
 {
     auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
-        varbinder_, globalClass->Scope()->AsClassScope()->StaticFieldScope());
-    ArenaVector<ir::Expression *> elements(checker_->Allocator()->Adapter());
+        varbinder_, enumClass->Scope()->AsClassScope()->StaticFieldScope());
+    ArenaVector<ir::Expression *> elements(Allocator()->Adapter());
     elements.reserve(enumDecl->Members().size());
     for (const auto *const member : enumDecl->Members()) {
         elements.push_back(elementMaker(member->AsTSEnumMember()));
     }
-    auto *const arrayExpr = checker_->AllocNode<ir::ArrayExpression>(std::move(elements), checker_->Allocator());
-    auto *const arrayIdent = MakeQualifiedIdentifier(enumDecl, name);
+    auto *const arrayExpr = checker_->AllocNode<ir::ArrayExpression>(std::move(elements), Allocator());
+    auto *const arrayIdent = checker_->AllocNode<ir::Identifier>(name, Allocator());
     auto *const arrayClassProp = checker_->AllocNode<ir::ClassProperty>(
         arrayIdent, arrayExpr, typeAnnotation,
-        ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC | ir::ModifierFlags::CONST, checker_->Allocator(), false);
-    arrayClassProp->SetParent(globalClass);
-    globalClass->Body().push_back(arrayClassProp);
+        ir::ModifierFlags::STATIC | ir::ModifierFlags::PROTECTED | ir::ModifierFlags::CONST, Allocator(), false);
+    arrayClassProp->SetParent(enumClass);
+    enumClass->Body().push_back(arrayClassProp);
 
     auto [array_decl, array_var] =
         varbinder_->NewVarDecl<varbinder::ConstDecl>(arrayIdent->Start(), arrayIdent->Name(), arrayClassProp);
     arrayIdent->SetVariable(array_var);
-    array_var->AddFlag(varbinder::VariableFlags::PUBLIC | varbinder::VariableFlags::STATIC |
+    array_var->AddFlag(varbinder::VariableFlags::PROTECTED | varbinder::VariableFlags::STATIC |
                        varbinder::VariableFlags::PROPERTY);
-    array_decl->Node()->SetParent(globalClass);
+    array_var->SetScope(enumClass->Scope()->AsClassScope()->StaticFieldScope());
+    array_decl->Node()->SetParent(enumClass);
     return arrayIdent;
 }
 
-ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl)
+ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl,
+                                                        ir::ClassDefinition *const enumClass)
 {
     auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation);
 
     // clang-format off
-    return MakeArray(enumDecl, program_->GlobalClass(), "NamesArray", arrayTypeAnnotation,
+    return MakeArray(enumDecl, enumClass, "NamesArray", arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
                         auto *const enumNameStringLiteral =
                             checker_->AllocNode<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
@@ -190,57 +173,229 @@ ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclarat
     // clang-format on
 }
 
-void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+ir::ClassDefinition *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *const enumDecl)
 {
-    auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl);
+    auto globalCtx = varbinder::LexicalScope<varbinder::GlobalScope>::Enter(varbinder_, program_->GlobalScope());
+    auto *ident = Allocator()->New<ir::Identifier>(GetEnumClassName(checker_, enumDecl).View(), Allocator());
+    auto [decl, var] = varbinder_->NewVarDecl<varbinder::ClassDecl>(ident->Start(), ident->Name());
+    ident->SetVariable(var);
 
-    auto *identClone = namesArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumGetNameMethod(enumDecl, identClone);
+    auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder_);
+    auto *classDef = checker_->AllocNode<ir::ClassDefinition>(
+        Allocator(), ident,
+        enumDecl->IsDeclare() ? ir::ClassDefinitionModifiers::DECLARATION : ir::ClassDefinitionModifiers::NONE,
+        enumDecl->IsDeclare() ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE, Language(Language::Id::ETS));
 
-    identClone = namesArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumValueOfMethod(enumDecl, identClone);
+    classDef->SetScope(classCtx.GetScope());
+    auto *classDecl = checker_->AllocNode<ir::ClassDeclaration>(classDef, Allocator());
+    classDef->Scope()->BindNode(classDef);
+    decl->BindNode(classDecl);
+    program_->Ast()->Statements().push_back(classDecl);
+    classDecl->SetParent(program_->Ast());
+    enumDecl->SetBoxedClass(classDef);
 
-    auto *const valuesArrayIdent = CreateEnumValuesArray(enumDecl);
+    CreateOrdinalField(classDef);
+    CreateCCtorForEnumClass(classDef);
+    CreateCtorForEnumClass(classDef);
 
-    identClone = valuesArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumGetValueMethod(enumDecl, identClone);
-
-    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl);
-
-    identClone = stringValuesArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumToStringMethod(enumDecl, identClone);
-
-    auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl);
-
-    identClone = itemsArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumValuesMethod(enumDecl, identClone);
-
-    identClone = itemsArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumFromIntMethod(enumDecl, identClone);
+    return classDef;
 }
 
-void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumClass)
 {
-    auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl);
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    auto *id = checker_->AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
 
-    auto *identClone = namesArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumGetNameMethod(enumDecl, identClone);
+    auto *const paramScope =
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), program_->GlobalScope());
+    auto *const functionScope = varbinder_->Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
+    functionScope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(functionScope);
 
-    identClone = namesArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumValueOfMethod(enumDecl, identClone);
+    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
-    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl);
+    auto *body = checker_->AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    auto *func = checker_->AllocNode<ir::ScriptFunction>(
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
+                                                ir::ModifierFlags::STATIC, false, Language(Language::Id::ETS)});
 
-    identClone = stringValuesArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumToStringMethod(enumDecl, identClone);
+    func->SetIdent(id);
+    id->SetParent(func);
+    body->SetScope(functionScope);
+    func->SetScope(functionScope);
+    auto *funcExpr = checker_->AllocNode<ir::FunctionExpression>(func);
 
-    auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl);
+    varbinder_->AsETSBinder()->AddCompilableFunction(func);
+    functionScope->BindNode(func);
+    paramScope->BindNode(func);
 
-    identClone = itemsArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumValuesMethod(enumDecl, identClone);
+    auto *const identClone = id->Clone(Allocator(), nullptr);
+    auto *const methodDef = checker_->AllocNode<ir::MethodDefinition>(
+        ir::MethodDefinitionKind::METHOD, identClone, funcExpr, ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC,
+        Allocator(), false);
+    methodDef->SetParent(enumClass);
+    enumClass->Body().push_back(methodDef);
 
-    identClone = itemsArrayIdent->Clone(checker_->Allocator(), nullptr);
-    CreateEnumFromIntMethod(enumDecl, identClone);
+    auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
+        varbinder_, enumClass->Scope()->AsClassScope()->StaticMethodScope());
+    auto *const methodVar = std::get<1>(varbinder_->NewVarDecl<varbinder::FunctionDecl>(
+        methodDef->Start(), Allocator(), methodDef->Id()->Name(), methodDef));
+    methodVar->AddFlag(varbinder::VariableFlags::STATIC | varbinder::VariableFlags::SYNTHETIC |
+                       varbinder::VariableFlags::METHOD);
+    methodDef->Function()->Id()->SetVariable(methodVar);
+    methodDef->Id()->SetVariable(methodVar);
+}
+
+ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *const enumClass)
+{
+    auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
+        varbinder_, enumClass->Scope()->AsClassScope()->InstanceFieldScope());
+
+    auto *const fieldIdent = Allocator()->New<ir::Identifier>("ordinal", Allocator());
+    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *field = checker_->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, intTypeAnnotation,
+                                                         ir::ModifierFlags::PROTECTED, Allocator(), false);
+
+    auto [decl, var] = varbinder_->NewVarDecl<varbinder::LetDecl>(lexer::SourcePosition(), fieldIdent->Name());
+    var->SetScope(enumClass->Scope()->AsClassScope()->InstanceFieldScope());
+    var->AddFlag(varbinder::VariableFlags::PROPERTY | varbinder::VariableFlags::PROTECTED);
+    fieldIdent->SetVariable(var);
+    decl->BindNode(field);
+
+    enumClass->Body().push_back(field);
+    field->SetParent(enumClass);
+    return field;
+}
+
+void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumClass)
+{
+    auto *const paramScope =
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), program_->GlobalScope());
+
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+
+    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *const inputOrdinalParam = MakeFunctionParam(checker_, varbinder_, paramScope, "ordinal", intTypeAnnotation);
+    params.push_back(inputOrdinalParam);
+
+    auto *id = checker_->AllocNode<ir::Identifier>("constructor", Allocator());
+    auto *const functionScope = varbinder_->Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
+    functionScope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(functionScope);
+    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+
+    auto *body = checker_->AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    auto *func = checker_->AllocNode<ir::ScriptFunction>(
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                ir::ScriptFunctionFlags::CONSTRUCTOR, ir::ModifierFlags::CONSTRUCTOR,
+                                                false, Language(Language::Id::ETS)});
+
+    func->SetIdent(id);
+    body->SetScope(functionScope);
+    func->SetScope(functionScope);
+    auto *funcExpr = checker_->AllocNode<ir::FunctionExpression>(func);
+
+    varbinder_->AsETSBinder()->AddCompilableFunction(func);
+    functionScope->BindNode(func);
+    paramScope->BindNode(func);
+
+    auto *thisExpr = Allocator()->New<ir::ThisExpression>();
+    auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
+    fieldIdentifier->SetReference();
+    auto *leftHandSide = checker_->AllocNode<ir::MemberExpression>(
+        thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    auto *rightHandSide = checker_->AllocNode<ir::Identifier>("ordinal", Allocator());
+    rightHandSide->SetVariable(inputOrdinalParam->Ident()->Variable());
+    auto *initializer = checker_->AllocNode<ir::AssignmentExpression>(leftHandSide, rightHandSide,
+                                                                      lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto initStatement = checker_->AllocNode<ir::ExpressionStatement>(initializer);
+    initStatement->SetParent(body);
+    body->Statements().push_back(initStatement);
+
+    auto *const identClone = id->Clone(Allocator(), nullptr);
+    auto *const methodDef = checker_->AllocNode<ir::MethodDefinition>(
+        ir::MethodDefinitionKind::CONSTRUCTOR, identClone, funcExpr, ir::ModifierFlags::PUBLIC, Allocator(), false);
+    methodDef->SetParent(enumClass);
+    enumClass->Body().push_back(methodDef);
+
+    auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
+        varbinder_, enumClass->Scope()->AsClassScope()->StaticMethodScope());
+    auto *const methodVar = std::get<1>(varbinder_->NewVarDecl<varbinder::FunctionDecl>(
+        methodDef->Start(), Allocator(), methodDef->Id()->Name(), methodDef));
+    methodVar->AddFlag(varbinder::VariableFlags::SYNTHETIC | varbinder::VariableFlags::METHOD);
+    methodDef->Function()->Id()->SetVariable(methodVar);
+    methodDef->Id()->SetVariable(methodVar);
+}
+
+void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
+{
+    auto *const enumClass = CreateClass(enumDecl);
+    auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
+    auto *const valuesArrayIdent = CreateEnumValuesArray(enumDecl, enumClass);
+    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
+    auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl, enumClass);
+    auto *const boxedItemsArrayIdent = CreateBoxedEnumItemsArray(enumDecl, enumClass);
+
+    auto *identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumGetNameMethod(enumDecl, enumClass, identClone);
+
+    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumGetValueOfMethod(enumDecl, enumClass, identClone);
+
+    identClone = valuesArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumValueOfMethod(enumDecl, enumClass, identClone);
+
+    identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumToStringMethod(enumDecl, enumClass, identClone);
+
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumValuesMethod(enumDecl, enumClass, identClone);
+
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::FROM_INT_METHOD_NAME,
+                            enumDecl->Key()->Name());
+
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateUnboxingMethod(enumDecl, enumClass, identClone);
+
+    identClone = boxedItemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
+                            GetEnumClassName(checker_, enumDecl).View());
+}
+
+void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
+{
+    auto *const enumClass = CreateClass(enumDecl);
+    auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
+    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
+    auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl, enumClass);
+    auto *const boxedItemsArrayIdent = CreateBoxedEnumItemsArray(enumDecl, enumClass);
+
+    auto *identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumGetNameMethod(enumDecl, enumClass, identClone);
+
+    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumGetValueOfMethod(enumDecl, enumClass, identClone);
+
+    identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumToStringMethod(enumDecl, enumClass, identClone);
+
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumValuesMethod(enumDecl, enumClass, identClone);
+
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::FROM_INT_METHOD_NAME,
+                            enumDecl->Key()->Name());
+
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateUnboxingMethod(enumDecl, enumClass, identClone);
+
+    identClone = boxedItemsArrayIdent->Clone(Allocator(), nullptr);
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
+                            GetEnumClassName(checker_, enumDecl).View());
 }
 
 bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *program)
@@ -276,31 +431,33 @@ bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *progr
     return true;
 }
 
-ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl)
+ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl,
+                                                         ir::ClassDefinition *const enumClass)
 {
     auto *const intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(intType);
     // clang-format off
-    return MakeArray(enumDecl, program_->GlobalClass(), "ValuesArray", arrayTypeAnnotation,
+    return MakeArray(enumDecl, enumClass, "ValuesArray", arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
                         auto *const enumValueLiteral = checker_->AllocNode<ir::NumberLiteral>(
                             lexer::Number(member->AsTSEnumMember()
                                                 ->Init()
                                                 ->AsNumberLiteral()
                                                 ->Number()
-                                                .GetValue<checker::ETSEnumType::ValueType>()));
+                                                .GetValue<checker::ETSIntEnumType::ValueType>()));
                         return enumValueLiteral;
                     });
     // clang-format on
 }
 
-ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumDeclaration *const enumDecl)
+ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumDeclaration *const enumDecl,
+                                                               ir::ClassDefinition *const enumClass)
 {
     auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation);
 
     // clang-format off
-    return MakeArray(enumDecl, program_->GlobalClass(), "StringValuesArray", arrayTypeAnnotation,
+    return MakeArray(enumDecl, enumClass, "StringValuesArray", arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
                         auto *const init = member->AsTSEnumMember()->Init();
                         util::StringView stringValue;
@@ -309,8 +466,8 @@ ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumD
                             stringValue = init->AsStringLiteral()->Str();
                         } else {
                             auto str = std::to_string(
-                                init->AsNumberLiteral()->Number().GetValue<checker::ETSEnumType::ValueType>());
-                            stringValue = util::UString(str, checker_->Allocator()).View();
+                                init->AsNumberLiteral()->Number().GetValue<checker::ETSIntEnumType::ValueType>());
+                            stringValue = util::UString(str, Allocator()).View();
                         }
 
                         auto *const enumValueStringLiteral = checker_->AllocNode<ir::StringLiteral>(stringValue);
@@ -319,23 +476,58 @@ ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumD
     // clang-format on
 }
 
-ir::Identifier *EnumLoweringPhase::CreateEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl)
+ir::Identifier *EnumLoweringPhase::CreateEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl,
+                                                        ir::ClassDefinition *const enumClass)
 {
     auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation);
     // clang-format off
-    return MakeArray(enumDecl, program_->GlobalClass(), "ItemsArray", arrayTypeAnnotation,
+    return MakeArray(enumDecl, enumClass, "ItemsArray", arrayTypeAnnotation,
                      [this, enumDecl](const ir::TSEnumMember *const member) {
                         auto *const enumTypeIdent =
-                            checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), checker_->Allocator());
+                            checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
                         enumTypeIdent->SetReference();
 
                         auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
-                            member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), checker_->Allocator());
+                            member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
                         enumMemberIdent->SetReference();
                         auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
                             enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
                         return enumMemberExpr;
+                    });
+    // clang-format on
+}
+
+ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl,
+                                                             ir::ClassDefinition *const enumClass)
+{
+    auto boxedClassName = GetEnumClassName(checker_, enumDecl).View();
+    auto *const enumTypeAnnotation = MakeTypeReference(checker_, boxedClassName);
+    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation);
+    // clang-format off
+    return MakeArray(enumDecl, enumClass, "BoxedItemsArray", arrayTypeAnnotation,
+                     [this, enumDecl, &boxedClassName](const ir::TSEnumMember *const member) {
+                        auto *const enumTypeIdent =
+                            checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
+                        enumTypeIdent->SetReference();
+
+                        auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
+                            member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
+                        enumMemberIdent->SetReference();
+                        auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
+                            enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+
+                        auto intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+                        auto asExpression = checker_->AllocNode<ir::TSAsExpression>(enumMemberExpr, intType, false);
+
+                        ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
+                        newExprArgs.push_back(asExpression);
+
+                        auto boxedTypeRef = MakeTypeReference(checker_, boxedClassName);
+                        
+                        auto *const newExpression = checker_->AllocNode<ir::ETSNewClassInstanceExpression>(
+                            boxedTypeRef, std::move(newExprArgs), nullptr);
+                        return newExpression;
                     });
     // clang-format on
 }
@@ -364,8 +556,6 @@ ir::ReturnStatement *CreateReturnEnumStatement(EnumLoweringPhase *const elp, ir:
     auto itemsArrayIdentClone = itemsArrayIdentifier->Clone(checker->Allocator(), nullptr);
     auto *const arrayAccessExpr = checker->AllocNode<ir::MemberExpression>(
         itemsArrayIdentClone, paramRefIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-    paramRefIdent->SetParent(arrayAccessExpr);
-
     auto *const returnStatement = checker->AllocNode<ir::ReturnStatement>(arrayAccessExpr);
     return returnStatement;
 }
@@ -408,117 +598,130 @@ ir::ReturnStatement *CreateReturnWitAsStatement(EnumLoweringPhase *const elp, ir
 }  // namespace
 
 void EnumLoweringPhase::CreateEnumFromIntMethod(const ir::TSEnumDeclaration *const enumDecl,
-                                                ir::Identifier *const itemsArrayIdent)
+                                                ir::ClassDefinition *const enumClass, ir::Identifier *const arrayIdent,
+                                                const util::StringView &methodName,
+                                                const util::StringView &returnTypeName)
 {
     auto *const paramScope =
-        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(checker_->Allocator(), program_->GlobalScope());
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
 
     auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
     auto *const inputOrdinalParameter =
         MakeFunctionParam(checker_, varbinder_, paramScope, "ordinal", intTypeAnnotation);
-    auto *const inArraySizeExpr = CreateIfTest(this, itemsArrayIdent, inputOrdinalParameter);
-    auto *const returnEnumStmt = CreateReturnEnumStatement(this, itemsArrayIdent, inputOrdinalParameter);
+    auto *const inArraySizeExpr = CreateIfTest(this, arrayIdent, inputOrdinalParameter);
+    auto *const returnEnumStmt = CreateReturnEnumStatement(this, arrayIdent, inputOrdinalParameter);
     auto *const ifOrdinalExistsStmt = checker_->AllocNode<ir::IfStatement>(inArraySizeExpr, returnEnumStmt, nullptr);
 
-    util::UString messageString(util::StringView("No enum constant in "), checker_->Allocator());
+    util::UString messageString(util::StringView("No enum constant in "), Allocator());
     messageString.Append(enumDecl->Key()->Name());
     messageString.Append(" with ordinal value ");
 
     auto *const throwNoEnumStmt = CreateThrowStatement(this, inputOrdinalParameter, messageString);
 
-    ArenaVector<ir::Expression *> params(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     params.push_back(inputOrdinalParameter);
 
-    ArenaVector<ir::Statement *> body(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(ifOrdinalExistsStmt);
     body.push_back(throwNoEnumStmt);
-    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
+    auto *const returnTypeAnnotation = MakeTypeReference(checker_, returnTypeName);
 
-    auto *const function = MakeFunction(paramScope, std::move(params), std::move(body), enumTypeAnnotation, enumDecl);
+    auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), returnTypeAnnotation, enumDecl,
+                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
     function->AddFlag(ir::ScriptFunctionFlags::THROWS);
-    auto *const ident = MakeQualifiedIdentifier(enumDecl, checker::ETSEnumType::FROM_INT_METHOD_NAME);
+    auto *const ident = checker_->AllocNode<ir::Identifier>(methodName, Allocator());
+
     function->SetIdent(ident);
     function->Scope()->BindInternalName(ident->Name());
 
-    MakeMethodDef(checker_, program_->GlobalClass(), varbinder_, ident, function);
+    MakeMethodDef(checker_, enumClass, varbinder_, ident, function);
     ident->SetReference();
 }
 
 void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                                 ir::ClassDefinition *const enumClass,
                                                  ir::Identifier *const stringValuesArrayIdent)
 {
-    auto *const paramScope = varbinder_->Allocator()->New<varbinder::FunctionParamScope>(checker_->Allocator(),
-                                                                                         program_->GlobalClassScope());
+    auto *const paramScope =
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
     auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
     auto *const inputEnumIdent = MakeFunctionParam(checker_, varbinder_, paramScope, "ordinal", enumTypeAnnotation);
     auto *const returnStmt = CreateReturnWitAsStatement(this, stringValuesArrayIdent, inputEnumIdent);
 
-    ArenaVector<ir::Statement *> body(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
-    ArenaVector<ir::Expression *> params(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     params.push_back(inputEnumIdent);
     auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
-    auto *const function = MakeFunction(paramScope, std::move(params), std::move(body), stringTypeAnnotation, enumDecl);
+    auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), stringTypeAnnotation, enumDecl,
+                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
 
-    auto *const functionIdent = MakeQualifiedIdentifier(enumDecl, checker::ETSEnumType::TO_STRING_METHOD_NAME);
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::TO_STRING_METHOD_NAME, Allocator());
+
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
-    MakeMethodDef(checker_, program_->GlobalClass(), varbinder_, functionIdent, function);
+    MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
     functionIdent->SetReference();
 }
 
-void EnumLoweringPhase::CreateEnumGetValueMethod(const ir::TSEnumDeclaration *const enumDecl,
-                                                 ir::Identifier *const valuesArrayIdent)
+void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                                ir::ClassDefinition *const enumClass,
+                                                ir::Identifier *const valuesArrayIdent)
 {
-    auto *const paramScope = varbinder_->Allocator()->New<varbinder::FunctionParamScope>(checker_->Allocator(),
-                                                                                         program_->GlobalClassScope());
+    auto *const paramScope =
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
 
     auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
     auto *const inputEnumIdent = MakeFunctionParam(checker_, varbinder_, paramScope, "e", enumTypeAnnotation);
     auto *const returnStmt = CreateReturnWitAsStatement(this, valuesArrayIdent, inputEnumIdent);
 
-    ArenaVector<ir::Statement *> body(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
-    ArenaVector<ir::Expression *> params(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     params.push_back(inputEnumIdent);
     auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
-    auto *const function = MakeFunction(paramScope, std::move(params), std::move(body), intTypeAnnotation, enumDecl);
-
-    auto *const functionIdent = MakeQualifiedIdentifier(enumDecl, checker::ETSEnumType::GET_VALUE_METHOD_NAME);
+    auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), intTypeAnnotation, enumDecl,
+                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::VALUE_OF_METHOD_NAME, Allocator());
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(checker_, program_->GlobalClass(), varbinder_, functionIdent, function);
+    MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
 
     functionIdent->SetReference();
 }
 
 void EnumLoweringPhase::CreateEnumGetNameMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                                ir::ClassDefinition *const enumClass,
                                                 ir::Identifier *const namesArrayIdent)
 {
     auto *const paramScope =
-        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(checker_->Allocator(), program_->GlobalScope());
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
 
     auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
     auto *const inputEnumIdent = MakeFunctionParam(checker_, varbinder_, paramScope, "ordinal", enumTypeAnnotation);
     auto *const returnStmt = CreateReturnWitAsStatement(this, namesArrayIdent, inputEnumIdent);
 
-    ArenaVector<ir::Statement *> body(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
-    ArenaVector<ir::Expression *> params(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     params.push_back(inputEnumIdent);
     auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
 
-    auto *const function = MakeFunction(paramScope, std::move(params), std::move(body), stringTypeAnnotation, enumDecl);
+    auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), stringTypeAnnotation, enumDecl,
+                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::GET_NAME_METHOD_NAME, Allocator());
 
-    auto *const functionIdent = MakeQualifiedIdentifier(enumDecl, checker::ETSEnumType::GET_NAME_METHOD_NAME);
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(checker_, program_->GlobalClass(), varbinder_, functionIdent, function);
+    MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
     functionIdent->SetReference();
 }
 
@@ -598,11 +801,12 @@ ir::IfStatement *CreateIf(EnumLoweringPhase *const elp, const ir::TSEnumDeclarat
 
 }  // namespace
 
-void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
-                                                ir::Identifier *const namesArrayIdent)
+void EnumLoweringPhase::CreateEnumGetValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                                   ir::ClassDefinition *const enumClass,
+                                                   ir::Identifier *const namesArrayIdent)
 {
     auto *const paramScope =
-        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(checker_->Allocator(), program_->GlobalScope());
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
 
     varbinder::LexicalScope<varbinder::LoopDeclarationScope> loopDeclScope(varbinder_);
 
@@ -622,50 +826,100 @@ void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *con
     forLoop->SetScope(loopScope.GetScope());
     loopScope.GetScope()->DeclScope()->BindNode(forLoop);
 
-    util::UString messageString(util::StringView("No enum constant "), checker_->Allocator());
+    util::UString messageString(util::StringView("No enum constant "), Allocator());
     messageString.Append(enumDecl->Key()->Name());
     messageString.Append('.');
 
     auto *const throwStmt = CreateThrowStatement(this, inputNameIdent, messageString);
 
-    ArenaVector<ir::Statement *> body(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(forLoop);
     body.push_back(throwStmt);
 
-    ArenaVector<ir::Expression *> params(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     params.push_back(inputNameIdent);
     auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
 
-    auto *const function = MakeFunction(paramScope, std::move(params), std::move(body), enumTypeAnnotation, enumDecl);
+    auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), enumTypeAnnotation, enumDecl,
+                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
     function->AddFlag(ir::ScriptFunctionFlags::THROWS);
-    auto *const functionIdent = MakeQualifiedIdentifier(enumDecl, checker::ETSEnumType::VALUE_OF_METHOD_NAME);
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::GET_VALUE_OF_METHOD_NAME, Allocator());
+
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
-    MakeMethodDef(checker_, program_->GlobalClass(), varbinder_, functionIdent, function);
+    MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
     functionIdent->SetReference();
 }
 
 void EnumLoweringPhase::CreateEnumValuesMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                               ir::ClassDefinition *const enumClass,
                                                ir::Identifier *const itemsArrayIdent)
 {
     auto *const paramScope =
-        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(checker_->Allocator(), program_->GlobalScope());
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
     auto *const returnStmt = checker_->AllocNode<ir::ReturnStatement>(itemsArrayIdent);
-    ArenaVector<ir::Statement *> body(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
-    ArenaVector<ir::Expression *> params(checker_->Allocator()->Adapter());
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     auto *const enumArrayTypeAnnotation =
         checker_->AllocNode<ir::TSArrayType>(MakeTypeReference(checker_, enumDecl->Key()->Name()));
 
-    auto *const function =
-        MakeFunction(paramScope, std::move(params), std::move(body), enumArrayTypeAnnotation, enumDecl);
-    auto *const functionIdent = MakeQualifiedIdentifier(enumDecl, checker::ETSEnumType::VALUES_METHOD_NAME);
+    auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), enumArrayTypeAnnotation,
+                                         enumDecl, ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::VALUES_METHOD_NAME, Allocator());
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(checker_, program_->GlobalClass(), varbinder_, functionIdent, function);
+    MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
     functionIdent->SetReference();
+}
+
+void EnumLoweringPhase::CreateUnboxingMethod(ir::TSEnumDeclaration const *const enumDecl,
+                                             ir::ClassDefinition *const enumClass,
+                                             ir::Identifier *const itemsArrayIdent)
+
+{
+    auto *const paramScope =
+        varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
+
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
+
+    auto *thisExpr = Allocator()->New<ir::ThisExpression>();
+    auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
+    fieldIdentifier->SetReference();
+    auto *arrayIndexExpr = checker_->AllocNode<ir::MemberExpression>(
+        thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+
+    auto itemsArrayIdentClone = itemsArrayIdent->Clone(checker_->Allocator(), nullptr);
+    auto *const arrayAccessExpr = checker_->AllocNode<ir::MemberExpression>(
+        itemsArrayIdentClone, arrayIndexExpr, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+
+    auto *const returnStmt = checker_->AllocNode<ir::ReturnStatement>(arrayAccessExpr);
+    body.push_back(returnStmt);
+
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+
+    auto *const returnTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
+
+    auto *const function = MakeFunction(
+        {paramScope, std::move(params), std::move(body), returnTypeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
+
+    varbinder_->AddFunctionThisParam(function);
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::UNBOX_METHOD_NAME, Allocator());
+    function->SetIdent(functionIdent);
+    function->Scope()->BindInternalName(functionIdent->Name());
+
+    MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
+    functionIdent->SetReference();
+}
+
+ArenaAllocator *EnumLoweringPhase::Allocator()
+{
+    return checker_->Allocator();
 }
 
 }  // namespace ark::es2panda::compiler

@@ -15,7 +15,7 @@
 
 class A<T extends Object> {
     public foo(e: T): void {
-        this.data[2].equals(e);
+        this.data[2] == e;
     }
 
     private data: T[];

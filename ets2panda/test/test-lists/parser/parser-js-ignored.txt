@@ -1,34 +1,3 @@
-# panda#15005: Added to the skip list to stabilize fe_dev_202312
-parser/ets/declare_iface.sts
-parser/ets/interfaces.sts
-parser/ets/test_interface.sts
-# End of panda#15005
-
-parser/ets/import_tests/modules/module.sts
-parser/ets/import_tests/import_class_members_1.sts
-parser/ets/import_tests/import_class_members_2.sts
-parser/ets/import_tests/import_class_members_3.sts
-parser/ets/import_tests/import_invalid_package.sts
-parser/ets/import_tests/import_name_conflict_1.sts
-parser/ets/import_tests/import_name_conflict_3.sts
-parser/ets/import_tests/import_nested_class_1.sts
-parser/ets/import_tests/import_nested_class_2.sts
-parser/ets/import_tests/import_nested_class_3.sts
-parser/ets/import_tests/import_separate_module.sts
-parser/ets/import_tests/import_several_8.sts
-# panda#17052
-parser/ets/import_tests/import_recursive.sts
-parser/ets/import_tests/packages/recursive/subpackage/subpackage_module_1.sts
-parser/ets/import_tests/packages/recursive/subpackage_module_1.sts
-
-# panda#11580 ([ETS front-end] Overriding issues)
-compiler/ets/override3.sts
-compiler/ets/override4.sts
-compiler/ets/override5.sts
-
-# Requires smart casts
-parser/ets/null-coalesc-negative.sts
-
 # Lambda tests, disabled because crash during compiler
 parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_variable.sts
 
@@ -42,26 +11,6 @@ compiler/ets/override17.sts
 compiler/ets/throwingFunctionType2.sts
 compiler/ets/throwingFunctionAsParameter2.sts
 
-# 15276
-parser/ets/n_overrideWithNullable.sts
-parser/ets/nullableType.sts
-
-# 15577 inference for union-typed targets
-compiler/ets/optionalLambdaParameter.sts
-compiler/ets/tuple_types_9_neg.sts
-
-# 15771 broken ast varbinder scopes in etsglobal
-parser/ets/optional-chaining-array.sts
-parser/ets/optional_chaining_invalid_property.sts
-parser/ets/optional_chaining_nested_property.sts
-parser/ets/optional_chaining_object_property.sts
-
 # 15642
 compiler/ets/etsObjectToString4.sts
 compiler/ets/generic_variance_1.sts
-
-# Related to void revert
-compiler/ets/lambda_infer_type/lambda_cast_infer_type_void.sts
-
-# panda#15575
-compiler/ets/promiseVoid.sts

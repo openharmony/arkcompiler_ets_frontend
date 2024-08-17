@@ -1,1 +1,1 @@
-SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [struct_invalid_nested2.sts:17:5]
+SyntaxError: Struct types are not supported yet! [struct_invalid_nested2.sts:16:1]

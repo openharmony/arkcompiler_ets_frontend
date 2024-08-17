@@ -63,6 +63,8 @@ enum class ParserStatus : uint64_t {
     IN_EXTENSION_FUNCTION = 1U << 30U,
     FUNCTION_HAS_RETURN_STATEMENT = 1U << 31U,
     IN_NAMESPACE = 1ULL << 32ULL,
+
+    ALLOW_DEFAULT_VALUE = 1ULL << 33ULL,
 };
 
 }  // namespace ark::es2panda::parser
