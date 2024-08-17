@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0xc
 .function any const-enum-exec.#%#Color1(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -32,6 +33,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x5
 .function any const-enum-exec.func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 

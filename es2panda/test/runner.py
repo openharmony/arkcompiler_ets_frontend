@@ -680,8 +680,7 @@ class CompilerTest(Test):
 
         ld_library_path = runner.ld_library_path
         os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
-        run_abc_cmd = [runner.ark_js_vm]
-        run_abc_cmd.extend([test_abc_path])
+        run_abc_cmd = [runner.ark_js_vm, '--enable-force-gc=false', test_abc_path]
         self.log_cmd(run_abc_cmd)
 
         process = subprocess.Popen(run_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1304,6 +1303,9 @@ class DebuggerTest(Test):
             self.error = "expected output:" + os.linesep + expected + os.linesep + "actual output:" + os.linesep +\
                 self.output
 
+        if os.path.exists("base.abc"):
+            os.remove("base.abc")
+
         return self
 
 
@@ -1590,6 +1592,7 @@ def add_directory_for_bytecode(runners, args):
     runner.add_directory("bytecode/commonjs", "js", ["--commonjs", "--dump-assembly"])
     runner.add_directory("bytecode/js", "js", ["--dump-assembly"])
     runner.add_directory("bytecode/ts/cases", "ts", ["--dump-assembly"])
+    runner.add_directory("bytecode/ts/ic", "ts", ["--dump-assembly"])
     runner.add_directory("bytecode/ts/api11", "ts", ["--dump-assembly", "--module", "--target-api-version=11"])
     runner.add_directory("bytecode/ts/api12", "ts", ["--dump-assembly", "--module", "--target-api-version=12"])
     runner.add_directory("bytecode/watch-expression", "js", ["--debugger-evaluate-expression", "--dump-assembly"])

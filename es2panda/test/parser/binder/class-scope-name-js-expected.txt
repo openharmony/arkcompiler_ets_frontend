@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x2
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -10,6 +11,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0xa
 .function any .#~A>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -32,6 +34,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~D=#D(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -40,6 +43,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~D^1=#D(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -48,6 +52,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x1
 .function any .#~B=#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -57,6 +62,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~B=B*#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -65,6 +71,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~B>#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -73,6 +80,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~C<#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -81,6 +89,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x2
 .function any .#~C=#C(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -91,6 +100,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~C>#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -99,6 +109,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~C>#foo^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -107,6 +118,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x3
 .function any .#~C>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -117,6 +129,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~C>@0*#c(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -125,6 +138,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0xb
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_13: 
