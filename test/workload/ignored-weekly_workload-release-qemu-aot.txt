@@ -3,3 +3,6 @@ box2d
 
 #18647
 splay
+
+#18790
+stanford-crypto-sha256
