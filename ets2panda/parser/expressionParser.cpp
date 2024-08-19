@@ -950,13 +950,9 @@ ir::RegExpLiteral *ParserImpl::ParseRegularExpression()
     lexer_->ResetTokenEnd();
     auto regexp = lexer_->ScanRegExp();
 
-    lexer::RegExpParser reParser(regexp, Allocator());
+    lexer::RegExpParser reParser(regexp, Allocator(), *this);
 
-    try {
-        reParser.ParsePattern();
-    } catch (lexer::RegExpError &e) {
-        ThrowSyntaxError(e.message.c_str());
-    }
+    reParser.ParsePattern();
 
     auto *regexpNode = AllocNode<ir::RegExpLiteral>(regexp.patternStr, regexp.flags, regexp.flagsStr);
     regexpNode->SetRange(lexer_->GetToken().Loc());

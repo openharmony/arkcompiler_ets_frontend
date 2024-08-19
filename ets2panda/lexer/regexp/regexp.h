@@ -19,6 +19,8 @@
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 
+#include "../../parser/parserImpl.h"
+
 #include <unordered_set>
 
 namespace ark::es2panda::lexer {
@@ -35,15 +37,6 @@ enum class RegExpFlags : uint32_t {
     STICKY = 1U << 5U,
 };
 
-class RegExpError : std::exception {
-public:
-    explicit RegExpError(std::string_view m);
-
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    std::string message;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
-
 struct RegExp {
     RegExp(util::StringView p, util::StringView f, RegExpFlags reFlags);
 
@@ -56,7 +49,7 @@ struct RegExp {
 
 class RegExpParser {
 public:
-    explicit RegExpParser(const RegExp &re, ArenaAllocator *allocator);
+    explicit RegExpParser(const RegExp &re, ArenaAllocator *allocator, const parser::ParserImpl &parser);
     void ParsePattern();
 
 private:
@@ -108,6 +101,7 @@ private:
     uint32_t capturingGroupCount_ {};
     std::unordered_set<util::StringView> groupNames_;
     std::unordered_set<util::StringView> backReferences_;
+    const es2panda::parser::ParserImpl &parser_;
 };
 }  // namespace ark::es2panda::lexer
 

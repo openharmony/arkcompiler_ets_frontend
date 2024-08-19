@@ -47,11 +47,11 @@ public:
             allowBigint = true;
         }
 
-        try {
-            ScanNumberLeadingZeroImpl<uint32_t, uint32_t>();
-        } catch (...) {
+        if (!ScanNumberLeadingZeroImpl<uint32_t, uint32_t>()) {
             Rewind(savedLexerPosition);
-            ScanNumberLeadingZeroImpl<uint64_t, uint64_t>();
+            if (!ScanNumberLeadingZeroImpl<uint64_t, uint64_t>()) {
+                ThrowError("Number is too large");
+            }
         }
 
         if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
