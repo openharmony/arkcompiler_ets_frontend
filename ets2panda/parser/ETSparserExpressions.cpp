@@ -541,6 +541,8 @@ std::optional<ir::Expression *> ETSParser::GetPostPrimaryExpression(ir::Expressi
         }
         case lexer::TokenType::PUNCTUATOR_FORMAT:
             ThrowUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+        case lexer::TokenType::PUNCTUATOR_ARROW:
+            ThrowUnexpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
         default:
             return std::nullopt;
     }

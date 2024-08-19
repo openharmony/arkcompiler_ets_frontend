@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token: '=>'. [lambda-arrow-after-braces.sts:18:8]
