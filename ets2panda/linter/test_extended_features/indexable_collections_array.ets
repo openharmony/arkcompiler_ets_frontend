@@ -24,7 +24,7 @@ const num = 123;
 console.log(array1[num]); // Legal
 
 console.log(array1['str']); // Illegal
-const str = "abc";
+const str = 'abc';
 console.log(array1[str]); // Illegal
 
 console.log(set1[0]); // Illegal
@@ -57,14 +57,14 @@ console.log(int32arr[num]); // Legal
 console.log(uint32arr[num]); // Legal
 console.log(bitVector[num]); // Legal
 
-console.log(int8arr["str"]); // Illegal
-console.log(uint8arr["str"]); // Illegal
-console.log(uint8clampedarr["str"]); // Illegal
-console.log(int16arr["str"]); // Illegal
-console.log(uint16arr["str"]); // Illegal
-console.log(int32arr["str"]); // Illegal
-console.log(uint32arr["str"]); // Illegal
-console.log(bitVector["str"]); // Illegal
+console.log(int8arr['str']); // Illegal
+console.log(uint8arr['str']); // Illegal
+console.log(uint8clampedarr['str']); // Illegal
+console.log(int16arr['str']); // Illegal
+console.log(uint16arr['str']); // Illegal
+console.log(int32arr['str']); // Illegal
+console.log(uint32arr['str']); // Illegal
+console.log(bitVector['str']); // Illegal
 console.log(int8arr[str]); // Illegal
 console.log(uint8arr[str]); // Illegal
 console.log(uint8clampedarr[str]); // Illegal
@@ -72,4 +72,4 @@ console.log(int16arr[str]); // Illegal
 console.log(uint16arr[str]); // Illegal
 console.log(int32arr[str]); // Illegal
 console.log(uint32arr[str]); // Illegal
-console.log(bitVector["str"]); // Illegal
+console.log(bitVector['str']); // Illegal
