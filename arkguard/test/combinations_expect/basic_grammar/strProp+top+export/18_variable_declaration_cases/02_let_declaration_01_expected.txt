@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the 'License');
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import e from 'assert';
+let f: number = 1;
+e.strictEqual(f, 1);
+function a(): number {
+    return f;
+}
+e.strictEqual(a(), 1);
+function b(m: boolean): number {
+    let n: number = 2;
+    {
+        let o: number = 3;
+        e.strictEqual(o, 3);
+    }
+    if (m) {
+        return n;
+    }
+    else {
+        // @ts-expect-error
+        return value3; // This will cause an error as value3 is not defined in this scope
+    }
+}
+e.strictEqual(b(true), 2);
+try {
+    b(false);
+}
+catch (l) {
+    e.strictEqual((l as ReferenceError).name, 'ReferenceError');
+    e.strictEqual((l as ReferenceError).message, 'value3 is not defined');
+}
+function c(i: boolean, j: number): number {
+    if (i) {
+        let k: number = 100;
+        return k;
+    }
+    return j;
+}
+e.strictEqual(c(false, 0), 0);
+e.strictEqual(c(true, 0), 100);
+function d(): string {
+    let g: () => string;
+    if (true) {
+        let h: string = 'hello';
+        g = function () {
+            return h;
+        };
+    }
+    return g();
+}
+e.strictEqual(d(), 'hello');

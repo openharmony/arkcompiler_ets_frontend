@@ -1,0 +1,57 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the 'License');
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+// top-level var
+var j: number = 1;
+assert.strictEqual(j, 1);
+// var be can defined multi times
+var j: number = 2;
+assert.strictEqual(j, 2);
+function g(): () => string {
+    // function scope var
+    var q: string = 'hello';
+    assert.strictEqual(q + ' world', 'hello world');
+    return function r(): string {
+        // lexical var
+        var s: string = q + '!';
+        return s;
+    };
+}
+assert.strictEqual(g()(), 'hello!');
+var k: () => string = g();
+assert.strictEqual(k(), 'hello!');
+function h(): number {
+    var o: number = 1;
+    o = 2;
+    // function declaration hoisting
+    var p: number = n();
+    assert.strictEqual(p, 2);
+    o = 3;
+    assert.strictEqual(o, 3);
+    return p;
+    function n(): number {
+        return o;
+    }
+}
+assert.strictEqual(h(), 2);
+function i(l: boolean): number | undefined {
+    if (l) {
+        var m: number = 10;
+    }
+    // var hoisting
+    return m;
+}
+assert.strictEqual(i(true), 10);
+assert.strictEqual(i(false), undefined);

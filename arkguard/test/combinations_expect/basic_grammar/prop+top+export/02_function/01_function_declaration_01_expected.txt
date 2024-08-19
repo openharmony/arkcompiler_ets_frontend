@@ -1,0 +1,114 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+let x = 1;
+assert(x === 1);
+function g() {
+    return x;
+}
+g();
+assert(g() === x);
+function h() {
+    function t1() {
+        function v1() {
+            return x;
+        }
+        v1();
+        assert(v1() === x);
+        return v1;
+    }
+    function u1() {
+        return 2;
+    }
+    assert(u1() === x + 1);
+    t1()();
+    assert(t1()() === x);
+    return t1;
+}
+h();
+assert(h()()() === x);
+function i(...s1) {
+    s1[0];
+    s1[1];
+    s1[2]()()();
+    return s1[0] + s1[1] + s1[2]()()();
+}
+i(1, 2, h);
+assert(i(1, 2, h) === 1 + 2 + x);
+function j({}) {
+    return x;
+}
+j(i);
+assert(j(i) === x);
+function k({ ...r1 }) {
+    r1.a;
+    r1.b(i);
+    return r1.a + r1.b(i);
+}
+k({ a: 1, b: j });
+assert(k({ a: 1, b: j }) === 1 + x);
+function l({ a: q1 }) {
+    q1;
+    return q1;
+}
+l({ a: 1 });
+assert(l({ a: 1 }) === 1);
+function m({ a: o1, ...p1 }) {
+    o1;
+    p1.c;
+    p1.d({ a: 1 });
+    return p1.c + p1.d({ a: o1 });
+}
+m({ a: "1", c: l({ a: 1 }), d: l });
+assert(m({ a: "1", c: l({ a: 1 }), d: l }) === "11");
+function o({ a: l1, "c": m1, ...n1 }) {
+    l1;
+    m1.c;
+    n1.d({ a: 1 });
+    return m1.c + n1.d({ a: l1 });
+}
+o({ a: "1", c: { c: l({ a: 1 }) }, d: l });
+assert(o({ a: "1", c: { c: l({ a: 1 }) }, d: l }) === "11");
+function p({ a: j1 = 1, b: k1 = j1 }) {
+    j1;
+    k1;
+    return k1;
+}
+p({ a: 1 });
+assert(p({ a: 1 }) === 1);
+function q(i1 = 1) {
+    i1;
+    return i1;
+}
+q();
+assert(q() === 1);
+function t(f1?: string, g1?: number, ...h1: number[]) {
+    f1;
+    g1;
+    h1[0];
+    return f1! + g1! + h1[0] + h1[1];
+}
+t("a", 1, 2, 3, 4);
+assert(t("a", 1, 2, 3, 4) === "a123");
+function u(d1: number, e1: string) {
+    return d1 + e1;
+}
+u(1, "a");
+assert(u(1, "a") === "1a");
+let a1 = 1;
+function v(b1: number, c1: string) {
+    return b1 + c1 + a1;
+}
+assert(v(1, "1") === "111");

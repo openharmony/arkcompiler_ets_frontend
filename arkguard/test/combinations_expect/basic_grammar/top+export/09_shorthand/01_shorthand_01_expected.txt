@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import a from 'assert';
+let b = 'hello';
+let c = { name1: b };
+c.name1;
+a(b === 'hello');
+a(c.name1 === 'hello');
+let d = 'hello';
+let e = { name: b, name2: b };
+e.name;
+a(d === 'hello');
+a(e.name === 'hello');
+a(e.name2 === 'hello');
+let f = 'hello';
+let g = { __name3: f };
+g.__name3;
+a(f === 'hello');
+a(g.__name3 === 'hello');
+let h = 'hello';
+let i = { ___name3: h };
+i.___name3;
+a(h === 'hello');
+a(i.___name3 === 'hello');
+let j = 'hello';
+let k = { _name3: j };
+k._name3;
+a(j === 'hello');
+a(k._name3 === 'hello');

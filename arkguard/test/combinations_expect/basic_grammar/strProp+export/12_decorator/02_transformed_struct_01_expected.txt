@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+if (!("finalizeConstruction" in ViewPU.prototype)) {
+    Reflect.set(ViewPU.prototype, "finalizeConstruction", () => { });
+}
+interface Index_Params {
+    message?: string;
+}
+class Index extends ViewPU {
+    constructor(k, l, m, n = -1, o = undefined, p) {
+        super(k, m, n, p);
+        if (typeof o === "function") {
+            this.paramsGenerator_ = o;
+        }
+        this.__message = new ObservedPropertySimplePU('Hello World', this, "message");
+        this.setInitiallyProvidedValue(l);
+        this.finalizeConstruction();
+    }
+    setInitiallyProvidedValue(j: Index_Params) {
+        if (j.message !== undefined) {
+            this.message = j.message;
+        }
+    }
+    updateStateVars(i: Index_Params) {
+    }
+    purgeVariableDependenciesOnElmtId(h) {
+        this.__message.purgeDependencyOnElmtId(h);
+    }
+    aboutToBeDeleted() {
+        this.__message.aboutToBeDeleted();
+        SubscriberManager.Get().delete(this.id__());
+        this.aboutToBeDeletedInternal();
+    }
+    private __message: ObservedPropertySimplePU<string>;
+    get message() {
+        return this.__message.get();
+    }
+    set message(g: string) {
+        this.__message.set(g);
+    }
+    initialRender() {
+        this.observeComponentCreation2((e, f) => {
+            Row.create();
+            Row.height('100%');
+        }, Row);
+        this.observeComponentCreation2((c, d) => {
+            Column.create();
+            Column.width('100%');
+        }, Column);
+        this.observeComponentCreation2((a, b) => {
+            Text.create(this.message);
+            Text.fontSize(50);
+            Text.fontWeight(FontWeight.Bold);
+        }, Text);
+        Text.pop();
+        Column.pop();
+        Row.pop();
+    }
+    rerender() {
+        this.updateDirtyElements();
+    }
+    static getEntryName(): string {
+        return "Index";
+    }
+}
+registerNamedRoute(() => new Index(undefined, {}), "", { bundleName: "com.example.arkguard", moduleName: "entry", pagePath: "pages/Index", pageFullPath: "entry/src/main/ets/pages/Index", integratedHsp: "false" });

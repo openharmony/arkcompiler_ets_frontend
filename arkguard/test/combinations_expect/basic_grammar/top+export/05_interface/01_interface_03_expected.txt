@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import b from 'assert';
+interface c {
+    i1P1: number;
+    i1P2(): void;
+}
+let d: c = {
+    i1P1: 1,
+    i1P2: () => { },
+};
+b(d.i1P1 === 1);
+b(d.i1P2() === undefined);
+interface e extends c {
+    i2P1: string;
+}
+let f: e = {
+    i1P1: 1,
+    i1P2: () => { },
+    i2P1: "1",
+};
+b(f.i1P1 === 1);
+b(f.i1P2() === undefined);
+b(f.i2P1 === "1");
+class g {
+    public foo(t: any) { return t; }
+    private x = 1;
+}
+let h = new g();
+b(h.foo(10) === 10);
+interface i extends g {
+    other(x: any): any;
+}
+class j {
+    public foo(s: any) { return s; }
+    private x = 1;
+}
+let k = new j();
+b(k.foo(2) === 2);
+class l {
+    public foo1(r: any) { return r; }
+    private x1 = 1;
+}
+let m = new l();
+b(m.foo1(3) === 3);
+class n {
+    public foo2(q: any) { return q; }
+    private x2 = 1;
+}
+let o = new n();
+b(o.foo2(4) === 4);
+interface p extends j, l, n {
+    other(x: any): any;
+}

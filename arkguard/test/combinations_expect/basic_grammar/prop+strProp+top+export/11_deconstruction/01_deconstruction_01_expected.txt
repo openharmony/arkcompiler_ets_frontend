@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+//array
+let h = 1;
+let i = [0, h, 3];
+assert(h === 1);
+assert(i[0] === 0);
+assert(i[1] === 1);
+assert(i[2] === 3);
+let [j, k, d] = i;
+assert(j === 0);
+assert(k === 1);
+assert(d === 3);
+[, ,] = [...i];
+//object
+let l = { h: 1, j: h + 1, k: 3 };
+assert(l.h === 1);
+assert(l.j === 2);
+assert(l.k === 3);
+let { k: m, h: o, j: p } = l;
+assert(m === 3);
+assert(o === 1);
+assert(p === 2);
+class q {
+    h: number;
+    j: number;
+    k: number;
+    constructor([x, y, z]: Array<number>) {
+        this.h = x;
+        this.j = y;
+        this.k = z;
+    }
+}
+function g([r, s, t]: Array<number>, { h: u, j: v, k: w }: q) {
+    r;
+    s;
+    t;
+    u;
+    v;
+    w;
+    assert(r === 10);
+    assert(s === 21);
+    assert(t === 20);
+    assert(u === 0);
+    assert(v === 1);
+    assert(w === 3);
+}
+g([10, h + 20, 20], new q([...i]));

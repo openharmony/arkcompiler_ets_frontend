@@ -1,0 +1,120 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+enum g {
+    prop1 = 1,
+    a1 = 2
+}
+assert(g.prop1 === 1);
+assert(g.a1 === 2);
+enum h {
+    up = 1,
+    b1,
+    left,
+    right
+}
+const direction: h = h.up;
+assert(direction === 1);
+assert(h.up === 1);
+assert(h.b1 === 2);
+assert(h.left === 3);
+assert(h.right === 4);
+assert(h[1] === 'up');
+assert(h[3] === 'left');
+assert(h[4] === 'right');
+var i;
+(function (w) {
+    w[w["prop1"] = 1] = "prop1";
+    w[w["a1"] = 2] = "prop2";
+})(i || (i = {}));
+assert(i.prop1 === 1);
+assert(i.a1 === 2);
+assert(i[1] === 'prop1');
+assert(i[2] === 'prop2');
+let j = 1;
+enum k {
+    prop1 = 1,
+    a1 = prop1 + j + 1
+}
+assert(k.prop1 === 1);
+assert(k.a1 === 3);
+assert(k[1] === 'prop1');
+enum l {
+    a = 2,
+    b = 3
+}
+assert(l.a === 2);
+assert(l.b === 3);
+assert(l[2] === 'a');
+assert(l[3] === 'b');
+enum m {
+    a = (1).valueOf(),
+    b = l.a,
+    c = l.b.valueOf()
+}
+assert(m.a === 1);
+assert(m.b === 2);
+assert(m.c === 3);
+assert(m[1] === 'a');
+assert(m[2] === 'b');
+assert(m[3] === 'c');
+module o {
+    export namespace u {
+        export enum v {
+            a = 1
+        }
+    }
+}
+assert(o.u.v.a === 1);
+assert(o.u.v[1] === 'a');
+module o {
+    export namespace u {
+        export enum v {
+            b = o.u.v.a + 1
+        }
+    }
+}
+assert(o.u.v.b === 2);
+assert(o.u.v[2] === 'b');
+export enum p {
+    c1 = 1,
+    d1 = 2,
+    e1 = 4,
+    f1 = 5,
+    g1 = 6,
+    h1 = 0
+}
+export const q = {
+    "i1": p.h1,
+    '0': p.c1,
+    '1': p.e1,
+    '2': p.d1,
+    '3': p.f1,
+    '4': p.g1,
+};
+assert(q["i1"] === 0);
+assert(q['0'] === 1);
+assert(q['1'] === 4);
+assert(q['2'] === 2);
+assert(q['3'] === 5);
+assert(q['4'] === 6);
+export enum t {
+    A = 1 << 1,
+    B = 1 << 2
+}
+assert(t.A === 2);
+assert(t.B === 4);
+assert(t[2] === 'A');
+assert(t[4] === 'B');

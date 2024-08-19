@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+let x: number = 1;
+let y: string = "1";
+let z: boolean = true;
+let j = 0;
+let k = 0;
+let l = 0;
+let m: ClassDecorator = () => { j++; };
+let o: MethodDecorator = () => { k++; };
+let p: PropertyDecorator = () => { l++; };
+function g(a1: number): ClassDecorator { assert(a1 === 1); return m; }
+function h(w: string): MethodDecorator { assert(w === "1"); return o; }
+function i(v: boolean): PropertyDecorator { assert(v === true); return p; }
+type m = number;
+type o = string;
+type p = boolean;
+@m
+@g(x)
+class q {
+    @o
+    @h(y)
+    u() { }
+    @o
+    @h(y)
+    set v(u: number) { this.a1 = u; }
+    @h(y)
+    @o
+    get b1(): number { return this.a1; }
+    @p
+    @i(z)
+    a1: number = 1;
+}
+assert(j === 2);
+assert(k === 6);
+assert(l === 2);
+let t = new q();
+assert(t.b1 === 1);
+t.v = 2;
+assert(t.a1 === 2);
+assert(t.b1 as number === 2);

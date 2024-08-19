@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+const i: unique symbol = Symbol();
+class j {
+    a01?: number;
+    b01?: string;
+    o?: boolean;
+    1?: number;
+    "x"?: number;
+    [i]?: number;
+}
+let x01 = 10;
+let k = { a01: 20 };
+let l: symbol;
+namespace m {
+    export let a01 = 30;
+}
+m.a01;
+let a01 = {
+    a01: 1,
+    b01: "12",
+    1: 1,
+    "2": "2",
+    [3]: 3,
+    ["4"]: "4",
+    [l = Symbol()]: 5,
+    [i]: 6,
+    ["1" + "2"]: 7,
+    [1 + 2 + 3]: 8,
+    [x01]: 9,
+    [x01 + 3]: 10,
+    [k.a01]: 11,
+    [m.a01]: 12,
+    x01: () => { return 13; },
+    await: () => 14
+};
+assert(a01.a01 === 1);
+assert(a01.b01 === '12');
+assert(a01[1] === 1);
+assert(a01["2"] === "2");
+assert(a01[3] === 3);
+assert(a01["4"] === "4");
+assert(a01[l] === 5);
+assert(a01[i] === 6);
+assert(a01["12"] === 7);
+assert(a01[6] === 8);
+assert(a01[10] === 9);
+assert(a01[13] === 10);
+assert(a01[20] === 11);
+assert(a01[30] === 12);
+assert(a01.x01() === 13);
+assert(a01.await() === 14);
+function g({ b01: o, ...p }: {
+    b01: number;
+    o: string;
+}) {
+    return o + p.o;
+}
+g({ b01: 1, o: "213" });
+assert(g({ b01: 1, o: "213" }) === "1213");
+function h(n: j) {
+    assert(n.a01 === 1);
+    assert(n.b01 === "1");
+    assert(n.o === true);
+    assert(n[1] === 1);
+    assert(n["x"] === 2);
+    assert(n[i] === 3);
+}
+h({ a01: 1, b01: "1", o: true, 1: 1, "x": 2, [i]: 3 });
