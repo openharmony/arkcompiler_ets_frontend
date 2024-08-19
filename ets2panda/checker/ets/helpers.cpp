@@ -664,6 +664,14 @@ void ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
         InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
     }
 }
+void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName)
+{
+    if (initType->IsETSObjectType() && initType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::ENUM) &&
+        !init->IsMemberExpression()) {
+        ThrowTypeError({"Cannot assign type '", initType->AsETSObjectType()->Name(), "' for variable ", varName, "."},
+                       init->Start());
+    }
+}
 
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
@@ -725,11 +733,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         return FixOptionalVariableType(bindingVar, flags);
     }
 
-    if (initType->IsETSObjectType() && initType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::ENUM) &&
-        !init->IsMemberExpression()) {
-        ThrowTypeError({"Cannot assign type '", initType->AsETSObjectType()->Name(), "' for variable ", varName, "."},
-                       init->Start());
-    }
+    CheckEnumType(init, initType, varName);
 
     (isConst || (isReadonly && isStatic)) ? bindingVar->SetTsType(initType)
                                           : bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));

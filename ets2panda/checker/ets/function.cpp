@@ -843,6 +843,47 @@ void ETSChecker::SearchAmongMostSpecificTypes(
     }
 }
 
+ArenaMultiMap<size_t, Signature *> ETSChecker::GetSuitableSignaturesForParameter(
+    const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
+    const lexer::SourcePosition &pos, size_t argumentsSize)
+{
+    // Collect which signatures are most specific for each parameter.
+    ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter(Allocator()->Adapter());
+
+    const checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(Relation(),
+                                                                          TypeRelationFlag::ONLY_CHECK_WIDENING);
+
+    for (size_t i = 0; i < paramCount; ++i) {
+        if (argTypeInferenceRequired[i]) {
+            for (auto *sig : signatures) {
+                bestSignaturesForParameter.insert({i, sig});
+            }
+            continue;
+        }
+        // 1st step: check which is the most specific parameter type for i. parameter.
+        Type *mostSpecificType = signatures.front()->Params().at(i)->TsType();
+        Signature *prevSig = signatures.front();
+
+        InitMostSpecificType(signatures, mostSpecificType, prevSig, i);
+        for (auto *sig : signatures) {
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
+                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), true);
+        }
+        for (auto *sig : signatures) {
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
+                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), false);
+        }
+
+        for (auto *sig : signatures) {
+            Type *sigType = sig->Params().at(i)->TsType();
+            if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
+                bestSignaturesForParameter.insert({i, sig});
+            }
+        }
+    }
+    return bestSignaturesForParameter;
+}
+
 Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                                    const std::vector<bool> &argTypeInferenceRequired,
                                                    const lexer::SourcePosition &pos, size_t argumentsSize)
@@ -878,40 +919,8 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
         return *restParamSignature;
     }
 
-    // Collect which signatures are most specific for each parameter.
-    ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter(Allocator()->Adapter());
-
-    const checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(Relation(),
-                                                                          TypeRelationFlag::ONLY_CHECK_WIDENING);
-
-    for (size_t i = 0; i < paramCount; ++i) {
-        if (argTypeInferenceRequired[i]) {
-            for (auto *sig : signatures) {
-                bestSignaturesForParameter.insert({i, sig});
-            }
-            continue;
-        }
-        // 1st step: check which is the most specific parameter type for i. parameter.
-        Type *mostSpecificType = signatures.front()->Params().at(i)->TsType();
-        Signature *prevSig = signatures.front();
-
-        InitMostSpecificType(signatures, mostSpecificType, prevSig, i);
-        for (auto *sig : signatures) {
-            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
-                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), true);
-        }
-        for (auto *sig : signatures) {
-            SearchAmongMostSpecificTypes(mostSpecificType, prevSig,
-                                         std::make_tuple(pos, argumentsSize, paramCount, i, sig), false);
-        }
-
-        for (auto *sig : signatures) {
-            Type *sigType = sig->Params().at(i)->TsType();
-            if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
-                bestSignaturesForParameter.insert({i, sig});
-            }
-        }
-    }
+    ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter =
+        GetSuitableSignaturesForParameter(argTypeInferenceRequired, paramCount, signatures, pos, argumentsSize);
     // Find the signature that are most specific for all parameters.
     Signature *mostSpecificSignature = FindMostSpecificSignature(signatures, bestSignaturesForParameter, paramCount);
 

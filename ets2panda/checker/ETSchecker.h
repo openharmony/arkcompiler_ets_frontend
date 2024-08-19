@@ -408,6 +408,9 @@ public:
     void SearchAmongMostSpecificTypes(
         Type *&mostSpecificType, Signature *&prevSig,
         std::tuple<const lexer::SourcePosition &, size_t, size_t, size_t, Signature *> info, bool lookForClassType);
+    ArenaMultiMap<size_t, Signature *> GetSuitableSignaturesForParameter(
+        const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
+        const lexer::SourcePosition &pos, size_t argumentsSize);
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
@@ -500,6 +503,7 @@ public:
     Type *HandleBooleanLogicalOperatorsExtended(Type *leftType, Type *rightType, ir::BinaryExpression *expr);
 
     checker::Type *FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags);
+    void CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName);
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
     void CheckAnnotationTypeForVariableDeclaration(checker::Type *annotationType, bool isUnionFunction,
