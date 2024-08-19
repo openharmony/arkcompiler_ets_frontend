@@ -520,6 +520,7 @@ private:
     ir::TSModuleDeclaration *ParseTsModuleOrNamespaceDelaration(const lexer::SourcePosition &startLoc,
                                                                 bool isDeclare,
                                                                 bool isExport);
+    bool IsInstantiatedInTsModuleBlock(ir::Statement **body);
 
     ir::TSImportEqualsDeclaration *ParseTsImportEqualsDeclaration(const lexer::SourcePosition &startLoc,
                                                                   bool isExport = false);
