@@ -331,7 +331,7 @@ class TestPrepare():
                 self.args.es2022 = "all"
             elif TEST_ES2023_DIR in self.args.file:
                 self.args.es2023 = "all"
-            elif TEST_OTHERTESTS_DIR in self.args.dir:
+            elif TEST_OTHERTESTS_DIR in self.args.file:
                 self.args.other = "other"
 
     def prepare_out_dir(self):

@@ -1,24 +1,5 @@
 # Known failures list for test262-other - release-x64-aot-pgo
 
-#18438
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-sub.js
-test262/data/other_tests/language/statements/class/elements/private-accessor-is-visible-in-computed-properties.js
-test262/data/other_tests/language/statements/class/elements/private-method-is-visible-in-computed-properties.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-bitand.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-bitxor.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-mod.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-lshift.js
-
-#18519
-test262/data/other_tests/built-ins/parseFloat/S15.1.2.3_A1_T2.js
-
-#18691
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-add.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-div.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-mult.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-rshift.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-srshift.js
-
 #18690
 test262/data/other_tests/language/statements/class/elements/privatefieldget-success-2.js
 test262/data/other_tests/language/statements/class/elements/privatefield-on-proxy.js
@@ -43,6 +24,3 @@ test262/data/other_tests/language/statements/class/elements/privatefieldset-type
 test262/data/other_tests/language/statements/class/elements/privatefieldset-typeerror-2.js
 test262/data/other_tests/language/statements/class/elements/privatefieldset-typeerror-5.js
 test262/data/other_tests/language/statements/class/elements/static-private-fields-proxy-default-handler-throws.js
-
-#18522
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-bitor.js
