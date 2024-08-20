@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Device Co., Ltd. 2021 - 2023. All rights reserved.
+ * Copyright (c) Huawei Device Co., Ltd. 2021-2024. All rights reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -55,22 +55,22 @@ void SrcDumper::Add(const std::string &str)
     ss_ << str;
 }
 
-void SrcDumper::Add(const int32_t i)
+void SrcDumper::Add(int32_t i)
 {
     ss_ << i;
 }
 
-void SrcDumper::Add(const int64_t l)
+void SrcDumper::Add(int64_t l)
 {
     ss_ << l;
 }
 
-void SrcDumper::Add(const float f)
+void SrcDumper::Add(float f)
 {
     ss_ << f;
 }
 
-void SrcDumper::Add(const double d)
+void SrcDumper::Add(double d)
 {
     ss_ << d;
 }
