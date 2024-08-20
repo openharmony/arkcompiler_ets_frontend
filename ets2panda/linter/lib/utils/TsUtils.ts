@@ -35,7 +35,7 @@ import { getScriptKind } from './functions/GetScriptKind';
 import { isStdLibraryType } from './functions/IsStdLibrary';
 import { isStructDeclaration, isStructDeclarationKind } from './functions/IsStruct';
 import type { NameGenerator } from './functions/NameGenerator';
-import { pathContainsDirectory } from './functions/PathHelper';
+import { srcFilePathContainsDirectory } from './functions/PathHelper';
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 
@@ -1079,10 +1079,19 @@ export class TsUtils {
     return false;
   }
 
+  parentSymbolCache = new Map<ts.Symbol, string | undefined>();
+
   getParentSymbolName(symbol: ts.Symbol): string | undefined {
+    const cached = this.parentSymbolCache.get(symbol);
+    if (cached) {
+      return cached;
+    }
+
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     const dotPosition = name.lastIndexOf('.');
-    return dotPosition === -1 ? undefined : name.substring(0, dotPosition);
+    const result = dotPosition === -1 ? undefined : name.substring(0, dotPosition);
+    this.parentSymbolCache.set(symbol, result);
+    return result;
   }
 
   isGlobalSymbol(symbol: ts.Symbol): boolean {
@@ -1373,7 +1382,7 @@ export class TsUtils {
       const ext = path.extname(fileName).toLowerCase();
       const isThirdPartyCode =
         ARKTS_IGNORE_DIRS.some((ignore) => {
-          return pathContainsDirectory(path.normalize(fileName), ignore);
+          return srcFilePathContainsDirectory(srcFile, ignore);
         }) ||
         ARKTS_IGNORE_FILES.some((ignore) => {
           return path.basename(fileName) === ignore;
