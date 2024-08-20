@@ -13,6 +13,7 @@
 
 .language ECMAScript
 
+slotNum = 0x0
 .function any .#*#A(any a0, any a1, any a2) {
 	mov v0, a0
 	mov v1, a1
@@ -38,6 +39,7 @@
 	returnundefined
 }
 
+slotNum = 0x1
 .function any .func_main_0(any a0, any a1, any a2) {
 	newlexenvwithname 0x1, _2
 	mov v0, a0

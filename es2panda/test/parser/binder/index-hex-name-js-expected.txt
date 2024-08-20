@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x2
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -10,6 +11,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x5a
 .function any .#~A>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -144,6 +146,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@10=#SSSS(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -152,6 +155,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@1=#CCC(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -160,6 +164,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@2=#DDD(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -168,6 +173,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@3=#EEE(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -176,6 +182,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@4=#FFF(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -184,6 +191,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@5=#GGG(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -192,6 +200,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@6=#HHH(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -200,6 +209,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@7=#III(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -208,6 +218,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@8=#JJJ(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -216,6 +227,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@9=#KKK(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -224,6 +236,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@a=#LLL(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -232,6 +245,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@b=#MMM(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -240,6 +254,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@c=#NNN(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -248,6 +263,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@d=#OOO(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -256,6 +272,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@e=#PPP(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -264,6 +281,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~@f=#QQQ(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -272,6 +290,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~BB=#BB(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -280,6 +299,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~A>@0~RRR=#RRR(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -288,6 +308,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x4
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_7: 

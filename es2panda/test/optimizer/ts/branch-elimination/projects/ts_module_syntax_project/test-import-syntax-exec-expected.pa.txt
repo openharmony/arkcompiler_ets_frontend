@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x0
 .function any &myapp/test-export-default-const&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -15,6 +16,7 @@ label_2:
 
 .language ECMAScript
 
+slotNum = 0x0
 .function any &myapp/test-export-default-let&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -28,6 +30,7 @@ label_2:
 
 .language ECMAScript
 
+slotNum = 0x0
 .function any &myapp/test-export-default-value&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -41,6 +44,7 @@ label_2:
 
 .language ECMAScript
 
+slotNum = 0x0
 .function any &myapp/test-export-syntax&.#*#f1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -49,6 +53,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any &myapp/test-export-syntax&.#~C1=#C1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -57,6 +62,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x9
 .function any &myapp/test-export-syntax&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -100,6 +106,7 @@ label_2:
 
 .language ECMAScript
 
+slotNum = 0x34
 .function any &myapp/test-import-syntax-exec&.func_main_0(any a0, any a1, any a2) {
 label_29: 
 label_0: 
@@ -235,6 +242,7 @@ label_30:
 
 .language ECMAScript
 
+slotNum = 0x13
 .function any &myapp/test-local-export&.#*#foo(any a0, any a1, any a2) {
 label_10: 
 label_1: 
@@ -265,6 +273,7 @@ label_8:
 label_11: 
 }
 
+slotNum = 0x1
 .function any &myapp/test-local-export&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -285,6 +294,7 @@ label_2:
 
 .language ECMAScript
 
+slotNum = 0x4
 .function any test-ts-namespace-exports.#&#ns(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -297,6 +307,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x14
 .function any test-ts-namespace-exports.#*#foo(any a0, any a1, any a2) {
 label_9: 
 label_0: 
@@ -333,6 +344,7 @@ label_7:
 label_10: 
 }
 
+slotNum = 0x6
 .function any test-ts-namespace-exports.func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 

@@ -294,10 +294,10 @@ public:
         return 0;
 %   end
 %   if (is_8_bit_ic)
-        if (slot < 0xFF) {
+        if (slot <= 0xFF) {
             if ((slot + <%= ret %>) > 0xFF) {
                 <%= op_map['imm'][0] %> = invalid;
-                return 0;
+                return 0x100 - slot;
             }
 
             <%= op_map['imm'][0] %> = slot;
