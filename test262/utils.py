@@ -246,7 +246,7 @@ def git_clone(git_url, code_dir):
 
 
 def git_checkout(git_bash, cwd):
-    cmd = ['git', 'checkout', git_bash]
+    cmd = ['git', 'checkout', '-f', git_bash]
     ret = run_cmd_cwd(cmd, cwd)
     assert not ret, f"\n error: git checkout '{git_bash}' failed."
 

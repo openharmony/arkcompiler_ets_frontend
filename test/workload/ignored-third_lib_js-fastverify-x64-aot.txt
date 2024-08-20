@@ -1,0 +1,24 @@
+# Known failures list for third_lib_js - fastverify-x64-aot
+
+#18330
+dayjs_test
+
+#18340
+Drools_test
+
+#18517
+js-joda_test
+
+#18342
+mathjs_test
+
+#18331
+validator_test
+
+#18484
+jBox2d_test
+pdfview_test
+commonmark-js_test
+
+#18487
+pako_test

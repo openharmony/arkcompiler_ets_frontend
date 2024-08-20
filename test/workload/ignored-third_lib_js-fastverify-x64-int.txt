@@ -1,4 +1,4 @@
-# Known failures list for third_lib_js - release-x64-int
+# Known failures list for third_lib_js - fastverify-x64-int
 
 #18330
 dayjs_test
@@ -6,14 +6,11 @@ dayjs_test
 #18340
 Drools_test
 
-#18372
+#18517
 js-joda_test
 
 #18342
 mathjs_test
-
-#18387
-pdfview_test
 
 #18331
 validator_test
