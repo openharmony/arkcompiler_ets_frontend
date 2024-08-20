@@ -33,7 +33,8 @@ import {
 } from '../ArkObfuscator';
 
 import { isDebug, isFileExist, sortAndDeduplicateStringArr, mergeSet, convertSetToArray } from './utils';
-import { nameCacheMap, yellow, unobfuscationNamesObj, globalUnobfuscatedPropMap } from './CommonObject';
+import { nameCacheMap, yellow, unobfuscationNamesObj } from './CommonObject';
+import { historyUnobfuscatedPropMap } from './Initializer';
 import { LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 
@@ -942,11 +943,10 @@ export function printWhitelist(obfuscationOptions: ObOptions, nameOptions: IName
   const hasPropertyConfig = enableProperty && reservedConfPropertyArray?.length > 0;
   const hasTopLevelConfig = enableToplevel && reservedConfToplevelArrary?.length > 0;
   if (hasPropertyConfig) {
-    // if -enable-property-obfuscation and -enable-toplevel-obfuscation,
-    // the mReservedToplevelNames has already been merged into the mReservedToplevelNames.
     whitelistObj.conf.push(...reservedConfPropertyArray);
     handleUniversalReservedList(nameOptions.mUniversalReservedProperties, whitelistObj.conf);
-  } else if (hasTopLevelConfig) {
+  }
+  if (hasTopLevelConfig) {
     whitelistObj.conf.push(...reservedConfToplevelArrary);
     handleUniversalReservedList(nameOptions.mUniversalReservedToplevelNames, whitelistObj.conf);
   }
@@ -964,7 +964,7 @@ export function printWhitelist(obfuscationOptions: ObOptions, nameOptions: IName
   fs.writeFileSync(defaultPath, whitelistContent);
 }
 
-function handleUniversalReservedList(universalList: RegExp[] | undefined, configArray: string[]) {
+function handleUniversalReservedList(universalList: RegExp[] | undefined, configArray: string[]): void {
   if (universalList?.length > 0) {
     universalList.forEach((value) => {
       const originalString = UnobfuscationCollections.reservedWildcardMap.get(value);
@@ -980,29 +980,28 @@ export function printUnobfuscationReasons(configPath: string, defaultPath: strin
   let property: Record<string, string[]> = {};
   let unobfuscationObj = { keptReasons: {}, keptNames: { property } };
   let keptReasons: Object = {
-    "sdk": "same as the system api names",
-    "lang": "same as the language keywords",
-    "conf": "same as the user-configured kept name",
-    "struct": "same as the ArkUI struct property",
-    "strProp": "same as the string property",
-    "exported": "same as the exported names and properties"
-  }
+    'sdk': 'same as the system api names',
+    'lang': 'same as the language keywords',
+    'conf': 'same as the user-configured kept name',
+    'struct': 'same as the ArkUI struct property',
+    'strProp': 'same as the string property',
+    'exported': 'same as the exported names and properties'
+  };
   unobfuscationObj.keptReasons = keptReasons;
 
-  if (globalUnobfuscatedPropMap.size === 0) {
+  if (!historyUnobfuscatedPropMap) {
     // Full build
     UnobfuscationCollections.unobfuscatedPropMap.forEach((value: Set<string>, key: string) => {
       let array: string[] = Array.from(value);
       unobfuscationObj.keptNames.property[key] = array;
-      globalUnobfuscatedPropMap.set(key, array);
     });
   } else {
     // Incremental build
     UnobfuscationCollections.unobfuscatedPropMap.forEach((value: Set<string>, key: string) => {
       let array: string[] = Array.from(value);
-      globalUnobfuscatedPropMap.set(key, array);
+      historyUnobfuscatedPropMap.set(key, array);
     });
-    globalUnobfuscatedPropMap.forEach((value: string[], key: string) => {
+    historyUnobfuscatedPropMap.forEach((value: string[], key: string) => {
       unobfuscationObj.keptNames.property[key] = value;
     });
   }
@@ -1012,7 +1011,10 @@ export function printUnobfuscationReasons(configPath: string, defaultPath: strin
     fs.mkdirSync(path.dirname(defaultPath), { recursive: true });
   }
   fs.writeFileSync(defaultPath, unobfuscationContent);
-
+  
+  if (!fs.existsSync(path.dirname(configPath))) {
+    fs.mkdirSync(path.dirname(configPath), { recursive: true });
+  }
   if (configPath) {
     fs.copyFileSync(defaultPath, configPath);
   }

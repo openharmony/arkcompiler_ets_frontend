@@ -47,7 +47,7 @@ export namespace UnobfuscationCollections {
   export let reservedSdkApiForProp: Set<string> = new Set();
   export let reservedSdkApiForGlobal: Set<string> = new Set();
   export let reservedSdkApiForLocal: Set<string> = new Set();
-  export let reservedStruct: Set<string>  = new Set();
+  export let reservedStruct: Set<string> = new Set();
   export let reservedLangForProperty: Set<string> = new Set();
   // declare global {}
   // In the above syntax, 'global' is named '__global' in tsc.

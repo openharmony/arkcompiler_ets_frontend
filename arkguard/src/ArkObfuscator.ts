@@ -60,12 +60,13 @@ import type { ReseverdSetForArkguard } from './common/ApiReader';
 import { ApiExtractor } from './common/ApiExtractor';
 import esInfo from './configs/preset/es_reserved_properties.json';
 import { EventList, TimeSumPrinter, TimeTracker } from './utils/PrinterUtils';
-import { Extension, type ProjectInfo } from './common/type';
+import { Extension, type ProjectInfo, type FilePathObj } from './common/type';
 export { FileUtils } from './utils/FileUtils';
 export { MemoryUtils } from './utils/MemoryUtils';
 import { TypeUtils } from './utils/TypeUtils';
 import { handleReservedConfig } from './utils/TransformUtil';
 import { UnobfuscationCollections } from './utils/CommonCollections';
+import { historyAllUnobfuscatedNamesMap } from './initialization/Initializer';
 export { UnobfuscationCollections } from './utils/CommonCollections';
 export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
 export type { ReservedNameInfo } from './utils/TransformUtil';
@@ -356,14 +357,14 @@ export class ArkObfuscator {
   /**
    * Obfuscate ast of a file.
    * @param content ast or source code of a source file
-   * @param sourceFilePath
+   * @param sourceFilePathObj
    * @param previousStageSourceMap
    * @param historyNameCache
    * @param originalFilePath When filename obfuscation is enabled, it is used as the source code path.
    */
   public async obfuscate(
     content: SourceFile | string,
-    sourceFilePath: string,
+    sourceFilePathObj: FilePathObj,
     previousStageSourceMap?: RawSourceMap,
     historyNameCache?: Map<string, string>,
     originalFilePath?: string,
@@ -371,12 +372,12 @@ export class ArkObfuscator {
   ): Promise<ObfuscationResultType> {
     ArkObfuscator.projectInfo = projectInfo;
     let result: ObfuscationResultType = { content: undefined };
-    if (this.isObfsIgnoreFile(sourceFilePath)) {
+    if (this.isObfsIgnoreFile(sourceFilePathObj.buildFilePath)) {
       // need add return value
       return result;
     }
 
-    let ast: SourceFile = this.createAst(content, sourceFilePath);
+    let ast: SourceFile = this.createAst(content, sourceFilePathObj.buildFilePath);
     if (ast.statements.length === 0) {
       return result;
     }
@@ -384,6 +385,14 @@ export class ArkObfuscator {
     if (historyNameCache && historyNameCache.size > 0 && this.mCustomProfiles.mNameObfuscation) {
       renameIdentifierModule.historyNameCache = historyNameCache;
     }
+
+    if (this.mCustomProfiles.mUnobfuscationOption?.mPrintKeptNames) {
+      let historyUnobfuscatedNames = historyAllUnobfuscatedNamesMap.get(sourceFilePathObj.relativeFilePath);
+      if (historyUnobfuscatedNames) {
+        renameIdentifierModule.historyUnobfuscatedNamesMap = new Map(Object.entries(historyUnobfuscatedNames));
+      }
+    }
+
     originalFilePath = originalFilePath ?? ast.fileName;
     if (this.mCustomProfiles.mRenameFileName?.mEnable) {
       orignalFilePathForSearching = originalFilePath;
@@ -394,7 +403,7 @@ export class ArkObfuscator {
 
     ast = this.obfuscateAst(ast);
 
-    this.writeObfuscationResult(ast, sourceFilePath, result, previousStageSourceMap, originalFilePath);
+    this.writeObfuscationResult(ast, sourceFilePathObj.buildFilePath, result, previousStageSourceMap, originalFilePath);
 
     this.clearCaches();
     return result;

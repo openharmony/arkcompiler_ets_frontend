@@ -16,11 +16,13 @@
 import fs from 'fs';
 import path from 'path';
 
-import { ArkObfuscator } from '../ArkObfuscator';
+import { ArkObfuscator, renameIdentifierModule } from '../ArkObfuscator';
 import { collectResevedFileNameInIDEConfig, MergedConfig, ObConfigResolver, readNameCache } from './ConfigResolver';
-import { readProjectPropertiesByCollectedPaths } from '../common/ApiReader';
-import type { ReseverdSetForArkguard } from '../common/ApiReader';
 import { type IOptions } from '../configs/IOptions';
+
+// Record all unobfuscated properties and reasons.
+export let historyUnobfuscatedPropMap: Map<string, string[]> | undefined;
+export let historyAllUnobfuscatedNamesMap: Map<string, Object> = new Map();
 
 export const printerConfig = {
   // Print obfuscation time&memory usage of all files and obfuscation processes
@@ -120,5 +122,34 @@ function initArkGuardConfig(
       }
     }
   }
+  if (mergedObConfig.options.printKeptNames && obfuscationCacheDir) {
+    const defaultUnobfuscationPath: string = path.join(obfuscationCacheDir, 'keptNames.json');
+    if (fs.existsSync(defaultUnobfuscationPath)) {
+      readUnobfuscationContent(defaultUnobfuscationPath, logger);
+    }
+  }
   return arkObfuscator;
+}
+
+function readUnobfuscationContent(defaultUnobfuscationPath: string, logger: any): void {
+  try {
+    const unobfuscationContent = fs.readFileSync(defaultUnobfuscationPath, 'utf-8');
+    const unobfuscationObj: {
+      keptReasons: Object;
+      keptNames: {
+        property: Object;
+        [key: string]: Object;
+      };
+    } = JSON.parse(unobfuscationContent);
+
+    if (Object.keys(unobfuscationObj.keptNames.property).length !== 0) {
+      historyUnobfuscatedPropMap = new Map<string, string[]>(Object.entries(unobfuscationObj.keptNames.property));
+    }
+    const { property, ...rest } = unobfuscationObj.keptNames;
+    Object.keys(rest).forEach((key) => {
+      historyAllUnobfuscatedNamesMap.set(key, rest[key]);
+    });
+  } catch (err) {
+    logger.error(`Failed to open ${defaultUnobfuscationPath}. Error message: ${err}`);
+  }
 }
