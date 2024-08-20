@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token. [array_expression_1.ts:16:21]

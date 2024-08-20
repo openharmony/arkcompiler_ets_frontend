@@ -1,1 +1,0 @@
-SyntaxError: Implicit octal literal not allowed [test-use-strict-1.js:19:10]

@@ -1,1 +1,0 @@
-SyntaxError: Multiple default clauses. [test-switch-5.js:19:3]

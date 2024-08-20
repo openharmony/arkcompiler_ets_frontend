@@ -1,1 +1,0 @@
-SyntaxError: Identifier expected [test_type_alias1.sts:16:6]

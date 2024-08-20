@@ -1,1 +1,0 @@
-SyntaxError: Both optional and rest parameters are not allowed in function's parameter list. [rest_parameter_03.sts:16:13]

@@ -1,1 +1,0 @@
-SyntaxError: Abstract method cannot be async [async_abstract_bad.sts:17:20]

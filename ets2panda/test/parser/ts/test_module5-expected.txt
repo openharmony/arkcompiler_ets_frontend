@@ -1,1 +1,0 @@
-SyntaxError: String literal expected. [test_module5.ts:18:24]

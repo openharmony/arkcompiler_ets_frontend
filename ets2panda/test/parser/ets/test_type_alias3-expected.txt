@@ -1,1 +1,0 @@
-SyntaxError: Invalid Type [test_type_alias3.sts:16:12]

@@ -1,1 +1,0 @@
-SyntaxError: 'With' is deprecated and not supported any more. [test-use-strict-2.js:19:1]

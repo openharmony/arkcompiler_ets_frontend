@@ -1,1 +1,0 @@
-SyntaxError: Struct types are not supported yet! [struct_invalid_extends3.sts:22:1]

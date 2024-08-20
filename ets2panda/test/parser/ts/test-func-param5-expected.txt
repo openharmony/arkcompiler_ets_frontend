@@ -1,1 +1,0 @@
-SyntaxError: 'constructor' cannot be used as a parameter property name [test-func-param5.ts:18:28]

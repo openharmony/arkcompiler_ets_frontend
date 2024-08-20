@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token [trailing_lambda_omit_call_parentheses.sts:21:7]

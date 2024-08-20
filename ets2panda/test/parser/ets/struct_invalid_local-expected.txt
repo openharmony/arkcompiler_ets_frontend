@@ -1,1 +1,0 @@
-SyntaxError: Illegal start of expression [struct_invalid_local.sts:17:5]

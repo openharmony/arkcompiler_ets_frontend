@@ -1,1 +1,0 @@
-SyntaxError: Missing initializer in const declaration [global_const_vars2.sts:16:17]

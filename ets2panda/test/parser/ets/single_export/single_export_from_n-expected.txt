@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token [single_export_from_n.sts:13:10]

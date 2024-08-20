@@ -1,1 +1,0 @@
-SyntaxError: Required parameter follows default parameter(s). [default_parameter3.sts:16:28]

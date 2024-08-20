@@ -1,1 +1,0 @@
-SyntaxError: Identifier expected. [test-type-query1.ts:17:15]

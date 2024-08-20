@@ -1,1 +1,0 @@
-SyntaxError: Invalid enum initialization value [enum18.sts:18:14]

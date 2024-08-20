@@ -1,1 +1,0 @@
-SyntaxError: Interface member initialization is prohibited [interface_member_initialization.sts:17:14]

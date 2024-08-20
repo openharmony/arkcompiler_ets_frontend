@@ -1,1 +1,0 @@
-SyntaxError: Private or static interface methods must have body [interfaceAbstract.sts:17:31]
