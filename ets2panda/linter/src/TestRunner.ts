@@ -33,6 +33,8 @@ const TAB = '    ';
 interface TestNodeInfo {
   line: number;
   column: number;
+  endLine: number;
+  endColumn: number;
   problem: string;
   autofix?: Autofix[];
   suggest?: string;
@@ -192,6 +194,8 @@ function runTest(testDir: string, testFile: string, mode: Mode): boolean {
     return {
       line: x.line,
       column: x.column,
+      endLine: x.endLine,
+      endColumn: x.endColumn,
       problem: x.problem,
       autofix: mode === Mode.AUTOFIX ? x.autofix : undefined,
       suggest: x.suggest,
@@ -214,6 +218,12 @@ function expectedAndActualMatch(expectedNodes: TestNodeInfo[], actualNodes: Test
     const actual = actualNodes[i];
     const expect = expectedNodes[i];
     if (actual.line !== expect.line || actual.column !== expect.column || actual.problem !== expect.problem) {
+      return reportDiff(expect, actual);
+    }
+    if (
+      expect.endLine && actual.endLine !== expect.endLine ||
+      expect.endColumn && actual.endColumn !== expect.endColumn
+    ) {
       return reportDiff(expect, actual);
     }
     if (!autofixArraysMatch(expect.autofix, actual.autofix)) {
