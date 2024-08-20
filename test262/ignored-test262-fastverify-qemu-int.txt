@@ -40,37 +40,7 @@ test262/data/test_es2021/language/identifiers/start-unicode-9.0.0-escaped.js
 test262/data/test_es2021/language/identifiers/start-unicode-9.0.0.js
 test262/data/test_es2021/built-ins/Array/prototype/flatMap/array-like-objects.js
 
-#18600 TypeError: at func_main_0
 
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-arrow-import-catch-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-arrow-import-catch-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-arrow-function-await-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-arrow-function-await-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-arrow-function-return-await-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-arrow-function-return-await-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-function-await-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-function-await-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-function-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-function-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-function-return-await-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-function-return-await-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-block-import-catch-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-gen-await-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-block-import-catch-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-block-labeled-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-block-labeled-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-do-while-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-do-while-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-function-import-catch-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-else-import-catch-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-else-import-catch-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-function-import-catch-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-if-import-catch-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-if-import-catch-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-while-import-catch-eval-rqstd-abrupt-urierror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-while-import-catch-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/top-level-import-catch-eval-rqstd-abrupt-typeerror.js
-test262/data/test_es2021/language/expressions/dynamic-import/catch/top-level-import-catch-eval-rqstd-abrupt-urierror.js
 
 #18596
 test262/data/test_es2021/built-ins/encodeURI/S15.1.3.3_A2.5_T1.js
