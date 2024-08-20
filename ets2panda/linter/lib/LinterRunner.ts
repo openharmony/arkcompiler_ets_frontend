@@ -107,6 +107,7 @@ export function lint(options: LintOptions): LintRunResult {
     new TypeScriptLinter(
       tsProgram.getTypeChecker(),
       cmdOptions.enableAutofix,
+      cmdOptions.arkts2,
       cancellationToken,
       options.incrementalLintInfo,
       tscStrictDiagnostics,
@@ -119,7 +120,6 @@ export function lint(options: LintOptions): LintRunResult {
       options.incrementalLintInfo
     );
   const { errorNodes, problemsInfos } = lintFiles(srcFiles, linter);
-
   consoleLog('\n\n\nFiles scanned: ', srcFiles.length);
   consoleLog('\nFiles with problems: ', errorNodes);
 

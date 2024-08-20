@@ -2645,4 +2645,65 @@ export class TsUtils {
     }
     return false;
   }
+
+  static isGetExpression(accessExpr: ts.ElementAccessExpression): boolean {
+    if (!ts.isBinaryExpression(accessExpr.parent)) {
+      return false;
+    }
+    const binaryExpr = accessExpr.parent;
+    return binaryExpr.operatorToken.kind === ts.SyntaxKind.EqualsToken && binaryExpr.right === accessExpr;
+  }
+
+  static isSetExpression(accessExpr: ts.ElementAccessExpression): boolean {
+    if (!ts.isBinaryExpression(accessExpr.parent)) {
+      return false;
+    }
+    const binaryExpr = accessExpr.parent;
+    return binaryExpr.operatorToken.kind === ts.SyntaxKind.EqualsToken && binaryExpr.left === accessExpr;
+  }
+
+  haveSameBaseType(type1: ts.Type, type2: ts.Type): boolean {
+    return this.tsTypeChecker.getBaseTypeOfLiteralType(type1) === this.tsTypeChecker.getBaseTypeOfLiteralType(type2);
+  }
+
+  isGetIndexableType(type: ts.Type, indexType: ts.Type): boolean {
+    if (!type.isClassOrInterface()) {
+      return false;
+    }
+
+    const getDecls = type.getProperty('$_get')?.getDeclarations();
+    if (getDecls?.length !== 1 || getDecls[0].kind !== ts.SyntaxKind.MethodDeclaration) {
+      return false;
+    }
+    const getMethodDecl = getDecls[0] as ts.MethodDeclaration;
+    const getParams = getMethodDecl.parameters;
+    if (getMethodDecl.type === undefined || getParams.length !== 1 || getParams[0].type === undefined) {
+      return false;
+    }
+
+    return this.haveSameBaseType(this.tsTypeChecker.getTypeFromTypeNode(getParams[0].type), indexType);
+  }
+
+  isSetIndexableType(type: ts.Type, indexType: ts.Type, valueType: ts.Type): boolean {
+    const setProp = type.getProperty('$_set');
+    const setDecls = setProp?.getDeclarations();
+    if (setDecls?.length !== 1 || setDecls[0].kind !== ts.SyntaxKind.MethodDeclaration) {
+      return false;
+    }
+    const setMethodDecl = setDecls[0] as ts.MethodDeclaration;
+    const setParams = setMethodDecl.parameters;
+    if (
+      setMethodDecl.type !== undefined ||
+      setParams.length !== 2 ||
+      setParams[0].type === undefined ||
+      setParams[1].type === undefined
+    ) {
+      return false;
+    }
+
+    return (
+      this.haveSameBaseType(this.tsTypeChecker.getTypeFromTypeNode(setParams[0].type), indexType) &&
+      this.haveSameBaseType(this.tsTypeChecker.getTypeFromTypeNode(setParams[1].type), valueType)
+    );
+  }
 }

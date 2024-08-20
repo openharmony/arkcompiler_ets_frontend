@@ -102,6 +102,7 @@ export class TypeScriptLinter {
   static useRelaxedRules = false;
   static useSdkLogic = false;
   static advancedClassChecks = false;
+  static arkts2: boolean = false;
 
   static initGlobals(): void {
     TypeScriptLinter.filteredDiagnosticMessages = new Set<ts.DiagnosticMessageChain>();
@@ -131,6 +132,7 @@ export class TypeScriptLinter {
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly enableAutofix: boolean,
+    private readonly arkts2: boolean,
     private readonly cancellationToken?: ts.CancellationToken,
     private readonly incrementalLintInfo?: IncrementalLintInfo,
     private readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>,
@@ -1725,11 +1727,25 @@ export class TypeScriptLinter {
     );
     const tsElemAccessArgType = this.tsTypeChecker.getTypeAtLocation(tsElementAccessExpr.argumentExpression);
 
+    const isGet = TsUtils.isGetExpression(tsElementAccessExpr);
+    const isGetIndexable = isGet && this.tsUtils.isGetIndexableType(tsElemAccessBaseExprType, tsElemAccessArgType);
+
+    const isSet = TsUtils.isSetExpression(tsElementAccessExpr);
+    const isSetIndexable =
+      isSet &&
+      this.tsUtils.isSetIndexableType(
+        tsElemAccessBaseExprType,
+        tsElemAccessArgType,
+        this.tsTypeChecker.getTypeAtLocation((tsElementAccessExpr.parent as ts.BinaryExpression).right)
+      );
+
     if (
       // unnamed types do not have symbol, so need to check that explicitly
       !this.tsUtils.isLibrarySymbol(tsElementAccessExprSymbol) &&
       !ts.isArrayLiteralExpression(tsElementAccessExpr.expression) &&
-      !this.isElementAcessAllowed(tsElemAccessBaseExprType, tsElemAccessArgType)
+      !this.isElementAcessAllowed(tsElemAccessBaseExprType, tsElemAccessArgType) &&
+      !(this.arkts2 && isGetIndexable) &&
+      !(this.arkts2 && isSetIndexable)
     ) {
       const autofix = this.autofixer?.fixPropertyAccessByIndex(tsElementAccessExpr);
       this.incrementCounters(node, FaultID.PropertyAccessByIndex, autofix);

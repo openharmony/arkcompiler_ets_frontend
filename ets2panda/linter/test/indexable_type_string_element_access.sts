@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,15 +13,12 @@
  * limitations under the License.
  */
 
-import type * as ts from 'typescript';
-
-export interface CommandLineOptions {
-  testMode?: boolean;
-  ideMode?: boolean;
-  logTscErrors?: boolean;
-  warningsAsErrors: boolean;
-  parsedConfigFile?: ts.ParsedCommandLine;
-  inputFiles: string[];
-  enableAutofix: boolean;
-  arkts2: boolean;
+class SomeClass {
+  $_get (index: string): SomeClass { return this }
+  $_set (index: string, value: SomeClass) { }
 }
+let x = new SomeClass
+x = x["index string"]
+// This notation implies a call: x = x.$_get ("index string")
+x["index string"] = x
+// This notation implies a call: x.$_set ("index string", x)
