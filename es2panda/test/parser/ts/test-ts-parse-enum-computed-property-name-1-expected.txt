@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token in enum member [test-ts-parse-enum-computed-property-name-1.ts:17:6]
