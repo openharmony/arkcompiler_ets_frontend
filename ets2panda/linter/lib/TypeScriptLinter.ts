@@ -2070,8 +2070,9 @@ export class TypeScriptLinter {
         this.incrementCounters(calleeExpr, FaultID.ClassAsObject);
       }
     }
+    const sym = this.tsUtils.trueSymbolAtLocation(tsNewExpr.expression);
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsNewExpr);
-    if (callSignature !== undefined) {
+    if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(sym)) {
       this.handleStructIdentAndUndefinedInArgs(tsNewExpr, callSignature);
       this.handleGenericCallWithNoTypeArgs(tsNewExpr, callSignature);
     }
