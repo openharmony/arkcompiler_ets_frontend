@@ -12,17 +12,8 @@ jBox2d_test
 #18629
 jsDiff_test
 
-#18444
-jmespath_test
-
 #18383
 memory-cache_test
-
-#18424
-pcx_test
-
-#18425
-gson_test
 
 #18437
 zxing_test

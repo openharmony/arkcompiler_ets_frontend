@@ -9,9 +9,6 @@ Drools_test
 #18517
 js-joda_test
 
-#18342
-mathjs_test
-
 #18481
 rxjs_test
 

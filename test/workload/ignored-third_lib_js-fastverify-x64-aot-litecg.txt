@@ -18,18 +18,12 @@ jmespath_test
 #18546
 jsDiff_test
 
-#18342
-mathjs_test
-
 #18481
 bignumber_test
 libphonenumber_test
 
 #18487
 pako_test
-
-#18424
-pcx_test
 
 #18437
 zxing_test
@@ -42,8 +36,6 @@ jBox2d_test
 commonmark-js_test
 pdfview_test
 
-#18425
-gson_test
 crypto-js_test
 lodash_test
 Matrix_test
