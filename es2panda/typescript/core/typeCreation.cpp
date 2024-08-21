@@ -167,6 +167,7 @@ Type *Checker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags>
                                ElementFlags combinedFlags, uint32_t minLength, uint32_t fixedLength, bool readonly,
                                NamedTupleMemberPool &&namedMembers)
 {
+    CHECK_NOT_NULL(desc);
     desc->stringIndexInfo = allocator_->New<IndexInfo>(GlobalAnyType(), "x", readonly);
 
     if (!namedMembers.empty()) {

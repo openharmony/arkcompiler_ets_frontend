@@ -1366,6 +1366,8 @@ VariableType *Scope::AddDecl(ArenaAllocator *allocator, util::StringView name, V
 
     auto *decl = allocator->New<DeclType>(name);
     auto *variable = allocator->New<VariableType>(decl, flags);
+    CHECK_NOT_NULL(decl);
+    CHECK_NOT_NULL(variable);
 
     decls_.push_back(decl);
     bindings_.insert({decl->Name(), variable});

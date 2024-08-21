@@ -93,6 +93,7 @@ void RegAllocator::Run(IRNode *ins)
 
 void RegAllocator::Run(IRNode *ins, size_t argCount)
 {
+    CHECK_NOT_NULL(ins);
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
     auto regCnt = ins->Registers(&regs);
     ASSERT(regCnt != 0);
