@@ -559,6 +559,7 @@ Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *objType)
     }
 
     Type *returnType = checker_->Allocator()->New<ObjectLiteralType>(desc);
+    CHECK_NOT_NULL(returnType);
     returnType->AsObjectType()->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
     return returnType;
 }

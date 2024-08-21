@@ -506,6 +506,7 @@ std::tuple<ParameterDecl *, const ir::AstNode *> ParamScope::AddParamDecl(ArenaA
 
     for (const auto *binding : bindings) {
         auto *varDecl = NewDecl<VarDecl>(allocator, binding->Name());
+        CHECK_NOT_NULL(varDecl);
         varDecl->BindNode(binding);
 
         if (FindLocal(varDecl->Name())) {
