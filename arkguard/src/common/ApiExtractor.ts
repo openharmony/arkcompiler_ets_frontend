@@ -865,7 +865,7 @@ export namespace ApiExtractor {
   function visitClass(node: Node): void {
     if (isPropertyDeclaration(node) || isMethodDeclaration(node)) {
       if (isIdentifier(node.name)) {
-        mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+        mCurrentExportedPropertySet.add(node.name.text);
       }
     }
     forEachChild(node, visitClass);
@@ -874,7 +874,7 @@ export namespace ApiExtractor {
   function visitInterfaceOrType(node: Node): void {
     if (isPropertySignature(node) || isMethodSignature(node)) {
       if (isIdentifier(node.name)) {
-        mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+        mCurrentExportedPropertySet.add(node.name.text);
       }
     }
     forEachChild(node, visitInterfaceOrType);
@@ -882,14 +882,14 @@ export namespace ApiExtractor {
 
   function visitEnum(node: Node): void {
     if (isEnumMember(node) && isIdentifier(node.name)) {
-      mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+      mCurrentExportedPropertySet.add(node.name.text);
     }
   }
 
   function visitObjectLiteral(node: Node): void {
     if (isPropertyAssignment(node)) {
       if (isIdentifier(node.name)) {
-        mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+        mCurrentExportedPropertySet.add(node.name.text);
       }
     }
     forEachChild(node, visitObjectLiteral);

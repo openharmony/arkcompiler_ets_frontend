@@ -86,7 +86,7 @@ namespace secharmony {
             expression = factory.createBinaryExpression(node.name, node.equalsToken, initializer);
           }
 
-          let identifier = factory.createIdentifier(node.name.escapedText.toString());
+          let identifier = factory.createIdentifier(node.name.text);
           return factory.createPropertyAssignment(identifier, expression);
         }
 
