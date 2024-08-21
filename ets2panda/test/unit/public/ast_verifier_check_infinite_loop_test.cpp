@@ -23,6 +23,7 @@ using ark::es2panda::compiler::ast_verifier::ASTVerifier;
 using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
 using ark::es2panda::ir::AstNode;
 
+namespace {
 struct TestData {
     char const *program;
 };
@@ -162,3 +163,4 @@ TEST_P(NormalLoopTests, NormalLoop)
 
     impl_->DestroyContext(ctx);
 }
+}  // namespace

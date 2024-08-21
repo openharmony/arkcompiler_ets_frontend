@@ -25,6 +25,7 @@ using ark::es2panda::compiler::ast_verifier::ASTVerifier;
 using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
 using ark::es2panda::ir::AstNode;
 
+namespace {
 TEST_F(ASTVerifierTest, LabelsHaveReferences)
 {
     ASTVerifier verifier {Allocator()};
@@ -216,3 +217,4 @@ TEST_F(ASTVerifierTest, Lambdas)
 
     impl_->DestroyContext(ctx);
 }
+}  // namespace

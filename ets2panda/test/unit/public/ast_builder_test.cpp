@@ -96,6 +96,7 @@ using ark::es2panda::ir::VariableDeclarationBuilder;
 using ark::es2panda::ir::VariableDeclaratorBuilder;
 using ark::es2panda::ir::WhileStatementBuilder;
 
+namespace {
 TEST_F(ASTVerifierTest, awaitExpressionBuild)
 {
     auto left = NumberLiteralBuilder(Allocator()).SetValue("10").Build();
@@ -392,3 +393,4 @@ TEST_F(ASTVerifierTest, whileStatementBuild)
     auto whileStmnt = WhileStatementBuilder(Allocator()).SetTest(binaryExpr).SetBody(exprStmnt).Build();
     ASSERT_TRUE(whileStmnt->IsWhileStatement());
 }
+}  // namespace
