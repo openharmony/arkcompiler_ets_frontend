@@ -13,6 +13,6 @@ REM See the License for the specific language governing permissions and
 REM limitations under the License.
 REM
 @echo off
-@set TSLINTER_HOME_PATH=%~dp0
+set TSLINTER_HOME_PATH=%~dp0
 
 node %TSLINTER_HOME_PATH%./dist/tslinter.js %*
