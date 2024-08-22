@@ -1,0 +1,1 @@
+SyntaxError: Unterminated RegExp [test-ts-regular-expression-patterns-4.ts:16:20]
