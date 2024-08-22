@@ -815,7 +815,8 @@ bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
     return true;
 }
 
-void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex, bool enableSendableFunc)
+void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex, bool enableSendableClass,
+                             bool enableSendableFunc)
 {
     auto *body = func->Body();
     if (!body || body->IsExpression()) {
@@ -840,14 +841,16 @@ void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &l
             return;
         }
 
-        keepScan = SetFuncFlagsForDirectives(expr->AsStringLiteral(), func, lineIndex, enableSendableFunc);
+        keepScan = SetFuncFlagsForDirectives(expr->AsStringLiteral(), func, lineIndex, enableSendableClass,
+                                             enableSendableFunc);
     }
 
     return;
 }
 
 bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
-                                        const lexer::LineIndex &lineIndex, bool enableSendableFunc)
+                                        const lexer::LineIndex &lineIndex, bool enableSendableClass,
+                                        bool enableSendableFunc)
 {
     if (strLit->Str().Is(USE_CONCURRENT)) {
         util::Concurrent::SetConcurrent(func, strLit, lineIndex);
@@ -856,8 +859,10 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
 
     if (strLit->Str().Is(USE_SENDABLE)) {
         if (func->IsConstructor()) {
-            auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
-            classDef->SetSendable();
+            if (enableSendableClass) {
+                auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
+                classDef->SetSendable();
+            }
         } else if (enableSendableFunc) {
             func->AddFlag(ir::ScriptFunctionFlags::SENDABLE);
         }
