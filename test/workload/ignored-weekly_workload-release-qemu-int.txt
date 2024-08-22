@@ -7,3 +7,10 @@ raytrace
 
 #18672
 json-parse-inspector
+
+#18745
+json-stringify-inspector
+
+#18740
+splay
+

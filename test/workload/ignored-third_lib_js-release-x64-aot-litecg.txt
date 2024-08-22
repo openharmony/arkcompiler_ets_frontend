@@ -16,6 +16,9 @@ jsDiff_test
 #18444
 jmespath_test
 
+#18350
+jsbn_test
+
 #18383
 memory-cache_test
 
