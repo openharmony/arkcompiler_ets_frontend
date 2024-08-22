@@ -7,9 +7,19 @@ compiler/ets/override13.sts
 # 15095
 compiler/ets/override17.sts
 
-# Throwing function types
-compiler/ets/throwingFunctionType2.sts
-compiler/ets/throwingFunctionAsParameter2.sts
+# 15276
+parser/ets/n_overrideWithNullable.sts
+parser/ets/nullableType.sts
+
+# 15577 inference for union-typed targets
+compiler/ets/optionalLambdaParameter.sts
+compiler/ets/tuple_types_9_neg.sts
+
+# 15771 broken ast varbinder scopes in etsglobal
+parser/ets/optional-chaining-array.sts
+parser/ets/optional_chaining_invalid_property.sts
+parser/ets/optional_chaining_nested_property.sts
+parser/ets/optional_chaining_object_property.sts
 
 # 15642
 compiler/ets/etsObjectToString4.sts

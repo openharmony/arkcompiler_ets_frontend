@@ -123,7 +123,7 @@ public:
     ETSObjectType *GlobalBuiltinJSValueType() const;
     ETSObjectType *GlobalBuiltinBoxType(Type *contents);
 
-    ETSObjectType *GlobalBuiltinFunctionType(size_t nargs) const;
+    ETSObjectType *GlobalBuiltinFunctionType(size_t nargs, ir::ScriptFunctionFlags flags) const;
     size_t GlobalBuiltinFunctionTypeVariadicThreshold() const;
 
     ETSObjectType *GlobalBuiltinDynamicType(Language lang) const;

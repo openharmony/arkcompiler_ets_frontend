@@ -277,9 +277,9 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
 {
     ETSChecker *checker = GetETSChecker();
-    size_t optionalParameterIndex = node->DefaultParamIndex();
 
-    auto *genericInterfaceType = checker->GlobalBuiltinFunctionType(node->Params().size());
+    size_t optionalParameterIndex = node->DefaultParamIndex();
+    auto *genericInterfaceType = checker->GlobalBuiltinFunctionType(node->Params().size(), node->Flags());
     node->SetFunctionalInterface(genericInterfaceType->GetDeclNode()->AsTSInterfaceDeclaration());
 
     auto *tsType = checker->GetCachedFunctionalInterface(node);

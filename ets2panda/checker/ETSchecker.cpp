@@ -69,19 +69,68 @@ static void SetupBuiltinMember(varbinder::Variable *var)
 
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 static constexpr std::string_view BUILTINS_TO_INIT[] = {
-    compiler::Signatures::BUILTIN_BOOLEAN_CLASS,    compiler::Signatures::BUILTIN_BYTE_CLASS,
-    compiler::Signatures::BUILTIN_CHAR_CLASS,       compiler::Signatures::BUILTIN_SHORT_CLASS,
-    compiler::Signatures::BUILTIN_INT_CLASS,        compiler::Signatures::BUILTIN_LONG_CLASS,
-    compiler::Signatures::BUILTIN_FLOAT_CLASS,      compiler::Signatures::BUILTIN_DOUBLE_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION0_CLASS,  compiler::Signatures::BUILTIN_FUNCTION1_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION2_CLASS,  compiler::Signatures::BUILTIN_FUNCTION3_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION4_CLASS,  compiler::Signatures::BUILTIN_FUNCTION5_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION6_CLASS,  compiler::Signatures::BUILTIN_FUNCTION7_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION8_CLASS,  compiler::Signatures::BUILTIN_FUNCTION9_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION10_CLASS, compiler::Signatures::BUILTIN_FUNCTION11_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION12_CLASS, compiler::Signatures::BUILTIN_FUNCTION13_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION14_CLASS, compiler::Signatures::BUILTIN_FUNCTION15_CLASS,
-    compiler::Signatures::BUILTIN_FUNCTION16_CLASS, compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
+    compiler::Signatures::BUILTIN_BOOLEAN_CLASS,
+    compiler::Signatures::BUILTIN_BYTE_CLASS,
+    compiler::Signatures::BUILTIN_CHAR_CLASS,
+    compiler::Signatures::BUILTIN_SHORT_CLASS,
+    compiler::Signatures::BUILTIN_INT_CLASS,
+    compiler::Signatures::BUILTIN_LONG_CLASS,
+    compiler::Signatures::BUILTIN_FLOAT_CLASS,
+    compiler::Signatures::BUILTIN_DOUBLE_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION0_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION1_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION2_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION3_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION4_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION5_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION6_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION7_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION8_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION9_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION10_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION11_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION12_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION13_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION14_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION15_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION16_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION0_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION1_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION2_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION3_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION4_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION5_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION6_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION7_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION8_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION9_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION10_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION11_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION12_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION13_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION14_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION15_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTION16_CLASS,
+    compiler::Signatures::BUILTIN_THROWING_FUNCTIONN_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION0_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION1_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION2_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION3_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION4_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION5_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION6_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION7_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION8_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION9_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION10_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION11_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION12_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION13_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION14_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION15_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTION16_CLASS,
+    compiler::Signatures::BUILTIN_RETHROWING_FUNCTIONN_CLASS,
 };
 
 void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
@@ -98,10 +147,34 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
         InitBuiltin(this, sig);
     }
 
+    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS), nargs = 0;
+         id <= static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS); id++, nargs++) {
+        auto *type = GetGlobalTypesHolder()
+                         ->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::THROWS)
+                         ->AsETSObjectType();
+        SetupFunctionalInterface(type);
+    }
+
+    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS), nargs = 0;
+         id <= static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS); id++, nargs++) {
+        auto *type = GetGlobalTypesHolder()
+                         ->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::RETHROWS)
+                         ->AsETSObjectType();
+        SetupFunctionalInterface(type);
+        // note(gergocs): type->Interfaces().front() should be the same as the type in throwing functions
+        // and adding the functional flag to the interface should be deleted
+        type->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+    }
+
     for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
          id <= static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
-        auto *type = GetGlobalTypesHolder()->GlobalFunctionBuiltinType(nargs)->AsETSObjectType();
+        auto *type =
+            GetGlobalTypesHolder()->GlobalFunctionBuiltinType(nargs, ir::ScriptFunctionFlags::NONE)->AsETSObjectType();
         SetupFunctionalInterface(type);
+        // note(gergocs): type->Interfaces().front() should be the same as the type in rethrowing functions
+        // and adding the functional flag to the interface should be deleted
+        type->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+        type->Interfaces().front()->Interfaces().front()->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
     }
 
     for (const auto &[name, var] : varMap) {
@@ -363,9 +436,9 @@ ETSObjectType *ETSChecker::GlobalBuiltinJSValueType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalJSValueBuiltinType);
 }
 
-ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs) const
+ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs, ir::ScriptFunctionFlags flags) const
 {
-    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType, nargs);
+    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType, nargs, flags);
 }
 
 size_t ETSChecker::GlobalBuiltinFunctionTypeVariadicThreshold() const

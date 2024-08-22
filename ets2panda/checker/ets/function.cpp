@@ -1402,7 +1402,7 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
         SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK |
                                                                     TypeRelationFlag::OVERRIDING_CONTEXT);
         if (Relation()->IsCompatibleTo(base, derived)) {
-            CheckThrowMarkers(derived, base);
+            CheckThrowMarkers(base, derived);
 
             if (derived->HasSignatureFlag(SignatureFlags::STATIC)) {
                 return false;
@@ -1419,9 +1419,13 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
 void ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
 {
     ir::ScriptFunctionFlags throwMarkers = ir::ScriptFunctionFlags::THROWS | ir::ScriptFunctionFlags::RETHROWS;
-    auto sourceThrowMarkers = source->Function()->Flags() & throwMarkers;
-    auto targetThrowMarkers = target->Function()->Flags() & throwMarkers;
-    if (sourceThrowMarkers != targetThrowMarkers) {
+    if ((source->Function()->Flags() & throwMarkers) == (target->Function()->Flags() & throwMarkers)) {
+        return;
+    }
+
+    if ((source->Function()->IsRethrowing() && target->Function()->IsThrowing()) ||
+        (!source->Function()->IsThrowing() &&
+         (target->Function()->IsRethrowing() || target->Function()->IsThrowing()))) {
         ThrowTypeError(
             "A method that overrides or hides another method cannot change throw or rethrow clauses of the "
             "overridden "
