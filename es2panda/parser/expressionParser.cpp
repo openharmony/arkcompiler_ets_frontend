@@ -1748,6 +1748,9 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
                 }
 
                 returnExpression = AllocNode<ir::TSNonNullExpression>(returnExpression);
+                CHECK_NOT_NULL(returnExpression);
+                ASSERT(returnExpression->AsTSNonNullExpression()->Expr()->Parent() == nullptr);
+                returnExpression->AsTSNonNullExpression()->Expr()->SetParent(returnExpression);
                 returnExpression->SetRange({startLoc, lexer_->GetToken().End()});
                 lexer_->NextToken();
                 continue;
@@ -1793,6 +1796,27 @@ void ParserImpl::ValidateUpdateExpression(ir::Expression *returnExpression, bool
     }
 }
 
+ir::Expression *ParserImpl::SetupChainExpr(ir::Expression *const top, lexer::SourcePosition startLoc)
+{
+    auto expr = top;
+    while (expr != nullptr && expr->IsTSNonNullExpression()) {
+        expr = expr->AsTSNonNullExpression()->Expr();
+    }
+    auto chainParent = expr->Parent();
+
+    lexer::SourcePosition endLoc = expr->End();
+    auto chain = AllocNode<ir::ChainExpression>(expr);
+    CHECK_NOT_NULL(chain);
+    chain->SetRange({startLoc, endLoc});
+
+    if (expr == top) {
+        return chain;
+    }
+    chainParent->AsTSNonNullExpression()->SetExpr(chain);
+    chain->SetParent(chainParent);
+    return top;
+}
+
 ir::Expression *ParserImpl::ParseMemberExpression(bool ignoreCallExpression, ExpressionParseFlags flags)
 {
     bool isAsync = lexer_->GetToken().IsAsyncModifier();
@@ -1812,8 +1836,17 @@ ir::Expression *ParserImpl::ParseMemberExpression(bool ignoreCallExpression, Exp
         }
     }
 
-    bool isChainExpression = false;
-    returnExpression = ParsePostPrimaryExpression(returnExpression, startLoc, ignoreCallExpression, &isChainExpression);
+    bool isChainExpression;
+    ir::Expression *prevExpression;
+    do {
+        isChainExpression = false;
+        prevExpression = returnExpression;
+        returnExpression =
+            ParsePostPrimaryExpression(returnExpression, startLoc, ignoreCallExpression, &isChainExpression);
+        if (isChainExpression) {
+            returnExpression = SetupChainExpr(returnExpression, startLoc);
+        }
+    } while (prevExpression != returnExpression);
 
     if (!lexer_->GetToken().NewLine() && lexer::Token::IsUpdateToken(lexer_->GetToken().Type())) {
         lexer::SourcePosition start = returnExpression->Start();
@@ -1824,12 +1857,6 @@ ir::Expression *ParserImpl::ParseMemberExpression(bool ignoreCallExpression, Exp
 
         returnExpression->SetRange({start, lexer_->GetToken().End()});
         lexer_->NextToken();
-    }
-
-    if (isChainExpression) {
-        lexer::SourcePosition endLoc = returnExpression->End();
-        returnExpression = AllocNode<ir::ChainExpression>(returnExpression);
-        returnExpression->SetRange({startLoc, endLoc});
     }
 
     return returnExpression;

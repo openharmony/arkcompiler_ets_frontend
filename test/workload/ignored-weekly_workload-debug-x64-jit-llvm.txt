@@ -1,12 +1,3 @@
-##18485
-raytrace
-
-##18483
-typescript-compiler
-
-##18486
-pdfjs
-
 ## Issue 18417
 box2d
 

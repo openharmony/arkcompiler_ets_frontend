@@ -21,15 +21,6 @@ OfflineAssembler
 ##18417
 box2d
 
-##18485
-raytrace
-
-##18486
-pdfjs
-
-##18483
-typescript-compiler
-
 ##18489
 wsl
 

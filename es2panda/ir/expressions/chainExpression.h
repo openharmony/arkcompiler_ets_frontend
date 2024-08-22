@@ -34,6 +34,7 @@ public:
     explicit ChainExpression(Expression *expression)
         : Expression(AstNodeType::CHAIN_EXPRESSION), expression_(expression)
     {
+        ASSERT(expression->IsMemberExpression() || expression->IsCallExpression());
     }
 
     const Expression *GetExpression() const

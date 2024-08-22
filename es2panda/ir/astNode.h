@@ -254,9 +254,9 @@ public:
         return type_;
     }
 
-    const AstNode *Parent()
+    AstNode *Parent()
     {
-        return parent_;
+        return const_cast<AstNode*>(parent_);
     }
 
     const AstNode *Parent() const
