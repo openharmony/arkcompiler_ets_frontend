@@ -16,5 +16,5 @@
 declare interface I {
     f1: string;
     foo(p: string): double;
-    static bar(p: double): void;
+    bar(p: double): void;
 }

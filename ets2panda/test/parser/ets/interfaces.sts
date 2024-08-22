@@ -20,7 +20,7 @@ interface I {
 
 interface I0 {
   private nop(): void { I0.nopnop(); }
-  static nopnop(): void {}
+  nopnop(): void {}
   nopnopnop(): void {}
 }
 

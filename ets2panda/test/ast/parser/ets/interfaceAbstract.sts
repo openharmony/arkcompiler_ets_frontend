@@ -14,7 +14,7 @@
  */
 
 interface Vehicle {
-  private static getHorsePower(rpm: int, torque: int): int
+  private getHorsePower(rpm: int, torque: int): int
 }
 
-/* @@? 17:31 Error SyntaxError: Private or static interface methods must have body  */
+/* @@? 17:24 Error SyntaxError: Private interface methods must have body  */

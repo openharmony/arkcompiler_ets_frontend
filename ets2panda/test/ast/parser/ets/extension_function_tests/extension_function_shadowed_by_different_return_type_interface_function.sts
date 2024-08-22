@@ -13,11 +13,7 @@
  * limitations under the License.
  */
 
-interface Fruit {
-    static foo(id: int, k: String): String {
-        return "3";
-    }
-}
+interface Fruit {}
 
 interface Yellow {
     foo(id0: int, k0: String): String {
@@ -37,4 +33,4 @@ function Banana.foo(id2: int, k2: String): int {
     return 2;
 }
 
-/* @@? 36:48 Warning Warning: extension is shadowed by a instance member function 'foo(id0: int, k0: String): String' in class Yellow  */
+/* @@? 32:48 Warning Warning: extension is shadowed by a instance member function 'foo(id0: int, k0: String): String' in class Yellow  */

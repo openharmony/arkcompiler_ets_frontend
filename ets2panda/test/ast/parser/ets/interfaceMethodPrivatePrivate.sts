@@ -13,12 +13,8 @@
  * limitations under the License.
  */
 
-function foo()
-{
-    interface LocalInterface
-    {
-        public property : int;
-    }
+interface I {
+    private private foo()
 }
 
-/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifiers */
+/* @@? 17:13 Error SyntaxError: Identifier expected  */
