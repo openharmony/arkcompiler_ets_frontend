@@ -1058,6 +1058,10 @@ void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *t
             CastToLong(node);
             break;
         }
+        case checker::TypeFlag::CHAR: {
+            CastToChar(node);
+            break;
+        }
         case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_TYPE_PARAMETER: {
