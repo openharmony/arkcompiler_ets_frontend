@@ -84,7 +84,7 @@ function countProblems(linter: TypeScriptLinter | InteropTypescriptLinter): [num
 }
 
 // eslint-disable-next-line max-lines-per-function
-export function lint(options: LintOptions): LintRunResult {
+export function lint(options: LintOptions, etsLoaderPath: string | undefined): LintRunResult {
   const cmdOptions = options.cmdOptions;
   const cancellationToken = options.cancellationToken;
   const tscCompiledProgram = options.tscCompiledProgram;
@@ -117,11 +117,7 @@ export function lint(options: LintOptions): LintRunResult {
       options.compatibleSdkVersion,
       options.compatibleSdkVersionStage
     ) :
-    new InteropTypescriptLinter(
-      tsProgram.getTypeChecker(),
-      tsProgram.getCompilerOptions(),
-      options.incrementalLintInfo
-    );
+    new InteropTypescriptLinter(tsProgram.getTypeChecker(), tsProgram.getCompilerOptions(), etsLoaderPath);
   const { errorNodes, problemsInfos } = lintFiles(srcFiles, linter);
   consoleLog('\n\n\nFiles scanned: ', srcFiles.length);
   consoleLog('\nFiles with problems: ', errorNodes);

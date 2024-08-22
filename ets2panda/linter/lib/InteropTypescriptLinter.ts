@@ -26,7 +26,6 @@ import type { Autofixer } from './autofixes/Autofixer';
 import type { ProblemInfo } from './ProblemInfo';
 import { ProblemSeverity } from './ProblemSeverity';
 import { Logger } from './Logger';
-import type { IncrementalLintInfo } from './IncrementalLintInfo';
 import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { ARKTS_COLLECTIONS_D_ETS, ARKTS_LANG_D_ETS } from './utils/consts/SupportedDetsIndexableTypes';
@@ -78,8 +77,8 @@ export class InteropTypescriptLinter {
   static ideMode: boolean = false;
   static testMode: boolean = false;
   static kitInfos = new Map<string, KitInfo>();
-  private static etsLoaderPath: string;
-  private static sdkPath: string;
+  private static etsLoaderPath?: string;
+  private static sdkPath?: string;
   static useSdkLogic = false;
   static advancedClassChecks = false;
 
@@ -93,7 +92,7 @@ export class InteropTypescriptLinter {
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly compileOptions: ts.CompilerOptions,
-    private readonly incrementalLintInfo?: IncrementalLintInfo
+    etsLoaderPath: string | undefined
   ) {
     this.tsUtils = new TsUtils(
       this.tsTypeChecker,
@@ -103,8 +102,8 @@ export class InteropTypescriptLinter {
     );
     this.currentErrorLine = 0;
     this.currentWarningLine = 0;
-    InteropTypescriptLinter.etsLoaderPath = compileOptions.etsLoaderPath ? compileOptions.etsLoaderPath : '';
-    InteropTypescriptLinter.sdkPath = path.resolve(InteropTypescriptLinter.etsLoaderPath, '../..');
+    InteropTypescriptLinter.etsLoaderPath = etsLoaderPath;
+    InteropTypescriptLinter.sdkPath = etsLoaderPath ? path.resolve(etsLoaderPath, '../..') : undefined;
     this.initCounters();
   }
 
@@ -216,9 +215,6 @@ export class InteropTypescriptLinter {
     };
     const stopCondition = (node: ts.Node): boolean => {
       if (!node) {
-        return true;
-      }
-      if (this.incrementalLintInfo?.shouldSkipCheck(node)) {
         return true;
       }
       if (LinterConfig.terminalTokens.has(node.kind)) {
@@ -334,7 +330,7 @@ export class InteropTypescriptLinter {
   }
 
   private allowInSdkImportSendable(resolvedModule: ts.ResolvedModuleFull): boolean {
-    const resolvedModuleIsInSdk = InteropTypescriptLinter.etsLoaderPath ?
+    const resolvedModuleIsInSdk = InteropTypescriptLinter.sdkPath ?
       path.normalize(resolvedModule.resolvedFileName).startsWith(InteropTypescriptLinter.sdkPath) :
       false;
     return (
@@ -532,7 +528,7 @@ export class InteropTypescriptLinter {
     const KIT_CONFIGS = '../ets-loader/kit_configs';
     const KIT_CONFIG_PATH = './build-tools/ets-loader/kit_configs';
 
-    const kitConfigs: string[] = [path.resolve(InteropTypescriptLinter.etsLoaderPath, KIT_CONFIGS)];
+    const kitConfigs: string[] = [path.resolve(InteropTypescriptLinter.etsLoaderPath as string, KIT_CONFIGS)];
     if (process.env.externalApiPaths) {
       const externalApiPaths = process.env.externalApiPaths.split(path.delimiter);
       externalApiPaths.forEach((sdkPath) => {
@@ -570,7 +566,7 @@ export class InteropTypescriptLinter {
 
   lint(sourceFile: ts.SourceFile): void {
     this.sourceFile = sourceFile;
-    this.isInSdk = InteropTypescriptLinter.etsLoaderPath ?
+    this.isInSdk = InteropTypescriptLinter.sdkPath ?
       path.normalize(this.sourceFile.fileName).indexOf(InteropTypescriptLinter.sdkPath) === 0 :
       false;
     this.visitSourceFile(this.sourceFile);

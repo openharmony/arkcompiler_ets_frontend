@@ -26,6 +26,7 @@ import { TypeScriptLinter } from '../lib/TypeScriptLinter';
 import type { Autofix } from '../lib/autofixes/Autofixer';
 import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions } from './Compiler';
+import { getEtsLoaderPath } from './LinterCLI';
 
 const TEST_DIR = 'test';
 const TAB = '    ';
@@ -187,7 +188,7 @@ function runTest(testDir: string, testFile: string, mode: Mode): boolean {
   const lintOptions = compileLintOptions(cmdOptions);
   lintOptions.compatibleSdkVersion = '12';
   lintOptions.compatibleSdkVersionStage = 'beta3';
-  const result = lint(lintOptions);
+  const result = lint(lintOptions, getEtsLoaderPath(lintOptions));
   const fileProblems = result.problemsInfos.get(path.normalize(cmdOptions.inputFiles[0]));
   if (fileProblems === undefined) {
     return true;
