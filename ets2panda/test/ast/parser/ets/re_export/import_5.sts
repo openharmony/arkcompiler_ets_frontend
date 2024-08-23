@@ -17,7 +17,6 @@ import * as all from "./re_export_5"
 
 function main() : void
 {
-    //Note (oeotvos) This should be a CTE, because of ambiguous function call, but it is not properly checked, when namespace import and alias is being used together.
     all.foo();
 }
 
