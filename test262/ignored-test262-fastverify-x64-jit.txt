@@ -1,8 +1,11 @@
 # Known failure list for test262 - fastverify-x64-jit
+#18892
+test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/constructor/locales-valid.js
 
 #17827
 test262/data/test_es2021/built-ins/RegExp/unicode_restricted_identity_escape_alpha.js
 test262/data/test_es2021/intl402/Locale/likely-subtags.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/invalid-tags.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-timezone.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-col-strength.js
 test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
@@ -36,6 +39,7 @@ test262/data/test_es2021/intl402/Segmenter/prototype/segment/next-inside-next.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/map/speciesctor-get-ctor-returns-throws.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor-returns-throws.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/filter/speciesctor-get-species-returns-throws.js
+test262/data/test_es2021/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-returns-throws.js
 test262/data/test_es2021/built-ins/Promise/any/iter-assigned-false-reject.js
 test262/data/test_es2021/built-ins/TypedArrayConstructors/from/mapfn-is-not-callable.js
 test262/data/test_es2021/built-ins/DataView/prototype/setUint8/set-values-return-undefined.js

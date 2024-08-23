@@ -1,5 +1,11 @@
 #18417
 box2d
 
+#18745
+json-stringify-inspector
+
 #18740
 splay
+
+#18605
+stanford-crypto-sha256
