@@ -522,15 +522,8 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
     return GuaranteedTypeForUncheckedCast(baseSig->ReturnType(), sig->ReturnType());
 }
 
-void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifier const *const id,
-                                      ir::TypeNode const *const annotation)
+void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifier const *const id)
 {
-    if (annotation == nullptr) {
-        ThrowTypeError(
-            {"Cannot infer type for ", id->Name(), " because method reference needs an explicit target type"},
-            id->Start());
-    }
-
     const auto *const targetType = GetTypeOfVariable(id->Variable());
     ASSERT(targetType != nullptr);
 

@@ -703,9 +703,17 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
-        annotationType = initType->AsETSFunctionType()->FunctionalInterface();
+        if (!init->IsArrowFunctionExpression() && (initType->AsETSFunctionType()->CallSignatures().size() != 1)) {
+            ThrowTypeError("Ambiguous function initialization because of multiple overloads", init->Start());
+        }
+
+        annotationType =
+            initType->AsETSFunctionType()->FunctionalInterface() == nullptr
+                ? FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignatures().front())
+                : initType->AsETSFunctionType()->FunctionalInterface();
         bindingVar->SetTsType(annotationType);
     }
+
     if (annotationType != nullptr) {
         CheckAnnotationTypeForVariableDeclaration(annotationType, annotationType->IsETSUnionType(), init, initType);
 
