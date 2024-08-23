@@ -21,9 +21,6 @@ parser/ets/re_export/import_5.sts
 # No conversion from enum to Object
 compiler/ets/lambda_infer_type/lambda_infer_type_retrun_enum.sts
 
-# Issue: #17983
-parser/ets/TypeInferFunc.sts
-
 # Duplicated check for global initializers
 compiler/ets/inferTypeOfArrayNegative2.sts
 parser/ets/optional_chaining_invalid_property.sts

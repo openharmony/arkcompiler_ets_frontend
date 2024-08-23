@@ -68,10 +68,18 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     }
     ASSERT(IsReferenceType(typeArgument) || typeArgument->IsETSVoidType());
     auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
+    bool retVal = false;
     if (typeArgument->IsETSVoidType()) {
-        return Relation()->IsSupertypeOf(constraint, GlobalETSUndefinedType());
+        retVal = Relation()->IsSupertypeOf(constraint, GlobalETSUndefinedType());
+    } else if (typeArgument->IsETSFunctionType()) {
+        retVal = Relation()->IsSupertypeOf(
+            constraint,
+            this->FunctionTypeToFunctionalInterfaceType(typeArgument->AsETSFunctionType()->CallSignatures().front()));
+    } else {
+        retVal = Relation()->IsSupertypeOf(constraint, typeArgument);
     }
-    return Relation()->IsSupertypeOf(constraint, typeArgument);
+
+    return retVal;
 }
 
 bool ETSChecker::HasTypeArgsOfObject(Type *argType, Type *paramType)
