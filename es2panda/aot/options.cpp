@@ -233,34 +233,46 @@ void Options::ParseCacheFileOption(const std::string &cacheInput)
 
 void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
 {
-    std::ifstream ifs;
-    ifs.open(panda::os::file::File::GetExtendedFilePath(compileContextInfoPath));
-    if (!ifs.is_open()) {
-        std::cerr << "Failed to open compile context info file from the provided path: '" <<
-                     compileContextInfoPath << "'." << std::endl <<
-                     "Please verify the file's existence, check the correctness of the path, " <<
-                     "and ensure you have the necessary permissions to access the file. " << std::endl;
+    std::stringstream ss;
+    std::string buffer;
+    if (!util::Helpers::ReadFileToBuffer(compileContextInfoPath, ss)) {
+        return;
+    }
+
+    buffer = ss.str();
+    if (buffer.empty() || !nlohmann::json::accept(buffer)) {
+        std::cerr << "The input file '" << compileContextInfoPath <<"' is incomplete format of json" << std::endl;
         return;
     }
     // Parser compile context info base on the input json file.
-    nlohmann::json compileContextInfoJson = nlohmann::json::parse(ifs);
+    nlohmann::json compileContextInfoJson = nlohmann::json::parse(buffer);
     if (!compileContextInfoJson.contains("compileEntries") || !compileContextInfoJson.contains("hspPkgNames") ||
         !compileContextInfoJson.contains("pkgContextInfo")) {
         std::cerr << "The input json file '" << compileContextInfoPath << "' content format is incorrect" << std::endl;
         return;
     }
+    if (!compileContextInfoJson["compileEntries"].is_array() || !compileContextInfoJson["hspPkgNames"].is_array() ||
+        !compileContextInfoJson["pkgContextInfo"].is_object()) {
+        std::cerr << "The input json file '" << compileContextInfoPath << "' content type is incorrect" << std::endl;
+        return;
+    }
+    std::set<std::string> externalPkgNames;
+    for (const auto& elem : compileContextInfoJson["hspPkgNames"]) {
+        if (elem.is_string()) {
+            externalPkgNames.insert(elem.get<std::string>());
+        }
+    }
+    compilerOptions_.compileContextInfo.externalPkgNames = externalPkgNames;
     compilerOptions_.compileContextInfo.compileEntries = compileContextInfoJson["compileEntries"];
-    compilerOptions_.compileContextInfo.externalPkgNames = compileContextInfoJson["hspPkgNames"];
-
     std::unordered_map<std::string, PkgInfo> pkgContextMap;
     for (const auto& [key, value] : compileContextInfoJson["pkgContextInfo"].items()) {
         PkgInfo pkgInfo;
-        if (value.contains("version")) {
+        if (value.contains("version") && value["version"].is_string()) {
             pkgInfo.version = value["version"];
         } else {
             std::cerr << "Failed to get version from pkgContextInfo."  << std::endl;
         }
-        if (value.contains("packageName")) {
+        if (value.contains("packageName") && value["packageName"].is_string()) {
             pkgInfo.packageName = value["packageName"];
         } else {
             std::cerr << "Failed to get package name from pkgContextInfo."  << std::endl;

@@ -78,6 +78,7 @@ checker::Type *TSMethodSignature::Check(checker::Checker *checker) const
     }
 
     returnTypeAnnotation_->Check(checker);
+    CHECK_NOT_NULL(callSignature);
     callSignature->SetReturnType(returnTypeAnnotation_->AsTypeNode()->GetType(checker));
 
     return nullptr;

@@ -66,6 +66,7 @@ void ReturnStatement::Compile(compiler::PandaGen *pg) const
 checker::Type *ReturnStatement::Check(checker::Checker *checker) const
 {
     const ir::AstNode *ancestor = checker::Checker::FindAncestorGivenByType(this, ir::AstNodeType::SCRIPT_FUNCTION);
+    CHECK_NOT_NULL(ancestor);
     ASSERT(ancestor && ancestor->IsScriptFunction());
     const ir::ScriptFunction *containingFunc = ancestor->AsScriptFunction();
 

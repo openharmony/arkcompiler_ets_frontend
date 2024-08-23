@@ -52,7 +52,7 @@ enum class AstNodeType {
 #undef DECLARE_NODE_TYPES
 };
 
-enum class AstNodeFlags {
+enum class AstNodeFlags : uint8_t {
     NO_OPTS = 0,
     STRICT = (1U << 0U),
     PARAMETER = (1U << 1U),
@@ -60,7 +60,7 @@ enum class AstNodeFlags {
 
 DEFINE_BITOPS(AstNodeFlags)
 
-enum class ModifierFlags {
+enum class ModifierFlags : uint16_t {
     NONE = 0,
     STATIC = 1 << 0,
     ASYNC = 1 << 1,
@@ -81,7 +81,7 @@ enum class ModifierFlags {
 
 DEFINE_BITOPS(ModifierFlags)
 
-enum class ScriptFunctionFlags {
+enum class ScriptFunctionFlags : uint16_t {
     NONE = 0,
     GENERATOR = 1 << 0,
     ASYNC = 1 << 1,

@@ -17,10 +17,11 @@
 #define ES2PANDA_COMPILER_TYPESCRIPT_TYPES_TYPE_FACTS_H
 
 #include <util/enumbitops.h>
+#include <cstdint>
 
 namespace panda::es2panda::checker {
 
-enum class TypeFacts {
+enum class TypeFacts : uint32_t {
     NONE = 0,
     TYPEOF_EQ_STRING = 1 << 0,        // typeof x === "string"
     TYPEOF_EQ_NUMBER = 1 << 1,        // typeof x === "number"

@@ -267,10 +267,12 @@ void AddEnumValueDeclaration(checker::Checker *checker, double number, binder::E
 
     if (!res) {
         auto *decl = checker->Allocator()->New<binder::EnumDecl>(memberStr);
+        CHECK_NOT_NULL(decl);
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindEnumMemberVariable(memberStr);
-        ASSERT(res && res->IsEnumVariable());
+        CHECK_NOT_NULL(res);
+        ASSERT(res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         enumVar->AsEnumVariable()->SetBackReference();
         enumVar->SetTsType(checker->GlobalStringType());
@@ -290,17 +292,15 @@ void InferEnumVariableType(checker::Checker *checker, binder::EnumVariable *vari
 {
     const ir::Expression *init = variable->Declaration()->Node()->AsTSEnumMember()->Init();
 
-    if (!init && *initNext) {
-        checker->ThrowTypeError("Enum member must have initializer.", variable->Declaration()->Node()->Start());
+    if (!init) {
+        if (*initNext) {
+            checker->ThrowTypeError("Enum member must have initializer.", variable->Declaration()->Node()->Start());
+        } else {
+            variable->SetValue(++(*value));
+            AddEnumValueDeclaration(checker, *value, variable);
+            return;
+        }
     }
-
-    if (!init && !*initNext) {
-        variable->SetValue(++(*value));
-        AddEnumValueDeclaration(checker, *value, variable);
-        return;
-    }
-
-    ASSERT(init);
 
     if (IsComputedEnumMember(init)) {
         if (*isLiteralEnum) {
@@ -370,7 +370,8 @@ checker::Type *TSEnumDeclaration::InferType(checker::Checker *checker, bool isCo
     for (size_t i = 0; i < localsSize; i++) {
         const util::StringView &currentName = enumScope->Decls()[i]->Name();
         binder::Variable *currentVar = enumScope->FindEnumMemberVariable(currentName);
-        ASSERT(currentVar && currentVar->IsEnumVariable());
+        CHECK_NOT_NULL(currentVar);
+        ASSERT(currentVar->IsEnumVariable());
         InferEnumVariableType(checker, currentVar->AsEnumVariable(), &value, &initNext, &isLiteralEnum, isConst,
                               computedExpr);
     }
@@ -394,6 +395,7 @@ checker::Type *TSEnumDeclaration::Check(checker::Checker *checker) const
     if (!enumVar->TsType()) {
         checker::ScopeContext scopeCtx(checker, scope_);
         checker::Type *enumType = InferType(checker, isConst_);
+        CHECK_NOT_NULL(enumType);
         enumType->SetVariable(enumVar);
         enumVar->SetTsType(enumType);
     }

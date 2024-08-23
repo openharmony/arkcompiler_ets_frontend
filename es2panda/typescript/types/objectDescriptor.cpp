@@ -55,6 +55,7 @@ void ObjectDescriptor::Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedD
     }
 
     if (stringIndexInfo) {
+        CHECK_NOT_NULL(copiedDesc);
         copiedDesc->stringIndexInfo = stringIndexInfo->Copy(allocator, relation, globalTypes);
     }
 }

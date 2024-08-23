@@ -57,6 +57,8 @@ public:
     void HandleDestructuringAssignment(const ir::Identifier *ident, Type *inferedType, Type *defaultType);
     void HandleAssignmentPattern(const ir::AssignmentExpression *assignmentPattern, Type *inferedType,
                                  bool validateDefault);
+    void HandleIdentifierPattern(const ir::AssignmentExpression *assignmentPattern, Type *initType,
+                                 Type *inferedType, Type *defaultType);
     void SetInferedTypeForVariable(binder::Variable *var, Type *inferedType, const lexer::SourcePosition &loc);
     void Prepare(const ir::Expression *typeAnnotation, const ir::Expression *initializer,
                  const lexer::SourcePosition &loc);

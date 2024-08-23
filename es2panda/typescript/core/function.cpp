@@ -157,6 +157,7 @@ Type *Checker::CreateParameterTypeForArrayAssignmentPattern(const ir::ArrayExpre
         util::StringView memberIndex = util::Helpers::ToStringView(allocator_, index);
         binder::LocalVariable *newMember = binder::Scope::CreateVar(
             allocator_, memberIndex, binder::VariableFlags::PROPERTY | binder::VariableFlags::OPTIONAL, nullptr);
+        CHECK_NOT_NULL(newMember);
         newMember->SetTsType(GlobalAnyType());
         newTuple->AddProperty(newMember);
     }
@@ -195,6 +196,7 @@ Type *Checker::CreateParameterTypeForObjectAssignmentPattern(const ir::ObjectExp
         binder::LocalVariable *newProp =
             binder::Scope::CreateVar(allocator_, prop->Key()->AsIdentifier()->Name(),
                                      binder::VariableFlags::PROPERTY | binder::VariableFlags::OPTIONAL, nullptr);
+        CHECK_NOT_NULL(newProp);
         newProp->SetTsType(GetBaseTypeOfLiteralType(CheckTypeCached(assignmentPattern->Right())));
         newObject->AddProperty(newProp);
     }

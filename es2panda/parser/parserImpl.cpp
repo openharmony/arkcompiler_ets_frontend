@@ -974,7 +974,7 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
 
         lexer_->NextToken();  // eat ':'
         auto *elementType = ParseTsTypeAnnotation(&options);
-        ASSERT(elementType != nullptr);
+        CHECK_NOT_NULL(elementType);
 
         if (elementType && isRestType) {
             HandleRestType(elementType->Type(), hasRestType);
@@ -2974,8 +2974,8 @@ ir::MethodDefinition *ParserImpl::CreateImplicitMethod(ir::Expression *superClas
 
     auto *paramScope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
     auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
-    ASSERT(paramScope != nullptr);
-    ASSERT(scope != nullptr);
+    CHECK_NOT_NULL(scope);
+    CHECK_NOT_NULL(paramScope);
 
     bool isConstructor = (funcFlag == ir::ScriptFunctionFlags::CONSTRUCTOR);
     if (isConstructor && hasSuperClass) {
