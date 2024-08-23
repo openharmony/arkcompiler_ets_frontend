@@ -536,6 +536,12 @@ export namespace ApiExtractor {
       getClassProperties(astNode, currentPropsSet);
     }
 
+    addPropWhiteList(nodeName, astNode, currentPropsSet);
+
+    forEachChild(astNode, visitProjectNode);
+  };
+
+  function addPropWhiteList(nodeName: string | undefined, astNode: Node, currentPropsSet: Set<string>): void {
     if (nodeName && (mCurrentExportNameSet.has(nodeName) || exportOriginalNameSet.has(nodeName))) {
       addElement(currentPropsSet);
     }
@@ -543,10 +549,7 @@ export namespace ApiExtractor {
     if (scanProjectConfig.isHarCompiled && scanProjectConfig.mPropertyObfuscation && isEnumDeclaration(astNode)) {
       addEnumElement(currentPropsSet);
     }
-
-    forEachChild(astNode, visitProjectNode);
-  };
-
+  }
 
   function addElement(currentPropsSet: Set<string>): void {
     currentPropsSet.forEach((element: string) => {
