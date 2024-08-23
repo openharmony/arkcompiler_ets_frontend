@@ -1249,6 +1249,44 @@ void ParserImpl::ThrowSyntaxError(std::string_view errorMessage, const lexer::So
     throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col};
 }
 
+void ParserImpl::LogExpectedToken(lexer::TokenType const tokenType)
+{
+    LogSyntaxError("Unexpected token, expected: '"s + TokenToString(tokenType) + "'."s);
+    lexer_->GetToken().SetTokenType(tokenType);
+}
+
+void ParserImpl::LogSyntaxError(std::string_view const errorMessage)
+{
+    LogSyntaxError(errorMessage, lexer_->GetToken().Start());
+}
+
+void ParserImpl::LogSyntaxError(std::initializer_list<std::string_view> list)
+{
+    LogSyntaxError(list, lexer_->GetToken().Start());
+}
+
+void ParserImpl::LogSyntaxError(std::initializer_list<std::string_view> list, const lexer::SourcePosition &pos)
+{
+    std::stringstream ss;
+
+    for (const auto &it : list) {
+        ss << it;
+    }
+
+    std::string err = ss.str();
+
+    LogSyntaxError(std::string_view {err}, pos);
+}
+
+void ParserImpl::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    errorLogger_.WriteLog(
+        Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col});
+}
+
 void ParserImpl::ThrowAllocationError(std::string_view message) const
 {
     throw Error(ErrorType::GENERIC, program_->SourceFilePath().Utf8(), message);

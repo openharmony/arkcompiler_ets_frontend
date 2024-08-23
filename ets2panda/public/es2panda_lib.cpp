@@ -491,10 +491,20 @@ static Context *Parse(Context *ctx)
         ctx->errorMessage = "Bad state at entry to Parse, needed NEW";
         return ctx;
     }
+    auto handleError = [ctx](Error const &e) {
+        std::stringstream ss;
+        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ctx->errorMessage = ss.str();
+        ctx->state = ES2PANDA_STATE_ERROR;
+    };
+
     try {
         ctx->parser->ParseScript(*ctx->sourceFile, ctx->config->options->CompilerOptions().compilationMode ==
                                                        CompilationMode::GEN_STD_LIB);
         ctx->state = ES2PANDA_STATE_PARSED;
+        if (ctx->parser->ErrorLogger()->IsAnyError()) {
+            handleError(ctx->parser->ErrorLogger()->Log()[0]);
+        }
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
@@ -565,6 +575,8 @@ static Context *Check(Context *ctx)
         } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::CheckerPhase::NAME);
         if (ctx->checker->ErrorLogger()->IsAnyError()) {
             handleError(ctx->checker->ErrorLogger()->Log()[0]);
+        } else if (ctx->parser->ErrorLogger()->IsAnyError()) {
+            handleError(ctx->parser->ErrorLogger()->Log()[0]);
         } else {
             ctx->state = ES2PANDA_STATE_CHECKED;
         }
