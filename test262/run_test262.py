@@ -136,6 +136,8 @@ def parse_args():
                         help="Run test262 with JIT")
     parser.add_argument('--run-baseline-jit', action='store_true',
                         help="Run test262 with baseline JIT")
+    parser.add_argument('--enable-rm', action='store_true',
+                        help="Enable force remove of the data directory")
     parser.add_argument('--abc2program', action='store_true',
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
     parser.add_argument('--stub-file',
@@ -263,6 +265,11 @@ class TestPrepare():
             else:
                 git_clone(TEST262_GIT_URL, DATA_DIR)
                 git_checkout(TEST262_GIT_HASH, DATA_DIR)
+
+        if self.args.enable_rm and self.args.run_jit and not os.path.isfile(TEST262_JIT_LABEL):
+            remove_dir(DATA_DIR)
+            git_clone(TEST262_JIT_GIT_URL, DATA_DIR)
+            git_checkout(TEST262_JIT_GIT_HASH, DATA_DIR)
 
         if not os.path.isdir(os.path.join(ESHOST_DIR, '.git')):
             git_clone(ESHOST_GIT_URL, ESHOST_DIR)

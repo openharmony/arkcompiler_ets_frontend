@@ -671,6 +671,7 @@ class ArkProgram():
                         f'{file_name_pre}.abc']
             if self.run_jit or self.run_baseline_jit:
                 cmd_args.insert(-1, f'--compiler-target-triple=aarch64-unknown-linux-gnu')
+                cmd_args.insert(-1, f'--open-ark-tools=true')
             if self.run_baseline_jit:
                 cmd_args.insert(-1, f'--test-assert=true')
         elif self.arch == ARK_ARCH_LIST[2]:
