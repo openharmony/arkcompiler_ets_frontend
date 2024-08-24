@@ -1,1 +1,0 @@
-SyntaxError: Default value is allowed only for optional parameters [lambda_optional_param_3.sts:16:41]

@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token: '@'. [annotion_decalaration_bad04.sts:17:1]

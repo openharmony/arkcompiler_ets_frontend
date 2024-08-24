@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token, expected '(' [test-wrong-function-decl-1.js:17:11]

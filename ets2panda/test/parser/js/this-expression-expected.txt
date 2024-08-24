@@ -1,1 +1,0 @@
-SyntaxError: Identifier expected. [this-expression.js:17:6]

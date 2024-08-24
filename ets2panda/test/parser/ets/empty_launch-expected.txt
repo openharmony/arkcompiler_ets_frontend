@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token ';'. [empty_launch.sts:17:11]

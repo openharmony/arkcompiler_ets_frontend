@@ -1,1 +1,0 @@
-SyntaxError: Struct types are not supported yet! [StructTest1.sts:23:1]

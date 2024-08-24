@@ -1,1 +1,0 @@
-SyntaxError: Invalid Type [special_signatures.sts:17:26]

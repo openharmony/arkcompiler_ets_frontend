@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token [test-ts-type-predicate8.ts:17:54]

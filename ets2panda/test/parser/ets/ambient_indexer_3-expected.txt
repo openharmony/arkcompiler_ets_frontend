@@ -1,1 +1,0 @@
-SyntaxError: Index type must be number in index signature [ambient_indexer_3.sts:17:14]

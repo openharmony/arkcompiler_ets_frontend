@@ -1,1 +1,0 @@
-SyntaxError: Unexpected super keyword [test-super-expression.js:17:6]

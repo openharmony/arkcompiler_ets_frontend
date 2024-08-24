@@ -1,0 +1,5 @@
+# Skipped until #16329 is done. It is not properly checked and does not cause a CTE when using namespace import with alias.
+ast/parser/ets/re_export/import_5.sts
+
+# Issue: #17983
+ast/parser/ets/TypeInferFunc.sts

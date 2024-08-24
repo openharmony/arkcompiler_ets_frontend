@@ -1,1 +1,0 @@
-SyntaxError: Variable 'b' has already been declared. [main_5.sts:17:8]

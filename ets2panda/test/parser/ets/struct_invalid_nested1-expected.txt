@@ -1,1 +1,0 @@
-SyntaxError: Struct types are not supported yet! [struct_invalid_nested1.sts:16:1]

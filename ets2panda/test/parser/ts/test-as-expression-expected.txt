@@ -1,1 +1,0 @@
-SyntaxError: Type expected [test-as-expression.ts:17:13]

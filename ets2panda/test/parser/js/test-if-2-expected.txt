@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token ')'. [test-if-2.js:17:4]

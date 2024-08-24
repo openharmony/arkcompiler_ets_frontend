@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token ')'. [test-for-2.js:17:7]
