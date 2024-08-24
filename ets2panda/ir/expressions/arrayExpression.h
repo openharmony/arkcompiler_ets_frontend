@@ -158,7 +158,7 @@ private:
     ArenaVector<Expression *> elements_;
     checker::Type *preferredType_ {};
     bool isDeclaration_ {};
-    bool trailingComma_;
+    bool trailingComma_ {};
     bool optional_ {};
 };
 }  // namespace ark::es2panda::ir

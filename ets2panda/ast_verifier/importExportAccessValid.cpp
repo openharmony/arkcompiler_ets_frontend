@@ -78,7 +78,7 @@ bool ImportExportAccessValid::InvariantImportExportMethod(const std::unordered_s
                                                           const ir::AstNode *callExpr, util::StringView name)
 {
     auto *signature = callExpr->AsCallExpression()->Signature();
-    if (signature->Owner() == nullptr) {
+    if (signature == nullptr || signature->Owner() == nullptr) {
         // NOTE(vpukhov): Add a synthetic owner for dynamic signatures
         ASSERT(callExpr->AsCallExpression()->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG));
         return true;
