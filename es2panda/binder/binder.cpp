@@ -722,7 +722,10 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             if ((inSendableClass_ && !scriptFunc->IsStaticInitializer()) || inSendableFunction_) {
                 scriptFunc->SetInSendable();
             }
+            bool enableSendableClass = program_->TargetApiVersion() >=
+                util::Helpers::SENDABLE_CLASS_MIN_SUPPORTED_API_VERSION;
             util::Helpers::ScanDirectives(const_cast<ir::ScriptFunction *>(scriptFunc), Program()->GetLineIndex(),
+                enableSendableClass,
                 !util::Helpers::IsDefaultApiVersion(program_->TargetApiVersion(), program_->GetTargetApiSubVersion()));
 
             if (scriptFunc->IsConstructor() && util::Helpers::GetClassDefiniton(scriptFunc)->IsSendable()) {
