@@ -1,2 +1,5 @@
 #18863
 json-parse-inspector
+
+#18841
+json-stringify-inspector
