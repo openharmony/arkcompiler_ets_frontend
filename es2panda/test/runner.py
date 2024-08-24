@@ -169,6 +169,8 @@ def get_args():
         help='enable arkguard for compiler tests')
     parser.add_argument('--aop-transform', dest='aop_transform', action='store_true', default=False,
         help='run debug tests')
+    parser.add_argument('--version-control', action='store_true', dest='version_control', default=False,
+        help='run api version control tests')
 
     return parser.parse_args()
 
@@ -1424,6 +1426,339 @@ class BytecodeRunner(Runner):
         return src
 
 
+class ArkJsVmDownload:  # Obtain different versions of ark_js_vm and their dependent libraries
+    def __init__(self, args):
+        self.build_dir = args.build_dir
+        self.url = "https://gitee.com/zhongmingwei123123/ark_js_vm_version.git"
+        self.local_path = path.join(self.build_dir, "ark_js_vm_version")
+        self.MAX_RETRIES = 3
+
+    def run_cmd_cwd(self, cmd):
+        try:
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            _, _ = proc.communicate()
+            return proc.wait()
+        except Exception as e:
+            print(f"Error executing command: {e}")
+            return -1
+
+    def git_clone(self, git_url, code_dir):
+        cmd = ["git", "clone", git_url, code_dir]
+        retries = 1
+        while retries <= self.MAX_RETRIES:
+            ret = self.run_cmd_cwd(cmd)
+            if ret == 0:
+                break
+            else:
+                print(f"\n warning: Atempt: #{retries} to clone '{git_url}' failed. Try cloining again")
+                retries += 1
+        assert not ret, f"\n error: Cloning '{git_url}' failed."
+
+    def run(self):
+        if not os.path.exists(self.local_path):
+            print("\nstart downLoad ark_js_vm_version ...\n")
+            self.git_clone(self.url, self.local_path)
+            print("\ndownload finish.\n")
+
+
+class VersionControlRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "VersionControl")
+
+    def add_directory(self, directory, extension, flags, test_version, feature_type, module_dir=None, func=Test):
+        glob_expression = path.join(self.test_root, directory, "*.%s" % (extension))
+        files = glob(glob_expression)
+        files = fnmatch.filter(files, self.test_root + "**" + self.args.filter)
+        module_path_list = []
+        if module_dir != None:
+            module_path_list = self.add_module_path(module_dir)
+        self.tests += list(
+            map(lambda f: TestVersionControl(f, flags, test_version, feature_type, module_path_list), files)
+        )
+
+    def add_module_path(self, module_dir):
+        module_path_list = []
+        glob_expression_ts = path.join(self.test_root, module_dir, "*.%s" % ("ts"))
+        glob_expression_js = path.join(self.test_root, module_dir, "*.%s" % ("js"))
+        module_path_list = glob(glob_expression_ts)
+        module_path_list.extend(glob(glob_expression_js))
+        module_path_list = fnmatch.filter(module_path_list, self.test_root + "**" + self.args.filter)
+        return module_path_list
+
+    def test_path(self, src):
+        return src
+
+    def run(self):
+        for test in self.tests:
+            test.run(self)
+
+
+class TestVersionControl(Test):
+    def __init__(self, test_path, flags, test_version, feature_type, module_path_list):
+        Test.__init__(self, test_path, flags)
+        self.BETA_VERSION__DEFAULT = 3
+        self.VERSION_WITH_SUBVERSION_LIST = [12]
+        self.target_api_version_list = ["9", "10", "11", "12"]
+        self.target_api_sub_version_list = ["beta1", "beta2", "beta3"]
+        self.specific_api_version_list = ["API11", "API12beta3"]
+        self.output = None
+        self.process = None
+        self.test_version = test_version
+        self.test_abc_path = None
+        self.feature_type = feature_type
+        self.module_path_list = module_path_list
+        self.module_abc_path_set = set()
+
+    def split_version(self, version_str):
+        parts = version_str.split("API")[1].split("beta")
+        main_part = int(parts[0])
+        beta_part = int(parts[1]) if len(parts) > 1 else self.BETA_VERSION__DEFAULT
+        return (main_part, beta_part)
+
+    def compare_two_versions(self, version1, version2):
+        version1_parsed = self.split_version(version1)
+        version2_parsed = self.split_version(version2)
+
+        if version1_parsed < version2_parsed:
+            return -1
+        elif version1_parsed > version2_parsed:
+            return 1
+        else:
+            return 0
+
+    def get_relative_path(self,from_dir, to_dir):
+        from_dir = os.path.normpath(from_dir)
+        to_dir = os.path.normpath(to_dir)
+        from_dir = os.path.abspath(from_dir)
+        to_dir = os.path.abspath(to_dir)
+        from_parts = from_dir.split(os.sep)
+        to_parts = to_dir.split(os.sep)
+        common_prefix_length = 0
+        for part1, part2 in zip(from_parts, to_parts):
+            if part1 == part2:
+                common_prefix_length += 1
+            else:
+                break
+        relative_parts = [".."] * (len(from_parts) - common_prefix_length) + to_parts[common_prefix_length:]
+        relative_path = os.path.join(*relative_parts)
+        return relative_path
+
+    def generate_single_module_abc(self, runner, module_path, target_version):
+        cmd = []
+        cmd.append(runner.es2panda)
+        cmd.append(module_path)
+        cmd.append("--module")
+        main_version, sub_version = self.split_version(target_version)
+        cmd.append("--target-api-version=%s" % (main_version))
+        if main_version == 12:
+            cmd.append("--target-api-sub-version=beta%s" % (sub_version))
+
+        basename = os.path.basename(module_path)
+        module_abc_name = "%s.abc" % (path.splitext(basename)[0])
+        relative_path = self.get_relative_path(path.split(self.path)[0], path.split(module_path)[0])
+        module_abc_dir = path.join(runner.build_dir, relative_path)
+        if not os.path.exists(module_abc_dir):
+            os.makedirs(module_abc_dir)
+        module_abc_path = path.join(module_abc_dir, module_abc_name)
+        self.module_abc_path_set.add(module_abc_path)
+        cmd.extend(["--output=%s" % (module_abc_path)])
+
+        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        _, stderr = proc.communicate()
+        proc.wait()
+        if stderr:
+            print(stderr.decode("utf-8", errors="ignore"))
+
+    def generate_module_abc(self, runner, target_version):
+        for module_path in self.module_path_list:
+            self.generate_single_module_abc(runner, module_path, target_version)
+
+    def remove_module_abc(self):
+        for module_abc_path in self.module_abc_path_set:
+            if path.exists(module_abc_path):
+                os.remove(module_abc_path)
+
+    def get_path_to_expected(
+        self, is_support, expected_stage, target_api_version="", specific_api_version="", dump_type=""
+    ):
+        support_name = "supported" if is_support else "unsupported"
+        api_name = ""
+        # Higher than the specific API version, expected results may differ
+        if target_api_version != "" and specific_api_version != "":
+            if self.compare_two_versions(target_api_version, specific_api_version) >= 0:
+                api_name = "for_higher_or_equal_to_%s_" % (specific_api_version)
+            else:
+                api_name = "for_below_%s_" % (specific_api_version)
+        if dump_type == "ast":
+            dump_type = ""
+        elif dump_type == "asm":
+            dump_type = "asm_"
+        expected_path = "%s_%s_%s_%s%sversion-expected.txt" % (
+            path.splitext(self.path)[0],
+            support_name,
+            expected_stage,
+            api_name,
+            dump_type,
+        )
+        return expected_path
+
+    def get_path_to_runtime_output_below_version_expected(self):
+        expected_path = "%s_runtime_below_abc_api_version-expected.txt" % (
+            path.splitext(self.path)[0])
+        return expected_path
+
+    def get_path_to_runtime_output_expected(self, is_support, target_api_version,is_below_abc_api_version):
+        path_expected = None
+        if is_below_abc_api_version:
+            path_expected = self.get_path_to_runtime_output_below_version_expected()
+            return path_expected
+        for specific_api_version in self.specific_api_version_list:
+            if self.compare_two_versions(target_api_version, specific_api_version) > 0:
+                continue
+            path_expected = self.get_path_to_expected(is_support, "runtime", target_api_version, specific_api_version)
+            if path.exists(path_expected):
+                return path_expected
+        return self.get_path_to_expected(is_support, "runtime", target_api_version)
+
+    def get_path_to_compile_ast_output_expected(self, is_support):
+        return self.get_path_to_expected(is_support, "compile")
+
+    def get_path_to_compile_asm_output_expected(self, is_support, target_api_version):
+        path_expected = None
+        for specific_api_version in self.specific_api_version_list:
+            if self.compare_two_versions(target_api_version, specific_api_version) > 0:
+                continue
+            path_expected = self.get_path_to_expected(
+                is_support, "compile", target_api_version, specific_api_version, "asm"
+            )
+            if path.exists(path_expected):
+                return path_expected
+        return self.get_path_to_expected(is_support, "compile", "", "", "asm")
+
+    def run_process(self, cmd):
+        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = self.process.communicate()
+        self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore").split("\n")[0]
+        return stdout, stderr
+
+    def run_process_compile(self, runner, target_api_version, target_api_sub_version="bata3", dump_type=""):
+        cmd = []
+        cmd.append(runner.es2panda)
+        cmd.append(self.path)
+        cmd.extend(self.flags)
+        cmd.append("--target-api-version=%s" % (target_api_version))
+        test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        self.test_abc_path = path.join(runner.build_dir, test_abc_name)
+        cmd.extend(["--output=%s" % (self.test_abc_path)])
+        if target_api_version == "12":
+            cmd.append("--target-api-sub-version=%s" % (target_api_sub_version))
+        if dump_type == "ast":
+            cmd.append("--dump-ast")
+        elif dump_type == "assembly":
+            cmd.append("--dump-assembly")
+        stdout, stderr = self.run_process(cmd)
+        return stdout, stderr
+
+    def generate_ast_of_target_version(self, runner, target_api_version, target_api_sub_version="bata3"):
+        return self.run_process_compile(runner, target_api_version, target_api_sub_version, dump_type="ast")
+
+    def generate_asm_of_target_version(self, runner, target_api_version, target_api_sub_version="bata3"):
+        return self.run_process_compile(runner, target_api_version, target_api_sub_version, dump_type="assembly")
+
+    def runtime_for_target_version(self, runner, target_api_version, target_api_sub_version="bata3"):
+        cmd = []
+        if target_api_version != "12":
+            target_api_sub_version = ""
+        # there is no virtual machine with version api12beta2 available.
+        # We have chosen api12beta1 as a replacement.
+        if target_api_version == "12" and target_api_sub_version == "beta2":
+            target_api_sub_version = "beta1"
+        ark_js_vm_dir = os.path.join(
+            runner.build_dir,
+            "ark_js_vm_version",
+            "API%s%s" % (target_api_version, target_api_sub_version),
+        )
+        ld_library_path = os.path.join(ark_js_vm_dir, "lib")
+        os.environ["LD_LIBRARY_PATH"] = ld_library_path
+        ark_js_vm_path = os.path.join(ark_js_vm_dir, "ark_js_vm")
+        cmd.append(ark_js_vm_path)
+        cmd.append(self.test_abc_path)
+        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = self.process.communicate()
+        self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore").split("\n")[0]
+        return stdout, stderr
+
+    def run_for_single_version(self, runner, target_api_version, target_api_sub_version="beta3"):
+        cur_api_version = "API" + target_api_version + target_api_sub_version
+        is_support = True if self.compare_two_versions(cur_api_version, self.test_version) >= 0 else False
+        compile_expected_path = None
+        stderr = None
+        if self.feature_type == "syntax_feature":
+            compile_expected_path = self.get_path_to_compile_ast_output_expected(is_support)
+            _, stderr = self.generate_ast_of_target_version(runner, target_api_version, target_api_sub_version)
+        elif self.feature_type == "bytecode_feature":
+            compile_expected_path = self.get_path_to_compile_asm_output_expected(is_support, cur_api_version)
+            _, stderr = self.generate_asm_of_target_version(
+                runner, target_api_version, target_api_sub_version
+            )
+        try:
+            with open(compile_expected_path, "r") as fp:
+                expected = fp.read()
+                self.passed = expected == self.output and self.process.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+        if not self.passed or (stderr and self.passed):
+            return stderr
+        for api_version in self.target_api_version_list:
+            # The interception capability of API9 version of ark_js_vm has not yet been launched.
+            if api_version == "9":
+                continue
+            for api_sub_version in self.target_api_sub_version_list:
+                if not api_version in self.VERSION_WITH_SUBVERSION_LIST and api_sub_version != "beta3":
+                    continue
+                cur_runtime_api_version = "API" + api_version + api_sub_version
+                is_below_abc_version = (
+                    False if self.compare_two_versions(cur_runtime_api_version, cur_api_version) >= 0 else True
+                )
+                self.generate_module_abc(runner, cur_runtime_api_version)
+                _, stderr = self.runtime_for_target_version(runner, api_version, api_sub_version)
+                runtime_expected_path = self.get_path_to_runtime_output_expected(
+                    is_support, cur_api_version, is_below_abc_version
+                )
+                self.remove_module_abc()
+                try:
+                    with open(runtime_expected_path, "r") as fp:
+                        expected = fp.read()
+                    if is_below_abc_version:
+                        self.passed = expected in self.output
+                    else:
+                        self.passed = expected == self.output
+                except Exception:
+                    self.passed = False
+                if not self.passed:
+                    return stderr
+        return stderr
+
+    def run(self, runner):
+        for target_api_version in self.target_api_version_list:
+            stderr = None
+            if target_api_version == "12":
+                for target_api_sub_version in self.target_api_sub_version_list:
+                    stderr = self.run_for_single_version(runner, target_api_version, target_api_sub_version)
+                    if path.exists(self.test_abc_path):
+                        os.remove(self.test_abc_path)
+                    if not self.passed:
+                        self.error = stderr.decode("utf-8", errors="ignore")
+                        return self
+            else:
+                stderr = self.run_for_single_version(runner, target_api_version)
+                if not self.passed:
+                    self.error = stderr.decode("utf-8", errors="ignore")
+                    return self
+        return self
+
+
 class CompilerTestInfo(object):
     def __init__(self, directory, extension, flags):
         self.directory = directory
@@ -1455,6 +1790,102 @@ def prepare_for_obfuscation(compiler_test_infos, test_root):
 
     for info in compiler_test_infos:
         info.update_dir(tmp_dir_name)
+
+
+def add_directory_for_version_control(runners, args):
+    ark_js_vm_prepared = ArkJsVmDownload(args)
+    ark_js_vm_prepared.run()
+    runner = VersionControlRunner(args)
+    runner.add_directory(
+        "version_control/API11/syntax_feature",
+        "js",
+        ["--module"],
+        "API11",
+        "syntax_feature",
+    )
+    runner.add_directory(
+        "version_control/API11/syntax_feature",
+        "ts",
+        ["--module"],
+        "API11",
+        "syntax_feature",
+    )
+    runner.add_directory(
+        "version_control/API12beta1_and_beta2/syntax_feature",
+        "ts", ["--module"],
+        "API12beta1",
+        "syntax_feature",
+    )
+    runner.add_directory(
+        "version_control/API12beta1_and_beta2/syntax_feature",
+        "js",
+        ["--module"],
+        "API12beta1",
+        "syntax_feature",
+    )
+    runner.add_directory(
+        "version_control/API12beta3/syntax_feature",
+        "ts",
+        ["--module"],
+        "API12beta3",
+        "syntax_feature",
+        "version_control/API12beta3/syntax_feature/import_target",
+    )
+    runner.add_directory(
+        "version_control/API12beta3/syntax_feature",
+        "js",
+        ["--module"],
+        "API12beta3",
+        "syntax_feature",
+        "version_control/API12beta3/syntax_feature/import_target",
+    )
+    runner.add_directory(
+        "version_control/API11/bytecode_feature",
+        "ts",
+        ["--module"],
+        "API11",
+        "bytecode_feature",
+    )
+    runner.add_directory(
+        "version_control/API11/bytecode_feature",
+        "js",
+        ["--module"],
+        "API11",
+        "bytecode_feature",
+    )
+    runner.add_directory(
+        "version_control/API12beta1_and_beta2/bytecode_feature",
+        "ts",
+        ["--module"],
+        "API12beta1",
+        "bytecode_feature",
+        "version_control/API12beta1_and_beta2/bytecode_feature/import_target",
+    )
+    runner.add_directory(
+        "version_control/API12beta1_and_beta2/bytecode_feature",
+        "js",
+        ["--module"],
+        "API12beta1",
+        "bytecode_feature",
+        "version_control/API12beta1_and_beta2/bytecode_feature/import_target",
+    )
+    runner.add_directory(
+        "version_control/API12beta3/bytecode_feature",
+        "ts",
+        ["--module"],
+        "API12beta3",
+        "bytecode_feature",
+        "version_control/API12beta3/bytecode_feature/import_target",
+    )
+    runner.add_directory(
+        "version_control/API12beta3/bytecode_feature",
+        "js",
+        ["--module"],
+        "API12beta3",
+        "bytecode_feature",
+        "version_control/API12beta3/bytecode_feature/import_target",
+    )
+    runners.append(runner)
 
 
 def add_directory_for_regression(runners, args):
@@ -1701,6 +2132,9 @@ def main():
     if args.debug:
         add_directory_for_debug(runners, args)
 
+    if args.version_control:
+        add_directory_for_version_control(runners, args)
+        
     failed_tests = 0
 
     for runner in runners:

@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token in class property [in_obj_syntax.js:17:5]
