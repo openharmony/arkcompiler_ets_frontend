@@ -912,7 +912,7 @@ ir::MethodDefinition* Transformer::AddMethodToClass(ir::ClassDefinition *classDe
         paramScope->AddParamDecl(Allocator(), param);
     }
     auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
-    ASSERT(scope != nullptr);
+    CHECK_NOT_NULL(scope);
     CHECK_NOT_NULL(paramScope);
     paramScope->BindFunctionScope(scope);
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));

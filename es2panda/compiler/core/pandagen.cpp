@@ -286,6 +286,7 @@ LiteralBuffer *PandaGen::NewLiteralBuffer()
 
 int32_t PandaGen::AddLiteralBuffer(LiteralBuffer *buf)
 {
+    CHECK_NOT_NULL(buf);
     buffStorage_.push_back(buf);
     buf->SetIndex(context_->NewLiteralIndex());
     return buf->Index();
