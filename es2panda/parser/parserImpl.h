@@ -564,6 +564,8 @@ private:
                                                 bool isDeclare = false, bool isAbstract = false,
                                                 bool isExported = false);
     ir::TSTypeAliasDeclaration *ParseTsTypeAliasDeclaration(bool isDeclare);
+    ir::Expression *ParseEnumComputedPropertyKey(binder::EnumDecl *&decl, const lexer::SourcePosition &keyStartLoc,
+                                                 bool isDeclare);
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,
                                             bool isExport, bool isDeclare, bool isConst);
     ir::TSEnumDeclaration *ParseEnumDeclaration(bool isExport = false, bool isDeclare = false, bool isConst = false);

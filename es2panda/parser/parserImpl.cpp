@@ -3456,6 +3456,39 @@ void ParserImpl::FindThisOrSuperReferenceInChildNode(const ir::AstNode *childNod
     }
 }
 
+ir::Expression *ParserImpl::ParseEnumComputedPropertyKey(binder::EnumDecl *&decl,
+                                                         const lexer::SourcePosition &keyStartLoc, bool isDeclare)
+{
+    ir::Expression *memberKey = nullptr;
+    lexer_->NextToken();
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
+        memberKey = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
+        decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, isDeclare, lexer_->GetToken().String());
+        memberKey->SetRange(lexer_->GetToken().Loc());
+        lexer_->NextToken();
+    } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
+        lexer_->NextToken();
+        memberKey = ParsePrimaryExpression();
+        decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, isDeclare, lexer_->GetToken().String());
+        memberKey->SetRange(lexer_->GetToken().Loc());
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_BACK_TICK) {
+            ThrowSyntaxError("Unexpected token, expected '`'");
+        }
+        lexer_->NextToken();
+    } else {
+        ThrowSyntaxError("Unexpected token in enum member");
+    }
+
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+        ThrowSyntaxError("Unexpected token, expected ']'");
+    }
+
+    lexer_->NextToken();
+    return memberKey;
+}
+
+
 ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,
                                                     bool isExport, bool isDeclare, bool isConst)
 {
@@ -3481,6 +3514,8 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const l
             decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, isDeclare, lexer_->GetToken().String());
             memberKey->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
+        } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+            memberKey = ParseEnumComputedPropertyKey(decl, keyStartLoc, isDeclare);
         } else {
             ThrowSyntaxError("Unexpected token in enum member");
         }
