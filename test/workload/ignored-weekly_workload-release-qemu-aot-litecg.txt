@@ -9,3 +9,6 @@ splay
 
 #18605
 stanford-crypto-sha256
+
+#18897
+splay-latency
