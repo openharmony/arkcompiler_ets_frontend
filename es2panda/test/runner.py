@@ -1431,7 +1431,7 @@ class ArkJsVmDownload:  # Obtain different versions of ark_js_vm and their depen
         self.build_dir = args.build_dir
         self.url = "https://gitee.com/zhongmingwei123123/ark_js_vm_version.git"
         self.local_path = path.join(self.build_dir, "ark_js_vm_version")
-        self.MAX_RETRIES = 3
+        self.max_retries = 3
 
     def run_cmd_cwd(self, cmd):
         try:
@@ -1445,7 +1445,7 @@ class ArkJsVmDownload:  # Obtain different versions of ark_js_vm and their depen
     def git_clone(self, git_url, code_dir):
         cmd = ["git", "clone", git_url, code_dir]
         retries = 1
-        while retries <= self.MAX_RETRIES:
+        while retries <= self.max_retries:
             ret = self.run_cmd_cwd(cmd)
             if ret == 0:
                 break
@@ -1470,7 +1470,7 @@ class VersionControlRunner(Runner):
         files = glob(glob_expression)
         files = fnmatch.filter(files, self.test_root + "**" + self.args.filter)
         module_path_list = []
-        if module_dir != None:
+        if module_dir is not None:
             module_path_list = self.add_module_path(module_dir)
         self.tests += list(
             map(lambda f: TestVersionControl(f, flags, test_version, feature_type, module_path_list), files)
@@ -1496,8 +1496,8 @@ class VersionControlRunner(Runner):
 class TestVersionControl(Test):
     def __init__(self, test_path, flags, test_version, feature_type, module_path_list):
         Test.__init__(self, test_path, flags)
-        self.BETA_VERSION__DEFAULT = 3
-        self.VERSION_WITH_SUBVERSION_LIST = [12]
+        self.beta_version_default = 3
+        self.version_with_sub_version_list = [12]
         self.target_api_version_list = ["9", "10", "11", "12"]
         self.target_api_sub_version_list = ["beta1", "beta2", "beta3"]
         self.specific_api_version_list = ["API11", "API12beta3"]
@@ -1512,7 +1512,7 @@ class TestVersionControl(Test):
     def split_version(self, version_str):
         parts = version_str.split("API")[1].split("beta")
         main_part = int(parts[0])
-        beta_part = int(parts[1]) if len(parts) > 1 else self.BETA_VERSION__DEFAULT
+        beta_part = int(parts[1]) if len(parts) > 1 else self.beta_version_default
         return (main_part, beta_part)
 
     def compare_two_versions(self, version1, version2):
@@ -1526,7 +1526,7 @@ class TestVersionControl(Test):
         else:
             return 0
 
-    def get_relative_path(self,from_dir, to_dir):
+    def get_relative_path(self, from_dir, to_dir):
         from_dir = os.path.normpath(from_dir)
         to_dir = os.path.normpath(to_dir)
         from_dir = os.path.abspath(from_dir)
@@ -1608,7 +1608,7 @@ class TestVersionControl(Test):
             path.splitext(self.path)[0])
         return expected_path
 
-    def get_path_to_runtime_output_expected(self, is_support, target_api_version,is_below_abc_api_version):
+    def get_path_to_runtime_output_expected(self, is_support, target_api_version, is_below_abc_api_version):
         path_expected = None
         if is_below_abc_api_version:
             path_expected = self.get_path_to_runtime_output_below_version_expected()
@@ -1715,7 +1715,7 @@ class TestVersionControl(Test):
             if api_version == "9":
                 continue
             for api_sub_version in self.target_api_sub_version_list:
-                if not api_version in self.VERSION_WITH_SUBVERSION_LIST and api_sub_version != "beta3":
+                if not api_version in self.version_with_sub_version_list and api_sub_version != "beta3":
                     continue
                 cur_runtime_api_version = "API" + api_version + api_sub_version
                 is_below_abc_version = (
@@ -2005,7 +2005,7 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/merge_abc_consistence_check/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
                                                  "--abc-class-threads=4"]))
-    
+
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/shared_module/projects", "ts",
                                                 ["--module", "--merge-abc", "--dump-assembly"]))
 
@@ -2134,7 +2134,7 @@ def main():
 
     if args.version_control:
         add_directory_for_version_control(runners, args)
-        
+
     failed_tests = 0
 
     for runner in runners:
