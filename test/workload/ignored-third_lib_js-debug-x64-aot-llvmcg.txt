@@ -2,8 +2,3 @@
 
 #18487
 pako_test
-
-#18484
-jBox2d_test
-commonmark-js_test
-pdfview_test
