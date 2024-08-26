@@ -1476,14 +1476,6 @@ void PandaGen::SuspendGenerator(const ir::AstNode *node, VReg genObj)
     ra_.Emit<Suspendgenerator>(node, genObj); // iterResult is in acc
 }
 
-void PandaGen::SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj)
-{
-    /*
-     *  TODO: suspend async generator
-     *  ra_.Emit<EcmaSuspendasyncgenerator>(node, asyncGenObj);
-     */
-}
-
 void PandaGen::GeneratorYield(const ir::AstNode *node, VReg genObj)
 {
     LoadAccumulator(node, genObj);
@@ -2009,14 +2001,6 @@ void PandaGen::GenDebugger(const ir::AstNode *node)
     if (IsDebug()) {
         ra_.Emit<Debugger>(node);
     }
-}
-
-void PandaGen::CopyLexEnv(const ir::AstNode *node)
-{
-    /*
-     *  TODO: add copy lexenv to optimize the loop env creation
-     *  ra_.Emit<EcmaCopylexenvdyn>(node);
-     */
 }
 
 void PandaGen::NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::VariableScope *scope)

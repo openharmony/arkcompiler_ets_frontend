@@ -425,7 +425,6 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
 
 checker::Type *ClassDefinition::Check(checker::Checker *checker) const
 {
-    // TODO(aszilagyi)
     return checker->GlobalAnyType();
 }
 

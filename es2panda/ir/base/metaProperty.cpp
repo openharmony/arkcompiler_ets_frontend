@@ -52,14 +52,12 @@ void MetaProperty::Compile(compiler::PandaGen *pg) const
     }
 
     if (kind_ == ir::MetaProperty::MetaPropertyKind::IMPORT_META) {
-        // TODO()
         pg->Unimplemented();
     }
 }
 
 checker::Type *MetaProperty::Check(checker::Checker *checker) const
 {
-    // TODO(aszilagyi)
     return checker->GlobalAnyType();
 }
 
