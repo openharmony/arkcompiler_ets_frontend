@@ -2,10 +2,18 @@
 #18892
 test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/constructor/locales-valid.js
 
+#18912
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/invalid-tags.js
+
+#18963
+test262/data/test_es2021/language/expressions/optional-chaining/short-circuiting.js
+
+#18961
+test262/data/test_es2021/built-ins/RegExp/S15.10.2.15_A1_T41.js
+
 #17827
 test262/data/test_es2021/built-ins/RegExp/unicode_restricted_identity_escape_alpha.js
 test262/data/test_es2021/intl402/Locale/likely-subtags.js
-test262/data/test_es2021/intl402/Intl/getCanonicalLocales/invalid-tags.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-timezone.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-col-strength.js
 test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
@@ -63,7 +71,7 @@ test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-vali
 test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-invalid.js
 # --- end of Issue #17827
 
-#18277
+#18438
 test262/data/test_es2021/intl402/DateTimeFormat/constructor-options-fractionalSecondDigits-invalid.js
 test262/data/test_es2021/intl402/DateTimeFormat/casing-numbering-system-calendar-options.js
 test262/data/test_es2021/intl402/DateTimeFormat/numbering-system-calendar-options.js
@@ -481,7 +489,7 @@ test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/formatToParts/pl-p
 test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/formatToParts/result-type.js
 test262/data/test_es2021/intl402/Segmenter/prototype/resolvedOptions/type-without-lbs.js
 test262/data/test_es2021/intl402/String/prototype/localeCompare/throws-same-exceptions-as-Collator.js
-# --- end of Issue #18277
+# --- end of Issue #18438
 
 #18441
 test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-short.js

@@ -98,7 +98,7 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT, custom_cwd=None):
         if ret_code and ret_code != 1:
             code = ret_code
             msg = f"Command {cmd_string}: \n"
-            msg += f"error: {str(errs.decode(code_format, 'ignore'))}"
+            msg += f"error: {errs_str}"
         else:
             code = 0
             msg = str(output_res.decode(code_format, 'ignore'))

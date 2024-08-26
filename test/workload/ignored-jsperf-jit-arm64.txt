@@ -17,3 +17,6 @@ Eval_Eval
 #18830
 AsyncIterator_asyncIterator
 AsyncGenerator_next
+
+#19077
+Function_applyFunction

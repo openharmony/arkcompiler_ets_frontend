@@ -10,6 +10,9 @@ pdfjs
 ##18485
 raytrace
 
+##19008
+regex-dna
+
 ##18740
 splay
 
