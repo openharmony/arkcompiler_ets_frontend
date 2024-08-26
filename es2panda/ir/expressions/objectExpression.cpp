@@ -690,7 +690,7 @@ checker::Type *ObjectExpression::Check(checker::Checker *checker) const
             const util::StringView &propName = GetPropertyName(prop->Key());
 
             auto *memberVar = binder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
-
+            CHECK_NOT_NULL(memberVar);
             if (inConstContext) {
                 memberVar->AddFlag(binder::VariableFlags::READONLY);
             } else {

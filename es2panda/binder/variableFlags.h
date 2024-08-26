@@ -152,7 +152,7 @@ enum class LetOrConstStatus {
     UNINITIALIZED,
 };
 
-enum class VariableScopeFlags {
+enum class VariableScopeFlags : uint8_t {
     NONE = 0,
     SET_LEXICAL_FUNCTION = 1U << 0U,
     USE_ARGS = 1U << 2U,
@@ -162,7 +162,7 @@ enum class VariableScopeFlags {
 
 DEFINE_BITOPS(VariableScopeFlags)
 
-enum class DeclarationFlags {
+enum class DeclarationFlags : uint8_t {
     NONE = 0,
     IMPORT = 1 << 0,
     EXPORT = 1 << 1,
