@@ -280,6 +280,7 @@ void AddEnumValueDeclaration(checker::Checker *checker, double number, binder::E
         ASSERT(res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         auto *decl = checker->Allocator()->New<binder::EnumDecl>(memberStr);
+        CHECK_NOT_NULL(decl);
         decl->BindNode(variable->Declaration()->Node());
         enumVar->ResetDecl(decl);
     }
