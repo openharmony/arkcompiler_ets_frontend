@@ -1070,7 +1070,9 @@ void Lexer::ScanRegExpPattern()
                     continue;
                 }
 
-                break;
+                Iterator().PeekCp(&cpSize);
+                Iterator().Forward(cpSize);
+                continue;
             }
             default: {
                 break;
