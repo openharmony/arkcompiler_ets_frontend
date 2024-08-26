@@ -17,3 +17,5 @@ function main() : void{
 (
     ({}=>z)
 }
+
+/* @@? 18:8 Error SyntaxError: Unexpected token: '=>'.  */

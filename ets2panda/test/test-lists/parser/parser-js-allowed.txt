@@ -228,6 +228,7 @@ compiler/ets/requiredType_5.sts
 compiler/ets/invalidInheritanceFromInterfaceStaticMethod.sts
 compiler/ets/override.sts
 compiler/ets/override9.sts
+compiler/ets/partialType_4.sts
 compiler/js/eval_lexically_unbound.js
 compiler/js/many_locals_1.js
 compiler/ts/functionCall.ts
