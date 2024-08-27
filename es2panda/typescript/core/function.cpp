@@ -150,8 +150,9 @@ Type *Checker::CreateParameterTypeForArrayAssignmentPattern(const ir::ArrayExpre
     if (inferedTuple->FixedLength() > arrayPattern->Elements().size()) {
         return inferedType;
     }
-
-    TupleType *newTuple = inferedTuple->Instantiate(allocator_, relation_, globalTypes_)->AsObjectType()->AsTupleType();
+    Type *instantiateTupleType = inferedTuple->Instantiate(allocator_, relation_, globalTypes_);
+    CHECK_NOT_NULL(instantiateTupleType);
+    TupleType *newTuple = instantiateTupleType->AsObjectType()->AsTupleType();
 
     for (uint32_t index = inferedTuple->FixedLength(); index < arrayPattern->Elements().size(); index++) {
         util::StringView memberIndex = util::Helpers::ToStringView(allocator_, index);
@@ -406,6 +407,7 @@ std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> Checker::Chec
 
     if (cache) {
         Type *placeholder = allocator_->New<ArrayType>(GlobalAnyType());
+        CHECK_NOT_NULL(placeholder);
         placeholder->SetVariable(std::get<0>(result));
         nodeCache_.insert({param, placeholder});
     }
@@ -416,6 +418,7 @@ std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> Checker::Chec
 void Checker::CheckFunctionParameterDeclarations(const ArenaVector<ir::Expression *> &params,
                                                  SignatureInfo *signatureInfo)
 {
+    CHECK_NOT_NULL(signatureInfo);
     signatureInfo->restVar = nullptr;
     signatureInfo->minArgCount = 0;
 
@@ -599,6 +602,7 @@ void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, bin
     auto *signatureInfo = allocator_->New<checker::SignatureInfo>(allocator_);
     CheckFunctionParameterDeclarations(bodyDeclaration->Params(), signatureInfo);
     auto *bodyCallSignature = allocator_->New<checker::Signature>(signatureInfo, GlobalResolvingReturnType());
+    CHECK_NOT_NULL(bodyCallSignature);
 
     if (descWithOverload->callSignatures.empty()) {
         Type *funcType = CreateFunctionTypeWithSignature(bodyCallSignature);

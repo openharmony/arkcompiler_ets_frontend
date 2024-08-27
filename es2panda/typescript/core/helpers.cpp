@@ -60,6 +60,7 @@ Type *Checker::GetBaseTypeOfLiteralType(Type *type)
     if (HasStatus(CheckerStatus::KEEP_LITERAL_TYPE)) {
         return type;
     }
+    CHECK_NOT_NULL(type);
 
     if (type->IsStringLiteralType()) {
         return GlobalStringType();
@@ -383,7 +384,7 @@ Type *Checker::GetTypeOfVariable(binder::Variable *var)
         }
         case binder::DeclType::VAR: {
             const ir::AstNode *declarator = FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
-            ASSERT(declarator);
+            CHECK_NOT_NULL(declarator);
 
             if (declarator->AsVariableDeclarator()->Id()->IsIdentifier()) {
                 InferSimpleVariableDeclaratorType(declarator->AsVariableDeclarator());

@@ -146,7 +146,7 @@ Type *InterfaceType::Instantiate(ArenaAllocator *allocator, TypeRelation *relati
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
 
     Type *newInterfaceType = allocator->New<InterfaceType>(allocator, name_, copiedDesc);
-
+    CHECK_NOT_NULL(newInterfaceType);
     for (auto *it : bases_) {
         newInterfaceType->AsObjectType()->AsInterfaceType()->AddBase(
             it->Instantiate(allocator, relation, globalTypes)->AsObjectType());

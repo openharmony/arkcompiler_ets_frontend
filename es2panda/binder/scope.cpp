@@ -754,7 +754,7 @@ void ModuleScope::ConvertLocalVariableToModuleVariable(ArenaAllocator *allocator
 void ModuleScope::AssignIndexToModuleVariable(util::StringView name, uint32_t index)
 {
     auto *moduleVar = FindLocal(name);
-    ASSERT(moduleVar != nullptr);
+    CHECK_NOT_NULL(moduleVar);
     ASSERT(moduleVar->IsModuleVariable());
     moduleVar->AsModuleVariable()->AssignIndex(index);
 }

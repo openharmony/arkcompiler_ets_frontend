@@ -61,6 +61,7 @@ panda::pandasm::AnnotationElement &AnnotationElement::Deserialize(const protoPan
     panda::pandasm::ScalarValue scalar = ScalarValue::Deserialize(protoElement.scalar(), allocator);
     auto *element = allocator->New<panda::pandasm::AnnotationElement>(protoElement.name(),
         std::make_unique<panda::pandasm::ScalarValue>(scalar));
+    CHECK_NOT_NULL(element);
     return *element;
 }
 
@@ -159,6 +160,7 @@ panda::pandasm::ScalarValue ScalarValue::Deserialize(const protoPanda::ScalarVal
         case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_ANNOTATION_DATA: {
             auto &protoAnnotationData = protoScalar.valueanno();
             auto *value = allocator->New<panda::pandasm::AnnotationData>(protoAnnotationData.recordname());
+            CHECK_NOT_NULL(value);
             AnnotationData::Deserialize(protoAnnotationData, *value, allocator);
             break;
         }
@@ -269,6 +271,7 @@ panda::pandasm::ArrayValue &ArrayValue::Deserialize(const protoPanda::ArrayValue
     }
     auto *array = allocator->New<panda::pandasm::ArrayValue>(
         static_cast<panda::pandasm::Value::Type>(protoArray.componenttype()), values);
+    CHECK_NOT_NULL(array);
     return *array;
 }
 } // panda::proto

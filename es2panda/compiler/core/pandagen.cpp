@@ -2068,6 +2068,7 @@ uint32_t PandaGen::TryDepth() const
 CatchTable *PandaGen::CreateCatchTable()
 {
     auto *catchTable = allocator_->New<CatchTable>(this, TryDepth());
+    CHECK_NOT_NULL(catchTable);
     catchList_.push_back(catchTable);
     return catchTable;
 }
