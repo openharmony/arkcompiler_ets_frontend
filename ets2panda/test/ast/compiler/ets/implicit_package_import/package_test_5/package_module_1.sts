@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
-package mypackage;
+package mypack;
 
-function foo(): void {}
+let myvar: number = wont_exist;
+
+/* @@? 18:21 Error TypeError: Unresolved reference wont_exist  */

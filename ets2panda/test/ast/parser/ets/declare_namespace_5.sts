@@ -13,4 +13,10 @@
  * limitations under the License.
  */
 
-package pack2;
+class A {
+    namespace ns {
+
+    }
+}
+
+/* @@? 17:5 Error SyntaxError: Namespace not enabled in here.  */

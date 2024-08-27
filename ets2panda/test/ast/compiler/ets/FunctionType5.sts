@@ -18,4 +18,4 @@ function foo (p: number){}
 
 let cb = foo;
 
-/* @@? 20:5 Error TypeError: Cannot infer type for cb because method reference needs an explicit target type  */
+/* @@? 19:10 Error TypeError: Ambiguous function initialization because of multiple overloads  */

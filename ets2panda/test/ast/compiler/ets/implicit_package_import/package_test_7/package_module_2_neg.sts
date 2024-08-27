@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
-package mypack;
+package mypackage;
 
-let myvar: number = wont_exist;
+function foo(): void {}
+
+/* @@? 18:1 Error TypeError: Function foo is already declared.  */

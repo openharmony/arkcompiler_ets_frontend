@@ -1,1 +1,0 @@
-SyntaxError: Namespace not enabled in here. [declare_namespace_5.sts:17:5]

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-class A {
-    namespace ns {
+package mypackage;
 
-    }
-}
+function foo(): void {}
+
+/* @@? 18:1 Error TypeError: Function foo is already declared.  */

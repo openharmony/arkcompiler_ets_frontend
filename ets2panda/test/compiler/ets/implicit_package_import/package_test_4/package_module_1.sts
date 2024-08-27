@@ -17,3 +17,5 @@ package mypack;
 import {myvar} from "./package_module_2"
 
 // compiling this file will fail with import from it's own package
+
+/* @@? 17:1 Error SyntaxError: Package module cannot import from a file in it's own package  */

@@ -13,12 +13,6 @@
  * limitations under the License.
  */
 
-package mypackage;
+package pack1;
 
-let exist_but_checker_fails_in_file: number = 8;
-let wong_type: string = 9;
-
-// If it's clear that a file belongs to a package, but contains type error, compilation is aborted
-//
-// NOTE (mmartin): error message will always mark the main compiled file, but it's not the correct place
-//                 of the error. Modify this when other error messages will be improved.
+/* @@? 1:1 Error SyntaxError: Files 'package_module_1_neg' and 'package_module_2_neg' are in the same folder, but have different package names.  */

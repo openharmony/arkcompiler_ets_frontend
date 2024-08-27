@@ -12,6 +12,8 @@ parser/ets/function.sts
 parser/ets/constructor_super_call3.sts
 parser/ets/proxyVoidGeneration.sts
 parser/ets/declare_iface.sts
+parser/ets/declare_namespace_3.sts
+parser/ets/declare_namespace_4.sts
 parser/ets/predefined_types.sts
 parser/ets/inheritance2.sts
 parser/ets/lambdaExpressionWithoutBlockStatementCallAVoidFunction.sts
