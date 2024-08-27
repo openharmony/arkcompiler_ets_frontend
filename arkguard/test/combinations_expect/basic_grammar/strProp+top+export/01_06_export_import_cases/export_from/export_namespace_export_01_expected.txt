@@ -12,6 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import v from 'assert';
+import t from 'assert';
 export * from './export_basic1';
-export * as w from './export_basic1';
+export * as u from './export_basic1';

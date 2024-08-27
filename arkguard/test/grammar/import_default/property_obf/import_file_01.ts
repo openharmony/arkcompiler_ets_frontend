@@ -12,18 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-type b = number;
-export let h = 2;
-export function g(j: b, k: number) {
-    return j + k;
-}
-export class Person {
-    prop1: b;
-    prop2: string;
-    constructor(i) {
-        this.prop1 = i;
-    }
-    doubleProp1(): b {
-        return 2 * this.prop1;
-    }
-}
+
+import { default as defaultClass } from './export_file_01';
+export { default as newDefault } from './export_file_01';
+
+let newClass = new defaultClass();

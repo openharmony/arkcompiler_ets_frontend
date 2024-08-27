@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * as u from './export_basic2';
-export function x() {
+export * as default from './export_basic2';
+export function v() {
     return 3;
 }

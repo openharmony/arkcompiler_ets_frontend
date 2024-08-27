@@ -14,8 +14,8 @@
  */
 import p from 'assert';
 import type { o as o } from './export_type_03';
-class i1 implements o {
+class h1 implements o {
     prop: number = 1;
 }
-let j1: o = new i1();
-p(j1.prop === 1);
+let i1: o = new h1();
+p(i1.prop === 1);

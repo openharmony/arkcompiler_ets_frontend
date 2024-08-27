@@ -14,6 +14,6 @@
  */
 declare module "moduleName" {
     export default undefined;
-    export var j: number;
-    export type d = typeof j;
+    export var i: number;
+    export type d = typeof i;
 }
