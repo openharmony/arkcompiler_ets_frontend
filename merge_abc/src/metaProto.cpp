@@ -134,6 +134,7 @@ void AnnotationMetadata::Deserialize(const protoPanda::AnnotationMetadata &proto
     annotations.reserve(protoMeta.annotations_size());
     for (const auto &protoAnnotation : protoMeta.annotations()) {
         auto *annotation = allocator->New<panda::pandasm::AnnotationData>(protoAnnotation.recordname());
+        CHECK_NOT_NULL(annotation);
         AnnotationData::Deserialize(protoAnnotation, *annotation, allocator);
         annotations.emplace_back(std::move(*annotation));
     }

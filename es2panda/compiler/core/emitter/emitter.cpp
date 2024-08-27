@@ -46,6 +46,7 @@ FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
     : pg_(pg), literalBuffers_(allocator->Adapter())
 {
     func_ = allocator->New<panda::pandasm::Function>(pg->InternalName().Mutf8(), LANG_EXT);
+    CHECK_NOT_NULL(func_);
 
     size_t paramCount = pg->InternalParamCount();
     func_->params.reserve(paramCount);

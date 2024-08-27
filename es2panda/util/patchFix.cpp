@@ -283,6 +283,7 @@ bool PatchFix::IsScopeValidToPatchLexical(binder::VariableScope *scope) const
         return false;
     }
 
+    CHECK_NOT_NULL(scope);
     if (!scope->IsFunctionVariableScope()) {
         return false;
     }

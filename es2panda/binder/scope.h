@@ -1090,6 +1090,7 @@ public:
         : FunctionScope(allocator, nullptr), exportBindings_(exportBindings), variableNames_(allocator->Adapter())
     {
         paramScope_ = allocator->New<FunctionParamScope>(allocator, parent);
+        CHECK_NOT_NULL(paramScope_);
         paramScope_->BindFunctionScope(this);
         SetParent(paramScope_);
     }
@@ -1157,6 +1158,7 @@ public:
         allocator, nullptr), enumMemberBindings_(enumMemberBindings), variableNames_(allocator->Adapter())
     {
         paramScope_ = allocator->New<FunctionParamScope>(allocator, parent);
+        CHECK_NOT_NULL(paramScope_);
         paramScope_->BindFunctionScope(this);
         SetParent(paramScope_);
         scopeDuplicateIndex_ = parent->GetDuplicateScopeIndex(GetScopeTag());

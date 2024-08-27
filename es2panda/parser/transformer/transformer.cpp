@@ -316,7 +316,9 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             }
             DuringClass duringClass(&classList_, node->Definition()->GetName(),
                                     CreateClassAliasName(node), node->Definition());
-            node = VisitTSNodes(node)->AsClassDeclaration();
+            auto *classNode = VisitTSNodes(node);
+            CHECK_NOT_NULL(classNode);
+            node = classNode->AsClassDeclaration();
             auto res = VisitClassDeclaration(node);
             SetOriginalNode(res, childNode);
             ResetParentScope(res, Scope());
@@ -326,7 +328,9 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             auto *node = childNode->AsClassExpression();
             DuringClass duringClass(&classList_, node->Definition()->GetName(),
                                     node->Definition()->GetName(), node->Definition());
-            node = VisitTSNodes(node)->AsClassExpression();
+            auto *classNode = VisitTSNodes(node);
+            CHECK_NOT_NULL(classNode);
+            node = classNode->AsClassExpression();
             auto res = VisitClassExpression(node);
             SetOriginalNode(res, childNode);
             return res;
@@ -903,17 +907,16 @@ ir::MethodDefinition* Transformer::AddMethodToClass(ir::ClassDefinition *classDe
                                                     ArenaVector<ir::Expression *> &params,
                                                     ArenaVector<ir::Statement *> &statements)
 {
-    ASSERT(classDefinition != nullptr);
+    CHECK_NOT_NULL(classDefinition);
     ASSERT((methodInfo.kind == ir::MethodDefinitionKind::GET) || (methodInfo.kind == ir::MethodDefinitionKind::SET));
 
     auto *paramScope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
-    ASSERT(paramScope != nullptr);
+    CHECK_NOT_NULL(paramScope);
     for (auto &param : params) {
         paramScope->AddParamDecl(Allocator(), param);
     }
     auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
     CHECK_NOT_NULL(scope);
-    CHECK_NOT_NULL(paramScope);
     paramScope->BindFunctionScope(scope);
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
     auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
@@ -2131,7 +2134,7 @@ ir::ExpressionStatement *Transformer::CreateTsEnumMember(ir::TSEnumMember *node,
 {
     util::StringView enumMemberName = GetNameFromEnumMember(node);
     binder::Variable *enumVar = Scope()->AsTSEnumScope()->FindEnumMemberVariable(enumMemberName);
-    ASSERT(enumVar);
+    CHECK_NOT_NULL(enumVar);
     if (node->Init() != nullptr) {
         bool isStringInit = enumVar->AsEnumVariable()->StringInit();
         if (!enumVar->AsEnumVariable()->IsVisited()) {

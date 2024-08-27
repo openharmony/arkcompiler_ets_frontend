@@ -317,6 +317,7 @@ private:
     void Alloc()
     {
         str_ = allocator_->New<ArenaString>(allocator_->Adapter());
+        CHECK_NOT_NULL(str_);
     }
 
 protected:
