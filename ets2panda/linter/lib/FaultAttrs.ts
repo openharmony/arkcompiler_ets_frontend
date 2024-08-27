@@ -135,3 +135,4 @@ faultsAttrs[FaultID.SendableFunctionAsExpr] = new FaultAttributes(179);
 faultsAttrs[FaultID.SendableDecoratorLimited] = new FaultAttributes(180);
 faultsAttrs[FaultID.SendableClosureExport] = new FaultAttributes(181, ProblemSeverity.WARNING);
 faultsAttrs[FaultID.SharedModuleExportsWarning] = new FaultAttributes(163, ProblemSeverity.WARNING);
+faultsAttrs[FaultID.ObjectLiteralProperty] = new FaultAttributes(182);

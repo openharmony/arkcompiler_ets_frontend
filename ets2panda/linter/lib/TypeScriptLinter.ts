@@ -482,6 +482,26 @@ export class TypeScriptLinter {
       const autofix = this.autofixer?.fixUntypedObjectLiteral(objectLiteralExpr, objectLiteralType);
       this.incrementCounters(node, FaultID.ObjectLiteralNoContextType, autofix);
     }
+
+    if (this.arkts2) {
+      this.handleObjectLiteralProperties(objectLiteralType, objectLiteralExpr);
+    }
+  }
+
+  private handleObjectLiteralProperties(
+    objectLiteralType: ts.Type | undefined,
+    objectLiteralExpr: ts.ObjectLiteralExpression
+  ): void {
+    const isRecordObject = objectLiteralType && this.tsUtils.isStdRecordType(objectLiteralType);
+    for (const prop of objectLiteralExpr.properties) {
+      if (
+        isRecordObject && !(prop.name && this.tsUtils.isValidRecordObjectLiteralKey(prop.name)) ||
+        !isRecordObject && !(ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name))
+      ) {
+        const faultNode = ts.isPropertyAssignment(prop) ? prop.name : prop;
+        this.incrementCounters(faultNode, FaultID.ObjectLiteralProperty);
+      }
+    }
   }
 
   private handleArrayLiteralExpression(node: ts.Node): void {
