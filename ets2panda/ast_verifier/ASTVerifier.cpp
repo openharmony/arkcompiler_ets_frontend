@@ -33,6 +33,7 @@
 #include "ast_verifier/importExportAccessValid.h"
 #include "ast_verifier/arithmeticOperationValid.h"
 #include "ast_verifier/variableNameIdentifierNameSame.h"
+#include "ast_verifier/checkScopeDeclaration.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
@@ -56,6 +57,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<VariableNameIdentifierNameSame>(allocator, "VariableNameIdentifierNameSame");
     AddInvariant<CheckAbstractMethod>(allocator, "CheckAbstractMethod");
     AddInvariant<GetterSetterValidation>(allocator, "GetterSetterValidation");
+    AddInvariant<CheckScopeDeclaration>(allocator, "CheckScopeDeclaration");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)

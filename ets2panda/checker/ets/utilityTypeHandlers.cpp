@@ -278,7 +278,9 @@ ir::ClassDefinition *ETSChecker::CreateClassPrototype(util::StringView name, par
     // Create class declaration node
     auto *const classDecl = AllocNode<ir::ClassDeclaration>(classDef, Allocator());
     classDecl->SetParent(classDeclProgram->Ast());
-    classDef->Scope()->BindNode(classDecl);
+
+    // Class definition is scope bearer, not class declaration
+    classDef->Scope()->BindNode(classDecl->Definition());
     decl->BindNode(classDef);
 
     // Put class declaration in global scope, and in program AST
