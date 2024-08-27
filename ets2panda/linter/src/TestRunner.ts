@@ -123,7 +123,7 @@ function runTestFiles(testFiles: string[], testDir: string): [number, number, bo
 
 function parseArgs(testDir: string, testFile: string, mode: Mode): CommandLineOptions {
   // Configure test parameters and run linter.
-  const args: string[] = [path.join(testDir, testFile)];
+  const cmdArgs: string[] = [path.join(testDir, testFile)];
   const argsFileName = path.join(testDir, testFile + ARGS_CONFIG_EXT);
 
   if (fs.existsSync(argsFileName)) {
@@ -132,13 +132,16 @@ function parseArgs(testDir: string, testFile: string, mode: Mode): CommandLineOp
     if (args.testMode !== undefined) {
       TypeScriptLinter.testMode = args.testMode;
     }
+    if (args.arkts2 === true) {
+      cmdArgs.push('--arkts-2');
+    }
   }
 
   if (mode === Mode.AUTOFIX) {
-    args.push('--autofix');
+    cmdArgs.push('--autofix');
   }
 
-  return parseCommandLine(args);
+  return parseCommandLine(cmdArgs);
 }
 
 function compareExpectedAndActual(testDir: string, testFile: string, mode: Mode, resultNodes: TestNodeInfo[]): string {
