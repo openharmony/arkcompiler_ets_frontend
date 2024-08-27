@@ -99,6 +99,9 @@ void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(id_);
 
+    if (IsDeclare()) {
+        dumper->Add("declare ");
+    }
     dumper->Add("interface ");
     id_->Dump(dumper);
 
@@ -107,7 +110,6 @@ void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
         typeParams_->Dump(dumper);
         dumper->Add(">");
     }
-
     if (!extends_.empty()) {
         dumper->Add(" extends ");
         for (auto ext : extends_) {

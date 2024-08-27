@@ -80,8 +80,6 @@ void ETSBinder::IdentifierAnalysis()
 
     recordTable_->SetProgram(Program());
     globalRecordTable_.SetClassDefinition(Program()->GlobalClass());
-    externalRecordTable_.insert({Program(), &globalRecordTable_});
-
     BuildProgram();
 
     ASSERT(globalRecordTable_.ClassDefinition() == Program()->GlobalClass());

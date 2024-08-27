@@ -43,7 +43,6 @@ public:
         FunctionSignature &&signature;
         ir::ScriptFunctionFlags funcFlags = ir::ScriptFunctionFlags::NONE;
         ir::ModifierFlags flags = ir::ModifierFlags::NONE;
-        bool declare = false;
         ark::es2panda::Language lang {Language::Id::ETS};
     };
 
@@ -267,11 +266,6 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0;
     }
 
-    [[nodiscard]] bool Declare() const noexcept
-    {
-        return declare_;
-    }
-
     [[nodiscard]] ir::ScriptFunctionFlags Flags() const noexcept
     {
         return funcFlags_;
@@ -368,7 +362,6 @@ private:
     varbinder::FunctionScope *scope_ {nullptr};
     ir::ScriptFunctionFlags funcFlags_;
     checker::Signature *signature_ {};
-    bool declare_;
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
     ArenaVector<AnnotationUsage *> annotations_;

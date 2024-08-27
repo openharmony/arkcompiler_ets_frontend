@@ -74,7 +74,7 @@ void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
     if (func_->IsNative()) {
         dumper->Add("native ");
     }
-    if (func_->Declare()) {
+    if (func_->IsDeclare()) {
         dumper->Add("declare ");
     }
     if (func_->IsAsyncFunc()) {

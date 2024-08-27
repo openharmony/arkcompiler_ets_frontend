@@ -64,13 +64,17 @@ void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
                  {"decorators", AstDumper::Optional(decorators_)},
                  {"id", key_},
                  {"members", members_},
-                 {"const", isConst_}});
+                 {"const", isConst_},
+                 {"declare", IsDeclare()}});
 }
 
 void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(isConst_ == false);
     ASSERT(key_ != nullptr);
+    if (IsDeclare()) {
+        dumper->Add("declare ");
+    }
     dumper->Add("enum ");
     key_->Dump(dumper);
     dumper->Add(" {");

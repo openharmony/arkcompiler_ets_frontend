@@ -201,6 +201,9 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
         Allocator(), key, std::move(members),
         ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()});
     enumDeclaration->SetRange({enumStart, Lexer()->GetToken().End()});
+    if (InAmbientContext()) {
+        enumDeclaration->AddModifier(ir::ModifierFlags::DECLARE);
+    }
 
     Lexer()->NextToken();  // eat '}'
 

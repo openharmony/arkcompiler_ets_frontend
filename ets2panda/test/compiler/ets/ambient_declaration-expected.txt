@@ -493,6 +493,7 @@
                         }
                       }
                     },
+                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 606,
@@ -586,6 +587,7 @@
                         }
                       }
                     },
+                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 606,

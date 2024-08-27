@@ -36,7 +36,7 @@ ir::VariableDeclaration *CreateVariableDeclaration(checker::ETSChecker *checker,
 
     ArenaVector<ir::VariableDeclarator *> declarators(1, declarator, checker->Allocator()->Adapter());
     auto *declaration = checker->AllocNode<ir::VariableDeclaration>(
-        ir::VariableDeclaration::VariableDeclarationKind::CONST, checker->Allocator(), std::move(declarators), false);
+        ir::VariableDeclaration::VariableDeclarationKind::CONST, checker->Allocator(), std::move(declarators));
 
     declarator->SetParent(declaration);
     return declaration;

@@ -13,4 +13,8 @@
  * limitations under the License.
  */
 
-declare type t = int;
+ 
+declare function foo(tmp: double): string 
+function main () {
+    foo(19)
+}

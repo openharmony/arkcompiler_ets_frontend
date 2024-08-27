@@ -38,12 +38,6 @@ public:
         return *this;
     }
 
-    TSModuleDeclarationBuilder &SetDeclare(bool declare)
-    {
-        declare_ = declare;
-        return *this;
-    }
-
     TSModuleDeclarationBuilder &SetGlobal(bool global)
     {
         global_ = global;
@@ -58,15 +52,14 @@ public:
 
     TSModuleDeclaration *Build()
     {
-        auto node = AllocNode(Allocator(), name_, body_,
-                              TSModuleDeclaration::ConstructorFlags {declare_, global_, isExternalAmbient_});
+        auto node =
+            AllocNode(Allocator(), name_, body_, TSModuleDeclaration::ConstructorFlags {global_, isExternalAmbient_});
         return node;
     }
 
 private:
     Expression *name_ {};
     Statement *body_ {};
-    bool declare_ = false;
     bool global_ = false;
     bool isExternalAmbient_ = false;
 };

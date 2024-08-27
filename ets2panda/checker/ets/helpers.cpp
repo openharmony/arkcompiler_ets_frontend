@@ -2360,7 +2360,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     auto *func = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
-                                                funcFlags, ir::ModifierFlags::PUBLIC, true});
+                                                funcFlags, ir::ModifierFlags::PUBLIC});
 
     if (!isSetter) {
         func->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);

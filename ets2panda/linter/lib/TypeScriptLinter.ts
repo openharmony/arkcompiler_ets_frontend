@@ -1058,8 +1058,8 @@ export class TypeScriptLinter {
     const isSignature = ts.isMethodSignature(funcLikeDecl);
     if (isSignature || !funcLikeDecl.body) {
       // Ambient flag is not exposed, so we apply dirty hack to make it visible
-      const isAmbientDeclaration = TsUtils.isAmbientNode(funcLikeDecl);
-      if ((isSignature || isAmbientDeclaration) && !funcLikeDecl.type) {
+      const isDeclareDeclaration = TsUtils.isAmbientNode(funcLikeDecl);
+      if ((isSignature || isDeclareDeclaration) && !funcLikeDecl.type) {
         this.incrementCounters(funcLikeDecl, FaultID.LimitedReturnTypeInference);
       }
       return [false, undefined];

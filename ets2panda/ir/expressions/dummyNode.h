@@ -49,7 +49,7 @@ public:
     {
     }
 
-    [[nodiscard]] bool IsAmbientIndexer() const noexcept
+    [[nodiscard]] bool IsDeclareIndexer() const noexcept
     {
         return (flag_ & ir::DummyNodeFlag::INDEXER) != 0;
     }

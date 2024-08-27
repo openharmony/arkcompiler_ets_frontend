@@ -81,7 +81,7 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declarations", declarators_},
                  {"kind", kind},
                  {"decorators", AstDumper::Optional(decorators_)},
-                 {"declare", AstDumper::Optional(declare_)}});
+                 {"declare", AstDumper::Optional(IsDeclare())}});
 }
 
 void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
@@ -118,8 +118,7 @@ VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, Variabl
     : Statement(static_cast<Statement const &>(other)),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
-      declarators_(allocator->Adapter()),
-      declare_(other.declare_)
+      declarators_(allocator->Adapter())
 {
     for (auto const &d : other.decorators_) {
         decorators_.emplace_back(d->Clone(allocator, nullptr));

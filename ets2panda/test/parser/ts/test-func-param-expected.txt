@@ -1311,7 +1311,6 @@
             }
           }
         ],
-        "declare": true,
         "loc": {
           "start": {
             "line": 23,
@@ -1570,7 +1569,6 @@
             }
           }
         ],
-        "declare": true,
         "loc": {
           "start": {
             "line": 24,
@@ -1704,7 +1702,6 @@
             }
           }
         ],
-        "declare": true,
         "loc": {
           "start": {
             "line": 25,
@@ -1964,7 +1961,6 @@
             }
           }
         ],
-        "declare": true,
         "loc": {
           "start": {
             "line": 26,

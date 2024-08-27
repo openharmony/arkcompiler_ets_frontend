@@ -64,7 +64,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
@@ -175,7 +174,6 @@
                         }
                       }
                     ],
-                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 17,
@@ -311,7 +309,6 @@
                     }
                   }
                 ],
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
@@ -405,7 +402,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 18,
@@ -516,7 +512,6 @@
                         }
                       }
                     ],
-                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 18,
@@ -652,7 +647,6 @@
                     }
                   }
                 ],
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 18,
@@ -790,7 +784,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [
@@ -972,7 +965,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [],
@@ -1080,7 +1072,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [],

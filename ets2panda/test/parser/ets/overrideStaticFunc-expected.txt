@@ -592,7 +592,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [],

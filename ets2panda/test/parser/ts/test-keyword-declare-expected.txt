@@ -80,7 +80,6 @@
         }
       ],
       "kind": "var",
-      "declare": true,
       "loc": {
         "start": {
           "line": 18,
@@ -171,7 +170,6 @@
         }
       ],
       "kind": "let",
-      "declare": true,
       "loc": {
         "start": {
           "line": 21,
@@ -288,7 +286,6 @@
         }
       ],
       "kind": "const",
-      "declare": true,
       "loc": {
         "start": {
           "line": 24,
@@ -334,7 +331,6 @@
         }
       ],
       "kind": "const",
-      "declare": true,
       "loc": {
         "start": {
           "line": 25,
@@ -486,7 +482,6 @@
           }
         }
       },
-      "declare": true,
       "loc": {
         "start": {
           "line": 28,
@@ -606,7 +601,6 @@
         "async": false,
         "expression": false,
         "params": [],
-        "declare": true,
         "loc": {
           "start": {
             "line": 31,

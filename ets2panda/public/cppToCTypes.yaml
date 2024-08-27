@@ -2915,12 +2915,9 @@ change_types:
       - name: global
         type:
           name: bool
-      - name: isExternalAmbient
-        type:
-          name: bool
     cast:
       expression: ""
-      var_name: "ir::TSModuleDeclaration::ConstructorFlags {declare, global, isExternalAmbient}"
+      var_name: "ir::TSModuleDeclaration::ConstructorFlags {declare, global}"
 
   - es2panda_arg:
       name: '|arg_name|'
@@ -3001,9 +2998,6 @@ change_types:
       - name: '|arg_name|flags'
         type:
           name: int
-      - name: '|arg_name|declare'
-        type:
-          name: bool
     cast:
       expression: "
         auto *|arg_name|bodyE2p = reinterpret_cast<ir::AstNode *>(|arg_name|body);\n
@@ -3013,7 +3007,7 @@ change_types:
         ark::es2panda::Language |arg_name|lang {Language::Id::ETS};\n
         "
       var_name: "ir::ScriptFunction::ScriptFunctionData {|arg_name|bodyE2p, std::move(|arg_name|signatureE2p),
-        |arg_name|funcFlagsE2p, |arg_name|flagsE2p, |arg_name|declare, |arg_name|lang}"
+        |arg_name|funcFlagsE2p, |arg_name|flagsE2p, |arg_name|lang}"
 
   - es2panda_arg:
       name: '|arg_name|'

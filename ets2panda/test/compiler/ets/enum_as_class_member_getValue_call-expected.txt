@@ -147,6 +147,7 @@
         }
       ],
       "const": false,
+      "declare": false,
       "loc": {
         "start": {
           "line": 20,
@@ -304,6 +305,7 @@
         }
       ],
       "const": false,
+      "declare": false,
       "loc": {
         "start": {
           "line": 26,
