@@ -13,10 +13,44 @@
  * limitations under the License.
  */
 
-enum Fruit { size = 4 };
+class A {}
+function A[][][].test() {}
 
-/* @@ label */function Fruit.name(): int {
-    return 1;
-}
+/* @@? 17:1 Node {
+  "type": "MethodDefinition",
+  "kind": "extensionmethod",
+  "accessibility": "public",
+  "static": true
+} */
 
-/* @@@ label Error TypeError: Extension function can only defined for class and interface type.  */
+/* @@? 17:10 Node {
+  "type": "Identifier",
+  "name": "A"
+} */
+
+/* @@? 17:11 Node {
+  "type": "TSArrayType"
+} */
+
+/* @@? 17:13 Node {
+  "type": "TSArrayType"
+} */
+
+/* @@? 17:15 Node {
+  "type": "TSArrayType"
+} */
+
+/* @@? 17:18 Node {
+  "type": "Identifier",
+  "name": "test"
+} */
+
+/* @@? 17:23 Node {
+  "type": "Identifier",
+  "name": "=t"
+} */
+
+/* @@? 17:25 Node {
+  "type": "BlockStatement",
+  "statements": []
+} */

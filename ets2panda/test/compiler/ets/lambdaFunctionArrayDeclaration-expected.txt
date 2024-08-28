@@ -287,11 +287,11 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 36
+                                  "column": 33
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 37
+                                  "column": 35
                                 }
                               }
                             },

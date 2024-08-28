@@ -259,6 +259,14 @@ parser/ets/re_export/import_index_2.sts
 parser/ets/re_export/import_index_3.sts
 parser/ets/import_folder.sts
 parser/ets/import_tests/import_relative_path.sts
+ast/parser/ets/extension_function_tests/extension_function_array1.sts
+ast/parser/ets/extension_function_tests/extension_function_array1_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array2.sts
+ast/parser/ets/extension_function_tests/extension_function_array2_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array3.sts
+ast/parser/ets/extension_function_tests/extension_function_array3_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array_primitive.sts
+ast/compiler/ets/extension_function_tests/extension_function_primitive.sts
 
 # FailKind.ES2PANDA_FAIL
 runtime/ets/objectEquality.sts

@@ -79,28 +79,38 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
 
 void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::MethodDefinition *node)
 {
-    auto *const classType = checker->GetApparentType(extensionFunc->Signature()->Params()[0]->TsType());
-    if (!classType->IsETSObjectType() ||
-        (!classType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::CLASS) &&
-         !classType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE))) {
-        checker->LogTypeError("Extension function can only defined for class and interface type.", node->Start());
+    auto *const thisType = extensionFunc->Signature()->Params()[0]->TsType();
+
+    // "Extension Functions" are only allowed for classes, interfaces, and arrays.
+    if (thisType->IsETSArrayType() ||
+        (thisType->IsETSObjectType() &&
+         (thisType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::CLASS) ||
+          thisType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)))) {
+        // Skip for arrays (array does not contain a class definition) and checked class definition.
+        if (!thisType->IsETSArrayType() && thisType->Variable()->Declaration()->Node()->IsClassDefinition() &&
+            !thisType->Variable()->Declaration()->Node()->AsClassDefinition()->IsClassDefinitionChecked()) {
+            thisType->Variable()->Declaration()->Node()->Check(checker);
+        }
+
+        // NOTE(gogabr): should be done in a lowering
+        ReplaceThisInExtensionMethod(checker, extensionFunc);
+
+        checker::SignatureInfo *originalExtensionSigInfo = checker->Allocator()->New<checker::SignatureInfo>(
+            extensionFunc->Signature()->GetSignatureInfo(), checker->Allocator());
+        originalExtensionSigInfo->minArgCount -= 1;
+        originalExtensionSigInfo->params.erase(originalExtensionSigInfo->params.begin());
+        checker::Signature *originalExtensionSigature =
+            checker->CreateSignature(originalExtensionSigInfo, extensionFunc->Signature()->ReturnType(), extensionFunc);
+
+        // The shadowing check is only relevant for classes and interfaces,
+        // since for arrays there are no other ways to declare a method other than "Extension Functions".
+        if (thisType->IsETSObjectType()) {
+            CheckExtensionIsShadowedByMethod(checker, thisType->AsETSObjectType(), extensionFunc,
+                                             originalExtensionSigature);
+        }
+    } else {
+        checker->LogTypeError("Extension function can only defined for class, interface or array.", node->Start());
     }
-    if (classType->Variable()->Declaration()->Node()->IsClassDefinition() &&
-        !classType->Variable()->Declaration()->Node()->AsClassDefinition()->IsClassDefinitionChecked()) {
-        classType->Variable()->Declaration()->Node()->Check(checker);
-    }
-
-    // NOTE(gogabr): should be done in a lowering
-    ReplaceThisInExtensionMethod(checker, extensionFunc);
-
-    checker::SignatureInfo *originalExtensionSigInfo = checker->Allocator()->New<checker::SignatureInfo>(
-        extensionFunc->Signature()->GetSignatureInfo(), checker->Allocator());
-    originalExtensionSigInfo->minArgCount -= 1;
-    originalExtensionSigInfo->params.erase(originalExtensionSigInfo->params.begin());
-    checker::Signature *originalExtensionSigature =
-        checker->CreateSignature(originalExtensionSigInfo, extensionFunc->Signature()->ReturnType(), extensionFunc);
-
-    CheckExtensionIsShadowedByMethod(checker, classType->AsETSObjectType(), extensionFunc, originalExtensionSigature);
 }
 
 void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::ScriptFunction *scriptFunc)

@@ -30,3 +30,15 @@ ast/compiler/ets/union_string_literals_6.sts
 
 # Issue: #19700
 ast/compiler/ets/returnStatementClone.sts
+
+# Issue: #20639
+ast/parser/ets/extension_function_tests/extension_function_array1.sts
+ast/parser/ets/extension_function_tests/extension_function_array1_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array2.sts
+ast/parser/ets/extension_function_tests/extension_function_array2_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array3.sts
+ast/parser/ets/extension_function_tests/extension_function_array3_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array_typealias.sts
+ast/parser/ets/extension_function_tests/extension_function_class.sts
+ast/parser/ets/extension_function_tests/extension_function_class_typealias.sts

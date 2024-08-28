@@ -13,9 +13,34 @@
  * limitations under the License.
  */
 
-let x: int[ = [1,2,3]
-let y: int = x [0]
+class A {}
+type B = A
 
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected: ']'.  */
-/* @@? 16:13 Error SyntaxError: Variable must be initialized or it's type must be declared  */
-/* @@? 16:13 Error SyntaxError: Unexpected token ']'.  */
+function B.test() {}
+
+/* @@? 19:1 Node {
+  "type": "MethodDefinition",
+  "kind": "extensionmethod",
+  "accessibility": "public",
+  "static": true
+} */
+
+/* @@? 19:10 Node {
+  "type": "Identifier",
+  "name": "B"
+} */
+
+/* @@? 19:12 Node {
+  "type": "Identifier",
+  "name": "test"
+} */
+
+/* @@? 19:17 Node {
+  "type": "Identifier",
+  "name": "=t"
+} */
+
+/* @@? 19:19 Node {
+  "type": "BlockStatement",
+  "statements": []
+} */

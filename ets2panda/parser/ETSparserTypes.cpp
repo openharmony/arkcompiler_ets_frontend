@@ -453,6 +453,33 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     return thisType;
 }
 
+ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options)
+{
+    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+        if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY) != 0) {
+            return typeNode;
+        }
+
+        lexer::SourcePosition startPos = Lexer()->GetToken().Start();
+
+        Lexer()->NextToken();  // eat '['
+
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+            if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
+                LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
+            }
+            return nullptr;
+        }
+
+        typeNode = AllocNode<ir::TSArrayType>(typeNode);
+        typeNode->SetRange({startPos, Lexer()->GetToken().End()});
+
+        Lexer()->NextToken();  // eat ']'
+    }
+
+    return typeNode;
+}
+
 ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingOptions *options)
 {
     bool const reportError = ((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
@@ -470,27 +497,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
         return typeAnnotation;
     }
 
-    const lexer::SourcePosition &startPos = Lexer()->GetToken().Start();
-
-    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-        if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY) != 0) {
-            return typeAnnotation;
-        }
-
-        Lexer()->NextToken();  // eat '['
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            if (reportError) {
-                LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
-            } else {
-                return nullptr;
-            }
-        }
-
-        Lexer()->NextToken();  // eat ']'
-        typeAnnotation = AllocNode<ir::TSArrayType>(typeAnnotation);
-        typeAnnotation->SetRange({startPos, Lexer()->GetToken().End()});
-    }
+    typeAnnotation = ParseTsArrayType(typeAnnotation, options);
 
     if (((*options) & TypeAnnotationParsingOptions::DISALLOW_UNION) == 0 &&
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {

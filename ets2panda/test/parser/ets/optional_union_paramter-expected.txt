@@ -336,11 +336,11 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 70
+                      "column": 67
                     },
                     "end": {
                       "line": 17,
-                      "column": 71
+                      "column": 69
                     }
                   }
                 },

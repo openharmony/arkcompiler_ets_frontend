@@ -917,9 +917,9 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
     return params;
 }
 
-ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringView className)
+ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] ir::TypeNode *typeAnnotation)
 {
-    LogSyntaxError({"Unexpected token: ", className.Utf8()});
+    LogSyntaxError("Unexpected token, expected function identifier");
     return nullptr;
 }
 
@@ -937,7 +937,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::
     return {true, body, body->End(), false};
 }
 
-FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Identifier *className)
+FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::TypeNode *typeAnnotation)
 {
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseFunctionTypeParameters();
 
@@ -948,16 +948,16 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Id
     FunctionParameterContext funcParamContext(&context_);
 
     ir::Expression *parameterThis = nullptr;
-    if (className != nullptr) {
+    if (typeAnnotation != nullptr) {
         const auto savedPos = Lexer()->Save();
         lexer_->NextToken();  // eat '('
-        parameterThis = CreateParameterThis(className->Name());
+        parameterThis = CreateParameterThis(typeAnnotation);
         Lexer()->Rewind(savedPos);
     }
 
     auto params = ParseFunctionParams();
 
-    if (className != nullptr) {
+    if (typeAnnotation != nullptr) {
         params.emplace(params.begin(), parameterThis);
     }
 
