@@ -120,10 +120,10 @@ std::vector<Phase *> GetETSPhaseList()
         &g_enumLoweringPhase,
         &g_resolveIdentifiers,
         &g_capturedVariables,
-        &g_checkerPhase,
+        &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
+        &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,
-        &g_pluginsAfterCheck,
         &g_bigintLowering,
         &g_opAssignmentLowering,
         &g_constStringToCharLowering,
@@ -141,7 +141,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_stringConstructorLowering,
         &g_stringComparisonLowering,
         &g_partialExportClassGen,
-        &g_pluginsAfterLowerings,
+        &g_pluginsAfterLowerings,  // pluginsAfterLowerings has to come at the very end, nothing should go after it
     };
     // clang-format on
 }
