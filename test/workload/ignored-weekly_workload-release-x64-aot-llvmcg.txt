@@ -5,3 +5,6 @@ box2d
 
 # Issue #18812
 typescript-compiler
+
+#19083
+air
