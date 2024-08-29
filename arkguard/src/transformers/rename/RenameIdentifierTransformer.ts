@@ -122,9 +122,6 @@ namespace secharmony {
     }
 
     let options: NameGeneratorOptions = {};
-    if (profile.mNameGeneratorType === NameGeneratorType.HEX) {
-      options.hexWithPrefixSuffix = true;
-    }
     let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
     const openTopLevel: boolean = option?.mNameObfuscation?.mTopLevel;
