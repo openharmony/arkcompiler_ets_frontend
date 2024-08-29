@@ -1,0 +1,5 @@
+{
+    "ReservedGlobalNames": "Reserved property names should match",
+    "ReservedNames": "Reserved names should match",
+    "ReservedPropertyNames": "Reserved global names should match"
+}
