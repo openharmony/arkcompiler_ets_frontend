@@ -830,7 +830,10 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
     }
     auto *newExpr = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
         allocator, allocator->New<ir::OpaqueTypeNode>(constructedType), std::move(args), nullptr);
-    newExpr->SetParent(lambdaOrFuncRef->Parent());
+    auto *lambdaOrFuncRefParent = lambdaOrFuncRef->Parent();
+    newExpr->SetParent(lambdaOrFuncRefParent);
+    // NOTE(dslynko, #19869): Required for correct debug-info generation
+    newExpr->SetRange(lambdaOrFuncRefParent != nullptr ? lambdaOrFuncRefParent->Range() : lambdaOrFuncRef->Range());
 
     auto *nearestScope = NearestScope(lambdaOrFuncRef);
     auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, nearestScope);

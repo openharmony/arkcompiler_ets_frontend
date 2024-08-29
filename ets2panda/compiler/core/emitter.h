@@ -67,6 +67,9 @@ public:
     void Generate();
 
 protected:
+    using VariablesStartsMap = std::unordered_map<const varbinder::Variable *, uint32_t>;
+
+protected:
     virtual pandasm::Function *GenFunctionSignature() = 0;
     virtual void GenFunctionAnnotations(pandasm::Function *func) = 0;
     virtual void GenVariableSignature(pandasm::debuginfo::LocalVariable &variableDebug,
@@ -76,7 +79,7 @@ protected:
     void GenFunctionInstructions(pandasm::Function *func);
     void GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const;
     void GenScopeVariableInfoEnd(pandasm::Function *func, const varbinder::Scope *scope, uint32_t count,
-                                 uint32_t start) const;
+                                 uint32_t scopeStart, const VariablesStartsMap &starts) const;
     void GenSourceFileDebugInfo(pandasm::Function *func);
     void GenFunctionCatchTables(ark::pandasm::Function *func);
     void GenVariablesDebugInfo(pandasm::Function *func);

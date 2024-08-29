@@ -192,6 +192,7 @@ static std::string WholeLine(const util::StringView &source, lexer::SourceRange 
         return {};
     }
     ASSERT(range.end.index <= source.Length());
+    ASSERT(range.end.index >= range.start.index);
     return source.Substr(range.start.index, range.end.index).EscapeSymbol<util::StringView::Mutf8Encode>();
 }
 
@@ -208,7 +209,8 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, pandasm::Ins *p
         }
     }
 
-    pandaIns->insDebug.lineNumber = astNode->Range().start.line + 1;
+    auto nodeRange = astNode->Range();
+    pandaIns->insDebug.lineNumber = nodeRange.start.line + 1;
 
     if (cg_->IsDebug()) {
         size_t insLen = GetIRNodeWholeLength(ins);
@@ -218,7 +220,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, pandasm::Ins *p
         }
 
         offset_ += insLen;
-        pandaIns->insDebug.wholeLine = WholeLine(SourceCode(), astNode->Range());
+        pandaIns->insDebug.wholeLine = WholeLine(SourceCode(), nodeRange);
     }
 }
 
@@ -297,6 +299,7 @@ static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variableDebu
         variableDebug.signature = "any";
         variableDebug.signatureType = "any";
     } else {
+        ASSERT(var->AsLocalVariable()->TsType() != nullptr);
         std::stringstream ss;
         var->AsLocalVariable()->TsType()->ToDebugInfoType(ss);
         variableDebug.signature = ss.str();
@@ -310,15 +313,15 @@ static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variableDebu
 }
 
 void FunctionEmitter::GenScopeVariableInfoEnd(pandasm::Function *func, const varbinder::Scope *scope, uint32_t count,
-                                              uint32_t start) const
+                                              uint32_t scopeStart, const VariablesStartsMap &starts) const
 {
     const auto extension = cg_->VarBinder()->Program()->Extension();
-    auto varsLength = static_cast<uint32_t>(count - start + 1);
+    auto varsLength = static_cast<uint32_t>(count - scopeStart + 1);
 
     if (scope->IsFunctionScope()) {
         for (auto *param : scope->AsFunctionScope()->ParamScope()->Params()) {
             auto &variableDebug = func->localVariableDebug.emplace_back();
-            GenLocalVariableInfo(variableDebug, param, std::make_tuple(start, varsLength, cg_->TotalRegsNum()),
+            GenLocalVariableInfo(variableDebug, param, std::make_tuple(scopeStart, varsLength, cg_->TotalRegsNum()),
                                  extension);
         }
     }
@@ -327,34 +330,67 @@ void FunctionEmitter::GenScopeVariableInfoEnd(pandasm::Function *func, const var
                                                                          unsortedBindings.end());
     for (const auto &[_, variable] : bindings) {
         (void)_;
-        if (!variable->IsLocalVariable() || variable->LexicalBound() || variable->Declaration()->IsParameterDecl() ||
-            variable->Declaration()->IsTypeAliasDecl()) {
+        const auto *decl = variable->Declaration();
+        // NOTE(dslynko, #19203): do not generate debug-info for labels and local classes and interfaces
+        if (!variable->IsLocalVariable() || variable->LexicalBound() || decl->IsTypeAliasDecl() ||
+            decl->IsLabelDecl() || decl->IsClassDecl() || decl->IsInterfaceDecl()) {
+            continue;
+        }
+        if (decl->IsParameterDecl() && !scope->IsCatchParamScope()) {
             continue;
         }
 
+        uint32_t localStart = scopeStart;
+        uint32_t localLength = varsLength;
+        auto iter = starts.find(variable);
+        if (iter != starts.end()) {
+            localStart = iter->second;
+            localLength = static_cast<uint32_t>(count - localStart + 1);
+        }
+
         auto &variableDebug = func->localVariableDebug.emplace_back();
-        GenLocalVariableInfo(variableDebug, variable, std::make_tuple(start, varsLength, cg_->TotalRegsNum()),
+        GenLocalVariableInfo(variableDebug, variable, std::make_tuple(localStart, localLength, cg_->TotalRegsNum()),
                              extension);
     }
 }
 
 void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const
 {
-    const auto *startIns = scope->ScopeStart();
-    const auto *endIns = scope->ScopeEnd();
+    const auto &instructions = cg_->Insns();
+    auto lastIter = instructions.end();
+    auto iter = std::find(instructions.begin(), lastIter, scope->ScopeStart());
+    if (iter == lastIter || *iter == scope->ScopeEnd()) {
+        return;
+    }
+    uint32_t count = iter - instructions.begin();
+    uint32_t start = count;
 
-    uint32_t start = 0;
-    uint32_t count = 0;
-
-    for (const auto *it : cg_->Insns()) {
-        if (startIns == it) {
-            start = count;
-        } else if (endIns == it) {
-            GenScopeVariableInfoEnd(func, scope, count, start);
+    auto checkNodeIsValid = [](const ir::AstNode *node) { return node != nullptr && node != FIRST_NODE_OF_FUNCTION; };
+    // NOTE(dslynko, #19090): need to track start location for each local variable
+    std::unordered_map<const varbinder::Variable *, uint32_t> varsStarts;
+    for (const auto *scopeEnd = scope->ScopeEnd(); iter != lastIter && *iter != scopeEnd; ++iter, ++count) {
+        const auto *node = (*iter)->Node();
+        if (!checkNodeIsValid(node)) {
+            continue;
+        }
+        auto *parent = node->Parent();
+        if (!checkNodeIsValid(parent)) {
+            continue;
         }
 
-        count++;
+        const varbinder::Variable *var = nullptr;
+        if (parent->IsVariableDeclarator()) {
+            var = parent->AsVariableDeclarator()->Id()->Variable();
+        } else if (parent->IsCatchClause()) {
+            var = node->Variable();
+        }
+        if (var != nullptr && varsStarts.count(var) == 0) {
+            varsStarts.emplace(var, count);
+        }
     }
+    ASSERT(iter != lastIter);
+
+    GenScopeVariableInfoEnd(func, scope, count, start, varsStarts);
 }
 
 void FunctionEmitter::GenVariablesDebugInfo(pandasm::Function *func)
