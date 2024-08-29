@@ -9,14 +9,11 @@ label_0:
 label_2: 
 }
 
-slotNum = 0x2
+slotNum = 0x0
 .function any .#~B=#B(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
-	copyrestargs 0x0
-	sta v0
-	lda a0
-	supercallspread 0x0, v0
+	callruntime.supercallforwardallargs a0
 	sta v0
 	lda a2
 	throw.ifsupernotcorrectcall 0x1

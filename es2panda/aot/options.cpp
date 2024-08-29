@@ -380,7 +380,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version. If both bc-version and"\
         "bc-min-version are enabled, only bc-version will take effects");
     panda::PandArg<bool> bcMinVersion("bc-min-version", false, "Print ark bytecode minimum supported version");
-    panda::PandArg<int> targetApiVersion("target-api-version", util::Helpers::DEFAULT_TARGET_API_VERSION,
+    panda::PandArg<int> targetApiVersion("target-api-version", panda_file::version[0],
         "Specify the targeting api version for es2abc to generated the corresponding version of bytecode");
     panda::PandArg<bool> targetBcVersion("target-bc-version", false, "Print the corresponding ark bytecode version"\
         "for target api version. If both target-bc-version and bc-version are enabled, only target-bc-version"\

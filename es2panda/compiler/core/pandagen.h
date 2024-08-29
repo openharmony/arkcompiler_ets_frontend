@@ -350,6 +350,7 @@ public:
     void CallSpread(const ir::AstNode *node, VReg func, VReg thisReg, VReg args);
     void SuperCall(const ir::AstNode *node, VReg startReg, size_t argCount);
     void SuperCallSpread(const ir::AstNode *node, VReg vs);
+    void SuperCallForwardAllArgs(const ir::AstNode *node, VReg funcObj);
     void NotifyConcurrentResult(const ir::AstNode *node);
     void CallInit(const ir::AstNode *node, VReg thisReg);
 
