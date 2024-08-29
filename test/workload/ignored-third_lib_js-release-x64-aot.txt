@@ -24,9 +24,6 @@ memory-cache_test
 #19251
 pdfview_test
 
-#18331
-validator_test
-
 zxing_test
 
 #19231
