@@ -27,3 +27,6 @@ AsyncFromSyncIterator_next
 AsyncFromSyncIterator_throw
 AsyncFromSyncIterator_return
 Object_defineSetter
+
+#19077
+Function_applyFunction

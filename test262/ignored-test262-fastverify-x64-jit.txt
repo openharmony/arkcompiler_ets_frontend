@@ -62,6 +62,7 @@ test262/data/test_es2021/built-ins/RegExp/unicode_restricted_identity_escape_c.j
 test262/data/test_es2021/built-ins/TypedArray/prototype/sort/comparefn-nonfunction-call-throws.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-returns-throws.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-returns-throws.js
+test262/data/test_es2021/built-ins/TypedArrayConstructors/internal/HasProperty/key-is-not-canonical.js
 test262/data/test_es2021/intl402/ListFormat/constructor/supportedLocalesOf/locales-invalid.js
 test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-sentence-iterable.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-valid.js
@@ -495,3 +496,7 @@ test262/data/test_es2021/intl402/String/prototype/localeCompare/throws-same-exce
 test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-short.js
 test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-auto.js
 # --- end of Issue #18441
+
+#19182
+test262/data/test_es2021/language/statements/async-generator/dstr/ary-ptrn-elem-obj-val-null.js
+# --- end of Issue #19182
