@@ -130,7 +130,7 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
         ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
         auto constraint = typeParam->GetConstraintType()->Substitute(relation, substitution);
         if (!relation->IsAssignableTo(typeArg, constraint)) {
-            checker->ThrowTypeError(  // NOTE(vpukhov): refine message
+            checker->LogTypeError(  // NOTE(vpukhov): refine message
                 {"Type ", typeArg, " is not assignable to", " constraint type ", constraint}, pos);
         }
     }
