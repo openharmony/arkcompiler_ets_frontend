@@ -163,6 +163,7 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     function.catch_blocks.reserve(protoFunction.catchblocks_size());
     for (const auto &protoCatchBlock : protoFunction.catchblocks()) {
         auto *catchBlock = allocator->New<panda::pandasm::Function::CatchBlock>();
+        CHECK_NOT_NULL(catchBlock);
         CatchBlock::Deserialize(protoCatchBlock, *catchBlock);
         function.catch_blocks.emplace_back(std::move(*catchBlock));
     }

@@ -117,7 +117,7 @@ binder::EnumMemberResult EvaluateUnaryExpression(checker::Checker *checker, bind
             return -std::get<double>(value);
         }
         case lexer::TokenType::PUNCTUATOR_TILDE: {
-            return static_cast<double>(~ToUInt(std::get<double>(value)));
+            return static_cast<double>(~ToInt(std::get<double>(value)));
         }
         default: {
             break;
@@ -167,10 +167,10 @@ binder::EnumMemberResult EvaluateBinaryExpression(checker::Checker *checker, bin
                 return static_cast<double>(ToUInt(std::get<double>(left)) ^ ToUInt(std::get<double>(right)));
             }
             case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT: {
-                return static_cast<double>(ToUInt(std::get<double>(left)) << ToUInt(std::get<double>(right)));
+                return static_cast<double>(ToInt(std::get<double>(left)) << ToUInt(std::get<double>(right)));
             }
             case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT: {
-                return static_cast<double>(ToUInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
+                return static_cast<double>(ToInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
             }
             case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
                 return static_cast<double>(ToUInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));

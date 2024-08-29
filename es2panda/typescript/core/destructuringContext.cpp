@@ -315,6 +315,7 @@ Type *ArrayDestructuringContext::CreateArrayTypeForRest(UnionType *inferedType)
 Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
 {
     ObjectDescriptor *desc = checker_->Allocator()->New<ObjectDescriptor>(checker_->Allocator());
+    CHECK_NOT_NULL(desc);
     ArenaVector<ElementFlags> elementFlags(checker_->Allocator()->Adapter());
     uint32_t savedIdx = index_;
     uint32_t iterIndex = 0;
@@ -326,7 +327,6 @@ Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
         util::StringView memberIndex = util::Helpers::ToStringView(checker_->Allocator(), iterIndex);
         auto *memberVar =
             binder::Scope::CreateVar(checker_->Allocator(), memberIndex, binder::VariableFlags::PROPERTY, nullptr);
-        CHECK_NOT_NULL(memberVar);
         memberVar->SetTsType(tupleElementType);
         elementFlags.push_back(memberFlag);
         desc->properties.push_back(memberVar);

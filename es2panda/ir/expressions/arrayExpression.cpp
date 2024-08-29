@@ -239,6 +239,7 @@ checker::Type *ArrayExpression::Check(checker::Checker *checker) const
 
     if (inConstContext || createTuple) {
         checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+        CHECK_NOT_NULL(desc);
         uint32_t index = 0;
 
         for (auto it = elementTypes.begin(); it != elementTypes.end(); it++, index++) {
@@ -271,6 +272,7 @@ checker::Type *ArrayExpression::Check(checker::Checker *checker) const
 checker::Type *ArrayExpression::CheckPattern(checker::Checker *checker) const
 {
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    CHECK_NOT_NULL(desc);
     ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
     checker::ElementFlags combinedFlags = checker::ElementFlags::NO_OPTS;
     uint32_t minLength = 0;
