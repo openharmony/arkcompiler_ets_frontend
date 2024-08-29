@@ -112,7 +112,6 @@ export class TypeScriptLinter {
   static useRelaxedRules = false;
   static useSdkLogic = false;
   static advancedClassChecks = false;
-  static arkts2: boolean = false;
 
   static initGlobals(): void {
     TypeScriptLinter.filteredDiagnosticMessages = new Set<ts.DiagnosticMessageChain>();
@@ -155,7 +154,8 @@ export class TypeScriptLinter {
       this.tsTypeChecker,
       TypeScriptLinter.testMode,
       TypeScriptLinter.advancedClassChecks,
-      TypeScriptLinter.useSdkLogic
+      TypeScriptLinter.useSdkLogic,
+      this.arkts2
     );
     this.currentErrorLine = 0;
     this.currentWarningLine = 0;

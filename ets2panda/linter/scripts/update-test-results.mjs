@@ -19,6 +19,7 @@ import * as path from 'node:path';
 const TS_EXT = ".ts";
 const ETS_EXT = ".ets";
 const TSX_EXT = ".tsx";
+const STS_EXT = ".sts";
 const D_TS_EXT = '.d.ts';
 
 class Mode {
@@ -70,6 +71,11 @@ function readTestFile(filePath) {
 }
 
 function updateTest(testDir, testFile, mode) {
+    // Temporary solution: rename '.sts' extension to '.ts'
+    if (testFile.endsWith(STS_EXT)) {
+        testFile = testFile.replace(STS_EXT, TS_EXT);
+    }
+
     let resultExt = RESULT_EXT[mode];
     let resultFileWithExt = testFile + resultExt;
     let resultFilePath = path.join(testDir, resultFileWithExt);
@@ -109,7 +115,11 @@ for (let testDir of testDirs) {
 
     // Get tests from test directory.
     let testFiles = fs.readdirSync(testDir).filter(x =>
-        (x.trimEnd().endsWith(TS_EXT) && !x.trimEnd().endsWith(D_TS_EXT)) || x.trimEnd().endsWith(TSX_EXT) || x.trimEnd().endsWith(ETS_EXT));
+        (x.trimEnd().endsWith(TS_EXT) && !x.trimEnd().endsWith(D_TS_EXT)) ||
+        x.trimEnd().endsWith(TSX_EXT) ||
+        x.trimEnd().endsWith(ETS_EXT) ||
+        x.trimEnd().endsWith(STS_EXT)
+    );
 
     if (!testFiles) continue;
 

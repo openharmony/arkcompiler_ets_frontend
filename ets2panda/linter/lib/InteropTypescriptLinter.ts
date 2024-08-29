@@ -92,13 +92,15 @@ export class InteropTypescriptLinter {
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly compileOptions: ts.CompilerOptions,
+    private readonly arkts2: boolean,
     etsLoaderPath: string | undefined
   ) {
     this.tsUtils = new TsUtils(
       this.tsTypeChecker,
       InteropTypescriptLinter.testMode,
       InteropTypescriptLinter.advancedClassChecks,
-      InteropTypescriptLinter.useSdkLogic
+      InteropTypescriptLinter.useSdkLogic,
+      this.arkts2
     );
     this.currentErrorLine = 0;
     this.currentWarningLine = 0;

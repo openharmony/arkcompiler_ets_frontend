@@ -117,13 +117,17 @@ export function lint(options: LintOptions, etsLoaderPath: string | undefined): L
       options.compatibleSdkVersion,
       options.compatibleSdkVersionStage
     ) :
-    new InteropTypescriptLinter(tsProgram.getTypeChecker(), tsProgram.getCompilerOptions(), etsLoaderPath);
+    new InteropTypescriptLinter(
+      tsProgram.getTypeChecker(),
+      tsProgram.getCompilerOptions(),
+      cmdOptions.arkts2,
+      etsLoaderPath
+    );
   const { errorNodes, problemsInfos } = lintFiles(srcFiles, linter);
   consoleLog('\n\n\nFiles scanned: ', srcFiles.length);
   consoleLog('\nFiles with problems: ', errorNodes);
 
   const [errorNodesTotal, warningNodes] = countProblems(linter);
-
   logTotalProblemsInfo(errorNodesTotal, warningNodes, linter);
   logProblemsPercentageByFeatures(linter);
 
