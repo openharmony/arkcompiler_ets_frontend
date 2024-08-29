@@ -138,3 +138,4 @@ faultsAttrs[FaultID.SharedModuleExportsWarning] = new FaultAttributes(163, Probl
 faultsAttrs[FaultID.SendableBetaCompatible] = new FaultAttributes(182);
 faultsAttrs[FaultID.ObjectLiteralProperty] = new FaultAttributes(183);
 faultsAttrs[FaultID.OptionalMethod] = new FaultAttributes(184);
+faultsAttrs[FaultID.ImportType] = new FaultAttributes(185);
