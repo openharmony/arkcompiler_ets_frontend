@@ -4,14 +4,23 @@ box2d
 #18744
 bignumber_test
 
+#18863
+json-parse-inspector
+
 #18745
 json-stringify-inspector
 
 #18746
 LuaJSFight
 
+#19008
+regex-dna
+
 #18647
 splay
+
+#18897
+splay-latency
 
 #18790
 stanford-crypto-sha256

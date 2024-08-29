@@ -2,3 +2,6 @@
 
 # Issue #18417
 box2d
+
+# Issue #18812
+typescript-compiler

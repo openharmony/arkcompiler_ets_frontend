@@ -3283,7 +3283,6 @@ test262/data/test_es2021/intl402/DisplayNames/prototype/resolvedOptions/return-o
 test262/data/test_es2021/intl402/DisplayNames/prototype/resolvedOptions/option-type.js
 test262/data/test_es2021/intl402/DisplayNames/options-type-invalid-throws.js
 test262/data/test_es2021/intl402/DisplayNames/options-style-valid.js
-test262/data/test_es2021/intl402/fallback-locales-are-supported.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/has-property.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/grandfathered.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/error-cases.js

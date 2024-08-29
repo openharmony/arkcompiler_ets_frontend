@@ -1,8 +1,14 @@
 #18417
 box2d
 
+#18899
+crypto
+
 #18745
 json-stringify-inspector
+
+#19008
+regex-dna
 
 #18740
 splay
