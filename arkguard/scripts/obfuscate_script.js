@@ -19,7 +19,7 @@ const { exec } = require('child_process');
 import { Extension } from '../src/common/type';
 
 function obfuscateDirs(obfConfig, obfDir) {
-  const command = `node --loader=ts-node/esm src/cli/SecHarmony.ts ${obfDir} --config-path ${obfConfig}`;
+  const command = `node --loader=ts-node/esm src/cli/SecHarmony.ts ${obfDir} --config-path ${obfConfig} --test-type grammar`;
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing command: ${error.message}`);

@@ -16,7 +16,8 @@
     "test:grammar": "rm -rf test/local && node --loader ts-node/esm ./scripts/obfuscate_script.js && node --loader ts-node/esm ./scripts/execute_result_statistics.js",
     "coverage": "nyc npm run test",
     "coverage_ut": "nyc npm run test:ut",
-    "benchmark": "cd ./test && npm install && cd ../ && node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=5000 ./test/benchmark/**/*.ts"
+    "benchmark": "cd ./test && npm install && cd ../ && node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=5000 ./test/benchmark/**/*.ts",
+    "test:combinations": "python ./scripts/combination_test.py"
   },
   "repository": {
     "type": "git",

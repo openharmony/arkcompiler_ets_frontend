@@ -14,8 +14,6 @@
  */
 
 import path from 'path';
-import fs from 'fs';
-import {FileUtils} from '../utils/FileUtils';
 import {ApiExtractor} from './ApiExtractor';
 import {ListUtil} from '../utils/ListUtil';
 import type {IOptions} from '../configs/IOptions';
@@ -62,68 +60,6 @@ export function isEnabledPropertyObfuscation(customProfiles: IOptions): boolean 
   return (customProfiles.mNameObfuscation &&
     customProfiles.mNameObfuscation.mEnable &&
     customProfiles.mNameObfuscation.mRenameProperties);
-}
-
-/**
- * read project reserved properties for UT
- * @param projectPaths can be dir or file
- * @param customProfiles
- */
-export function readProjectProperties(projectPaths: string[], customProfiles: IOptions, isOHProject?: boolean):
-  {projectAndLibsReservedProperties: string[]; libExportNames: string[]} {
-
-  let scanningCommonType: ApiExtractor.ApiType = undefined;
-  let scanningLibsType: ApiExtractor.ApiType = undefined;
-  if (isEnabledPropertyObfuscation(customProfiles)) {
-    scanningCommonType = ApiExtractor.ApiType.PROJECT;
-    scanningLibsType = ApiExtractor.ApiType.PROJECT_DEPENDS;
-  } else {
-    scanningCommonType = ApiExtractor.ApiType.CONSTRUCTOR_PROPERTY;
-    scanningLibsType = ApiExtractor.ApiType.CONSTRUCTOR_PROPERTY;
-  }
-  ApiExtractor.mConstructorPropertySet = new Set();
-  // This call is for UT.
-  initScanProjectConfig(customProfiles);
-
-  for (const projectPath of projectPaths) {
-    if (!fs.existsSync(projectPath)) {
-      console.error(`File ${FileUtils.getFileName(projectPath)} is not found.`);
-      return {projectAndLibsReservedProperties:[], libExportNames: []};
-    }
-    stringPropsSet.clear();
-    const sourcPath = isOHProject ? path.join(projectPath, 'src', 'main') : projectPath;
-    const projProperties: string[] = ApiExtractor.parseCommonProject(sourcPath, customProfiles, scanningCommonType);
-    const libExportNamesAndReservedProps = readThirdPartyLibProperties(projectPath, scanningLibsType);
-    const sdkProperties = libExportNamesAndReservedProps?.reservedProperties;
-
-    if (isEnabledPropertyObfuscation(customProfiles)) {
-      // read project code export names
-      customProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(projProperties,
-        customProfiles.mNameObfuscation.mReservedProperties, [...structPropsSet]);
-
-      // read project lib export names
-      if (sdkProperties && sdkProperties.length > 0) {
-        customProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(sdkProperties,
-          customProfiles.mNameObfuscation.mReservedProperties);
-      }
-
-      if (scanProjectConfig.mKeepStringProperty && stringPropsSet.size > 0) {
-        customProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList([...stringPropsSet],
-          customProfiles.mNameObfuscation.mReservedProperties);
-      }
-    }
-    structPropsSet.clear();
-    stringPropsSet.clear();
-    if (scanProjectConfig.mExportObfuscation && libExportNamesAndReservedProps?.reservedLibExportNames) {
-      customProfiles.mNameObfuscation.mReservedNames = ListUtil.uniqueMergeList(libExportNamesAndReservedProps.reservedLibExportNames,
-        customProfiles.mNameObfuscation.mReservedNames);
-    }
-  }
-
-  return {
-    projectAndLibsReservedProperties: customProfiles.mNameObfuscation.mReservedProperties ?? [],
-    libExportNames: customProfiles.mNameObfuscation.mReservedNames ?? []
-  };
 }
 
 function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean) {
@@ -200,31 +136,4 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
     exportNameSet: exportNameSet,
     enumPropertySet: enumPropertySet,
   };
-}
-
-function readThirdPartyLibProperties(projectPath: string, scanningApiType: ApiExtractor.ApiType): {reservedProperties: string[];
-  reservedLibExportNames: string[] | undefined} {
-  if (!fs.lstatSync(projectPath).isDirectory()) {
-    return undefined;
-  }
-
-  // find third party lib and extract reserved names
-  const fileNames: string[] = fs.readdirSync(projectPath);
-  const hasNodeModules: boolean = fileNames.includes('node_modules');
-  const hasOHModules: boolean = fileNames.includes('oh_modules');
-  if (!hasNodeModules && !hasOHModules) {
-    return undefined;
-  }
-  if (hasNodeModules && hasOHModules) {
-    throw new Error(`There are both node_modules and oh_modules folders in ${projectPath}`);
-  }
-
-  let filePath: string = '';
-  if (hasNodeModules) {
-    filePath = path.join(projectPath, 'node_modules');
-  } else {
-    filePath = path.join(projectPath, 'oh_modules');
-  }
-
-  return ApiExtractor.parseThirdPartyLibs(filePath, scanningApiType);
 }

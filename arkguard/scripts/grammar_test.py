@@ -59,6 +59,7 @@ FILE_EXTENSION_LIST = [
 CONFIG_FILE_NAME = "obfConfig.json"
 PRINT_UNOBFUSCATION_SUFFIX = "keptNames.unobf.json"
 EXPECTED_UNOBFUSCATION_SUFFIX = "_expected_unobf.txt"
+TEST_TYPE = 'grammar'
 
 POOL_THREAD_COUNT = os.cpu_count()
 
@@ -70,6 +71,11 @@ NO_NEED_RUN_WITH_NODE_FILES = [
     "export_struct_transform_class.ts",
     "nosymbolIdentifierTest.ts",
 ]
+
+
+SOURCE_EXPECT_MAP = {}
+SOURCE_EXPECT_MAP['grammar'] = {'test/local': 'test/grammar'}
+SOURCE_EXPECT_MAP['combinations'] = {'test/local/combinations': 'test/combinations_expect'}
 # For debug
 VERBOSE = False
 
@@ -136,17 +142,20 @@ def run_file_with_node(file_path):
 
 
 class Task:
-    def __init__(self, work_dir, obf_config_path):
+    def __init__(self, work_dir, obf_config_path, test_type):
         self.work_dir = work_dir
         self.obf_config_path = obf_config_path
+        self.test_type = test_type
 
 
 def obfuscate_dir(task: Task):
     config_file_path = task.obf_config_path
     work_dir = task.work_dir
-    cmd = "node lib/cli/SecHarmony.js %s --config-path %s" % (
+    test_type = task.test_type
+    cmd = "node lib/cli/SecHarmony.js %s --config-path %s --test-type %s"  % (
         work_dir,
         config_file_path,
+        test_type
     )
     if VERBOSE:
         logging.info("running test: %s", cmd)
@@ -211,9 +220,9 @@ class TestStat:
 
 
 class Runner:
-    def __init__(self, test_filter):
+    def __init__(self, test_filter, root_dir, test_type):
         self.test_filter = test_filter
-
+        self.test_type = test_type
         self.obfuscation_tasks = []
         self.obfuscate_result = TestStat()
         self.run_with_node_result = TestStat()
@@ -227,7 +236,6 @@ class Runner:
         # all source files in test directory
         self.all_file_list = []
 
-        root_dir = os.path.join(os.path.dirname(__file__), "../test/local")
         self.obfscated_cache_root_dir = os.path.normpath(root_dir)
 
         self.__init()
@@ -243,7 +251,7 @@ class Runner:
         self.start_time = 0
 
     def add_task(self, work_dir, obf_config_path):
-        task = Task(work_dir, obf_config_path)
+        task = Task(work_dir, obf_config_path, self.test_type)
         self.obfuscation_tasks.append(task)
 
     def obfuscate(self):
@@ -260,6 +268,10 @@ class Runner:
                 self.obfuscate_result.failed_cases.append(self.obfuscation_tasks[i])
 
         self.end_record()
+        self.clear_obfuscation_tasks()
+
+    def clear_obfuscation_tasks(self):
+        self.obfuscation_tasks.clear()
 
     def run_with_node(self):
         self.start_record("run_with_node")
@@ -328,12 +340,12 @@ class Runner:
         if self.run_with_node_result.failed_count > 0:
             logging.info("run with node failed cases:")
             for one in self.run_with_node_result.failed_cases:
-                logging.info("->", one)
+                logging.info(one)
 
         if self.content_compare_result.failed_count > 0:
             logging.info("content compare failed cases:")
             for one in self.content_compare_result.failed_cases:
-                logging.info("->", one)
+                logging.info(one)
 
         logging.info("obfuscation passed    : %d/%d failed: %d", self.obfuscate_result.success_count,
             self.obfuscate_result.total_count, self.obfuscate_result.failed_count)
@@ -351,6 +363,11 @@ class Runner:
         ):
             return -1
         return 0
+
+    def has_failed_cases(self):
+        return (self.obfuscate_result.failed_count > 0) or \
+        (self.run_with_node_result.failed_count > 0) or \
+        (self.content_compare_result.failed_count> 0)
 
     def __filter_files(self, file_list):
         target = []
@@ -386,12 +403,21 @@ class Runner:
             self.content_compare_result.failed_count += 1
             self.content_compare_result.failed_cases.append(file_path)
             diff = difflib.ndiff(actual.splitlines(), expectation.splitlines())
-            logging.info("compare file, actual path:", actual_path)
-            logging.info("compare file, expect path:", expectation_file)
+            logging.info("compare file, actual path:")
+            logging.info(actual_path)
+            logging.info("compare file, expect path:")
+            logging.info(expectation_file)
             logging.info("\n".join(diff))
 
+    def get_expect_path(self, file_path):
+        base_dir =  os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+        source_expect = SOURCE_EXPECT_MAP[self.test_type]
+        for source, expect in source_expect.items():
+            if file_path.startswith(os.path.join(base_dir, source)):
+                return file_path.replace(source, expect)
+
     def __compare_content(self, file_path):
-        source_path = file_path.replace("/test/local/", "/test/grammar/")
+        source_path = self.get_expect_path(file_path)
         source_suffix = get_file_suffix(source_path)
         expectation_path = f"{source_suffix.file_name}_expected.txt"
         result_suffix = get_file_suffix(file_path)
@@ -475,7 +501,8 @@ def main():
 
     root_config = os.path.join(root_dir, CONFIG_FILE_NAME)
 
-    runner = Runner(args.test_filter)
+    local_root_dir = os.path.join(os.path.dirname(__file__), "../test/local")
+    runner = Runner(args.test_filter, local_root_dir, TEST_TYPE)
     runner.traverse_dirs(root_dir, root_config)
     runner.obfuscate()
     runner.run_with_node()
