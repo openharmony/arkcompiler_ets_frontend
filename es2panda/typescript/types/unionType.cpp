@@ -184,6 +184,7 @@ Type *UnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, 
     }
 
     Type *newUnionType = allocator->New<UnionType>(std::move(copiedConstituents));
+    CHECK_NOT_NULL(newUnionType);
 
     return HandleUnionType(newUnionType->AsUnionType(), globalTypes);
 }

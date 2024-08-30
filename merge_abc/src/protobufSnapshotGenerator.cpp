@@ -71,6 +71,7 @@ panda::es2panda::util::ProgramCache *ProtobufSnapshotGenerator::GetCacheContext(
     }
 
     auto *program = allocator->New<panda::pandasm::Program>();
+    CHECK_NOT_NULL(program);
     Program::Deserialize(protoCache.program(), *program, allocator);
     uint32_t hashCode = protoCache.hashcode();
     auto *programCache = allocator->New<panda::es2panda::util::ProgramCache>(hashCode, std::move(*program));

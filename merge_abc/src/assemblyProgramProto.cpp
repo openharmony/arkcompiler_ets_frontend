@@ -68,6 +68,7 @@ void Program::Deserialize(const protoPanda::Program &protoProgram, panda::pandas
         auto &protoFunction = functionUnit.value();
         auto *function = allocator->New<panda::pandasm::Function>(protoFunction.name(),
             static_cast<panda::panda_file::SourceLang>(protoFunction.language()));
+        CHECK_NOT_NULL(function);
         Function::Deserialize(protoFunction, *function, allocator);
         program.function_table.insert({name, std::move(*function)});
     }

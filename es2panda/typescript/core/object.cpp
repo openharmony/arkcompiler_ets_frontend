@@ -111,6 +111,7 @@ void Checker::ResolveUnionTypeMembers(UnionType *type)
     }
 
     ObjectDescriptor *desc = allocator_->New<ObjectDescriptor>(allocator_);
+    CHECK_NOT_NULL(desc);
     ArenaVector<Type *> stringInfoTypes(allocator_->Adapter());
     ArenaVector<Type *> numberInfoTypes(allocator_->Adapter());
     ArenaVector<Signature *> callSignatures(allocator_->Adapter());

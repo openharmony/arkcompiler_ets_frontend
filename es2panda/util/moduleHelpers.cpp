@@ -44,6 +44,7 @@ void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
     }
 
     auto *prog = allocator->New<panda::pandasm::Program>();
+    CHECK_NOT_NULL(prog);
     std::string line;
     while (getline(ss, line)) {
         std::size_t pos = line.find(":");
