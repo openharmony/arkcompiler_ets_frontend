@@ -1,4 +1,1 @@
 # Known failures list for third_lib_js - debug-x64-aot-llvmcg
-
-#18487
-pako_test

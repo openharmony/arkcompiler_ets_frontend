@@ -15,9 +15,6 @@ jmespath_test
 #18342
 mathjs_test
 
-#18487
-pako_test
-
 #18424
 pcx_test
 

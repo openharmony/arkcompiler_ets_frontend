@@ -14,6 +14,3 @@ mathjs_test
 
 #18331
 validator_test
-
-#18487
-pako_test
