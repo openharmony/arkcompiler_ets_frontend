@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import d from 'assert';
+let e: number = 1;
+let f: string = "1";
+let g: boolean = true;
+let h = 0;
+let i = 0;
+let j = 0;
+let k: ClassDecorator = () => { h++; };
+let l: MethodDecorator = () => { i++; };
+let m: PropertyDecorator = () => { j++; };
+function a(s: number): ClassDecorator { d(s === 1); return k; }
+function b(r: string): MethodDecorator { d(r === "1"); return l; }
+function c(q: boolean): PropertyDecorator { d(q === true); return m; }
+type k = number;
+type l = string;
+type m = boolean;
+@k
+@a(e)
+class n {
+    @l
+    @b(f)
+    f01() { }
+    @l
+    @b(f)
+    set a001(p: number) { this.a01 = p; }
+    @b(f)
+    @l
+    get a002(): number { return this.a01; }
+    @m
+    @c(g)
+    a01: number = 1;
+}
+d(h === 2);
+d(i === 6);
+d(j === 2);
+let o = new n();
+d(o.a002 === 1);
+o.a001 = 2;
+d(o.a01 === 2);
+d(o.a002 as number === 2);

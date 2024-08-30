@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import a from 'assert';
+let b: symbol = Symbol();
+let c = Symbol("s");
+const d: unique symbol = Symbol("s3");
+let e = {
+    [b]: 1
+};
+e[b];
+a(e[b] === 1);
+//Symbol.asyncIterator;
+Symbol.hasInstance;
+Symbol.isConcatSpreadable;
+Symbol.iterator;
+Symbol.match;
+Symbol.replace;
+Symbol.search;
+Symbol.species;
+Symbol.split;
+Symbol.toPrimitive;
+Symbol.toStringTag;
+Symbol.unscopables;
+let f = {
+    //[Symbol.asyncIterator]:1,
+    [Symbol.hasInstance]: 2,
+    [Symbol.isConcatSpreadable]: 3,
+    [Symbol.iterator]: 4,
+    [Symbol.match]: 5,
+    [Symbol.replace]: 6,
+    [Symbol.search]: 7,
+    [Symbol.species]: 8,
+    [Symbol.split]: 9,
+    [Symbol.toPrimitive]: 10,
+    [Symbol.toStringTag]: 11,
+    [Symbol.unscopables]: 12,
+};
+//assert(o1[Symbol.asyncIterator] === 1);
+a(f[Symbol.hasInstance] === 2);
+a(f[Symbol.isConcatSpreadable] === 3);
+a(f[Symbol.iterator] === 4);
+a(f[Symbol.match] === 5);
+a(f[Symbol.replace] === 6);
+a(f[Symbol.search] === 7);
+a(f[Symbol.species] === 8);
+a(f[Symbol.split] === 9);
+a(f[Symbol.toPrimitive] === 10);
+a(f[Symbol.toStringTag] === 11);
+a(f[Symbol.unscopables] === 12);

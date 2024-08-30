@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+type g = string;
+type B = number;
+declare namespace h {
+    export { k1, l1 };
+}
+declare namespace i {
+    export { i1, j1 };
+}
+export {};
+declare const j: h.g;
+declare const k: i.B;
+declare const l: h.i.B;
+declare const m: i.h.g;
+declare const o: h.i.h.g;
+declare const p: i.h.i.B;
+let q: h.g = "a";
+let t: i.B = 1;
+let u: h.i.B = 2;
+let v: i.h.g = "b";
+let a1: h.i.h.g = "c";
+let b1: i.h.i.B = 3;
+assert(q === "a");
+assert(t === 1);
+assert(u === 2);
+assert(v === "b");
+assert(a1 === "c");
+assert(b1 === 3);
+declare namespace c1 {
+    function h1(): void;
+    let f1: number;
+}
+declare module d1 {
+    function h1(): void;
+    let f1: number;
+}
+declare module e1 {
+    export let f1: g1;
+    type g1 = number;
+    export {};
+}

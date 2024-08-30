@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import a from 'assert';
+var b = function i() {
+    let p = 'test';
+    return p;
+};
+b();
+a(b() === 'test');
+var c = {
+    c: function () {
+        return c;
+    },
+    d: function f() {
+        return c.c;
+    }
+};
+c.c();
+c.d();
+a(c.c() === c);
+a(c.d()() === c);
+const { B: d = function () {
+    let o = 'binding';
+    return o;
+}, C: e = function j() {
+    let n = 'binding';
+    return n;
+} } = { B: undefined, C: () => {
+        return 'test';
+    } };
+d();
+e();
+a(d() == 'binding');
+a(e() === 'test');
+var f = function k() {
+    return k;
+};
+var g = function l() {
+    return g;
+};
+f();
+g()();
+a(f() === f);
+a(g()() === g);
+var h = function m(q: any, ...r: any): any {
+    return arguments;
+};
+h(1, 2, 3);
+a(h(1, 2, 3)['0'] === 1);
+a(h(1, 2, 3)['1'] === 2);
+a(h(1, 2, 3)['2'] === 3);

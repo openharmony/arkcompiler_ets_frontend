@@ -1,0 +1,80 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+interface g {
+    (): string;
+    (a: number, b: number, c?: string): number;
+    new (): string;
+    new (s: string): any;
+    [n: number]: () => string;
+    [s: string]: any;
+    p1: any;
+    p2: string;
+    p3?: any;
+    p4?: number;
+    u: (s: number) => string;
+    v(): any;
+    a1?(): any;
+    b1(a: string): number;
+    c1?(s: number): string;
+}
+interface h {
+    (a: number, b: number, c?: string): number;
+}
+let i: h = (v: number, w: number, x?: string) => 1;
+assert(i(1, 1) === 1);
+interface j {
+    new (s: string): any;
+}
+let k: j = class {
+    a: string;
+    constructor(u: string) {
+        this.a = u;
+    }
+};
+let l = new k("test");
+assert(l.a = "test");
+interface m {
+    p1: any;
+    p2: string;
+    p3?: any;
+    p4?: number;
+    u: (s: number) => string;
+}
+let o: m = {
+    p1: 1,
+    p2: "1",
+    u: (t: number) => t.toString(),
+};
+assert(o.p1 === 1);
+assert(o.p2 === "1");
+assert(o.p3 === undefined);
+assert(o.p4 === undefined);
+assert(o.u(1) === "1");
+interface p {
+    v(): any;
+    a1?(): any;
+    b1(a: string): number;
+    c1?(s: number): string;
+}
+let q: p = {
+    v: () => 1,
+    b1: (s: string) => 1,
+    c1: (r: number) => r.toString(),
+};
+assert(q.v() === 1);
+assert(q.a1 === undefined);
+assert(q.b1("1") === 1);
+assert(q.c1!(2) === "2");

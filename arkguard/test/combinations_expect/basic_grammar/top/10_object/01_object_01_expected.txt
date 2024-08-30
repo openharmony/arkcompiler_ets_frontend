@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import c from 'assert';
+const d: unique symbol = Symbol();
+class e {
+    a01?: number;
+    b01?: string;
+    c01?: boolean;
+    1?: number;
+    "x"?: number;
+    [d]?: number;
+}
+let f = 10;
+let g = { a01: 20 };
+let h: symbol;
+namespace i {
+    export let a01 = 30;
+}
+i.a01;
+let j = {
+    a01: 1,
+    b01: "12",
+    1: 1,
+    "2": "2",
+    [3]: 3,
+    ["4"]: "4",
+    [h = Symbol()]: 5,
+    [d]: 6,
+    ["1" + "2"]: 7,
+    [1 + 2 + 3]: 8,
+    [f]: 9,
+    [f + 3]: 10,
+    [g.a01]: 11,
+    [i.a01]: 12,
+    x01: () => { return 13; },
+    await: () => 14
+};
+c(j.a01 === 1);
+c(j.b01 === '12');
+c(j[1] === 1);
+c(j["2"] === "2");
+c(j[3] === 3);
+c(j["4"] === "4");
+c(j[h] === 5);
+c(j[d] === 6);
+c(j["12"] === 7);
+c(j[6] === 8);
+c(j[10] === 9);
+c(j[13] === 10);
+c(j[20] === 11);
+c(j[30] === 12);
+c(j.x01() === 13);
+c(j.await() === 14);
+function a({ b01: l, ...m }: {
+    b01: number;
+    c01: string;
+}) {
+    return l + m.c01;
+}
+a({ b01: 1, c01: "213" });
+c(a({ b01: 1, c01: "213" }) === "1213");
+function b(k: e) {
+    c(k.a01 === 1);
+    c(k.b01 === "1");
+    c(k.c01 === true);
+    c(k[1] === 1);
+    c(k["x"] === 2);
+    c(k[d] === 3);
+}
+b({ a01: 1, b01: "1", c01: true, 1: 1, "x": 2, [d]: 3 });

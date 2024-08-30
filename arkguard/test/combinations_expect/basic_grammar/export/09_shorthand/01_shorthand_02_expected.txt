@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from 'assert';
+let name1 = 1;
+let obj = { name1: name1 };
+{
+    const { name1: h = 2 } = obj;
+    h;
+    assert(h === 1);
+}
+assert(obj.name1 === 1);
+(function () {
+    var g;
+    for ({ s0: g = 5 } of [{ s0: 1 }]) {
+        assert(g === 1);
+    }
+})();
+(function () {
+    var f;
+    for ({ s1: f = 5 } of [{ s1: f }]) {
+        assert(f === 5);
+    }
+})();
+(function () {
+    let e;
+    ({ y: e = 5 } = { y: 1 });
+    assert(e === 1);
+})();
+(function () {
+    let b: string, c: {
+        x: number;
+    };
+    let d: any = { y2: "1", y3: { x: 2 } };
+    ({ y2: b = '5', y3: c = { x: 1 } } = d);
+    assert(b === '1');
+    assert(c.x === 2);
+})();
+(function () {
+    let a;
+    ({ z: a = { x: 5 } } = { z: { x: 1 } });
+    assert(a.x === 1);
+})();

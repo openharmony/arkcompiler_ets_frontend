@@ -1,0 +1,38 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import a from 'assert';
+let b = 1;
+let c = 2;
+let d = 3;
+let e = () => { };
+a(e() === undefined);
+let f = () => 1 ? 2 : 3;
+a(f() === 2);
+let g = () => b ? c : d;
+a(g() === 2);
+let h = ([]) => 1 ? 2 : 3;
+a(h([]) === 2);
+let i = ([]) => b ? c : d;
+a(i([]) === 2);
+let j = (...o: any): any => o;
+a(j(1, 2, 3)[0] === 1);
+let k = () => { 1 ? 2 : 3; };
+a(k() === undefined);
+let l = () => { b ? c : d; };
+a(l() === undefined);
+let m = ([]) => { 1 ? 2 : 3; };
+a(m([]) === undefined);
+let n = ([]) => { b ? c : d; };
+a(n([]) === undefined);

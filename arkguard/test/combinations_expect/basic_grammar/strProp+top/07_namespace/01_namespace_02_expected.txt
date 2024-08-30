@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import a from 'assert';
+type A1 = string;
+type B = number;
+declare namespace NS1 {
+    export { NS2, A1 };
+}
+declare namespace NS2 {
+    export { NS1, B };
+}
+export {};
+declare const b: NS1.A1;
+declare const c: NS2.B;
+declare const d: NS1.NS2.B;
+declare const e: NS2.NS1.A1;
+declare const f: NS1.NS2.NS1.A1;
+declare const g: NS2.NS1.NS2.B;
+let h: NS1.A1 = "a";
+let i: NS2.B = 1;
+let j: NS1.NS2.B = 2;
+let k: NS2.NS1.A1 = "b";
+let l: NS1.NS2.NS1.A1 = "c";
+let m: NS2.NS1.NS2.B = 3;
+a(h === "a");
+a(i === 1);
+a(j === 2);
+a(k === "b");
+a(l === "c");
+a(m === 3);
+declare namespace n {
+    function foo1(): void;
+    let val: number;
+}
+declare module o {
+    function foo1(): void;
+    let val: number;
+}
+declare module p {
+    export let val: q;
+    type q = number;
+    export {};
+}

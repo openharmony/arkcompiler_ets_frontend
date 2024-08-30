@@ -22,4 +22,3 @@ class Tiger implements as {
 }
 let ins: as = new Tiger();
 assert(ins.prop === 1);
-

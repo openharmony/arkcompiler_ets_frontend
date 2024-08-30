@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import assert from "assert";
+class v {
+    b1 = 5;
+    constructor(public c1: number, private d1: string, protected e1: boolean, readonly f1: number, b1: string) {
+        b1 = b1 + 1;
+        let c1 = c1;
+        let d1 = d1;
+        let e1 = e1;
+        let f1 = f1;
+        this.b1 = f1;
+    }
+}
+let a1 = new v(1, '2', false, 4, '5');
+assert(a1.b1 === 4);

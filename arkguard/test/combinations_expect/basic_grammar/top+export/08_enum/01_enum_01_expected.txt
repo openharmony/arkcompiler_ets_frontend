@@ -1,0 +1,120 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import b from 'assert';
+enum A1 {
+    prop1 = 1,
+    prop2 = 2
+}
+b(A1.prop1 === 1);
+b(A1.prop2 === 2);
+enum c {
+    up = 1,
+    down,
+    left,
+    right
+}
+const d: c = c.up;
+b(d === 1);
+b(c.up === 1);
+b(c.down === 2);
+b(c.left === 3);
+b(c.right === 4);
+b(c[1] === 'up');
+b(c[3] === 'left');
+b(c[4] === 'right');
+var e;
+(function (n) {
+    n[n["prop1"] = 1] = "prop1";
+    n[n["prop2"] = 2] = "prop2";
+})(e || (e = {}));
+b(e.prop1 === 1);
+b(e.prop2 === 2);
+b(e[1] === 'prop1');
+b(e[2] === 'prop2');
+let f = 1;
+enum g {
+    prop1 = 1,
+    prop2 = prop1 + f + 1
+}
+b(g.prop1 === 1);
+b(g.prop2 === 3);
+b(g[1] === 'prop1');
+enum h {
+    a = 2,
+    b = 3
+}
+b(h.a === 2);
+b(h.b === 3);
+b(h[2] === 'a');
+b(h[3] === 'b');
+enum i {
+    a = (1).valueOf(),
+    b = h.a,
+    c = h.b.valueOf()
+}
+b(i.a === 1);
+b(i.b === 2);
+b(i.c === 3);
+b(i[1] === 'a');
+b(i[2] === 'b');
+b(i[3] === 'c');
+module j {
+    export namespace N {
+        export enum E1 {
+            a = 1
+        }
+    }
+}
+b(j.N.E1.a === 1);
+b(j.N.E1[1] === 'a');
+module j {
+    export namespace N {
+        export enum E1 {
+            b = j.N.E1.a + 1
+        }
+    }
+}
+b(j.N.E1.b === 2);
+b(j.N.E1[2] === 'b');
+export enum k {
+    LEFT_BUTTON = 1,
+    RIGHT_BUTTON = 2,
+    MIDDLE_BUTTON = 4,
+    XBUTTON1_BUTTON = 5,
+    XBUTTON2_BUTTON = 6,
+    NO_BUTTON = 0
+}
+export const l = {
+    '-1': k.NO_BUTTON,
+    '0': k.LEFT_BUTTON,
+    '1': k.MIDDLE_BUTTON,
+    '2': k.RIGHT_BUTTON,
+    '3': k.XBUTTON1_BUTTON,
+    '4': k.XBUTTON2_BUTTON,
+};
+b(l['-1'] === 0);
+b(l['0'] === 1);
+b(l['1'] === 4);
+b(l['2'] === 2);
+b(l['3'] === 5);
+b(l['4'] === 6);
+export enum m {
+    A = 1 << 1,
+    B = 1 << 2
+}
+b(m.A === 2);
+b(m.B === 4);
+b(m[2] === 'A');
+b(m[4] === 'B');

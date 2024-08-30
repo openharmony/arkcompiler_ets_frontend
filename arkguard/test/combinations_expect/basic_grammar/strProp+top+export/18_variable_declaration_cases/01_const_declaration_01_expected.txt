@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the 'License');
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import a from 'assert';
+const b: string = 'A';
+a.strictEqual(b, 'A');
+try {
+    // @ts-expect-error
+    b = 'B';
+}
+catch (g) {
+    a.strictEqual((g as TypeError).name, 'TypeError');
+    a.strictEqual((g as TypeError).message, 'Assignment to constant variable.');
+}
+const c: {
+    name1: string;
+    version1: string;
+} = {
+    name1: 'arkguard',
+    version1: '1.0.0'
+};
+a.strictEqual(c.name1, 'arkguard');
+a.strictEqual(c.version1, '1.0.0');
+try {
+    // @ts-expect-error
+    c = 'another';
+}
+catch (f) {
+    a.strictEqual((f as TypeError).name, 'TypeError');
+    a.strictEqual((f as TypeError).message, 'Assignment to constant variable.');
+}
+c.version1 = '1.0.1';
+a.strictEqual(c.name1, 'arkguard');
+a.strictEqual(c.version1, '1.0.1');
+const { name1: d, version1: e }: {
+    name1: string;
+    version1: string;
+} = c;
+a.strictEqual(d, 'arkguard');
+a.strictEqual(e, '1.0.1');
