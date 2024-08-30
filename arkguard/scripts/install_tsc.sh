@@ -39,6 +39,11 @@ target_dir=./node_modules/typescript
 
 echo "move $package_path to override $target_dir"
 
-rm -rf $target_dir
+if [ -d "$target_dir" ]; then
+    rm -r "$target_dir"
+else
+    echo "$target_dir does not exist. No need to remove."
+fi
+
 mv $package_path $target_dir
 echo "------------------------------------finished-------------------------------------"
