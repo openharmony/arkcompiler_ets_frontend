@@ -6,3 +6,6 @@ test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-
 
 #18438
 test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-sync-return.js
+
+##18914
+test262/data/other_tests/built-ins/Object/entries/not-a-constructor.js

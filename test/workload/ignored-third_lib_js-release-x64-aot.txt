@@ -20,3 +20,5 @@ memory-cache_test
 
 #18331
 validator_test
+
+zxing_test

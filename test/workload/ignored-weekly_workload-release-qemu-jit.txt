@@ -12,3 +12,9 @@ json-stringify-inspector
 
 #19008
 regex_dna
+
+#18483
+typescript-compiler
+box2d
+pdfjs
+raytrace
