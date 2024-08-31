@@ -1,1 +1,7 @@
 # Known failures list for third_lib_js - release-arm64-aot
+
+# Issue #19130
+pako_test
+
+# Issue #19073
+zxing_test

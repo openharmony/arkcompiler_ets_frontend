@@ -3,3 +3,6 @@ splay-latency
 
 ##18863
 json-parse-inspector
+
+##19072
+OfflineAssembler

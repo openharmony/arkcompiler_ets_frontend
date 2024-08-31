@@ -6,3 +6,9 @@ json-stringify-inspector
 
 #18740
 splay
+
+#18841
+json-stringify-inspector
+
+#19008
+regex_dna
