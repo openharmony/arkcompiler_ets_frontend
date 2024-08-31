@@ -28,7 +28,7 @@ import time
 
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 EXTENTION_JS = ".js"
 EXTENTION_TS = ".ts"
@@ -336,7 +336,7 @@ class Runner:
         if self.obfuscate_result.failed_count > 0:
             logging.info("obfuscation failed cases:")
             for one in self.obfuscate_result.failed_cases:
-                logging.info("->", one)
+                logging.info(one)
 
         if self.run_with_node_result.failed_count > 0:
             logging.info("run with node failed cases:")
