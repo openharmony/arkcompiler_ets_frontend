@@ -37,6 +37,7 @@ import { nameCacheMap, yellow, unobfuscationNamesObj } from './CommonObject';
 import { historyUnobfuscatedPropMap } from './Initializer';
 import { LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
+import { WhitelistType } from '../utils/TransformUtil';
 
 enum OptionType {
   NONE,
@@ -1033,13 +1034,17 @@ function handleUniversalReservedList(universalList: RegExp[] | undefined, config
 export function printUnobfuscationReasons(configPath: string, defaultPath: string): void {
   let property: Record<string, string[]> = {};
   let unobfuscationObj = { keptReasons: {}, keptNames: { property } };
-  let keptReasons: Object = {
-    'sdk': 'same as the system api names',
-    'lang': 'same as the language keywords',
-    'conf': 'same as the user-configured kept name',
-    'struct': 'same as the ArkUI struct property',
-    'strProp': 'same as the string property',
-    'exported': 'same as the exported names and properties'
+  type WhitelistObject = {
+    [key in WhitelistType]: string;
+  };
+  let keptReasons: WhitelistObject = {
+    sdk: 'same as the system api names',
+    lang: 'same as the language keywords',
+    conf: 'same as the user-configured kept name',
+    struct: 'same as the ArkUI struct property',
+    strProp: 'same as the string property',
+    exported: 'same as the exported names and properties',
+    enum: 'same as the members in the enum'
   };
   unobfuscationObj.keptReasons = keptReasons;
 

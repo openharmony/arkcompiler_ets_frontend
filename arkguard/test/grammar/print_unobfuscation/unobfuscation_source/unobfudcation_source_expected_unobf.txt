@@ -5,12 +5,23 @@
     "conf": "same as the user-configured kept name",
     "struct": "same as the ArkUI struct property",
     "strProp": "same as the string property",
-    "exported": "same as the exported names and properties"
+    "exported": "same as the exported names and properties",
+    "enum": "same as the members in the enum"
   },
   "keptNames": {
     "property": {
+      "exportedProp": [
+        "exported"
+      ],
+      "string1": [
+        "strProp"
+      ],
+      "string2": [
+        "strProp"
+      ],
       "unit": [
-        "lang"
+        "lang",
+        "strProp"
       ],
       "property1": [
         "conf"
@@ -27,9 +38,6 @@
         "conf"
       ],
       "#add": [
-        "lang"
-      ],
-      "#usb": [
         "lang"
       ]
     }

@@ -56,7 +56,11 @@ import {NodeUtils} from '../../utils/NodeUtils';
 import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
-import { isInPropertyWhitelist, recordReservedName, isReservedProperty } from '../../utils/TransformUtil';
+import {
+  isInPropertyWhitelist,
+  isReservedProperty,
+  needToRecordProperty
+} from '../../utils/TransformUtil';
 import {
   classInfoInMemberMethodCache,
   nameCache
@@ -160,7 +164,9 @@ namespace secharmony {
         }
 
         if (isStringLiteralLike(node) && profile?.mKeepStringProperty) {
-          recordReservedName(node.text, 'strProp', UnobfuscationCollections.unobfuscatedPropMap); 
+          if (UnobfuscationCollections.printKeptName) {
+            needToRecordProperty(node.text, UnobfuscationCollections.unobfuscatedPropMap);
+          }
           return node;
         }
 
