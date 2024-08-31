@@ -1,9 +1,5 @@
 # Known failure list for test262 - debug-x64-aot-pgo
 
-#18412
-test262/data/test_es2021/language/computed-property-names/class/method/constructor-can-be-getter.js
-test262/data/test_es2021/language/computed-property-names/class/method/constructor-can-be-setter.js
-
 #17827
 test262/data/test_es2021/built-ins/Array/prototype/concat/Array.prototype.concat_large-typed-array.js
 test262/data/test_es2021/built-ins/Array/prototype/concat/Array.prototype.concat_small-typed-array.js
