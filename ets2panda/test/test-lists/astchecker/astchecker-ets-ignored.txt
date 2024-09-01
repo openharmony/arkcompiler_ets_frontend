@@ -3,3 +3,6 @@ ast/parser/ets/re_export/import_5.sts
 
 # Issue: #17983
 ast/parser/ets/TypeInferFunc.sts
+
+# Issue: #19440
+ast/parser/ets/iterator_override_next.sts

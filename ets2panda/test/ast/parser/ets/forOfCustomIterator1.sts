@@ -50,3 +50,4 @@ function main(): void {
 }
 
 /* @@? 48:19 Error TypeError: Iterator method must return an object which implements Iterator<T>  */
+/* @@? 48:19 Error TypeError: 'For-of' statement source expression is not of iterable type. */

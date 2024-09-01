@@ -163,7 +163,8 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 
     auto *const method = sourceType->GetProperty(compiler::Signatures::ITERATOR_METHOD, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->ThrowTypeError("Object type doesn't have proper iterator method.", position);
+        checker->LogTypeError("Object type doesn't have proper iterator method.", position);
+        return nullptr;
     }
 
     ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
@@ -172,7 +173,8 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, position, "iterator",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
-        checker->ThrowTypeError("Cannot find iterator method with the required signature.", position);
+        checker->LogTypeError("Cannot find iterator method with the required signature.", position);
+        return nullptr;
     }
     checker->ValidateSignatureAccessibility(sourceType, nullptr, signature, position,
                                             "Iterator method is not visible here.");
@@ -183,12 +185,15 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
         checker->CheckThrowingStatements(this);
     }
 
-    CheckReturnTypeOfIteratorMethod(checker, sourceType, signature, position);
+    if (!CheckReturnTypeOfIteratorMethod(checker, sourceType, signature, position)) {
+        return nullptr;
+    }
 
     auto *const nextMethod =
         signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
     if (nextMethod == nullptr || !nextMethod->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->ThrowTypeError("Iterator object doesn't have proper next method.", position);
+        checker->LogTypeError("Iterator object doesn't have proper next method.", position);
+        return nullptr;
     }
 
     auto &nextSignatures = checker->GetTypeOfVariable(nextMethod)->AsETSFunctionType()->CallSignatures();
@@ -205,7 +210,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     return nullptr;
 }
 
-void ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
+bool ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
                                                      checker::Signature *signature,
                                                      const lexer::SourcePosition &position)
 {
@@ -222,10 +227,11 @@ void ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checke
 
     if (signature->ReturnType() != nullptr && signature->ReturnType()->IsETSObjectType() &&
         ForOfStatement::CheckIteratorInterfaceForObject(checker, signature->ReturnType()->AsETSObjectType())) {
-        return;
+        return true;
     }
 
-    checker->ThrowTypeError("Iterator method must return an object which implements Iterator<T>", position);
+    checker->LogTypeError("Iterator method must return an object which implements Iterator<T>", position);
+    return false;
 }
 
 bool ForOfStatement::CheckIteratorInterfaceForObject(checker::ETSChecker *checker, checker::ETSObjectType *obj)
