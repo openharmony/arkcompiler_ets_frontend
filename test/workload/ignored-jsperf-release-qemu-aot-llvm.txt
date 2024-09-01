@@ -34,6 +34,10 @@ String_length
 String_repeat
 # --- end of Issue #18851
 
+#19077
+Function_applyFunction
+
+
 
 
 

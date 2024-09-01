@@ -29,3 +29,7 @@ crypto-js_test
 lodash_test
 Matrix_test
 dom4j_test
+
+#19106
+memory-cache_test
+

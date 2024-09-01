@@ -22,3 +22,7 @@ memory-cache_test
 validator_test
 
 zxing_test
+
+#19231
+jBox2d_test
+
