@@ -25,6 +25,10 @@ splay-latency
 #18790
 stanford-crypto-sha256
 
+#19216
+wsl
+
+
 #19083
 air
 
