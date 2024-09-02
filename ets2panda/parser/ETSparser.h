@@ -328,7 +328,7 @@ private:
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;
 
-    void ValidateForInStatement() override;
+    bool ValidateForInStatement() override;
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
@@ -366,7 +366,7 @@ private:
                                                bool ignoreCallExpression, bool *isChainExpression) override;
     ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpr) override;
     ir::Statement *ParseAssertStatement() override;
-    void ValidateLabeledStatement(lexer::TokenType type) override;
+    bool ValidateLabeledStatement(lexer::TokenType type) override;
     ir::Expression *ParseCatchParam() override;
     void ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpression *param) override;
     ir::Expression *ParseSuperClassReference() override;

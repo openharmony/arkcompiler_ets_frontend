@@ -13,12 +13,22 @@
  * limitations under the License.
  */
 
+try {
+    let x = 8
+}
 
-/*---
-flags: [module]
----*/
+try {}
+finally (x)
 
-import * as b from "foo"
-import a from "bar";
-import {c, d as e, f } from "bar"
-import "foobar";
+try {}
+catch () {}
+
+declare namespace abc {
+    let i = 0
+}
+
+/* @@? 20:1 Error SyntaxError: Missing catch or finally clause */
+/* @@? 21:9 Error SyntaxError: Expected a '{', got '('. */
+/* @@? 24:8 Error SyntaxError: Unexpected token ')' in catch parameter */
+/* @@? 27:13 Error SyntaxError: Initializers are not allowed in ambient contexts. */
+/* @@? 29:1 Error SyntaxError: Expected a '}' got 'eos'. */

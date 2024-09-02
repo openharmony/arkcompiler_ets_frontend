@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token. [test-import-decl.js:22:15]

@@ -14,10 +14,13 @@
  */
 
 
-switch (alma) {
-  function (){}
-}
+/*---
+flags: [module]
+---*/
 
-/* @@? 18:3 Error SyntaxError: Unexpected token 'function', expected 'case' or 'default'. */
-/* @@? 18:3 Error SyntaxError: Unexpected token 'function', expected ':' */
-/* @@? 18:12 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
+import * as b from "foo"
+import a from "bar";
+import {c, d as e, f } from "bar"
+import "foobar";
+
+/* @@? 22:15 Error SyntaxError: Unexpected token 'string literal', expected 'from'. */

@@ -16,4 +16,5 @@
 
 switch
 
-/* @@? 20:1 Error SyntaxError: Unexpected token, expected '('  */
+/* @@? 21:1 Error SyntaxError: Unexpected token 'eos', expected '(' */
+/* @@? 21:1 Error SyntaxError: Unexpected token 'eos'. */

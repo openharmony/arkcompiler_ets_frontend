@@ -128,10 +128,13 @@ ArenaVector<ir::Statement *> ETSParser::ParseTopLevelStatements()
         if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SEMI_COLON)) {
             continue;
         }
+        auto savedPosition = Lexer()->Save();
         auto stmt = ParseTopLevelStatement();
         GetContext().Status() &= ~ParserStatus::IN_AMBIENT_CONTEXT;
         if (stmt != nullptr) {
             statements.emplace_back(stmt);
+        } else if (savedPosition == Lexer()->Save()) {
+            Lexer()->NextToken();  // Error processing, avoid infinite loop.
         }
     }
 
@@ -144,7 +147,7 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
     if (stmt != nullptr) {
         if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
             !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
-            parser->ThrowSyntaxError("Can only type export class or interface!", stmt->Start());
+            parser->LogSyntaxError("Can only type export class or interface!", stmt->Start());
         }
         stmt->AddModifier(memberModifiers);
     }
@@ -220,22 +223,27 @@ ArenaVector<ir::Statement *> ETSParser::ParseTopLevelDeclaration()
     return topStatements;
 }
 
-void ETSParser::ValidateLabeledStatement(lexer::TokenType type)
+bool ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 {
     if (type != lexer::TokenType::KEYW_DO && type != lexer::TokenType::KEYW_WHILE &&
         type != lexer::TokenType::KEYW_FOR && type != lexer::TokenType::KEYW_SWITCH) {
-        ThrowSyntaxError("Label must be followed by a loop statement", Lexer()->GetToken().Start());
+        LogSyntaxError("Label must be followed by a loop statement", Lexer()->GetToken().Start());
+        return false;
     }
+
+    return true;
 }
 
-void ETSParser::ValidateForInStatement()
+bool ETSParser::ValidateForInStatement()
 {
-    ThrowUnexpectedToken(lexer::TokenType::KEYW_IN);
+    LogSyntaxError({"Unexpected token: '", lexer::TokenToString(lexer::TokenType::KEYW_IN), "'."});
+    return false;
 }
 
 ir::DebuggerStatement *ETSParser::ParseDebuggerStatement()
 {
-    ThrowUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
+    LogSyntaxError({"Unexpected token: '", lexer::TokenToString(lexer::TokenType::KEYW_DEBUGGER), "'."});
+    return nullptr;
 }
 
 ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags flags)
@@ -252,13 +260,19 @@ ir::Statement *ETSParser::ParseAssertStatement()
     Lexer()->NextToken();
 
     ir::Expression *test = ParseExpression();
+    if (test == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     lexer::SourcePosition endLoc = test->End();
     ir::Expression *second = nullptr;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
         second = ParseExpression();
-        endLoc = second->End();
+        if (second != nullptr) {  // Error processing.
+            endLoc = second->End();
+        }
     }
 
     auto *asStatement = AllocNode<ir::AssertStatement>(test, second);
@@ -272,10 +286,6 @@ ir::Statement *ETSParser::ParseTryStatement()
 {
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat the 'try' keyword
-
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ThrowSyntaxError("Unexpected token, expected '{'");
-    }
 
     ir::BlockStatement *body = ParseBlockStatement();
 
@@ -297,8 +307,8 @@ ir::Statement *ETSParser::ParseTryStatement()
     }
 
     if (catchClauses.empty() && finalizer == nullptr) {
-        ThrowSyntaxError("A try statement should contain either finally clause or at least one catch clause.",
-                         startLoc);
+        LogSyntaxError("A try statement should contain either finally clause or at least one catch clause.", startLoc);
+        return nullptr;
     }
 
     lexer::SourcePosition endLoc = finalizer != nullptr ? finalizer->End() : catchClauses.back()->End();
@@ -323,10 +333,14 @@ ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementP
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ETSStructDeclaration *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
-                                                          [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                                          [[maybe_unused]] ir::ModifierFlags modFlags)
+                                                          ir::ClassDefinitionModifiers modifiers,
+                                                          ir::ModifierFlags modFlags)
 {
-    ThrowSyntaxError("Illegal start of expression", Lexer()->GetToken().Start());
+    LogSyntaxError("Illegal start of STRUCT expression", Lexer()->GetToken().Start());
+    ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
+                              ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
+                          modFlags);  // Try to parse struct and drop the result.
+    return nullptr;
 }
 
 }  // namespace ark::es2panda::parser

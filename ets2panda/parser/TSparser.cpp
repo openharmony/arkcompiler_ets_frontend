@@ -2162,9 +2162,9 @@ void TSParser::ThrowMultipleDefaultError()
     ThrowSyntaxError("A 'default' clause cannot appear more than once in a 'switch' statement");
 }
 
-void TSParser::ThrowIllegalNewLineErrorAfterThrow()
+void TSParser::LogIllegalNewLineErrorAfterThrow()
 {
-    ThrowSyntaxError("Line break not permitted here");
+    LogSyntaxError("Line break not permitted here");
 }
 
 void TSParser::ThrowIfBodyEmptyError(ir::Statement *consequent)

@@ -1502,6 +1502,9 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclaratorInitializer(ir::Expres
     Lexer()->NextToken();
 
     ir::Expression *initializer = ParseExpression();
+    if (initializer == nullptr) {  // Error processing.
+        return nullptr;
+    }
 
     lexer::SourcePosition endLoc = initializer->End();
 
