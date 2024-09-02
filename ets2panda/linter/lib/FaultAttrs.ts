@@ -137,3 +137,4 @@ faultsAttrs[FaultID.SendableClosureExport] = new FaultAttributes(181, ProblemSev
 faultsAttrs[FaultID.SharedModuleExportsWarning] = new FaultAttributes(163, ProblemSeverity.WARNING);
 faultsAttrs[FaultID.SendableBetaCompatible] = new FaultAttributes(182);
 faultsAttrs[FaultID.ObjectLiteralProperty] = new FaultAttributes(183);
+faultsAttrs[FaultID.OptionalMethod] = new FaultAttributes(184);
