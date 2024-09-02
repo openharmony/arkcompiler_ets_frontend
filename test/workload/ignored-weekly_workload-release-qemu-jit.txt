@@ -18,3 +18,6 @@ typescript-compiler
 box2d
 pdfjs
 raytrace
+
+#19243
+hash-map

@@ -22,3 +22,6 @@ test262/data/test_es2021/intl402/DateTimeFormat/date-time-options.js
 test262/data/test_es2021/language/computed-property-names/class/method/constructor-can-be-getter.js
 test262/data/test_es2021/language/computed-property-names/class/method/constructor-can-be-setter.js
 # --- end of Issue #18412
+
+#19242
+test262/data/test_es2021/language/expressions/dynamic-import/namespace/await-ns-no-iterator.js

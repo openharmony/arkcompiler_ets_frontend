@@ -456,3 +456,6 @@ test262/data/other_tests/built-ins/decodeURIComponent/S15.1.3.2_A2.4_T1.js
 test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A1.3_T1.js
 test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A2.3_T1.js
 test262/data/other-tests/intl402/constructors-string-and-single-element-array.js
+
+#19254
+test262/data/other_tests/language/module-code/top-level-await/syntax/for-in-await-expr-regexp.js
