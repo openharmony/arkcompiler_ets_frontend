@@ -1,6 +1,15 @@
 #18417
 box2d
 
+#18744
+bignumber_test
+
+#18745
+json-stringify-inspector
+
+#18746
+LuaJSFight
+
 #18647
 splay
 

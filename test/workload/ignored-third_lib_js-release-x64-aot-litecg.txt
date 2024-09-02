@@ -6,6 +6,9 @@ Drools_test
 #18517
 js-joda_test
 
+#18546
+jBox2d_test
+
 #18484
 jBox2d_test
 pdfview_test
@@ -15,6 +18,9 @@ jsDiff_test
 
 #18444
 jmespath_test
+
+#18350
+jsbn_test
 
 #18383
 memory-cache_test

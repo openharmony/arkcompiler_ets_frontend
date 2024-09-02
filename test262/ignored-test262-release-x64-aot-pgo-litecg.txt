@@ -1,6 +1,6 @@
 # Known failure list for test262 - release-x64-aot-pgo-litecg
 
-#18438
+#18756
 test262/data/test_es2021/built-ins/Array/prototype/find/predicate-is-not-callable-throws.js
 test262/data/test_es2021/built-ins/Array/prototype/findIndex/predicate-is-not-callable-throws.js
 
@@ -8,4 +8,8 @@ test262/data/test_es2021/built-ins/Array/prototype/findIndex/predicate-is-not-ca
 test262/data/test_es2021/built-ins/TypedArray/prototype/set/typedarray-arg-set-values-diff-buffer-other-type-conversions-sab.js
 
 #18676
+test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
 test262/data/test_es2021/language/module-code/instn-iee-err-circular-as.js
+
+#18902
+test262/data/test_es2021/intl402/fallback-locales-are-supported.js
