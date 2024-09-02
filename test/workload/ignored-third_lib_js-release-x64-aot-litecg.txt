@@ -24,6 +24,9 @@ memory-cache_test
 #18424
 pcx_test
 
+#19251
+pdfview_test
+
 #18425
 gson_test
 

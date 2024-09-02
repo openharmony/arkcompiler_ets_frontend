@@ -1,5 +1,4 @@
 # Known failures list for jsperf - release-qemu-aot-pgo-llvm
-
 # Issue #18851
 TestCaseError_RegExp_Error_unicodeSets
 TestCaseError_Intl_Error_supportedValuesOf
