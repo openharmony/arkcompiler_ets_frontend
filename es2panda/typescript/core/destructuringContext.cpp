@@ -546,6 +546,7 @@ void ObjectDestructuringContext::HandleRest(const ir::SpreadElement *rest)
 Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *objType)
 {
     ObjectDescriptor *desc = checker_->Allocator()->New<ObjectDescriptor>(checker_->Allocator());
+    CHECK_NOT_NULL(desc);
 
     for (auto *it : objType->AsObjectType()->Properties()) {
         if (!it->HasFlag(binder::VariableFlags::INFERED_IN_PATTERN)) {

@@ -119,6 +119,7 @@ Type *Checker::CreateUnionType(ArenaVector<Type *> &&constituentTypes)
     }
 
     auto *newUnionType = allocator_->New<UnionType>(std::move(newConstituentTypes));
+    CHECK_NOT_NULL(newUnionType);
 
     return UnionType::HandleUnionType(newUnionType, globalTypes_);
 }
