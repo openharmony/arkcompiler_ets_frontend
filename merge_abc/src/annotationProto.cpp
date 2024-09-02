@@ -56,6 +56,7 @@ panda::pandasm::AnnotationElement &AnnotationElement::Deserialize(const protoPan
         panda::pandasm::ArrayValue &array = ArrayValue::Deserialize(protoElement.array(), allocator);
         auto *element = allocator->New<panda::pandasm::AnnotationElement>(protoElement.name(),
             std::make_unique<panda::pandasm::ArrayValue>(array));
+        CHECK_NOT_NULL(element);
         return *element;
     }
     panda::pandasm::ScalarValue scalar = ScalarValue::Deserialize(protoElement.scalar(), allocator);

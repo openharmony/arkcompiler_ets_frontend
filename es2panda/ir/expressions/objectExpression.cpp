@@ -472,7 +472,7 @@ void ObjectExpression::Compile(compiler::PandaGen *pg) const
 checker::Type *ObjectExpression::CheckPattern(checker::Checker *checker) const
 {
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-
+    CHECK_NOT_NULL(desc);
     bool isOptional = false;
 
     for (auto it = properties_.rbegin(); it != properties_.rend(); it++) {
