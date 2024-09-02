@@ -18,6 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void ETSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -68,6 +69,16 @@ checker::Type *ETSUnionType::Check(checker::ETSChecker *checker)
     return GetType(checker);
 }
 
+static bool CheckConstituentTypesValid(ArenaVector<checker::Type *> const &constituentTypes)
+{
+    for (auto &it : constituentTypes) {
+        if (it->IsTypeError()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 checker::Type *ETSUnionType::GetType(checker::ETSChecker *checker)
 {
     if (TsType() != nullptr) {
@@ -81,9 +92,13 @@ checker::Type *ETSUnionType::GetType(checker::ETSChecker *checker)
     }
 
     checker->Relation()->SetNode(this);
-    SetTsType(checker->CreateETSUnionType(std::move(types)));
+    if (!CheckConstituentTypesValid(types)) {
+        SetTsType(checker->GlobalTypeError());
+    } else {
+        SetTsType(checker->CreateETSUnionType(std::move(types)));
+    }
     checker->Relation()->SetNode(nullptr);
-    return TsType();
+    return TsTypeOrError();
 }
 
 ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)

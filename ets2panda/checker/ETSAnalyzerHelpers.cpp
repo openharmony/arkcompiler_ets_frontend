@@ -541,14 +541,16 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
     return iterType;
 }
 
-void CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, const std::string &name,
+bool CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, const std::string &name,
                            ir::ReturnStatement *st)
 {
     if (name.find(compiler::Signatures::ETS_MAIN_WITH_MANGLE_BEGIN) != std::string::npos) {
         if (!funcReturnType->IsETSVoidType() && !funcReturnType->IsIntType()) {
-            checker->ThrowTypeError("Bad return type, main enable only void or int type.", st->Start());
+            checker->LogTypeError("Bad return type, main enable only void or int type.", st->Start());
+            return false;
         }
     }
+    return true;
 }
 
 void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker::Type *argumentType,
@@ -556,12 +558,18 @@ void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
 {
     if (funcReturnType->IsETSVoidType() || funcReturnType == checker->GlobalVoidType()) {
         if (argumentType != checker->GlobalVoidType()) {
-            checker->ThrowTypeError("Unexpected return value, enclosing method return type is void.",
-                                    stArgument->Start());
+            checker->LogTypeError("Unexpected return value, enclosing method return type is void.",
+                                  stArgument->Start());
+            return;
         }
-        checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
-                                   {"Return statement type is not compatible with the enclosing method's return type."},
-                                   checker::TypeRelationFlag::DIRECT_RETURN);
+        if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType,
+                                        stArgument->Start(), {},
+                                        checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 .IsAssignable()) {
+            checker->LogTypeError({"Return statement type is not compatible with the enclosing method's return type."},
+                                  stArgument->Start());
+            return;
+        }
         return;
     }
 
@@ -577,10 +585,13 @@ void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
 
     const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
     const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
-    checker::AssignmentContext(
-        checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
-        {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
-        checker::TypeRelationFlag::DIRECT_RETURN);
+    if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
+                                    {}, checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+             .IsAssignable()) {
+        checker->LogTypeError(
+            {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
+            stArgument->Start());
+    }
 }
 
 void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
@@ -611,10 +622,16 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
         const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
         const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
 
-        checker::AssignmentContext(
-            checker->Relation(), arrowFunc, argumentType, funcReturnType, stArgument->Start(),
-            {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
-            checker::TypeRelationFlag::DIRECT_RETURN);
+        if (!checker::AssignmentContext(checker->Relation(), arrowFunc, argumentType, funcReturnType,
+                                        stArgument->Start(), {},
+                                        checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 .IsAssignable()) {
+            checker->LogTypeError({"Type '", sourceType,
+                                   "' is not compatible with the enclosing method's return type '", targetType, "'"},
+                                  stArgument->Start());
+            funcReturnType = checker->GlobalTypeError();
+            return;
+        }
     }
 
     containingFunc->Signature()->SetReturnType(funcReturnType);
@@ -635,8 +652,9 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
     if (stArgument == nullptr) {
         // previous return statement(s) have value
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType()) {
-            checker->ThrowTypeError("All return statements in the function should be empty or have a value.",
-                                    st->Start());
+            checker->LogTypeError("All return statements in the function should be empty or have a value.",
+                                  st->Start());
+            return;
         }
     } else {
         if (stArgument->IsObjectExpression()) {
@@ -651,12 +669,15 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
 
         //  previous return statement(s) don't have any value
         if (funcReturnType->IsETSVoidType() && !argumentType->IsETSVoidType()) {
-            checker->ThrowTypeError("All return statements in the function should be empty or have a value.",
-                                    stArgument->Start());
+            checker->LogTypeError("All return statements in the function should be empty or have a value.",
+                                  stArgument->Start());
+            return;
         }
 
         const auto name = containingFunc->Scope()->InternalName().Mutf8();
-        CheckArgumentVoidType(funcReturnType, checker, name, st);
+        if (!CheckArgumentVoidType(funcReturnType, checker, name, st)) {
+            return;
+        }
 
         // remove CONSTANT type modifier if exists
         if (argumentType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {

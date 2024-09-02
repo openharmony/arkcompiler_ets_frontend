@@ -26,4 +26,4 @@ function main() {
 }
 
 
-/* @@? 21:10 Error TypeError: Function cannot have different primitive return types, found 'boolean', 'int'  */
+/* @@? 21:10 Error TypeError: Function cannot have different primitive return types, require 'boolean', found 'int'  */
