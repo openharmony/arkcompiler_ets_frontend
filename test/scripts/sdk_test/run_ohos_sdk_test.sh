@@ -16,8 +16,9 @@
 
 # Description: output test results
 
+set -e
 
-function usage {
+function usage() {
     echo "Usage: $0 [--mode <debug|release>]"
     exit 1
 }
@@ -45,7 +46,7 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 
-function compile_and_collect_result {
+function compile_and_collect_result() {
     local compile_command=$1
     compile_output=$($compile_command 2>&1)
     if [ $? -eq 0 ]; then
@@ -55,23 +56,23 @@ function compile_and_collect_result {
     fi
 }
 
-function compile_and_display {
+function compile_and_display() {
     local mode=$1
     local compile_command=$2
-    
+
     $clean_command
     full_result=$(compile_and_collect_result "$compile_command")
-    
+
     echo "\nconsole.log('$mode')" >> "$file"
-    
+
     increment_result=$(compile_and_collect_result "$compile_command")
-    
+
     printf "%-20s %-10s\n" "cases" "result ($mode)"
     printf "%-20s %-10s\n" "full build" "$full_result"
     printf "%-20s %-10s\n" "incremental build" "$increment_result"
 }
 
-function get_compile_command {
+function get_compile_command() {
     local mode=$1
     if [ "$mode" == "debug" ]; then
         echo $debug_compile_command
