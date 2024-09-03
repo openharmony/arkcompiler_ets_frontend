@@ -382,7 +382,7 @@ export namespace ApiExtractor {
        * exports.A = {a, b, c}
        */
       getObjectProperties(expression.right, mCurrentExportedPropertySet);
-      // module.exports = {a, b, c};
+      // module.exports = {a, b, c}, {a, b, c} as the export content of the module
       let defaultExport = left.expression.getText() === 'module';
       if (defaultExport) {
         getObjectExportNames(expression.right, mCurrentExportNameSet);
@@ -402,7 +402,7 @@ export namespace ApiExtractor {
     }
     if (isIdentifier(leftExpression.expression)) {
       if (leftExpressionText === 'module') {
-        // module.exports = {A};
+        // module.exports = {A}, A as the export content of the module
         if (isPropertyAccessExpression(leftExpression) && leftExpression.name.getText() === 'exports') {
           return true;
         }
