@@ -423,4 +423,4 @@
     }
   }
 }
-SyntaxError: Variable 'foo' is already defined. [import_name_conflict_4.sts:16:19]
+SyntaxError: Variable 'foo' is already defined. [import_name_conflict_4.ets:16:19]

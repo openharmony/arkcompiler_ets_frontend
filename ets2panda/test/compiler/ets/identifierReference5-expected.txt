@@ -1167,4 +1167,4 @@
     }
   }
 }
-TypeError: 'this' cannot be referenced from a static context [identifierReference5.sts:31:5]
+TypeError: 'this' cannot be referenced from a static context [identifierReference5.ets:31:5]

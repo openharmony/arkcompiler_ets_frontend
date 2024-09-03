@@ -449,4 +449,4 @@
     }
   }
 }
-TypeError: Type '(v: double, u: double) => double' cannot be assigned to type '(p1: Int, p2: Int) => void' [identifierReference2.sts:16:34]
+TypeError: Type '(v: double, u: double) => double' cannot be assigned to type '(p1: Int, p2: Int) => void' [identifierReference2.ets:16:34]

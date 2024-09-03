@@ -483,4 +483,4 @@
     }
   }
 }
-TypeError: Default catch clause should be the last in the try statement [tryCatchErrorFlow.sts:21:5]
+TypeError: Default catch clause should be the last in the try statement [tryCatchErrorFlow.ets:21:5]

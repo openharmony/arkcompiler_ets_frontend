@@ -442,4 +442,4 @@
     }
   }
 }
-TypeError: Few elements in array initializer for tuple with size of 2 [tuple_types_5_neg.sts:18:36]
+TypeError: Few elements in array initializer for tuple with size of 2 [tuple_types_5_neg.ets:18:36]

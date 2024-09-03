@@ -1461,4 +1461,4 @@
     }
   }
 }
-TypeError: size(s: int): void in Hex cannot override size(s: int): void in Core because overridden method is final. [getter_setter_access_modifiers_2.sts:33:22]
+TypeError: size(s: int): void in Hex cannot override size(s: int): void in Core because overridden method is final. [getter_setter_access_modifiers_2.ets:33:22]

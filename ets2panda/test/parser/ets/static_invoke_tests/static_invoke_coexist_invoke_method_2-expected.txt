@@ -969,4 +969,4 @@
     }
   }
 }
-TypeError: Static invoke method and static instantiate method both exist in class/interface C is not allowed. [static_invoke_coexist_invoke_method_2.sts:29:24]
+TypeError: Static invoke method and static instantiate method both exist in class/interface C is not allowed. [static_invoke_coexist_invoke_method_2.ets:29:24]

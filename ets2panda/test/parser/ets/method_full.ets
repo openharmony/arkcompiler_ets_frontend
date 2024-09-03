@@ -13,19 +13,21 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+package com.huawei.migrationtool.teets.ets;
 
-class class_instance_creation  {
-    constructor(i : int) {
+abstract class method_full  {
+    foo(): void {
     }
-
-    constructor() {
+    foo_int(b : double, c : char, i : int): int {
     }
-
-    constructor(s : String, d : double) {
+    foo_bool(d : double, c : char, ... i: int[]): boolean {
     }
-
-    static inst1 : class_instance_creation = new class_instance_creation();
-    static inst2 : class_instance_creation = new class_instance_creation(3);
-    static inst3 : class_instance_creation = new class_instance_creation("ss", 7.8);
+    private final foo_private(d : double): int {
+    }
+    public final foo_final(d : double): double {
+    }
+    protected static foo_final(i : int): boolean {
+    }
+    protected abstract foo_abstract(): int ;
+    private native foo_native(): int ;
 }

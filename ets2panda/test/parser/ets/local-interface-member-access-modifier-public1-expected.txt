@@ -1,1 +1,1 @@
-SyntaxError: Local interface declaration members can not have access modifies [local-interface-member-access-modifier-public1.sts:20:9]
+SyntaxError: Local interface declaration members can not have access modifies [local-interface-member-access-modifier-public1.ets:20:9]

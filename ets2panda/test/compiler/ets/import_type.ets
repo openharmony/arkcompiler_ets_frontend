@@ -13,16 +13,9 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+import type {A, B, D} from './export_type.ets'
 
-class MyClass  {
-    static a : int = 1;
-    static {
-        MyClass.a = 2;
-        MyClass.a += 3;
-        MyClass.b = 5;
-        MyClass.b -= 6;
-    }
-
-    static b : int = 4;
-}
+let a = new A();
+class C implements B {};
+let c = new C()
+let d = new D()

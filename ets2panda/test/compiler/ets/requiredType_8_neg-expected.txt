@@ -753,4 +753,4 @@
     }
   }
 }
-TypeError: Required type can be instantiated only with object literal [requiredType_8_neg.sts:21:34]
+TypeError: Required type can be instantiated only with object literal [requiredType_8_neg.ets:21:34]

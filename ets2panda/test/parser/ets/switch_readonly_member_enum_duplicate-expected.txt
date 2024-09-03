@@ -6839,4 +6839,4 @@
     }
   }
 }
-TypeError: Case duplicate [switch_readonly_member_enum_duplicate.sts:35:14]
+TypeError: Case duplicate [switch_readonly_member_enum_duplicate.ets:35:14]

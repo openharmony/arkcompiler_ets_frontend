@@ -777,4 +777,4 @@
     }
   }
 }
-TypeError: Interface property implementation cannot be generated as non-public [nonPublicInterfaceProp.sts:22:13]
+TypeError: Interface property implementation cannot be generated as non-public [nonPublicInterfaceProp.ets:22:13]

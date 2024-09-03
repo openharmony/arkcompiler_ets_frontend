@@ -189,7 +189,7 @@ private:
 TEST_F(UnionNormalizationTest, UnionWithObject)
 {
     // Test normalization: int | Object | string ==> Object
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);
@@ -209,7 +209,7 @@ TEST_F(UnionNormalizationTest, UnionWithObject)
 TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes1)
 {
     // Test normalization: number | Base | string | number ==> number | Base | string
-    InitializeChecker("_.sts", "class Base {}");
+    InitializeChecker("_.ets", "class Base {}");
 
     auto program = Program();
     ASSERT(program);
@@ -240,7 +240,7 @@ TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes1)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithIdenticalTypes2)
 {
     // Test normalization: Base | int | Base | double | short | number ==> Base | number
-    InitializeChecker("_.sts", "class Base {}");
+    InitializeChecker("_.ets", "class Base {}");
 
     auto program = Program();
     ASSERT(program);
@@ -272,7 +272,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionWithIdenticalTypes2)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithNumeric1)
 {
     // Test normalization: boolean | int | double | short ==> boolean | double
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);
@@ -296,7 +296,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionWithNumeric1)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithNumeric2)
 {
     // Test normalization: string | int | Base | double | short ==> string | Base | double
-    InitializeChecker("_.sts", "class Base {}");
+    InitializeChecker("_.ets", "class Base {}");
 
     auto program = Program();
     ASSERT(program);
@@ -334,7 +334,7 @@ TEST_F(UnionNormalizationTest, UnionWithSubTypes)
         class Derived1 extends Base {}\
         class Derived2 extends Base {}\
         ";
-    InitializeChecker("_.sts", SRC);
+    InitializeChecker("_.ets", SRC);
 
     auto program = Program();
     ASSERT(program);
@@ -411,7 +411,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionLinearization)
         type UT2 = int | UT | number\
         type UT3 = int | (Derived2 | Base) | Derived1 | (string | number | short) | (int | string)\
         ";
-    InitializeChecker("_.sts", SRC);
+    InitializeChecker("_.ets", SRC);
 
     auto program = Program();
     ASSERT(program);
@@ -459,7 +459,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionLinearization)
 
 TEST_F(UnionNormalizationTest, UnionStringLiterals)
 {
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);
@@ -507,7 +507,7 @@ TEST_F(UnionNormalizationTest, UnionStringLiterals)
 TEST_F(UnionNormalizationTest, DISABLED_UnionWithNever)
 {
     // Test normalization: int | never | number ==> number
-    InitializeChecker("_.sts", "");
+    InitializeChecker("_.ets", "");
 
     auto checker = Checker();
     ASSERT(checker);

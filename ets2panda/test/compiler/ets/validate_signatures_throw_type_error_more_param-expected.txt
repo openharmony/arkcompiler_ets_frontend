@@ -428,4 +428,4 @@
     }
   }
 }
-TypeError: No matching construct signature for std.core.Float(int, string) [validate_signatures_throw_type_error_more_param.sts:17:20]
+TypeError: No matching construct signature for std.core.Float(int, string) [validate_signatures_throw_type_error_more_param.ets:17:20]

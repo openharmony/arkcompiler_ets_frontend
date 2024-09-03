@@ -724,4 +724,4 @@
     }
   }
 }
-TypeError: 'fun' type does not exist. [newClassInstanceExpression.sts:23:21]
+TypeError: 'fun' type does not exist. [newClassInstanceExpression.ets:23:21]

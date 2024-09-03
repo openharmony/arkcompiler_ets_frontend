@@ -13,13 +13,15 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.teets.sts;
+package com.huawei.migrationtool.test.ets;
 
-class A  {
-    public  foo(): void {
+class array_type  {
+    private a : int[] ;
+    protected f : float[][][] ;
+    public  foo(s : String[][]): void {
     }
-    private foo(i : int): void {
+    toCharArray(): char[] {
     }
-    static foo(d : double): void {
+    private toStringArray(): String[] {
     }
 }

@@ -5733,4 +5733,4 @@
     }
   }
 }
-TypeError: Type 'Color2' cannot be assigned to type 'Color' [enum8.sts:20:20]
+TypeError: Type 'Color2' cannot be assigned to type 'Color' [enum8.ets:20:20]

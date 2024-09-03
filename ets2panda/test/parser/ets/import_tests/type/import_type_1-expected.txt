@@ -300,4 +300,4 @@
     }
   }
 }
-SyntaxError: Cannot find imported element 'A' exported with alias [import_type_1.sts:16:9]
+SyntaxError: Cannot find imported element 'A' exported with alias [import_type_1.ets:16:9]

@@ -625,4 +625,4 @@
     }
   }
 }
-TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwInCatchClause1.sts:23:13]
+TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwInCatchClause1.ets:23:13]

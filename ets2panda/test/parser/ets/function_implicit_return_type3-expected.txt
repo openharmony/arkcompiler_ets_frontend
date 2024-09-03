@@ -544,4 +544,4 @@
     }
   }
 }
-TypeError: Type '(i: int) => void' cannot be assigned to type '(p1: Int) => Int' [function_implicit_return_type3.sts:18:27]
+TypeError: Type '(i: int) => void' cannot be assigned to type '(p1: Int) => Int' [function_implicit_return_type3.ets:18:27]

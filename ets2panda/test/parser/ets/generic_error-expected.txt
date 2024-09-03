@@ -898,4 +898,4 @@
     }
   }
 }
-TypeError: Type C is not assignable to constraint type Comparable<Object> [generic_error.sts:23:22]
+TypeError: Type C is not assignable to constraint type Comparable<Object> [generic_error.ets:23:22]

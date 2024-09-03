@@ -1565,4 +1565,4 @@
     }
   }
 }
-Warning: Finally clause cannot complete normally [try_catch_alive_1.sts:61:15]
+Warning: Finally clause cannot complete normally [try_catch_alive_1.ets:61:15]

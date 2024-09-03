@@ -1630,4 +1630,4 @@
     }
   }
 }
-TypeError: Property 'increment' does not exist on type 'A' [null-coalesc-negative.sts:37:5]
+TypeError: Property 'increment' does not exist on type 'A' [null-coalesc-negative.ets:37:5]

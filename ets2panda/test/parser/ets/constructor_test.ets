@@ -13,6 +13,28 @@
  * limitations under the License.
  */
 
-// TODO: Should be a "SyntaxError: Variance modifier is not allowed here [type_variance4.sts:18:13]",
-// after generic global function parsing is implemented.
-function fn<in T>(t: T): void {}
+package com.huawei.migrationtool.teets.ets;
+
+export class constructor_test  {
+    public constructor() {
+        this(0);
+    }
+
+    protected constructor(b : double, c : char, i : int) {
+    }
+
+    private constructor(i : int) {
+    }
+
+}
+
+class derived extends constructor_test  {
+    public constructor() {
+        this(5);
+    }
+
+    protected constructor(i : int) {
+        super(1.2, c'c', i);
+    }
+
+}

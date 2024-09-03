@@ -1542,4 +1542,4 @@
     }
   }
 }
-TypeError: Type 'T<P>' is generic but type argument were not provided. [recursive_union_neg_2.sts:19:25]
+TypeError: Type 'T<P>' is generic but type argument were not provided. [recursive_union_neg_2.ets:19:25]

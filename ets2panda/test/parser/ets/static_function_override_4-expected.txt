@@ -679,4 +679,4 @@
     }
   }
 }
-TypeError: Method bar(): void in BClass not overriding any method [static_function_override_4.sts:21:17]
+TypeError: Method bar(): void in BClass not overriding any method [static_function_override_4.ets:21:17]

@@ -1228,4 +1228,4 @@
     }
   }
 }
-TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality. [nullable_type_in_stringconcat_func.sts:17:12]
+TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality. [nullable_type_in_stringconcat_func.ets:17:12]

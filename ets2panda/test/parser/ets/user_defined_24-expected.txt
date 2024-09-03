@@ -1,1 +1,1 @@
-SyntaxError: Cannot be used as user-defined type. [user_defined_24.sts:16:8]
+SyntaxError: Cannot be used as user-defined type. [user_defined_24.ets:16:8]

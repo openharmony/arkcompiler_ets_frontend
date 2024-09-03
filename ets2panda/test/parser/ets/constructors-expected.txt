@@ -1294,4 +1294,4 @@
     }
   }
 }
-TypeError: Cannot inherit with 'final' modifier. [constructors.sts:31:18]
+TypeError: Cannot inherit with 'final' modifier. [constructors.ets:31:18]

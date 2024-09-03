@@ -905,4 +905,4 @@
     }
   }
 }
-TypeError: Setter must have void return type [setter_with_non_void.sts:19:14]
+TypeError: Setter must have void return type [setter_with_non_void.ets:19:14]

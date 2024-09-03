@@ -13,7 +13,17 @@
  * limitations under the License.
  */
 
-import type {A, C} from './export_type.sts'
+package com.huawei.migrationtool.test.ets;
 
-let a = new A();
-let b = new C();
+export class unary_operations  {
+    private a: int = 3;
+    private pref1: int = +this.a;
+    private pref2: int = -this.a;
+    private pref3: int = ++this.a;
+    private pref4: int = --this.a;
+    private pref5: int = ~this.a;
+    private b: boolean = false;
+    private pref6: boolean = !this.b;
+    private post1: int = this.a++;
+    private post2: int = this.a--;
+}

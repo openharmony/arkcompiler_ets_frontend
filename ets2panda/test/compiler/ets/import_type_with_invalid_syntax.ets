@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+import type * from './export_type.ets'
 
-class empty_class  {
-}
+let a = new A();
+class C implements B {};
+let c = new C()

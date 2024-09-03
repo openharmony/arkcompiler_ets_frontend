@@ -1226,4 +1226,4 @@
     }
   }
 }
-TypeError: No matching call signature [recursive_function_neg_1.sts:20:5]
+TypeError: No matching call signature [recursive_function_neg_1.ets:20:5]

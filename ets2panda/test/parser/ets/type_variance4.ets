@@ -13,13 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
-export class type_cast {
-    private i1: int = 34;
-    private d: double = 3.7;
-    private i2: int = this.d as int;
-    protected c: char = c'c';
-    protected b: byte = this.c as byte;
-    f: float = this.d as float;
-}
+// TODO: Should be a "SyntaxError: Variance modifier is not allowed here [type_variance4.ets:18:13]",
+// after generic global function parsing is implemented.
+function fn<in T>(t: T): void {}

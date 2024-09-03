@@ -430,4 +430,4 @@
     }
   }
 }
-TypeError: Unreachable statement. [try_catch_alive_6.sts:23:9]
+TypeError: Unreachable statement. [try_catch_alive_6.ets:23:9]

@@ -1036,4 +1036,4 @@
     }
   }
 }
-TypeError: Signature constructor(alma: int): void is not visible here. [privateSuperConstructorCall.sts:25:5]
+TypeError: Signature constructor(alma: int): void is not visible here. [privateSuperConstructorCall.ets:25:5]

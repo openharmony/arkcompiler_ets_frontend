@@ -3028,4 +3028,4 @@
     }
   }
 }
-TypeError: Extension function can only defined for class and interface type. [extension_function_not_for_class_type.sts:18:1]
+TypeError: Extension function can only defined for class and interface type. [extension_function_not_for_class_type.ets:18:1]

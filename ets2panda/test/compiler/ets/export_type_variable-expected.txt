@@ -1,1 +1,1 @@
-SyntaxError: Can only type export class or interface! [export_type_variable.sts:18:14]
+SyntaxError: Can only type export class or interface! [export_type_variable.ets:18:14]

@@ -389,4 +389,4 @@
     }
   }
 }
-TypeError: Function foo is already declared. [export.sts:16:13]
+TypeError: Function foo is already declared. [export.ets:16:13]

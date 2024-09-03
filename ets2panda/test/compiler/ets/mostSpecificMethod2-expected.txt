@@ -1586,4 +1586,4 @@
     }
   }
 }
-TypeError: Reference to Foo is ambiguous [mostSpecificMethod2.sts:30:5]
+TypeError: Reference to Foo is ambiguous [mostSpecificMethod2.ets:30:5]

@@ -3493,4 +3493,4 @@
     }
   }
 }
-TypeError: Enum constant does not have property 'Blue'. [enum6.sts:25:9]
+TypeError: Enum constant does not have property 'Blue'. [enum6.ets:25:9]

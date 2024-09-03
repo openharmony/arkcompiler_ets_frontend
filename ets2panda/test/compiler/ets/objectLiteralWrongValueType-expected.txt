@@ -612,4 +612,4 @@
     }
   }
 }
-TypeError: Type 'string' is not compatible with type 'int' at property 'f' [objectLiteralWrongValueType.sts:21:8]
+TypeError: Type 'string' is not compatible with type 'int' at property 'f' [objectLiteralWrongValueType.ets:21:8]

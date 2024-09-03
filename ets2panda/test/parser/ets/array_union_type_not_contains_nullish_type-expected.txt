@@ -605,4 +605,4 @@
     }
   }
 }
-TypeError: Union types in array declaration must include a nullish type. [array_union_type_not_contains_nullish_type.sts:20:19]
+TypeError: Union types in array declaration must include a nullish type. [array_union_type_not_contains_nullish_type.ets:20:19]

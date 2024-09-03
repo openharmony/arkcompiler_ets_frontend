@@ -356,4 +356,4 @@
     }
   }
 }
-SyntaxError: Cannot find type 'Fruit'. [extension_function_for_unresolved_type.sts:16:21]
+SyntaxError: Cannot find type 'Fruit'. [extension_function_for_unresolved_type.ets:16:21]

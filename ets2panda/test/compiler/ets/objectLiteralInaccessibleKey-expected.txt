@@ -612,4 +612,4 @@
     }
   }
 }
-TypeError: Property f is not visible here. [objectLiteralInaccessibleKey.sts:21:5]
+TypeError: Property f is not visible here. [objectLiteralInaccessibleKey.ets:21:5]

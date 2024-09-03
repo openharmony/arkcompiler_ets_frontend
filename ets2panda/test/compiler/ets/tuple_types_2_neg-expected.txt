@@ -501,4 +501,4 @@
     }
   }
 }
-TypeError: Element accessor value is out of tuple size bounds. [tuple_types_2_neg.sts:19:7]
+TypeError: Element accessor value is out of tuple size bounds. [tuple_types_2_neg.ets:19:7]

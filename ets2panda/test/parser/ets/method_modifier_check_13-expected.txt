@@ -381,4 +381,4 @@
     }
   }
 }
-TypeError: Invalid method modifier(s): an abstract method can't have private, override, static, final or native modifier. [method_modifier_check_13.sts:17:5]
+TypeError: Invalid method modifier(s): an abstract method can't have private, override, static, final or native modifier. [method_modifier_check_13.ets:17:5]

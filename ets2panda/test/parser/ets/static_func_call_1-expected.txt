@@ -520,4 +520,4 @@
     }
   }
 }
-TypeError: Static property 'bar' must be accessed through it's class 'A' [static_func_call_1.sts:18:13]
+TypeError: Static property 'bar' must be accessed through it's class 'A' [static_func_call_1.ets:18:13]

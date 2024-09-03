@@ -803,4 +803,4 @@
     }
   }
 }
-TypeError: Type 'undefined' cannot be assigned to type 'Double' [requiredType_2_neg.sts:22:17]
+TypeError: Type 'undefined' cannot be assigned to type 'Double' [requiredType_2_neg.ets:22:17]

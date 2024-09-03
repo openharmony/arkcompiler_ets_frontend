@@ -783,4 +783,4 @@
     }
   }
 }
-TypeError: Type 'A' cannot be assigned to type 'A' [readonlyType_5.sts:22:22]
+TypeError: Type 'A' cannot be assigned to type 'A' [readonlyType_5.ets:22:22]

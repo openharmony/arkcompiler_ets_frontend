@@ -1,1 +1,1 @@
-SyntaxError: Label must be followed by a loop statement [labeledBlockStatement.sts:17:8]
+SyntaxError: Label must be followed by a loop statement [labeledBlockStatement.ets:17:8]

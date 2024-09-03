@@ -13,28 +13,13 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.teets.sts;
+package com.huawei.migrationtool.test.ets;
 
-export class constructor_test  {
-    public constructor() {
-        this(0);
-    }
-
-    protected constructor(b : double, c : char, i : int) {
-    }
-
-    private constructor(i : int) {
-    }
-
-}
-
-class derived extends constructor_test  {
-    public constructor() {
-        this(5);
-    }
-
-    protected constructor(i : int) {
-        super(1.2, c'c', i);
-    }
-
+export class type_cast {
+    private i1: int = 34;
+    private d: double = 3.7;
+    private i2: int = this.d as int;
+    protected c: char = c'c';
+    protected b: byte = this.c as byte;
+    f: float = this.d as float;
 }

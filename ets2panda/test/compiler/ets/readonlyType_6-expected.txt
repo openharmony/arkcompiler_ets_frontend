@@ -941,4 +941,4 @@
     }
   }
 }
-TypeError: Cannot call readonly type methods. [readonlyType_6.sts:25:5]
+TypeError: Cannot call readonly type methods. [readonlyType_6.ets:25:5]

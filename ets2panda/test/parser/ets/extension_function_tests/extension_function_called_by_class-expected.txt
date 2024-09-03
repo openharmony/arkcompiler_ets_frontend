@@ -955,4 +955,4 @@
     }
   }
 }
-TypeError: Property 'price' does not exist on type 'A' [extension_function_called_by_class.sts:27:23]
+TypeError: Property 'price' does not exist on type 'A' [extension_function_called_by_class.ets:27:23]

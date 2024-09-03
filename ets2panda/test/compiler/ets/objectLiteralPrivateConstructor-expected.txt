@@ -517,4 +517,4 @@
     }
   }
 }
-TypeError: Signature constructor(): void is not visible here. [objectLiteralPrivateConstructor.sts:20:12]
+TypeError: Signature constructor(): void is not visible here. [objectLiteralPrivateConstructor.ets:20:12]

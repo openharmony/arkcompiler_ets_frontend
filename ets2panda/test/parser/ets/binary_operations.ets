@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+package com.huawei.migrationtool.test.ets;
 
 export class binary_operations  {
     private sum1 : int = 3 + 2;

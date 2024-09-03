@@ -1,1 +1,1 @@
-SyntaxError: Only one default export is allowed in a module [too_many_default_exports.sts:17:16]
+SyntaxError: Only one default export is allowed in a module [too_many_default_exports.ets:17:16]

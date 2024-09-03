@@ -886,4 +886,4 @@
     }
   }
 }
-TypeError: Variable has same value with another switch case [switch_readonly_member_number_duplicate.sts:27:9]
+TypeError: Variable has same value with another switch case [switch_readonly_member_number_duplicate.ets:27:9]

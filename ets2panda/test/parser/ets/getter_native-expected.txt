@@ -501,4 +501,4 @@
     }
   }
 }
-TypeError: 'Native' modifier is invalid for Accessors [getter_native.sts:18:21]
+TypeError: 'Native' modifier is invalid for Accessors [getter_native.ets:18:21]

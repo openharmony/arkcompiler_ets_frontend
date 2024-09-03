@@ -942,4 +942,4 @@
     }
   }
 }
-TypeError: Method 'foo' is declared in I1 and I2 interfaces. [InterfaceWithDefaultFunction2.sts:18:27]
+TypeError: Method 'foo' is declared in I1 and I2 interfaces. [InterfaceWithDefaultFunction2.ets:18:27]

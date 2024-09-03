@@ -685,4 +685,4 @@
     }
   }
 }
-TypeError: 'super' cannot be referenced from a static context [superReferenceFromStaticContext.sts:22:9]
+TypeError: 'super' cannot be referenced from a static context [superReferenceFromStaticContext.ets:22:9]

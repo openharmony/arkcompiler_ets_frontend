@@ -1,1 +1,1 @@
-SyntaxError: Invalid enum initialization value [enum17.sts:18:22]
+SyntaxError: Invalid enum initialization value [enum17.ets:18:22]

@@ -328,4 +328,4 @@
     }
   }
 }
-TypeError: Only 'string[]' type argument is allowed. [main_entry_point_3.sts:16:15]
+TypeError: Only 'string[]' type argument is allowed. [main_entry_point_3.ets:16:15]

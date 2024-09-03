@@ -529,4 +529,4 @@
     }
   }
 }
-TypeError: No matching call signature with trailing lambda [trailing_lambda_not_transform_trailing_block_1.sts:20:1]
+TypeError: No matching call signature with trailing lambda [trailing_lambda_not_transform_trailing_block_1.ets:20:1]

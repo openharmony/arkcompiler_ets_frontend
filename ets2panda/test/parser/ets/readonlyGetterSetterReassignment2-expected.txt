@@ -1017,4 +1017,4 @@
     }
   }
 }
-TypeError: Readonly field already initialized at declaration. [readonlyGetterSetterReassignment2.sts:24:14]
+TypeError: Readonly field already initialized at declaration. [readonlyGetterSetterReassignment2.ets:24:14]

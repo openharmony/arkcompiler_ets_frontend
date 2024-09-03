@@ -395,4 +395,4 @@
     }
   }
 }
-TypeError: Getter must return a value [accessor_void.sts:17:10]
+TypeError: Getter must return a value [accessor_void.ets:17:10]

@@ -562,4 +562,4 @@
     }
   }
 }
-TypeError: key in class composite should be either identifier or string literal [objectLiteralBadKey.sts:19:12]
+TypeError: key in class composite should be either identifier or string literal [objectLiteralBadKey.ets:19:12]

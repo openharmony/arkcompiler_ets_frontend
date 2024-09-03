@@ -858,4 +858,4 @@
     }
   }
 }
-TypeError: 'this' cannot be referenced from a static context [invalidMemberExpressionFromStaticContext6.sts:23:9]
+TypeError: 'this' cannot be referenced from a static context [invalidMemberExpressionFromStaticContext6.ets:23:9]

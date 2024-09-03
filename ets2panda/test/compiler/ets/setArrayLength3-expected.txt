@@ -472,4 +472,4 @@
     }
   }
 }
-TypeError: Setting the length of an array is not permitted [setArrayLength3.sts:18:5]
+TypeError: Setting the length of an array is not permitted [setArrayLength3.ets:18:5]

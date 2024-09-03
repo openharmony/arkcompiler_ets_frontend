@@ -389,4 +389,4 @@
     }
   }
 }
-TypeError: Property 'DefaultExportedFunc' does not exist on type 'default_export' [import_all_2.sts:19:9]
+TypeError: Property 'DefaultExportedFunc' does not exist on type 'default_export' [import_all_2.ets:19:9]

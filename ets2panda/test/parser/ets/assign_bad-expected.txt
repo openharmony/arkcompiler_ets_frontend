@@ -1,1 +1,1 @@
-SyntaxError: Unexpected token [assign_bad.sts:16:5]
+SyntaxError: Unexpected token [assign_bad.ets:16:5]

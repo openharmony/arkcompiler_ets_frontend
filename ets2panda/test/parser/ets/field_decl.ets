@@ -13,9 +13,16 @@
  * limitations under the License.
  */
 
-import type {A, B, D} from './export_type.sts'
+package com.huawei.migrationtool.test.ets;
 
-let a = new A();
-class C implements B {};
-let c = new C()
-let d = new D()
+export class field_decl  {
+    private a : int ;
+    protected b : char ;
+    protected c : char = c'c';
+    public d : boolean = true;
+    f : short ;
+    static g : long ;
+    static readonly pi : float = 3.14;
+    public static readonly e : double = 2.71828;
+    private readonly h : byte = 2;
+}

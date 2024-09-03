@@ -106,7 +106,7 @@
         },
         "right": {
           "type": "Identifier",
-          "name": "sts",
+          "name": "ets",
           "decorators": [],
           "loc": {
             "start": {
@@ -954,4 +954,4 @@
     }
   }
 }
-TypeError: Function with a non void return type must return a value. [array_type.sts:23:5]
+TypeError: Function with a non void return type must return a value. [array_type.ets:23:5]

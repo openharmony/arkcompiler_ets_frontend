@@ -497,4 +497,4 @@
     }
   }
 }
-TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingConstructorCheck1.sts:21:11]
+TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingConstructorCheck1.ets:21:11]

@@ -572,4 +572,4 @@
     }
   }
 }
-TypeError: Bad operand type, the type of the operand must be numeric type. [lambdaFunction4.sts:20:9]
+TypeError: Bad operand type, the type of the operand must be numeric type. [lambdaFunction4.ets:20:9]

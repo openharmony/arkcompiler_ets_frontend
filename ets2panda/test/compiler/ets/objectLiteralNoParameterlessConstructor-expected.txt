@@ -559,4 +559,4 @@
     }
   }
 }
-TypeError: type C has no parameterless constructor [objectLiteralNoParameterlessConstructor.sts:20:12]
+TypeError: type C has no parameterless constructor [objectLiteralNoParameterlessConstructor.ets:20:12]

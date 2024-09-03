@@ -1,1 +1,1 @@
-SyntaxError: Interface declaration cannot have 'implements' clause. [interfaces2.sts:18:13]
+SyntaxError: Interface declaration cannot have 'implements' clause. [interfaces2.ets:18:13]

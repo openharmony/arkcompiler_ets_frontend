@@ -13,8 +13,19 @@
  * limitations under the License.
  */
 
-import * from "import_tests/packages";
-import * from "import_tests/modules/module";
+package com.huawei.migrationtool.test.ets;
 
-// Throw error: "dbl" is defined by "package/package_module_1.sts" and "modules/module.sts".
-let x = dbl;
+class class_instance_creation  {
+    constructor(i : int) {
+    }
+
+    constructor() {
+    }
+
+    constructor(s : String, d : double) {
+    }
+
+    static inst1 : class_instance_creation = new class_instance_creation();
+    static inst2 : class_instance_creation = new class_instance_creation(3);
+    static inst3 : class_instance_creation = new class_instance_creation("ss", 7.8);
+}

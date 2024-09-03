@@ -620,4 +620,4 @@
     }
   }
 }
-TypeError: This expression is not callable. [call_expression_for_non_functional_type.sts:27:5]
+TypeError: This expression is not callable. [call_expression_for_non_functional_type.ets:27:5]

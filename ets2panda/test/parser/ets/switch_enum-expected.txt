@@ -3427,4 +3427,4 @@
     }
   }
 }
-TypeError: Case duplicate [switch_enum.sts:20:14]
+TypeError: Case duplicate [switch_enum.ets:20:14]

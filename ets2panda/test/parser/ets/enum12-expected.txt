@@ -3460,4 +3460,4 @@
     }
   }
 }
-TypeError: No enum type method called 'toString' [enum12.sts:20:29]
+TypeError: No enum type method called 'toString' [enum12.ets:20:29]

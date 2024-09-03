@@ -335,4 +335,4 @@
     }
   }
 }
-TypeError: Class or interface 'Object' cannot be used as object [class_as_object_1.sts:16:13]
+TypeError: Class or interface 'Object' cannot be used as object [class_as_object_1.ets:16:13]

@@ -13,9 +13,16 @@
  * limitations under the License.
  */
 
-import {foo} from "./import_extension_1";
-import {goo} from "./import_extension_2.sts";
+package com.huawei.migrationtool.test.ets;
 
-function main(): void {
-    let bar = foo + goo;
+class MyClass  {
+    static a : int = 1;
+    static {
+        MyClass.a = 2;
+        MyClass.a += 3;
+        MyClass.b = 5;
+        MyClass.b -= 6;
+    }
+
+    static b : int = 4;
 }

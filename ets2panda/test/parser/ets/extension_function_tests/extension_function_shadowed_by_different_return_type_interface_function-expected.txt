@@ -1764,4 +1764,4 @@
     }
   }
 }
-Warning: extension is shadowed by a instance member function 'foo(id0: int, k0: String): String' in class Yellow [extension_function_shadowed_by_different_return_type_interface_function.sts:36:48]
+Warning: extension is shadowed by a instance member function 'foo(id0: int, k0: String): String' in class Yellow [extension_function_shadowed_by_different_return_type_interface_function.ets:36:48]

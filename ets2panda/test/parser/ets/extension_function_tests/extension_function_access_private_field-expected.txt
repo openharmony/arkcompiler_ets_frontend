@@ -941,4 +941,4 @@
     }
   }
 }
-TypeError: Property id is not visible here. [extension_function_access_private_field.sts:21:21]
+TypeError: Property id is not visible here. [extension_function_access_private_field.ets:21:21]

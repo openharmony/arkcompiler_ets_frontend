@@ -1,1 +1,1 @@
-SyntaxError: Invalid enum initialization type [enum15.sts:18:11]
+SyntaxError: Invalid enum initialization type [enum15.ets:18:11]
