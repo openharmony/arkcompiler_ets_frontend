@@ -3557,6 +3557,7 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isExport, bool isDe
     auto enumCtx = binder::LexicalScope<binder::TSEnumScope>(Binder(), enumMemberBindings);
     auto *enumDeclaration = ParseEnumMembers(key, enumStart, isExport, isDeclare, isConst);
     res->Declaration()->AsEnumLiteralDecl()->Add(enumDeclaration);
+    res->Declaration()->BindNode(enumDeclaration);
 
     return enumDeclaration;
 }
