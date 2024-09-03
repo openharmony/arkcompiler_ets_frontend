@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class ETSTypeReferencePartBuilder : public AstBuilder {
+class ETSTypeReferencePartBuilder : public AstBuilder<ir::ETSTypeReferencePart> {
 public:
     explicit ETSTypeReferencePartBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -44,23 +44,16 @@ public:
         return *this;
     }
 
-    ETSTypeReferencePartBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     ETSTypeReferencePart *Build()
     {
-        auto etsTypeReference = AllocNode<ir::ETSTypeReferencePart>(name_, typeParams_, prev_);
-        return etsTypeReference;
+        auto node = AllocNode(name_, typeParams_, prev_);
+        return node;
     }
 
 private:
     ir::Expression *name_ {};
     ir::TSTypeParameterInstantiation *typeParams_ {};
     ir::ETSTypeReferencePart *prev_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

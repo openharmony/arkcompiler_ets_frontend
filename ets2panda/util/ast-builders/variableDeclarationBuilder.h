@@ -22,17 +22,11 @@
 
 namespace ark::es2panda::ir {
 
-class VariableDeclarationBuilder : public AstBuilder {
+class VariableDeclarationBuilder : public AstBuilder<ir::VariableDeclaration> {
 public:
     explicit VariableDeclarationBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), declarators_(allocator->Adapter())
     {
-    }
-
-    VariableDeclarationBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
     }
 
     VariableDeclarationBuilder &SetKind(VariableDeclaration::VariableDeclarationKind kind)
@@ -61,13 +55,11 @@ public:
 
     VariableDeclaration *Build()
     {
-        auto *etsTypeReference =
-            AllocNode<ir::VariableDeclaration>(kind_, Allocator(), std::move(declarators_), declare_);
-        return etsTypeReference;
+        auto *node = AllocNode(kind_, Allocator(), std::move(declarators_), declare_);
+        return node;
     }
 
 private:
-    AstNode *parent_ {};
     VariableDeclaration::VariableDeclarationKind kind_ = VariableDeclaration::VariableDeclarationKind::LET;
     ArenaVector<VariableDeclarator *> declarators_;
     bool declare_ = true;

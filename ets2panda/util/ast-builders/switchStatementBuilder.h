@@ -22,17 +22,11 @@
 
 namespace ark::es2panda::ir {
 
-class SwitchStatementBuilder : public AstBuilder {
+class SwitchStatementBuilder : public AstBuilder<ir::SwitchStatement> {
 public:
     explicit SwitchStatementBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), cases_(allocator->Adapter())
     {
-    }
-
-    SwitchStatementBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
     }
 
     SwitchStatementBuilder &SetDiscriminant(Expression *discr)
@@ -55,12 +49,11 @@ public:
 
     SwitchStatement *Build()
     {
-        auto node = AllocNode<ir::SwitchStatement>(discriminant_, std::move(cases_));
+        auto node = AllocNode(discriminant_, std::move(cases_));
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     Expression *discriminant_ {};
     ArenaVector<SwitchCaseStatement *> cases_;
 };

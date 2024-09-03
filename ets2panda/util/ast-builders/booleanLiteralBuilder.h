@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class BooleanLiteralBuilder : public AstBuilder {
+class BooleanLiteralBuilder : public AstBuilder<ir::BooleanLiteral> {
 public:
     explicit BooleanLiteralBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    BooleanLiteralBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     BooleanLiteralBuilder &SetValue(bool val)
     {
@@ -40,12 +34,11 @@ public:
 
     BooleanLiteral *Build()
     {
-        auto *node = AllocNode<ir::BooleanLiteral>(value_);
+        auto *node = AllocNode(value_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     bool value_ = true;
 };
 

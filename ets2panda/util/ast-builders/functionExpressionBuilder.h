@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class FunctionExpressionBuilder : public AstBuilder {
+class FunctionExpressionBuilder : public AstBuilder<ir::FunctionExpression> {
 public:
     explicit FunctionExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    FunctionExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     FunctionExpressionBuilder &SetFunction(ScriptFunction *func)
     {
@@ -40,13 +34,12 @@ public:
 
     FunctionExpression *Build()
     {
-        auto *etsTypeReference = AllocNode<ir::FunctionExpression>(func_);
-        return etsTypeReference;
+        auto *node = AllocNode(func_);
+        return node;
     }
 
 private:
     ScriptFunction *func_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

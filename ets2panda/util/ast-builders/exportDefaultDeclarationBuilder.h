@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class ExportDefaultDeclarationBuilder : public AstBuilder {
+class ExportDefaultDeclarationBuilder : public AstBuilder<ir::ExportDefaultDeclaration> {
 public:
     explicit ExportDefaultDeclarationBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    ExportDefaultDeclarationBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     ExportDefaultDeclarationBuilder &SetDeclaration(AstNode *decl)
     {
@@ -46,12 +40,11 @@ public:
 
     ExportDefaultDeclaration *Build()
     {
-        auto node = AllocNode<ir::ExportDefaultDeclaration>(decl_, exportEquals_);
+        auto node = AllocNode(decl_, exportEquals_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     AstNode *decl_ {};
     bool exportEquals_ = false;
 };

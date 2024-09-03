@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class IfStatementBuilder : public AstBuilder {
+class IfStatementBuilder : public AstBuilder<ir::IfStatement> {
 public:
     explicit IfStatementBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    IfStatementBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     IfStatementBuilder &SetTest(Expression *test)
     {
@@ -52,12 +46,11 @@ public:
 
     IfStatement *Build()
     {
-        auto *node = AllocNode<ir::IfStatement>(test_, consequent_, alternate_);
+        auto *node = AllocNode(test_, consequent_, alternate_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     Expression *test_ {};
     Statement *consequent_ {};
     Statement *alternate_ {};

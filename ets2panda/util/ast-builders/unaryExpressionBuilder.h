@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class UnaryExpressionBuilder : public AstBuilder {
+class UnaryExpressionBuilder : public AstBuilder<ir::UnaryExpression> {
 public:
     explicit UnaryExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -38,23 +38,15 @@ public:
         return *this;
     }
 
-    UnaryExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     UnaryExpression *Build()
     {
-        auto *node = AllocNode<ir::UnaryExpression>(argument_, operator_);
-        node->SetParent(parent_);
+        auto *node = AllocNode(argument_, operator_);
         return node;
     }
 
 private:
     Expression *argument_ {};
     lexer::TokenType operator_ = lexer::TokenType::PUNCTUATOR_PLUS_PLUS;
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

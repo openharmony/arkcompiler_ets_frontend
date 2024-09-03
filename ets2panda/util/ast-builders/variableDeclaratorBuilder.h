@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class VariableDeclaratorBuilder : public AstBuilder {
+class VariableDeclaratorBuilder : public AstBuilder<ir::VariableDeclarator> {
 public:
     explicit VariableDeclaratorBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    VariableDeclaratorBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     VariableDeclaratorBuilder &SetId(Expression *id)
     {
@@ -46,12 +40,11 @@ public:
 
     VariableDeclarator *Build()
     {
-        auto *etsTypeReference = AllocNode<ir::VariableDeclarator>(flag_, id_, init_);
-        return etsTypeReference;
+        auto *node = AllocNode(flag_, id_, init_);
+        return node;
     }
 
 private:
-    AstNode *parent_ {};
     ark::es2panda::ir::VariableDeclaratorFlag flag_ = ark::es2panda::ir::VariableDeclaratorFlag::LET;
     Expression *id_ {};
     Expression *init_ {};

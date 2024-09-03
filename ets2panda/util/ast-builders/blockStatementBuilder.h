@@ -22,17 +22,11 @@
 
 namespace ark::es2panda::ir {
 
-class BlockStatementBuilder : public AstBuilder {
+class BlockStatementBuilder : public AstBuilder<ir::BlockStatement> {
 public:
     explicit BlockStatementBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), statementList_(allocator->Adapter())
     {
-    }
-
-    BlockStatementBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
     }
 
     BlockStatementBuilder &SetStatements(ArenaVector<Statement *> statements)
@@ -49,15 +43,11 @@ public:
 
     BlockStatement *Build()
     {
-        auto node = AllocNode<ir::BlockStatement>(Allocator(), std::move(statementList_));
-        if (parent_ != nullptr) {
-            node->SetParent(parent_);
-        }
+        auto node = AllocNode(Allocator(), std::move(statementList_));
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     ArenaVector<Statement *> statementList_;
 };
 

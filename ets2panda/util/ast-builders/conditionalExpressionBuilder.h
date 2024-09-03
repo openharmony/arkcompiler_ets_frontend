@@ -13,55 +13,48 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_UTIL_INCLUDE_IF_STATEMENT_BUILDER
-#define ES2PANDA_UTIL_INCLUDE_IF_STATEMENT_BUILDER
+#ifndef ES2PANDA_UTIL_INCLUDE_CONDITIONAL_EXPRESSION_BUILDER
+#define ES2PANDA_UTIL_INCLUDE_CONDITIONAL_EXPRESSION_BUILDER
 
-#include "ir/statements/ifStatement.h"
+#include "ir/expressions/conditionalExpression.h"
 #include "mem/arena_allocator.h"
 #include "astBuilder.h"
 
 namespace ark::es2panda::ir {
 
-class IfStatementBuilder : public AstBuilder {
+class ConditionalExpressionBuilder : public AstBuilder<ir::ConditionalExpression> {
 public:
-    IfStatementBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
+    explicit ConditionalExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
-    IfStatementBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
-    IfStatementBuilder &SetTest(Expression *test)
+    ConditionalExpressionBuilder &SetTest(Expression *test)
     {
         test_ = test;
         return *this;
     }
 
-    IfStatementBuilder &SetConsequent(Statement *conseq)
+    ConditionalExpressionBuilder &SetConsequent(Expression *conseq)
     {
         consequent_ = conseq;
         return *this;
     }
 
-    IfStatementBuilder &SetAlternate(Statement *alternate)
+    ConditionalExpressionBuilder &SetAlternate(Expression *alternate)
     {
         alternate_ = alternate;
         return *this;
     }
 
-    IfStatement *Build()
+    ConditionalExpression *Build()
     {
-        auto node = AllocNode<ir::IfStatement>(test_, consequent_, alternate_);
+        auto *node = AllocNode(test_, consequent_, alternate_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
-    Expression *test_;
-    Statement *consequent_;
-    Statement *alternate_;
+    Expression *test_ {};
+    Expression *consequent_ {};
+    Expression *alternate_ {};
 };
 
 }  // namespace ark::es2panda::ir
-#endif  // ES2PANDA_UTIL_INCLUDE_IF_STATEMENT_BUILDER
+#endif  // ES2PANDA_UTIL_INCLUDE_CONDITIONAL_EXPRESSION_BUILDER

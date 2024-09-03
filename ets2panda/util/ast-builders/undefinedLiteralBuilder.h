@@ -22,24 +22,17 @@
 
 namespace ark::es2panda::ir {
 
-class UndefinedLiteralBuilder : public AstBuilder {
+class UndefinedLiteralBuilder : public AstBuilder<ir::UndefinedLiteral> {
 public:
     explicit UndefinedLiteralBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
-    UndefinedLiteralBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     UndefinedLiteral *Build()
     {
-        auto *node = AllocNode<ir::UndefinedLiteral>();
+        auto *node = AllocNode();
         return node;
     }
 
 private:
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

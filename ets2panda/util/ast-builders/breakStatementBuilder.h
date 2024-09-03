@@ -22,24 +22,17 @@
 
 namespace ark::es2panda::ir {
 
-class BreakStatementBuilder : public AstBuilder {
+class BreakStatementBuilder : public AstBuilder<ir::BreakStatement> {
 public:
     explicit BreakStatementBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
-    BreakStatementBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     BreakStatement *Build()
     {
-        auto *etsTypeReference = AllocNode<ir::BreakStatement>();
-        return etsTypeReference;
+        auto *node = AllocNode();
+        return node;
     }
 
 private:
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

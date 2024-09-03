@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class TSClassImplementsBuilder : public AstBuilder {
+class TSClassImplementsBuilder : public AstBuilder<ir::TSClassImplements> {
 public:
     explicit TSClassImplementsBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    TSClassImplementsBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     TSClassImplementsBuilder &SetExpression(Expression *expression)
     {
@@ -46,12 +40,11 @@ public:
 
     TSClassImplements *Build()
     {
-        auto node = AllocNode<ir::TSClassImplements>(expression_, typeParameters_);
+        auto node = AllocNode(expression_, typeParameters_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     Expression *expression_ {};
     TSTypeParameterInstantiation *typeParameters_ {};
 };

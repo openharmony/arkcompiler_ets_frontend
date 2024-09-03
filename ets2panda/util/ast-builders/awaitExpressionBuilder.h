@@ -23,7 +23,7 @@
 
 namespace ark::es2panda::ir {
 
-class AwaitExpressionBuilder : public AstBuilder {
+class AwaitExpressionBuilder : public AstBuilder<ir::AwaitExpression> {
 public:
     explicit AwaitExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -33,22 +33,14 @@ public:
         return *this;
     }
 
-    AwaitExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     AwaitExpression *Build()
     {
-        auto *node = AllocNode<ir::AwaitExpression>(argument_);
-        node->SetParent(parent_);
+        auto *node = AllocNode(argument_);
         return node;
     }
 
 private:
     Expression *argument_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

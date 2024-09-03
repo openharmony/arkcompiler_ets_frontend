@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class CharLiteralBuilder : public AstBuilder {
+class CharLiteralBuilder : public AstBuilder<ir::CharLiteral> {
 public:
     explicit CharLiteralBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    CharLiteralBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     CharLiteralBuilder &SetValue(char16_t val)
     {
@@ -40,12 +34,11 @@ public:
 
     CharLiteral *Build()
     {
-        auto *node = AllocNode<ir::CharLiteral>(value_);
+        auto *node = AllocNode(value_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     char16_t value_ = u'\u0000';
 };
 

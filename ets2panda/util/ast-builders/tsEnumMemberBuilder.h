@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class TSEnumMemberBuilder : public AstBuilder {
+class TSEnumMemberBuilder : public AstBuilder<ir::TSEnumMember> {
 public:
     explicit TSEnumMemberBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    TSEnumMemberBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     TSEnumMemberBuilder &SetKey(Expression *key)
     {
@@ -46,12 +40,11 @@ public:
 
     TSEnumMember *Build()
     {
-        auto *node = AllocNode<ir::TSEnumMember>(key_, init_);
+        auto *node = AllocNode(key_, init_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     Expression *key_ {};
     Expression *init_ {};
 };

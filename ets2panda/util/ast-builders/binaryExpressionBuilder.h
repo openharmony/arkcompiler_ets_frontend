@@ -23,7 +23,7 @@
 
 namespace ark::es2panda::ir {
 
-class BinaryExpressionBuilder : public AstBuilder {
+class BinaryExpressionBuilder : public AstBuilder<ir::BinaryExpression> {
 public:
     explicit BinaryExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -45,16 +45,9 @@ public:
         return *this;
     }
 
-    BinaryExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     BinaryExpression *Build()
     {
-        auto *node = AllocNode<ir::BinaryExpression>(left_, right_, operator_);
-        node->SetParent(parent_);
+        auto *node = AllocNode(left_, right_, operator_);
         return node;
     }
 
@@ -62,7 +55,6 @@ private:
     Expression *left_ = nullptr;
     Expression *right_ = nullptr;
     lexer::TokenType operator_ = lexer::TokenType::PUNCTUATOR_PLUS;
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir
