@@ -5672,3 +5672,7 @@ test262/data/test_es2021/built-ins/DataView/toindex-byteoffset-sab.js
 test262/data/test_es2021/built-ins/DataView/prototype/getBigUint64/return-values.js
 test262/data/test_es2021/built-ins/DataView/prototype/setInt8/toindex-byteoffset.js
 # --- end of Issue #18596
+
+#19352
+test262/data/test_es2021/built-ins/TypedArray/prototype/set/array-arg-negative-integer-offset-throws.js
+test262/data/test_es2021/built-ins/TypedArray/prototype/set/typedarray-arg-negative-integer-offset-throws.js
