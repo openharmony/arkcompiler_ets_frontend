@@ -74,3 +74,88 @@ let b:SendableClassJ = new SendableClassJ();
 class SendableClassK {
     ma: SendableClassJ = b; // ERROR
 }
+
+//
+
+@Sendable
+class SendableLocalClassA {
+
+}
+
+@Sendable
+function sendableFunctionA() {
+
+};
+
+@Sendable
+export class SendableLocalClassB {
+
+}
+
+@Sendable
+export function sendableFunctionB() {
+
+};
+
+@Sendable
+class SendableLocalClassC {
+
+}
+
+@Sendable
+function sendableFunctionC() {
+
+};
+
+@Sendable
+class SendableLocalClassD {
+
+}
+
+@Sendable
+function sendableFunctionD() {
+
+};
+
+@Sendable
+class SendableLocalClassE {
+
+}
+
+@Sendable
+function sendableFunctionE() {
+
+};
+
+@Sendable 
+class SendableClass {
+  handle() {
+    new SendableLocalClassA(); // OK
+    sendableFunctionA(); // OK
+    new SendableLocalClassB(); // WARING, export decl
+    sendableFunctionB(); // WARING, export decl
+    new SendableLocalClassC(); // WARING, export { decl }
+    sendableFunctionC(); // WARING, export { decl }
+    new SendableLocalClassD(); // WARING, export { decl as alias }
+    sendableFunctionD(); // WARING, export { decl as alias }
+    new SendableLocalClassE(); // WARING, export default decl
+  }
+}
+
+@Sendable
+function sendableFunction() {
+    new SendableLocalClassA(); // OK
+    sendableFunctionA(); // OK
+    new SendableLocalClassB(); // WARING, export decl
+    sendableFunctionB(); // WARING, export decl
+    new SendableLocalClassC(); // WARING, export { decl }
+    sendableFunctionC(); // WARING, export { decl }
+    new SendableLocalClassD(); // WARING, export { decl as alias }
+    sendableFunctionD(); // WARING, export { decl as alias }
+    new SendableLocalClassE(); // WARING, export default decl
+}
+
+export { SendableLocalClassC, sendableFunctionC, SendableLocalClassD as Sc42, sendableFunctionD as sf42 };
+
+
+export default SendableLocalClassE;

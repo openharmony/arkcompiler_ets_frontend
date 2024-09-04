@@ -44,7 +44,7 @@ import {
 } from './utils/consts/NonInitializablePropertyDecorators';
 import { NON_RETURN_FUNCTION_DECORATORS } from './utils/consts/NonReturnFunctionDecorators';
 import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyHasNoInitializerErrorCode';
-import { SENDABLE_DECORATOR, SENDABLE_DECORATOR_NODES } from './utils/consts/SendableAPI';
+import { SENDABLE_DECORATOR, SENDABLE_DECORATOR_NODES, SENDABLE_CLOSURE_DECLS } from './utils/consts/SendableAPI';
 import type { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
@@ -93,6 +93,7 @@ export class TypeScriptLinter {
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
 
   autofixer: Autofixer | undefined;
+  private fileExportSendableDeclCaches: Set<ts.Node> | undefined;
 
   private sourceFile?: ts.SourceFile;
   private static sharedModulesCache: Map<string, boolean>;
@@ -2606,6 +2607,10 @@ export class TypeScriptLinter {
     ) {
       return;
     }
+    if (this.isFileExportSendableDecl(decl)) {
+      // This part of the check is removed when the relevant functionality is implemented at runtime
+      this.incrementCounters(node, FaultID.SendableClosureExport);
+    }
     if (this.isTopSendableClosure(decl)) {
       return;
     }
@@ -2658,6 +2663,16 @@ export class TypeScriptLinter {
     return false;
   }
 
+  private isFileExportSendableDecl(decl: ts.Declaration): boolean {
+    if (!ts.isSourceFile(decl.parent) || !ts.isClassDeclaration(decl) && !ts.isFunctionDeclaration(decl)) {
+      return false;
+    }
+    if (!this.fileExportSendableDeclCaches) {
+      this.fileExportSendableDeclCaches = this.tsUtils.searchFileExportDecl(decl.parent, SENDABLE_CLOSURE_DECLS);
+    }
+    return this.fileExportSendableDeclCaches.has(decl);
+  }
+
   lint(sourceFile: ts.SourceFile): void {
     if (this.enableAutofix) {
       this.autofixer = new Autofixer(this.tsTypeChecker, this.tsUtils, sourceFile, this.cancellationToken);
@@ -2665,6 +2680,7 @@ export class TypeScriptLinter {
 
     this.walkedComments.clear();
     this.sourceFile = sourceFile;
+    this.fileExportSendableDeclCaches = undefined;
     this.visitSourceFile(this.sourceFile);
     this.handleCommentDirectives(this.sourceFile);
   }
@@ -2692,6 +2708,9 @@ export class TypeScriptLinter {
         }
         return;
       case ts.SyntaxKind.TypeAliasDeclaration:
+        if (!this.tsUtils.isShareableEntity(parentNode)) {
+          this.incrementCounters(parentNode, FaultID.SharedModuleExportsWarning);
+        }
         return;
       default:
         this.incrementCounters(parentNode, FaultID.SharedModuleExports);

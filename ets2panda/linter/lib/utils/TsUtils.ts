@@ -2706,4 +2706,46 @@ export class TsUtils {
       this.haveSameBaseType(this.tsTypeChecker.getTypeFromTypeNode(setParams[1].type), valueType)
     );
   }
+
+  // Search for and save the exported declaration in the specified file, re-exporting another module will not be included.
+  searchFileExportDecl(sourceFile: ts.SourceFile, targetDecls?: ts.SyntaxKind[]): Set<ts.Node> {
+    const exportDeclSet = new Set<ts.Node>();
+    const appendDecl = (decl: ts.Node | undefined): void => {
+      if (!decl || targetDecls && !targetDecls.includes(decl.kind)) {
+        return;
+      }
+      exportDeclSet.add(decl);
+    };
+
+    sourceFile.statements.forEach((statement: ts.Statement) => {
+      if (ts.isExportAssignment(statement)) {
+        // handle the case:"export default declName;"
+        if (statement.isExportEquals) {
+          return;
+        }
+        appendDecl(this.getDeclarationNode(statement.expression));
+      } else if (ts.isExportDeclaration(statement)) {
+        // handle the case:"export { declName1, declName2 };"
+        if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
+          return;
+        }
+        statement.exportClause.elements.forEach((specifier) => {
+          appendDecl(this.getDeclarationNode(specifier.propertyName ?? specifier.name));
+        });
+      } else if (ts.canHaveModifiers(statement)) {
+        // handle the case:"export const/class/function... decalName;"
+        if (!TsUtils.hasModifier(ts.getModifiers(statement), ts.SyntaxKind.ExportKeyword)) {
+          return;
+        }
+        if (!ts.isVariableStatement(statement)) {
+          appendDecl(statement);
+          return;
+        }
+        for (const exportDecl of statement.declarationList.declarations) {
+          appendDecl(exportDecl);
+        }
+      }
+    });
+    return exportDeclSet;
+  }
 }
