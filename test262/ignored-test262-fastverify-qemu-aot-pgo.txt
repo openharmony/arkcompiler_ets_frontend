@@ -5826,3 +5826,7 @@ test262/data/test_es2021/built-ins/Object/defineProperty/15.2.3.6-4-218.js
 
 #19255
 test262/data/test_es2021/built-ins/TypedArray/prototype/set/BigInt/typedarray-arg-set-values-diff-buffer-other-type-sab.js
+
+#19352
+test262/data/test_es2021/built-ins/TypedArray/prototype/set/array-arg-negative-integer-offset-throws.js
+test262/data/test_es2021/built-ins/TypedArray/prototype/set/typedarray-arg-negative-integer-offset-throws.js
