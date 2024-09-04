@@ -503,7 +503,9 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
         ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
 
         auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-        moduleIdxField.name = std::string {context->Binder()->Program()->SourceFile()};
+        moduleIdxField.name = context->Binder()->Program()->ModuleRecordFieldName().empty() ?
+                              std::string {context->Binder()->Program()->SourceFile()} :
+                              context->Binder()->Program()->ModuleRecordFieldName();
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         moduleIdxField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
