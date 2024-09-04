@@ -44,7 +44,13 @@ import {
 } from './utils/consts/NonInitializablePropertyDecorators';
 import { NON_RETURN_FUNCTION_DECORATORS } from './utils/consts/NonReturnFunctionDecorators';
 import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyHasNoInitializerErrorCode';
-import { SENDABLE_DECORATOR, SENDABLE_DECORATOR_NODES, SENDABLE_CLOSURE_DECLS } from './utils/consts/SendableAPI';
+import {
+  SENDABLE_DECORATOR,
+  SENDABLE_DECORATOR_NODES,
+  SENDABLE_CLOSURE_DECLS,
+  SENDBALE_FUNCTION_START_VERSION,
+  SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12
+} from './utils/consts/SendableAPI';
 import type { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
@@ -60,6 +66,7 @@ import {
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
+import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } from './utils/consts/VersionInfo';
 
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
@@ -96,6 +103,8 @@ export class TypeScriptLinter {
   private fileExportSendableDeclCaches: Set<ts.Node> | undefined;
 
   private sourceFile?: ts.SourceFile;
+  private readonly compatibleSdkVersion: number;
+  private readonly compatibleSdkVersionStage: string;
   private static sharedModulesCache: Map<string, boolean>;
   static filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
   static ideMode: boolean = false;
@@ -138,7 +147,9 @@ export class TypeScriptLinter {
     private readonly incrementalLintInfo?: IncrementalLintInfo,
     private readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>,
     private readonly reportAutofixCb?: ReportAutofixCallback,
-    private readonly isEtsFileCb?: IsEtsFileCallback
+    private readonly isEtsFileCb?: IsEtsFileCallback,
+    compatibleSdkVersion?: string,
+    compatibleSdkVersionStage?: string
   ) {
     this.tsUtils = new TsUtils(
       this.tsTypeChecker,
@@ -153,7 +164,8 @@ export class TypeScriptLinter {
       TypeScriptLinter.filteredDiagnosticMessages
     );
     this.supportedStdCallApiChecker = new SupportedStdCallApiChecker(this.tsUtils, this.tsTypeChecker);
-
+    this.compatibleSdkVersion = Number(compatibleSdkVersion) || DEFAULT_COMPATIBLE_SDK_VERSION;
+    this.compatibleSdkVersionStage = compatibleSdkVersionStage || DEFAULT_COMPATIBLE_SDK_VERSION_STAGE;
     this.initEtsHandlers();
     this.initCounters();
   }
@@ -998,6 +1010,9 @@ export class TypeScriptLinter {
       this.incrementCounters(node, FaultID.GeneratorFunction);
     }
     if (TsUtils.hasSendableDecoratorFunctionOverload(tsFunctionDeclaration)) {
+      if (!this.isSendableDecoratorValid(tsFunctionDeclaration)) {
+        return;
+      }
       TsUtils.getNonSendableDecorators(tsFunctionDeclaration)?.forEach((decorator) => {
         this.incrementCounters(decorator, FaultID.SendableFunctionDecorator);
       });
@@ -1547,6 +1562,9 @@ export class TypeScriptLinter {
     const tsTypeAlias = node as ts.TypeAliasDeclaration;
     this.countDeclarationsWithDuplicateName(tsTypeAlias.name, tsTypeAlias);
     if (TsUtils.hasSendableDecorator(tsTypeAlias)) {
+      if (!this.isSendableDecoratorValid(tsTypeAlias)) {
+        return;
+      }
       TsUtils.getNonSendableDecorators(tsTypeAlias)?.forEach((decorator) => {
         this.incrementCounters(decorator, FaultID.SendableTypeAliasDecorator);
       });
@@ -2823,5 +2841,20 @@ export class TypeScriptLinter {
         this.incrementCounters(decorator, FaultID.SendableDecoratorLimited, autofix);
       }
     }
+  }
+
+  private isSendableDecoratorValid(decl: ts.FunctionDeclaration | ts.TypeAliasDeclaration): boolean {
+    if (
+      this.compatibleSdkVersion > SENDBALE_FUNCTION_START_VERSION ||
+      this.compatibleSdkVersion === SENDBALE_FUNCTION_START_VERSION &&
+        !SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12.includes(this.compatibleSdkVersionStage)
+    ) {
+      return true;
+    }
+    const curDecorator = TsUtils.getSendableDecorator(decl);
+    if (curDecorator) {
+      this.incrementCounters(curDecorator, FaultID.SendableBetaCompatible);
+    }
+    return false;
   }
 }
