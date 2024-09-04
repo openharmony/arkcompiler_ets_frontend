@@ -188,7 +188,7 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     fs.writeFileSync(printPath, whitelistContent);
   }
 
-  private handleUniversalReservedList(universalList: RegExp[] | undefined, configArray: string[]) {
+  private handleUniversalReservedList(universalList: RegExp[] | undefined, configArray: string[]): void {
     if (universalList?.length > 0) {
       universalList.forEach((value) => {
         const originalString = UnobfuscationCollections.reservedWildcardMap.get(value);

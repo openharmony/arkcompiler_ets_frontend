@@ -212,7 +212,7 @@ export function isReservedTopLevel(originalName: string): boolean {
   // The 'mReservedToplevelNames' has already been added to 'PropCollections.reservedProperties'.
   return UnobfuscationCollections.reservedLangForTopLevel.has(originalName) ||
     UnobfuscationCollections.reservedSdkApiForGlobal?.has(originalName) ||
-    UnobfuscationCollections.reservedExportName?.has(originalName)||
+    UnobfuscationCollections.reservedExportName?.has(originalName) ||
     PropCollections.reservedProperties?.has(originalName) ||
     isMatchWildcard(PropCollections.universalReservedProperties, originalName);
 }
@@ -220,7 +220,7 @@ export function isReservedTopLevel(originalName: string): boolean {
 export function isReservedProperty(originalName: string): boolean {
   return UnobfuscationCollections.reservedSdkApiForProp?.has(originalName) ||
     UnobfuscationCollections.reservedLangForProperty?.has(originalName) ||
-    UnobfuscationCollections.reservedStruct?.has(originalName)||
+    UnobfuscationCollections.reservedStruct?.has(originalName) ||
     UnobfuscationCollections.reservedExportNameAndProp?.has(originalName) ||
     UnobfuscationCollections.reservedStrProp?.has(originalName) ||
     UnobfuscationCollections.reservedEnum?.has(originalName) ||
