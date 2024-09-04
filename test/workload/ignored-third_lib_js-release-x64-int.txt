@@ -1,8 +1,5 @@
 # Known failures list for third_lib_js - release-x64-int
 
-#18789
-crypto-js_test
-
 #18330
 dayjs_test
 
