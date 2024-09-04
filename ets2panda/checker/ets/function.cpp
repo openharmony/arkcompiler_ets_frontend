@@ -68,10 +68,18 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     }
     ASSERT(IsReferenceType(typeArgument) || typeArgument->IsETSVoidType());
     auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
+    bool retVal = false;
     if (typeArgument->IsETSVoidType()) {
-        return Relation()->IsSupertypeOf(constraint, GlobalETSUndefinedType());
+        retVal = Relation()->IsSupertypeOf(constraint, GlobalETSUndefinedType());
+    } else if (typeArgument->IsETSFunctionType()) {
+        retVal = Relation()->IsSupertypeOf(
+            constraint,
+            this->FunctionTypeToFunctionalInterfaceType(typeArgument->AsETSFunctionType()->CallSignatures().front()));
+    } else {
+        retVal = Relation()->IsSupertypeOf(constraint, typeArgument);
     }
-    return Relation()->IsSupertypeOf(constraint, typeArgument);
+
+    return retVal;
 }
 
 bool ETSChecker::HasTypeArgsOfObject(Type *argType, Type *paramType)
@@ -1003,11 +1011,12 @@ checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition 
 
     bool isConstructSig = method->IsConstructor();
 
-    auto *funcType = BuildFunctionSignature(method->Function(), isConstructSig);
-
+    BuildFunctionSignature(method->Function(), isConstructSig);
+    auto *funcType = BuildNamedFunctionType(method->Function());
     std::vector<checker::ETSFunctionType *> overloads;
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
-        auto *const overloadType = BuildFunctionSignature(currentFunc->Function(), isConstructSig);
+        BuildFunctionSignature(currentFunc->Function(), isConstructSig);
+        auto *const overloadType = BuildNamedFunctionType(currentFunc->Function());
         CheckIdenticalOverloads(funcType, overloadType, currentFunc);
         currentFunc->SetTsType(overloadType);
         funcType->AddCallSignature(currentFunc->Function()->Signature());
@@ -1306,7 +1315,7 @@ static void AddSignatureFlags(const ir::ScriptFunction *const func, Signature *c
     }
 }
 
-checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
+void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
 {
     bool isArrow = func->IsArrow();
     auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
@@ -1329,18 +1338,17 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
     } else {
         signature->AddSignatureFlag(SignatureFlags::CALL);
     }
-
-    auto *funcType = CreateETSFunctionType(func, signature, funcName);
     func->SetSignature(signature);
-    funcType->SetVariable(nameVar);
-    VarBinder()->AsETSBinder()->BuildFunctionName(func);
-
     AddSignatureFlags(func, signature);
+    VarBinder()->AsETSBinder()->BuildFunctionName(func);
+}
 
-    if (!isArrow) {
-        nameVar->SetTsType(funcType);
-    }
-
+checker::ETSFunctionType *ETSChecker::BuildNamedFunctionType(ir::ScriptFunction *func)
+{
+    ASSERT(!func->IsArrow());
+    auto *nameVar = func->Id()->Variable();
+    auto *funcType = CreateETSFunctionType(func, func->Signature(), nameVar->Name());
+    funcType->SetVariable(nameVar);
     return funcType;
 }
 
@@ -1402,7 +1410,7 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
         SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK |
                                                                     TypeRelationFlag::OVERRIDING_CONTEXT);
         if (Relation()->IsCompatibleTo(base, derived)) {
-            CheckThrowMarkers(derived, base);
+            CheckThrowMarkers(base, derived);
 
             if (derived->HasSignatureFlag(SignatureFlags::STATIC)) {
                 return false;
@@ -1419,9 +1427,13 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
 void ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
 {
     ir::ScriptFunctionFlags throwMarkers = ir::ScriptFunctionFlags::THROWS | ir::ScriptFunctionFlags::RETHROWS;
-    auto sourceThrowMarkers = source->Function()->Flags() & throwMarkers;
-    auto targetThrowMarkers = target->Function()->Flags() & throwMarkers;
-    if (sourceThrowMarkers != targetThrowMarkers) {
+    if ((source->Function()->Flags() & throwMarkers) == (target->Function()->Flags() & throwMarkers)) {
+        return;
+    }
+
+    if ((source->Function()->IsRethrowing() && target->Function()->IsThrowing()) ||
+        (!source->Function()->IsThrowing() &&
+         (target->Function()->IsRethrowing() || target->Function()->IsThrowing()))) {
         ThrowTypeError(
             "A method that overrides or hides another method cannot change throw or rethrow clauses of the "
             "overridden "

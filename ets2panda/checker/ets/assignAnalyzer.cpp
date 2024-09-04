@@ -66,7 +66,9 @@
 namespace ark::es2panda::checker {
 
 static constexpr NodeId INVALID_ID = -1;
-static constexpr bool CHECK_ALL_PROPERTIES = false;
+static constexpr bool CHECK_ALL_PROPERTIES = true;
+// NOTE(pantos) generic field initialization issue, skip them for now
+static constexpr bool CHECK_GENERIC_NON_READONLY_PROPERTIES = false;
 static constexpr bool WARN_NO_INIT_ONCE_PER_VARIABLE = false;
 static constexpr int LOOP_PHASES = 2;
 
@@ -1364,9 +1366,11 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
     ASSERT(node != nullptr);
 
     const checker::Type *type = nullptr;
+    bool isNonReadonlyField = false;
 
     if (node->IsClassProperty()) {
         type = node->AsClassProperty()->TsType();
+        isNonReadonlyField = !node->IsReadonly();  // NOTE(pantos) readonly is true, const is not set?
     } else if (node->IsVariableDeclarator()) {
         varbinder::Variable *variable = GetBoundVariable(node);
         if (variable != nullptr) {
@@ -1376,15 +1380,17 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
         UNREACHABLE();
     }
 
-    return type != nullptr && (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ||
-                               (type->PossiblyETSNullish() && !type->HasTypeFlag(checker::TypeFlag::GENERIC)));
+    return type != nullptr &&
+           (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ||
+            (type->PossiblyETSNullish() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
+                                            (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)
 {
     const ir::AstNode *declNode = GetDeclaringNode(node);
 
-    if (declNode == nullptr) {
+    if (declNode == nullptr || declNode->IsDeclare()) {
         return;
     }
 
@@ -1394,6 +1400,7 @@ void AssignAnalyzer::LetInit(const ir::AstNode *node)
     }
 
     if (node != declNode && declNode->IsConst()) {
+        // check reassignment of readonly properties
         util::StringView type = GetVariableType(declNode);
         util::StringView name = GetVariableName(declNode);
         const lexer::SourcePosition &pos = GetVariablePosition(node);
@@ -1423,7 +1430,7 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
 {
     const ir::AstNode *declNode = GetDeclaringNode(node);
 
-    if (declNode == nullptr) {
+    if (declNode == nullptr || declNode->IsDeclare()) {
         return;
     }
 
@@ -1438,7 +1445,7 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
     }
 
     if (declNode->IsClassProperty()) {
-        if (!declNode->IsConst()) {
+        if (!CHECK_ALL_PROPERTIES && !declNode->IsConst()) {
             // non readonly property
             return;
         }
@@ -1466,7 +1473,7 @@ void AssignAnalyzer::CheckInit(const ir::AstNode *node)
 
             std::stringstream ss;
             if (node->IsClassProperty()) {
-                ss << "Property '" << name << "' might not have been inicialized.";
+                ss << "Property '" << name << "' might not have been initialized.";
             } else {
                 ss << Capitalize(type) << " '" << name << "' is used before being assigned.";
             }

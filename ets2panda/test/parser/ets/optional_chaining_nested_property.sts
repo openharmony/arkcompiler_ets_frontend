@@ -15,9 +15,9 @@
 
 
 class Car {
-    company: String;
-    fuel: String;
-    seats: Int;
+    company: String = "";
+    fuel: String = "";
+    seats: Int = 0;
 }
 
 let car: Car = {

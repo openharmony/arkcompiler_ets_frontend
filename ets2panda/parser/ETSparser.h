@@ -20,6 +20,7 @@
 #include "util/importPathManager.h"
 #include "TypedParser.h"
 #include "ir/base/classDefinition.h"
+#include <utility>
 
 namespace ark::es2panda::ir {
 class ETSPackageDeclaration;
@@ -41,6 +42,9 @@ public:
 
     [[nodiscard]] bool IsETSParser() const noexcept override;
 
+    ir::ImportSpecifier *GetTriggeringCCTORSpecifier(util::StringView localName, util::StringView importedName);
+    void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
+                                                 parser::Program *newProg) const;
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
 
 public:
@@ -238,6 +242,7 @@ private:
     void ParseProgram(ScriptKind kind) override;
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile) override;
     ir::ETSPackageDeclaration *ParsePackageDeclaration();
+    void AddPackageSourcesToParseList();
     ArenaVector<ir::Statement *> ParseTopLevelStatements();
 
     static bool IsClassMethodModifier(lexer::TokenType type) noexcept;
@@ -249,9 +254,13 @@ private:
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
-    std::vector<Program *> ParseSources();
+    void TryParseSource(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
+                        const ArenaVector<util::StringView> &directImportsFromMainSource,
+                        std::vector<Program *> &programs);
+    std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
-    ArenaVector<ir::ImportSpecifier *> ParseNamedSpecifiers();
+    bool IsDefaultImport();
+    std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> ParseNamedSpecifiers();
     ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
     parser::Program *ParseSource(const SourceFile &sourceFile);
@@ -402,6 +411,11 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ClassDefinition *ParseClassDefinition(ir::ClassDefinitionModifiers modifiers,
                                               ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
+    bool CheckInNamespaceContextIsExported();
+    ir::NamespaceDeclaration *ParseNamespaceDeclaration(ir::ModifierFlags flags);
+    ir::NamespaceDefinition *ParseNamespaceDefinition(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
+    using NamespaceBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
+    NamespaceBody ParseNamespaceBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseEnumDeclaration(bool isConst = false, bool isStatic = false) override;
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;

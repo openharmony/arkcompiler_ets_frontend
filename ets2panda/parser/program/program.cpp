@@ -57,6 +57,19 @@ const varbinder::GlobalScope *Program::GlobalScope() const
     return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 
+void Program::SetDeclarationModuleInfo()
+{
+    bool onlyDeclarations = true;
+    for (auto stmt : ast_->Statements()) {
+        if (stmt->IsDeclare() || stmt->IsTSTypeAliasDeclaration()) {
+            continue;
+        }
+        onlyDeclarations = false;
+        break;
+    }
+    moduleInfo_.isDeclModule = onlyDeclarations;
+}
+
 void Program::AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection)
 {
     ArenaSet<ETSWarnings> tmp(allocator_->Adapter());

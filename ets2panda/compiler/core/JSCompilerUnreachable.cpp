@@ -498,4 +498,14 @@ void JSCompiler::Compile([[maybe_unused]] const ir::DummyNode *node) const
 {
     UNREACHABLE();
 }
+
+void JSCompiler::Compile([[maybe_unused]] const ir::NamespaceDeclaration *st) const
+{
+    UNREACHABLE();
+}
+
+void JSCompiler::Compile([[maybe_unused]] const ir::NamespaceDefinition *st) const
+{
+    UNREACHABLE();
+}
 }  // namespace ark::es2panda::compiler

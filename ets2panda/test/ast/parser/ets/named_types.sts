@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 //import ets.util.List;
 //import ets.lang.annotation.*;
 class named_types  {
@@ -32,4 +30,4 @@ class auxilliary  {
     }
 }
 
-/* @@? 22:19 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@? 20:19 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

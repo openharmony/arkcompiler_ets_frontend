@@ -16,7 +16,7 @@
 class C {}
 
 class IR {
-    value: C
+    value: C = new C()
 }
 
 class CIterator {

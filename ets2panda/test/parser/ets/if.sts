@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 class IfTest  {
     public  Test(): void {
         let t : boolean = true;

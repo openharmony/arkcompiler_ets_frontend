@@ -86,6 +86,9 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
         return;
     }
 
+    if (accType->IsIntType() && expr->TsType()->IsETSEnumType()) {
+        return;
+    }
     ASSERT_PRINT(false, std::string("Type mismatch after Expression::Compile: ") + accType->ToString() +
                             " instead of " + expr->TsType()->ToString());
 }
@@ -1056,6 +1059,10 @@ void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *t
         }
         case checker::TypeFlag::LONG: {
             CastToLong(node);
+            break;
+        }
+        case checker::TypeFlag::CHAR: {
+            CastToChar(node);
             break;
         }
         case checker::TypeFlag::ETS_ARRAY:

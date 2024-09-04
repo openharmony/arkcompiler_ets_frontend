@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 export class field_decl  {
     private a : int ;
     protected b : char ;

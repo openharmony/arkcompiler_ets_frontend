@@ -17,8 +17,8 @@ type partial_A = Partial<A>;
 
 class A {
     num_memb: number;
-    str_memb: String;
-    b_memb: B;
+    str_memb: String = "";
+    b_memb: B = new B();
 }
 
 class B { fld: number = 6 }

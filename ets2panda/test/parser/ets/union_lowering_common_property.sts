@@ -14,11 +14,11 @@
  */
 
 class A {
-    status: string;
+    status: string = "";
 }
 
 class B {
-    status: string;
+    status: string = "";
 }
 
 type Union = A | B;

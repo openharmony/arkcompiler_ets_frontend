@@ -15,9 +15,15 @@
 
 #include "compiler/lowering/ets/topLevelStmts/importExportDecls.h"
 #include "ir/ets/etsReExportDeclaration.h"
+#include "parser/program/program.h"
 #include "util/importPathManager.h"
 
 namespace ark::es2panda::compiler {
+
+static bool ProgramFileNameLessThan(const parser::Program *a, const parser::Program *b)
+{
+    return a->FileName().Mutf8() < b->FileName().Mutf8();
+}
 
 void ImportExportDecls::ParseDefaultSources()
 {
@@ -25,15 +31,105 @@ void ImportExportDecls::ParseDefaultSources()
     varbinder_->SetDefaultImports(std::move(imports));
 }
 
-void ImportExportDecls::HandleGlobalStmts(const ArenaVector<parser::Program *> &programs)
+/**
+ * @brief checks if `prog` matches with the path in `stmt` (an ImportDeclaration statement)
+
+ * If match is found, `prog` is inserted into a container (`triggeringCCtorMethodsAndPrograms`) that will be used when
+ * calling the  triggeringCCtorMethod inside the entrypoint's `_$init$_`.
+ *
+ * The structure of `triggeringCCtorMethodsAndPrograms` is delineated in the `CollectImportedProgramsFromStmts` method.
+
+ * @return true if `prog` is part of a package
+ * @return false otherwise
+ */
+void ImportExportDecls::MatchImportDeclarationPathWithProgram(
+    ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *prog, const util::StringView moduleName,
+    const GlobalClassHandler *globalClass,
+    GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms)
+{
+    if (util::Helpers::IsStdLib(prog)) {
+        return;
+    }
+    auto resolvedImportPath = stmt->ResolvedSource()->Str().Utf8();
+    if (!((prog->IsPackageModule() && prog->SourceFileFolder().Is(resolvedImportPath)) ||
+          prog->AbsoluteName().Is(resolvedImportPath)) ||
+        prog->IsDeclarationModule()) {
+        return;
+    }
+
+    if (triggeringCCtorMethodsAndPrograms->count(moduleName) == 0) {
+        triggeringCCtorMethodsAndPrograms->emplace(moduleName, prog->Allocator()->Adapter());
+    }
+    auto triggeringCCtorMethodName =
+        globalClass->FormTriggeringCCtorMethodName(stmt->AsETSImportDeclaration()->Source()->Str());
+    triggeringCCtorMethodsAndPrograms->at(moduleName).emplace_back(std::pair(triggeringCCtorMethodName, prog));
+    AddImportSpecifierForTriggeringCCtorMethod(stmt, globalClass, triggeringCCtorMethodName);
+}
+
+/**
+ * @brief Collects imported programs and local names for the functions that are to trigger the owner classes of the
+ * imported programs
+ *
+ * The function to trigger the CCtor in the imported program is named `_$trigger_cctor$_`. A local
+ * alias is assigned to this function. The `_$init$_` of the entrypoint program's owner class will use this alias
+ * when calling the special function.
+ *
+ * The alias for the special function and the program is stored in std::pairs. The pairs that belong to the same
+ * package form a vector. The vectors are stored in an unordered map, the key being the name of the package name.
+ */
+void ImportExportDecls::CollectImportedProgramsFromStmts(
+    ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *program, const GlobalClassHandler *globalClass,
+    GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms)
+{
+    for (auto const &directExtSource : program->DirectExternalSources()) {
+        for (auto prog : directExtSource.second) {
+            MatchImportDeclarationPathWithProgram(stmt, prog, directExtSource.first, globalClass,
+                                                  triggeringCCtorMethodsAndPrograms);
+            if (prog->IsPackageModule()) {
+                break;
+            }
+        }
+    }
+}
+
+/**
+ * @brief  Adds specifier of the TriggeringCCtorMethod to the import declaration `stmt`.
+ *
+ * Adds specifier of the TriggeringCCtorMethod to the import declaration (`stmt`). The specifier have a different
+ * local name, to avoid collision with the `_$trigger_cctor$_` in different modules.
+ */
+void ImportExportDecls::AddImportSpecifierForTriggeringCCtorMethod(ark::es2panda::ir::ETSImportDeclaration *stmt,
+                                                                   const GlobalClassHandler *globalClass,
+                                                                   util::StringView triggeringCCtorMethodName)
+{
+    ir::ImportSpecifier *specifier =
+        parser_->AsETSParser()->GetTriggeringCCTORSpecifier(triggeringCCtorMethodName, globalClass->TRIGGER_CCTOR);
+    stmt->Specifiers().push_back(specifier);
+    specifier->SetParent(stmt);
+}
+
+GlobalClassHandler::TriggeringCCtorMethodsAndPrograms ImportExportDecls::HandleGlobalStmts(
+    ArenaVector<parser::Program *> &programs, GlobalClassHandler *globalClass)
 {
     VerifySingleExportDefault(programs);
     VerifyTypeExports(programs);
+    GlobalClassHandler::TriggeringCCtorMethodsAndPrograms triggeringCCtorMethodsAndPrograms {
+        programs.front()->Allocator()->Adapter()};
+    if (!programs.empty()) {
+        std::sort(programs.begin(), programs.end(), ProgramFileNameLessThan);
+    }
     for (const auto &program : programs) {
         fieldMap_.clear();
         exportNameMap_.clear();
         exportedTypes_.clear();
         for (auto stmt : program->Ast()->Statements()) {
+            // note (hurton): Current implementation of triggering the imported programs top level statements does
+            // not support type imports and re-exports.
+            if (stmt->IsETSImportDeclaration() && !stmt->AsETSImportDeclaration()->IsTypeKind() &&
+                !util::Helpers::IsStdLib(program) && !program->IsDeclarationModule()) {
+                CollectImportedProgramsFromStmts(stmt->AsETSImportDeclaration(), program, globalClass,
+                                                 &triggeringCCtorMethodsAndPrograms);
+            }
             stmt->Accept(this);
             if (stmt->IsExportNamedDeclaration()) {
                 PopulateAliasMap(stmt->AsExportNamedDeclaration(), program->SourceFilePath());
@@ -45,7 +141,8 @@ void ImportExportDecls::HandleGlobalStmts(const ArenaVector<parser::Program *> &
 
             ASSERT(!originalName.Empty());
 
-            if (fieldMap_.find(originalName) == fieldMap_.end() && !isType) {
+            if (fieldMap_.find(originalName) == fieldMap_.end() && !isType &&
+                importedSpecifiersForExportCheck_.count(originalName) == 0) {
                 util::ErrorHandler::ThrowSyntaxError(
                     varbinder_->Program(), "Cannot find name '" + originalName.Mutf8() + "' to export", startLoc);
             }
@@ -54,6 +151,7 @@ void ImportExportDecls::HandleGlobalStmts(const ArenaVector<parser::Program *> &
             }
         }
     }
+    return triggeringCCtorMethodsAndPrograms;
 }
 
 void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path)
@@ -71,16 +169,18 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
 void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView originalFieldName, util::StringView exportName,
                                                        lexer::SourcePosition startLoc)
 {
-    ir::AstNode *field = fieldMap_.find(originalFieldName)->second;
-    if ((field->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
-        // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
-        // element using its original name and also an alias, like: export {test_func, test_func as foo}.
-        util::ErrorHandler::ThrowSyntaxError(
-            varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
-            startLoc);
+    auto fieldItem = fieldMap_.find(originalFieldName);
+    if (fieldItem != fieldMap_.end()) {
+        ir::AstNode *field = fieldItem->second;
+        if ((field->Modifiers() & ir::ModifierFlags::EXPORTED) != 0) {
+            // Note (oeotvos) Needs to be discussed, whether we would like to allow exporting the same program
+            // element using its original name and also an alias, like: export {test_func, test_func as foo}.
+            util::ErrorHandler::ThrowSyntaxError(
+                varbinder_->Program(), "Cannot export '" + originalFieldName.Mutf8() + "', it was already exported",
+                startLoc);
+        }
+        field->AddModifier(ir::ModifierFlags::EXPORT);
     }
-
-    field->AddModifier(ir::ModifierFlags::EXPORT);
 
     if (exportName != originalFieldName) {
         if (auto declItem = fieldMap_.find(exportName); declItem != fieldMap_.end()) {
@@ -93,7 +193,10 @@ void ImportExportDecls::HandleSelectiveExportWithAlias(util::StringView original
                     "The given name '" + exportName.Mutf8() + "' is already used in another export", startLoc);
             }
         }
-        field->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+
+        if (fieldItem != fieldMap_.end()) {
+            fieldItem->second->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+        }
     }
 }
 
@@ -135,6 +238,15 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
             util::ErrorHandler::ThrowSyntaxError(
                 varbinder_->Program(),
                 "The given name '" + local->Name().Mutf8() + "' is already used in another export", local->Start());
+        }
+    }
+}
+
+void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl)
+{
+    for (ir::AstNode *spec : importDecl->AsETSImportDeclaration()->Specifiers()) {
+        if (spec->IsImportSpecifier()) {
+            importedSpecifiersForExportCheck_.emplace(spec->AsImportSpecifier()->Imported()->Name());
         }
     }
 }

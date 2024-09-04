@@ -1923,12 +1923,7 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 
     expr->Expr()->Compile(etsg);
 
-    if (!etsg->GetAccumulatorType()->DefinitelyNotETSNullish()) {
-        if (etsg->GetAccumulatorType()->DefinitelyETSNullish()) {
-            etsg->EmitNullishException(expr);
-            return;
-        }
-
+    if (etsg->GetAccumulatorType()->PossiblyETSNullish()) {
         auto arg = etsg->AllocReg();
         etsg->StoreAccumulator(expr, arg);
         etsg->LoadAccumulator(expr, arg);

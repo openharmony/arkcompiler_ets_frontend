@@ -332,4 +332,14 @@ void CompilerImpl::DumpAsm(const ark::pandasm::Program *prog)
 {
     Emitter::DumpAsm(prog);
 }
+
+std::string CompilerImpl::GetPhasesList(const ScriptExtension ext)
+{
+    std::stringstream ss;
+    for (auto phase : compiler::GetPhaseList(ext)) {
+        ss << " " << phase->Name() << std::endl;
+    }
+    return ss.str();
+}
+
 }  // namespace ark::es2panda::compiler

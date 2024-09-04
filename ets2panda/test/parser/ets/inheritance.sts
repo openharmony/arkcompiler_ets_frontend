@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.teets.sts;
-
 interface interface_a {
 }
 

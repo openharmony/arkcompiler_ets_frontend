@@ -203,31 +203,10 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
 ir::Statement *ETSParser::ParseTopLevelStatement()
 {
     const auto flags = StatementParsingFlags::ALLOW_LEXICAL;
-    static const std::unordered_set<lexer::TokenType> ALLOWED_TOP_LEVEL_STMTS = {
-        lexer::TokenType::PUNCTUATOR_LEFT_BRACE,
-        lexer::TokenType::PUNCTUATOR_SEMI_COLON,
-        lexer::TokenType::KEYW_ASSERT,
-        lexer::TokenType::KEYW_IF,
-        lexer::TokenType::KEYW_DO,
-        lexer::TokenType::KEYW_FOR,
-        lexer::TokenType::KEYW_TRY,
-        lexer::TokenType::KEYW_WHILE,
-        lexer::TokenType::KEYW_BREAK,
-        lexer::TokenType::KEYW_CONTINUE,
-        lexer::TokenType::KEYW_THROW,
-        lexer::TokenType::KEYW_SWITCH,
-        lexer::TokenType::KEYW_DEBUGGER,
-        lexer::TokenType::LITERAL_IDENT,
-    };
 
     auto result = ParseTopLevelDeclStatement(flags);
     if (result == nullptr) {
-        auto const tokenType = Lexer()->GetToken().Type();
-        if (ALLOWED_TOP_LEVEL_STMTS.count(tokenType) != 0U) {
-            result = ParseStatement(flags);
-        } else {
-            ThrowUnexpectedToken(tokenType);
-        }
+        result = ParseStatement(flags);
     }
     return result;
 }

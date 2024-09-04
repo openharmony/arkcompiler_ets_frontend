@@ -541,6 +541,8 @@ std::optional<ir::Expression *> ETSParser::GetPostPrimaryExpression(ir::Expressi
         }
         case lexer::TokenType::PUNCTUATOR_FORMAT:
             ThrowUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+        case lexer::TokenType::PUNCTUATOR_ARROW:
+            ThrowUnexpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
         default:
             return std::nullopt;
     }
@@ -635,8 +637,12 @@ ir::Expression *ETSParser::ParseNewExpression()
     ir::TypeNode *baseTypeReference = ParseBaseTypeReference(&options);
     ir::TypeNode *typeReference = baseTypeReference;
     if (typeReference == nullptr) {
-        options |= TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE | TypeAnnotationParsingOptions::ALLOW_WILDCARD;
+        options |= TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE | TypeAnnotationParsingOptions::ALLOW_WILDCARD |
+                   TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY;
         typeReference = ParseTypeReference(&options);
+        if (typeReference == nullptr) {
+            typeReference = ParseTypeAnnotation(&options);
+        }
     } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("Invalid { after base types.");
     }

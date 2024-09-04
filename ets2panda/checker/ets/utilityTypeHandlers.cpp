@@ -75,8 +75,11 @@ Type *ETSChecker::HandlePartialType(Type *const typeToBePartial)
 
     auto *const classDef = typeToBePartial->Variable()->Declaration()->Node()->AsClassDefinition();
 
+    constexpr auto *PARTIAL_CLASS_SUFFIX = "$partial";
+
     // Partial class name for class 'T' will be 'T$partial'
-    const auto partialClassName = util::UString(classDef->Ident()->Name().Mutf8() + "$partial", Allocator()).View();
+    const auto partialClassName =
+        util::UString(classDef->Ident()->Name().Mutf8() + PARTIAL_CLASS_SUFFIX, Allocator()).View();
 
     auto *const classDefProgram = classDef->GetTopStatement()->AsETSScript()->Program();
     const bool isClassDeclaredInCurrentFile = classDefProgram == VarBinder()->Program();
@@ -100,7 +103,8 @@ Type *ETSChecker::HandlePartialType(Type *const typeToBePartial)
                                        : VarBinder()->AsETSBinder()->GetExternalRecordTable().at(programToUse);
 
     const varbinder::BoundContext boundCtx(recordTableToUse, partialClassDef);
-    partialClassDef->SetInternalName(qualifiedClassName);
+    partialClassDef->SetInternalName(
+        util::UString(classDef->InternalName().Mutf8() + PARTIAL_CLASS_SUFFIX, Allocator()).View());
 
     // If class prototype was created before, then we cached it's type. In that case return it.
     // This handles cases where a Partial<T> presents in class T, because during generating T$partial we'd need the
@@ -119,12 +123,6 @@ Type *ETSChecker::HandlePartialType(Type *const typeToBePartial)
     }
 
     return CreatePartialTypeClassDef(partialClassDef, classDef, typeToBePartial, recordTableToUse);
-}
-
-Type *ETSChecker::HandlePartialTypeNode(ir::TypeNode *const typeParamNode)
-{
-    auto *const bareTypeToBePartial = typeParamNode->Check(this);
-    return HandlePartialType(bareTypeToBePartial);
 }
 
 ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const prop,
@@ -535,12 +533,6 @@ Type *ETSChecker::HandleRequiredType(Type *typeToBeRequired)
     return typeToBeRequired;
 }
 
-Type *ETSChecker::HandleRequiredTypeNode(ir::TypeNode *const typeParamNode)
-{
-    auto *const bareTypeToBeRequired = typeParamNode->Check(this);
-    return HandleRequiredType(bareTypeToBeRequired);
-}
-
 void ETSChecker::MakePropertiesNonNullish(ETSObjectType *const classType)
 {
     classType->AddObjectFlag(ETSObjectFlags::REQUIRED);
@@ -583,7 +575,7 @@ static bool StringEqualsPropertyName(const util::StringView pname1, const ir::Ex
         pname2 = prop2Key->AsIdentifier()->Name();
     }
 
-    return pname1.Is(pname2.Mutf8());
+    return pname1 == pname2;
 }
 
 void ETSChecker::ValidateObjectLiteralForRequiredType(const ETSObjectType *const requiredType,

@@ -53,12 +53,23 @@ interface Lista <T>  {
 
 class A<T>{
     j: A<T>;
+    constructor(j: A<T>) {
+        this.j = j;
+    }
 }
 
 class B<K extends Lista<Object>, V>{
     j: Nodes<K, V>;
     i: Nodes<K, V>;
-     foo(): void{
+    constructor(
+        j: Nodes<K, V>,
+        i: Nodes<K, V>
+        )
+    {
+        this.j = j;
+        this.i = i;
+    }
+    foo(): void{
         this.j.right.left.right.key.popFront();
         this.j = this.i;
      }

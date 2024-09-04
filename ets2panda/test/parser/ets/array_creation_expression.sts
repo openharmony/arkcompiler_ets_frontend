@@ -22,7 +22,7 @@ class ListTest<T> {
     constructor()
     {
         this.num = 10;
-        let data = new T[this.num];
+        this.data = new T[this.num];
     }
     private data: T[];
     private num: int;

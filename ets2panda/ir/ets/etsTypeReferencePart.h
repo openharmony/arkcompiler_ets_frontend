@@ -73,6 +73,8 @@ public:
     [[nodiscard]] ETSTypeReferencePart *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
+    checker::Type *HandleInternalTypes(checker::ETSChecker *checker, const Identifier *ident);
+
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *typeParams_ {};
     ir::ETSTypeReferencePart *prev_ {};

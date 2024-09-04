@@ -22,7 +22,7 @@ interface B extends A {
 }
 
 class C implements A {
-    private value: string;
+    private value: string = "";
 
     foo(): A {
         this.value = "foo(): A"
@@ -35,7 +35,7 @@ class C implements A {
 }
 
 class D implements B {
-    private value: string;
+    private value: string = "";
 
     foo(): B {
         this.value = "foo(): B"

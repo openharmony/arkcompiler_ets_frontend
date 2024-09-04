@@ -15,10 +15,16 @@
 
 class B<T> {
     a: T;
+    constructor(a: T) {
+        this.a = a;
+    }
 }
 
 class A<T> {
     b: B<T>;
+    constructor(b: B<T>) {
+        this.b = b;
+    }
 }
 
 class Z {
@@ -26,7 +32,7 @@ class Z {
 }
 
 function main(): void {
-    let d: A<Z>;
+    let d: A<Z> = new A<Z>(new B<Z>(new Z()));
     d.b.a.c = 127;
 }
 

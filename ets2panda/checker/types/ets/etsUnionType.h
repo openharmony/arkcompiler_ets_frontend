@@ -56,6 +56,7 @@ public:
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 
     static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &types);
+    static void ReduceSubtypes(TypeRelation *relation, ArenaVector<Type *> &types);
 
     std::tuple<bool, bool> ResolveConditionExpr() const override;
 

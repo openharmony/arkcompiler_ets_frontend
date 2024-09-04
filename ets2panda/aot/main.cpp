@@ -142,6 +142,12 @@ static int Run(int argc, const char **argv)
     }
     es2panda::Compiler compiler(options->Extension(), options->ThreadCount(), std::move(pluginsOpt.value()));
 
+    if (options->ListPhases()) {
+        std::cerr << "Available phases:" << std::endl;
+        std::cerr << compiler.GetPhasesList();
+        return 1;
+    }
+
     if (options->CompilerOptions().compilationMode == CompilationMode::PROJECT) {
         return CompileFromConfig(compiler, options.get());
     }

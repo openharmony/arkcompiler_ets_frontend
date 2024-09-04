@@ -49,6 +49,7 @@
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/ifStatement.h"
 #include "ir/statements/labelledStatement.h"
+#include "ir/statements/namespaceDeclaration.h"
 #include "ir/statements/switchStatement.h"
 #include "ir/statements/throwStatement.h"
 #include "ir/statements/tryStatement.h"
@@ -507,11 +508,29 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
     return method;
 }
 
+bool IsParseClassElementSeenStatic(lexer::Lexer *lexer)
+{
+    char32_t nextCp = lexer->Lookahead();
+    if (lexer->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC && nextCp != lexer::LEX_CHAR_EQUALS &&
+        nextCp != lexer::LEX_CHAR_COLON && nextCp != lexer::LEX_CHAR_LEFT_PAREN &&
+        nextCp != lexer::LEX_CHAR_LESS_THAN) {
+        lexer->NextToken();
+        return true;
+    }
+    return false;
+}
+
 ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                           ir::ClassDefinitionModifiers modifiers,
                                           [[maybe_unused]] ir::ModifierFlags flags)
 {
     auto startLoc = Lexer()->GetToken().Start();
+    ir::ModifierFlags memberModifiers = ir::ModifierFlags::NONE;
+    if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 &&
+        Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXPORT) {
+        Lexer()->NextToken();  // eat exported
+        memberModifiers |= ir::ModifierFlags::EXPORTED;
+    }
     auto savedPos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
@@ -519,20 +538,16 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         return ParseClassStaticBlock();
     }
 
-    auto [memberModifiers, isStepToken] = ParseClassMemberAccessModifiers();
+    auto [modifierFlags, isStepToken] = ParseClassMemberAccessModifiers();
+    memberModifiers |= modifierFlags;
 
     if (InAmbientContext()) {
         memberModifiers |= ir::ModifierFlags::DECLARE;
     }
 
-    bool seenStatic = false;
-    char32_t nextCp = Lexer()->Lookahead();
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC && nextCp != lexer::LEX_CHAR_EQUALS &&
-        nextCp != lexer::LEX_CHAR_COLON && nextCp != lexer::LEX_CHAR_LEFT_PAREN &&
-        nextCp != lexer::LEX_CHAR_LESS_THAN) {
-        Lexer()->NextToken();
+    bool seenStatic = IsParseClassElementSeenStatic(Lexer());
+    if (seenStatic) {
         memberModifiers |= ir::ModifierFlags::STATIC;
-        seenStatic = true;
     }
 
     if (IsClassFieldModifier(Lexer()->GetToken().KeywordType())) {
@@ -550,18 +565,18 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         case lexer::TokenType::KEYW_CONSTRUCTOR: {
             return ParseInnerConstructorDeclaration(memberModifiers, startLoc);
         }
+        case lexer::TokenType::KEYW_NAMESPACE: {
+            return ParseNamespaceDeclaration(memberModifiers);
+        }
         case lexer::TokenType::KEYW_PUBLIC:
         case lexer::TokenType::KEYW_PRIVATE:
         case lexer::TokenType::KEYW_PROTECTED: {
             ThrowSyntaxError("Access modifier must precede field and method modifiers.");
-            break;
         }
         default: {
-            break;
+            return ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
         }
     }
-
-    return ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
 }
 
 ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,

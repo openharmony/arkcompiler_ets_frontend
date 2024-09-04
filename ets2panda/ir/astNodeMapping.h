@@ -65,6 +65,8 @@
     _(META_PROPERTY_EXPRESSION, MetaProperty)                                             \
     _(METHOD_DEFINITION, MethodDefinition)                                                \
     _(NAMED_TYPE, NamedType)                                                              \
+    _(NAMESPACE_DECLARATION, NamespaceDeclaration)                                        \
+    _(NAMESPACE_DEFINITION, NamespaceDefinition)                                          \
     _(NEW_EXPRESSION, NewExpression)                                                      \
     _(NULL_LITERAL, NullLiteral)                                                          \
     _(UNDEFINED_LITERAL, UndefinedLiteral)                                                \

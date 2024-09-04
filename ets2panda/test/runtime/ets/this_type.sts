@@ -28,7 +28,7 @@ class Component {
 }
 
 class Button extends Component {
-  title: string;
+  title: string = "";
 
   getTitle(): string {
     return this.title;

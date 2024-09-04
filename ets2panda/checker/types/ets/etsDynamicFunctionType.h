@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,11 +18,19 @@
 
 #include "checker/types/ets/etsFunctionType.h"
 #include "checker/types/signature.h"
+#include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {
 
 class ETSDynamicFunctionType : public ETSFunctionType {
 public:
+    explicit ETSDynamicFunctionType(ETSChecker *checker, util::StringView name, ArenaVector<Signature *> &&signatures,
+                                    Language lang)
+        : ETSFunctionType(checker, name, std::move(signatures)), lang_(lang)
+    {
+        AddTypeFlag(TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE);
+    }
+
     explicit ETSDynamicFunctionType(util::StringView name, Signature *signature, ArenaAllocator *allocator,
                                     Language lang)
         : ETSFunctionType(name, signature, allocator), lang_(lang)

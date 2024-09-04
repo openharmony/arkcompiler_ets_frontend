@@ -39,6 +39,20 @@
                 }
               }
             },
+            "value": {
+              "type": "StringLiteral",
+              "value": "",
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 19
+                },
+                "end": {
+                  "line": 17,
+                  "column": 21
+                }
+              }
+            },
             "accessibility": "public",
             "static": false,
             "readonly": false,
@@ -71,7 +85,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 17
+                    "column": 18
                   }
                 }
               },
@@ -82,7 +96,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 17
+                  "column": 18
                 }
               }
             },
@@ -95,7 +109,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 17
+                "column": 21
               }
             }
           },
@@ -253,6 +267,20 @@
                 }
               }
             },
+            "value": {
+              "type": "StringLiteral",
+              "value": "",
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 19
+                },
+                "end": {
+                  "line": 20,
+                  "column": 21
+                }
+              }
+            },
             "accessibility": "public",
             "static": false,
             "readonly": false,
@@ -285,7 +313,7 @@
                   },
                   "end": {
                     "line": 20,
-                    "column": 17
+                    "column": 18
                   }
                 }
               },
@@ -296,7 +324,7 @@
                 },
                 "end": {
                   "line": 20,
-                  "column": 17
+                  "column": 18
                 }
               }
             },
@@ -309,7 +337,7 @@
               },
               "end": {
                 "line": 20,
-                "column": 17
+                "column": 21
               }
             }
           },
@@ -479,6 +507,100 @@
                 "id": {
                   "type": "Identifier",
                   "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 1
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$trigger_cctor$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$trigger_cctor$_",
                   "decorators": [],
                   "loc": {
                     "start": {

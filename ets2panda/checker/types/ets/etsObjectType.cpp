@@ -182,17 +182,14 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
                                                                            const util::StringView &name,
                                                                            PropertySearchFlags flags) const
 {
-    if (funcType == nullptr) {
-        return nullptr;
-    }
-
     auto const addSignature = [funcType, flags](varbinder::LocalVariable *found) -> void {
         for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
             if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
                 it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
                 continue;
             }
-
+            // Issue: #18720
+            // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
             funcType->AddCallSignature(it);
         }
     };

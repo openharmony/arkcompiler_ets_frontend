@@ -344,6 +344,16 @@ ETSFunctionType *ETSChecker::CreateETSFunctionType(ir::ScriptFunction *func, Sig
     return Allocator()->New<ETSFunctionType>(name, signature, Allocator());
 }
 
+ETSFunctionType *ETSChecker::CreateETSFunctionType(ir::ScriptFunction *func, ArenaVector<Signature *> &&signatures,
+                                                   util::StringView name)
+{
+    if (func->IsDynamic()) {
+        return Allocator()->New<ETSDynamicFunctionType>(this, name, std::move(signatures), func->Language());
+    }
+
+    return Allocator()->New<ETSFunctionType>(this, name, std::move(signatures));
+}
+
 Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func)
 {
     return Allocator()->New<Signature>(info, returnType, func);
@@ -644,14 +654,23 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
 {
     auto *retType = signature->ReturnType();
     if (signature->RestVar() != nullptr) {
-        auto *functionN = GlobalBuiltinFunctionType(GlobalBuiltinFunctionTypeVariadicThreshold())->AsETSObjectType();
+        auto *functionN =
+            GlobalBuiltinFunctionType(GlobalBuiltinFunctionTypeVariadicThreshold(), signature->Function()->Flags())
+                ->AsETSObjectType();
         auto *substitution = NewSubstitution();
         substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), MaybePromotedBuiltinType(retType));
         return functionN->Substitute(Relation(), substitution);
     }
 
-    auto *funcIface = GlobalBuiltinFunctionType(signature->Params().size())->AsETSObjectType();
+    // Note: FunctionN is not supported yet
+    if (signature->Params().size() >= GetGlobalTypesHolder()->VariadicFunctionTypeThreshold()) {
+        return nullptr;
+    }
+
+    auto *funcIface =
+        GlobalBuiltinFunctionType(signature->Params().size(), signature->Function()->Flags())->AsETSObjectType();
     auto *substitution = NewSubstitution();
+
     for (size_t i = 0; i < signature->Params().size(); i++) {
         substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
                               MaybePromotedBuiltinType(signature->Params()[i]->TsType()));
@@ -659,6 +678,15 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
     substitution->emplace(funcIface->TypeArguments()[signature->Params().size()]->AsETSTypeParameter(),
                           MaybePromotedBuiltinType(signature->ReturnType()));
     return funcIface->Substitute(Relation(), substitution);
+}
+
+Type *ETSChecker::ResolveFunctionalInterfaces(ArenaVector<Signature *> &signatures)
+{
+    ArenaVector<Type *> types(Allocator()->Adapter());
+    for (auto *signature : signatures) {
+        types.push_back(FunctionTypeToFunctionalInterfaceType(signature));
+    }
+    return CreateETSUnionType(std::move(types));
 }
 
 }  // namespace ark::es2panda::checker

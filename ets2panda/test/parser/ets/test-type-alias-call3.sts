@@ -15,7 +15,7 @@
 
 type Callback = (n: int) => int
 class A {
-    public static callback: Callback
+    public static callback: Callback = (n: int) => 0
     public increment() {
         A.callback(1)
     }

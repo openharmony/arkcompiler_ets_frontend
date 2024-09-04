@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.teets.sts;
-
 export class constructor_test  {
     public constructor() {
         this(0);

@@ -22,4 +22,4 @@ class OtherType {}
 function main(): void {
     
 }
-/* @@? 17:1 Error SyntaxError: Unexpected token: '@'.  */
+/* @@? 17:1 Error SyntaxError: Unexpected token '@'.  */

@@ -19,7 +19,7 @@ type Third = First | Second;
 type Callback = Third;
 
 class A {
-    public callback: Callback;
+    public callback: Callback = (n: int) => 0;
     public increment() {
         this.callback(1);
     }

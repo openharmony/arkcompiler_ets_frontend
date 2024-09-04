@@ -33,6 +33,7 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/spreadElement.h"
+#include "ir/statements/namespaceDeclaration.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/dummyNode.h"
@@ -109,11 +110,15 @@ void ETSParser::ParseProgram(ScriptKind kind)
     auto decl = ParsePackageDeclaration();
     if (decl != nullptr) {
         statements.emplace_back(decl);
+        // If we found a package declaration, then add all files with the same package to the package parse list
+        AddPackageSourcesToParseList();
     }
+
     auto script = ParseETSGlobalScript(startLoc, statements);
 
-    AddExternalSource(ParseSources());
+    AddExternalSource(ParseSources(true));
     GetProgram()->SetAst(script);
+    GetProgram()->SetDeclarationModuleInfo();
 }
 
 ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
@@ -136,14 +141,15 @@ ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
 
 void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
 {
-    for (auto *newProg : programs) {
-        auto &extSources = globalProgram_->ExternalSources();
+    auto &extSources = globalProgram_->ExternalSources();
 
-        const util::StringView name = newProg->ModuleName();
-        if (extSources.count(name) == 0) {
-            extSources.emplace(name, Allocator()->Adapter());
+    for (auto *newProg : programs) {
+        const util::StringView moduleName = newProg->ModuleName();
+        if (extSources.count(moduleName) == 0) {
+            extSources.try_emplace(moduleName, Allocator()->Adapter());
         }
-        extSources.at(name).emplace_back(newProg);
+
+        extSources.at(moduleName).emplace_back(newProg);
     }
 }
 
@@ -164,45 +170,127 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseDefaultSources(std::stri
     return statements;
 }
 
-std::vector<Program *> ETSParser::ParseSources()
+ir::ImportSpecifier *ETSParser::GetTriggeringCCTORSpecifier(util::StringView localName, util::StringView importedName)
+{
+    auto *local = AllocNode<ir::Identifier>(localName, Allocator());
+    auto *imported = AllocNode<ir::Identifier>(importedName, Allocator());
+    return AllocNode<ir::ImportSpecifier>(imported, local);
+}
+
+void ETSParser::AddDirectImportsToDirectExternalSources(
+    const ArenaVector<util::StringView> &directImportsFromMainSource, parser::Program *const newProg) const
+{
+    if (std::find_if(directImportsFromMainSource.begin(), directImportsFromMainSource.end(),
+                     [newProg](const util::StringView &sv) { return sv == newProg->AbsoluteName(); }) ==
+        directImportsFromMainSource.end()) {
+        return;
+    }
+
+    const util::StringView name = newProg->Ast()->Statements().empty() ? newProg->FileName() : newProg->ModuleName();
+    if (GetProgram()->DirectExternalSources().count(name) == 0) {
+        GetProgram()->DirectExternalSources().try_emplace(name, Allocator()->Adapter());
+    }
+    GetProgram()->DirectExternalSources().at(name).emplace_back(newProg);
+}
+
+void ETSParser::TryParseSource(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
+                               const ArenaVector<util::StringView> &directImportsFromMainSource,
+                               std::vector<Program *> &programs)
+{
+    try {
+        parser::Program *newProg =
+            ParseSource({parseListIdx.sourcePath.Utf8(), extSrc->View().Utf8(), parseListIdx.sourcePath.Utf8(), false});
+
+        if (!parseListIdx.isImplicitPackageImported || newProg->IsPackageModule()) {
+            AddDirectImportsToDirectExternalSources(directImportsFromMainSource, newProg);
+            // don't insert the separate modules into the programs, when we collect implicit package imports
+            programs.emplace_back(newProg);
+        }
+    } catch (const Error &) {
+        // Here file is not a valid STS source. Ignore and continue if it's implicit package import, else throw
+        // the syntax error as usual
+
+        if (!parseListIdx.isImplicitPackageImported) {
+            throw;
+        }
+
+        util::Helpers::LogWarning("Error during parse of file '", parseListIdx.sourcePath,
+                                  "' in compiled package. File will be omitted.");
+    }
+}
+
+std::vector<Program *> ETSParser::ParseSources(bool firstSource)
 {
     std::vector<Program *> programs;
 
     auto &parseList = importPathManager_->ParseList();
 
-    // This parse list `paths` can grow in the meantime, so keep this index-based iteration
-    // NOLINTNEXTLINE(modernize-loop-convert)
-    for (size_t idx = 0; idx < parseList.size(); idx++) {
-        // check if already parsed
-        if (parseList[idx].isParsed) {
-            continue;
+    ArenaVector<util::StringView> directImportsFromMainSource(Allocator()->Adapter());
+
+    if (firstSource) {
+        for (auto pl : parseList) {
+            if (pl.isParsed) {
+                // Handle excluded files, which are already set to be parsed before parsing them
+                continue;
+            }
+            directImportsFromMainSource.emplace_back(pl.sourcePath);
         }
-        std::ifstream inputStream(parseList[idx].sourcePath.Mutf8());
-        const auto data = importPathManager_->GetImportData(parseList[idx].sourcePath, Extension());
-        if (!data.hasDecl) {
-            continue;
+    }
+
+    auto notParsedElement =
+        std::find_if(parseList.begin(), parseList.end(), [](const auto &parseInfo) { return !parseInfo.isParsed; });
+
+    // NOTE (mmartin): Need a more optimal solution here
+    // This is needed, as during a parsing of a file, programs can be re-added to the parseList, which needs to be
+    // re-parsed. This won't change the size of the list, so with only the 'for loop', there can be unparsed files
+    // remained.
+    // An example for this, is when a file is added as an implicit package import, but it's erroneous, so we just ignore
+    // the file. But when the same file is also added with an explicit import declaration, then we need to re-parse it,
+    // and throw the syntax error.
+    while (notParsedElement != parseList.end()) {
+        // This parse list `paths` can grow in the meantime, so keep this index-based iteration
+        // NOLINTNEXTLINE(modernize-loop-convert)
+        for (size_t idx = 0; idx < parseList.size(); idx++) {
+            // check if already parsed
+            if (parseList[idx].isParsed) {
+                continue;
+            }
+            std::ifstream inputStream(parseList[idx].sourcePath.Mutf8());
+            const auto data = importPathManager_->GetImportData(parseList[idx].sourcePath, Extension());
+            if (!data.hasDecl) {
+                importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
+                continue;
+            }
+
+            if (GetProgram()->SourceFilePath().Is(parseList[idx].sourcePath.Mutf8())) {
+                return programs;
+            }
+
+            if (inputStream.fail()) {
+                ThrowSyntaxError({"Failed to open file: ", parseList[idx].sourcePath.Mutf8()});
+            }
+
+            std::stringstream ss;
+            ss << inputStream.rdbuf();
+            auto externalSource = ss.str();
+
+            auto currentLang = GetContext().SetLanguage(data.lang);
+            auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
+            importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
+
+            // In case of implicit package import, if we find a malformed STS file in the package's directory, instead
+            // of aborting compilation we just ignore the file
+
+            // NOTE (mmartin): after the multiple syntax error handling in the parser is implemented, this try-catch
+            // must be changed, as exception throwing will be removed
+
+            TryParseSource(parseList[idx], extSrc, directImportsFromMainSource, programs);
+
+            GetContext().SetLanguage(currentLang);
         }
 
-        if (GetProgram()->SourceFilePath().Is(parseList[idx].sourcePath.Mutf8())) {
-            break;
-        }
-
-        if (inputStream.fail()) {
-            ThrowSyntaxError({"Failed to open file: ", parseList[idx].sourcePath.Mutf8()});
-        }
-
-        std::stringstream ss;
-        ss << inputStream.rdbuf();
-        auto externalSource = ss.str();
-
-        auto currentLang = GetContext().SetLanguage(data.lang);
-        auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
-        importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
-        auto newProg = ParseSource(
-            {parseList[idx].sourcePath.Utf8(), extSrc->View().Utf8(), parseList[idx].sourcePath.Utf8(), false});
-
-        programs.emplace_back(newProg);
-        GetContext().SetLanguage(currentLang);
+        notParsedElement =
+            std::find_if(parseList.begin(), parseList.end(), [](const auto &parseInfo) { return !parseInfo.isParsed; });
     }
 
     return programs;
@@ -225,6 +313,7 @@ parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
     }
     auto script = ParseETSGlobalScript(startLoc, statements);
     program->SetAst(script);
+    GetProgram()->SetDeclarationModuleInfo();
     return program;
 }
 
@@ -494,7 +583,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
                 ThrowSyntaxError("Namespaces are declare only");
             }
             GetContext().Status() |= ParserStatus::IN_NAMESPACE;
-            auto *ns = ParseClassDeclaration(modifiers, ir::ModifierFlags::STATIC);
+            auto *ns = ParseNamespaceDeclaration(ir::ModifierFlags::DECLARE | ir::ModifierFlags::EXPORT);
             GetContext().Status() &= ~ParserStatus::IN_NAMESPACE;
             return ns;
         }
@@ -730,6 +819,10 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ETSParser::Pars
         flags |= ExpressionParseFlags::POTENTIAL_CLASS_LITERAL;
     }
 
+    if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY) != 0) {
+        flags |= ExpressionParseFlags::POTENTIAL_NEW_ARRAY;
+    }
+
     auto *typeName = ParseQualifiedName(flags);
     if (typeName == nullptr) {
         return {nullptr, nullptr};
@@ -895,10 +988,10 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
         auto specs = ParseNamedSpecifiers();
 
         if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM) {
-            specifiers = util::Helpers::ConvertVector<ir::AstNode>(specs);
+            specifiers = util::Helpers::ConvertVector<ir::AstNode>(specs.first);
         } else {
             ArenaVector<ir::ExportSpecifier *> exports(Allocator()->Adapter());
-            for (auto spec : specs) {
+            for (auto spec : specs.first) {
                 exports.emplace_back(AllocNode<ir::ExportSpecifier>(spec->Local(), spec->Imported()));
             }
             auto result = AllocNode<ir::ExportNamedDeclaration>(Allocator(), static_cast<ir::StringLiteral *>(nullptr),
@@ -973,13 +1066,13 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
     auto resolvedImportPath = importPathManager_->ResolvePath(GetProgram()->AbsoluteName(), importPath);
     if (globalProgram_->AbsoluteName() != resolvedImportPath) {
         importPathManager_->AddToParseList(resolvedImportPath,
-                                           (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U);
-    } else {
-        if (!IsETSModule()) {
-            ThrowSyntaxError("Please compile `" + globalProgram_->FileName().Mutf8() + "." +
-                             globalProgram_->SourceFile().GetExtension().Mutf8() +
-                             "` with `--ets-module` option. It is being imported by another file.");
-        }
+                                           (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U
+                                               ? util::ImportFlags::DEFAULT_IMPORT
+                                               : util::ImportFlags::NONE);
+    } else if (!IsETSModule()) {
+        ThrowSyntaxError("Please compile `" + globalProgram_->FileName().Mutf8() + "." +
+                         globalProgram_->SourceFile().GetExtension().Mutf8() +
+                         "` with `--ets-module` option. It is being imported by another file.");
     }
 
     auto *resolvedSource = AllocNode<ir::StringLiteral>(resolvedImportPath);
@@ -1005,6 +1098,7 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
             Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_TYPE) ? ir::ImportKinds::TYPE : ir::ImportKinds::VALUE;
 
         ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
+        ArenaVector<ir::AstNode *> defaultSpecifiers(Allocator()->Adapter());
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
             if (importKind == ir::ImportKinds::TYPE) {
@@ -1013,26 +1107,42 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
             ParseNameSpaceSpecifier(&specifiers);
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
             auto specs = ParseNamedSpecifiers();
-            specifiers = util::Helpers::ConvertVector<ir::AstNode>(specs);
+            specifiers = util::Helpers::ConvertVector<ir::AstNode>(specs.first);
+            defaultSpecifiers = util::Helpers::ConvertVector<ir::AstNode>(specs.second);
         } else {
             ParseImportDefaultSpecifier(&specifiers);
         }
+        auto pos = Lexer()->Save();
+        if (!specifiers.empty()) {
+            ir::ImportSource *importSource = ParseSourceFromClause(true);
 
-        ir::ImportSource *importSource = ParseSourceFromClause(true);
+            lexer::SourcePosition endLoc = importSource->Source()->End();
+            auto *importDeclaration =
+                AllocNode<ir::ETSImportDeclaration>(importSource, std::move(specifiers), importKind);
+            importDeclaration->SetRange({startLoc, endLoc});
 
-        lexer::SourcePosition endLoc = importSource->Source()->End();
-        auto *importDeclaration = AllocNode<ir::ETSImportDeclaration>(importSource, std::move(specifiers), importKind);
-        importDeclaration->SetRange({startLoc, endLoc});
+            ConsumeSemicolon(importDeclaration);
+            statements.push_back(importDeclaration);
+        }
 
-        ConsumeSemicolon(importDeclaration);
+        if (!defaultSpecifiers.empty()) {
+            Lexer()->Rewind(pos);
+            ir::ImportSource *importSourceDefault = ParseSourceFromClause(true);
 
-        statements.push_back(importDeclaration);
+            lexer::SourcePosition endLocDef = importSourceDefault->Source()->End();
+            auto *importDeclarationDefault =
+                AllocNode<ir::ETSImportDeclaration>(importSourceDefault, std::move(defaultSpecifiers), importKind);
+            importDeclarationDefault->SetRange({startLoc, endLocDef});
+
+            ConsumeSemicolon(importDeclarationDefault);
+            util::Helpers::CheckDefaultImport(statements);
+            statements.push_back(importDeclarationDefault);
+        }
     }
 
     std::sort(statements.begin(), statements.end(), [](const auto *s1, const auto *s2) -> bool {
         return s1->Specifiers()[0]->IsImportNamespaceSpecifier() && !s2->Specifiers()[0]->IsImportNamespaceSpecifier();
     });
-
     return statements;
 }
 
@@ -1056,7 +1166,22 @@ ir::ExportNamedDeclaration *ETSParser::ParseSingleExport(ir::ModifierFlags modif
     return result;
 }
 
-ArenaVector<ir::ImportSpecifier *> ETSParser::ParseNamedSpecifiers()
+bool ETSParser::IsDefaultImport()
+{
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DEFAULT) {
+        Lexer()->NextToken();
+        if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
+            Lexer()->NextToken();
+            return true;
+        }
+        ThrowSyntaxError("Unexpected token. 'as' keyword is expected.");
+    }
+    return false;
+}
+
+using ImportSpecifierVector = ArenaVector<ir::ImportSpecifier *>;
+using ImportDefaultSpecifierVector = ArenaVector<ir::ImportDefaultSpecifier *>;
+std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseNamedSpecifiers()
 {
     // NOTE(user): handle qualifiedName in file bindings: qualifiedName '.' '*'
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_LEFT_BRACE)) {
@@ -1066,46 +1191,60 @@ ArenaVector<ir::ImportSpecifier *> ETSParser::ParseNamedSpecifiers()
     auto fileName = GetProgram()->SourceFilePath().Mutf8();
 
     ArenaVector<ir::ImportSpecifier *> result(Allocator()->Adapter());
+    ArenaVector<ir::ImportDefaultSpecifier *> resultDefault(Allocator()->Adapter());
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
             ThrowSyntaxError("The '*' token is not allowed as a selective binding (between braces)");
         }
 
-        if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-            ThrowSyntaxError("Unexpected token");
-        }
+        if (!IsDefaultImport()) {
+            if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+                ThrowSyntaxError("Unexpected token");
+            }
 
-        lexer::Token importedToken = Lexer()->GetToken();
-        auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
-        ir::Identifier *local = nullptr;
-        imported->SetReference();
-        imported->SetRange(Lexer()->GetToken().Loc());
+            lexer::Token importedToken = Lexer()->GetToken();
+            auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
+            ir::Identifier *local = nullptr;
+            imported->SetReference();
+            imported->SetRange(Lexer()->GetToken().Loc());
 
-        Lexer()->NextToken();  // eat import/export name
+            Lexer()->NextToken();
 
-        if (CheckModuleAsModifier() && Lexer()->TryEatTokenType(lexer::TokenType::KEYW_AS)) {
-            local = ParseNamedImport(Lexer()->GetToken());
-            Lexer()->NextToken();  // eat local name
+            if (CheckModuleAsModifier() && Lexer()->TryEatTokenType(lexer::TokenType::KEYW_AS)) {
+                local = ParseNamedImport(Lexer()->GetToken());
+                Lexer()->NextToken();
+            } else {
+                local = ParseNamedImport(importedToken);
+            }
+
+            auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
+            specifier->SetRange({imported->Start(), local->End()});
+
+            util::Helpers::CheckImportedName(result, specifier, fileName);
+
+            result.emplace_back(specifier);
         } else {
-            local = ParseNamedImport(importedToken);
+            auto *imported = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            imported->SetReference();
+            imported->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+            auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(imported);
+            specifier->SetRange({imported->Start(), imported->End()});
+
+            util::Helpers::CheckDefaultImportedName(resultDefault, specifier, fileName);
+
+            resultDefault.emplace_back(specifier);
         }
-
-        auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
-        specifier->SetRange({imported->Start(), local->End()});
-
-        util::Helpers::CheckImportedName(result, specifier, fileName);
-
-        result.emplace_back(specifier);
-
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
         }
     }
-
     Lexer()->NextToken();  // eat '}'
+    std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> resultSpecifiers(
+        result, resultDefault);
 
-    return result;
+    return resultSpecifiers;
 }
 
 void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport)
@@ -1737,6 +1876,14 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
     }
 
     return funcDecl;
+}
+
+void ETSParser::AddPackageSourcesToParseList()
+{
+    importPathManager_->AddToParseList(GetProgram()->SourceFileFolder(), util::ImportFlags::IMPLICIT_PACKAGE_IMPORT);
+
+    // Global program file is always in the same folder that we scanned, but we don't need to parse it twice
+    importPathManager_->MarkAsParsed(globalProgram_->SourceFilePath());
 }
 
 //================================================================================================//

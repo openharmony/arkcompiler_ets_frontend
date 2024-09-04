@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 class class_instance_creation  {
     constructor(i : int) {
     }

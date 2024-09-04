@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 export class unary_operations  {
     private a: int = 3;
     private pref1: int = +this.a;

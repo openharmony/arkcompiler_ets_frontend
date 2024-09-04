@@ -152,7 +152,7 @@ struct AllArgs {
 
     // parser
     ark::PandArg<std::string> inputExtension {"extension", "",
-                                              "Parse the input as the given extension (options: js | ts | as | ets)"};
+                                              "Parse the input as the given extension (options: js | ts | as | sts)"};
     ark::PandArg<bool> opModule {"module", false, "Parse the input as module (JS only option)"};
     ark::PandArg<bool> opParseOnly {"parse-only", false, "Parse the input only"};
     ark::PandArg<bool> opDumpAst {"dump-ast", false, "Dump the parsed AST"};
@@ -234,6 +234,7 @@ struct AllArgs {
         "dump-ets-src-after-phases", "", "Generate program dump as ets source code after running phases in the list"};
     ark::PandArg<std::string> dumpAfterPhases {"dump-after-phases", "",
                                                "Generate program dump after running phases in the list"};
+    ark::PandArg<bool> opListPhases {"list-phases", false, "Dump list of available phases"};
 
     // tail arguments
     ark::PandArg<std::string> inputFile {"input", "", "input file"};
@@ -311,6 +312,7 @@ struct AllArgs {
         argparser.Add(&dumpEtsSrcBeforePhases);
         argparser.Add(&dumpAfterPhases);
         argparser.Add(&dumpEtsSrcAfterPhases);
+        argparser.Add(&opListPhases);
         argparser.Add(&arktsConfig);
 
         argparser.Add(&opEtsEnableAll);
@@ -529,6 +531,7 @@ bool Options::Parse(int argc, const char **argv)
     optLevel_ = allArgs.opOptLevel.GetValue();
     threadCount_ = allArgs.opThreadCount.GetValue();
     listFiles_ = allArgs.opListFiles.GetValue();
+    listPhases_ = allArgs.opListPhases.GetValue();
 
     return true;
 }

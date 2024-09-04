@@ -15,6 +15,7 @@
 
 class TuplePair<X, Y> {
     one: [X, Y]
+    constructor(value: [X, Y]) { this.one = value;}
     public provide(): [X, Y] { return this.one; }
 }
 

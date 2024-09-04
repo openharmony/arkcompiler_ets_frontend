@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 export class type_cast {
     private i1: int = 34;
     private d: double = 3.7;

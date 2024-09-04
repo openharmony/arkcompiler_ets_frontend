@@ -16,7 +16,7 @@
 
 import type { Callback } from './test-type-alias-call7';
 class A {
-    public callback: Callback
+    public callback: Callback = (n: int) => 0;
     public increment(){
         this.callback(1)
     }

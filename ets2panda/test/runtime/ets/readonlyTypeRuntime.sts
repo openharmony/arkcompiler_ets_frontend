@@ -16,16 +16,16 @@
 type readonly_A = Readonly<A>;
 
 class A {
-    num_mem: Number
-    str_mem: String
-    b_mem: B
+    num_mem: Number = 0
+    str_mem: String = ""
+    b_mem: B = new B()
 }
 
 class B {fld: Number = 6}
 
-class C {c_num_mem: Number}
+class C {c_num_mem: Number = 0}
 
-class D  extends C {d_num_mem: Number}
+class D  extends C {d_num_mem: Number = 0}
 
 
 function main(): void {

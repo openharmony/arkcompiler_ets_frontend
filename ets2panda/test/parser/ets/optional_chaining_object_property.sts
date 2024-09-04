@@ -15,8 +15,8 @@
 
 
 class Dog {
-    name: String;
-    legs: Int;
+    name: String = "";
+    legs: Int = 0;
 }
 
 let dog: Dog = {

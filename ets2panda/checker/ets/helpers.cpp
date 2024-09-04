@@ -588,10 +588,17 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Arr
     }
 }
 
-checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags)
+checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags,
+                                                   ir::Expression *init)
 {
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
         auto type = bindingVar->TsTypeOrError();
+        if (init != nullptr && init->TsType()->IsETSEnumType()) {
+            init->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+        }
+        if (type->IsETSEnumType()) {
+            type = type->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
+        }
         if (type->IsETSUnionType()) {
             auto constituentTypes = type->AsETSUnionType()->ConstituentTypes();
             constituentTypes.push_back(GlobalETSUndefinedType());
@@ -691,7 +698,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (init == nullptr) {
-        return FixOptionalVariableType(bindingVar, flags);
+        return FixOptionalVariableType(bindingVar, flags, init);
     }
 
     CheckInit(ident, typeAnnotation, init, annotationType, bindingVar);
@@ -702,26 +709,20 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         ThrowTypeError("Cannot get the expression type", init->Start());
     }
 
-    bool isUnionFunction = false;
-
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
-        if (initType->AsETSFunctionType()->CallSignatures().size() == 1) {
-            annotationType =
-                FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignatures().front());
-        } else {
-            ArenaVector<Type *> types(Allocator()->Adapter());
-
-            for (auto &signature : initType->AsETSFunctionType()->CallSignatures()) {
-                types.push_back(FunctionTypeToFunctionalInterfaceType(signature));
-            }
-
-            annotationType = CreateETSUnionType(std::move(types));
-            isUnionFunction = true;
+        if (!init->IsArrowFunctionExpression() && (initType->AsETSFunctionType()->CallSignatures().size() != 1)) {
+            ThrowTypeError("Ambiguous function initialization because of multiple overloads", init->Start());
         }
+
+        annotationType =
+            initType->AsETSFunctionType()->FunctionalInterface() == nullptr
+                ? FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignatures().front())
+                : initType->AsETSFunctionType()->FunctionalInterface();
         bindingVar->SetTsType(annotationType);
     }
+
     if (annotationType != nullptr) {
-        CheckAnnotationTypeForVariableDeclaration(annotationType, isUnionFunction, init, initType);
+        CheckAnnotationTypeForVariableDeclaration(annotationType, annotationType->IsETSUnionType(), init, initType);
 
         // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
         // are assigned with CONSTANT, which would not be correct. (After feature supported)
@@ -730,7 +731,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
              (initType->IsETSStringType() && annotationType->IsETSStringType()))) {
             bindingVar->SetTsType(init->TsType());
         }
-        return FixOptionalVariableType(bindingVar, flags);
+        return FixOptionalVariableType(bindingVar, flags, init);
     }
 
     CheckEnumType(init, initType, varName);
@@ -738,7 +739,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     (isConst || (isReadonly && isStatic)) ? bindingVar->SetTsType(initType)
                                           : bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));
 
-    return FixOptionalVariableType(bindingVar, flags);
+    return FixOptionalVariableType(bindingVar, flags, init);
 }
 
 void ETSChecker::CheckAnnotationTypeForVariableDeclaration(checker::Type *annotationType, bool isUnionFunction,
@@ -1901,10 +1902,16 @@ void ETSChecker::CheckThrowingStatements(ir::AstNode *node)
                 node->Start());
         }
 
-        ThrowTypeError(
-            "This statement can cause an exception, therefore it must be enclosed in a try statement with a default "
-            "catch clause",
-            node->Start());
+        if (auto interfaces =
+                ancestorFunction->AsScriptFunction()->Signature()->Owner()->AsETSObjectType()->Interfaces();
+            !(!interfaces.empty() &&
+              interfaces[0]->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE))) {
+            ThrowTypeError(
+                "This statement can cause an exception, therefore it must be enclosed in a try statement with a "
+                "default "
+                "catch clause",
+                node->Start());
+        }
     }
 }
 
@@ -1963,6 +1970,10 @@ ir::BlockStatement *ETSChecker::FindFinalizerOfTryStatement(ir::AstNode *startFr
 
 void ETSChecker::CheckRethrowingFunction(ir::ScriptFunction *func)
 {
+    if (func->Signature()->Owner()->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL_INTERFACE)) {
+        return;
+    }
+
     bool foundThrowingParam = false;
 
     // It doesn't support lambdas yet.
