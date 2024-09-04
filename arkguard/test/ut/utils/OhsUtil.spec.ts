@@ -16,6 +16,7 @@
 import {
   isViewPUBasedClass,
   getElementAccessExpressionProperties,
+  getIndexedAccessTypeProperties,
   stringPropsSet,
   structPropsSet,
   getTypeAliasProperties,
@@ -99,7 +100,7 @@ describe('unit test for OhsUtil.ts', function () {
   describe('test for getElementAccessExpressionProperties function', function () {
     it('should not add items to propertySet if elementAccessExpression is undefined', () => {
       const propertySet = new Set<string>();
-      getElementAccessExpressionProperties(undefined, propertySet);
+      getElementAccessExpressionProperties(undefined);
       expect(stringPropsSet.has('value')).to.be.false;
     });
 
@@ -108,7 +109,7 @@ describe('unit test for OhsUtil.ts', function () {
       const value = ts.factory.createStringLiteral('value');
       const elementAccessExpression = ts.factory.createElementAccessExpression(key, value);
       const propertySet = new Set<string>();
-      getElementAccessExpressionProperties(elementAccessExpression, propertySet);
+      getElementAccessExpressionProperties(elementAccessExpression);
       expect(stringPropsSet.has('value')).to.be.true;
     });
 
@@ -117,8 +118,59 @@ describe('unit test for OhsUtil.ts', function () {
       const value = ts.factory.createBigIntLiteral("9999999");
       const elementAccessExpression = ts.factory.createElementAccessExpression(key, value);
       const propertySet = new Set<string>();
-      getElementAccessExpressionProperties(elementAccessExpression, propertySet)
+      getElementAccessExpressionProperties(elementAccessExpression)
       expect(stringPropsSet.has('9999999')).to.be.false;
+    });
+  })
+
+  describe('test for getIndexedAccessTypeProperties function', function () {
+    beforeEach(() => {
+      stringPropsSet.clear();
+    });
+
+    it('should not add items to propertySet if indexedAccessType is undefined', () => {
+      getIndexedAccessTypeProperties(undefined);
+      expect(stringPropsSet.has('value')).to.be.false;
+    });
+
+    it('should add to propertySet if indexedAccessType.indexType is literalType and set string value', () => {
+      const indexedAccessType = ts.factory.createIndexedAccessTypeNode(
+        ts.factory.createTypeReferenceNode(
+          ts.factory.createIdentifier("T"),
+          undefined
+        ),
+        ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral("U"))
+      )
+      getIndexedAccessTypeProperties(indexedAccessType);
+      expect(stringPropsSet.has("U")).to.be.true;
+    });
+
+    it('should add to propertySet if indexedAccessType.indexType is unionType and set string value', () => {
+      const indexedAccessType = ts.factory.createIndexedAccessTypeNode(
+        ts.factory.createTypeReferenceNode(
+          ts.factory.createIdentifier("T1"),
+          undefined
+        ),
+        ts.factory.createUnionTypeNode([
+          ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral("U")),
+          ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(1))
+        ])
+      )
+      getIndexedAccessTypeProperties(indexedAccessType);
+      expect(stringPropsSet.has("U")).to.be.true;
+      expect(stringPropsSet.has('1')).to.be.false;
+    });
+
+    it('should not add items to propertySet if indexedAccessType.literalType is set numberic value', () => {
+      const indexedAccessType = ts.factory.createIndexedAccessTypeNode(
+        ts.factory.createTypeReferenceNode(
+          ts.factory.createIdentifier("T"),
+          undefined
+        ),
+        ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(1))
+      )
+      getIndexedAccessTypeProperties(indexedAccessType)
+      expect(stringPropsSet.has('1')).to.be.false;
     });
   })
 
@@ -244,4 +296,4 @@ describe('unit test for OhsUtil.ts', function () {
       });
     })
   })
-}); 
+});

@@ -641,10 +641,10 @@ namespace secharmony {
           // To address the issue where method names starting with double underscores were transformed to start with triple underscores,
           // we changed the retrieval method to use gotNode.name.text instead of escapedText. However, this change introduced the possibility
           // of collecting method records when gotNode.name is a NumericLiteral or StringLiteral, which is not desired.
-          // To avoid altering the collection specifications of MemberMethodCache, we restricted the collection scenarios 
+          // To avoid altering the collection specifications of MemberMethodCache, we restricted the collection scenarios
           // to match the original cases where only identifiers and private identifiers are collected.
           valueName = gotNode.name.text;
-        } 
+        }
 
         if (valueName === '') {
           return;

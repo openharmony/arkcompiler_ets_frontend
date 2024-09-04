@@ -43,7 +43,9 @@ let j: number & (string | number) = 1;
 b(j === 1);
 type k = number;
 type l = string;
-function a<f1>(g1: f1 extends k ? k : l) { return g1; }
+function a<q2>(r2: q2 extends k ? k : l) {
+    return r2;
+}
 b(a<number>(1) === 1);
 type m<T> = T extends {
     a: infer U;
@@ -64,37 +66,141 @@ interface p {
 type q = keyof p;
 let r: q = "name";
 b(r === "name");
-type s = {
-    U: number;
-};
-let t: s['U'] = 2;
-b(t === 2);
-type u<T extends any[]> = {
+type s<T extends any[]> = {
     [P in keyof T]: T[P];
 };
-let v: u<number[]> = [1];
-b(v[0] === 1);
-let w: "cc" = "cc";
-b(w === "cc");
-let x: [
+let t: s<number[]> = [1];
+b(t[0] === 1);
+let u: "cc" = "cc";
+b(u === "cc");
+let v: [
     prop1: string,
     prop2: number
 ] = ["1", 2];
-b(x[0] === "1");
-b(x[1] === 2);
-type y = {
+b(v[0] === "1");
+b(v[1] === 2);
+type w = {
     description: string;
     f1(para1: number): boolean;
     (para2: number): number;
 };
-const z: y = (e1: number) => e1;
-z.description = "test";
-z.f1 = (d1: number) => {
-    return d1 > 0 ? true : false;
+const x: w = (p2: number) => p2;
+x.description = "test";
+x.f1 = (o2: number) => {
+    return o2 > 0 ? true : false;
 };
-b(z(100) === 100);
-b(z.description === "test");
-b(z.f1(-100) === false);
-type a1 = (para5: number) => number;
-const b1: a1 = (c1: number) => c1;
-b(b1(200) === 200);
+b(x(100) === 100);
+b(x.description === "test");
+b(x.f1(-100) === false);
+type y = (para5: number) => number;
+const z: y = (n2: number) => n2;
+b(z(200) === 200);
+// Different grammar scenarios of indexedAccessType
+type a1 = {
+    U: number;
+    V: string;
+    W: boolean;
+};
+export type T5 = {
+    X1: a1;
+};
+let b1: T5["X1"]["U"] = 2;
+b(b1 === 2);
+let c1: a1["U"] = 3;
+let d1: a1["V"] = "test";
+let e1: a1["W"] = false;
+b(c1 === 3);
+b(d1 === "test");
+b(e1 === false);
+let f1: a1["U" | "V"] = 4;
+let g1: a1["U" | "V"] = "test";
+b(f1 === 4);
+b(g1 === "test");
+let h1: T5["X1"]["U" | "V"] = 5;
+let i1: T5["X1"]["U" | "V"] = "test";
+b(h1 === 5);
+b(i1 === "test");
+let j1: a1[keyof T5["X1"]] = 6;
+b(j1 === 6);
+const k1 = [
+    { n1: "Alice", m1: 15 },
+    { n1: "Bob", m1: 23 },
+    { n1: "Eve", m1: 38 },
+];
+type A1 = (typeof k1)[1]["m1"];
+let l1: A1 = 7;
+b(l1 === 7);
+type m1 = [
+    string,
+    number
+];
+let n1: m1[0] = "test";
+let o1: m1[1] = 9;
+b(n1 === "test");
+b(o1 === 9);
+// Defination of unionType
+type p1 = "123" | "321";
+type q1 = 1234 | 4321;
+type r1 = "3124" | 4123;
+type s1 = "U1234" | 2143;
+type t1 = "U4213" | "U4132";
+type u1 = "U3412" | "3421";
+// need to add "1234" into whitelist when enable prop+strProp
+let v1: p1["1234"] = "1";
+b(v1 === "1");
+let w1: p1[4321] = "2";
+b(w1 === "2");
+let x1: t1[4321] = "3";
+b(x1 === "3");
+let y1: t1["1234"] = "4";
+b(y1 === "4");
+let z1: u1[4321] = "5";
+b(z1 === "5");
+let a2: u1["1234"] = "6";
+b(a2 === "6");
+// Define properties in type individually
+type b2 = {
+    prop3: number;
+    prop4: number;
+    "3214": number;
+    1324: number;
+    [2143]: number;
+    ["2314"]: number;
+};
+// Define properties in type and access them using indexedAccessType
+type c2 = {
+    prop5: number;
+    prop6: number;
+    "3412": number;
+    ["2341"]: number;
+    1432: number;
+    [1423]: number;
+    // need to add into whitelist when enable prop and prop+strProp
+    1243: number;
+    [2134]: number;
+    // need to add into whitelist when enable prop+strProp
+    "3142": number;
+    ["2314"]: number;
+};
+let d2: c2["prop5"] = 1;
+b(d2 === 1);
+let e2: c2["prop6"] = 2;
+b(e2 === 2);
+let f2: c2["3412"] = 3;
+b(f2 === 3);
+let g2: c2["2341"] = 4;
+b(g2 === 4);
+let h2: c2["1432"] = 5;
+b(h2 === 5);
+let i2: c2["1423"] = 6;
+b(i2 === 6);
+// need to add into whitelist when enable prop and prop+strProp
+let j2: c2[1243] = 7;
+b(j2 === 7);
+let k2: c2[2134] = 7;
+b(k2 === 7);
+// need to add into whitelist when enable prop+strProp
+let l2: c2[3142] = 8;
+b(l2 === 8);
+let m2: c2[2314] = 9;
+b(m2 === 9);
