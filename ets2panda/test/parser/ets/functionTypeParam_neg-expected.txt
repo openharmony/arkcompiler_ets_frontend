@@ -725,4 +725,4 @@
     }
   }
 }
-TypeError: Duplicate type parameter 'T'. [functionTypeParam_neg.sts:19:17]
+TypeError: Duplicate type parameter 'T'. [functionTypeParam_neg.ets:19:17]

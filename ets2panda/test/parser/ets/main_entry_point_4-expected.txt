@@ -369,4 +369,4 @@
     }
   }
 }
-TypeError: 0 or 1 argument are allowed [main_entry_point_4.sts:16:14]
+TypeError: 0 or 1 argument are allowed [main_entry_point_4.ets:16:14]

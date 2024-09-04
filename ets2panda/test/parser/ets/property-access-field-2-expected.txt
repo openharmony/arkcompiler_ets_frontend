@@ -517,4 +517,4 @@
     }
   }
 }
-TypeError: 'instanceVal' is an instance property of 'A' [property-access-field-2.sts:20:18]
+TypeError: 'instanceVal' is an instance property of 'A' [property-access-field-2.ets:20:18]

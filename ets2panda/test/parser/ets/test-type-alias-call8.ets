@@ -13,21 +13,10 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
-//import ets.util.List;
-//import ets.lang.annotation.*;
-class named_types  {
-    text : ets.lang.String ;
-    public static class inner<T> {
-        public class innertoo  {
-        }
-
-    }
-
-}
-
-class auxilliary  {
-    public  foo(): named_types.inner {
+import type { Callback } from './test-type-alias-call3.ets';
+class A {
+    public callback: Callback
+    public increment(){
+        this.callback(1)
     }
 }

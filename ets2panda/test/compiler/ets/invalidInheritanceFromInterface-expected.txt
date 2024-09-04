@@ -1101,4 +1101,4 @@
     }
   }
 }
-TypeError: This expression is not callable. [invalidInheritanceFromInterface.sts:25:15]
+TypeError: This expression is not callable. [invalidInheritanceFromInterface.ets:25:15]

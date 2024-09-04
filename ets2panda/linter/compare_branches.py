@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# coding=utf-8
 #
 # Copyright (c) 2022-2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +47,7 @@ def get_branch_map(repo, branch_name, path):
         if sha not in result:
             result[sha] = commit
         else:
-            raise Exception(f'Duplicate commit {sha}')
+            raise Exception('Duplicate commit ' + sha)
 
     return result
 

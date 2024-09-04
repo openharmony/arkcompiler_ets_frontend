@@ -1066,4 +1066,4 @@
     }
   }
 }
-TypeError: Type '(y: A<String>) => A<String>|null' cannot be assigned to type '(p1: A<Int>) => A<Int>|null|null' [etsObjectToString5.sts:18:42]
+TypeError: Type '(y: A<String>) => A<String>|null' cannot be assigned to type '(p1: A<Int>) => A<Int>|null|null' [etsObjectToString5.ets:18:42]

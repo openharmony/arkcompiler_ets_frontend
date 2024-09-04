@@ -890,4 +890,4 @@
     }
   }
 }
-TypeError: 'y' is a static property of 'G' [invalid_access_static.sts:21:3]
+TypeError: 'y' is a static property of 'G' [invalid_access_static.ets:21:3]

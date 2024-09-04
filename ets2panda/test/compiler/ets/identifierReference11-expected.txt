@@ -639,4 +639,4 @@
     }
   }
 }
-TypeError: Unresolved reference foo [identifierReference11.sts:22:5]
+TypeError: Unresolved reference foo [identifierReference11.ets:22:5]

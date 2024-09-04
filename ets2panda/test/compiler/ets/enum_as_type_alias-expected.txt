@@ -3518,4 +3518,4 @@
     }
   }
 }
-TypeError: Cannot refer to enum members through type alias. [enum_as_type_alias.sts:21:34]
+TypeError: Cannot refer to enum members through type alias. [enum_as_type_alias.ets:21:34]

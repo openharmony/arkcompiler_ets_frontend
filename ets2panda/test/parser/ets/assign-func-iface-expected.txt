@@ -1,1 +1,1 @@
-SyntaxError: Unexpected token: 'async'. [assign-func-iface.sts:17:5]
+SyntaxError: Unexpected token: 'async'. [assign-func-iface.ets:17:5]

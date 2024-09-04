@@ -2619,4 +2619,4 @@
     }
   }
 }
-TypeError: Iterator method must return an object which implements Iterator<T> [forOfCustomIterator1.sts:48:19]
+TypeError: Iterator method must return an object which implements Iterator<T> [forOfCustomIterator1.ets:48:19]

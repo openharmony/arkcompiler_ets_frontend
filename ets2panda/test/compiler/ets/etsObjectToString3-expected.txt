@@ -1024,4 +1024,4 @@
     }
   }
 }
-TypeError: Type '() => A<Int>' cannot be assigned to type 'A<Int>' [etsObjectToString3.sts:18:17]
+TypeError: Type '() => A<Int>' cannot be assigned to type 'A<Int>' [etsObjectToString3.ets:18:17]

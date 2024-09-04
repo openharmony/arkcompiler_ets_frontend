@@ -329,4 +329,4 @@
     }
   }
 }
-TypeError: Native, Abstract and Declare methods cannot have body. [declare_func_bad.sts:16:39]
+TypeError: Native, Abstract and Declare methods cannot have body. [declare_func_bad.ets:16:39]

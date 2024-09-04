@@ -753,4 +753,4 @@
     }
   }
 }
-TypeError: 'foo_in_A' is an instance property of 'A' [invalidMemberExpressionFromStaticContext3.sts:21:11]
+TypeError: 'foo_in_A' is an instance property of 'A' [invalidMemberExpressionFromStaticContext3.ets:21:11]

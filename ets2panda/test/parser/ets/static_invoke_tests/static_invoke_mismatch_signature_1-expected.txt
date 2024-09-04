@@ -426,4 +426,4 @@
     }
   }
 }
-TypeError: No static invoke method and static instantiate method in A. A() is not allowed. [static_invoke_mismatch_signature_1.sts:21:5]
+TypeError: No static invoke method and static instantiate method in A. A() is not allowed. [static_invoke_mismatch_signature_1.ets:21:5]

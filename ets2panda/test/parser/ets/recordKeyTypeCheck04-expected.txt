@@ -488,4 +488,4 @@
     }
   }
 }
-TypeError: Type 'string' is not compatible with type 'Double' at index 1 [recordKeyTypeCheck04.sts:18:9]
+TypeError: Type 'string' is not compatible with type 'Double' at index 1 [recordKeyTypeCheck04.ets:18:9]

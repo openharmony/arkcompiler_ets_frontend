@@ -903,4 +903,4 @@
     }
   }
 }
-TypeError: Method prop2(<property>prop2: Int): void in AA not overriding any method [getterOverrideGen_n.sts:1:1]
+TypeError: Method prop2(<property>prop2: Int): void in AA not overriding any method [getterOverrideGen_n.ets:1:1]

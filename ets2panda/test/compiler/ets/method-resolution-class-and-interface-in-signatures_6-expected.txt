@@ -2639,4 +2639,4 @@
     }
   }
 }
-TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(a: J, d: double): double` and `foo(a: I, d: double): double` [method-resolution-class-and-interface-in-signatures_6.sts:42:24]
+TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(a: J, d: double): double` and `foo(a: I, d: double): double` [method-resolution-class-and-interface-in-signatures_6.ets:42:24]

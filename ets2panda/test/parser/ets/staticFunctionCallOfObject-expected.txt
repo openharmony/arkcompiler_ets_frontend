@@ -965,4 +965,4 @@
     }
   }
 }
-TypeError: No matching call signature for toString(double) [staticFunctionCallOfObject.sts:22:17]
+TypeError: No matching call signature for toString(double) [staticFunctionCallOfObject.ets:22:17]

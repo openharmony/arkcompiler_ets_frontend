@@ -287,4 +287,4 @@
     }
   }
 }
-TypeError: Bad operand type, the type of the operand must be boolean type. [assert_with_not_boolean_type_2.sts:17:12]
+TypeError: Bad operand type, the type of the operand must be boolean type. [assert_with_not_boolean_type_2.ets:17:12]

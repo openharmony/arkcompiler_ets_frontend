@@ -773,4 +773,4 @@
     }
   }
 }
-TypeError: Type A<T> is not assignable to constraint type A<A<A<T>>> [recursive_class_neg.sts:15:20]
+TypeError: Type A<T> is not assignable to constraint type A<A<A<T>>> [recursive_class_neg.ets:15:20]

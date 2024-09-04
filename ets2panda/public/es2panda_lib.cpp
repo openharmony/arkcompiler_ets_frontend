@@ -1172,7 +1172,7 @@ extern "C" es2panda_AstNode *CreateClassDefinition(es2panda_Context *context, es
 
     auto classDef =
         allocator->New<ir::ClassDefinition>(allocator, id, ir::ClassDefinitionModifiers::NONE,
-                                            E2pToIrModifierFlags(flags), Language::FromString("sts").value());
+                                            E2pToIrModifierFlags(flags), Language::FromString("ets").value());
     return reinterpret_cast<es2panda_AstNode *>(classDef);
 }
 

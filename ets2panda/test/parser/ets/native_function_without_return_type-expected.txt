@@ -382,4 +382,4 @@
     }
   }
 }
-TypeError: Native and Declare methods should have explicit return type. [native_function_without_return_type.sts:16:20]
+TypeError: Native and Declare methods should have explicit return type. [native_function_without_return_type.ets:16:20]

@@ -1,1 +1,1 @@
-SyntaxError: A local class or interface declaration can not have access modifier [local-interface-access-modifier-private.sts:18:5]
+SyntaxError: A local class or interface declaration can not have access modifier [local-interface-access-modifier-private.ets:18:5]

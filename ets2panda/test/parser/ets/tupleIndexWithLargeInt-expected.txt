@@ -580,4 +580,4 @@
     }
   }
 }
-TypeError: Element accessor value is out of tuple size bounds. [tupleIndexWithLargeInt.sts:20:9]
+TypeError: Element accessor value is out of tuple size bounds. [tupleIndexWithLargeInt.ets:20:9]

@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+package com.huawei.migrationtool.teets.ets;
 
-class test_assert  {
-    test(x : int): void {
-        assert x > 10;
-        assert (x != 2);
-        assert x > 10 || x < 3 : "inside interval!";
-        assert (x < 10 && x > 2) : "outside interval!";
+class A  {
+    public  foo(): void {
+    }
+    private foo(i : int): void {
+    }
+    static foo(d : double): void {
     }
 }

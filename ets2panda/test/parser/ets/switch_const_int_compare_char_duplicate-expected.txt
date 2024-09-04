@@ -522,4 +522,4 @@
     }
   }
 }
-TypeError: Variable has same value with another switch case [switch_const_int_compare_char_duplicate.sts:20:9]
+TypeError: Variable has same value with another switch case [switch_const_int_compare_char_duplicate.ets:20:9]

@@ -1033,4 +1033,4 @@
     }
   }
 }
-TypeError: No matching call signature [superStaticCall.sts:24:16]
+TypeError: No matching call signature [superStaticCall.ets:24:16]

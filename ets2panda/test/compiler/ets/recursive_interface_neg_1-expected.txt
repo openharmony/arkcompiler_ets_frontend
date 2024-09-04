@@ -531,4 +531,4 @@
     }
   }
 }
-TypeError: Type D is not assignable to constraint type A<D> [recursive_interface_neg_1.sts:17:22]
+TypeError: Type D is not assignable to constraint type A<D> [recursive_interface_neg_1.ets:17:22]

@@ -1270,4 +1270,4 @@
     }
   }
 }
-TypeError: Cannot inherit from interface Interface because field instance_field is inherited with a different declaration type [interface_with_different_type.sts:16:1]
+TypeError: Cannot inherit from interface Interface because field instance_field is inherited with a different declaration type [interface_with_different_type.ets:16:1]

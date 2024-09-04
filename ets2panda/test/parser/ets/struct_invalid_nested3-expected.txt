@@ -1,1 +1,1 @@
-SyntaxError: Field type annotation expected [struct_invalid_nested3.sts:17:12]
+SyntaxError: Field type annotation expected [struct_invalid_nested3.ets:17:12]

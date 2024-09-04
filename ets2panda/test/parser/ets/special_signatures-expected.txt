@@ -1,1 +1,1 @@
-SyntaxError: Invalid Type [special_signatures.sts:17:26]
+SyntaxError: Invalid Type [special_signatures.ets:17:26]

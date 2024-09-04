@@ -395,4 +395,4 @@
     }
   }
 }
-TypeError: Method foo(): void in A not overriding any method [method_modifier_check_11.sts:17:23]
+TypeError: Method foo(): void in A not overriding any method [method_modifier_check_11.ets:17:23]

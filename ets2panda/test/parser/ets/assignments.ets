@@ -13,10 +13,26 @@
  * limitations under the License.
  */
 
-import type { Callback } from './test-type-alias-call3.sts';
-class A {
-    public callback: Callback
-    public increment(){
-        this.callback(1)
+package com.huawei.migrationtool.test.ets;
+
+class AssignmentsTest {
+    a: int;
+    b: int;
+    public  Test(): void {
+        this.a = 10;
+        this.a += 1;
+        this.a -= 2;
+        this.a *= 3;
+        this.a /= 4;
+        this.a %= 5;
+        this.a = 10;
+        this.a >>= 1;
+        this.a >>>= 2;
+        this.a <<= 3;
+        this.a = 10;
+        this.a &= 2;
+        this.a |= 3;
+        this.a ^= 4;
+        this.b = this.a = 10;
     }
 }

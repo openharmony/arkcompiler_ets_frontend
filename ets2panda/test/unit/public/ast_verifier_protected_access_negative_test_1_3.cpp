@@ -33,7 +33,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
             let a = base.a;
         }
     )";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -72,7 +72,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
             let a = derived.a;
         }
     )";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -111,7 +111,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
             let a = derived.a;
         }
     )";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 

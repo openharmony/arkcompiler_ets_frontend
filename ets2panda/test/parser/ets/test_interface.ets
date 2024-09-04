@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.teets.sts;
+package com.huawei.migrationtool.teets.ets;
 
 //import ets.util.List;
 //import ets.io.*;
@@ -26,3 +26,4 @@ interface test_interface {
     private foo(b : boolean): void {
     }
 }
+

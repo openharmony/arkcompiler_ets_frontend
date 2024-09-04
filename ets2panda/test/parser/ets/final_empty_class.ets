@@ -13,25 +13,8 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.teets.sts;
+package com.huawei.migrationtool.test.ets;
 
-interface interface_a {
+export class final_empty_class  {
 }
 
-interface interface_b {
-}
-
-class base_class  {
-}
-
-class public_class extends base_class implements interface_a, interface_b  {
-}
-
-class final_class extends base_class  {
-}
-
-abstract class abstract_class extends base_class implements interface_b  {
-}
-
-export class inheritance extends base_class  {
-}

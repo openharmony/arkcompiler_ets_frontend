@@ -208,4 +208,4 @@
     }
   }
 }
-SyntaxError: Cannot find default imported element in the target [default_import2.sts:16:30]
+SyntaxError: Cannot find default imported element in the target [default_import2.ets:16:30]

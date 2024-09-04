@@ -1,1 +1,1 @@
-SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [StringFasta.sts:41:12]
+SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [StringFasta.ets:41:12]

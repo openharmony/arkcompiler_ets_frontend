@@ -482,4 +482,4 @@
     }
   }
 }
-TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwInFinallyBlock2.sts:21:9]
+TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwInFinallyBlock2.ets:21:9]

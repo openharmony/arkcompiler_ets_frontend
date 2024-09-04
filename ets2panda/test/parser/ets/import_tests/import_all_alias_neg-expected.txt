@@ -346,4 +346,4 @@
     }
   }
 }
-TypeError: Namespace style identifier Test is not callable. [import_all_alias_neg.sts:18:19]
+TypeError: Namespace style identifier Test is not callable. [import_all_alias_neg.ets:18:19]

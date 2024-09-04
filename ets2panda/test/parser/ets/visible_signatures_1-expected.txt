@@ -935,4 +935,4 @@
     }
   }
 }
-TypeError: Signature foo(a: double): int is not visible here. [visible_signatures_1.sts:26:5]
+TypeError: Signature foo(a: double): int is not visible here. [visible_signatures_1.ets:26:5]

@@ -681,4 +681,4 @@
     }
   }
 }
-TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method. [method_override_throw_5.sts:17:24]
+TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method. [method_override_throw_5.ets:17:24]

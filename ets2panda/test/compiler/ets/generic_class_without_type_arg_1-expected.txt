@@ -538,4 +538,4 @@
     }
   }
 }
-TypeError: Type 'A<T>' is generic but type argument were not provided. [generic_class_without_type_arg_1.sts:19:12]
+TypeError: Type 'A<T>' is generic but type argument were not provided. [generic_class_without_type_arg_1.ets:19:12]

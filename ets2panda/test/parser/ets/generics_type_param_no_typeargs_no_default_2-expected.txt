@@ -1930,4 +1930,4 @@
     }
   }
 }
-TypeError: Type 'Boxx<T>' is generic but type argument were not provided. [generics_type_param_no_typeargs_no_default_2.sts:36:20]
+TypeError: Type 'Boxx<T>' is generic but type argument were not provided. [generics_type_param_no_typeargs_no_default_2.ets:36:20]

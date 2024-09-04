@@ -574,4 +574,4 @@
     }
   }
 }
-TypeError: 'foo' is a static property of 'A' [property-access-method-1.sts:20:14]
+TypeError: 'foo' is a static property of 'A' [property-access-method-1.ets:20:14]

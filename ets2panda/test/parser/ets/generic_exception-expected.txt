@@ -1065,4 +1065,4 @@
     }
   }
 }
-TypeError: Generics are not allowed as 'Exception' or 'Error' subclasses. [generic_exception.sts:16:8]
+TypeError: Generics are not allowed as 'Exception' or 'Error' subclasses. [generic_exception.ets:16:8]

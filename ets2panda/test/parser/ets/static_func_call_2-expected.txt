@@ -548,4 +548,4 @@
     }
   }
 }
-TypeError: 'bar' is a static property of 'A' [static_func_call_2.sts:18:18]
+TypeError: 'bar' is a static property of 'A' [static_func_call_2.ets:18:18]

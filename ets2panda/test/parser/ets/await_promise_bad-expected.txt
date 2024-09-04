@@ -523,4 +523,4 @@
     }
   }
 }
-TypeError: 'await' expressions require Promise object as argument. [await_promise_bad.sts:17:29]
+TypeError: 'await' expressions require Promise object as argument. [await_promise_bad.ets:17:29]

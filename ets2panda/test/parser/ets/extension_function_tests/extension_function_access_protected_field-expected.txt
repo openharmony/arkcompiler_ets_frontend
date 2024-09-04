@@ -1028,4 +1028,4 @@
     }
   }
 }
-TypeError: Signature price(): int is not visible here. [extension_function_access_protected_field.sts:23:16]
+TypeError: Signature price(): int is not visible here. [extension_function_access_protected_field.ets:23:16]

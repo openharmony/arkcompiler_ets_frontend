@@ -1,1 +1,1 @@
-SyntaxError: Unexpected token, expected '{' [interfaces3.sts:18:13]
+SyntaxError: Unexpected token, expected '{' [interfaces3.ets:18:13]

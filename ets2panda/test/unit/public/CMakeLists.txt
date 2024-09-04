@@ -67,7 +67,7 @@ add_custom_target(es2panda-plugin-test
   COMMENT "Test es2panda plugin functionality"
   COMMAND ${CMAKE_COMMAND} -E env
     LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin
-    --extension=sts "${CMAKE_CURRENT_SOURCE_DIR}/t.sts" > "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out"
+    "${CMAKE_CURRENT_SOURCE_DIR}/t.ets" > "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out"
   COMMAND ${CMAKE_COMMAND} -E compare_files
     "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out" "${CMAKE_CURRENT_SOURCE_DIR}/plugin_test.expected.txt"
 )

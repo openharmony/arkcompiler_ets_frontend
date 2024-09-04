@@ -465,4 +465,4 @@
     }
   }
 }
-TypeError: struct B is not extensible. [struct_invalid_extends1.sts:20:17]
+TypeError: struct B is not extensible. [struct_invalid_extends1.ets:20:17]

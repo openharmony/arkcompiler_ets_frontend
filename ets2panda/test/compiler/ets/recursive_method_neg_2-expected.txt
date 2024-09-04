@@ -1679,4 +1679,4 @@
     }
   }
 }
-TypeError: Type 'D' is not compatible with type 'C' at index 1 [recursive_method_neg_2.sts:25:18]
+TypeError: Type 'D' is not compatible with type 'C' at index 1 [recursive_method_neg_2.ets:25:18]

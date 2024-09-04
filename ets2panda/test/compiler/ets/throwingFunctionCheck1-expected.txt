@@ -492,4 +492,4 @@
     }
   }
 }
-TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingFunctionCheck1.sts:18:13]
+TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingFunctionCheck1.ets:18:13]

@@ -3,7 +3,7 @@
         "outDir": "build"
     },
     "files": [
-        "hello.sts"
+        "hello.ets"
     ],
     "include": [
         "packages/*"

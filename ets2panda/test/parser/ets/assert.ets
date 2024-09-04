@@ -13,26 +13,13 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+package com.huawei.migrationtool.test.ets;
 
-class AssignmentsTest {
-    a: int;
-    b: int;
-    public  Test(): void {
-        this.a = 10;
-        this.a += 1;
-        this.a -= 2;
-        this.a *= 3;
-        this.a /= 4;
-        this.a %= 5;
-        this.a = 10;
-        this.a >>= 1;
-        this.a >>>= 2;
-        this.a <<= 3;
-        this.a = 10;
-        this.a &= 2;
-        this.a |= 3;
-        this.a ^= 4;
-        this.b = this.a = 10;
+class test_assert  {
+    test(x : int): void {
+        assert x > 10;
+        assert (x != 2);
+        assert x > 10 || x < 3 : "inside interval!";
+        assert (x < 10 && x > 2) : "outside interval!";
     }
 }

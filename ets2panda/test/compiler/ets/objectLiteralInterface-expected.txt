@@ -422,4 +422,4 @@
     }
   }
 }
-TypeError: target type for class composite C is not instantiable [objectLiteralInterface.sts:18:12]
+TypeError: target type for class composite C is not instantiable [objectLiteralInterface.ets:18:12]

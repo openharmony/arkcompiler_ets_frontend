@@ -3519,4 +3519,4 @@
     }
   }
 }
-TypeError: No enum item method called 'valueOf' [enum13.sts:20:26]
+TypeError: No enum item method called 'valueOf' [enum13.ets:20:26]

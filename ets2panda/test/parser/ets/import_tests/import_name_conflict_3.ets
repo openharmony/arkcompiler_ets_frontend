@@ -13,15 +13,8 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+import * from "import_tests/packages";
+import * from "import_tests/modules/module";
 
-class array_type  {
-    private a : int[] ;
-    protected f : float[][][] ;
-    public  foo(s : String[][]): void {
-    }
-    toCharArray(): char[] {
-    }
-    private toStringArray(): String[] {
-    }
-}
+// Throw error: "dbl" is defined by "package/package_module_1.ets" and "modules/module.ets".
+let x = dbl;

@@ -714,4 +714,4 @@
     }
   }
 }
-TypeError: fn(): int in A cannot override fn(): void in J because overriding return type is not compatible with the other return type. [override7.sts:23:21]
+TypeError: fn(): int in A cannot override fn(): void in J because overriding return type is not compatible with the other return type. [override7.ets:23:21]

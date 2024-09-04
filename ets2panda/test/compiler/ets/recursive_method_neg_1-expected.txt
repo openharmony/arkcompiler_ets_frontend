@@ -1816,4 +1816,4 @@
     }
   }
 }
-TypeError: No matching call signature for foo(C) [recursive_method_neg_1.sts:26:5]
+TypeError: No matching call signature for foo(C) [recursive_method_neg_1.ets:26:5]

@@ -420,4 +420,4 @@
     }
   }
 }
-TypeError: Case duplicate [switch_num_compare_char_duplicate.sts:21:9]
+TypeError: Case duplicate [switch_num_compare_char_duplicate.ets:21:9]

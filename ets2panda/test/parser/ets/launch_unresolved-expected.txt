@@ -330,4 +330,4 @@
     }
   }
 }
-TypeError: Unresolved reference foo [launch_unresolved.sts:17:12]
+TypeError: Unresolved reference foo [launch_unresolved.ets:17:12]

@@ -13,21 +13,7 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+import type {A, C} from './export_type.ets'
 
-class empty_statement  {
-    a: int;
-    public  Test(): void {
-        this.a = 10;
-        let i : int = 0;
-        if (i != 0) {
-        }
-        if (i == 0) {
-            ++i;
-        }
-        else {
-        }
-    }
-    public  Run(): void {
-    }
-}
+let a = new A();
+let b = new C();

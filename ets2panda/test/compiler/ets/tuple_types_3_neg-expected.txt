@@ -403,4 +403,4 @@
     }
   }
 }
-TypeError: Too many elements in array initializer for tuple with size of 1 [tuple_types_3_neg.sts:18:27]
+TypeError: Too many elements in array initializer for tuple with size of 1 [tuple_types_3_neg.ets:18:27]

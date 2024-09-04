@@ -1895,5 +1895,5 @@
     }
   }
 }
-Warning: extension is shadowed by a instance member function 'sweetness1(id: String): void' in class B [extension_function_shadowed_by_member_function.sts:40:36]
-Warning: extension is shadowed by a instance member function 'price(): int' in class B [extension_function_shadowed_by_member_function.sts:43:20]
+Warning: extension is shadowed by a instance member function 'sweetness1(id: String): void' in class B [extension_function_shadowed_by_member_function.ets:40:36]
+Warning: extension is shadowed by a instance member function 'price(): int' in class B [extension_function_shadowed_by_member_function.ets:43:20]

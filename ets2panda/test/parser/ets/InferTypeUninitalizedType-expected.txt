@@ -1267,4 +1267,4 @@
     }
   }
 }
-TypeError: No matching call signature for foo(A<Double>) [InferTypeUninitalizedType.sts:30:5]
+TypeError: No matching call signature for foo(A<Double>) [InferTypeUninitalizedType.ets:30:5]

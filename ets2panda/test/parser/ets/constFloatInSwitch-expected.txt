@@ -625,4 +625,4 @@
     }
   }
 }
-TypeError: Unexpected type double [constFloatInSwitch.sts:25:13]
+TypeError: Unexpected type double [constFloatInSwitch.ets:25:13]

@@ -985,4 +985,4 @@
     }
   }
 }
-TypeError: Property 'price' does not exist on type 'Banana' [normal_function_with_extension_style_signature.sts:30:12]
+TypeError: Property 'price' does not exist on type 'Banana' [normal_function_with_extension_style_signature.ets:30:12]

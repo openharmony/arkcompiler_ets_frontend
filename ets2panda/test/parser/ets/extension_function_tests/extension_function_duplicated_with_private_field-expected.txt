@@ -1013,4 +1013,4 @@
     }
   }
 }
-TypeError: Signature name(id: int): int is not visible here. [extension_function_duplicated_with_private_field.sts:28:21]
+TypeError: Signature name(id: int): int is not visible here. [extension_function_duplicated_with_private_field.ets:28:21]

@@ -389,4 +389,4 @@
     }
   }
 }
-TypeError: Property 'foo1' does not exist on type 'export' [import_alias_3.sts:19:9]
+TypeError: Property 'foo1' does not exist on type 'export' [import_alias_3.ets:19:9]

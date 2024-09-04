@@ -501,4 +501,4 @@
     }
   }
 }
-TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingFunctionType2.sts:21:3]
+TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [throwingFunctionType2.ets:21:3]

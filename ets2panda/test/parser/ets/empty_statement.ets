@@ -13,16 +13,21 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+package com.huawei.migrationtool.test.ets;
 
-export class field_decl  {
-    private a : int ;
-    protected b : char ;
-    protected c : char = c'c';
-    public d : boolean = true;
-    f : short ;
-    static g : long ;
-    static readonly pi : float = 3.14;
-    public static readonly e : double = 2.71828;
-    private readonly h : byte = 2;
+class empty_statement  {
+    a: int;
+    public  Test(): void {
+        this.a = 10;
+        let i : int = 0;
+        if (i != 0) {
+        }
+        if (i == 0) {
+            ++i;
+        }
+        else {
+        }
+    }
+    public  Run(): void {
+    }
 }

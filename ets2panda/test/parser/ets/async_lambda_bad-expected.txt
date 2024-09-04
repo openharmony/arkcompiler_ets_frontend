@@ -437,4 +437,4 @@
     }
   }
 }
-TypeError: Return type of async lambda must be 'Promise' [async_lambda_bad.sts:16:31]
+TypeError: Return type of async lambda must be 'Promise' [async_lambda_bad.ets:16:31]

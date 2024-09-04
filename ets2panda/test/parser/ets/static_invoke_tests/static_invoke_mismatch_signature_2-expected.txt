@@ -533,4 +533,4 @@
     }
   }
 }
-TypeError: Expected 0 arguments, got 1. [static_invoke_mismatch_signature_2.sts:23:5]
+TypeError: Expected 0 arguments, got 1. [static_invoke_mismatch_signature_2.ets:23:5]

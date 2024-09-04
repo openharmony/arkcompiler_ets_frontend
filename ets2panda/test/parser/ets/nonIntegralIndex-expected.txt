@@ -578,4 +578,4 @@
     }
   }
 }
-TypeError: Type 'double' cannot be used as an index type. Only primitive or unboxable integral types can be used as index. [nonIntegralIndex.sts:18:8]
+TypeError: Type 'double' cannot be used as an index type. Only primitive or unboxable integral types can be used as index. [nonIntegralIndex.ets:18:8]

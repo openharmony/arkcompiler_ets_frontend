@@ -1,1 +1,1 @@
-SyntaxError: Comma is mandatory between elements in a tuple type declaration [tuple_type_3_neg.sts:17:24]
+SyntaxError: Comma is mandatory between elements in a tuple type declaration [tuple_type_3_neg.ets:17:24]

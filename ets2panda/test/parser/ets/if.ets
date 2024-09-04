@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
+package com.huawei.migrationtool.test.ets;
 
 class IfTest  {
     public  Test(): void {

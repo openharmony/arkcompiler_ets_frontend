@@ -824,4 +824,4 @@
     }
   }
 }
-TypeError: Using super is not allowed in constructor [superInConstructor1.sts:25:14]
+TypeError: Using super is not allowed in constructor [superInConstructor1.ets:25:14]

@@ -797,4 +797,4 @@
     }
   }
 }
-TypeError: No matching call signature [generic_function_call_6.sts:22:5]
+TypeError: No matching call signature [generic_function_call_6.ets:22:5]

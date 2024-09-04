@@ -563,4 +563,4 @@
     }
   }
 }
-TypeError: type C has no property named f [objectLiteralNoSuchKey.sts:20:5]
+TypeError: type C has no property named f [objectLiteralNoSuchKey.ets:20:5]

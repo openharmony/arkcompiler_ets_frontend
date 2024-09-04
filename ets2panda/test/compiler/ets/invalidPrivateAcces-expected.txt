@@ -977,4 +977,4 @@
     }
   }
 }
-TypeError: Signature a(): void is not visible here. [invalidPrivateAccess5.sts:10:13]
+TypeError: Signature a(): void is not visible here. [invalidPrivateAccess5.ets:10:13]

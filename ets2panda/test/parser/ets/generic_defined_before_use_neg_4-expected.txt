@@ -592,4 +592,4 @@
     }
   }
 }
-TypeError: Type Parameter T2 should be defined before use. [generic_defined_before_use_neg_4.sts:16:17]
+TypeError: Type Parameter T2 should be defined before use. [generic_defined_before_use_neg_4.ets:16:17]

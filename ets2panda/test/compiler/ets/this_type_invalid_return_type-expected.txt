@@ -464,4 +464,4 @@
     }
   }
 }
-TypeError: The only allowed return value is 'this' if the method's return type is the 'this' type [this_type_invalid_return_type.sts:18:9]
+TypeError: The only allowed return value is 'this' if the method's return type is the 'this' type [this_type_invalid_return_type.ets:18:9]

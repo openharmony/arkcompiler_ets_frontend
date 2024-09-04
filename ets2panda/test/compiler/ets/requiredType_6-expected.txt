@@ -914,4 +914,4 @@
     }
   }
 }
-TypeError: Type 'Required<B>' cannot be assigned to type 'B' [requiredType_6.sts:23:15]
+TypeError: Type 'Required<B>' cannot be assigned to type 'B' [requiredType_6.ets:23:15]

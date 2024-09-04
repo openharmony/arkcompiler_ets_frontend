@@ -1,1 +1,1 @@
-SyntaxError: Access modifier must precede field and method modifiers. [access_modifier_1.sts:17:11]
+SyntaxError: Access modifier must precede field and method modifiers. [access_modifier_1.ets:17:11]

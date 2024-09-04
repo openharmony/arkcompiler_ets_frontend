@@ -1,2 +1,2 @@
 # panda#15821
-BigInt.sts
+BigInt.ets

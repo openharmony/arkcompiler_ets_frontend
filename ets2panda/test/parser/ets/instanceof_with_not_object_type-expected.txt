@@ -481,4 +481,4 @@
     }
   }
 }
-SyntaxError: Cannot find type 'a'. [instanceof_with_not_object_type.sts:24:18]
+SyntaxError: Cannot find type 'a'. [instanceof_with_not_object_type.ets:24:18]

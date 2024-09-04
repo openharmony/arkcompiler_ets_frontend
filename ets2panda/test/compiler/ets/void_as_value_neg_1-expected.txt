@@ -960,4 +960,4 @@
     }
   }
 }
-TypeError: Cannot use type 'void' as value.  [void_as_value_neg_1.sts:25:15]
+TypeError: Cannot use type 'void' as value.  [void_as_value_neg_1.ets:25:15]

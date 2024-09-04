@@ -358,4 +358,4 @@
     }
   }
 }
-SyntaxError: Variable 'foo' is already defined with different type. [import_name_conflict_10.sts:16:19]
+SyntaxError: Variable 'foo' is already defined with different type. [import_name_conflict_10.ets:16:19]
