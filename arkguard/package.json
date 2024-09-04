@@ -13,11 +13,11 @@
     "pre_run_test": "cd ./test && npm install && cd ..",
     "test": "npm run test:ut && npm run test:grammar",
     "test:ut": "npm run pre_run_test && node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=10000 ./test/ut/**/*.ts",
-    "test:grammar": "python scripts/grammar_test.py",
+    "test:grammar": "python3 scripts/grammar_test.py",
     "coverage": "nyc npm run test",
     "coverage_ut": "nyc npm run test:ut",
     "benchmark": "cd ./test && npm install && cd ../ && node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=5000 ./test/benchmark/**/*.ts",
-    "test:combinations": "python ./scripts/combination_test.py"
+    "test:combinations": "python3 ./scripts/combination_test.py"
   },
   "repository": {
     "type": "git",
