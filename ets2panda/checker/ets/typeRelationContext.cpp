@@ -82,6 +82,9 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     if (typeArgs != nullptr) {
         for (auto *const it : typeArgs->Params()) {
             auto *paramType = it->GetType(checker_);
+            if (paramType->IsTypeError()) {
+                return;
+            }
 
             if (paramType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
                 checker_->Relation()->SetNode(it);

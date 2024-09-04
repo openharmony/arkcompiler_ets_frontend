@@ -59,6 +59,9 @@ private:
     checker::Type *GetCalleeType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr) const
     {
         checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
+        if (calleeType == nullptr) {
+            return nullptr;
+        }
 
         if (!calleeType->IsETSObjectType()) {
             checker->LogTypeError("This expression is not constructible.", expr->Start());

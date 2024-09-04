@@ -515,7 +515,7 @@ public:
                                                    ir::Expression *init, checker::Type *initType);
     void CheckTruthinessOfType(ir::Expression *expr);
 
-    void CheckNonNullish(ir::Expression const *expr);
+    bool CheckNonNullish(ir::Expression const *expr);
     Type *GetNonNullishType(Type *type);
     Type *RemoveNullType(Type *type);
     Type *RemoveUndefinedType(Type *type);

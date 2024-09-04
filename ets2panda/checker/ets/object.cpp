@@ -69,7 +69,9 @@ ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
     TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, classDef->Ident()->Start());
 
     Type *superType = classDef->Super()->AsTypeNode()->GetType(this);
-
+    if (superType == nullptr) {
+        return nullptr;
+    }
     if (!superType->IsETSObjectType() || !superType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS)) {
         LogTypeError({"The super type of '", classDef->Ident()->Name(), "' class is not extensible."},
                      classDef->Super()->Start());
@@ -1063,6 +1065,9 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         return;
     }
 
+    if (classType->SuperType() == nullptr) {
+        return;
+    }
     CheckConstructors(classDef, classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);

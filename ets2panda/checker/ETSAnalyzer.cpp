@@ -403,6 +403,10 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     auto *calleeType = GetCalleeType(checker, expr);
+    if (calleeType == nullptr) {
+        return expr->TsType();
+    }
+
     if (calleeType->IsTypeError()) {
         expr->SetTsType(calleeType);
         return expr->TsTypeOrError();
@@ -1264,6 +1268,15 @@ std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *
     return ret;
 }
 
+static void TypeErrorOnMissingProperty(ir::MemberExpression *expr, checker::Type *baseType,
+                                       checker::ETSChecker *checker)
+{
+    checker->LogTypeError(
+        {"Property '", expr->Property()->AsIdentifier()->Name(), "' does not exist on type '", baseType, "'"},
+        expr->Object()->Start());
+    expr->SetTsType(checker->GlobalTypeError());
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     if (expr->TsTypeOrError() != nullptr) {
@@ -1291,7 +1304,10 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
         }
     }
 
-    checker->CheckNonNullish(expr->Object());
+    if (!checker->CheckNonNullish(expr->Object())) {
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsType();
+    }
 
     if (expr->IsComputed()) {
         return expr->AdjustType(checker, expr->CheckComputed(checker, baseType));
@@ -1319,14 +1335,8 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (baseType->IsETSUnionType()) {
         return expr->AdjustType(checker, expr->CheckUnionMember(checker, baseType));
     }
-
-    if (baseType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        checker->ThrowTypeError(
-            {"Property '", expr->Property()->AsIdentifier()->Name(), "' does not exist on type '", baseType, "'"},
-            expr->Object()->Start());
-    }
-
-    checker->ThrowTypeError({"Cannot access property of non-object or non-enum type"}, expr->Object()->Start());
+    TypeErrorOnMissingProperty(expr, baseType, checker);
+    return expr->TsTypeOrError();
 }
 
 checker::Type *ETSAnalyzer::PreferredType(ir::ObjectExpression *expr) const
