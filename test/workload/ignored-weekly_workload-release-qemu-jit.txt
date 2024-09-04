@@ -10,8 +10,14 @@ splay
 #18841
 json-stringify-inspector
 
+#19243
+hash-map
+
 #19008
-regex_dna
+regex-dna
+
+#19216
+wsl
 
 #18483
 typescript-compiler

@@ -18,6 +18,7 @@ test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicali
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-col-strength.js
 test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
 test262/data/test_es2021/language/statements/for/S12.6.3_A10_T2.js
+test262/data/test_es2021/built-ins/TypedArrayConstructors/internals/HasProperty/key-is-not-canonical-index.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/slice/speciesctor-get-species-returns-throws.js
 test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js
 test262/data/test_es2021/built-ins/RegExp/unicode_restricted_identity_escape.js
