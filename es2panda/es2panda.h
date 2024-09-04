@@ -120,6 +120,7 @@ struct CompilerOptions {
     bool removeRedundantFile {false};
     bool dumpString {false};
     std::string targetApiSubVersion;
+    std::string moduleRecordFieldName;
 };
 
 enum class ErrorType {
