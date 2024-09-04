@@ -1,5 +1,5 @@
 diff --git a/bin/run.js b/bin/run.js
-index 650f19a..b2a554b 100755
+index 650f19a..7284fa1 100755
 --- a/bin/run.js
 +++ b/bin/run.js
 @@ -76,6 +76,7 @@ if (argv.prelude) {
@@ -23,7 +23,7 @@ index 650f19a..b2a554b 100755
  // Show help if no arguments provided
  if (!argv._.length) {
    cli.showHelp();
-@@ -130,15 +137,18 @@ if (!argv._.length) {
+@@ -130,17 +137,35 @@ if (!argv._.length) {
    return;
  }
  
@@ -45,8 +45,25 @@ index 650f19a..b2a554b 100755
 +);
  
  const remove = path.relative(process.cwd(), test262Dir);
++if (argv.isTestListSet) {
++    let fileName = argv._[0]
++    if (!fs.existsSync(fileName)){
++        if (fileName.startsWith("test262/")) {
++            fileName = path.join(__dirname, "../../../", fileName)
++        } else {
++            fileName = path.join(__dirname, "../../", fileName)
++        }
++    }
++    const data = fs.readFileSync(fileName, "utf8")
++    argv._ = data
++        .split("\n")
++        .map(line => line.trim())
++        .filter(line => line.length > 0 && !line.startsWith("#"))
++}
  argv._ = argv._.map(p => path.relative(remove, p));
-@@ -166,6 +176,7 @@ if (preprocessor) {
+ 
+ let test262Version;
+@@ -166,6 +191,7 @@ if (preprocessor) {
    tests = tests.pipe(filter(preprocessor));
  }
  
@@ -54,7 +71,7 @@ index 650f19a..b2a554b 100755
  const results = zip(pool, tests).pipe(
    flatMap(pair => {
      return pool.runTest(pair);
-@@ -209,3 +220,11 @@ function hasFeatures(test) {
+@@ -209,3 +235,11 @@ function hasFeatures(test) {
    }
    return features.filter(feature => (test.attrs.features || []).includes(feature)).length > 0;
  }
@@ -87,7 +104,7 @@ index ad14b84..1b8a184 100644
        .then(agent => {
          this.agents.push(agent);
 diff --git a/lib/cli.js b/lib/cli.js
-index 4a74309..91d1735 100644
+index 4a74309..a330271 100644
 --- a/lib/cli.js
 +++ b/lib/cli.js
 @@ -1,4 +1,4 @@
@@ -106,8 +123,17 @@ index 4a74309..91d1735 100644
    .describe('reporter', 'format of data written to standard output')
    .choices('reporter', ['simple', 'json'])
    .nargs('reporter', 1)
+@@ -33,6 +36,8 @@ const yargv = yargs
+   .describe('timeout', 'test timeout (in ms, default 10000)')
+   .nargs('timeout', 1)
+   .describe('acceptVersion', 'override for supported Test262 version')
++  .boolean('isTestListSet')
++  .describe('isTestListSet', 'Set if positional argument contains test-list file')
+   .boolean('saveCompiledTests')
+   .describe('saveCompiledTests', 'Write the compiled version of path/to/test.js as path/to/test.js.<hostType>.<default|strict>.<pass|fail> so that it can be easily re-run under that host')
+   .boolean('saveOnlyFailed')
 diff --git a/lib/reporters/simple.js b/lib/reporters/simple.js
-index 08f9a55..a386924 100644
+index 08f9a55..1579861 100644
 --- a/lib/reporters/simple.js
 +++ b/lib/reporters/simple.js
 @@ -1,22 +1,30 @@
@@ -116,17 +142,17 @@ index 08f9a55..a386924 100644
 +const fs = require('fs');
  const saveCompiledTest = require('../saveCompiledTest');
 +var xmlbuilder = require('xmlbuilder');
-
+ 
  function simpleReporter(results, opts) {
    let passed = 0;
    let failed = 0;
    let lastPassed = true;
 +  let xmll = xmlbuilder.create("testsuite");
 +  xmll.att("name", "Test 262");
-
+ 
    results.on('pass', function (test) {
      passed++;
-
+ 
      clearPassed();
      lastPassed = true;
 -    process.stdout.write(`PASS ${test.file}`);
@@ -135,15 +161,15 @@ index 08f9a55..a386924 100644
 +    writeStatistics(mess, opts);
 +
 +    xmll.ele("testcase").att("name", test.file);
-
+ 
      if (opts.saveCompiledTests && !opts.saveOnlyFailed) {
        test.savedTestPath = saveCompiledTest(test, opts);
 -      process.stdout.write(`\nSaved compiled passed test as ${test.savedTestPath}\n`);
 +      // process.stdout.write(`\nSaved compiled passed test as ${test.savedTestPath}\n`);
      }
    });
-
-@@ -24,14 +32,27 @@
+ 
+@@ -24,14 +32,27 @@ function simpleReporter(results, opts) {
      failed++;
      clearPassed();
      lastPassed = false;
@@ -156,7 +182,7 @@ index 08f9a55..a386924 100644
 +    console.log(mess);
 +    console.log(`${test.result.message}`);
      console.log('');
-
+ 
 +    writeStatistics(mess, opts);
 +
 +    var tc = xmll.ele("testcase");
@@ -172,9 +198,9 @@ index 08f9a55..a386924 100644
      }
 +
    });
-
+ 
    results.on('end', function () {
-@@ -40,6 +61,11 @@
+@@ -40,6 +61,11 @@ function simpleReporter(results, opts) {
      console.log(`Ran ${(passed + failed)} tests`);
      console.log(`${passed} passed`);
      console.log(`${failed} failed`);
@@ -184,9 +210,9 @@ index 08f9a55..a386924 100644
 +
 +    fs.writeFileSync(path.join(opts.tempDir,"result.xml"), xmll.end({pretty: true}));
    });
-
+ 
    function clearPassed() {
-@@ -52,6 +78,29 @@
+@@ -52,6 +78,29 @@ function simpleReporter(results, opts) {
        }
      }
    }
@@ -214,7 +240,7 @@ index 08f9a55..a386924 100644
 +  }
 +
  }
-
+ 
  module.exports = simpleReporter;
 diff --git a/lib/saveCompiledTest.js b/lib/saveCompiledTest.js
 index c233adb..7739946 100644
@@ -234,7 +260,7 @@ index c233adb..7739946 100644
    fs.writeFileSync(savedTestPath, test.compiled);
    return savedTestPath;
 diff --git a/lib/validator.js b/lib/validator.js
-index e7cb695..38a113c 100644
+index e7cb695..d4671a3 100644
 --- a/lib/validator.js
 +++ b/lib/validator.js
 @@ -35,7 +35,7 @@ module.exports = function validate(test) {
@@ -255,7 +281,7 @@ index e7cb695..38a113c 100644
        };
      } else {
        return {
-@@ -78,9 +78,9 @@ module.exports = function validate(test) {
+@@ -78,7 +78,7 @@ module.exports = function validate(test) {
        } else {
          return {
            pass: false,
@@ -264,13 +290,11 @@ index e7cb695..38a113c 100644
          };
        }
      }
-   }
--};
-+};
 diff --git a/package.json b/package.json
---- a/package.json	(revision 9c499f028eb24e67781435c0bb442e00343eb39d)
-+++ b/package.json	(date 1721307847458)
-@@ -15,7 +15,8 @@
+index 60ef715..9e7ef0c 100644
+--- a/package.json
++++ b/package.json
+@@ -15,11 +15,11 @@
      "minimatch": "^3.0.4",
      "rxjs": "^6.4.0",
      "test262-stream": "^1.3.0",
@@ -279,5 +303,9 @@ diff --git a/package.json b/package.json
 +    "xmlbuilder": "^15.1.1"
    },
    "author": "Brian Terlson",
-   "license": "BSD-3-Clause",
-\ No newline at end of file
+-  "license": "BSD-3-Clause",
+-  "files": [
++  "license": "BSD-3-Clause",  "files": [
+     "index.js",
+     "bin",
+     "lib",
