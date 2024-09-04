@@ -14,3 +14,16 @@ zxing_test
 
 #18371
 memory-cache_test
+
+#19251
+pdfview_test
+
+#19248
+pinyin4js_test
+
+#19247
+jsDiff_test
+
+#19246
+asn-one_test
+
