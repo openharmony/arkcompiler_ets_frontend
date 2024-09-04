@@ -9,11 +9,11 @@
         "decorators": [],
         "loc": {
           "start": {
-            "line": 16,
+            "line": 20,
             "column": 14
           },
           "end": {
-            "line": 16,
+            "line": 20,
             "column": 26
           }
         }
@@ -27,11 +27,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 16,
+                "line": 20,
                 "column": 30
               },
               "end": {
-                "line": 16,
+                "line": 20,
                 "column": 36
               }
             }
@@ -52,11 +52,11 @@
           },
           "loc": {
             "start": {
-              "line": 16,
+              "line": 20,
               "column": 30
             },
             "end": {
-              "line": 16,
+              "line": 20,
               "column": 36
             }
           }
@@ -65,11 +65,11 @@
       "const": false,
       "loc": {
         "start": {
-          "line": 16,
+          "line": 20,
           "column": 9
         },
         "end": {
-          "line": 16,
+          "line": 20,
           "column": 38
         }
       }
@@ -82,11 +82,11 @@
         "decorators": [],
         "loc": {
           "start": {
-            "line": 18,
+            "line": 22,
             "column": 13
           },
           "end": {
-            "line": 18,
+            "line": 22,
             "column": 18
           }
         }
@@ -100,11 +100,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 19,
+                "line": 23,
                 "column": 5
               },
               "end": {
-                "line": 19,
+                "line": 23,
                 "column": 8
               }
             }
@@ -125,11 +125,11 @@
           },
           "loc": {
             "start": {
-              "line": 19,
+              "line": 23,
               "column": 5
             },
             "end": {
-              "line": 19,
+              "line": 23,
               "column": 8
             }
           }
@@ -142,11 +142,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 19,
+                "line": 23,
                 "column": 10
               },
               "end": {
-                "line": 19,
+                "line": 23,
                 "column": 14
               }
             }
@@ -156,22 +156,22 @@
             "value": 42,
             "loc": {
               "start": {
-                "line": 19,
+                "line": 23,
                 "column": 17
               },
               "end": {
-                "line": 19,
+                "line": 23,
                 "column": 19
               }
             }
           },
           "loc": {
             "start": {
-              "line": 19,
+              "line": 23,
               "column": 10
             },
             "end": {
-              "line": 19,
+              "line": 23,
               "column": 19
             }
           }
@@ -184,11 +184,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 19,
+                "line": 23,
                 "column": 21
               },
               "end": {
-                "line": 19,
+                "line": 23,
                 "column": 26
               }
             }
@@ -209,11 +209,11 @@
           },
           "loc": {
             "start": {
-              "line": 19,
+              "line": 23,
               "column": 21
             },
             "end": {
-              "line": 19,
+              "line": 23,
               "column": 26
             }
           }
@@ -222,11 +222,11 @@
       "const": false,
       "loc": {
         "start": {
-          "line": 18,
+          "line": 22,
           "column": 8
         },
         "end": {
-          "line": 20,
+          "line": 24,
           "column": 2
         }
       }
@@ -239,11 +239,11 @@
         "decorators": [],
         "loc": {
           "start": {
-            "line": 22,
+            "line": 26,
             "column": 13
           },
           "end": {
-            "line": 22,
+            "line": 26,
             "column": 21
           }
         }
@@ -257,11 +257,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 23,
+                "line": 27,
                 "column": 5
               },
               "end": {
-                "line": 23,
+                "line": 27,
                 "column": 9
               }
             }
@@ -271,22 +271,22 @@
             "value": "fopen",
             "loc": {
               "start": {
-                "line": 23,
+                "line": 27,
                 "column": 12
               },
               "end": {
-                "line": 23,
+                "line": 27,
                 "column": 19
               }
             }
           },
           "loc": {
             "start": {
-              "line": 23,
+              "line": 27,
               "column": 5
             },
             "end": {
-              "line": 23,
+              "line": 27,
               "column": 19
             }
           }
@@ -299,11 +299,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 24,
+                "line": 28,
                 "column": 5
               },
               "end": {
-                "line": 24,
+                "line": 28,
                 "column": 10
               }
             }
@@ -313,22 +313,22 @@
             "value": "fclose",
             "loc": {
               "start": {
-                "line": 24,
+                "line": 28,
                 "column": 13
               },
               "end": {
-                "line": 24,
+                "line": 28,
                 "column": 21
               }
             }
           },
           "loc": {
             "start": {
-              "line": 24,
+              "line": 28,
               "column": 5
             },
             "end": {
-              "line": 24,
+              "line": 28,
               "column": 21
             }
           }
@@ -337,11 +337,11 @@
       "const": false,
       "loc": {
         "start": {
-          "line": 22,
+          "line": 26,
           "column": 8
         },
         "end": {
-          "line": 25,
+          "line": 29,
           "column": 2
         }
       }
@@ -355,11 +355,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 27,
+              "line": 31,
               "column": 14
             },
             "end": {
-              "line": 27,
+              "line": 31,
               "column": 15
             }
           }
@@ -375,11 +375,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 28,
+                  "line": 32,
                   "column": 3
                 },
                 "end": {
-                  "line": 28,
+                  "line": 32,
                   "column": 4
                 }
               }
@@ -392,11 +392,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 28,
+                    "line": 32,
                     "column": 22
                   },
                   "end": {
-                    "line": 28,
+                    "line": 32,
                     "column": 34
                   }
                 }
@@ -407,11 +407,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 28,
+                    "line": 32,
                     "column": 35
                   },
                   "end": {
-                    "line": 28,
+                    "line": 32,
                     "column": 41
                   }
                 }
@@ -420,11 +420,11 @@
               "optional": false,
               "loc": {
                 "start": {
-                  "line": 28,
+                  "line": 32,
                   "column": 22
                 },
                 "end": {
-                  "line": 28,
+                  "line": 32,
                   "column": 41
                 }
               }
@@ -445,33 +445,33 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 28,
+                      "line": 32,
                       "column": 7
                     },
                     "end": {
-                      "line": 28,
+                      "line": 32,
                       "column": 19
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 28,
+                    "line": 32,
                     "column": 7
                   },
                   "end": {
-                    "line": 28,
+                    "line": 32,
                     "column": 21
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 28,
+                  "line": 32,
                   "column": 7
                 },
                 "end": {
-                  "line": 28,
+                  "line": 32,
                   "column": 21
                 }
               }
@@ -480,11 +480,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 28,
+                "line": 32,
                 "column": 3
               },
               "end": {
-                "line": 28,
+                "line": 32,
                 "column": 41
               }
             }
@@ -573,11 +573,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 29,
+                "line": 33,
                 "column": 2
               },
               "end": {
-                "line": 29,
+                "line": 33,
                 "column": 2
               }
             }
@@ -585,22 +585,22 @@
         ],
         "loc": {
           "start": {
-            "line": 27,
+            "line": 31,
             "column": 16
           },
           "end": {
-            "line": 29,
+            "line": 33,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 27,
+          "line": 31,
           "column": 8
         },
         "end": {
-          "line": 29,
+          "line": 33,
           "column": 2
         }
       }
@@ -4880,9 +4880,39 @@
                       "argument": {
                         "type": "MemberExpression",
                         "object": {
-                          "type": "Identifier",
-                          "name": "NamesArray",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "#Color",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "NamesArray",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -5246,9 +5276,39 @@
                         "right": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "NamesArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Color",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "NamesArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -5352,9 +5412,39 @@
                           "right": {
                             "type": "MemberExpression",
                             "object": {
-                              "type": "Identifier",
-                              "name": "NamesArray",
-                              "decorators": [],
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "#Color",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 1
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "NamesArray",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 1
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 1,
@@ -5806,9 +5896,39 @@
                       "argument": {
                         "type": "MemberExpression",
                         "object": {
-                          "type": "Identifier",
-                          "name": "ValuesArray",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "#Color",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "ValuesArray",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -6096,9 +6216,39 @@
                       "argument": {
                         "type": "MemberExpression",
                         "object": {
-                          "type": "Identifier",
-                          "name": "StringValuesArray",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "#Color",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "StringValuesArray",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -6327,9 +6477,39 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "Identifier",
-                        "name": "ItemsArray",
-                        "decorators": [],
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "Identifier",
+                          "name": "#Color",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 1
+                            }
+                          }
+                        },
+                        "property": {
+                          "type": "Identifier",
+                          "name": "ItemsArray",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 1
+                            }
+                          }
+                        },
+                        "computed": false,
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 1,
@@ -6553,9 +6733,39 @@
                         "right": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "ItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Color",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "ItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -6611,9 +6821,39 @@
                         "argument": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "ItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Color",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "ItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -6930,9 +7170,39 @@
                       "argument": {
                         "type": "MemberExpression",
                         "object": {
-                          "type": "Identifier",
-                          "name": "ItemsArray",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "#Color",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "ItemsArray",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -7212,9 +7482,39 @@
                         "right": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "BoxedItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Color",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "BoxedItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -7270,9 +7570,39 @@
                         "argument": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "BoxedItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Color",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "BoxedItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -8888,9 +9218,39 @@
                       "argument": {
                         "type": "MemberExpression",
                         "object": {
-                          "type": "Identifier",
-                          "name": "NamesArray",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "#Commands",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "NamesArray",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -9254,9 +9614,39 @@
                         "right": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "NamesArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Commands",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "NamesArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -9360,9 +9750,39 @@
                           "right": {
                             "type": "MemberExpression",
                             "object": {
-                              "type": "Identifier",
-                              "name": "NamesArray",
-                              "decorators": [],
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "#Commands",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 1
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "NamesArray",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 1
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 1
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 1,
@@ -9842,9 +10262,39 @@
                       "argument": {
                         "type": "MemberExpression",
                         "object": {
-                          "type": "Identifier",
-                          "name": "StringValuesArray",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "#Commands",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "StringValuesArray",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -10073,9 +10523,39 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "Identifier",
-                        "name": "ItemsArray",
-                        "decorators": [],
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "Identifier",
+                          "name": "#Commands",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 1
+                            }
+                          }
+                        },
+                        "property": {
+                          "type": "Identifier",
+                          "name": "ItemsArray",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 1
+                            }
+                          }
+                        },
+                        "computed": false,
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 1,
@@ -10299,9 +10779,39 @@
                         "right": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "ItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Commands",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "ItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -10357,9 +10867,39 @@
                         "argument": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "ItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Commands",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "ItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -10676,9 +11216,39 @@
                       "argument": {
                         "type": "MemberExpression",
                         "object": {
-                          "type": "Identifier",
-                          "name": "ItemsArray",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "#Commands",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "ItemsArray",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 1
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -10958,9 +11528,39 @@
                         "right": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "BoxedItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Commands",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "BoxedItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -11016,9 +11616,39 @@
                         "argument": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "BoxedItemsArray",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "#Commands",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "BoxedItemsArray",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 1
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 1
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 1,
@@ -11271,7 +11901,7 @@
       "column": 1
     },
     "end": {
-      "line": 30,
+      "line": 34,
       "column": 1
     }
   }

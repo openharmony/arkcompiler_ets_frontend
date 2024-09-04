@@ -282,17 +282,22 @@ Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, 
             return bindings_.insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)}).first->second;
         }
         case DeclType::ENUM_LITERAL: {
-            return bindings_
-                .insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::ENUM_LITERAL)})
-                .first->second;
+            auto *var =
+                bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::ENUM_LITERAL)})
+                    .first->second;
+            newDecl->Node()->AsTSEnumDeclaration()->Key()->SetVariable(var);
+            return var;
         }
         case DeclType::INTERFACE: {
             return bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)})
                 .first->second;
         }
         case DeclType::CLASS: {
-            return bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS)})
-                .first->second;
+            auto *var =
+                bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS)})
+                    .first->second;
+            newDecl->Node()->AsClassDefinition()->Ident()->SetVariable(var);
+            return var;
         }
         case DeclType::TYPE_PARAMETER: {
             return bindings_
@@ -478,7 +483,9 @@ Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *current
             return InsertBinding(newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)).first->second;
         }
         case DeclType::ENUM_LITERAL: {
-            return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
+            var = AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
+            ident = newDecl->Node()->AsTSEnumDeclaration()->Key();
+            break;
         }
         // NOTE(psiket):Duplication
         case DeclType::INTERFACE: {

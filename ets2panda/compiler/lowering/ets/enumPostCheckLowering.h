@@ -34,6 +34,7 @@ protected:
     ir::CallExpression *CreateCall(checker::ETSChecker *checker, ir::ClassDefinition *const classDef,
                                    checker::ETSEnumType::Method (checker::ETSEnumType::*getMethod)() const,
                                    ir::Expression *argument);
+    ir::CallExpression *GenerateValueOfCall(checker::ETSChecker *checker, ir::AstNode *const node);
 };
 
 }  // namespace ark::es2panda::compiler

@@ -304,11 +304,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSConstructorType *node) co
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSEnumDeclaration *st) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSEnumMember *st) const
 {
     UNREACHABLE();

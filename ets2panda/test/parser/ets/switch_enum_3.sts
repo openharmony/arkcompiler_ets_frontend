@@ -13,6 +13,10 @@
  * limitations under the License.
  */
  
+/*
+ * Can not moved into ast/parser while #19557 isn't resolved
+ */ 
+ 
 enum A {
     B, C, D
 }

@@ -126,10 +126,6 @@ ir::Statement *ETSParser::ParseEnumDeclaration(bool isConst, bool isStatic)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM);
 
-    if ((GetContext().Status() & parser::ParserStatus::FUNCTION) != 0U) {
-        ThrowSyntaxError("Local enum declaration support is not yet implemented.");
-    }
-
     lexer::SourcePosition enumStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat enum keyword
 

@@ -12,6 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+/*
+ * Can not moved into ast/compiler while #19557 isn't resolved
+ */
 
 import * as all from "std/math";
 
