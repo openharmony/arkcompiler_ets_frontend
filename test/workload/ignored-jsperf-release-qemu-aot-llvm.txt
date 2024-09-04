@@ -35,8 +35,3 @@ String_repeat
 
 #19077
 Function_applyFunction
-
-
-
-
-
