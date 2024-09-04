@@ -1,6 +1,9 @@
 #18417
 box2d
 
+#19318
+code-load
+
 #18899
 crypto
 
@@ -9,6 +12,9 @@ json-parse-inspector
 
 #18745
 json-stringify-inspector
+
+#18383
+memory-cache_test
 
 #19008
 regex-dna
