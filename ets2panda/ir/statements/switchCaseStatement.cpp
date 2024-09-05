@@ -70,6 +70,9 @@ void SwitchCaseStatement::Dump(ir::SrcDumper *dumper) const
         dumper->Endl();
         for (auto cs : consequent_) {
             cs->Dump(dumper);
+            if (!cs->IsBlockStatement() && cs != consequent_.back()) {
+                dumper->Endl();
+            }
         }
         dumper->DecrIndent();
     }

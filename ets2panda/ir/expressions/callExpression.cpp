@@ -90,6 +90,12 @@ void CallExpression::Dump(ir::SrcDumper *dumper) const
         }
     }
     dumper->Add(")");
+    if (trailingBlock_ != nullptr) {
+        if (isTrailingBlockInNewLine_) {
+            dumper->Endl();
+        }
+        trailingBlock_->Dump(dumper);
+    }
 }
 
 void CallExpression::Compile(compiler::PandaGen *pg) const

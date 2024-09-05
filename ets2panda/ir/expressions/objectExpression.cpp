@@ -241,7 +241,20 @@ void ObjectExpression::Dump(ir::AstDumper *dumper) const
 
 void ObjectExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("ObjectExpression");
+    dumper->Add("{");
+    if (!properties_.empty()) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        for (auto property : properties_) {
+            property->Dump(dumper);
+            dumper->Add(",");
+            if (property == properties_.back()) {
+                dumper->DecrIndent();
+            }
+            dumper->Endl();
+        }
+    }
+    dumper->Add("}");
 }
 
 void ObjectExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const

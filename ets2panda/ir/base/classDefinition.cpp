@@ -163,6 +163,24 @@ void ClassDefinition::Dump(ir::AstDumper *dumper) const
                  {"body", body_, propFilter}});
 }
 
+// This method is needed by OHOS CI code checker
+void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
+{
+    dumper->Add(" {");
+    if (!body_.empty()) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        for (auto elem : body_) {
+            elem->Dump(dumper);
+            if (elem == body_.back()) {
+                dumper->DecrIndent();
+            }
+            dumper->Endl();
+        }
+    }
+    dumper->Add("}");
+}
+
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(ident_ != nullptr);
@@ -173,6 +191,10 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 
     if (IsExported()) {
         dumper->Add("export ");
+    }
+
+    if (IsDeclare()) {
+        dumper->Add("declare ");
     }
 
     if (IsFinal()) {
@@ -207,19 +229,12 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
         }
     }
 
-    dumper->Add(" {");
-    if (!body_.empty()) {
-        dumper->IncrIndent();
-        dumper->Endl();
-        for (auto elem : body_) {
-            elem->Dump(dumper);
-            if (elem == body_.back()) {
-                dumper->DecrIndent();
-            }
-            dumper->Endl();
-        }
+    if (!IsDeclare() || !body_.empty()) {
+        DumpBody(dumper);
     }
-    dumper->Add("}");
+    if (IsLocal()) {
+        dumper->Add(";");
+    }
     dumper->Endl();
 }
 

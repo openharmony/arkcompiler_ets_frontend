@@ -83,7 +83,15 @@ void ExportNamedDeclaration::Dump(ir::AstDumper *dumper) const
 
 void ExportNamedDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("ExportNamedDeclaration");
+    dumper->Add("export { ");
+    for (const auto *spec : specifiers_) {
+        spec->Dump(dumper);
+
+        if (spec != specifiers_.back()) {
+            dumper->Add(", ");
+        }
+    }
+    dumper->Add(" }");
 }
 
 void ExportNamedDeclaration::Compile(compiler::PandaGen *pg) const

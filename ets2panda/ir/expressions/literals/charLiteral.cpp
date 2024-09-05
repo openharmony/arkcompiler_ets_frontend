@@ -37,7 +37,13 @@ void CharLiteral::Dump(ir::AstDumper *dumper) const
 
 void CharLiteral::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add(std::to_string(char_));
+    std::string utf8Str = util::Helpers::UTF16toUTF8(char_);
+    if (UNLIKELY(utf8Str.empty())) {
+        dumper->Add(std::to_string(char_));
+        return;
+    }
+
+    dumper->Add("c\'" + util::Helpers::CreateEscapedString(utf8Str) + "\'");
 }
 
 void CharLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const

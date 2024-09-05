@@ -73,7 +73,23 @@ void TSTypeParameter::Dump(ir::AstDumper *dumper) const
 
 void TSTypeParameter::Dump(ir::SrcDumper *dumper) const
 {
+    if (IsIn()) {
+        dumper->Add("in ");
+    }
+    if (IsOut()) {
+        dumper->Add("out ");
+    }
+
     name_->Dump(dumper);
+
+    if (defaultType_ != nullptr) {
+        dumper->Add(" = ");
+        defaultType_->Dump(dumper);
+    }
+    if (constraint_ != nullptr) {
+        dumper->Add(" extends ");
+        constraint_->Dump(dumper);
+    }
 }
 
 void TSTypeParameter::Compile([[maybe_unused]] compiler::PandaGen *pg) const

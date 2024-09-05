@@ -56,7 +56,45 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
 
 void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
 {
+    if (func_->IsNative()) {
+        dumper->Add("native ");
+    }
+    if (func_->Declare()) {
+        dumper->Add("declare ");
+    }
+    if (func_->IsAsyncFunc()) {
+        dumper->Add("async ");
+    }
     dumper->Add("function ");
+
+    if (func_->IsExtensionMethod()) {
+        for (const auto *param : func_->Params()) {
+            if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->Ident() != nullptr &&
+                param->AsETSParameterExpression()->Ident()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS &&
+                param->AsETSParameterExpression()->Ident()->TypeAnnotation() != nullptr &&
+                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->IsETSTypeReference() &&
+                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part() != nullptr &&
+                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part()->Name() !=
+                    nullptr &&
+                param->AsETSParameterExpression()
+                    ->Ident()
+                    ->TypeAnnotation()
+                    ->AsETSTypeReference()
+                    ->Part()
+                    ->Name()
+                    ->IsIdentifier()) {
+                dumper->Add(std::string(param->AsETSParameterExpression()
+                                            ->Ident()
+                                            ->TypeAnnotation()
+                                            ->AsETSTypeReference()
+                                            ->Part()
+                                            ->Name()
+                                            ->AsIdentifier()
+                                            ->Name()));
+                dumper->Add(".");
+            }
+        }
+    }
     func_->Id()->Dump(dumper);
     func_->Dump(dumper);
 }

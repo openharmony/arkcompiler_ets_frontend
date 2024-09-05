@@ -161,13 +161,16 @@ void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
         if (ident_ != nullptr) {
             ASSERT(ident_->IsAnnotatedExpression());
             ident_->Dump(dumper);
+            if (initializer_ != nullptr && initializer_->IsUndefinedLiteral()) {
+                dumper->Add("?");
+            }
             auto typeAnnotation = ident_->AsAnnotatedExpression()->TypeAnnotation();
             if (typeAnnotation != nullptr) {
                 dumper->Add(": ");
                 typeAnnotation->Dump(dumper);
             }
         }
-        if (initializer_ != nullptr) {
+        if (initializer_ != nullptr && !initializer_->IsUndefinedLiteral()) {
             dumper->Add(" = ");
             initializer_->Dump(dumper);
         }

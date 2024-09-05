@@ -187,7 +187,11 @@ void Property::Compile(compiler::ETSGen *etsg) const
 
 void Property::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("Property");
+    if (kind_ == PropertyKind::INIT) {
+        key_->Dump(dumper);
+        dumper->Add(": ");
+        value_->Dump(dumper);
+    }
 }
 
 checker::Type *Property::Check(checker::TSChecker *checker)

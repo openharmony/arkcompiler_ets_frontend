@@ -37,7 +37,7 @@ void TSThisType::Dump(ir::AstDumper *dumper) const
 
 void TSThisType::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("TSThisType");
+    dumper->Add("this");
 }
 
 void TSThisType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

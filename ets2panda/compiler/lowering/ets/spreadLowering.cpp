@@ -77,7 +77,6 @@ std::string SpreadConstructionPhase::CreateETSCode(ir::ArrayExpression *array, s
         }
     }
     src << newArrayName << ";" << std::endl;
-    std::cout << src.str() << std::endl;
 
     return src.str();
 }

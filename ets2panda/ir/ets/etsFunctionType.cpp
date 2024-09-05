@@ -47,7 +47,7 @@ void ETSFunctionType::Dump(ir::AstDumper *dumper) const
 
 void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("(");
+    dumper->Add("((");
     for (auto *param : Params()) {
         param->Dump(dumper);
         if (param != Params().back()) {
@@ -64,6 +64,7 @@ void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
         dumper->Add("=> ");
         ReturnType()->Dump(dumper);
     }
+    dumper->Add(")");
 }
 
 void ETSFunctionType::Compile(compiler::PandaGen *pg) const

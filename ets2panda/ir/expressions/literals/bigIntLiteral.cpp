@@ -37,7 +37,7 @@ void BigIntLiteral::Dump(ir::AstDumper *dumper) const
 
 void BigIntLiteral::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add(std::string(src_));
+    dumper->Add(std::string(src_) + "n");
 }
 
 void BigIntLiteral::Compile(compiler::PandaGen *pg) const

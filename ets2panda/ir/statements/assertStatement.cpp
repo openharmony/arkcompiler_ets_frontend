@@ -61,6 +61,12 @@ void AssertStatement::Dump(ir::SrcDumper *dumper) const
     dumper->Add("assert(");
     test_->Dump(dumper);
     dumper->Add(")");
+
+    if (second_ != nullptr) {
+        dumper->Add(": ");
+        second_->Dump(dumper);
+    }
+
     if (parent_->IsStatement()) {
         dumper->Add(";");
     }

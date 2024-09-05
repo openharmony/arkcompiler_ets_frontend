@@ -107,7 +107,8 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
         }
     }
 
-    if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsBlockExpression())) {
+    if ((parent_ != nullptr) &&
+        (parent_->IsBlockStatement() || parent_->IsBlockExpression() || parent_->IsSwitchCaseStatement())) {
         dumper->Add(";");
     }
 }

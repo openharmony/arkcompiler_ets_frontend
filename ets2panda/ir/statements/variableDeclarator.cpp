@@ -63,6 +63,9 @@ void VariableDeclarator::Dump(ir::SrcDumper *dumper) const
 {
     if (id_ != nullptr) {
         id_->Dump(dumper);
+        if (id_->IsOptionalDeclaration()) {
+            dumper->Add("?");
+        }
         if (id_->IsAnnotatedExpression()) {
             auto *type = id_->AsAnnotatedExpression()->TypeAnnotation();
             if (type != nullptr) {

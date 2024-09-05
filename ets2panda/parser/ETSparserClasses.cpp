@@ -912,9 +912,8 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
 
     func->SetIdent(name);
-    auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD,
-                                                   name->Clone(Allocator(), nullptr)->AsExpression(), funcExpr, flags,
-                                                   Allocator(), false);
+    auto *method = AllocNode<ir::MethodDefinition>(methodKind, name->Clone(Allocator(), nullptr)->AsExpression(),
+                                                   funcExpr, flags, Allocator(), false);
     method->SetRange(funcExpr->Range());
 
     func->Id()->SetReference();

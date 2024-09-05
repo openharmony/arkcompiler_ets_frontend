@@ -18,6 +18,7 @@ endif()
 add_subdirectory(dynamic)
 add_subdirectory(lowerings)
 add_subdirectory(public)
+add_subdirectory(src_dumper)
 
 ets2panda_add_gtest(es2panda_astdumper_tests
     CPP_SOURCES ast_dumper_test.cpp

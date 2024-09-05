@@ -39,7 +39,7 @@ void TemplateElement::Dump(ir::AstDumper *dumper) const
 
 void TemplateElement::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("TemplateElement");
+    dumper->Add(std::string(raw_));
 }
 
 void TemplateElement::Compile(compiler::PandaGen *pg) const

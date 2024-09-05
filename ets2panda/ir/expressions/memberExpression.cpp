@@ -73,6 +73,9 @@ void MemberExpression::Dump(ir::SrcDumper *dumper) const
     object_->Dump(dumper);
     if (IsOptional()) {
         dumper->Add("?");
+        if ((MemberExpressionKind::ELEMENT_ACCESS & kind_) != 0U) {
+            dumper->Add(".");
+        }
     }
     if ((MemberExpressionKind::ELEMENT_ACCESS & kind_) != 0U) {
         dumper->Add("[");

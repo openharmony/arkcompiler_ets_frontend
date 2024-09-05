@@ -46,9 +46,6 @@ void ExpressionStatement::Dump(ir::SrcDumper *dumper) const
     expression_->Dump(dumper);
     if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsSwitchCaseStatement())) {
         dumper->Add(";");
-        if (parent_->IsSwitchCaseStatement()) {
-            dumper->Endl();
-        }
     }
 }
 

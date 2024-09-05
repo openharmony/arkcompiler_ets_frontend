@@ -49,6 +49,7 @@ void UpdateExpression::Dump(ir::AstDumper *dumper) const
 void UpdateExpression::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(argument_);
+    dumper->Add("(");
     if (prefix_) {
         dumper->Add(TokenToString(operator_));
         argument_->Dump(dumper);
@@ -56,6 +57,7 @@ void UpdateExpression::Dump(ir::SrcDumper *dumper) const
         argument_->Dump(dumper);
         dumper->Add(TokenToString(operator_));
     }
+    dumper->Add(")");
 }
 
 void UpdateExpression::Compile(compiler::PandaGen *pg) const

@@ -36,7 +36,7 @@ void EmptyStatement::Dump(ir::AstDumper *dumper) const
 
 void EmptyStatement::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("EmptyStatement");
+    dumper->Add("");
 }
 
 void EmptyStatement::Compile(compiler::PandaGen *pg) const

@@ -55,13 +55,13 @@ void BinaryExpression::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(left_ != nullptr);
     ASSERT(right_ != nullptr);
-    dumper->Add("(");
+    dumper->Add("((");
     left_->Dump(dumper);
-    dumper->Add(" ");
+    dumper->Add(") ");
     dumper->Add(TokenToString(operator_));
-    dumper->Add(" ");
+    dumper->Add(" (");
     right_->Dump(dumper);
-    dumper->Add(")");
+    dumper->Add("))");
 }
 
 void BinaryExpression::Compile(compiler::PandaGen *pg) const

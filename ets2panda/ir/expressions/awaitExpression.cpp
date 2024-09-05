@@ -46,7 +46,10 @@ void AwaitExpression::Dump(ir::AstDumper *dumper) const
 
 void AwaitExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("AwaitExpression");
+    if (argument_ != nullptr) {
+        dumper->Add("await ");
+        argument_->Dump(dumper);
+    }
 }
 
 void AwaitExpression::Compile(compiler::PandaGen *pg) const

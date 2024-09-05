@@ -149,6 +149,8 @@ public:
     }
 
 private:
+    void DumpPrefix(ir::SrcDumper *dumper) const;
+
     MethodDefinitionKind kind_;
     // Overloads are stored like in an 1:N fashion.
     // The very firstly processed method becomes the base(1) and the others tied into it as overloads(N).

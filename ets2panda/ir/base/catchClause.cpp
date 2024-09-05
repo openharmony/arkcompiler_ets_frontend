@@ -59,6 +59,10 @@ void CatchClause::Dump(ir::SrcDumper *dumper) const
     dumper->Add("(");
     if (param_ != nullptr) {
         param_->Dump(dumper);
+        if (param_->IsIdentifier() && param_->AsIdentifier()->TypeAnnotation() != nullptr) {
+            dumper->Add(": ");
+            param_->AsIdentifier()->TypeAnnotation()->Dump(dumper);
+        }
     }
     dumper->Add(") {");
     dumper->IncrIndent();

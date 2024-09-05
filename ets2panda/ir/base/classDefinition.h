@@ -379,6 +379,9 @@ private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
                                         const std::vector<compiler::VReg> &staticComputedFieldKeys) const;
 
+    // This method is needed by OHOS CI code checker
+    void DumpBody(ir::SrcDumper *dumper) const;
+
     varbinder::LocalScope *scope_ {nullptr};
     util::StringView privateId_ {};
     Identifier *ident_ {};

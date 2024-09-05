@@ -48,7 +48,12 @@ void ExportSpecifier::Dump(ir::AstDumper *dumper) const
 
 void ExportSpecifier::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("ExportSpecifier");
+    exported_->Dump(dumper);
+
+    if (local_ != nullptr) {
+        dumper->Add(" as ");
+        local_->Dump(dumper);
+    }
 }
 
 void ExportSpecifier::Compile(compiler::PandaGen *pg) const

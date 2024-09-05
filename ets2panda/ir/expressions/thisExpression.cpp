@@ -39,7 +39,7 @@ void ThisExpression::Dump(ir::AstDumper *dumper) const
 
 void ThisExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("this");
+    dumper->Add("(this)");
 }
 
 void ThisExpression::Compile(compiler::PandaGen *pg) const

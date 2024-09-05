@@ -49,6 +49,7 @@
 #include "libpandabase/utils/utf.h"
 #include "libpandabase/os/filesystem.h"
 #include "ir/module/importDefaultSpecifier.h"
+#include <iomanip>
 
 namespace ark::es2panda::util {
 // Helpers
@@ -620,45 +621,64 @@ std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator,
     return {Helpers::ToStringView(allocator, index), true};
 }
 
-std::string Helpers::CreateEscapedString(const std::string &str)
+static std::string GetEscapedCharacter(const unsigned char c)
 {
-    std::string ret {};
-    ret.reserve(str.size());
-
-    for (std::string::value_type c : str) {
-        switch (c) {
-            case lexer::LEX_CHAR_BS: {
-                ret.append("\\b");
-                break;
-            }
-            case lexer::LEX_CHAR_TAB: {
-                ret.append("\\t");
-                break;
-            }
-            case lexer::LEX_CHAR_LF: {
-                ret.append("\\n");
-                break;
-            }
-            case lexer::LEX_CHAR_VT: {
-                ret.append("\\v");
-                break;
-            }
-            case lexer::LEX_CHAR_FF: {
-                ret.append("\\f");
-                break;
-            }
-            case lexer::LEX_CHAR_CR: {
-                ret.append("\\r");
-                break;
-            }
-            default: {
-                ret += c;
-                break;
-            }
+    std::stringstream escapedStr;
+    escapedStr << '\\';
+    switch (c) {
+        case lexer::LEX_CHAR_DOUBLE_QUOTE: {
+            escapedStr << '"';
+            break;
+        }
+        case lexer::LEX_CHAR_BS: {
+            escapedStr << 'b';
+            break;
+        }
+        case lexer::LEX_CHAR_TAB: {
+            escapedStr << 't';
+            break;
+        }
+        case lexer::LEX_CHAR_LF: {
+            escapedStr << 'n';
+            break;
+        }
+        case lexer::LEX_CHAR_VT: {
+            escapedStr << 'v';
+            break;
+        }
+        case lexer::LEX_CHAR_FF: {
+            escapedStr << 'f';
+            break;
+        }
+        case lexer::LEX_CHAR_CR: {
+            escapedStr << 'r';
+            break;
+        }
+        case lexer::LEX_CHAR_NULL: {
+            escapedStr << '0';
+            break;
+        }
+        default: {
+            escapedStr << 'u' << std::hex << std::setw(4U) << std::setfill('0') << static_cast<unsigned int>(c);
+            break;
         }
     }
+    return escapedStr.str();
+}
 
-    return ret;
+std::string Helpers::CreateEscapedString(const std::string &str)
+{
+    std::string escapedStr;
+    for (const unsigned char c : str) {
+        // check if a given character is printable
+        // the cast is necessary to avoid undefined behaviour
+        if (LIKELY((std::isprint(c) != 0U || c >= lexer::LEX_ASCII_MAX_BITS) && c != lexer::LEX_CHAR_DOUBLE_QUOTE)) {
+            escapedStr += c;
+        } else {
+            escapedStr += GetEscapedCharacter(c);
+        }
+    }
+    return escapedStr;
 }
 
 std::string Helpers::UTF16toUTF8(const char16_t c)
