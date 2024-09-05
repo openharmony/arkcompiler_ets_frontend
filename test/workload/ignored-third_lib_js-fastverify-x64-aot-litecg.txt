@@ -33,6 +33,9 @@ zxing_test
 #18331
 validator_test
 
+#18546
+jBox2d_test
+
 #18484
 jBox2d_test
 commonmark-js_test

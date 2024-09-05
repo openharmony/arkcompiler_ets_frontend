@@ -34,6 +34,7 @@ test262/data/other_tests/language/statements/class/elements/privategetter-on-pro
 
 #18548
 test262/data/other_tests/language/statements/class/elements/privatemethods-on-proxy.js
+test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-add.js
 
 #18521
 test262/data/other_tests/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-factory.js
