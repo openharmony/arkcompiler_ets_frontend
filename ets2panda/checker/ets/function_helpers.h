@@ -16,10 +16,6 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_FUNCTION_HELPERS_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_FUNCTION_HELPERS_H
 
-#include "varbinder/varbinder.h"
-#include "varbinder/declaration.h"
-#include "varbinder/scope.h"
-#include "varbinder/variable.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsObjectType.h"
@@ -47,7 +43,15 @@
 #include "ir/statements/whileStatement.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "parser/program/program.h"
+#include "utils/arena_containers.h"
 #include "util/helpers.h"
+#include "util/language.h"
+#include "varbinder/declaration.h"
+#include "varbinder/ETSBinder.h"
+#include "varbinder/scope.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/variable.h"
+#include "varbinder/variableFlags.h"
 
 namespace ark::es2panda::checker {
 
@@ -64,6 +68,52 @@ static Type *MaybeBoxedType(ETSChecker *checker, Type *type, ir::Expression *exp
     return res;
 }
 
+static void InferUntilFail(Signature const *const signature, const ArenaVector<ir::Expression *> &arguments,
+                           ETSChecker *checker, Substitution *substitution)
+{
+    auto *sigInfo = signature->GetSignatureInfo();
+    auto &sigParams = signature->GetSignatureInfo()->typeParams;
+    ArenaVector<bool> inferStatus(checker->Allocator()->Adapter());
+    inferStatus.assign(arguments.size(), false);
+    bool anyChange = true;
+    size_t lastSubsititutionSize = 0;
+
+    // some ets lib files require type infer from arg index 0,1,... , not fit to build graph
+    while (anyChange && substitution->size() < sigParams.size()) {
+        anyChange = false;
+        for (size_t ix = 0; ix < arguments.size(); ++ix) {
+            if (inferStatus[ix]) {
+                continue;
+            }
+
+            auto *arg = arguments[ix];
+            if (arg->IsObjectExpression()) {
+                continue;
+            }
+
+            auto *const argType = arg->IsSpreadElement()
+                                      ? MaybeBoxedType(checker, arg->AsSpreadElement()->Argument()->Check(checker),
+                                                       arg->AsSpreadElement()->Argument())
+                                      : MaybeBoxedType(checker, arg->Check(checker), arg);
+            auto *const paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType()
+                                    : sigInfo->restVar != nullptr   ? sigInfo->restVar->TsType()
+                                                                    : nullptr;
+
+            if (paramType == nullptr) {
+                continue;
+            }
+
+            if (checker->EnhanceSubstitutionForType(sigInfo->typeParams, paramType, argType, substitution)) {
+                inferStatus[ix] = true;
+            }
+            if (lastSubsititutionSize != substitution->size()) {
+                lastSubsititutionSize = substitution->size();
+                anyChange = true;
+            }
+        }
+    }
+}
+
 static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *checker, Signature *signature,
                                                                  const ArenaVector<ir::Expression *> &arguments)
 {
@@ -71,28 +121,7 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
     auto *sigInfo = signature->GetSignatureInfo();
     auto &sigParams = signature->GetSignatureInfo()->typeParams;
 
-    for (size_t ix = 0; ix < arguments.size(); ix++) {
-        auto *arg = arguments[ix];
-        if (arg->IsObjectExpression()) {
-            continue;
-        }
-
-        auto *const argType = arg->IsSpreadElement()
-                                  ? MaybeBoxedType(checker, arg->AsSpreadElement()->Argument()->Check(checker),
-                                                   arg->AsSpreadElement()->Argument())
-                                  : MaybeBoxedType(checker, arg->Check(checker), arg);
-        auto *const paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType()
-                                : sigInfo->restVar != nullptr   ? sigInfo->restVar->TsType()
-                                                                : nullptr;
-
-        if (paramType == nullptr) {
-            continue;
-        }
-
-        if (!checker->EnhanceSubstitutionForType(sigInfo->typeParams, paramType, argType, substitution)) {
-            return nullptr;
-        }
-    }
+    InferUntilFail(signature, arguments, checker, substitution);
 
     if (substitution->size() != sigParams.size()) {
         for (const auto typeParam : sigParams) {
