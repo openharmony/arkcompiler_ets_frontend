@@ -18,6 +18,7 @@
 from typing import Tuple, Dict, Any
 from text_tools import find_first_not_restricted_character, find_scope_borders, find_first_of_characters, smart_split_by
 from line_iterator import LineIterator
+from cpp_keywords import known_macroses
 
 # Weakness: define define !endif! endif
 
@@ -70,3 +71,10 @@ def parse_define_macros_name(data: str, start: int) -> Tuple[int, str]:
         raise RuntimeError("Can't find macros name.")
 
     return end_of_name, data[start_of_name:end_of_name].strip(" \n")
+
+
+def is_known_macros(data: str) -> bool:
+    for name in known_macroses:
+        if data.find(name) != -1:
+            return True
+    return False

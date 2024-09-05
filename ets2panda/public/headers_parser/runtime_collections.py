@@ -21,7 +21,6 @@ import os
 import sys
 from typing import Any, Dict
 from file_tools import print_to_yaml
-from log_tools import info_log
 
 statistics: Dict[str, Dict[str, Any]] = {}
 custom_yamls: Dict[str, Dict[str, Any]] = {}
@@ -80,7 +79,6 @@ def save_custom_yamls() -> None:
     for _, value in custom_yamls.items():
         yaml_file = value["yaml_file"]
         print_to_yaml(yaml_file, value["collection"])
-        info_log(f"Saved custom yaml: '{yaml_file}'")
 
         statistics["generated_yamls"]["collection"].add(
             os.path.basename(yaml_file)
@@ -88,11 +86,8 @@ def save_custom_yamls() -> None:
 
 
 def save_statistics() -> None:
-    logs_path = os.path.join(LIB_GEN_FOLDER, "./gen/logs")
-    if not os.path.exists(logs_path):
-        os.makedirs(logs_path)
-
-    info_log(f"Parsed {len(custom_yamls['pathsToHeaders']['collection']['paths'])} / {len(sys.argv[3:])} headers.")
+    if not os.path.exists(LIB_GEN_FOLDER + "/gen/logs"):
+        os.makedirs(LIB_GEN_FOLDER + "/gen/logs")
 
     for _, value in statistics.items():
         with os.fdopen(os.open(value["log_file"], os.O_WRONLY | os.O_CREAT, mode=511), "w", encoding="utf-8") as f:

@@ -33,9 +33,9 @@ void e2p_test_plugin_is_Initialize()
 static void IsIdentifier(es2panda_AstNode *node, void *arg)
 {
     es2panda_Context *ctx = arg;
-    if (impl->AstNodeIsExpression(ctx, node)) {
+    if (impl->AstNodeIsExpressionConst(ctx, node)) {
         puts("Found Expression:");
-        puts(impl->AstNodeDumpJSON(ctx, node));
+        puts(impl->AstNodeDumpJSONConst(ctx, node));
         puts("---");
     }
 }

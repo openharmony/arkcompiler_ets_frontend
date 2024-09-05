@@ -16,7 +16,7 @@
 
 
 from typing import Tuple, Dict, Any
-from text_tools import find_first_not_restricted_character
+from text_tools import find_first_not_restricted_character, find_first_of_characters
 from parse_arguments import parse_type
 
 
@@ -24,9 +24,12 @@ def parse_using(data: str, start: int = 0) -> Tuple[int, Dict]:
     res: Dict[str, Any] = {}
 
     start_of_name = find_first_not_restricted_character(" ", data, data.find("using ", start) + len("using "))
-    end_of_name = data.find(" ", start_of_name)
+    end_of_name = find_first_of_characters(" =;\n", data, start_of_name)
 
     res["name"] = data[start_of_name:end_of_name]
+
+    if data[end_of_name] == ";":
+        return end_of_name, res
 
     var_start = find_first_not_restricted_character(" ", data, data.find("=", start))
     var_end = data.find(";", start)

@@ -27,6 +27,10 @@ known_macroses = [
     "AST_NODE_MAPPING",
     "AST_NODE_REINTERPRET_MAPPING",
     "DECLARE_FLAG_OPERATIONS",
+    "SCOPE_TYPES",
+    "DEFAULT_COPY_SEMANTIC",
+    "VARIABLE_TYPES",
+    "DECLARATION_KINDS",
 ]
 
 modifiers_list = [
@@ -45,5 +49,6 @@ modifiers_list = [
     "volatile",
     "[[maybe_unused]]",
     "[[nodiscard]]",
+    "[[noreturn]]",
     "static",
 ]

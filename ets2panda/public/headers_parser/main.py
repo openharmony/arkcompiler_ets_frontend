@@ -26,7 +26,7 @@ from typing import List
 
 # pylint: disable=W0401,W0614
 from cpp_parser import CppParser
-from log_tools import init_log, console_log, parsing_log, error_log, info_log
+from log_tools import init_log, error_log, info_log, parsing_failed_msg
 from prepare_header import remove_comments, extract_and_remove_includes
 from file_tools import print_to_yaml
 from runtime_collections import (
@@ -42,9 +42,6 @@ def parse_file(src_path: str, dest_path: str) -> None:
     """
     Parse one file.
     """
-    console_log("------------------------------------------------------------------------------")
-    parsing_log("Parsing file: " + src_path)
-
     with open(src_path, "r", encoding="utf-8") as file:
         data = file.read()
         data = remove_comments(data)
@@ -60,7 +57,6 @@ def parse_file(src_path: str, dest_path: str) -> None:
                 os.makedirs(os.path.dirname(dest_path))
 
             print_to_yaml(dest_path, res)
-            console_log("\n++++++++++++++++++++++++\n+ Successfully parsed! +\n++++++++++++++++++++++++")
 
             # Collect statistics
             add_to_statistics("generated_yamls", dest_path)
@@ -70,9 +66,8 @@ def parse_file(src_path: str, dest_path: str) -> None:
         except Exception:  # pylint: disable=W0718
             os.fdopen(os.open(dest_path, os.O_CREAT, mode=511), "w", encoding="utf-8").close()
 
-            error_log("Error while parsing '" + src_path + "'\n")
-            error_log(traceback.format_exc() + "\n")
-            info_log("Error! Can't parse '" + src_path + "'")
+            error_log(f"Error! Can't parse '{src_path}'\n{traceback.format_exc()}\n")
+            parsing_failed_msg(src_path)
 
 
 def parse_files_in_list(paths_list: List[str], result_folder: str) -> None:
@@ -95,7 +90,7 @@ def parse_files_in_list(paths_list: List[str], result_folder: str) -> None:
             parse_file(path, dst)
 
         else:
-            info_log(f"Error! File does not fit for parsing or does not exist: '{path}'")
+            info_log(f"File does not fit for parsing or does not exist: '{path}'")
 
 
 if __name__ == "__main__":

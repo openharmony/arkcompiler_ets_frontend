@@ -21,7 +21,7 @@ import os
 LOGGING = 0
 DEBUG_LOGGING = 0
 INFO_LOGGING = 1
-WARNING_LOGGING = 1
+WARNING_LOGGING = 0
 ERROR_LOGGIN = 1
 PARSING_LOGGING = 0
 
@@ -32,49 +32,25 @@ LIB_GEN_FOLDER: str = ""
 def init_log(lib_gen_folder: str) -> None:
     global LIB_GEN_FOLDER  # pylint: disable=W0603
     LIB_GEN_FOLDER = lib_gen_folder
-    os.makedirs(os.path.join(LIB_GEN_FOLDER, "./gen/logs"), exist_ok=True)
-
-
-def debug_log(msg: str) -> None:
-    if DEBUG_LOGGING:
-        print(msg)
-
-
-def console_log(msg: str) -> None:
-    if LOGGING:
-        print(msg)
+    os.makedirs(LIB_GEN_FOLDER + "/gen/logs", exist_ok=True)
 
 
 def info_log(msg: str) -> None:
     if INFO_LOGGING:
-        print(msg)
+        print("INFO: " + msg)
 
 
 def warning_log(msg: str) -> None:
-    path = os.path.join(LIB_GEN_FOLDER, "./gen/logs/warning_logs.txt")
     if WARNING_LOGGING:
-        with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, mode=511), "a", encoding="utf-8") as f:
-            f.write("Warning! " + msg + "\n")
+        print("WARNING: " + msg)
+
+
+def parsing_failed_msg(file: str) -> None:
+    print(f"NON FATAL ERROR: Headers parser failed on {file}.\nTo reproduce locally: run 'ninja gen_yamls' and check <es2panda_lib::binary_root>/gen/logs/error_logs.txt")
 
 
 def error_log(msg: str) -> None:
     path = os.path.join(LIB_GEN_FOLDER, "./gen/logs/error_logs.txt")
     if ERROR_LOGGIN:
-        with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, mode=511), "a", encoding="utf-8") as f:
-            f.write(msg)
-
-
-def parsing_log(msg: str) -> None:
-    if PARSING_LOGGING:
-        print(msg)
-
-
-def tmp_log(msg: str) -> None:
-    print(msg)
-
-
-def dump_to_file(file_name: str, msg: str) -> None:
-    path = LIB_GEN_FOLDER + file_name
-    with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, mode=511), "w", encoding="utf-8") as f:
-        f.write(msg)
-    console_log("Data dumped to '" + path + "'")
+        with os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT|os.O_APPEND), "a", encoding="utf-8") as f:
+            f.write(msg + "\n")
