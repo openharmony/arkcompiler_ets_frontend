@@ -43,6 +43,11 @@ protected:
         checker_->ThrowTypeError(list, pos);
     }
 
+    void LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+    {
+        checker_->LogTypeError(list, pos);
+    }
+
 private:
     Checker *const checker_;
 };

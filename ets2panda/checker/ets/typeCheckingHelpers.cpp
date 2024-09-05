@@ -550,6 +550,10 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
 
     auto *const aliasTypeNode = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
     TypeStackElement tse(this, aliasTypeNode, "Circular type alias reference", aliasTypeNode->Start());
+    if (tse.HasTypeError()) {
+        var->SetTsType(GlobalTypeError());
+        return GlobalTypeError();
+    }
     aliasTypeNode->Check(this);
     auto *const aliasedType = aliasTypeNode->TypeAnnotation()->GetType(this);
 

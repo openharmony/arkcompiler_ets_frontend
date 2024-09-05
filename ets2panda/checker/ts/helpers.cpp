@@ -478,6 +478,9 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
         std::initializer_list<TypeErrorMessageElement> {
             "'", var->Name(), "' is referenced directly or indirectly in its ", "own initializer ot type annotation."},
         decl->Node()->Start());
+    if (tse.HasTypeError()) {
+        return GlobalErrorType();
+    }
 
     return GetDeclTsType(var, decl);
 }
@@ -506,6 +509,9 @@ Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbin
     }
 
     TypeStackElement tse(this, var, {"Type alias ", var->Name(), " circularly refences itself"}, node->Start());
+    if (tse.HasTypeError()) {
+        return GlobalErrorType();
+    }
 
     ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSTypeAliasDeclaration());
     ir::TSTypeAliasDeclaration *declaration = var->Declaration()->Node()->AsTSTypeAliasDeclaration();

@@ -160,8 +160,8 @@ public:
     ETSObjectType *BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
     ETSObjectType *GetSuperType(ETSObjectType *type);
     ArenaVector<ETSObjectType *> GetInterfaces(ETSObjectType *type);
-    ArenaVector<ETSObjectType *> GetInterfacesOfClass(ETSObjectType *type);
-    ArenaVector<ETSObjectType *> GetInterfacesOfInterface(ETSObjectType *type);
+    void GetInterfacesOfClass(ETSObjectType *type);
+    void GetInterfacesOfInterface(ETSObjectType *type);
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(const ETSObjectType *type);
@@ -833,6 +833,8 @@ private:
     ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     void CheckProgram(parser::Program *program, bool runAnalysis = false);
     void CheckWarnings(parser::Program *program, const CompilerOptions &options);
+
+    bool ComputeSuperType(ETSObjectType *type);
 
     template <typename UType>
     UType HandleModulo(UType leftValue, UType rightValue);

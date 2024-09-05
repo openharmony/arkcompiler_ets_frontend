@@ -135,7 +135,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
             SetTsType(HandleInternalTypes(checker, name_->AsIdentifier()));
         }
 
-        if (TsType() == nullptr) {
+        if (TsTypeOrError() == nullptr) {
             checker::Type *baseType = checker->GetReferencedTypeBase(name_);
 
             ASSERT(baseType != nullptr);

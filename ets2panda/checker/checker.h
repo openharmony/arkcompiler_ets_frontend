@@ -254,24 +254,35 @@ class TypeStackElement {
 public:
     explicit TypeStackElement(Checker *checker, void *element, std::initializer_list<TypeErrorMessageElement> list,
                               const lexer::SourcePosition &pos)
-        : checker_(checker), element_(element)
+        : checker_(checker), element_(element), hasErrorChecker_(false)
     {
         if (!checker->typeStack_.insert(element).second) {
-            checker_->ThrowTypeError(list, pos);
+            checker_->LogTypeError(list, pos);
+            element_ = nullptr;
         }
     }
 
     explicit TypeStackElement(Checker *checker, void *element, std::string_view err, const lexer::SourcePosition &pos)
-        : checker_(checker), element_(element)
+        : checker_(checker), element_(element), hasErrorChecker_(false)
     {
         if (!checker->typeStack_.insert(element).second) {
-            checker_->ThrowTypeError(err, pos);
+            checker_->LogTypeError(err, pos);
+            element_ = nullptr;
         }
+    }
+
+    bool HasTypeError()
+    {
+        hasErrorChecker_ = true;
+        return element_ == nullptr;
     }
 
     ~TypeStackElement()
     {
-        checker_->typeStack_.erase(element_);
+        ASSERT(hasErrorChecker_);
+        if (element_ != nullptr) {
+            checker_->typeStack_.erase(element_);
+        }
     }
 
     NO_COPY_SEMANTIC(TypeStackElement);
@@ -280,6 +291,7 @@ public:
 private:
     Checker *checker_;
     void *element_;
+    bool hasErrorChecker_;
 };
 
 class ScopeContext {
