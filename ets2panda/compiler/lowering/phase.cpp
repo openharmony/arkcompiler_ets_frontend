@@ -198,8 +198,9 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
-        ctx->checker->ThrowTypeError({"Precondition check failed for ", util::StringView {Name()}},
-                                     lexer::SourcePosition {});
+        ctx->checker->LogTypeError({"Precondition check failed for ", util::StringView {Name()}},
+                                   lexer::SourcePosition {});
+        return false;
     }
 #endif
 
@@ -211,8 +212,9 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 
 #ifndef NDEBUG
     if (!Postcondition(ctx, program)) {
-        ctx->checker->ThrowTypeError({"Postcondition check failed for ", util::StringView {Name()}},
-                                     lexer::SourcePosition {});
+        ctx->checker->LogTypeError({"Postcondition check failed for ", util::StringView {Name()}},
+                                   lexer::SourcePosition {});
+        return false;
     }
 #endif
 

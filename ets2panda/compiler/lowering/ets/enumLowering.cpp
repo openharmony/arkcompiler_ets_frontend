@@ -400,21 +400,22 @@ void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDecla
 
 bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
+    bool isPerformedSuccess = true;
     if (program->Extension() != ScriptExtension::ETS) {
-        return true;
+        return isPerformedSuccess;
     }
 
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
-            Perform(ctx, extProg);
+            isPerformedSuccess &= Perform(ctx, extProg);
         }
     }
 
     checker_ = ctx->checker->AsETSChecker();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program_ = program;
-    program->Ast()->IterateRecursively([this](ir::AstNode *ast) -> void {
+    program->Ast()->IterateRecursively([this, &isPerformedSuccess](ir::AstNode *ast) -> void {
         if (ast->IsTSEnumDeclaration()) {
             auto *enumDecl = ast->AsTSEnumDeclaration();
 
@@ -424,11 +425,12 @@ bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *progr
             } else if (itemInit->IsStringLiteral()) {
                 CreateEnumStringClassFromEnumDeclaration(enumDecl);
             } else {
-                checker_->ThrowTypeError("Invalid enumeration value type.", enumDecl->Start());
+                checker_->LogTypeError("Invalid enumeration value type.", enumDecl->Start());
+                isPerformedSuccess = false;
             }
         }
     });
-    return true;
+    return isPerformedSuccess;
 }
 
 ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl,

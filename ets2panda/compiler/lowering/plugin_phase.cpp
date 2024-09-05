@@ -28,7 +28,8 @@ bool PluginPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Pro
     for (auto &plugin : *(ctx->plugins)) {
         (plugin.*methodCall_)(reinterpret_cast<es2panda_Context *>(ctx));
         if (ctx->state == ES2PANDA_STATE_ERROR) {
-            ctx->checker->ThrowTypeError(ctx->errorMessage, ctx->errorPos);
+            ctx->checker->LogTypeError(ctx->errorMessage, ctx->errorPos);
+            return false;
         }
     }
 
