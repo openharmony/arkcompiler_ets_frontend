@@ -68,11 +68,6 @@ export const structPropsSet: Set<string> = new Set();
  */
 export const enumPropsSet: Set<string> = new Set();
 
-/**
- * Collect the original name of export elements to ensure we can collect their properties
- */
-export const exportOriginalNameSet: Set<string> = new Set();
-
 function containViewPU(heritageClauses: NodeArray<HeritageClause>): boolean {
   if (!heritageClauses) {
     return false;
