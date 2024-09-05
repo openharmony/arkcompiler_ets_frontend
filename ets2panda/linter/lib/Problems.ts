@@ -124,6 +124,7 @@ export enum FaultID {
   SendableDecoratorLimited,
   SendableClosureExport,
   SharedModuleExportsWarning,
+  ObjectLiteralProperty,
   // this should always be last enum
   LAST_ID
 }

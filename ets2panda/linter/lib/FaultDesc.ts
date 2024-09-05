@@ -128,3 +128,4 @@ faultDesc[FaultID.SendableFunctionAsExpr] = 'Sendable function as expr';
 faultDesc[FaultID.SendableDecoratorLimited] = 'Sendable decorator limited';
 faultDesc[FaultID.SendableClosureExport] = 'Sendable closure export';
 faultDesc[FaultID.SharedModuleExportsWarning] = 'Shared module exports Warning';
+faultDesc[FaultID.ObjectLiteralProperty] = 'Object literal property';
