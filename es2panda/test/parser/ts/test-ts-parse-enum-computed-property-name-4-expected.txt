@@ -1,0 +1,1 @@
+SyntaxError: Computed property names are not allowed in enums [test-ts-parse-enum-computed-property-name-4.ts:18:16]

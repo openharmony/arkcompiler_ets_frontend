@@ -2571,6 +2571,9 @@ util::StringView Transformer::GetNameFromEnumMember(const ir::TSEnumMember *node
         name = node->Key()->AsIdentifier()->Name();
     } else if (node->Key()->IsStringLiteral()) {
         name = node->Key()->AsStringLiteral()->Str();
+    } else if (node->Key()->IsTemplateLiteral()) {
+        // Because enum does not support Tagged template literal, Quasis can only have one element
+        name = node->Key()->AsTemplateLiteral()->Quasis().front()->Cooked();
     }
     return name;
 }

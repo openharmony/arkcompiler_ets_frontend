@@ -44,6 +44,7 @@
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/privateIdentifier.h>
 #include <ir/expressions/superExpression.h>
+#include <ir/expressions/templateLiteral.h>
 #include <ir/expressions/typeArgumentsExpression.h>
 #include <ir/module/exportDefaultDeclaration.h>
 #include <ir/module/exportNamedDeclaration.h>
@@ -3468,14 +3469,20 @@ ir::Expression *ParserImpl::ParseEnumComputedPropertyKey(binder::EnumDecl *&decl
         memberKey->SetRange(lexer_->GetToken().Loc());
         lexer_->NextToken();
     } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
-        lexer_->NextToken();
+        lexer_->ResetTokenEnd();
+        const auto startPos = lexer_->Save();
+        lexer_->ScanString<LEX_CHAR_BACK_TICK>();
+        util::StringView cooked = lexer_->GetToken().String();
+        lexer_->Rewind(startPos);
+
         memberKey = ParsePrimaryExpression();
-        decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, isDeclare, lexer_->GetToken().String());
-        memberKey->SetRange(lexer_->GetToken().Loc());
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_BACK_TICK) {
-            ThrowSyntaxError("Unexpected token, expected '`'");
+        ArenaVector<ir::Expression *> expressions = memberKey->AsTemplateLiteral()->Expressions();
+        if (!expressions.empty()) {
+            ThrowSyntaxError("Computed property names are not allowed in enums");
         }
-        lexer_->NextToken();
+
+        decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, isDeclare, cooked);
+        memberKey->SetRange(lexer_->GetToken().Loc());
     } else {
         ThrowSyntaxError("Unexpected token in enum member");
     }
