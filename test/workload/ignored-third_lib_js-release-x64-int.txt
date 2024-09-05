@@ -6,6 +6,9 @@ dayjs_test
 #18340
 Drools_test
 
+#19231
+jBox2d_test
+
 #18372
 js-joda_test
 

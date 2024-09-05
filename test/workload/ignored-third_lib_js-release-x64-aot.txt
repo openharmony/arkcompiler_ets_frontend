@@ -9,6 +9,9 @@ Drools_test
 #18350
 jsbn_test
 
+#19247
+jsDiff_test
+
 #18372
 js-joda_test
 
