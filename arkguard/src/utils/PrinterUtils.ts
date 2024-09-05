@@ -75,17 +75,17 @@ abstract class BasePrinter {
 
   protected abstract getCurrentEventData(): string;
 
-  constructor(outputPath: string = "") {
+  constructor(outputPath: string = '') {
     this.outputPath = outputPath;
   }
 
-  setOutputPath(outputPath: string | undefined) {
+  setOutputPath(outputPath: string | undefined): void {
     this.outputPath = outputPath;
   }
 
   print(message: string): void {
-    if (this.outputPath && this.outputPath !== "") {
-      fs.appendFileSync(`${this.outputPath}`, message + "\n");
+    if (this.outputPath && this.outputPath !== '') {
+      fs.appendFileSync(`${this.outputPath}`, message + '\n');
     } else {
       console.log(message);
     }
@@ -101,7 +101,7 @@ export class TimeTracker extends BasePrinter {
   private eventStack: Map<string, TimeAndMemInfo> = new Map<string, TimeAndMemInfo>();
   private filesTimeSum: number = 0;
   private maxTimeUsage = 0;
-  private maxTimeFile = "";
+  private maxTimeFile = '';
   private maxMemoryUsage: number = 0;
   private maxMemoryFile: string = '';
 
@@ -120,7 +120,7 @@ export class TimeTracker extends BasePrinter {
     }
 
     const eventStartTime = this.eventStack.get(eventName).start;
-    const duration = (Date.now() - eventStartTime)/MILLISECOND_TO_SECOND;
+    const duration = (Date.now() - eventStartTime) / MILLISECOND_TO_SECOND;
     const eventEndMemory = process.memoryUsage().heapUsed;
     const eventStartMemory = this.eventStack.get(eventName).startMemory;
     const memoryUsage = eventEndMemory - eventStartMemory;
@@ -154,9 +154,9 @@ export class TimeTracker extends BasePrinter {
       this.eventStack.get(eventName).duration = this.filesTimeSum;
       this.outputData();
       const maxTimeUsage = this.maxTimeUsage.toFixed(SIG_FIGS);
-      const maxMemoryUsage = (this.maxMemoryUsage/BYTE_TO_MB).toFixed(SIG_FIGS);
-      this.print(`Max time cost: ${this.maxTimeFile}: ${maxTimeUsage}s`)
-      this.print(`Max memory usage: ${this.maxMemoryFile}: ${maxMemoryUsage}MB\n`)
+      const maxMemoryUsage = (this.maxMemoryUsage / BYTE_TO_MB).toFixed(SIG_FIGS);
+      this.print(`Max time cost: ${this.maxTimeFile}: ${maxTimeUsage}s`);
+      this.print(`Max memory usage: ${this.maxMemoryFile}: ${maxMemoryUsage}MB\n`);
     }
 
     if ((eventName === EventList.CREATE_PRINTER)) {
@@ -165,14 +165,14 @@ export class TimeTracker extends BasePrinter {
   }
 
   getCurrentEventData(): string {
-    let eventData = "";
+    let eventData = '';
     for (const eventName of this.eventStack.keys()) {
-      let depth = eventList.get(eventName)?? 0;
+      let depth = eventList.get(eventName) ?? 0;
       let eventInfo = this.eventStack.get(eventName);
       const duration = eventInfo.duration;
-      const startMemory = eventInfo.startMemory/BYTE_TO_MB;
-      const endMemory = eventInfo.endMemory/BYTE_TO_MB;
-      const memoryUsage = eventInfo.memoryUsage/BYTE_TO_MB;
+      const startMemory = eventInfo.startMemory / BYTE_TO_MB;
+      const endMemory = eventInfo.endMemory / BYTE_TO_MB;
+      const memoryUsage = eventInfo.memoryUsage / BYTE_TO_MB;
       eventData += this.formatEvent(eventName, duration, startMemory, endMemory, memoryUsage, depth);
     }
     return eventData;
@@ -183,9 +183,9 @@ export class TimeTracker extends BasePrinter {
     const indent = INDENT.repeat(depth);
     const formattedDuration = duration.toFixed(SIG_FIGS) + 's';
     const formatttedStartMemory = startMemory.toFixed(SIG_FIGS) + 'MB';
-    const formatttedEndMemory  = endMemory.toFixed(SIG_FIGS) + 'MB';
-    const formatttedMemoryUsage  = memoryUsage.toFixed(SIG_FIGS) + 'MB';
-    return `${indent}${eventName}: timeCost:${formattedDuration} startMemory:${formatttedStartMemory} `+
+    const formatttedEndMemory = endMemory.toFixed(SIG_FIGS) + 'MB';
+    const formatttedMemoryUsage = memoryUsage.toFixed(SIG_FIGS) + 'MB';
+    return `${indent}${eventName}: timeCost:${formattedDuration} startMemory:${formatttedStartMemory} ` + 
     `endMemory:${formatttedEndMemory} memoryUsage:${formatttedMemoryUsage}\n`;
   }
 }
@@ -203,9 +203,9 @@ export class TimeSumPrinter extends BasePrinter {
   }
 
   getCurrentEventData(): string {
-    let eventData = "";
+    let eventData = '';
     for (const eventName of this.eventSum.keys()) {
-      let depth = eventList.get(eventName)?? 0;
+      let depth = eventList.get(eventName) ?? 0;
       const duration = this.eventSum.get(eventName);
       eventData += this.formatEvent(eventName, duration, depth);
     }
