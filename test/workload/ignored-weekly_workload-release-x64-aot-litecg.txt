@@ -8,3 +8,6 @@ stanford-crypto-pbkdf2
 
 # Issue #18483
 typescript-compiler
+
+# Issue #19398
+raytrace
