@@ -20,3 +20,12 @@ stanford-crypto-sha256
 
 ##18897
 splay-latency
+
+#19072
+OfflineAssembler
+
+#19233
+regexp
+
+##18490
+mandreel

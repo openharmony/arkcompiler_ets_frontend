@@ -459,3 +459,18 @@ test262/data/other-tests/intl402/constructors-string-and-single-element-array.js
 
 #19254
 test262/data/other_tests/language/module-code/top-level-await/syntax/for-in-await-expr-regexp.js
+
+#19097
+test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A2.5_T1.js
+
+#19250
+test262/data/other_tests/language/module-code/top-level-await/syntax/for-await-expr-obj-literal.js
+
+#19253
+test262/data/other_tests/language/module-code/top-level-await/syntax/for-in-await-expr-literal-string.js
+
+#19250
+test262/data/other_tests/language/module-code/top-level-await/syntax/for-await-expr-obj-literal.js
+
+#19291
+test262/data/other_tests/language/module-code/top-level-await/syntax/try-await-expr-regexp.js
