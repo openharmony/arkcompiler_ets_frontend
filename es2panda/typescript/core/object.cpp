@@ -158,6 +158,7 @@ void Checker::ResolveUnionTypeMembers(UnionType *type)
     }
 
     ObjectType *mergedType = allocator_->New<ObjectLiteralType>(desc);
+    CHECK_NOT_NULL(mergedType);
     mergedType->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
     type->SetMergedObjectType(mergedType);
 }

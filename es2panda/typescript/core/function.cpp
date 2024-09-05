@@ -593,6 +593,7 @@ void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, bin
         }
 
         Signature *overloadSignature = allocator_->New<checker::Signature>(overloadSignatureInfo, returnType);
+        CHECK_NOT_NULL(overloadSignature);
         overloadSignature->SetNode(func);
         descWithOverload->callSignatures.push_back(overloadSignature);
     }

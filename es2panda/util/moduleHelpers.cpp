@@ -61,6 +61,8 @@ void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
         panda::pandasm::Record *entryRecord = new panda::pandasm::Record(recordName, langExt);
         entryRecord->field_list.emplace_back(std::move(entryNameField));
         prog->record_table.emplace(recordName, std::move(*entryRecord));
+        delete entryRecord;
+        entryRecord = nullptr;
     }
 
     auto *cache = allocator->New<util::ProgramCache>(hash, std::move(*prog), true);

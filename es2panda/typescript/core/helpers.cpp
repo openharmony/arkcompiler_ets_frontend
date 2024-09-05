@@ -411,6 +411,7 @@ Type *Checker::GetTypeOfVariable(binder::Variable *var)
         }
         case binder::DeclType::PARAM: {
             const ir::AstNode *declaration = FindAncestorUntilGivenType(decl->Node(), ir::AstNodeType::SCRIPT_FUNCTION);
+            CHECK_NOT_NULL(declaration);
 
             if (declaration->IsIdentifier()) {
                 const ir::Identifier *ident = declaration->AsIdentifier();
