@@ -556,6 +556,7 @@ void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, bin
     }
 
     ObjectDescriptor *descWithOverload = allocator_->New<ObjectDescriptor>(allocator_);
+    CHECK_NOT_NULL(descWithOverload);
 
     for (auto it = decl->Decls().begin(); it != decl->Decls().end() - 1; it++) {
         const ir::ScriptFunction *func = *it;
@@ -615,6 +616,7 @@ void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, bin
 
     if (!descWithOverload->callSignatures.empty()) {
         Type *funcType = allocator_->New<FunctionType>(descWithOverload);
+        CHECK_NOT_NULL(funcType);
         funcType->SetVariable(funcVar);
         funcVar->SetTsType(funcType);
 
