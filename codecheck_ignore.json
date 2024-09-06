@@ -1,0 +1,13 @@
+{
+    "arkguard": "*",
+    "es2panda": "*",
+    "ets2panda": "*",
+    "figures":  "*",
+    "test": "*",
+    "test262": "*",
+    "testTs": "*",
+    "test_ecma_bcopt": "*",
+    "legacy_bin": "*",
+    "merge_abc": "*"
+}
+
