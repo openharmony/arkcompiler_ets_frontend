@@ -15,6 +15,9 @@ js-joda_test
 #19104
 hi-base32_test
 
+#18425
+gson_test
+
 #18383
 memory-cache_test
 

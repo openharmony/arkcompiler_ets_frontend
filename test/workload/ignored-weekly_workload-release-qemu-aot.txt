@@ -16,6 +16,9 @@ json-stringify-inspector
 #18746
 LuaJSFight
 
+#19072
+OfflineAssembler
+
 #19008
 regex-dna
 
