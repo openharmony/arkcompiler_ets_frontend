@@ -10,8 +10,5 @@ dayjs_test
 #18340
 Drools_test
 
-#18372
-js-joda_test
-
 #18383
 memory-cache_test

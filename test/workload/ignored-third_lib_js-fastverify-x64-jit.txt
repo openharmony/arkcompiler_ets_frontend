@@ -6,9 +6,6 @@ dayjs_test
 #18340
 Drools_test
 
-#18517
-js-joda_test
-
 #18340
 jmespath_test
 

@@ -26,7 +26,6 @@ eventEmitter3_test
 dom4j_test
 pcx_test
 qrcodegen_test
-js-joda_test
 metaphone_test
 zxing_test
 jsonBigint_test
