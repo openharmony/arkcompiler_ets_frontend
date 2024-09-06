@@ -1166,6 +1166,7 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
         expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
         if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
             expr->Signature()->Function()->HasBody()) {
+            checker::ScopeContext scopeCtx(checker, expr->Signature()->Function()->Body()->Scope());
             checker->CollectReturnStatements(expr->Signature()->Function());
         }
         returnType = expr->Signature()->ReturnType();
