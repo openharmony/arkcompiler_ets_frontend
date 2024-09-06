@@ -30,8 +30,7 @@ pcx_test
 #18437
 zxing_test
 
-#18331
-validator_test
+
 
 #18546
 jBox2d_test

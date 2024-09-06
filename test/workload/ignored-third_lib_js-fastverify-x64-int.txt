@@ -15,9 +15,6 @@ js-joda_test
 #18342
 mathjs_test
 
-#18331
-validator_test
-
 #19106
 memory-cache_test
 
