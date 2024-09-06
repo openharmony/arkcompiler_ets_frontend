@@ -34,6 +34,7 @@ import {
 } from './utils/consts/ArktsIgnorePaths';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { pathContainsDirectory } from './utils/functions/PathHelper';
+import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles;
@@ -85,7 +86,6 @@ function countProblems(linter: TypeScriptLinter | InteropTypescriptLinter): [num
 
 export function lint(options: LintOptions): LintRunResult {
   const cmdOptions = options.cmdOptions;
-  const cancellationToken = options.cancellationToken;
   const tscCompiledProgram = options.tscCompiledProgram;
   const tsProgram = tscCompiledProgram.getProgram();
 
@@ -103,12 +103,13 @@ export function lint(options: LintOptions): LintRunResult {
   }
 
   const tscStrictDiagnostics = getTscDiagnostics(tscCompiledProgram, srcFiles);
+  LibraryTypeCallDiagnosticChecker.rebuildTscDiagnostics(tscStrictDiagnostics);
   const linter = options.isEtsFile ?
     new TypeScriptLinter(
       tsProgram.getTypeChecker(),
       cmdOptions.enableAutofix,
       cmdOptions.arkts2,
-      cancellationToken,
+      options.cancellationToken,
       options.incrementalLintInfo,
       tscStrictDiagnostics,
       options.reportAutofixCb,

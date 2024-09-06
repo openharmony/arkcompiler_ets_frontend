@@ -16,6 +16,7 @@
 /* eslint prefer-named-capture-group: 0 */
 
 import type * as ts from 'typescript';
+import { TypeScriptLinter } from '../../TypeScriptLinter';
 import type { DiagnosticChecker } from './DiagnosticChecker';
 
 /*
@@ -36,6 +37,17 @@ export const ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE =
   /^Argument of type '(.*)\bnull\b(.*)' is not assignable to parameter of type '.*'\.$/;
 export const ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE =
   /^Argument of type '(.*)\bundefined\b(.*)' is not assignable to parameter of type '.*'\.$/;
+export const TYPE = 'Type';
+export const IS_NOT_ASSIGNABLE_TO_TYPE = 'is not assignable to type';
+export const ARGUMENT_OF_TYPE = 'Argument of type';
+export const IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE = 'is not assignable to parameter of type';
+
+export enum ErrorType {
+  NO_ERROR,
+  UNKNOW,
+  NULL,
+  UNDEFINED
+}
 
 export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
   inLibCall: boolean = false;
@@ -63,33 +75,32 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
     return true;
   }
 
-  checkMessageChain(chain: ts.DiagnosticMessageChain): boolean {
+  static checkMessageChain(chain: ts.DiagnosticMessageChain, inLibCall: boolean): ErrorType {
     if (chain.code === TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE) {
       if (chain.messageText.match(TYPE_UNKNOWN_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
-        return false;
+        return ErrorType.UNKNOW;
       }
-      if (this.inLibCall && chain.messageText.match(TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
-        return false;
+      if (inLibCall && chain.messageText.match(TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
+        return ErrorType.UNDEFINED;
       }
-      if (this.inLibCall && chain.messageText.match(TYPE_NULL_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
-        return false;
+      if (inLibCall && chain.messageText.match(TYPE_NULL_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
+        return ErrorType.NULL;
       }
     }
     if (chain.code === ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE) {
       if (
-        this.inLibCall &&
+        inLibCall &&
         chain.messageText.match(ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)
       ) {
-        return false;
+        return ErrorType.UNDEFINED;
       }
-      if (
-        this.inLibCall &&
-        chain.messageText.match(ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)
-      ) {
-        return false;
+      if (inLibCall && chain.messageText.match(ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)) {
+        return ErrorType.NULL;
       }
     }
-    return chain.next === undefined ? true : this.checkMessageChain(chain.next[0]);
+    return chain.next === undefined ?
+      ErrorType.NO_ERROR :
+      LibraryTypeCallDiagnosticChecker.checkMessageChain(chain.next[0], inLibCall);
   }
 
   checkFilteredDiagnosticMessages(msgText: ts.DiagnosticMessageChain | string): boolean {
@@ -146,10 +157,76 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
       return this.checkMessageText(msgText);
     }
 
-    if (!this.checkMessageChain(msgText)) {
+    if (LibraryTypeCallDiagnosticChecker.checkMessageChain(msgText, this.inLibCall) !== ErrorType.NO_ERROR) {
       this.diagnosticMessages.push(msgText);
       return false;
     }
     return true;
+  }
+
+  static rebuildTscDiagnostics(tscStrictDiagnostics: Map<string, ts.Diagnostic[]>): void {
+    if (tscStrictDiagnostics.size === 0) {
+      return;
+    }
+
+    const diagnosticMessageChainArr: ts.Diagnostic[] = [];
+    const strictArr: ts.Diagnostic[] = [];
+    tscStrictDiagnostics.forEach((strict) => {
+      if (strict.length === 0) {
+        return;
+      }
+
+      for (let i = 0; i < strict.length; i++) {
+        if (typeof strict[i].messageText === 'string') {
+          strictArr.push(strict[i]);
+        } else {
+          diagnosticMessageChainArr.push(strict[i]);
+        }
+      }
+    });
+
+    if (diagnosticMessageChainArr.length === 0 || strictArr.length === 0) {
+      return;
+    }
+
+    const textSet: Set<string> = new Set<string>();
+    const unknownSet: Set<string> = new Set<string>();
+    diagnosticMessageChainArr.forEach((item) => {
+      const diagnosticMessageChain = item.messageText as ts.DiagnosticMessageChain;
+      const isAllowFilter: ErrorType = LibraryTypeCallDiagnosticChecker.checkMessageChain(diagnosticMessageChain, true);
+      if (isAllowFilter === ErrorType.UNKNOW) {
+        LibraryTypeCallDiagnosticChecker.collectDiagnosticMessage(diagnosticMessageChain, unknownSet);
+        TypeScriptLinter.unknowDiagnosticCache.add(item);
+        return;
+      }
+      if (isAllowFilter !== ErrorType.NO_ERROR) {
+        LibraryTypeCallDiagnosticChecker.collectDiagnosticMessage(diagnosticMessageChain, textSet);
+        TypeScriptLinter.strictDiagnosticCache.add(item);
+      }
+    });
+    strictArr.forEach((item) => {
+      const messageText = item.messageText as string;
+      if (unknownSet.has(messageText)) {
+        TypeScriptLinter.unknowDiagnosticCache.add(item);
+      } else if (textSet.has(messageText)) {
+        TypeScriptLinter.strictDiagnosticCache.add(item);
+      }
+    });
+  }
+
+  static collectDiagnosticMessage(diagnosticMessageChain: ts.DiagnosticMessageChain, textSet: Set<string>): void {
+    const isTypeError = diagnosticMessageChain.code === TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE;
+    const typeText = isTypeError ?
+      diagnosticMessageChain.messageText :
+      diagnosticMessageChain.messageText.
+        replace(ARGUMENT_OF_TYPE, TYPE).
+        replace(IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE, IS_NOT_ASSIGNABLE_TO_TYPE);
+    const argumentText = isTypeError ?
+      diagnosticMessageChain.messageText.
+        replace(TYPE, ARGUMENT_OF_TYPE).
+        replace(IS_NOT_ASSIGNABLE_TO_TYPE, IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE) :
+      diagnosticMessageChain.messageText;
+    textSet.add(typeText);
+    textSet.add(argumentText);
   }
 }

@@ -14,6 +14,7 @@
  */
 
 import { TaskGroup, applyToUnknown, fooExecute } from "./dynamic_lib"
+import {CallbackType, callback} from "./oh_modules/ohos_lib"
 
 export declare function applyToUnknownETS(fn: (a: unknown) => void);
 
@@ -44,3 +45,6 @@ fooExecute(taskGroup).then((res: number[]) => {
 fooExecute(taskGroup).then((res: Array<number>) => {
     console.log(res);
 });
+
+fooLocal(callback);
+fooLocal(callback);
