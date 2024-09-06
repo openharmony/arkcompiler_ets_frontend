@@ -131,7 +131,9 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
             clone->SetParent(parent);
         }
 
-        clone->SetScope(scope_);
+        // Reset scope for clone
+        // Using old scopes with clone may lead to incorrect ast-structure
+        clone->SetScope(nullptr);
 
         return clone;
     }

@@ -198,6 +198,12 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
         resParams.push_back(newParam);
         varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
         i++;
+
+        if (newParam->TypeAnnotation()->IsETSFunctionType()) {
+            // Parameter can be a function with other parameters inside
+            // Restart varbinder to set correct scopes for inner parameters
+            InitScopesPhaseETS::RunExternalNode(newParam->TypeAnnotation(), varBinder);
+        }
     }
 
     return {resParams, varMap};
