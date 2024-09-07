@@ -27,6 +27,9 @@ pcx_test
 #19251
 pdfview_test
 
+#19478
+htmlParser2_test
+
 #18425
 gson_test
 
