@@ -214,6 +214,17 @@ public:
     {
         return isShared_;
     }
+
+    void SetModuleRecordFieldName(std::string moduleRecordFieldName)
+    {
+        moduleRecordFieldName_ = moduleRecordFieldName;
+    }
+
+    std::string ModuleRecordFieldName() const
+    {
+        return moduleRecordFieldName_;
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -238,6 +249,7 @@ private:
     bool useDefineSemantic_ {true};
     bool isShared_ {false};
     std::string targetApiSubVersion_ { util::Helpers::DEFAULT_SUB_API_VERSION };
+    std::string moduleRecordFieldName_;
 };
 
 }  // namespace panda::es2panda::parser
