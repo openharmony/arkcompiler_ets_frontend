@@ -1634,7 +1634,7 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
                 return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS | SETTER_FLAGS;
             }
 
-            auto const *targetType = assignmentExpr->Left()->TsType();
+            auto const *targetType = assignmentExpr->Left()->TsTypeOrError();
             if (targetType->IsETSObjectType() &&
                 targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
                 return FUNCTIONAL_FLAGS;

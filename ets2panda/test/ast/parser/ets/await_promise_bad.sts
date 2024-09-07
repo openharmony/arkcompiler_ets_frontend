@@ -19,3 +19,4 @@ async function foo(): Promise<Object> {
 }
 
 /* @@? 17:29 Error TypeError: 'await' expressions require Promise object as argument.  */
+/* @@? 18:12 Error TypeError: Type 'null' is not compatible with the enclosing method's return type 'Promise<Object> | Object'  */

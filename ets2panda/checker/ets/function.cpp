@@ -1620,8 +1620,10 @@ void ETSChecker::CheckOverride(Signature *signature)
 
 Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef)
 {
+    if (methodDef->TsTypeOrError()->IsTypeError()) {
+        return nullptr;
+    }
     ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
-
     for (auto *it : methodDef->TsType()->AsETSFunctionType()->CallSignatures()) {
         if (it->Function() == methodDef->Function()) {
             return it;

@@ -553,14 +553,14 @@ bool CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, 
     return true;
 }
 
-void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker::Type *argumentType,
+bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker::Type *argumentType,
                      ir::Expression *stArgument, bool isAsync)
 {
     if (funcReturnType->IsETSVoidType() || funcReturnType == checker->GlobalVoidType()) {
         if (argumentType != checker->GlobalVoidType()) {
             checker->LogTypeError("Unexpected return value, enclosing method return type is void.",
                                   stArgument->Start());
-            return;
+            return false;
         }
         if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType,
                                         stArgument->Start(), {},
@@ -568,9 +568,9 @@ void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
                  .IsAssignable()) {
             checker->LogTypeError({"Return statement type is not compatible with the enclosing method's return type."},
                                   stArgument->Start());
-            return;
+            return false;
         }
-        return;
+        return true;
     }
 
     if (isAsync && funcReturnType->IsETSObjectType() &&
@@ -579,7 +579,7 @@ void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
         checker::AssignmentContext(checker->Relation(), stArgument, argumentType, promiseArg, stArgument->Start(), {},
                                    checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW);
         if (checker->Relation()->IsTrue()) {
-            return;
+            return true;
         }
     }
 
@@ -591,7 +591,9 @@ void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
         checker->LogTypeError(
             {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
             stArgument->Start());
+        return false;
     }
+    return true;
 }
 
 void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
