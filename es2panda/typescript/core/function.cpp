@@ -615,6 +615,7 @@ void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, bin
 
     if (!descWithOverload->callSignatures.empty()) {
         Type *funcType = allocator_->New<FunctionType>(descWithOverload);
+        CHECK_NOT_NULL(funcType);
         funcType->SetVariable(funcVar);
         funcVar->SetTsType(funcType);
 
