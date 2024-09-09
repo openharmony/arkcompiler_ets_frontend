@@ -17,6 +17,8 @@
         {
             "line": 18,
             "column": 1,
+            "endLine": 18,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -31,6 +33,8 @@
         {
             "line": 22,
             "column": 1,
+            "endLine": 22,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -45,6 +49,8 @@
         {
             "line": 26,
             "column": 1,
+            "endLine": 26,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -59,6 +65,8 @@
         {
             "line": 29,
             "column": 6,
+            "endLine": 29,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -73,6 +81,8 @@
         {
             "line": 32,
             "column": 13,
+            "endLine": 32,
+            "endColumn": 15,
             "problem": "ForInStatement",
             "suggest": "",
             "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
@@ -80,6 +90,8 @@
         {
             "line": 32,
             "column": 6,
+            "endLine": 32,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -94,6 +106,8 @@
         {
             "line": 35,
             "column": 22,
+            "endLine": 35,
+            "endColumn": 25,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -108,6 +122,8 @@
         {
             "line": 38,
             "column": 6,
+            "endLine": 38,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -122,6 +138,8 @@
         {
             "line": 40,
             "column": 1,
+            "endLine": 40,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -129,6 +147,8 @@
         {
             "line": 40,
             "column": 5,
+            "endLine": 40,
+            "endColumn": 23,
             "problem": "DestructuringDeclaration",
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
@@ -136,6 +156,8 @@
         {
             "line": 40,
             "column": 21,
+            "endLine": 40,
+            "endColumn": 22,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
@@ -143,6 +165,8 @@
         {
             "line": 42,
             "column": 1,
+            "endLine": 42,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -157,6 +181,8 @@
         {
             "line": 42,
             "column": 14,
+            "endLine": 42,
+            "endColumn": 17,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -164,6 +190,8 @@
         {
             "line": 44,
             "column": 1,
+            "endLine": 44,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -178,6 +206,8 @@
         {
             "line": 46,
             "column": 9,
+            "endLine": 46,
+            "endColumn": 12,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -192,6 +222,8 @@
         {
             "line": 49,
             "column": 1,
+            "endLine": 49,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -199,6 +231,8 @@
         {
             "line": 49,
             "column": 12,
+            "endLine": 49,
+            "endColumn": 91,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
@@ -206,6 +240,8 @@
         {
             "line": 49,
             "column": 12,
+            "endLine": 49,
+            "endColumn": 91,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
@@ -213,6 +249,8 @@
         {
             "line": 51,
             "column": 1,
+            "endLine": 51,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -220,6 +258,8 @@
         {
             "line": 51,
             "column": 13,
+            "endLine": 51,
+            "endColumn": 36,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -234,6 +274,8 @@
         {
             "line": 53,
             "column": 1,
+            "endLine": 53,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -241,6 +283,8 @@
         {
             "line": 53,
             "column": 13,
+            "endLine": 53,
+            "endColumn": 26,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
@@ -248,6 +292,8 @@
         {
             "line": 56,
             "column": 1,
+            "endLine": 56,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -262,6 +308,8 @@
         {
             "line": 56,
             "column": 20,
+            "endLine": 56,
+            "endColumn": 23,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -269,6 +317,8 @@
         {
             "line": 56,
             "column": 32,
+            "endLine": 56,
+            "endColumn": 56,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -283,6 +333,8 @@
         {
             "line": 58,
             "column": 1,
+            "endLine": 58,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "autofix": [
                 {
@@ -297,6 +349,8 @@
         {
             "line": 58,
             "column": 13,
+            "endLine": 58,
+            "endColumn": 37,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -311,6 +365,8 @@
         {
             "line": 58,
             "column": 39,
+            "endLine": 58,
+            "endColumn": 42,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -318,6 +374,8 @@
         {
             "line": 58,
             "column": 51,
+            "endLine": 58,
+            "endColumn": 64,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -332,6 +390,8 @@
         {
             "line": 61,
             "column": 6,
+            "endLine": 61,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -339,6 +399,8 @@
         {
             "line": 63,
             "column": 1,
+            "endLine": 63,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -346,6 +408,8 @@
         {
             "line": 63,
             "column": 19,
+            "endLine": 63,
+            "endColumn": 22,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -353,6 +417,8 @@
         {
             "line": 65,
             "column": 1,
+            "endLine": 65,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -360,6 +426,8 @@
         {
             "line": 65,
             "column": 5,
+            "endLine": 65,
+            "endColumn": 8,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -367,6 +435,8 @@
         {
             "line": 65,
             "column": 10,
+            "endLine": 65,
+            "endColumn": 13,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -374,6 +444,8 @@
         {
             "line": 65,
             "column": 15,
+            "endLine": 65,
+            "endColumn": 18,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -381,6 +453,8 @@
         {
             "line": 65,
             "column": 20,
+            "endLine": 65,
+            "endColumn": 23,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -388,6 +462,8 @@
         {
             "line": 65,
             "column": 24,
+            "endLine": 65,
+            "endColumn": 27,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -395,6 +471,8 @@
         {
             "line": 68,
             "column": 1,
+            "endLine": 68,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -402,6 +480,8 @@
         {
             "line": 68,
             "column": 5,
+            "endLine": 68,
+            "endColumn": 8,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -409,6 +489,8 @@
         {
             "line": 68,
             "column": 21,
+            "endLine": 68,
+            "endColumn": 24,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -416,6 +498,8 @@
         {
             "line": 68,
             "column": 25,
+            "endLine": 68,
+            "endColumn": 28,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -423,6 +507,8 @@
         {
             "line": 71,
             "column": 14,
+            "endLine": 71,
+            "endColumn": 17,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -430,6 +516,8 @@
         {
             "line": 71,
             "column": 18,
+            "endLine": 71,
+            "endColumn": 21,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -437,6 +525,8 @@
         {
             "line": 71,
             "column": 23,
+            "endLine": 71,
+            "endColumn": 26,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -444,6 +534,8 @@
         {
             "line": 71,
             "column": 28,
+            "endLine": 71,
+            "endColumn": 31,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -451,6 +543,8 @@
         {
             "line": 73,
             "column": 6,
+            "endLine": 73,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -458,6 +552,8 @@
         {
             "line": 76,
             "column": 14,
+            "endLine": 76,
+            "endColumn": 16,
             "problem": "ForInStatement",
             "suggest": "",
             "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
@@ -465,6 +561,8 @@
         {
             "line": 76,
             "column": 6,
+            "endLine": 76,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -472,6 +570,8 @@
         {
             "line": 79,
             "column": 6,
+            "endLine": 79,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -479,6 +579,8 @@
         {
             "line": 82,
             "column": 24,
+            "endLine": 82,
+            "endColumn": 27,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -486,6 +588,8 @@
         {
             "line": 86,
             "column": 6,
+            "endLine": 86,
+            "endColumn": 9,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -493,6 +597,8 @@
         {
             "line": 89,
             "column": 24,
+            "endLine": 89,
+            "endColumn": 27,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -500,6 +606,8 @@
         {
             "line": 89,
             "column": 28,
+            "endLine": 89,
+            "endColumn": 31,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -507,6 +615,8 @@
         {
             "line": 91,
             "column": 1,
+            "endLine": 91,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -514,6 +624,8 @@
         {
             "line": 91,
             "column": 5,
+            "endLine": 91,
+            "endColumn": 14,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -521,6 +633,8 @@
         {
             "line": 93,
             "column": 1,
+            "endLine": 93,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -528,6 +642,8 @@
         {
             "line": 93,
             "column": 5,
+            "endLine": 93,
+            "endColumn": 21,
             "problem": "DestructuringDeclaration",
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
@@ -535,6 +651,8 @@
         {
             "line": 93,
             "column": 19,
+            "endLine": 93,
+            "endColumn": 20,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
@@ -542,6 +660,8 @@
         {
             "line": 95,
             "column": 1,
+            "endLine": 95,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -549,6 +669,8 @@
         {
             "line": 95,
             "column": 5,
+            "endLine": 95,
+            "endColumn": 26,
             "problem": "DestructuringDeclaration",
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
@@ -556,6 +678,8 @@
         {
             "line": 95,
             "column": 24,
+            "endLine": 95,
+            "endColumn": 25,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
@@ -563,6 +687,8 @@
         {
             "line": 97,
             "column": 1,
+            "endLine": 97,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -570,6 +696,8 @@
         {
             "line": 99,
             "column": 26,
+            "endLine": 99,
+            "endColumn": 29,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -577,6 +705,8 @@
         {
             "line": 102,
             "column": 12,
+            "endLine": 102,
+            "endColumn": 15,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -584,6 +714,8 @@
         {
             "line": 108,
             "column": 13,
+            "endLine": 108,
+            "endColumn": 16,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -591,6 +723,8 @@
         {
             "line": 110,
             "column": 20,
+            "endLine": 110,
+            "endColumn": 23,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -598,6 +732,8 @@
         {
             "line": 110,
             "column": 24,
+            "endLine": 110,
+            "endColumn": 27,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -605,6 +741,8 @@
         {
             "line": 115,
             "column": 1,
+            "endLine": 115,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -612,6 +750,8 @@
         {
             "line": 115,
             "column": 14,
+            "endLine": 115,
+            "endColumn": 38,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -626,6 +766,8 @@
         {
             "line": 117,
             "column": 13,
+            "endLine": 117,
+            "endColumn": 27,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -640,6 +782,8 @@
         {
             "line": 117,
             "column": 22,
+            "endLine": 117,
+            "endColumn": 23,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
@@ -647,6 +791,8 @@
         {
             "line": 118,
             "column": 1,
+            "endLine": 118,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -654,6 +800,8 @@
         {
             "line": 118,
             "column": 19,
+            "endLine": 118,
+            "endColumn": 43,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -668,6 +816,8 @@
         {
             "line": 120,
             "column": 1,
+            "endLine": 120,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -675,6 +825,8 @@
         {
             "line": 120,
             "column": 28,
+            "endLine": 120,
+            "endColumn": 52,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -689,6 +841,8 @@
         {
             "line": 122,
             "column": 1,
+            "endLine": 122,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -696,6 +850,8 @@
         {
             "line": 122,
             "column": 5,
+            "endLine": 122,
+            "endColumn": 49,
             "problem": "DestructuringDeclaration",
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
@@ -703,6 +859,8 @@
         {
             "line": 122,
             "column": 25,
+            "endLine": 122,
+            "endColumn": 49,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -717,6 +875,8 @@
         {
             "line": 124,
             "column": 1,
+            "endLine": 124,
+            "endColumn": 4,
             "problem": "VarDeclaration",
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
@@ -724,6 +884,8 @@
         {
             "line": 124,
             "column": 5,
+            "endLine": 124,
+            "endColumn": 56,
             "problem": "DestructuringDeclaration",
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
@@ -731,6 +893,8 @@
         {
             "line": 124,
             "column": 32,
+            "endLine": 124,
+            "endColumn": 56,
             "problem": "FunctionExpression",
             "autofix": [
                 {
@@ -745,6 +909,8 @@
         {
             "line": 42,
             "column": 10,
+            "endLine": 42,
+            "endColumn": 12,
             "problem": "StrictDiagnostic",
             "suggest": "Variable 'b9' is used before being assigned.",
             "rule": "Variable 'b9' is used before being assigned."
@@ -752,6 +918,8 @@
         {
             "line": 56,
             "column": 13,
+            "endLine": 56,
+            "endColumn": 18,
             "problem": "StrictDiagnostic",
             "suggest": "Variable 'foo15' is used before being assigned.",
             "rule": "Variable 'foo15' is used before being assigned."
@@ -759,6 +927,8 @@
         {
             "line": 76,
             "column": 27,
+            "endLine": 76,
+            "endColumn": 30,
             "problem": "StrictDiagnostic",
             "suggest": "Variable 'a23' is used before being assigned.",
             "rule": "Variable 'a23' is used before being assigned."
@@ -766,6 +936,8 @@
         {
             "line": 79,
             "column": 28,
+            "endLine": 79,
+            "endColumn": 31,
             "problem": "StrictDiagnostic",
             "suggest": "Variable 'a24' is used before being assigned.",
             "rule": "Variable 'a24' is used before being assigned."
@@ -773,6 +945,8 @@
         {
             "line": 86,
             "column": 35,
+            "endLine": 86,
+            "endColumn": 44,
             "problem": "StrictDiagnostic",
             "suggest": "Argument of type '() => never' is not assignable to parameter of type 'never'.",
             "rule": "Argument of type '() => never' is not assignable to parameter of type 'never'."
@@ -780,6 +954,8 @@
         {
             "line": 97,
             "column": 11,
+            "endLine": 97,
+            "endColumn": 14,
             "problem": "StrictDiagnostic",
             "suggest": "Variable 'b31' is used before being assigned.",
             "rule": "Variable 'b31' is used before being assigned."
@@ -787,6 +963,8 @@
         {
             "line": 120,
             "column": 13,
+            "endLine": 120,
+            "endColumn": 18,
             "problem": "StrictDiagnostic",
             "suggest": "Variable 'foo41' is used before being assigned.",
             "rule": "Variable 'foo41' is used before being assigned."

@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -20,6 +20,18 @@
             "endLine": 17,
             "endColumn": 47,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructObj_1",
+                    "start": 633,
+                    "end": 644
+                },
+                {
+                    "replacementText": "let a = GeneratedDestructObj_1.a;let b = GeneratedDestructObj_1.b;let c = GeneratedDestructObj_1.c;",
+                    "start": 676,
+                    "end": 676
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -56,6 +68,18 @@
             "endLine": 19,
             "endColumn": 68,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructObj_2",
+                    "start": 742,
+                    "end": 768
+                },
+                {
+                    "replacementText": "let a3 = GeneratedDestructObj_2.a3;let { c3, d3: e3 } = GeneratedDestructObj_2.b3;",
+                    "start": 806,
+                    "end": 806
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -128,6 +152,18 @@
             "endLine": 25,
             "endColumn": 11,
             "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 941,
+                    "end": 941,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    a5: number;\n    b5: number;\n}\n"
+                },
+                {
+                    "start": 973,
+                    "end": 989,
+                    "replacementText": "({ a5: 1, b5: 2 } as GeneratedObjectLiteralInterface_1)"
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -137,6 +173,18 @@
             "endLine": 27,
             "endColumn": 29,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructObj_3",
+                    "start": 997,
+                    "end": 1007
+                },
+                {
+                    "replacementText": "let a5 = GeneratedDestructObj_3.a5;let b5 = GeneratedDestructObj_3.b5;",
+                    "start": 1022,
+                    "end": 1022
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -146,6 +194,18 @@
             "endLine": 30,
             "endColumn": 34,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructArray_1",
+                    "start": 1063,
+                    "end": 1075
+                },
+                {
+                    "replacementText": "const a6 = GeneratedDestructArray_1[0];const b6 = GeneratedDestructArray_1[1];const c6 = GeneratedDestructArray_1[2];",
+                    "start": 1091,
+                    "end": 1091
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -182,6 +242,18 @@
             "endLine": 35,
             "endColumn": 64,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructArray_2",
+                    "start": 1278,
+                    "end": 1308
+                },
+                {
+                    "replacementText": "const [a1, a2] = GeneratedDestructArray_2[0];const [b1, b2] = GeneratedDestructArray_2[1];const [c1, c2] = GeneratedDestructArray_2[2];",
+                    "start": 1336,
+                    "end": 1336
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -191,6 +263,18 @@
             "endLine": 36,
             "endColumn": 85,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructArray_3",
+                    "start": 1345,
+                    "end": 1387
+                },
+                {
+                    "replacementText": "const [a1, a2, a3] = GeneratedDestructArray_3[0];const [b1, b2, b3] = GeneratedDestructArray_3[1];const [c1, c2, c3] = GeneratedDestructArray_3[2];",
+                    "start": 1424,
+                    "end": 1424
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -218,6 +302,18 @@
             "endLine": 43,
             "endColumn": 28,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructArray_4",
+                    "start": 1593,
+                    "end": 1603
+                },
+                {
+                    "replacementText": "let a12 = GeneratedDestructArray_4[0];let b12 = GeneratedDestructArray_4[1];",
+                    "start": 1617,
+                    "end": 1617
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -308,6 +404,18 @@
             "endLine": 56,
             "endColumn": 55,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructObj_4",
+                    "start": 2031,
+                    "end": 2055
+                },
+                {
+                    "replacementText": "let a18 = GeneratedDestructObj_4.a18;let [c18, d18] = GeneratedDestructObj_4.b18;",
+                    "start": 2082,
+                    "end": 2082
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -326,6 +434,18 @@
             "endLine": 63,
             "endColumn": 52,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructObj_5",
+                    "start": 2097,
+                    "end": 2151
+                },
+                {
+                    "replacementText": "let a19 = GeneratedDestructObj_5.a19;let {\n    c19,\n    d19: [e19, f19],\n  } = GeneratedDestructObj_5.b19;",
+                    "start": 2202,
+                    "end": 2202
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
@@ -452,6 +572,18 @@
             "endLine": 85,
             "endColumn": 26,
             "problem": "DestructuringDeclaration",
+            "autofix": [
+                {
+                    "replacementText": "GeneratedDestructObj_6",
+                    "start": 2749,
+                    "end": 2760
+                },
+                {
+                    "replacementText": "let a = GeneratedDestructObj_6.a;let b = GeneratedDestructObj_6.b;let s = GeneratedDestructObj_6.s;",
+                    "start": 2771,
+                    "end": 2771
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         }

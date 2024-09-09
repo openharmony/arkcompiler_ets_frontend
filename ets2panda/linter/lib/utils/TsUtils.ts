@@ -1839,6 +1839,117 @@ export class TsUtils {
     });
   }
 
+  // Check if the destructuring assignment has default values
+  static destructuringAssignmentHasDefaultValue(node: ts.AssignmentPattern): boolean {
+    if (ts.isArrayLiteralExpression(node)) {
+      return node.elements.some((x) => {
+        if (ts.isBinaryExpression(x) && x.right) {
+          return true;
+        }
+        if (ts.isObjectLiteralExpression(x) || ts.isArrayLiteralExpression(x)) {
+          return TsUtils.destructuringAssignmentHasDefaultValue(x);
+        }
+        return false;
+      });
+    }
+
+    return node.properties.some((x) => {
+      if (ts.isShorthandPropertyAssignment(x) && x.equalsToken) {
+        return true;
+      }
+      if (
+        ts.isPropertyAssignment(x) &&
+        (ts.isObjectLiteralExpression(x.initializer) || ts.isArrayLiteralExpression(x.initializer))
+      ) {
+        return TsUtils.destructuringAssignmentHasDefaultValue(x.initializer);
+      }
+      return false;
+    });
+  }
+
+  // Check if the destructuring declaration has default values
+  static destructuringDeclarationHasDefaultValue(node: ts.BindingPattern): boolean {
+    return node.elements.some((x) => {
+      if (ts.isBindingElement(x)) {
+        if (x.initializer) {
+          return true;
+        }
+        if (ts.isArrayBindingPattern(x.name) || ts.isObjectBindingPattern(x.name)) {
+          return TsUtils.destructuringDeclarationHasDefaultValue(x.name);
+        }
+      }
+      return false;
+    });
+  }
+
+  // Check that the dimensions of the destruct array are the same
+  static isSameDimension(arr: ts.Node): boolean | undefined {
+    if (ts.isArrayLiteralExpression(arr)) {
+      let hasOneDimensional: boolean = false;
+      let hasMultipleDimensions: boolean = false;
+      const arrElements = arr.elements;
+      let maxlen: number = 0;
+      let minlen: number = 1000;
+      for (let i = 0; i < arrElements.length; i++) {
+        const e = arrElements[i] as ts.Node;
+        if (!ts.isArrayLiteralExpression(e)) {
+          hasOneDimensional = true;
+        } else {
+          hasMultipleDimensions = true;
+          if (hasOneDimensional && hasMultipleDimensions) {
+            return false;
+          }
+          if (!this.isSameDimension(e)) {
+            return false;
+          }
+          maxlen = Math.max(e.elements.length, maxlen);
+          minlen = Math.min(e.elements.length, minlen);
+        }
+      }
+      if (hasOneDimensional && hasMultipleDimensions) {
+        return false;
+      } else if (hasOneDimensional && !hasMultipleDimensions) {
+        return true;
+      } else if (!hasOneDimensional && hasMultipleDimensions && maxlen === minlen) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  // if ArrayLiteralExpression has empty element, will be marked as not fixable
+  static checkArrayLiteralHasEmptyElement(node: ts.ArrayLiteralExpression): boolean {
+    return node.elements.some((x) => {
+      if (ts.isOmittedExpression(x)) {
+        return true;
+      }
+      if (ts.isArrayLiteralExpression(x)) {
+        if (x.elements.length === 0) {
+          return true;
+        }
+        return this.checkArrayLiteralHasEmptyElement(x);
+      }
+      return false;
+    });
+  }
+
+  // if ArrayBindingPattern has empty element, will be marked as not fixable
+  static checkArrayBindingHasEmptyElement(node: ts.ArrayBindingPattern): boolean {
+    return node.elements.some((x) => {
+      if (ts.isOmittedExpression(x)) {
+        return true;
+      }
+      if (ts.isBindingElement(x) && ts.isArrayBindingPattern(x.name)) {
+        if (x.name.elements.length === 0) {
+          return true;
+        }
+        return this.checkArrayBindingHasEmptyElement(x.name);
+      }
+      return false;
+    });
+  }
+
   static hasNestedObjectDestructuring(node: ts.ArrayBindingOrAssignmentPattern): boolean {
     if (ts.isArrayLiteralExpression(node)) {
       return node.elements.some((x) => {
@@ -2435,30 +2546,90 @@ export class TsUtils {
 
   static declarationNameExists(srcFile: ts.SourceFile, name: string): boolean {
     return srcFile.statements.some((stmt) => {
-      if (!ts.isImportDeclaration(stmt)) {
-        return (
-          TsUtils.isDeclarationStatement(stmt) &&
-          stmt.name !== undefined &&
-          ts.isIdentifier(stmt.name) &&
-          stmt.name.text === name
-        );
-      }
+      return (
+        TsUtils.checkDeclarationInBlockStatement(stmt, name) ||
+        TsUtils.checkImportDeclaration(stmt, name) ||
+        TsUtils.checkDeclarationInLoopStatement(stmt, name) ||
+        TsUtils.checkDeclarationInVariableStatement(stmt, name) ||
+        TsUtils.checkGeneralDeclaration(stmt, name)
+      );
+    });
+  }
 
+  static checkDeclarationInBlockStatement(stmt: ts.Statement, name: string): boolean {
+    if (ts.isBlock(stmt)) {
+      return stmt.statements.some((innerStmt) => {
+        return (
+          TsUtils.checkDeclarationInVariableStatement(innerStmt, name) ||
+          TsUtils.checkGeneralDeclaration(innerStmt, name)
+        );
+      });
+    }
+    return false;
+  }
+
+  static checkImportDeclaration(stmt: ts.Statement, name: string): boolean {
+    if (ts.isImportDeclaration(stmt)) {
       if (!stmt.importClause) {
         return false;
       }
-
-      if (!stmt.importClause.namedBindings) {
-        return stmt.importClause.name?.text === name;
+      if (stmt.importClause.namedBindings) {
+        if (ts.isNamespaceImport(stmt.importClause.namedBindings)) {
+          return stmt.importClause.namedBindings.name.text === name;
+        }
+        return stmt.importClause.namedBindings.elements.some((x) => {
+          return x.name.text === name;
+        });
       }
+      return stmt.importClause.name?.text === name;
+    }
+    return false;
+  }
 
-      if (ts.isNamespaceImport(stmt.importClause.namedBindings)) {
-        return stmt.importClause.namedBindings.name.text === name;
+  static checkDeclarationInLoopStatement(stmt: ts.Statement, name: string): boolean {
+    if (
+      ts.isForStatement(stmt) ||
+      ts.isWhileStatement(stmt) ||
+      ts.isDoStatement(stmt) ||
+      ts.isForOfStatement(stmt) ||
+      ts.isForInStatement(stmt)
+    ) {
+      if (ts.isBlock(stmt.statement)) {
+        return stmt.statement.statements.some((innerStmt) => {
+          return (
+            TsUtils.checkDeclarationInVariableStatement(innerStmt, name) ||
+            TsUtils.checkGeneralDeclaration(innerStmt, name)
+          );
+        });
       }
-      return stmt.importClause.namedBindings.elements.some((x) => {
-        return x.name.text === name;
+    }
+    return false;
+  }
+
+  static checkDeclarationInVariableStatement(stmt: ts.Statement, name: string): boolean {
+    if (ts.isVariableStatement(stmt)) {
+      return stmt.declarationList.declarations.some((decl) => {
+        return decl.name.getText() === name;
       });
-    });
+    }
+    return false;
+  }
+
+  static checkGeneralDeclaration(stmt: ts.Statement, name: string): boolean {
+    if (ts.isFunctionDeclaration(stmt)) {
+      return (
+        stmt.body!.statements.some((innerStmt) => {
+          return TsUtils.checkDeclarationInVariableStatement(innerStmt, name);
+        }) ||
+        stmt.name !== undefined && ts.isIdentifier(stmt.name) && stmt.name.text === name
+      );
+    }
+    return (
+      TsUtils.isDeclarationStatement(stmt) &&
+      stmt.name !== undefined &&
+      ts.isIdentifier(stmt.name) &&
+      stmt.name.text === name
+    );
   }
 
   static generateUniqueName(nameGenerator: NameGenerator, srcFile: ts.SourceFile): string | undefined {
