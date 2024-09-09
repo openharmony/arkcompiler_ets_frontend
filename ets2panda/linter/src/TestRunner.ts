@@ -184,7 +184,10 @@ function runTest(testDir: string, testFile: string, mode: Mode): boolean {
   const currentTestMode = TypeScriptLinter.testMode;
 
   const cmdOptions = parseArgs(testDir, testFile, mode);
-  const result = lint(compileLintOptions(cmdOptions));
+  const lintOptions = compileLintOptions(cmdOptions);
+  lintOptions.compatibleSdkVersion = '12';
+  lintOptions.compatibleSdkVersionStage = 'beta3';
+  const result = lint(lintOptions);
   const fileProblems = result.problemsInfos.get(path.normalize(cmdOptions.inputFiles[0]));
   if (fileProblems === undefined) {
     return true;

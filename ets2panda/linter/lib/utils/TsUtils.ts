@@ -2033,10 +2033,7 @@ export class TsUtils {
   }
 
   static hasSendableDecorator(decl: ts.ClassDeclaration | ts.FunctionDeclaration | ts.TypeAliasDeclaration): boolean {
-    const decorators = ts.getAllDecorators(decl);
-    return !!decorators?.some((x) => {
-      return TsUtils.getDecoratorName(x) === SENDABLE_DECORATOR;
-    });
+    return !!TsUtils.getSendableDecorator(decl);
   }
 
   static getNonSendableDecorators(
@@ -2045,6 +2042,15 @@ export class TsUtils {
     const decorators = ts.getAllDecorators(decl);
     return decorators?.filter((x) => {
       return TsUtils.getDecoratorName(x) !== SENDABLE_DECORATOR;
+    });
+  }
+
+  static getSendableDecorator(
+    decl: ts.ClassDeclaration | ts.FunctionDeclaration | ts.TypeAliasDeclaration
+  ): ts.Decorator | undefined {
+    const decorators = ts.getAllDecorators(decl);
+    return decorators?.find((x) => {
+      return TsUtils.getDecoratorName(x) === SENDABLE_DECORATOR;
     });
   }
 

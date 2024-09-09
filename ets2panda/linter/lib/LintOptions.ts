@@ -31,4 +31,6 @@ export interface LintOptions {
   isFileFromModuleCb?: IsFileFromModuleCallback;
   isEtsFileCb?: IsEtsFileCallback;
   isEtsFile?: boolean;
+  compatibleSdkVersion?: string;
+  compatibleSdkVersionStage?: string;
 }

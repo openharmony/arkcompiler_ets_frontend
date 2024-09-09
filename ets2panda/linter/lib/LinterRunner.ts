@@ -83,6 +83,7 @@ function countProblems(linter: TypeScriptLinter | InteropTypescriptLinter): [num
   return [errorNodesTotal, warningNodes];
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function lint(options: LintOptions): LintRunResult {
   const cmdOptions = options.cmdOptions;
   const cancellationToken = options.cancellationToken;
@@ -112,7 +113,9 @@ export function lint(options: LintOptions): LintRunResult {
       options.incrementalLintInfo,
       tscStrictDiagnostics,
       options.reportAutofixCb,
-      options.isEtsFileCb
+      options.isEtsFileCb,
+      options.compatibleSdkVersion,
+      options.compatibleSdkVersionStage
     ) :
     new InteropTypescriptLinter(
       tsProgram.getTypeChecker(),

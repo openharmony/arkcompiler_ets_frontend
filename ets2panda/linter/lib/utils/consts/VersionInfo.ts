@@ -13,17 +13,5 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
-
-export const SENDABLE_DECORATOR = 'Sendable';
-
-export const SENDABLE_DECORATOR_NODES = [
-  ts.SyntaxKind.ClassDeclaration,
-  ts.SyntaxKind.FunctionDeclaration,
-  ts.SyntaxKind.TypeAliasDeclaration
-];
-
-export const SENDABLE_CLOSURE_DECLS = [ts.SyntaxKind.ClassDeclaration, ts.SyntaxKind.FunctionDeclaration];
-
-export const SENDBALE_FUNCTION_START_VERSION = 12;
-export const SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12 = ['beta1', 'beta2'];
+export const DEFAULT_COMPATIBLE_SDK_VERSION = 12;
+export const DEFAULT_COMPATIBLE_SDK_VERSION_STAGE = 'beta1';
