@@ -1070,6 +1070,18 @@ static void CheckCallee(ETSChecker *checker, ir::CallExpression *expr)
     }
 }
 
+checker::Type *GetReturnTypeFromSignature(ir::CallExpression *expr, ETSChecker *checker)
+{
+    checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
+    expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
+    if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
+        expr->Signature()->Function()->HasBody()) {
+        checker->CollectReturnStatements(expr->Signature()->Function());
+    }
+    return expr->Signature()->ReturnType();
+    // NOTE(vpukhov): #14902 substituted signature is not updated
+}
+
 checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1114,14 +1126,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
 
     if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
-        checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
-        expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
-        if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
-            expr->Signature()->Function()->HasBody()) {
-            checker->CollectReturnStatements(expr->Signature()->Function());
-        }
-        returnType = expr->Signature()->ReturnType();
-        // NOTE(vpukhov): #14902 substituted signature is not updated
+        returnType = GetReturnTypeFromSignature(expr, checker);
     }
     expr->SetTsType(returnType);
     expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCallReturn(expr->Signature()));

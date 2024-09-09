@@ -1061,13 +1061,10 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         }
     }
 
-    if (classDef->IsGlobal()) {
+    if (classDef->IsGlobal() || classType->SuperType() == nullptr) {
         return;
     }
 
-    if (classType->SuperType() == nullptr) {
-        return;
-    }
     CheckConstructors(classDef, classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);

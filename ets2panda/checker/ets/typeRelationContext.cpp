@@ -36,17 +36,16 @@ bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
         ir::Expression *currentArrayElem = node->Elements()[index];
         auto *const currentArrayElementType = currentArrayElem->Check(relation->GetChecker()->AsETSChecker());
 
-        // clang-format off
         if (!AssignmentContext(relation, currentArrayElem,
                                currentArrayElem->Check(relation->GetChecker()->AsETSChecker()), target->ElementType(),
-                               currentArrayElem->Start(), {}, TypeRelationFlag::NO_THROW).IsAssignable()) {
-            relation->GetChecker()->LogTypeError({"Array element at index ", index, " with type '", currentArrayElementType,
-                                   "' is not compatible with the target array element type '", target->ElementType(),
-                                   "'"},
-                                  currentArrayElem->Start());
+                               currentArrayElem->Start(), {}, TypeRelationFlag::NO_THROW)
+                 .IsAssignable()) {
+            relation->GetChecker()->LogTypeError(
+                {"Array element at index ", index, " with type '", currentArrayElementType,
+                 "' is not compatible with the target array element type '", target->ElementType(), "'"},
+                currentArrayElem->Start());
             ok = false;
         }
-        // clang-format on
     }
     return ok;
 }
