@@ -6,6 +6,9 @@ dayjs_test
 #18340
 Drools_test
 
+#19478
+htmlParser2_test
+
 #18372
 js-joda_test
 
