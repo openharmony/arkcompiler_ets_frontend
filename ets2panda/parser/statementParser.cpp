@@ -648,6 +648,9 @@ ir::Statement *ParserImpl::ParseExpressionStatement(StatementParsingFlags flags)
             ThrowSyntaxError("A local class or interface declaration can not have access modifier",
                              startPos.GetToken().Start());
         }
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
+            ThrowSyntaxError("Annotation declaration can not have access modifier", startPos.GetToken().Start());
+        }
         lexer_->Rewind(startPos);
     }
 

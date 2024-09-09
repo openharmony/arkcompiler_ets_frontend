@@ -12,13 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@interface MyAnno {
-    testProperty1: string
-    testProperty2: number
+
+enum Color {Blue, Red, Green}
+
+@interface MyValue {
+    size: Color
+}
+@MyValue(Color.Blue)
+class A{
+    @MyValue(Color.Red)
+    foo(){}
 }
 
-@MyAnno()
-function main(): void {
-    
-}
-/* @@? 15:1 Error SyntaxError: Unexpected token '@'.  */
+@MyValue(Color.Green)
+function globalFoo(){}
+
+function main(){}

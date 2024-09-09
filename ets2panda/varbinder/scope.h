@@ -751,6 +751,29 @@ private:
     mutable uint32_t anonymousClassIdx_ {1};
 };
 
+class AnnotationScope : public ClassScope {
+public:
+    explicit AnnotationScope(ArenaAllocator *allocator, Scope *parent) : ClassScope(allocator, parent) {}
+
+    ScopeType Type() const override
+    {
+        return ScopeType::ANNOTATION;
+    }
+};
+
+class AnnotationParamScope : public ParamScope {
+public:
+    explicit AnnotationParamScope(ArenaAllocator *allocator, Scope *parent) : ParamScope(allocator, parent) {}
+
+    ScopeType Type() const override
+    {
+        return ScopeType::ANNOTATIONPARAMSCOPE;
+    }
+
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                         [[maybe_unused]] ScriptExtension extension) override;
+};
+
 class CatchParamScope : public ParamScope {
 public:
     explicit CatchParamScope(ArenaAllocator *allocator, Scope *parent) : ParamScope(allocator, parent) {}

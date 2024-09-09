@@ -21,7 +21,7 @@
 }
 
 // Annotation use:
-@ClassAuthor ({authorName: "Bob", authorAge: 35, testBool: False})
+@ClassAuthor ({authorName: "Bob", authorAge: 35, testBool: false})
 class MyClass {}
 
 function main(): void {

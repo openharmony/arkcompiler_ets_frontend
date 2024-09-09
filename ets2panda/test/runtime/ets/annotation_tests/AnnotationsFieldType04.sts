@@ -29,7 +29,7 @@
 
 // Annotation use:
 @ClassAuthor ({authorName: "Bob", authorAge: 35, testBool: false,
-               reviewers: ["Bob", "Jim", "Tom"], reviewersAge: [18, 21, 32]
+               reviewers: ["Bob", "Jim", "Tom"], reviewersAge: [18, 21, 32],
                testBools: [false, true, false]})
 @MyAnno ()
 class MyClass {}

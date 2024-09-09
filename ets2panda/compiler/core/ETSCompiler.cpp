@@ -1362,6 +1362,8 @@ void ETSCompiler::Compile(const ir::BreakStatement *st) const
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const {}
+void ETSCompiler::Compile([[maybe_unused]] const ir::AnnotationDeclaration *st) const {}
+void ETSCompiler::Compile([[maybe_unused]] const ir::AnnotationUsage *st) const {}
 
 static void CompileImpl(const ir::ContinueStatement *self, ETSGen *etsg)
 {

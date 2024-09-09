@@ -30,6 +30,7 @@
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/decorator.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/classDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
@@ -132,6 +133,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
             case ir::AstNodeType::TS_INTERFACE_DECLARATION:
             case ir::AstNodeType::TS_TYPE_PARAMETER:
             case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
+            case ir::AstNodeType::ANNOTATION_DECLARATION:
             case ir::AstNodeType::IMPORT_NAMESPACE_SPECIFIER: {
                 ident->SetVariable(res.variable);
                 return;
@@ -344,11 +346,22 @@ void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
     ResolveMethodDefinition(methodDef);
 }
 
+void ETSBinder::BuildAnnotationUsage(ir::AnnotationUsage *annoUsage)
+{
+    LookupTypeReference(annoUsage->AsAnnotationUsage()->Ident(), false);
+    for (auto *property : annoUsage->Properties()) {
+        ResolveReference(property);
+    }
+}
+
 void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
 {
     methodDef->ResolveReferences([this](auto *childNode) { ResolveReference(childNode); });
 
     auto *func = methodDef->Function();
+    for (auto *anno : func->Annotations()) {
+        ResolveReference(anno);
+    }
     if (methodDef->IsStatic() || func->IsStaticBlock()) {
         return;
     }
@@ -408,6 +421,9 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
 
     for (auto *impl : classDef->Implements()) {
         ResolveReference(impl);
+    }
+    for (auto *anno : classDef->Annotations()) {
+        ResolveReference(anno);
     }
 
     for (auto *stmt : classDef->Body()) {
@@ -803,6 +819,12 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         return true;
     }
 
+    if (var->Declaration()->Node()->IsAnnotationDeclaration() &&
+        var->Declaration()->Node()->AsAnnotationDeclaration()->Ident()->Name() != localName) {
+        ThrowError(importPath->Start(), "Can not rename annotation '" + var->Declaration()->Name().Mutf8() +
+                                            "' in export or import statements.");
+    }
+
     // The first part of the condition will be true, if something was given an alias when exported, but we try
     // to import it using its original name.
     if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias()) {
@@ -932,6 +954,10 @@ void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
         }
         case ir::AstNodeType::OBJECT_EXPRESSION: {
             BuildObjectExpression(childNode->AsObjectExpression());
+            break;
+        }
+        case ir::AstNodeType::ANNOTATION_USAGE: {
+            BuildAnnotationUsage(childNode->AsAnnotationUsage());
             break;
         }
         default: {

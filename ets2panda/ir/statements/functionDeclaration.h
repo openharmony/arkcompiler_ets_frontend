@@ -17,17 +17,30 @@
 #define ES2PANDA_IR_STATEMENT_FUNCTION_DECLARATION_H
 
 #include "ir/statement.h"
+#include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::ir {
 class ScriptFunction;
+class AnnotationUsage;
 
 class FunctionDeclaration : public Statement {
 public:
+    explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func,
+                                 ArenaVector<AnnotationUsage *> &&annotations, bool isAnonymous = false)
+        : Statement(AstNodeType::FUNCTION_DECLARATION),
+          decorators_(allocator->Adapter()),
+          func_(func),
+          isAnonymous_(isAnonymous),
+          annotations_(std::move(annotations))
+    {
+    }
+
     explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func, bool isAnonymous = false)
         : Statement(AstNodeType::FUNCTION_DECLARATION),
           decorators_(allocator->Adapter()),
           func_(func),
-          isAnonymous_(isAnonymous)
+          isAnonymous_(isAnonymous),
+          annotations_(allocator->Adapter())
     {
     }
 
@@ -56,6 +69,29 @@ public:
         return !inTs;
     }
 
+    [[nodiscard]] ArenaVector<ir::AnnotationUsage *> &Annotations() noexcept
+    {
+        return annotations_;
+    }
+
+    [[nodiscard]] const ArenaVector<ir::AnnotationUsage *> &Annotations() const noexcept
+    {
+        return annotations_;
+    }
+
+    void SetAnnotations(ArenaVector<ir::AnnotationUsage *> &&annotations)
+    {
+        annotations_ = std::move(annotations);
+        for (auto anno : annotations_) {
+            anno->SetParent(this);
+        }
+    }
+
+    void AddAnnotations(AnnotationUsage *const annotations)
+    {
+        annotations_.emplace_back(annotations);
+    }
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -74,6 +110,7 @@ private:
     ArenaVector<Decorator *> decorators_;
     ScriptFunction *func_;
     const bool isAnonymous_;
+    ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir
 

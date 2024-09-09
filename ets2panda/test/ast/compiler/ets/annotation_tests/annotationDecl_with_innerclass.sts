@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@interface MyAnno {}
-class MyAnno {}
-
-function main(): void {
-    
+@interface MyAnno {
+    testProperty1: string
+    class A{}
 }
-/* @@? 16:1 Error SyntaxError: Unexpected token '@'.  */
+
+
+/* @@? 17:5 Error SyntaxError: Identifier expected, got ''.  */
+/* @@? 17:5 Error SyntaxError: Unexpected token.  */

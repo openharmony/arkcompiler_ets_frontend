@@ -63,6 +63,8 @@
 #include "ir/module/importSpecifier.h"
 #include "ir/module/exportSpecifier.h"
 #include "ir/module/exportNamedDeclaration.h"
+#include "ir/statements/annotationDeclaration.h"
+#include "ir/statements/annotationUsage.h"
 #include "ir/statements/assertStatement.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/ifStatement.h"
@@ -149,9 +151,33 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
             !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
             parser->LogSyntaxError("Can only type export class or interface!", stmt->Start());
         }
+        if (stmt->IsAnnotationDeclaration()) {
+            if ((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U) {
+                parser->ThrowSyntaxError("Can not export annotation default!", stmt->Start());
+            }
+        }
         stmt->AddModifier(memberModifiers);
     }
     return stmt;
+}
+
+ir::Statement *ETSParser::ParseAnnotation(StatementParsingFlags flags, ir::ModifierFlags memberModifiers)
+{
+    ir::Statement *result = nullptr;
+
+    Lexer()->NextToken();  // eat '@'
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE) {
+        result = ParseAnnotationDeclaration(memberModifiers);
+    } else {
+        auto annotations = ParseAnnotations(memberModifiers);
+        auto savePos = Lexer()->GetToken().Start();
+        result = ParseTopLevelDeclStatement(flags);
+        if (result != nullptr) {
+            ApplyAnnotationsToNode(result, std::move(annotations), savePos);
+        }
+    }
+
+    return result;
 }
 
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
@@ -189,6 +215,10 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_CLASS: {
             result = ParseTypeDeclaration(false);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_AT: {
+            result = ParseAnnotation(flags, memberModifiers);
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {

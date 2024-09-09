@@ -17,9 +17,8 @@
     testProperty2: number
 }
 
-@MyAnno({testProperty1: Bob, testProperty2: 1})
-@MyAnno({testProperty1: Jim, testProperty2: 0})
-function main(): void {
-    
-}
-/* @@? 15:1 Error SyntaxError: Unexpected token '@'.  */
+@MyAnno({testProperty1: "Bob", testProperty2: 1})
+@MyAnno({testProperty1: "Jim", testProperty2: 0})
+class A{}
+
+/* @@? 21:2 Error SyntaxError: Variable 'MyAnno' has already been declared.  */

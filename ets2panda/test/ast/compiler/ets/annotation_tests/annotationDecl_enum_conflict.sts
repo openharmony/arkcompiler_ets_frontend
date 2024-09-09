@@ -11,13 +11,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
-export declare @interface MyAnno {}
+@interface MyAnno {}
+enum MyAnno {one, two, three}
 
-@MyAnno
-declare class C {}
-
-function main(): void {
-   
-}
+/* @@? 17:1 Error SyntaxError: Variable 'MyAnno' has already been declared.  */

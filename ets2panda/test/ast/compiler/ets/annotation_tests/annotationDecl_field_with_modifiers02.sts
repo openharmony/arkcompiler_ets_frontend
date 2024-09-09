@@ -11,13 +11,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
-import * as ns from "./ExportForAnnotation01"
-
-@ns.ClassAuthor({authorName: "Bob"})
-class C {}
-
-function main(): void {
-   
+ */
+@interface MyAnno {
+    static testProperty1: string
+    testProperty2: number
 }
+
+
+/* @@? 16:5 Error SyntaxError: Annotation property can not have access modifiers  */

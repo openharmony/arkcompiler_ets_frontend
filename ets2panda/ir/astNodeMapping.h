@@ -19,6 +19,8 @@
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #define AST_NODE_MAPPING(_)                                                               \
     _(ARROW_FUNCTION_EXPRESSION, ArrowFunctionExpression)                                 \
+    _(ANNOTATION_DECLARATION, AnnotationDeclaration)                                      \
+    _(ANNOTATION_USAGE, AnnotationUsage)                                                  \
     _(ASSERT_STATEMENT, AssertStatement)                                                  \
     _(AWAIT_EXPRESSION, AwaitExpression)                                                  \
     _(BIGINT_LITERAL, BigIntLiteral)                                                      \

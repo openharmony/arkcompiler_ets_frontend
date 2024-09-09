@@ -17,6 +17,7 @@
 #include "nodeHasType.h"
 #include "ir/base/classDefinition.h"
 #include "ir/expressions/identifier.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
@@ -77,6 +78,12 @@ CheckResult NodeHasType::CheckCompound(CheckContext &ctx, const ir::AstNode *ast
     }
     if (ast->IsClassDefinition()) {
         for (const auto &member : ast->AsClassDefinition()->Body()) {
+            [[maybe_unused]] auto _ = (*this)(ctx, member);
+        }
+        return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+    }
+    if (ast->IsAnnotationDeclaration()) {
+        for (const auto &member : ast->AsAnnotationDeclaration()->Properties()) {
             [[maybe_unused]] auto _ = (*this)(ctx, member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};

@@ -88,6 +88,7 @@ private:
     void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl) override;
     void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl) override;
     void VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl) override;
+    void VisitAnnotationDeclaration(ir::AnnotationDeclaration *annotationDecl) override;
 
 private:
     varbinder::ETSBinder *varbinder_ {nullptr};

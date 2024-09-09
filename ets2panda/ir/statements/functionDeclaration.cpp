@@ -32,6 +32,13 @@ void FunctionDeclaration::TransformChildren(const NodeTransformer &cb, std::stri
         }
     }
 
+    for (auto *&it : annotations_) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
+
     if (auto *transformedNode = cb(func_); func_ != transformedNode) {
         func_->SetTransformedNode(transformationName, transformedNode);
         func_ = transformedNode->AsScriptFunction();
@@ -44,6 +51,10 @@ void FunctionDeclaration::Iterate(const NodeTraverser &cb) const
         cb(it);
     }
 
+    for (auto *it : annotations_) {
+        cb(it);
+    }
+
     cb(func_);
 }
 
@@ -51,6 +62,7 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", func_->IsOverload() ? "TSDeclareFunction" : "FunctionDeclaration"},
                  {"decorators", AstDumper::Optional(decorators_)},
+                 {"annotations", AstDumper::Optional(annotations_)},
                  {"function", func_}});
 }
 

@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-@interface MyAnno {}
-class A implements MyAnno {}
+class A{}
 
-function main(): void {
-    
+@interface MyAnno {
+    testProperty1: string = new A()
 }
-/* @@? 16:1 Error SyntaxError: Unexpected token '@'.  */
+
+/* @@? 19:29 Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */

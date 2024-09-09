@@ -36,6 +36,8 @@ enum class IdentifierFlags : uint32_t {
     GET = 1U << 3U,
     SET = 1U << 4U,
     IGNORE_BOX = 1U << 5U,
+    ANNOTATIONDECL = 1U << 6U,
+    ANNOTATIONUSAGE = 1U << 7U,
 };
 
 }  // namespace ark::es2panda::ir
@@ -167,6 +169,26 @@ public:
     void SetIgnoreBox() noexcept
     {
         flags_ |= IdentifierFlags::IGNORE_BOX;
+    }
+
+    [[nodiscard]] bool IsAnnotationDecl() const noexcept
+    {
+        return (flags_ & IdentifierFlags::ANNOTATIONDECL) != 0;
+    }
+
+    void SetAnnotationDecl() noexcept
+    {
+        flags_ |= IdentifierFlags::ANNOTATIONDECL;
+    }
+
+    [[nodiscard]] bool IsAnnotataionUsage() const noexcept
+    {
+        return (flags_ & IdentifierFlags::ANNOTATIONUSAGE) != 0;
+    }
+
+    void SetAnnotataionUsage() noexcept
+    {
+        flags_ |= IdentifierFlags::ANNOTATIONUSAGE;
     }
 
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override

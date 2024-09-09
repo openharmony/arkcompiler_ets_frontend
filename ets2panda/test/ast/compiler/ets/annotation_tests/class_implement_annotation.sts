@@ -11,17 +11,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
-// Annotation declaretion:
-@interface ClassAuthor {
-   authorName: string
-}
+@interface MyAnno {}
+class A implements MyAnno {}
 
-// Annotation use:
-@ClassAuthor ({authorName: "Bob"})
-class MyClass {}
-
-function main(): void {
-   
-}
+/* @@? 17:20 Error TypeError: Annotations are only implemented at the parse stage.  */
+/* @@? 17:20 Error TypeError: Interface expected here.  */

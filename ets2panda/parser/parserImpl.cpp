@@ -43,6 +43,7 @@
 #include "lexer/lexer.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/sourceLocation.h"
+#include "parser/ETSparser.h"
 
 using namespace std::literals::string_literals;
 
@@ -741,7 +742,7 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParserImpl::Par
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
-    lexer_->NextToken();
+    ExpectToken(lexer::TokenType::KEYW_CLASS);
 
     ir::Identifier *identNode = ParseClassIdent(modifiers);
 

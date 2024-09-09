@@ -12,14 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class OtherType {}
-
-@interface MyAnno {
-    testProperty: OtherType
+static @interface MyAnno {
+    testProperty1: string
 }
 
 
-function main(): void {
-    
-}
-/* @@? 17:1 Error SyntaxError: Unexpected token '@'.  */
+/* @@? 15:1 Error SyntaxError: Unexpected token: 'static'.  */

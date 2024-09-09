@@ -12,13 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@interface MyAnno {
-    testProperty1: string
-    testProperty2: number
+
+@interface MyValue {
+    id: number
+}
+@MyValue(1.1)
+class A{
+    @MyValue(2.3)
+    foo(){}
 }
 
-@MyAnno
-function main(): void {
-    
-}
-/* @@? 15:1 Error SyntaxError: Unexpected token '@'.  */
+@MyValue(3.14)
+function globalFoo(){}
+
+function main(){}

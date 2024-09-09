@@ -1100,6 +1100,16 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::RegExpLiteral *expr) const
     return checker->GlobalAnyType();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AnnotationDeclaration *expr) const
+{
+    return nullptr;
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AnnotationUsage *expr) const
+{
+    return nullptr;
+}
+
 checker::Type *TSAnalyzer::Check(ir::StringLiteral *expr) const
 {
     TSChecker *checker = GetTSChecker();

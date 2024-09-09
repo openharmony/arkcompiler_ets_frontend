@@ -11,17 +11,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
-// Annotation declaretion:
-@interface ClassAuthor {
-   authorName: string
+ */
+@interface MyAnno {
+    testProperty1: string
+    testProperty2: number
+  }
+  
+@interface MyAnno1 {    // OK
+    testProperty1: string
+    testProperty2: number
 }
 
-// Annotation use:
-@ClassAuthor ({authorName: "Bob"})
-abstract class MyClass {}
-
-function main(): void {
-   
+@interface MyAnno {    // CTE
+    testProperty3: string
+    testProperty4: number
 }
+
+/* @@? 25:12 Error SyntaxError: Variable 'MyAnno' has already been declared.  */

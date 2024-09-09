@@ -56,25 +56,6 @@ union_wide_property_access.sts
 # Issue: #16049
 increment-on-nullish-type.sts
 
-# Issue: #17711
-annotation_tests/AnnotationDeclare01.sts
-annotation_tests/AnnotationDeclare02.sts
-annotation_tests/AnnotationForAbstractClass.sts
-annotation_tests/AnnotationForFunction01.sts
-annotation_tests/AnnotationForFunction02.sts
-annotation_tests/AnnotationNoNeedToSetProperties01.sts
-annotation_tests/AnnotationNoNeedToSetProperties02.sts
-annotation_tests/AnnotationNoNeedToSetProperties03.sts
-annotation_tests/AnnotationsDefineAndUseForClass.sts
-annotation_tests/AnnotationsFieldType01.sts
-annotation_tests/AnnotationsFieldType02.sts
-annotation_tests/AnnotationsFieldType03.sts
-annotation_tests/AnnotationsFieldType04.sts
-annotation_tests/ExportForAnnotation01.sts
-annotation_tests/ImportForAnnotation01.sts
-annotation_tests/ImportForAnnotation02.sts
-annotation_tests/Muti-AnnotationsDefineAndUseForClass.sts
-
 # 15276
 n_overrideWithNullable.sts
 nullableType.sts

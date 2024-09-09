@@ -1444,6 +1444,11 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
             tsType = GetTypeFromTypeAliasReference(refVar);
             break;
         }
+        case ir::AstNodeType::ANNOTATION_DECLARATION: {
+            LogTypeError("Annotations are only implemented at the parse stage.", name->Start());
+            tsType = GlobalTypeError();
+            break;
+        }
         default: {
             UNREACHABLE();
         }

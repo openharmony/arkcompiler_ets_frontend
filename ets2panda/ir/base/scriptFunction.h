@@ -16,13 +16,14 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
-#include "ir/statements/returnStatement.h"
 #include "checker/types/signature.h"
+#include "ir/statements/annotationUsage.h"
+#include "ir/statements/returnStatement.h"
 #include "ir/astNode.h"
-#include "varbinder/scope.h"
+#include "scriptFunctionSignature.h"
 #include "util/enumbitops.h"
 #include "util/language.h"
-#include "scriptFunctionSignature.h"
+#include "varbinder/scope.h"
 
 namespace ark::es2panda::checker {
 class Signature;
@@ -32,6 +33,7 @@ class Signature;
 namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;
+class AnnotationUsage;
 
 class ScriptFunction : public AstNode {
 public:
@@ -314,6 +316,29 @@ public:
         return lang_;
     }
 
+    [[nodiscard]] ArenaVector<ir::AnnotationUsage *> &Annotations() noexcept
+    {
+        return annotations_;
+    }
+
+    [[nodiscard]] const ArenaVector<ir::AnnotationUsage *> &Annotations() const noexcept
+    {
+        return annotations_;
+    }
+
+    void SetAnnotations(ArenaVector<ir::AnnotationUsage *> &&annotations)
+    {
+        annotations_ = std::move(annotations);
+        for (auto anno : annotations_) {
+            anno->SetParent(this);
+        }
+    }
+
+    void AddAnnotations(AnnotationUsage *const annotations)
+    {
+        annotations_.emplace_back(annotations);
+    }
+
     [[nodiscard]] ScriptFunction *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -341,6 +366,7 @@ private:
     bool declare_;
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
+    ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir
 

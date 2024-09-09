@@ -1454,6 +1454,8 @@ void JSCompiler::Compile(const ir::ForUpdateStatement *st) const
 }
 
 void JSCompiler::Compile([[maybe_unused]] const ir::FunctionDeclaration *st) const {}
+void JSCompiler::Compile([[maybe_unused]] const ir::AnnotationDeclaration *st) const {}
+void JSCompiler::Compile([[maybe_unused]] const ir::AnnotationUsage *st) const {}
 
 void JSCompiler::Compile(const ir::IfStatement *st) const
 {

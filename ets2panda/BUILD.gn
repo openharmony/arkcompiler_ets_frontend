@@ -342,6 +342,8 @@ libes2panda_sources = [
   "ir/opaqueTypeNode.cpp",
   "ir/srcDump.cpp",
   "ir/statement.cpp",
+  "ir/statements/annotationDeclaration.cpp",
+  "ir/statements/annotationUsage.cpp",
   "ir/statements/assertStatement.cpp",
   "ir/statements/blockStatement.cpp",
   "ir/statements/breakStatement.cpp",

@@ -29,7 +29,7 @@ class GlobalDeclTransformer : public ir::visitor::CustomAstVisitor {
         ir::AstNodeType::ETS_PACKAGE_DECLARATION,   ir::AstNodeType::ETS_IMPORT_DECLARATION,
         ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION, ir::AstNodeType::EXPORT_ALL_DECLARATION,
         ir::AstNodeType::EXPORT_NAMED_DECLARATION,  ir::AstNodeType::REEXPORT_STATEMENT,
-        ir::AstNodeType::NAMESPACE_DECLARATION,
+        ir::AstNodeType::NAMESPACE_DECLARATION,     ir::AstNodeType::ANNOTATION_DECLARATION,
     };
 
     const std::unordered_set<ir::AstNodeType> propertiesDecl_ = {

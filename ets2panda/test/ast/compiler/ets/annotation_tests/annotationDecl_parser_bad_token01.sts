@@ -11,18 +11,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
-// Annotation declaretion:
-@interface FuncAuthor {
-   authorName: string = "Jim"
+ */
+@interface MyAnno {
+    testProperty1: string,
+    testProperty2: number
 }
 
-// Annotation use:
-class C {
-   @FuncAuthor ()
-   function foo(): void
-}
-function main(): void {
-   
-}
+
+/* @@? 16:26 Error SyntaxError: Identifier expected, got ','.  */
+/* @@? 16:26 Error SyntaxError: Unexpected token.  */

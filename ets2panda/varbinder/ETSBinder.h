@@ -119,6 +119,7 @@ public:
     void BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
     void BuildMemberExpression(ir::MemberExpression *memberExpr);
     void BuildMethodDefinition(ir::MethodDefinition *methodDef);
+    void BuildAnnotationUsage(ir::AnnotationUsage *annoUsage);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
     bool DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
