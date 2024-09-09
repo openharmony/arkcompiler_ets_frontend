@@ -304,6 +304,9 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
 {
+    if (node->TsType() != nullptr) {
+        return node->TsType();
+    }
     ETSChecker *checker = GetETSChecker();
 
     size_t optionalParameterIndex = node->DefaultParamIndex();

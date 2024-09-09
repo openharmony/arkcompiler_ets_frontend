@@ -919,8 +919,8 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
     return lambda->Params().size() == calleeType->Params().size();
 }
 
-bool ETSChecker::CheckLambdaInvocable(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *const arrowFuncExpr,
-                                      Type *const parameterType, TypeRelationFlag flags)
+bool ETSChecker::CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *const arrowFuncExpr,
+                                  Type *const subParameterType)
 {
     if (typeAnnotation->IsETSTypeReference()) {
         typeAnnotation = DerefETSTypeReference(typeAnnotation);
@@ -930,24 +930,33 @@ bool ETSChecker::CheckLambdaInvocable(ir::AstNode *typeAnnotation, ir::ArrowFunc
         return false;
     }
 
-    flags |= TypeRelationFlag::NO_THROW;
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+    auto calleeType = typeAnnotation->AsETSFunctionType();
+    // Lambda function will only have exactly one signature.
+    auto functionSignature =
+        TryGettingFunctionTypeFromInvokeFunction(subParameterType)->AsETSFunctionType()->CallSignatures()[0];
+    InferTypesForLambda(lambda, calleeType, functionSignature);
 
-    InferTypesForLambda(lambda, typeAnnotation->AsETSFunctionType());
-    Type *const argumentType = arrowFuncExpr->Check(this);
-
-    checker::InvocationContext invocationCtx(Relation(), arrowFuncExpr, argumentType, parameterType,
-                                             arrowFuncExpr->Start(), {}, flags);
-    return invocationCtx.IsInvocable();
+    return true;
 }
 
 bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
                                            ir::ArrowFunctionExpression *const arrowFuncExpr, Type *const parameterType,
                                            TypeRelationFlag flags)
 {
+    auto checkInvocable = [&arrowFuncExpr, &parameterType, this](TypeRelationFlag functionFlags) {
+        Type *const argumentType = arrowFuncExpr->Check(this);
+        functionFlags |= TypeRelationFlag::NO_THROW;
+
+        checker::InvocationContext invocationCtx(Relation(), arrowFuncExpr, argumentType, parameterType,
+                                                 arrowFuncExpr->Start(), {}, functionFlags);
+        return invocationCtx.IsInvocable();
+    };
+
     //  process `single` type as usual.
     if (!typeAnnotation->IsETSUnionType()) {
-        return CheckLambdaInvocable(typeAnnotation, arrowFuncExpr, parameterType, flags);
+        ASSERT(!parameterType->IsETSUnionType());
+        return CheckLambdaInfer(typeAnnotation, arrowFuncExpr, parameterType) && checkInvocable(flags);
     }
 
     // Preserve actual lambda types
@@ -958,8 +967,14 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
-    for (ir::AstNode *typeNode : typeAnnotation->AsETSUnionType()->Types()) {
-        if (CheckLambdaInvocable(typeNode, arrowFuncExpr, parameterType, flags)) {
+    ASSERT(parameterType->AsETSUnionType()->ConstituentTypes().size() ==
+           typeAnnotation->AsETSUnionType()->Types().size());
+    const auto typeAnnsOfUnion = typeAnnotation->AsETSUnionType()->Types();
+    const auto typeParamOfUnion = parameterType->AsETSUnionType()->ConstituentTypes();
+    for (size_t ix = 0; ix < typeAnnsOfUnion.size(); ++ix) {
+        auto *typeNode = typeAnnsOfUnion[ix];
+        auto *paramNode = typeParamOfUnion[ix];
+        if (CheckLambdaInfer(typeNode, arrowFuncExpr, paramNode) && checkInvocable(flags)) {
             return true;
         }
 

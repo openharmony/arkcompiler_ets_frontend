@@ -2239,19 +2239,28 @@ bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunc
     return false;
 }
 
-void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType)
+void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType,
+                                     Signature *maybeSubstitutedFunctionSig)
 {
     for (size_t i = 0; i < calleeType->Params().size(); ++i) {
         const auto *const calleeParam = calleeType->Params()[i]->AsETSParameterExpression()->Ident();
         auto *const lambdaParam = lambda->Params()[i]->AsETSParameterExpression()->Ident();
         if (lambdaParam->TypeAnnotation() == nullptr) {
             auto *const typeAnnotation = calleeParam->TypeAnnotation()->Clone(Allocator(), lambdaParam);
+            if (maybeSubstitutedFunctionSig != nullptr) {
+                ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
+                typeAnnotation->SetTsType(maybeSubstitutedFunctionSig->Params()[i]->TsType());
+            }
             lambdaParam->SetTsTypeAnnotation(typeAnnotation);
             typeAnnotation->SetParent(lambdaParam);
         }
     }
     if (lambda->ReturnTypeAnnotation() == nullptr) {
-        lambda->SetReturnTypeAnnotation(calleeType->ReturnType()->Clone(Allocator(), lambda));
+        auto *const returnTypeAnnotation = calleeType->ReturnType()->Clone(Allocator(), lambda);
+        if (maybeSubstitutedFunctionSig != nullptr) {
+            returnTypeAnnotation->SetTsType(maybeSubstitutedFunctionSig->ReturnType());
+        }
+        lambda->SetReturnTypeAnnotation(returnTypeAnnotation);
     }
 }
 
