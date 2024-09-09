@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { IOptions } from '../configs/IOptions';
+import type { IOptions } from '../configs/IOptions';
 import { FileUtils } from './FileUtils';
 
 export class UnitTestUtil {

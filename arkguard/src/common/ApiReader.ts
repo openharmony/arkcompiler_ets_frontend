@@ -127,7 +127,7 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
   };
 }
 
-function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean) {
+function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean): void {
   scanProjectConfig.mPropertyObfuscation = customProfiles.mNameObfuscation?.mRenameProperties;
   scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
   scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
@@ -142,15 +142,15 @@ function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean
 export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>, customProfiles: IOptions, isHarCompiled: boolean): {
   projectAndLibsReservedProperties: string[];
   libExportNames: string[]} {
-  const ApiType = ApiExtractor.ApiType;
+  const apiType = ApiExtractor.ApiType;
   let scanningCommonType = undefined;
   let scanningLibsType = undefined;
   if (needReadApiInfo(customProfiles)) {
-    scanningCommonType = ApiType.PROJECT;
-    scanningLibsType = ApiType.PROJECT_DEPENDS;
+    scanningCommonType = apiType.PROJECT;
+    scanningLibsType = apiType.PROJECT_DEPENDS;
   } else {
-    scanningCommonType = ApiType.CONSTRUCTOR_PROPERTY;
-    scanningLibsType = ApiType.CONSTRUCTOR_PROPERTY;
+    scanningCommonType = apiType.CONSTRUCTOR_PROPERTY;
+    scanningLibsType = apiType.CONSTRUCTOR_PROPERTY;
   }
   // The purpose of collecting constructor properties is to avoid generating the same name as the constructor property when obfuscating identifier names.
   ApiExtractor.mConstructorPropertySet = new Set();
