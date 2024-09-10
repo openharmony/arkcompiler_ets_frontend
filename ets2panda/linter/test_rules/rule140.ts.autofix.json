@@ -39,6 +39,19 @@
             "line": 22,
             "column": 17,
             "problem": "ObjectLiteralNoContextType",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 722,
+                    "end": 722,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    firstName: string;\n}\n"
+                },
+                {
+                    "start": 735,
+                    "end": 735,
+                    "replacementText": ": GeneratedObjectLiteralInterface_1"
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
