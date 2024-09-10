@@ -126,6 +126,7 @@ export enum FaultID {
   SharedModuleExportsWarning,
   SendableBetaCompatible,
   ObjectLiteralProperty,
+  OptionalMethod,
   // this should always be last enum
   LAST_ID
 }

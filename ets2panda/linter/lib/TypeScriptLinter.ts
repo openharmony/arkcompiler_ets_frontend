@@ -1630,12 +1630,18 @@ export class TypeScriptLinter {
       { begin: tsMethodDecl.parameters.end, end: tsMethodDecl.body?.getStart() ?? tsMethodDecl.parameters.end },
       FUNCTION_HAS_NO_RETURN_ERROR_CODE
     );
+    if (this.arkts2 && tsMethodDecl.questionToken) {
+      this.incrementCounters(tsMethodDecl.questionToken, FaultID.OptionalMethod);
+    }
   }
 
   private handleMethodSignature(node: ts.MethodSignature): void {
     const tsMethodSign = node;
     if (!tsMethodSign.type) {
       this.handleMissingReturnType(tsMethodSign);
+    }
+    if (this.arkts2 && tsMethodSign.questionToken) {
+      this.incrementCounters(tsMethodSign.questionToken, FaultID.OptionalMethod);
     }
   }
 
