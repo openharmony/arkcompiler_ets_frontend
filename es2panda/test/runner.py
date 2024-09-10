@@ -1489,6 +1489,8 @@ def add_directory_for_regression(runners, args):
                          ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/unicode", "js", ["--parse-only"])
     runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
+    runner.add_directory("parser/js/module-record/module-record-field-name-option.js", "js",
+                         ["--module-record-field-name=abc", "--source-file=abc", "--module", "--dump-normalized-asm-program"])
 
     runners.append(runner)
 
@@ -1558,6 +1560,8 @@ def add_directory_for_compiler(runners, args):
                                                 ["--module", "--dump-assembly"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/debugInfo/", "js",
                                                 ["--debug-info", "--dump-debug-info", "--source-file", "debug-info.js"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/js/module-record-field-name-option.js", "js",
+                                                ["--module", "--module-record-field-name=abc"]))
     # Following directories of test cases are for dump-assembly comparison only, and is not executed.
     # Check CompilerProjectTest for more details.
     compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",

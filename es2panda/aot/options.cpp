@@ -361,6 +361,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
     panda::PandArg<bool> opuseDefineSemantic("use-define-semantic", false, "Compile ts class fields "\
         "in accordance with ECMAScript2022");
+    panda::PandArg<std::string> moduleRecordFieldName("module-record-field-name", "", "Specify the field name "\
+        "of module record in unmerged abc");
 
     // optimizer
     panda::PandArg<bool> opBranchElimination("branch-elimination", false, "Enable branch elimination optimization");
@@ -441,6 +443,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opNpmModuleEntryList);
     argparser_->Add(&opMergeAbc);
     argparser_->Add(&opuseDefineSemantic);
+    argparser_->Add(&moduleRecordFieldName);
     argparser_->Add(&opBranchElimination);
     argparser_->Add(&opOptTryCatchFunc);
 
@@ -655,6 +658,7 @@ bool Options::Parse(int argc, const char **argv)
         && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
     compilerOptions_.removeRedundantFile = opRemoveRedundantFile.GetValue();
     compilerOptions_.dumpString = opDumpString.GetValue();
+    compilerOptions_.moduleRecordFieldName = moduleRecordFieldName.GetValue();
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();
