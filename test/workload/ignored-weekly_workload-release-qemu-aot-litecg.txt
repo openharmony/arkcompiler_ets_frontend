@@ -40,3 +40,5 @@ wsl
 #18731
 stanford-crypto-sha256
 
+#18745
+json-stringify-inspector
