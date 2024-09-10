@@ -18,6 +18,9 @@ memory-cache_test
 #19231
 jBox2d_test
 
+#19501
+lodash_test
+
 #19248
 pinyin4js_test
 
