@@ -86,7 +86,6 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
 ir::Identifier *GlobalDeclTransformer::RefIdent(const util::StringView &name)
 {
     auto *const callee = util::NodeAllocator::Alloc<ir::Identifier>(allocator_, name, allocator_);
-    callee->SetReference();
     return callee;
 }
 

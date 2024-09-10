@@ -345,7 +345,6 @@ std::tuple<ir::AnnotatedExpression *, bool> ASParser::ParsePatternElementToken(E
         }
         case lexer::TokenType::LITERAL_IDENT: {
             returnNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            returnNode->AsIdentifier()->SetReference();
             returnNode->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
 
@@ -846,7 +845,6 @@ ir::Expression *ASParser::ParsePotentialAsExpression(ir::Expression *primaryExpr
 ir::Identifier *ASParser::ParsePrimaryExpressionIdent([[maybe_unused]] ExpressionParseFlags flags)
 {
     auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-    identNode->SetReference();
     identNode->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();

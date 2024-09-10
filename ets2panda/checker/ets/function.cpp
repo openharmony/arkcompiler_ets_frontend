@@ -1835,7 +1835,6 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     if (!asyncFunc->Signature()->HasSignatureFlag(SignatureFlags::NEED_RETURN_TYPE)) {
         // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
         auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
-        objectId->SetReference();
         VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
         returnTypeAnn =
             AllocNode<ir::ETSTypeReference>(AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));

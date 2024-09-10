@@ -470,7 +470,6 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, modifiers, Allocator(), false);
     method->SetRange(funcExpr->Range());
-    func->Id()->SetReference();
     return method;
 }
 
@@ -486,7 +485,6 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
     ir::ScriptFunction *func = ParseFunction(desc->newStatus);
     if (propName->IsIdentifier()) {
         func->SetIdent(propName->AsIdentifier()->Clone(Allocator(), nullptr));
-        func->Id()->SetReference();
     }
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -915,8 +913,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, name->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, flags, Allocator(), false);
     method->SetRange(funcExpr->Range());
-
-    func->Id()->SetReference();
 
     ConsumeSemicolon(method);
 

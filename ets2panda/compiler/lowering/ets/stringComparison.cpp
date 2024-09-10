@@ -85,7 +85,6 @@ void StringComparisonLowering::ProcessBinaryExpression(ir::BinaryExpression *exp
     auto *const callee = checker->AllocNode<ir::Identifier>("compareTo", checker->Allocator());
     accessor = checker->AllocNode<ir::MemberExpression>(expr->Left(), callee, ir::MemberExpressionKind::PROPERTY_ACCESS,
                                                         false, false);
-    callee->SetReference();
 
     callArgs.push_back(expr->Right());
     auto callExpression = checker->AllocNode<ir::CallExpression>(accessor, std::move(callArgs), nullptr, false, false);

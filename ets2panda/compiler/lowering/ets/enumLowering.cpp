@@ -49,7 +49,6 @@ namespace {
 [[nodiscard]] ir::ETSTypeReference *MakeTypeReference(checker::ETSChecker *const checker, const util::StringView &name)
 {
     auto *const ident = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
-    ident->SetReference();
     auto *const referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(ident);
     return checker->AllocNode<ir::ETSTypeReference>(referencePart);
 }
@@ -304,7 +303,6 @@ void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumCl
 
     auto *thisExpr = Allocator()->New<ir::ThisExpression>();
     auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
-    fieldIdentifier->SetReference();
     auto *leftHandSide = checker_->AllocNode<ir::MemberExpression>(
         thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *rightHandSide = checker_->AllocNode<ir::Identifier>("ordinal", Allocator());
@@ -488,11 +486,9 @@ ir::Identifier *EnumLoweringPhase::CreateEnumItemsArray(const ir::TSEnumDeclarat
                      [this, enumDecl](const ir::TSEnumMember *const member) {
                         auto *const enumTypeIdent =
                             checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
-                        enumTypeIdent->SetReference();
 
                         auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
                             member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
-                        enumMemberIdent->SetReference();
                         auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
                             enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
                         return enumMemberExpr;
@@ -511,11 +507,9 @@ ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDec
                      [this, enumDecl, &boxedClassName](const ir::TSEnumMember *const member) {
                         auto *const enumTypeIdent =
                             checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
-                        enumTypeIdent->SetReference();
 
                         auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
                             member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
-                        enumMemberIdent->SetReference();
                         auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
                             enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
@@ -541,7 +535,6 @@ ir::BinaryExpression *CreateIfTest(EnumLoweringPhase *const elp, ir::Identifier 
 {
     auto *const checker = elp->Checker();
     auto *const lengthIdent = checker->AllocNode<ir::Identifier>("length", checker->Allocator());
-    lengthIdent->SetReference();
     auto *const valuesArrayLengthExpr = checker->AllocNode<ir::MemberExpression>(
         itemsArrayIdentifier, lengthIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *const paramRefIdent = MakeParamRefIdent(checker, parameter);
@@ -637,7 +630,6 @@ void EnumLoweringPhase::CreateEnumFromIntMethod(const ir::TSEnumDeclaration *con
     function->Scope()->BindInternalName(ident->Name());
 
     MakeMethodDef(checker_, enumClass, varbinder_, ident, function);
-    ident->SetReference();
 }
 
 void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *const enumDecl,
@@ -665,7 +657,6 @@ void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *co
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
     MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
-    functionIdent->SetReference();
 }
 
 void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
@@ -693,8 +684,6 @@ void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *con
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
-
-    functionIdent->SetReference();
 }
 
 void EnumLoweringPhase::CreateEnumGetNameMethod(const ir::TSEnumDeclaration *const enumDecl,
@@ -724,7 +713,6 @@ void EnumLoweringPhase::CreateEnumGetNameMethod(const ir::TSEnumDeclaration *con
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
-    functionIdent->SetReference();
 }
 
 namespace {
@@ -761,7 +749,6 @@ ir::BinaryExpression *CreateForLoopTest(EnumLoweringPhase *const elp, ir::Identi
 {
     auto *const checker = elp->Checker();
     auto *const lengthIdent = checker->AllocNode<ir::Identifier>("length", checker->Allocator());
-    lengthIdent->SetReference();
     auto *const arrayLengthExpr = checker->AllocNode<ir::MemberExpression>(
         namesArrayIdentifier, lengthIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *const forLoopIdentClone = loopIdentifier->Clone(checker->Allocator(), nullptr);
@@ -851,7 +838,6 @@ void EnumLoweringPhase::CreateEnumGetValueOfMethod(const ir::TSEnumDeclaration *
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
     MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
-    functionIdent->SetReference();
 }
 
 void EnumLoweringPhase::CreateEnumValuesMethod(const ir::TSEnumDeclaration *const enumDecl,
@@ -876,7 +862,6 @@ void EnumLoweringPhase::CreateEnumValuesMethod(const ir::TSEnumDeclaration *cons
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
-    functionIdent->SetReference();
 }
 
 void EnumLoweringPhase::CreateUnboxingMethod(ir::TSEnumDeclaration const *const enumDecl,
@@ -891,7 +876,6 @@ void EnumLoweringPhase::CreateUnboxingMethod(ir::TSEnumDeclaration const *const 
 
     auto *thisExpr = Allocator()->New<ir::ThisExpression>();
     auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
-    fieldIdentifier->SetReference();
     auto *arrayIndexExpr = checker_->AllocNode<ir::MemberExpression>(
         thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
@@ -916,7 +900,6 @@ void EnumLoweringPhase::CreateUnboxingMethod(ir::TSEnumDeclaration const *const 
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(checker_, enumClass, varbinder_, functionIdent, function);
-    functionIdent->SetReference();
 }
 
 ArenaAllocator *EnumLoweringPhase::Allocator()

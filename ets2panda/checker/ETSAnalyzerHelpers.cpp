@@ -157,7 +157,6 @@ void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scr
 
     auto *objectId =
         checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());
-    objectId->SetReference();
     checker->VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
     auto *returnType = checker->AllocNode<ir::ETSTypeReference>(
         checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));

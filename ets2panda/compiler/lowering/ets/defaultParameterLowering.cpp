@@ -119,7 +119,6 @@ ir::TSTypeParameterInstantiation *DefaultParameterLowering::CreateTypeParameterI
     for (const auto &param : method->Function()->TypeParams()->Params()) {
         auto *identRef =
             checker->AllocNode<ir::Identifier>(param->AsTSTypeParameter()->Name()->Name(), checker->Allocator());
-        identRef->AsIdentifier()->SetReference();
 
         referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef, nullptr, nullptr);
 
@@ -141,7 +140,6 @@ ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefin
     ir::Expression *id = nullptr;
     ir::Expression *accessor = nullptr;
     auto *const callee = checker->AllocNode<ir::Identifier>(method->Id()->Name(), checker->Allocator());
-    callee->SetReference();
 
     if (method->IsConstructor()) {
         accessor = checker->AllocNode<ir::ThisExpression>();
@@ -150,7 +148,6 @@ ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefin
             if (method->IsStatic()) {
                 id = checker->AllocNode<ir::Identifier>(method->Parent()->AsClassDefinition()->Ident()->Name(),
                                                         checker->Allocator());
-                id->AsIdentifier()->SetReference();
             } else {
                 id = checker->AllocNode<ir::ThisExpression>();
             }
@@ -225,7 +222,6 @@ void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *meth
     auto *ident = funcExpression->Function()->Id()->Clone(checker->Allocator(), nullptr);
     auto *const overloadMethod = checker->AllocNode<ir::MethodDefinition>(
         method->Kind(), ident, funcExpression, method->Modifiers(), checker->Allocator(), false);
-    ident->SetReference();
 
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overloadMethod->SetRange(funcExpression->Range());

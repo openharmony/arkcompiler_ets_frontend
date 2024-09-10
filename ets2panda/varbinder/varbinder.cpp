@@ -14,7 +14,6 @@
  */
 
 #include "varbinder.h"
-
 #include "varbinder/privateBinding.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
@@ -246,7 +245,7 @@ void VarBinder::InstantiatePrivateContext(const ir::Identifier *ident) const
 
 void VarBinder::LookupIdentReference(ir::Identifier *ident)
 {
-    if (!ident->IsReference()) {
+    if (!ident->IsReference(Extension())) {
         return;
     }
 
@@ -541,7 +540,6 @@ void VarBinder::ResolveReference(ir::AstNode *childNode)
     switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             auto *ident = childNode->AsIdentifier();
-
             LookupIdentReference(ident);
             ResolveReferences(childNode);
             break;

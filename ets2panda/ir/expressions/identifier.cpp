@@ -42,10 +42,6 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
             clone->SetParent(parent);
         }
 
-        if (this->IsReference()) {
-            clone->SetReference();
-        }
-
         clone->SetRange(Range());
 
         return clone;
@@ -109,6 +105,7 @@ void Identifier::Dump(ir::SrcDumper *dumper) const
     if (IsPrivateIdent()) {
         dumper->Add("private ");
     }
+
     dumper->Add(std::string(name_));
     if (IsOptional()) {
         dumper->Add("?");
@@ -134,4 +131,287 @@ checker::Type *Identifier::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+bool Identifier::IsDeclaration(ScriptExtension ext) const
+{
+    // GLOBAL class is not a reference
+    if (Name() == "ETSGLOBAL") {
+        return true;
+    }
+
+    // We can determine reference status from parent node
+    if (Parent() == nullptr) {
+        return false;
+    }
+
+    auto const *const parent = Parent();
+
+    // We need two Parts because check is too long to fit in one function
+    if (CheckDeclarationsPart1(parent, ext) || CheckDeclarationsPart2(parent, ext)) {
+        return true;
+    }
+
+    // This will check other cases that are not related to declarations
+    return CheckNotDeclarations(parent, ext);
+}
+
+bool Identifier::CheckNotDeclarations(const ir::AstNode *parent, [[maybe_unused]] ScriptExtension ext) const
+{
+    if (parent->IsTSMethodSignature() && ext == ScriptExtension::TS) {
+        // NOTE(kkonkuznetsov): fix in TS
+        // Example: c(a: (a: number, b: void) => string, b?: number[]): undefined;
+        // a, b should not be references
+        return false;
+    }
+
+    // Parameters in methods are not references
+    // Example:
+    // function foo(a: int)
+    if (parent->IsETSParameterExpression()) {
+        return true;
+    }
+
+    if (parent->IsTSPropertySignature() && ext == ScriptExtension::TS) {
+        // Example:
+        //
+        // interface foo {
+        //     a: number,
+        // }
+        auto *prop = parent->AsTSPropertySignature();
+        if (prop->Key() == this) {
+            return true;
+        }
+    }
+
+    if (parent->IsClassProperty()) {
+        // RHS is a reference
+        // Example: const foo1: (self: Object, x: int) => int = foo;
+        // foo here is a reference
+        auto *prop = parent->AsClassProperty();
+        return !(prop->Value() == this);
+    }
+
+    // Identifier in catch is not a reference
+    // Example:
+    //
+    // _try_{
+    //   _throw_new_Exception();}_catch_(e)_{}
+    if (parent->IsCatchClause()) {
+        return true;
+    }
+
+    // Type Parameter is not a reference
+    // Example:
+    // interface X <K> {}
+    if (parent->IsTSTypeParameter()) {
+        return true;
+    }
+
+    // Rest Parameter is not a reference
+    // Example:
+    // class A {
+    //    constructor(... items :Object[]){}
+    // }
+    if (parent->IsRestElement()) {
+        if (ext == ScriptExtension::TS) {
+            // NOTE(kkonkuznetsov): fix in TS
+            // Example: var func8: { (...c): boolean, (...c: number[]): string };
+            // c is expected to be a reference
+            return false;
+        }
+
+        if (ext == ScriptExtension::JS) {
+            // NOTE(kkonkuznetsov): some JS tests have the following code:
+            //
+            // let x;
+            // async function* fn() {
+            //   for await ([...x] of [g()]) {
+            //   }
+            // }
+            // Here in `[...x]` x is parsed as Rest Element,
+            // however x is expected to be a reference.
+            // Otherwise the tests fail.
+            return !(parent->Parent() != nullptr && parent->Parent()->IsArrayPattern());
+        }
+
+        return true;
+    }
+
+    // Script function identifiers are not references
+    // Example:
+    // public static foo()
+    if (parent->IsScriptFunction()) {
+        if (ext == ScriptExtension::TS) {
+            // NOTE(kkonkuznetsov): fix in TS
+            // Example: let c = (a?: number) => { }
+            return false;
+        }
+
+        if (ext == ScriptExtension::JS) {
+            // In some JS tests the following code:
+            //
+            // let_f_=_()_=>_o;
+            //
+            // creates AST that has Identifier as Body
+            return !(parent->AsScriptFunction()->Body() == this);
+        }
+
+        return true;
+    }
+
+    // Helper function to reduce function size
+    return CheckDefinitions(parent, ext);
+}
+
+bool Identifier::CheckDefinitions(const ir::AstNode *parent, [[maybe_unused]] ScriptExtension ext) const
+{
+    // New methods are not references
+    if (parent->IsMethodDefinition()) {
+        return true;
+    }
+
+    // New classes are not references
+    if (parent->IsClassDefinition()) {
+        if (ext == ScriptExtension::JS) {
+            // Example from JS tests:
+            // inner Outer is a reference
+            //
+            // class Outer {
+            //   innerclass() {
+            //     return class extends Outer {};
+            //   }
+            // }
+            auto *def = parent->AsClassDefinition();
+            return !(def->Super() == this);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Identifier::CheckDeclarationsPart1(const ir::AstNode *parent, [[maybe_unused]] ScriptExtension ext) const
+{
+    // All declarations are not references
+    if (parent->IsVariableDeclarator()) {
+        if (ext == ScriptExtension::TS) {
+            // NOTE(kkonkuznetsov): fix in TS
+            // All variable declarations in TS are expected to be references for some reason
+            return false;
+        }
+
+        auto *decl = parent->AsVariableDeclarator();
+
+        // Example: let goo = foo;
+        // RHS is a reference
+        return !(decl->Init() == this);
+    }
+
+    // All declarations are not references
+    if (parent->IsVariableDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsClassDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsETSPackageDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsFunctionDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsImportDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsETSImportDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsETSStructDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsExportAllDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsExportDefaultDeclaration()) {
+        return true;
+    }
+
+    return false;
+}
+
+bool Identifier::CheckDeclarationsPart2(const ir::AstNode *parent, ScriptExtension ext) const
+{
+    // All declarations are not references
+    if (parent->IsExportNamedDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsTSEnumDeclaration()) {
+        // NOTE(kkonkuznetsov): fix in TS
+        // Should not be a reference
+        // However currently some TS tests depend on declaration ident being a reference
+        return !(ext == ScriptExtension::TS);
+    }
+
+    if (parent->IsTSInterfaceDeclaration()) {
+        // NOTE(kkonkuznetsov): This should not be a reference
+        // Example:
+        //
+        // interface foo {
+        //     a: number,
+        // }
+        //
+        // However currently some TS tests depend on interface ident being a reference
+        return !(ext == ScriptExtension::TS);
+    }
+
+    if (parent->IsTSModuleDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsTSSignatureDeclaration()) {
+        // NOTE(kkonkuznetsov): fix in TS
+        // Example: new(a: null, b?: string): { a: number, b: string, c?([a, b]): string }
+        // a, b should not be references
+        return !(ext == ScriptExtension::TS);
+    }
+
+    if (parent->IsETSReExportDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsTSImportEqualsDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsTSTypeAliasDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsTSTypeParameterDeclaration()) {
+        return true;
+    }
+
+    if (parent->IsDeclare()) {
+        return true;
+    }
+
+    if (parent->Parent() != nullptr) {
+        if (parent->Parent()->IsTSEnumDeclaration()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 }  // namespace ark::es2panda::ir

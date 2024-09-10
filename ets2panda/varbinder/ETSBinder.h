@@ -107,6 +107,8 @@ public:
 
     void IdentifierAnalysis() override;
     void BuildClassDefinition(ir::ClassDefinition *classDef) override;
+    void BuildObjectExpression(ir::ObjectExpression *obj);
+    void BuildETSTypeReference(ir::ETSTypeReference *typeRef);
     void BuildClassProperty(const ir::ClassProperty *prop) override;
     void LookupIdentReference(ir::Identifier *ident) override;
     bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;

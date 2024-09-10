@@ -49,7 +49,6 @@ ir::ClassDeclaration *ClassBuilder::Build(parser::Program *program) &&
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *classId = checker_->AllocNode<ir::Identifier>(className_, allocator);
-    classId->SetReference();
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *classDef = checker_->AllocNode<ir::ClassDefinition>(

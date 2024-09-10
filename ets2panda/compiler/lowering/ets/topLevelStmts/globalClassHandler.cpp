@@ -163,7 +163,6 @@ void GlobalClassHandler::AddInitCall(ir::ClassDefinition *globalClass, ir::Metho
 ir::Identifier *GlobalClassHandler::RefIdent(const util::StringView &name)
 {
     auto *const callee = NodeAllocator::Alloc<ir::Identifier>(allocator_, name, allocator_);
-    callee->SetReference();
     return callee;
 }
 

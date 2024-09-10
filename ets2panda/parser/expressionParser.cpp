@@ -854,7 +854,6 @@ ir::MetaProperty *ParserImpl::ParsePotentialNewTarget()
 ir::Identifier *ParserImpl::ParsePrimaryExpressionIdent([[maybe_unused]] ExpressionParseFlags flags)
 {
     auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-    identNode->SetReference();
     identNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -1022,7 +1021,6 @@ ir::Expression *ParserImpl::ParseHashMaskOperator()
     ValidatePrivateIdentifier();
     auto *privateIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
     privateIdent->SetPrivate(true);
-    privateIdent->SetReference();
     lexer_->NextToken();
 
     if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_IN) {
@@ -1448,7 +1446,6 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
     const auto tokenType = lexer_->GetToken().Type();
     if (tokenType == lexer::TokenType::LITERAL_IDENT) {
         auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-        identNode->SetReference();
         identNode->SetPrivate(isPrivate);
         identNode->SetRange(lexer_->GetToken().Loc());
 
@@ -1580,7 +1577,6 @@ ir::MemberExpression *ParserImpl::ParsePrivatePropertyAccess(ir::Expression *pri
     auto *privateIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
     privateIdent->SetRange({memberStart, lexer_->GetToken().End()});
     privateIdent->SetPrivate(true);
-    privateIdent->SetReference();
     lexer_->NextToken();
 
     auto *memberExpr = AllocNode<ir::MemberExpression>(primaryExpr, privateIdent,
@@ -1804,7 +1800,6 @@ ir::Expression *ParserImpl::ParsePatternElement(ExpressionParseFlags flags, bool
         }
         case lexer::TokenType::LITERAL_IDENT: {
             returnNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-            returnNode->AsIdentifier()->SetReference();
             returnNode->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
             break;
@@ -1932,7 +1927,6 @@ ir::Property *ParserImpl::ParseShorthandProperty(const lexer::LexerPosition *sta
     key->SetRange(lexer_->GetToken().Loc());
 
     ir::Expression *value = AllocNode<ir::Identifier>(ident, Allocator());
-    value->AsIdentifier()->SetReference();
     value->SetRange(lexer_->GetToken().Loc());
 
     lexer::SourcePosition end;

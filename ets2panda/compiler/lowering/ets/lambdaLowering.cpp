@@ -465,13 +465,11 @@ static ir::BlockStatement *CreateFunctionBody(public_lib::Context *ctx, ir::Arro
     ir::Expression *id = nullptr;
     ir::Expression *accessor = nullptr;
     auto *const callee = checker->AllocNode<ir::Identifier>(defaultMethod->Id()->Name(), checker->Allocator());
-    callee->SetReference();
 
     if (defaultMethod->IsStatic() && defaultMethod->Parent()->IsClassDefinition() &&
         (!defaultMethod->Parent()->AsClassDefinition()->IsGlobal())) {
         id = checker->AllocNode<ir::Identifier>(defaultMethod->Parent()->AsClassDefinition()->Ident()->Name(),
                                                 checker->Allocator());
-        id->AsIdentifier()->SetReference();
         accessor = checker->AllocNode<ir::MemberExpression>(id, callee, ir::MemberExpressionKind::PROPERTY_ACCESS,
                                                             false, false);
         callee->SetParent(accessor);
@@ -1118,11 +1116,14 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
     if (node->IsArrowFunctionExpression()) {
         return ConvertLambda(ctx, node->AsArrowFunctionExpression());
     }
+
     if (node->IsIdentifier()) {
         auto *id = node->AsIdentifier();
         auto *var = id->Variable();
-        if (id->IsReference() && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() && var != nullptr &&
-            var->Declaration()->IsFunctionDecl() && !IsInCalleePosition(id)) {
+        // We are running this lowering only for ETS files
+        // so it is correct to pass ETS extension here to isReference()
+        if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
+            var != nullptr && var->Declaration()->IsFunctionDecl() && !IsInCalleePosition(id)) {
             return ConvertFunctionReference(ctx, id);
         }
     }

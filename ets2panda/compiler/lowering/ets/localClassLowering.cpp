@@ -68,7 +68,6 @@ static ir::Statement *CreateCtorFieldInit(checker::ETSChecker *checker, util::St
 
     auto *thisExpr = allocator->New<ir::ThisExpression>();
     auto *fieldAccessExpr = allocator->New<ir::Identifier>(name, allocator);
-    fieldAccessExpr->SetReference();
     auto *leftHandSide = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
         allocator, thisExpr, fieldAccessExpr, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *rightHandSide = allocator->New<ir::Identifier>(name, allocator);
