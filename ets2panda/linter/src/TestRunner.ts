@@ -27,6 +27,7 @@ import type { Autofix } from '../lib/autofixes/Autofixer';
 import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions } from './Compiler';
 import { getEtsLoaderPath } from './LinterCLI';
+import { ProblemSeverity } from '../lib/ProblemSeverity';
 
 const TEST_DIR = 'test';
 const TAB = '    ';
@@ -40,6 +41,7 @@ interface TestNodeInfo {
   autofix?: Autofix[];
   suggest?: string;
   rule?: string;
+  severity?: string;
 }
 
 enum Mode {
@@ -206,7 +208,8 @@ function runTest(testDir: string, testFile: string, mode: Mode): boolean {
       problem: x.problem,
       autofix: mode === Mode.AUTOFIX ? x.autofix : undefined,
       suggest: x.suggest,
-      rule: x.rule
+      rule: x.rule,
+      severity: ProblemSeverity[x.severity]
     };
   });
 
@@ -224,13 +227,7 @@ function expectedAndActualMatch(expectedNodes: TestNodeInfo[], actualNodes: Test
   for (let i = 0; i < actualNodes.length; i++) {
     const actual = actualNodes[i];
     const expect = expectedNodes[i];
-    if (actual.line !== expect.line || actual.column !== expect.column || actual.problem !== expect.problem) {
-      return reportDiff(expect, actual);
-    }
-    if (
-      expect.endLine && actual.endLine !== expect.endLine ||
-      expect.endColumn && actual.endColumn !== expect.endColumn
-    ) {
+    if (!locationMatch(expect, actual) || actual.problem !== expect.problem) {
       return reportDiff(expect, actual);
     }
     if (!autofixArraysMatch(expect.autofix, actual.autofix)) {
@@ -242,9 +239,21 @@ function expectedAndActualMatch(expectedNodes: TestNodeInfo[], actualNodes: Test
     if (expect.rule && actual.rule !== expect.rule) {
       return reportDiff(expect, actual);
     }
+    if (expect.severity && actual.severity !== expect.severity) {
+      return reportDiff(expect, actual);
+    }
   }
 
   return '';
+}
+
+function locationMatch(expected: TestNodeInfo, actual: TestNodeInfo): boolean {
+  return (
+    actual.line === expected.line ||
+    actual.column === expected.column ||
+    !!(expected.endLine && actual.endLine === expected.endLine) ||
+    !!(expected.endColumn && actual.endColumn === expected.endColumn)
+  );
 }
 
 function autofixArraysMatch(expected: Autofix[] | undefined, actual: Autofix[] | undefined): boolean {
