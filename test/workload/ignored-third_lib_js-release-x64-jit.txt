@@ -18,6 +18,12 @@ memory-cache_test
 #19231
 jBox2d_test
 
+#19248
+pinyin4js_test
+
+#19426
+validator_test
+
 #19106
 memory-cache_test
 

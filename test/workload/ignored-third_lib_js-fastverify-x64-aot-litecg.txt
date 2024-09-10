@@ -40,7 +40,6 @@ gson_test
 crypto-js_test
 lodash_test
 Matrix_test
-dom4j_test
 
 #18383
 memory-cache_test

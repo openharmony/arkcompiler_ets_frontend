@@ -31,6 +31,9 @@ splay-latency
 #19083
 air
 
+#18483
+typescript-compiler
+
 #18731
 stanford-crypto-sha256
 
