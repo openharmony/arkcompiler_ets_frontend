@@ -892,7 +892,7 @@ describe('test for ConfigResolve', function() {
     it('should collect reserved file names from modulePathMap and projectConfig', () => {
       projectConfig.compileShared = true;
       const result = collectResevedFileNameInIDEConfig('', projectConfig, modulePathMap, []);
-      expect(result).to.deep.equal(['path/to/module1', 'path/to/module2','path/to/build','etsFortgz','path/to/project','path/to/cache']);
+      expect(result).to.deep.equal(['path/to/module1', 'path/to/module2','module1','module2','path/to/build','etsFortgz','path/to/project','path/to/cache']);
     });
     it('should collect reserved file names from ohPackagePath and projectConfig', () => {
       projectConfig.byteCodeHar = true;
