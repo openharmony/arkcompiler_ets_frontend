@@ -11,5 +11,10 @@ test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-
 #18438
 test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-sync-return.js
 
+#18547
+test262/data/test_es2021/built-ins/Atomics/sub/bad-range.js
+test262/data/test_es2021/built-ins/String/prototype/trim/15.5.4.20-2-8.js
+test262/data/other_tests/language/expressions/class/dstr/async-gen-meth-static-dflt-ary-init-iter-get-err-array-prototype.js
+
 ##18914
 test262/data/other_tests/built-ins/Object/entries/not-a-constructor.js
