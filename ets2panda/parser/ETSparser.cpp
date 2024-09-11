@@ -1302,7 +1302,7 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
         return;
     }
 
-    Lexer()->NextToken();  // eat `as` literal
+    ExpectToken(lexer::TokenType::KEYW_AS, true);  // eat `as` literal
     local = ParseNamedImport(Lexer()->GetToken());
 
     auto *specifier = AllocNode<ir::ImportNamespaceSpecifier>(local);
