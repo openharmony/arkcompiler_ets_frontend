@@ -24,6 +24,7 @@ import type { ProblemInfo } from '../lib/ProblemInfo';
 import { TypeScriptLinter } from '../lib/TypeScriptLinter';
 import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions } from './Compiler';
+import type { LintOptions } from '../lib/LintOptions';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -41,7 +42,8 @@ export function run(): void {
   TypeScriptLinter.initGlobals();
 
   if (!cmdOptions.ideMode) {
-    const result = lint(compileLintOptions(cmdOptions));
+    const compileOptions = compileLintOptions(cmdOptions);
+    const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
     process.exit(result.errorNodes > 0 ? 1 : 0);
   } else {
     runIDEMode(cmdOptions);
@@ -90,7 +92,8 @@ function runIDEMode(cmdOptions: CommandLineOptions): void {
     if (cmdOptions.parsedConfigFile) {
       cmdOptions.parsedConfigFile.fileNames.push(tmpFileName);
     }
-    const result = lint(compileLintOptions(cmdOptions));
+    const compileOptions = compileLintOptions(cmdOptions);
+    const result = lint(compileOptions, getEtsLoaderPath(compileOptions));
     const problems = Array.from(result.problemsInfos.values());
     if (problems.length === 1) {
       showJSONMessage(problems);
@@ -99,4 +102,9 @@ function runIDEMode(cmdOptions: CommandLineOptions): void {
     }
     fs.unlinkSync(tmpFileName);
   });
+}
+
+export function getEtsLoaderPath(compileOptions: LintOptions): string | undefined {
+  const tsProgram = compileOptions.tscCompiledProgram.getProgram();
+  return tsProgram.getCompilerOptions().etsLoaderPath;
 }
