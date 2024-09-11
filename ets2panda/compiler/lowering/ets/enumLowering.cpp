@@ -111,7 +111,7 @@ template <typename ElementMaker>
     auto *const arrayIdent = checker_->AllocNode<ir::Identifier>(name, Allocator());
     auto *const arrayClassProp = checker_->AllocNode<ir::ClassProperty>(
         arrayIdent, arrayExpr, typeAnnotation,
-        ir::ModifierFlags::STATIC | ir::ModifierFlags::PROTECTED | ir::ModifierFlags::CONST, Allocator(), false);
+        ir::ModifierFlags::STATIC | ir::ModifierFlags::PROTECTED | ir::ModifierFlags::READONLY, Allocator(), false);
     arrayClassProp->SetParent(enumClass);
     enumClass->Body().push_back(arrayClassProp);
 
