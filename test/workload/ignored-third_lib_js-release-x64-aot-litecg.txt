@@ -3,9 +3,6 @@
 # Issue #18340
 Drools_test
 
-#18517
-js-joda_test
-
 #18546
 jBox2d_test
 

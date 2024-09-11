@@ -8,7 +8,6 @@ js-md2_test
 brotli_test
 jBox2d_test
 zxing_test
-js-joda_test
 is-webp-master_test
 leven_test
 Jmustache_test

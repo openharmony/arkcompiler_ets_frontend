@@ -12,9 +12,6 @@ jsbn_test
 #19247
 jsDiff_test
 
-#18372
-js-joda_test
-
 #18425
 gson_test
 

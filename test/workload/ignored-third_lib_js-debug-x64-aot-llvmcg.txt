@@ -3,9 +3,6 @@
 #18487
 pako_test
 
-#18517
-js-joda_test
-
 #18897
 splay-latency
 

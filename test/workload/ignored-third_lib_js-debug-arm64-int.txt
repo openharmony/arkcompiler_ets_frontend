@@ -24,7 +24,6 @@ sax_test
 dayjs_test
 validator_test
 
-js-joda_test
 d3Ease_test
 qrcodegen_test
 zxing-text-encoding_test

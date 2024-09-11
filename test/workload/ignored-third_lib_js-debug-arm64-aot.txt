@@ -25,7 +25,6 @@ leven_test
 base64_test
 brotli_test
 pcx_test
-js-joda_test
 gson_test
 time-ampm_test
 imtype_test
