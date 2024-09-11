@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 18,
+            "line": 19,
             "column": 25,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
-            "line": 18,
+            "line": 19,
             "column": 51,
             "problem": "UnknownType",
             "suggest": "",

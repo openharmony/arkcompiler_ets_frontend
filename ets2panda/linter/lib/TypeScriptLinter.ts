@@ -107,6 +107,8 @@ export class TypeScriptLinter {
   private readonly compatibleSdkVersionStage: string;
   private static sharedModulesCache: Map<string, boolean>;
   static filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
+  static strictDiagnosticCache: Set<ts.Diagnostic>;
+  static unknowDiagnosticCache: Set<ts.Diagnostic>;
   static ideMode: boolean = false;
   static testMode: boolean = false;
   static useRelaxedRules = false;
@@ -117,6 +119,8 @@ export class TypeScriptLinter {
   static initGlobals(): void {
     TypeScriptLinter.filteredDiagnosticMessages = new Set<ts.DiagnosticMessageChain>();
     TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
+    TypeScriptLinter.strictDiagnosticCache = new Set<ts.Diagnostic>();
+    TypeScriptLinter.unknowDiagnosticCache = new Set<ts.Diagnostic>();
   }
 
   private initEtsHandlers(): void {
@@ -918,7 +922,8 @@ export class TypeScriptLinter {
 
   private filterStrictDiagnostics(
     filters: { [code: number]: (pos: number) => boolean },
-    diagnosticChecker: DiagnosticChecker
+    diagnosticChecker: DiagnosticChecker,
+    inLibCall: boolean
   ): boolean {
     if (!this.tscStrictDiagnostics || !this.sourceFile) {
       return false;
@@ -935,6 +940,22 @@ export class TypeScriptLinter {
         return true;
       }
       if (val.start === undefined || checkInRange(val.start)) {
+        return true;
+      }
+      if (TypeScriptLinter.unknowDiagnosticCache.has(val)) {
+        TypeScriptLinter.filteredDiagnosticMessages.add(val.messageText as ts.DiagnosticMessageChain);
+        return false;
+      }
+
+      /**
+       * When a fault is DiagnosticMessageChain, a filter error is reported when the node source is ts or a tripartite database.
+       * When a fault does not match TypeScriptLinter.strictDiagnosticCache and error type is not string，just return true directly.
+       */
+      if (TypeScriptLinter.strictDiagnosticCache.has(val)) {
+        if (inLibCall) {
+          TypeScriptLinter.filteredDiagnosticMessages.add(val.messageText as ts.DiagnosticMessageChain);
+          return false;
+        }
         return true;
       }
       return diagnosticChecker.checkDiagnosticMessage(val.messageText);
@@ -2101,7 +2122,8 @@ export class TypeScriptLinter {
           return TypeScriptLinter.checkInRange(rangesToFilter, pos);
         }
       },
-      this.libraryTypeCallDiagnosticChecker
+      this.libraryTypeCallDiagnosticChecker,
+      inLibCall
     );
     if (hasFiltered) {
       this.filterOutDiagnostics(
