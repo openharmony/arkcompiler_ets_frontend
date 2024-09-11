@@ -74,3 +74,5 @@ image_files:
     "../../performance_test/mail_data/release_full_time.jpg": performance10
     "../../performance_test/mail_data/release_incremental_time.jpg": performance11
     "../../performance_test/mail_data/release_size.jpg": performance12
+    "../../performance_test/mail_data/debug_preview_model_build_time.jpg": performance31
+    "../../performance_test/mail_data/release_preview_model_build_time.jpg": performance41

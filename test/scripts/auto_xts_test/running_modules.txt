@@ -1,1 +1,1 @@
-modules=ActsAceEtsTest
+modules=ActsEsmoduleEntryTest;ActsEsmoduleOhostestTest;ActsHspDemoTest

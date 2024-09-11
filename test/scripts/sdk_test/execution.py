@@ -17,15 +17,18 @@ limitations under the License.
 
 Description: execute test tasks
 """
-
+import copy
+import json
 import logging
 import os
 import re
 import shutil
 import signal
 import subprocess
+import tarfile
 import time
 import zipfile
+from contextlib import contextmanager
 
 import json5
 
@@ -33,10 +36,238 @@ import options
 import utils
 
 
+class FullTest:
+    @staticmethod
+    def prepare_full_task(task, test_name):
+        if test_name in task.full_compilation_info:
+            full_task = task.full_compilation_info[test_name]
+        else:
+            full_task = options.FullCompilationInfo()
+            full_task.name = test_name
+            task.full_compilation_info[test_name] = full_task
+        return full_task
+
+    @staticmethod
+    def full_compile(task, is_debug):
+        test_name = "full_compile"
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+        clean_compile(task)
+
+        full_task = FullTest.prepare_full_task(task, test_name)
+        [stdout, stderr] = compile_project(task, is_debug)
+        passed = validate(full_task, task, is_debug, stdout, stderr, f'{test_name}')
+        if passed:
+            backup_compile_output(task, is_debug)
+
+        return passed
+
+    @staticmethod
+    def compile_full_import_ordinary_ohpm_package(task, is_debug):
+        test_name = 'import_ordinary_ohpm_package'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        try:
+            modify_file = os.path.join(task.path, *task.inc_modify_file)
+            patch_content = (options.configs.get('patch_content').get('ohpm_package_patch')
+                             .get('ordinary_package'))
+            head_content = patch_content.get('head')
+            tail_content = patch_content.get('tail')
+            utils.add_content_to_file(modify_file, head_content, tail_content)
+            build_passed, build_time = is_build_module_successful(task, is_debug, info,
+                                                                  '', f'full_compile_{test_name}')
+            if not build_passed:
+                return
+            package_name = patch_content.get('name')
+            is_included = is_npm_txt_included_ohpm_package(info, task, is_debug, package_name)
+            if is_included:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+        finally:
+            utils.remove_content_from_file(modify_file, head_content, tail_content)
+
+    @staticmethod
+    def compile_full_import_special_ohpm_package(task, is_debug):
+        test_name = 'import_special_ohpm_package'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        try:
+            modify_file = os.path.join(task.path, *task.inc_modify_file)
+            patch_content = (options.configs.get('patch_content').get('ohpm_package_patch')
+                             .get('special_package'))
+            head_content = patch_content.get('head')
+            tail_content = patch_content.get('tail')
+            utils.add_content_to_file(modify_file, head_content, tail_content)
+            build_passed, build_time = is_build_module_successful(task, is_debug, info,
+                                                                  '', f'full_compile_{test_name}')
+            if not build_passed:
+                logging.error(f'Test：{test_name} failed,due to full compilation failed')
+                return
+            package_name = patch_content.get('name')
+            disasm_file_path = get_disasm_abc_file(task, info, 'Hap')
+            is_contained = utils.file_contains_specified_fields(disasm_file_path, package_name)
+            if is_contained:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+        finally:
+            utils.remove_content_from_file(modify_file, head_content, tail_content)
+
+    @staticmethod
+    def compile_full_import_static_library(task, is_debug):
+        test_name = 'import_static_library'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Har'):
+            build_passed, build_time = is_build_module_successful(task, is_debug, info, '',
+                                                                  f'full_compile_{test_name}')
+            if not build_passed:
+                logging.error(f'Test：{test_name} failed,due to full compilation failed')
+                return
+            pa_file = get_disasm_abc_file(task, info, 'Hap')
+            if not pa_file:
+                return
+            is_packaged = is_package_modules_to_module_abc(task, pa_file, task.har_module)
+            if is_packaged:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+            else:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Har was not properly packaged into module abc'
+
+    @staticmethod
+    def compile_full_import_share_library(task, is_debug):
+        test_name = 'import_share_library'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Hsp'):
+            build_passed, build_time = is_build_module_successful(task, is_debug, info, '',
+                                                                  f'full_compile_{test_name}')
+            if not build_passed:
+                logging.error(f'Test：{test_name} failed,due to full compilation failed')
+                return
+            pa_file = get_disasm_abc_file(task, info, 'Hap')
+            if not pa_file:
+                return
+            is_packaged = is_package_modules_to_module_abc(task, pa_file, task.hsp_module)
+            if not is_packaged:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+            else:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Unexpected changes have occurred.Hsp should not be packaged into module abc'
+
+    @staticmethod
+    def compile_full_import_so_file(task, is_debug):
+        test_name = 'import_so_file'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Cpp'):
+            [stdout, stderr] = compile_project(task, is_debug)
+            is_success, build_time = is_compile_success(stdout)
+            if not is_success:
+                logging.error(f'Test：{test_name} failed,due to full compilation failed')
+                info.result = options.TaskResult.failed
+                info.error_message = stderr
+                return
+            validate(full_task, task, is_debug, stdout, stderr)
+
+    @staticmethod
+    def compile_full_has_syntax_error_in_js(task, is_debug):
+        test_name = 'has_syntax_error_in_js'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        try:
+            add_or_delete_js_file(task, 1, True)
+            patch_lines_error = options.configs.get('patch_content').get('patch_lines_error')
+            expected_error = patch_lines_error.get('expected_error')
+            [stdout, stderr] = compile_project(task, is_debug)
+            is_passed = is_get_expected_error(info, stderr, expected_error)
+            if is_passed:
+                info.result = options.TaskResult.passed
+
+        finally:
+            add_or_delete_js_file(task, 0)
+
+    @staticmethod
+    def compile_full_use_normalize_ohmurl(task, is_debug):
+        test_name = 'use_normalize_ohmurl'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        modify_normalize_ohmurl_options(task, 1)
+        try:
+            with manage_module_import_and_export_handle(task, 'Har'):
+                is_build_passed, build_time = is_build_module_successful(task, is_debug, info,
+                                                                         '', f'full_compile_{test_name}')
+                if not is_build_passed:
+                    logging.error(f'Test：{test_name},full compilation failed with use normalize ohmurl option')
+                    return
+                is_passed = is_normalized_ohm_url(task, is_debug, info)
+                if is_passed:
+                    info.result = options.TaskResult.passed
+                    info.time = build_time
+        finally:
+            modify_normalize_ohmurl_options(task, 0)
+
+    @staticmethod
+    def compile_full_module_name_is_inconsistent(task, is_debug):
+        test_name = 'module_name_is_inconsistent'
+        clean_compile(task)
+        full_task = FullTest.prepare_full_task(task, test_name)
+        info = full_task.debug_info if is_debug else full_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        oh_package_json_path = os.path.join(task.path, *task.hap_module_path, 'oh-package.json5')
+        json_data = {}
+        try:
+            with open(oh_package_json_path, 'r+', encoding='utf-8') as json_file:
+                json_data = json5.load(json_file)
+                bak_data = copy.deepcopy(json_data)
+                dependencies_dic = json_data["dependencies"]
+                patch_lines = options.configs.get('patch_content').get('patch_lines_1')
+                dependency_name = utils.extract_library_names(patch_lines.get('har').get('head'))
+                module_name = task.har_module.capitalize()
+                dependencies_dic[dependency_name] = os.path.normpath(f"file:../{module_name}")
+                json_file.seek(0)
+                json.dump(json_data, json_file, indent=4)
+                json_file.truncate()
+            sync_project(task)
+
+            with manage_module_import_and_export_handle(task, 'Har'):
+                is_build_successful, build_time = is_build_module_successful(task, is_debug, info,
+                    '', 'full_compile_module_name_is_inconsistent')
+                if is_build_successful:
+                    info.result = options.TaskResult.passed
+                    info.time = build_time
+        finally:
+            with open(oh_package_json_path, 'w', encoding='utf-8') as json_file:
+                json.dump(bak_data, json_file, indent=4)
+            sync_project(task)
+
+
 class IncrementalTest:
     @staticmethod
     def validate_module_name_change(task, inc_task, is_debug, stdout, stderr, new_module_name):
-        output_file = get_compile_output_file_path(task, is_debug)
+        output_file = get_compile_output_file_path(task, is_debug, options.OutputType.unsigned)
         output_dir = os.path.dirname(output_file)
         output_file_name = os.path.basename(output_file)
         output_file_name_items = output_file_name.split(
@@ -103,60 +334,20 @@ class IncrementalTest:
         return False
 
     @staticmethod
-    def validate_compile_incremental_file(task, inc_task, is_debug, modified_files):
-        cache_extention = ''
-        if 'stage' in task.type:
-            cache_extention = '.protoBin'
-        elif 'fa' in task.type or 'compatible8' in task.type:
-            cache_extention = '.temp.abc'
-        elif 'js' in task.type:
-            cache_extention = '.abc'
-
-        modified_cache_files = []
-        # modified_files is a list of file with relative path to .../debug/release
-        for file in modified_files:
-            name, ext = os.path.splitext(file)
-            modified_cache_files.append(name + cache_extention)
-
-        logging.debug(f"modified_cache_files: {modified_cache_files}")
-
+    def validate_compile_incremental_file(task, inc_task, is_debug, modified_files, module=''):
+        module_path = utils.get_module_path(task, module)
         if is_debug:
             cache_path = os.path.join(
-                task.path, *(task.build_path), *(task.cache_path), 'debug')
+                task.path, *module_path, *task.build_path, *task.cache_path, 'debug')
             backup_path = task.backup_info.cache_debug
             inc_info = inc_task.debug_info
         else:
             cache_path = os.path.join(
-                task.path, *(task.build_path), *(task.cache_path), 'release')
+                task.path, *module_path, *task.build_path, *task.cache_path, 'release')
             backup_path = task.backup_info.cache_release
             inc_info = inc_task.release_info
 
-        for root, dirs, files in os.walk(cache_path):
-            for file in files:
-                if not file.endswith(cache_extention):
-                    continue
-                file_absolute_path = os.path.join(root, file)
-                file_relative_path = os.path.relpath(
-                    file_absolute_path, cache_path)
-                backup_file = os.path.join(backup_path, file_relative_path)
-
-                if not os.path.exists(backup_file):
-                    logging.debug(f"backup file not exits: {backup_file}")
-                    continue
-
-                if utils.is_file_timestamps_same(file_absolute_path, backup_file):
-                    continue
-
-                logging.debug(f"found file ${file_relative_path} changed")
-                is_file_in_list = IncrementalTest.is_file_in_modified_files(
-                    task.type, file_relative_path, modified_cache_files)
-                logging.debug(f"is file in list: {is_file_in_list}")
-                if not is_file_in_list:
-                    logging.debug(f"Unexpected file modified: {file_relative_path}")
-                    inc_info.result = options.TaskResult.failed
-                    inc_info.error_message = f'Incremental compile found unexpected file timestamp changed. \
-                                             Changed file: {file_relative_path}'
-                    return
+        validate_cache_file(task, inc_info, modified_files, cache_path, backup_path)
 
     @staticmethod
     def prepare_incremental_task(task, test_name):
@@ -235,7 +426,7 @@ class IncrementalTest:
             old_content = file.read()
             file.seek(0)
             patch_lines = options.configs.get(
-                'patch_content').get('patch_lines_1')
+                'patch_content').get('patch_lines_1').get('js')
             file.write(patch_lines.get('head'))
             file.write(old_content)
             file.write(patch_lines.get('tail'))
@@ -266,14 +457,16 @@ class IncrementalTest:
             old_content = file.read()
             file.seek(0)
             patch_lines = options.configs.get(
-                'patch_content').get('patch_lines_1')
+                'patch_content').get('patch_lines_1').get('js')
             file.write(patch_lines.get('head'))
             file.write(old_content)
             file.write(patch_lines.get('tail'))
 
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        expected_errors = options.configs.get('patch_content').get('patch_file_error').get('expected_error')
         [stdout, stderr] = compile_project(task, is_debug)
-        passed = validate(inc_task, task, is_debug, stdout, stderr, 'incremental_compile_add_nonexistent_file')
-        if not passed:
+        passed = is_get_expected_error(info, stderr, expected_errors)
+        if passed:
             logging.info("The first compilation file does not exist. The compilation fails as expected")
 
             modify_dir = os.path.dirname(modify_file)
@@ -291,16 +484,15 @@ class IncrementalTest:
 
             with open(new_file, 'w', encoding='utf-8') as file:
                 file.writelines(new_file_content)
-            
+
             [stdout, stderr] = compile_project(task, is_debug)
             passed = validate(inc_task, task, is_debug, stdout, stderr, 'incremental_compile_add_nonexistent_file')
             if passed:
                 modified_files = [os.path.join(*modify_file_item)]
                 IncrementalTest.validate_compile_incremental_file(
                     task, inc_task, is_debug, modified_files)
-
-            shutil.move(modify_file_backup, modify_file)
             os.remove(new_file)
+        shutil.move(modify_file_backup, modify_file)
 
     @staticmethod
     def compile_incremental_delete_file(task, is_debug):
@@ -342,7 +534,7 @@ class IncrementalTest:
         profile_file_backup = profile_file + ".bak"
         shutil.copyfile(profile_file, profile_file_backup)
 
-        with open(profile_file, 'r') as file:
+        with open(profile_file, 'r', encoding='utf-8') as file:
             profile_data = json5.load(file)
         new_module_name = "new_entry"
         logging.debug(f"profile_data is: {profile_data}")
@@ -354,8 +546,7 @@ class IncrementalTest:
             json5.dump(profile_data, file)
 
         # modify module.json5 for stage mode
-        entry_item = task.build_path[:-2]  # to entry path
-        config_file_dir = os.path.join(task.path, *entry_item, 'src', 'main')
+        config_file_dir = os.path.join(task.path, *task.hap_module_path, 'src', 'main')
         config_file = os.path.join(config_file_dir, 'module.json5')
         config_file_backup = config_file + ".bak"
         shutil.copyfile(config_file, config_file_backup)
@@ -367,7 +558,7 @@ class IncrementalTest:
             json5.dump(config_data, file)
 
         try:
-            cmd = get_hvigor_compile_cmd(task, is_debug, new_module_name)
+            cmd = get_hvigor_compile_cmd(task, is_debug, 'Hap', new_module_name)
             [stdout, stderr] = compile_project(task, is_debug, cmd)
             IncrementalTest.validate_module_name_change(
                 task, inc_task, is_debug, stdout, stderr, new_module_name)
@@ -376,6 +567,492 @@ class IncrementalTest:
         finally:
             shutil.move(profile_file_backup, profile_file)
             shutil.move(config_file_backup, config_file)
+
+    @staticmethod
+    def compile_incremental_build_modify_error_then_fix(task, is_debug):
+        test_name = 'modify_error_then_fix'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        modify_file = os.path.join(task.path, *task.inc_modify_file)
+        patch_lines_error = options.configs.get('patch_content').get('patch_lines_error')
+        error_content = patch_lines_error.get('content')
+        with open(modify_file, 'a', encoding='utf-8') as file:
+            file.write(error_content)
+
+        try:
+            [stdout, stderr] = compile_project(task, is_debug)
+            is_passed = is_get_expected_error(info, stderr, patch_lines_error.get('expected_error'))
+            if not is_passed:
+                logging.error(f"task: {task.name}failed to get expected error, skip second build")
+                return
+        finally:
+            utils.remove_content_from_file(modify_file, '',
+                                           patch_lines_error.get('content'))
+        is_build_successful, build_time = is_build_module_successful(task, is_debug,
+            info, '', 'incremental_compile_modify_error_then_fix')
+        if is_build_successful:
+            info.result = options.TaskResult.passed
+            info.time = build_time
+            modify_file_item = task.inc_modify_file
+            modified_files = [os.path.join(*modify_file_item)]
+            IncrementalTest.validate_compile_incremental_file(
+                task, inc_task, is_debug, modified_files)
+
+    @staticmethod
+    def compile_incremental_build_add_error_page(task, is_debug):
+        test_name = 'add_error_page_then_fix'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        add_or_delete_page(task, 1, True)
+        try:
+            expected_errors = options.configs.get('patch_content').get('patch_lines_error').get('content')
+            [stdout, stderr] = compile_project(task, is_debug)
+            if not is_get_expected_error(info, stderr, expected_errors):
+                return
+            add_or_delete_page(task, 0, True)
+            second_incremental, build_time = is_build_module_successful(task, is_debug, info,
+                '', 'incremental_compile_add_error_page_then_fix')
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+                modify_file_item = task.inc_modify_file
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+        finally:
+            add_or_delete_page(task, 0)
+
+    @staticmethod
+    def compile_incremental_build_add_error_non_page(task, is_debug):
+        test_name = 'add_error_non_page_then_fix'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        add_or_delete_js_file(task, 1, True)
+        try:
+            expected_errors = options.configs.get('patch_content').get('patch_lines_error').get('content')
+            [stdout, stderr] = compile_project(task, is_debug)
+            if not is_get_expected_error(info, stderr, expected_errors):
+                return
+            add_or_delete_js_file(task, 0, True)
+            second_incremental, build_time = is_build_module_successful(task, is_debug, info,
+                '', 'incremental_compile_add_error_non_page_then_fix')
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+                modify_file_item = task.inc_modify_file
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+        finally:
+            add_or_delete_js_file(task, 0)
+
+    @staticmethod
+    def compile_incremental_build_modify_sdk_version(task, is_debug):
+        test_name = 'modify_sdk_version'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        try:
+            first_incremental, first_build_time = is_build_module_successful(task, is_debug, info)
+            if not first_incremental:
+                return
+            # The default project uses api12, change it to api11
+            modify_sdk_version(task, 11)
+            second_incremental, second_build_time = is_build_module_successful(task, is_debug, info,
+                '', 'incremental_compile_modify_sdk_version')
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = first_build_time + second_build_time
+        finally:
+            modify_sdk_version(task, 12)
+
+    @staticmethod
+    def compile_incremental_build_entry_then_har(task, is_debug):
+        test_name = 'build_entry_then_har'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Har'):
+            first_incremental, first_build_time = is_build_module_successful(task, is_debug, info)
+            if not first_incremental:
+                return
+            second_incremental, second_build_time = is_build_module_successful(task, is_debug, info,
+                'Har', 'incremental_compile_build_entry_then_har')
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = first_build_time + second_build_time
+                modify_file_item = task.inc_modify_file
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+
+    @staticmethod
+    def compile_incremental_build_har_then_entry(task, is_debug):
+        test_name = 'build_har_then_entry'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Har'):
+            first_incremental, first_build_time = is_build_module_successful(task, is_debug, info, 'Har')
+            if not first_incremental:
+                return
+            second_incremental, second_build_time = is_build_module_successful(task, is_debug, info,
+                '', 'incremental_compile_build_har_then_entry')
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = first_build_time + second_build_time
+                modify_file_item = task.inc_modify_file
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+
+    @staticmethod
+    def compile_incremental_build_entry_then_hsp(task, is_debug):
+        test_name = 'build_entry_then_hsp'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Hsp'):
+            first_incremental, first_build_time = is_build_module_successful(task, is_debug, info)
+            if not first_incremental:
+                return
+            second_incremental, second_build_time = is_build_module_successful(task, is_debug, info,
+                'Hsp', 'incremental_compile_build_entry_then_hsp')
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = first_build_time + second_build_time
+                modify_file_item = task.inc_modify_file
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+
+    @staticmethod
+    def compile_incremental_build_hsp_then_entry(task, is_debug):
+        test_name = 'build_hsp_then_entry'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Hsp'):
+            first_incremental, first_build_time = is_build_module_successful(task, is_debug, info, 'Hsp')
+            if not first_incremental:
+                return
+            second_incremental, second_build_time = is_build_module_successful(task, is_debug, info,
+                '', 'incremental_compile_build_hsp_then_entry')
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = first_build_time + second_build_time
+                modify_file_item = task.inc_modify_file
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+
+    @staticmethod
+    def compile_incremental_build_hsp_then_ohos(task, is_debug):
+        if not is_debug or 'ohosTest' not in task.type:
+            return
+        test_name = 'build_hsp_then_ohos'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'Hsp'):
+            first_incremental, first_build_time = is_build_module_successful(task, is_debug, info, 'Hsp')
+            if not first_incremental:
+                return
+            second_incremental, second_build_time = is_build_ohos_test_successful(task, info)
+
+            if second_incremental:
+                info.result = options.TaskResult.passed
+                info.time = first_build_time + second_build_time
+                modify_file_item = task.inc_modify_file
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+
+    @staticmethod
+    def compile_incremental_build_entry_then_ohos(task, is_debug):
+        if not is_debug:
+            return
+        test_name = 'build_entry_then_ohos'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        first_incremental, first_build_time = is_build_module_successful(task, is_debug, info)
+        if not first_incremental:
+            return
+        second_incremental, second_build_time = is_build_ohos_test_successful(task, info)
+
+        if second_build_time:
+            info.result = options.TaskResult.passed
+            info.time = first_build_time + second_build_time
+            modify_file_item = task.inc_modify_file
+            modified_files = [os.path.join(*modify_file_item)]
+            IncrementalTest.validate_compile_incremental_file(
+                task, inc_task, is_debug, modified_files)
+
+    @staticmethod
+    def compile_incremental_build_entry_then_preview_build(task, is_debug):
+        test_name = 'build_entry_then_preview_build'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+        info = inc_task.debug_info if is_debug else inc_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        first_incremental, first_build_time = is_build_module_successful(task, is_debug, inc_task)
+        if not first_incremental:
+            return
+        second_incremental, second_build_time = preview_mode_build(info, task, is_debug)
+
+        if second_incremental:
+            info.result = options.TaskResult.passed
+            info.time = first_build_time + second_build_time
+            modify_file_item = task.inc_modify_file
+            modified_files = [os.path.join(*modify_file_item)]
+            IncrementalTest.validate_compile_incremental_file(
+                task, inc_task, is_debug, modified_files)
+
+
+class PreviewTest:
+    @staticmethod
+    def validate_preview_incremental_file(task, preview_task_info, is_debug, modified_files, module=''):
+        module_path = utils.get_module_path(task, module)
+        cache_path = os.path.join(
+            task.path, *module_path, *task.build_path, *task.preview_cache_path, 'debug')
+        backup_path = task.backup_info.cache_debug
+
+        passed = validate_cache_file(task, preview_task_info, modified_files, cache_path, backup_path)
+        return passed
+
+    @staticmethod
+    def preview_compile(task, is_debug):
+        test_name = "preview_compile"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        clean_preview_cache(task)
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        passed, build_time = preview_mode_build(preview_task_info, task, is_debug, f'preview_compile_{test_name}')
+        if passed:
+            preview_task_info.result = options.TaskResult.passed
+            preview_task_info.time = build_time
+
+        return passed
+
+    @staticmethod
+    def compile_preview_build_entry_then_preview(task, is_debug):
+        test_name = "build_entry_then_preview"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        build_entry, build_module_time = is_build_module_successful(task, is_debug, preview_task_info)
+        if not build_entry:
+            return
+        build_preview, preview_build_time = preview_mode_build(preview_task_info, task, is_debug)
+
+        if build_preview:
+            preview_task_info.result = options.TaskResult.passed
+            preview_task_info.time = preview_build_time
+
+    @staticmethod
+    def compile_preview_build_modify_file_name(task, is_debug):
+        test_name = "build_modify_file_name"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        modify_file = os.path.join(task.path, *task.inc_modify_file)
+        patch_content = options.configs.get('patch_content')
+        patch_new_file_ts = patch_content.get('patch_new_file_ts')
+        ts_file_name = patch_new_file_ts.get('name')
+        ts_content = patch_new_file_ts.get('content')
+        modify_dic = os.path.dirname(modify_file)
+        ts_file = os.path.join(modify_dic, ts_file_name)
+
+        try:
+            with open(ts_file, 'w', encoding='utf-8') as file:
+                file.write(ts_content)
+
+            path_lines = patch_content.get('patch_lines_1')
+            ts_path_lines = path_lines.get('ts')
+            head_contnet = ts_path_lines.get('head')
+            tail_contnet = ts_path_lines.get('tail')
+            utils.add_content_to_file(modify_file, head_contnet, tail_contnet)
+            first_build_passed, first_build_time = is_build_module_successful(task, is_debug, preview_task_info)
+            if not first_build_passed:
+                return
+            ts_file_new_name = patch_new_file_ts.get('new_name')
+            ts_new_file = os.path.join(modify_dic, ts_file_new_name)
+            os.rename(ts_file, ts_new_file)
+            second_build_passed, second_build_time = is_build_module_successful(task, is_debug, preview_task_info)
+            if second_build_passed:
+                preview_task_info.result = options.TaskResult.passed
+                preview_task_info.time = first_build_time + second_build_time
+        finally:
+            os.remove(ts_new_file)
+            utils.remove_content_from_file(modify_file, head_contnet, tail_contnet)
+
+    @staticmethod
+    def compile_preview_build_generate_sourcemap(task, is_debug):
+        test_name = "build_generate_sourcemap"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        build_preview, preview_build_time = preview_mode_build(preview_task_info, task, is_debug)
+        if not build_preview:
+            return
+
+        preview_path = os.path.join(task.path, *task.hap_module_path, *task.preview_path)
+        preview_cache_path = os.path.join(preview_path, *task.preview_cache_path)
+        source_map_path = os.path.join(preview_cache_path, 'debug', 'sourceMaps.json') if is_debug \
+            else os.path.join(preview_cache_path, 'release', 'sourceMaps.json')
+
+        if not os.path.exists(source_map_path):
+            logging.error(f'task: {task.name},source map not found in {source_map_path}')
+            preview_task_info.result = options.TaskResult.failed
+            preview_task_info.error_message = f"Source map not found in f{source_map_path}"
+            return
+
+        preview_task_info.result = options.TaskResult.passed
+        preview_task_info.time = preview_build_time
+
+    @staticmethod
+    def compile_preview_build_tigger_incremental_build(task, is_debug):
+        test_name = "tigger_incremental_build"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        backup_preview_cache(task, is_debug)
+        inc_modify_file = os.path.join(task.path, *task.inc_modify_file)
+        patch_line = options.configs.get('patch_content').get('patch_lines_2')
+        utils.add_content_to_file(inc_modify_file, '', patch_line.get('tail'))
+
+        try:
+            build_preview, preview_build_time = preview_mode_build(preview_task_info, task, is_debug)
+            if not build_preview:
+                return
+
+            passed = PreviewTest.validate_preview_incremental_file(task, preview_task_info, is_debug, inc_modify_file)
+            if passed:
+                preview_task_info.result = options.TaskResult.passed
+                preview_task_info.time = preview_build_time
+        finally:
+            utils.remove_content_from_file(inc_modify_file, '', patch_line.get('tail'))
+
+    @staticmethod
+    def compile_preview_build_has_arkui_error(task, is_debug):
+        test_name = "has_arkui_error"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        add_or_delete_arkui_component(task, 1, True)
+        try:
+            preview_mode_build(preview_task_info, task, is_debug)
+            cmd = get_preview_mode_compile_cmd(task, is_debug)
+            [stdout, stderr] = compile_project(task, is_debug, cmd)
+            expected_errors = options.configs.get('patch_content').get('arkui_patch').get('expected_errors')
+            is_passed = is_get_expected_error(preview_task_info, stderr, expected_errors)
+            if is_passed:
+                preview_task_info.result = options.TaskResult.passed
+        finally:
+            add_or_delete_arkui_component(task, 0)
+
+    @staticmethod
+    def compile_preview_build_sdk_path_has_special_char(task, is_debug):
+        test_name = "sdk_path_has_special_char"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        sdk_path, api_version = '', ''
+        profile_file = os.path.join(task.path, 'build-profile.json5')
+        with open(profile_file, 'r', encoding='utf-8') as file:
+            profile_data = json5.load(file)
+            api_version = profile_data['app']['products'][0]['compatibleSdkVersion']
+            if isinstance(api_version, int):
+                openharmony_sdk_path = options.configs.get('deveco_openharmony_sdk_path')
+                sdk_path = os.path.join(openharmony_sdk_path, str(api_version), 'ets', 'build-tools')
+            else:
+                harmonyos_sdk_path = options.configs.get('deveco_harmonyos_sdk_path')
+                api_version_file_map = options.configs.get('api_version_file_name_map')
+                file_name = api_version_file_map.get(api_version)
+                sdk_path = os.path.join(harmonyos_sdk_path, file_name, 'openharmony', 'ets', 'build-tools')
+        # Add a space to sdk file path
+        last_folder_name = os.path.basename(sdk_path)
+        new_folder_name = last_folder_name[:2] + " " + last_folder_name[2:]
+        new_sdk_path = os.path.join(os.path.dirname(sdk_path), new_folder_name)
+        try:
+            os.rename(sdk_path, new_sdk_path)
+            passed, build_time = preview_mode_build(preview_task_info, task, is_debug)
+
+            if passed:
+                preview_task_info.result = options.TaskResult.passed
+                preview_task_info.time = build_time
+            else:
+                preview_task_info.result = options.TaskResult.failed
+                logging.error(f'Test failed due to adding spaces to the SDK path')
+        finally:
+            os.rename(new_sdk_path, sdk_path)
+
+    @staticmethod
+    def compile_preview_build_modify_error_then_fix(task, is_debug):
+        test_name = "modify_hello_world_then_fix"
+        preview_task_info = options.CompilationInfo()
+        task.preview_compilation_info[test_name] = preview_task_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        add_or_delete_arkui_component(task, 1)
+        arkui_patch = options.configs.get('patch_content').get('arkui_patch')
+        origin_text = arkui_patch.get('origin_text')
+        error_text = arkui_patch.get('error_text')
+        try:
+            preview_modify_file = os.path.join(task.path, *task.inc_modify_file)
+            with open(preview_modify_file, 'r+', encoding='utf-8') as file:
+                old_content = file.read()
+                new_content = old_content.replace(origin_text, error_text)
+                file.seek(0)
+                file.write(new_content)
+                file.truncate()
+            cmd = get_preview_mode_compile_cmd(task, is_debug)
+            [stdout, stderr] = compile_project(task, is_debug, cmd)
+            expected_errors = arkui_patch.get('expected_errors')
+            is_passed = is_get_expected_error(preview_task_info, stderr, expected_errors)
+            if not is_passed:
+                logging.error(f'task: {task.name}, first build did not get expected errors, skip second build')
+                return
+            with open(preview_modify_file, 'r+', encoding='utf-8') as file:
+                old_content = file.read()
+                new_content = old_content.replace(error_text, origin_text)
+                file.seek(0)
+                file.write(new_content)
+                file.truncate()
+            is_build_successful, build_time = preview_mode_build(preview_task_info, task, is_debug)
+            if is_build_successful:
+                preview_task_info.result = options.TaskResult.passed
+                preview_task_info.time = build_time
+        finally:
+            add_or_delete_arkui_component(task, 0)
 
 
 class OtherTest:
@@ -501,7 +1178,7 @@ class OtherTest:
         patch_lines_error = options.configs.get(
             'patch_content').get('patch_lines_error')
         with open(modify_file, 'a', encoding='utf-8') as file:
-            file.write(patch_lines_error.get('tail'))
+            file.write(patch_lines_error.get('content'))
 
         [stdout, stderr] = compile_project(task, is_debug)
         expected_errors = patch_lines_error.get('expected_error')
@@ -528,9 +1205,8 @@ class OtherTest:
 
         logging.info(f"==========> Running {test_name} for task: {task.name}")
         # get build-profile.json5
-        entry_item = task.build_path[:-2]  # to entry path
         profile_file = os.path.join(
-            task.path, *entry_item, 'build-profile.json5')
+            task.path, *task.hap_module_path, 'build-profile.json5')
         profile_file_backup = profile_file + ".bak"
         shutil.copyfile(profile_file, profile_file_backup)
 
@@ -549,7 +1225,7 @@ class OtherTest:
         [stdout, stderr] = compile_project(task, is_debug, cmd)
         # Only the Windows platform has a length limit
         if utils.is_windows():
-            expected_error_message = 'The length of path exceeds the maximum length: 259'
+            expected_error_message = f"Unknown module '{long_str}' in the command line"
 
             if expected_error_message in stderr:
                 test_info.result = options.TaskResult.passed
@@ -576,7 +1252,7 @@ class OtherTest:
 
         logging.info(f"==========> Running {test_name} for task: {task.name}")
         # ohosTest has only debug mode
-        cmd = [get_hvigor_path(task.path), '--mode', 'module',
+        cmd = [*get_hvigor_path(task.path), '--mode', 'module',
                '-p', 'module=entry@ohosTest', 'assembleHap']
         [stdout, stderr] = compile_project(task, True, cmd)
         [is_success, time_string] = is_compile_success(stdout)
@@ -584,7 +1260,7 @@ class OtherTest:
             test_info.result = options.TaskResult.failed
             test_info.error_message = stderr
         else:
-            output_file = get_compile_output_file_path(task, True)
+            output_file = get_compile_output_file_path(task, '', options.OutputType.unsigned)
             output_dir = os.path.dirname(output_file)
             output_file_name = os.path.basename(output_file)
 
@@ -731,7 +1407,7 @@ def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug)
         sourcemap_path = abc_generated_path
     else:
         sourcemap_path = os.path.join(
-            task.path, *(task.build_path), *(task.cache_path), 'release')
+            task.path, *task.hap_module_path, *(task.build_path), *(task.cache_path), 'release')
     sourcemap_file = os.path.join(sourcemap_path, 'sourceMaps.map')
     if not os.path.exists(sourcemap_file):
         info.result = options.TaskResult.failed
@@ -741,7 +1417,7 @@ def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug)
     return True
 
 
-def collect_compile_time(info, time_string):
+def collect_compile_time(time_string):
     time_min = 0.0
     time_second = 0.0
     time_millisecond = 0.0
@@ -755,36 +1431,47 @@ def collect_compile_time(info, time_string):
         if item == 'ms':
             time_millisecond = round(float(time_items[idx - 1]) / 1000, 3)
 
-    info.time = round(time_min + time_second + time_millisecond, 3)
+    return round(time_min + time_second + time_millisecond, 3)
 
 
-def get_compile_output_file_path(task, is_debug):
-    output_file = ''
+def get_compile_output_file_path(task, module, output_type):
+    module_path = utils.get_module_path(task, module)
+    output_path = utils.get_output_path(task, module, output_type)
 
-    if is_debug:
-        output_file = os.path.join(
-            task.path, *(task.build_path), *(task.output_hap_path))
+    if 'External' in module:
+        output_file = os.path.join(task.external_path, *module_path, *task.build_path, *output_path)
     else:
-        output_file = os.path.join(
-            task.path, *(task.build_path), *(task.output_app_path))
+        output_file = os.path.join(task.path, *module_path, *task.build_path, *output_path)
 
     return output_file
 
 
-def validate_compile_output(info, task, is_debug, output_file=''):
+def validate_compile_output_har(info, task, is_debug, output_file='', module=''):
+    uncompressed_output_file = get_output_uncompressed_file(task, info, module, options.OutputType.har)
+
+    if not uncompressed_output_file:
+        return False
+
+    return True
+
+
+def validate_compile_output(info, task, is_debug, output_file='', module=''):
     passed = False
 
     if output_file == '':
-        output_file = get_compile_output_file_path(task, is_debug)
-    uncompressed_output_file = output_file + '.uncompressed'
+        output_file = get_compile_output_file_path(task, module, options.OutputType.unsigned)
 
+    if module == 'Har':
+        return validate_compile_output_har(info, task, is_debug, '', module)
+
+    uncompressed_output_file = output_file + '.uncompressed'
     if not os.path.exists(output_file):
         logging.error("output file for task %s not exists: %s",
                       task.name, output_file)
         passed = False
 
         info.result = options.TaskResult.failed
-        info.error_message = "Hap not found"
+        info.error_message = f"{module} not found"
         return passed
     try:
         with zipfile.ZipFile(output_file, 'r') as zip_ref:
@@ -811,14 +1498,29 @@ def validate_compile_output(info, task, is_debug, output_file=''):
     return passed
 
 
-def run_compile_output(info, task, is_debug, picture_name):
+def run_compile_output(info, task, is_debug, picture_name='', module=''):
+    hsp_output_path = task.backup_info.hsp_signed_output_debug if is_debug \
+        else task.backup_info.hsp_signed_output_release
+    if len(hsp_output_path) < 1:
+        backup_hsp_module_compile_signed_package(task, is_debug)
+
     picture_suffix = 'debug'
     if not is_debug:
         picture_suffix = 'release'
     picture_name = f'{picture_name}_{picture_suffix}'
-    utils.get_running_screenshot(task, picture_name)
-    time.sleep(2)
-    runtime_passed = utils.verify_runtime(task, picture_name)
+
+    runtime_passed = False
+    # There is a certain probability of failure when taking screenshots
+    try_times = 5
+    for i in range(try_times):
+        utils.get_running_screenshot(task, picture_name, is_debug, module)
+        time.sleep(2)
+        if utils.verify_runtime(task, picture_name):
+            runtime_passed = True
+            break
+        else:
+            logging.debug(f'get the preview picture failed, retry: {i}/{try_times}')
+
     if not runtime_passed:
         logging.error(f'The runtime of the {task.name} is inconsistent with the reference screenshot,'
                       f' when running {picture_name}')
@@ -830,6 +1532,12 @@ def run_compile_output(info, task, is_debug, picture_name):
     return runtime_passed
 
 
+
+# verify preview build picture
+def verify_preview_picture(info, task, is_debug, picture_name, module=''):
+    return True
+
+
 def is_compile_success(compile_stdout):
     pattern = r"BUILD SUCCESSFUL in (\d+ min )?(\d+ s )?(\d+ ms)?"
     match_result = re.search(pattern, compile_stdout)
@@ -839,7 +1547,7 @@ def is_compile_success(compile_stdout):
     return [True, match_result.group(0)]
 
 
-def validate(compilation_info, task, is_debug, stdout, stderr, picture_name, output_file=''):
+def validate(compilation_info, task, is_debug, stdout, stderr, picture_name='', output_file=''):
     info = {}
     if is_debug:
         info = compilation_info.debug_info
@@ -855,11 +1563,11 @@ def validate(compilation_info, task, is_debug, stdout, stderr, picture_name, out
 
     passed = validate_compile_output(info, task, is_debug, output_file)
 
-    if options.arguments.run_haps:
+    if options.arguments.run_haps and picture_name:
         runtime_passed = run_compile_output(info, task, is_debug, picture_name)
 
     if passed:
-        collect_compile_time(info, time_string)
+        info.time = collect_compile_time(time_string)
         info.result = options.TaskResult.passed
 
     return passed
@@ -867,21 +1575,47 @@ def validate(compilation_info, task, is_debug, stdout, stderr, picture_name, out
 
 def get_hvigor_path(project_path):
     hvigor = ''
+    deveco_path = options.configs.get('deveco_path')
+    node_js_path = os.path.join(deveco_path, 'tools', 'node')
     if utils.is_windows():
-        hvigor = os.path.join(project_path, 'hvigorw.bat')
+        node_exe_path = os.path.join(node_js_path, 'node.exe')
+        hvigor_script_path = os.path.join(deveco_path, 'tools', 'hvigor', 'bin', 'hvigorw.js')
+        hvigor = [node_exe_path, hvigor_script_path]
     else:
-        hvigor = os.path.join(project_path, 'hvigorw')
+        hvigor = os.path.join(deveco_path, 'hvigorw')
         utils.add_executable_permission(hvigor)
     return hvigor
 
 
-def get_hvigor_compile_cmd(task, is_debug, module_name='', module_target='default'):
-    cmd = [get_hvigor_path(task.path)]
+def get_hvigor_compile_cmd(task, is_debug, module='', module_name='', module_target='default'):
+    cmd = [*get_hvigor_path(task.path)]
     build_mode = 'debug' if is_debug else 'release'
-    module = module_name if module_name else task.hap_module
-    cmd.extend(['--mode', 'module', '-p', 'product=default', '-p', f'module={module}@{module_target}', '-p',
-                f'buildMode={build_mode}', 'assembleHap',
-                '--info', '--verbose-analyze', '--parallel', '--incremental', '--daemon'])
+    if not module:
+        module = 'Hap'
+    if not module_name:
+        module_name = utils.get_module_name(task, module)
+    cmd.extend(['--mode', 'module', '-p', 'product=default', '-p', f'module={module_name}@{module_target}', '-p',
+                f'buildMode={build_mode}', f'assemble{module}',
+                '--info', '--analyze=advanced', '--module_name', '--incremental', '--daemon'])
+    return cmd
+
+
+def get_preview_mode_compile_cmd(task, is_debug, module='', module_target='default'):
+    cmd = [*get_hvigor_path(task.path)]
+    build_mode = 'debug' if is_debug else 'release'
+    module_name = utils.get_module_name(task, module)
+    page = os.path.join(*task.inc_modify_file)
+    if module == 'Har':
+        page = os.path.join(task.har_modify_file)
+    elif module == 'Hsp':
+        page = os.path.join(task.hsp_modify_file)
+
+    cmd.extend(['--mode', 'module', '-p', f'module={module_name}@{module_target}', '-p', 'product=default',
+                '-p', f'buildMode={build_mode}', '-p', 'buildRoot=.preview', '-p', '-p',
+                f'previewer.replace.page={page}', '-p', 'pageType=page', '-p', 'compileResInc=true',
+                '-p', 'previewMode=true', 'PreviewBuild', '--watch', '--analyze', '--parallel',
+                '--incremental', '--daemon'])
+
     return cmd
 
 
@@ -903,8 +1637,30 @@ def compile_project(task, is_debug, cmd=''):
     return [stdout_utf8, stderr_utf8]
 
 
+def preview_mode_build(info, task, is_debug, picture_name='', module=''):
+    cmd = get_preview_mode_compile_cmd(task, is_debug, module)
+    [stdout, stderr] = compile_project(task, is_debug, cmd)
+
+    [is_success, time_string] = is_compile_success(stdout)
+    if not is_success:
+        info.result = options.TaskResult.failed
+        info.error_message = f'task: {task.name}, Preview compile failed'
+        logging.error(f'task: {task.name}, Preview compile failed')
+        return False, ''
+
+    is_get_correct_pic = verify_preview_picture(info, task, is_debug, picture_name, module)
+    if not is_get_correct_pic:
+        info.result = options.TaskResult.failed
+        info.error_message = f'task: {task.name}, Get incorrect picture'
+        logging.error(f'task: {task.name}, Get incorrect picture')
+        return False, ''
+
+    time_string = collect_compile_time(time_string)
+    return True, time_string
+
+
 def clean_compile(task):
-    cmd = [get_hvigor_path(task.path), 'clean']
+    cmd = [*get_hvigor_path(task.path), 'clean']
     logging.debug(f'cmd: {cmd}')
     logging.debug(f"cmd execution path {task.path}")
     process = subprocess.Popen(cmd, shell=False, cwd=task.path,
@@ -912,9 +1668,52 @@ def clean_compile(task):
     out, err = process.communicate(timeout=options.arguments.compile_timeout)
 
 
+def clean_preview_cache(task, module=''):
+    module_path = utils.get_module_path(task, module)
+
+    preview_cache_path = os.path.join(task.path, *module_path, '.preview')
+    if os.path.exists(preview_cache_path):
+        shutil.rmtree(preview_cache_path)
+        logging.debug(f"delete preview cache successfully on this path: {preview_cache_path}")
+
+
+def sync_project(task):
+    ohpm_bat_path = os.path.join(options.configs.get('deveco_path'), 'tools', 'ohpm', 'bin', 'ohpm.bat')
+    ohpm_install_cmd_suffix = ' install --all --registry https://repo.harmonyos.com/ohpm/ --strict_ssl true'
+    ohpm_install_cmd = f'"{ohpm_bat_path}"' + ohpm_install_cmd_suffix
+    cmd_suffix = '--sync -p product=default -p buildMode=debug --analyze --parallel --incremental --daemon'
+    cmd = [*get_hvigor_path(task.path), cmd_suffix]
+    logging.debug(f"cmd execution path {task.path}")
+    logging.debug(f'ohpm install cmd: {ohpm_install_cmd}')
+    subprocess.Popen(ohpm_install_cmd, shell=False, cwd=task.path,
+                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logging.debug(f'sync cmd: {cmd}')
+    subprocess.Popen(cmd, shell=False, cwd=task.path,
+                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # If you don't wait it may cause: current process status is busy, cannot start a build action
+    time.sleep(5)
+
+
+def compile_full(task, is_debug):
+    if not FullTest.full_compile(task, is_debug):
+        return False
+
+    FullTest.compile_full_import_ordinary_ohpm_package(task, is_debug)
+    FullTest.compile_full_import_special_ohpm_package(task, is_debug)
+    FullTest.compile_full_import_static_library(task, is_debug)
+    FullTest.compile_full_import_share_library(task, is_debug)
+    FullTest.compile_full_import_so_file(task, is_debug)
+    FullTest.compile_full_has_syntax_error_in_js(task, is_debug)
+    FullTest.compile_full_use_normalize_ohmurl(task, is_debug)
+    FullTest.compile_full_module_name_is_inconsistent(task, is_debug)
+
+    return True
+
+
 def compile_incremental(task, is_debug):
     logging.info(
         f"==========> Running task: {task.name} in incremental compilation")
+    clean_compile(task)
     [stdout, stderr] = compile_project(task, is_debug)
 
     [is_success, time_string] = is_compile_success(stdout)
@@ -939,8 +1738,38 @@ def compile_incremental(task, is_debug):
     IncrementalTest.compile_incremental_add_file(task, is_debug)
     IncrementalTest.compile_incremental_add_nonexistent_file(task, is_debug)
     IncrementalTest.compile_incremental_delete_file(task, is_debug)
+
+    IncrementalTest.compile_incremental_build_modify_error_then_fix(task, is_debug)
+    IncrementalTest.compile_incremental_build_add_error_page(task, is_debug)
+    IncrementalTest.compile_incremental_build_add_error_non_page(task, is_debug)
+    IncrementalTest.compile_incremental_build_entry_then_har(task, is_debug)
+    IncrementalTest.compile_incremental_build_har_then_entry(task, is_debug)
+    IncrementalTest.compile_incremental_build_entry_then_hsp(task, is_debug)
+    IncrementalTest.compile_incremental_build_hsp_then_entry(task, is_debug)
+    IncrementalTest.compile_incremental_build_hsp_then_ohos(task, is_debug)
+    IncrementalTest.compile_incremental_build_entry_then_ohos(task, is_debug)
+    IncrementalTest.compile_incremental_build_entry_then_preview_build(task, is_debug)
+
+    # These tests require modifying the test files and synchronizing the project,
+    # which may result in unexpected modifications
     IncrementalTest.compile_incremental_reverse_hap_mode(task, is_debug)
     IncrementalTest.compile_incremental_modify_module_name(task, is_debug)
+    IncrementalTest.compile_incremental_build_modify_sdk_version(task, is_debug)
+
+
+def compile_preview(task, is_debug):
+    clean_preview_cache(task)
+    if not PreviewTest.preview_compile(task, is_debug):
+        logging.error('Preview build failed, skip other preview tests')
+        return
+
+    PreviewTest.compile_preview_build_entry_then_preview(task, is_debug)
+    PreviewTest.compile_preview_build_modify_file_name(task, is_debug)
+    PreviewTest.compile_preview_build_generate_sourcemap(task, is_debug)
+    PreviewTest.compile_preview_build_tigger_incremental_build(task, is_debug)
+    PreviewTest.compile_preview_build_has_arkui_error(task, is_debug)
+    PreviewTest.compile_preview_build_sdk_path_has_special_char(task, is_debug)
+    PreviewTest.compile_preview_build_modify_error_then_fix(task, is_debug)
 
 
 def backup_compile_output(task, is_debug):
@@ -964,7 +1793,7 @@ def backup_compile_output(task, is_debug):
         if not os.path.exists(backup_output_path):
             os.makedirs(backup_output_path)
 
-    output_file = get_compile_output_file_path(task, is_debug)
+    output_file = get_compile_output_file_path(task, '', options.OutputType.unsigned)
     shutil.copy(output_file, backup_output_path)
     backup_output = os.path.join(
         backup_output_path, os.path.basename(output_file))
@@ -977,6 +1806,69 @@ def backup_compile_output(task, is_debug):
         task.backup_info.output_release.append(backup_time_output)
 
 
+def backup_hsp_module_compile_signed_package(task, is_debug):
+    if not options.arguments.run_haps:
+        return
+
+    backup_path = task.backup_info.cache_path
+    if not os.path.exists(backup_path):
+        os.mkdir(backup_path)
+
+    cmd = get_hvigor_compile_cmd(task, is_debug, 'Hsp')
+    stdout, stderr = compile_project(task, is_debug, cmd)
+    passed, build_time = is_compile_success(stdout)
+    if not passed:
+        return
+
+    backup_output_path = os.path.join(backup_path, 'output', 'debug') if is_debug \
+        else os.path.join(backup_path, 'output', 'release')
+    if not os.path.exists(backup_output_path):
+        os.makedirs(backup_output_path)
+    output_file = get_compile_output_file_path(task, 'Hsp', options.OutputType.signed)
+    backup_output = os.path.join(
+        backup_output_path, os.path.basename(output_file))
+    shutil.copy(output_file, backup_output_path)
+
+    if is_debug:
+        task.backup_info.hsp_signed_output_debug = backup_output
+    else:
+        task.backup_info.hsp_signed_output_release = backup_output
+
+
+def backup_preview_output(task, is_debug, module):
+    backup_path = task.backup_info.cache_path
+    if not os.path.exists(backup_path):
+        os.mkdir(backup_path)
+
+    if is_debug:
+        # We only need two backup files to compare in the ohter tests.
+        if len(task.backup_info.preview_output_debug) == 2:
+            return
+
+        backup_preview_output_path = os.path.join(backup_path, 'preview', 'debug')
+        if not os.path.exists(backup_preview_output_path):
+            os.makedirs(backup_preview_output_path)
+
+    if is_debug:
+        if len(task.backup_info.preview_output_release) == 2:
+            return
+
+        backup_preview_output_path = os.path.join(backup_path, 'preview', 'release')
+        if not os.path.exists(backup_preview_output_path):
+            os.makedirs(backup_preview_output_path)
+
+    preview_output_path = os.path.join((task.path, module, '.preview'))
+    shutil.copy(preview_output_path, backup_path)
+    backup_preview_output = os.path.join(
+        backup_preview_output_path, os.path.basename(preview_output_path))
+    preview_backup_time_out = backup_preview_output_path + utils.get_time_string()
+    shutil.move(backup_preview_output, preview_backup_time_out)
+    if is_debug:
+        task.backup_info.output_debug.append(preview_backup_time_out)
+    else:
+        task.backup_info.output_release.append(preview_backup_time_out)
+
+
 def backup_compile_cache(task, is_debug):
     backup_path = task.backup_info.cache_path
     if not os.path.exists(backup_path):
@@ -986,7 +1878,7 @@ def backup_compile_cache(task, is_debug):
     if not os.path.exists(backup_cache_path):
         os.mkdir(backup_cache_path)
     cache_files = os.path.join(
-        task.path, *(task.build_path), *(task.cache_path))
+        task.path, *task.hap_module_path, *(task.build_path), *(task.cache_path))
 
     if is_debug:
         if task.backup_info.cache_debug != '':
@@ -1006,25 +1898,46 @@ def backup_compile_cache(task, is_debug):
         task.backup_info.cache_release = backup_cache_file
 
 
+def backup_preview_cache(task, is_debug, module=''):
+    backup_path = task.backup_info.cache_path
+    if not os.path.exists(backup_path):
+        os.mkdir(backup_path)
+
+    preview_backup_cache_path = os.path.join(backup_path, 'preview_cache')
+    if not os.path.exists(preview_backup_cache_path):
+        os.mkdir(preview_backup_cache_path)
+    module_path = utils.get_module_path(task, module)
+    preview_cache_files = os.path.join(
+        task.path, *module_path, *task.preview_path, *task.preview_cache_path)
+
+    if is_debug:
+        if task.backup_info.preview_cache_debug != '':
+            return
+
+        preview_cache_files = os.path.join(preview_cache_files, 'debug')
+        preview_backup_cache_file = os.path.join(preview_backup_cache_path, 'debug')
+        shutil.copytree(preview_cache_files, preview_backup_cache_file)
+        task.backup_info.preview_cache_debug = preview_backup_cache_file
+    else:
+        if task.backup_info.preview_cache_release != '':
+            return
+
+        preview_cache_files = os.path.join(preview_cache_files, 'release')
+        preview_backup_cache_file = os.path.join(preview_backup_cache_path, 'release')
+        shutil.copytree(preview_cache_files, preview_backup_cache_file)
+        task.backup_info.preview_cache_release = preview_backup_cache_file
+
+
 def execute_full_compile(task):
-    logging.info(f"==========> Running task: {task.name} in full compilation")
-    clean_compile(task)
-    passed = False
+    logging.info(
+        f"==========> Running task: {task.name} in full compilation")
+    passed = True
     if options.arguments.hap_mode in ['all', 'release']:
-        [stdout, stderr] = compile_project(task, False)
-        passed = validate(task.full_compilation_info,
-                          task, False, stdout, stderr, 'full_compile')
-        if passed:
-            backup_compile_output(task, False)
+        passed = passed and compile_full(task, False)
         clean_compile(task)
     if options.arguments.hap_mode in ['all', 'debug']:
-        [stdout, stderr] = compile_project(task, True)
-        passed = validate(task.full_compilation_info,
-                          task, True, stdout, stderr, 'full_compile')
-        if passed:
-            backup_compile_output(task, True)
+        passed = passed and compile_full(task, True)
         clean_compile(task)
-
     return passed
 
 
@@ -1039,10 +1952,378 @@ def execute_incremental_compile(task):
         clean_compile(task)
 
 
+def execute_preview_compile(task):
+    logging.info(
+        f"==========> Running task: {task.name} in preview compilation")
+    compile_preview(task, True)
+    clean_compile(task)
+
+
 def clean_backup(task):
     if os.path.exists(task.backup_info.cache_path):
         shutil.rmtree(task.backup_info.cache_path)
     return
+
+
+def is_build_module_successful(task, is_debug, info, module='', picture_name=''):
+    cmd = get_hvigor_compile_cmd(task, is_debug, module)
+    [stdout, stderr] = compile_project(task, is_debug, cmd)
+    [is_success, time_string] = is_compile_success(stdout)
+    if not is_success:
+        info.result = options.TaskResult.failed
+        module_name = utils.get_module_name(task, module)
+        info.error_message = f'Compile failed due to build {module_name} module.'
+        logging.error(f'build {module_name} failed')
+        return False, ''
+
+    passed = validate_compile_output(info, task, is_debug, '', module)
+
+    if options.arguments.run_haps and picture_name:
+        runtime_passed = run_compile_output(info, task, is_debug, picture_name)
+
+    time_string = collect_compile_time(time_string)
+    return passed, time_string
+
+
+def is_get_expected_error(info, stderr, expect_errors):
+    passed = False
+    for expect_error in expect_errors:
+        if expect_error in stderr:
+            passed = True
+            break
+
+    if not passed:
+        logging.error(f"True message: {stderr}, didn't get expected error message: {expect_errors}")
+        info.result = options.TaskResult.failed
+        info.error_message = f'Expected error message: {expect_errors}'
+
+    return passed
+
+
+def is_build_ohos_test_successful(task, info):
+    cmd = [*get_hvigor_path(task.path), '--mode', 'module',
+           '-p', 'module=entry@ohosTest', 'assembleHap']
+    [stdout, stderr] = compile_project(task, True, cmd)
+    [is_success, time_string] = is_compile_success(stdout)
+
+    if not is_success:
+        info.result = options.TaskResult.failed
+        info.error_message = f'Compile failed due to build ohos test.'
+        logging.error(f'build ohos test failed')
+        return False, ''
+
+    time_string = collect_compile_time(time_string)
+    return True, time_string
+
+
+def modify_main_pages_json(task, page_path, reverse):
+    main_pages_json_path = os.path.join(task.path, *task.main_pages_json_path)
+    with open(main_pages_json_path, 'r+', encoding='utf-8') as json_file:
+        json_data = json.load(json_file)
+        pages_dic = json_data['src']
+        if reverse:
+            if page_path not in pages_dic:
+                pages_dic.append(page_path)
+            logging.info(f'Page {page_path} is already in the list')
+        else:
+            if page_path in pages_dic:
+                pages_dic.remove(page_path)
+            else:
+                logging.error(f'Page {page_path} not found in the list')
+
+        json_file.seek(0)
+        json.dump(json_data, json_file, indent=2)
+        json_file.truncate()
+    sync_project(task)
+
+
+def add_or_delete_page(task, reverse, is_error=False):
+    patch_content = options.configs.get(
+        'patch_content').get('patch_new_file_ets')
+    patch_lines_error = options.configs.get(
+        'patch_content').get('patch_lines_error')
+    page_path = patch_content.get('path')
+    new_file_page = patch_content.get('name')
+    new_file_content = patch_content.get('component')
+    new_file_directory = os.path.dirname(os.path.join(task.path, *task.inc_modify_file))
+    new_file_path = os.path.join(new_file_directory, new_file_page)
+
+    if reverse:
+        modify_main_pages_json(task, page_path, 1)
+        with open(new_file_path, 'a', encoding='utf-8') as file:
+            file.write(new_file_content)
+            if is_error:
+                error_content = patch_lines_error.get('content')
+                file.write(error_content)
+    else:
+        if is_error:
+            utils.remove_content_from_file(new_file_path, '', patch_lines_error.get('content'))
+        else:
+            modify_main_pages_json(task, page_path, 0)
+            os.remove(new_file_path)
+
+
+def add_or_delete_js_file(task, reverse, is_error=False):
+    modify_file = os.path.join(task.path, *task.inc_modify_file)
+    patch_content = options.configs.get('patch_content')
+
+    patch_new_file_js = patch_content.get('patch_new_file_js')
+    js_file_name = patch_new_file_js.get('name')
+    js_content = patch_new_file_js.get('content')
+    modify_dic = os.path.dirname(modify_file)
+    js_file_path = os.path.join(modify_dic, js_file_name)
+    path_lines = patch_content.get('patch_lines_1').get('js')
+
+    if reverse:
+        with open(js_file_path, 'a', encoding='utf-8') as file:
+            file.write(js_content)
+            if is_error:
+                error_content = patch_content.get('patch_lines_error').get('content')
+                file.write(error_content)
+
+        utils.add_content_to_file(modify_file, path_lines.get('head'), path_lines.get('tail'))
+    else:
+        if is_error:
+            tail_content = patch_content.get('patch_lines_error').get('content')
+            utils.remove_content_from_file(js_file_path, '', tail_content)
+        else:
+            os.remove(js_file_path)
+            utils.remove_content_from_file(modify_file, path_lines.get('head'), path_lines.get('tail'))
+
+
+def modify_normalize_ohmurl_options(task, reverse):
+    oh_package_json_path = os.path.join(task.path, 'build-profile.json5')
+    with open(oh_package_json_path, 'r+', encoding='utf-8') as json_file:
+        json_data = json5.load(json_file)
+        products = json_data['app']['products'][0]
+        if 'buildOption' not in products:
+            products['buildOption'] = {}
+        build_option = products['buildOption']
+        if 'strictMode' not in build_option:
+            build_option['strictMode'] = {}
+        strict_mode = build_option['strictMode']
+        # if 'useNormalizedOHMUrl' not in products:
+        if reverse:
+            strict_mode['useNormalizedOHMUrl'] = True
+        else:
+            strict_mode['useNormalizedOHMUrl'] = False
+
+        json_file.seek(0)
+        json5.dump(json_data, json_file, indent=4, ensure_ascii=False)
+        json_file.truncate()
+    sync_project(task)
+
+
+def modify_module_import_handle(task, module, reverse):
+    module_dict = {
+        'Har': task.har_modify_file,
+        'Hsp': task.hsp_modify_file,
+        'Cpp': task.cpp_modify_file
+    }
+    modify_file = os.path.join(task.path, *task.inc_modify_file)
+    modify_file_patch = options.configs.get('patch_content').get('patch_lines_1').get(module.lower())
+    if reverse:
+        utils.add_content_to_file(modify_file, modify_file_patch.get('head'),
+                                  modify_file_patch.get('tail'))
+    else:
+        utils.remove_content_from_file(modify_file, modify_file_patch.get('head'),
+                                       modify_file_patch.get('tail'))
+
+
+@contextmanager
+def manage_module_import_and_export_handle(task, module_name):
+    modify_module_import_handle(task, module_name, 1)
+    try:
+        yield
+    finally:
+        modify_module_import_handle(task, module_name, 0)
+
+
+def validate_cache_file(task, info, modified_files, cache_path, backup_path):
+    cache_extension = utils.get_cache_extension(task.type)
+    modified_cache_files = []
+    # modified_files is a list of file with relative path to .../debug/release
+    for file in modified_files:
+        name, ext = os.path.splitext(file)
+        modified_cache_files.append(name + cache_extension)
+
+    for root, dirs, files in os.walk(cache_path):
+        for file in files:
+            if not file.endswith(cache_extension):
+                continue
+            file_absolute_path = os.path.join(root, file)
+            file_relative_path = os.path.relpath(
+                file_absolute_path, cache_path)
+            backup_file = os.path.join(backup_path, file_relative_path)
+
+            if not os.path.exists(backup_file):
+                logging.debug(f"backup file not exits: {backup_file}")
+                continue
+
+            if utils.is_file_timestamps_same(file_absolute_path, backup_file):
+                continue
+
+            logging.debug(f"found file ${file_relative_path} changed")
+            is_file_in_list = IncrementalTest.is_file_in_modified_files(
+                task.type, file_relative_path, modified_cache_files)
+            logging.debug(f"is file in list: {is_file_in_list}")
+            if not is_file_in_list:
+                logging.debug(f"Unexpected file modified: {file_relative_path}")
+                info.result = options.TaskResult.failed
+                info.error_message = f'Incremental compile found unexpected file timestamp changed. \
+                                             Changed file: {file_relative_path}'
+                return False
+
+    return True
+
+
+def get_output_uncompressed_file(task, info, module, output_type=''):
+    if not output_type:
+        output_type = options.OutputType.unsigned
+    output_file = get_compile_output_file_path(task, module, output_type)
+    uncompressed_output_file = output_file + '.uncompressed'
+    if not os.path.exists(output_file):
+        logging.error(f"outputfile: {output_file} for task: {task.name} not found")
+        info.result = options.TaskResult.failed
+        return ''
+
+    try:
+        if utils.check_zip_file(output_file):
+            with zipfile.ZipFile(output_file, 'r') as zip_ref:
+                zip_ref.extractall(uncompressed_output_file)
+        elif utils.check_gzip_file(output_file):
+            with tarfile.open(output_file, 'r:gz') as tar_ref:
+                tar_ref.extractall(uncompressed_output_file)
+        else:
+            logging.error(
+                f"task: {task.name},not the expected file type for output file: {output_file}")
+            info.result = options.TaskResult.failed
+            return ''
+    except:
+        logging.error(
+            f"uncompressed output file for task {task.name} failed. output file: {output_file}")
+        info.result = options.TaskResult.failed
+        return ''
+    if module == 'Har' or module == 'ExternalHar':
+        uncompressed_output_file = os.path.join(uncompressed_output_file, 'package')
+    return uncompressed_output_file
+
+
+def get_disasm_abc_file(task, info, module, uncompressed_output_file=''):
+    if not uncompressed_output_file:
+        uncompressed_output_file = get_output_uncompressed_file(task, info, module)
+
+    if not os.path.exists(uncompressed_output_file):
+        info.result = options.TaskResult.failed
+        info.error_message = "uncompressed file not found"
+        return ''
+
+    abc_path = ''
+    if utils.is_esmodule(task.type):
+        abc_path = os.path.join(uncompressed_output_file, 'ets', 'modules.abc')
+
+    if not os.path.exists(abc_path):
+        info.result = options.TaskResult.failed
+        info.error_message = "abc file not found"
+        return ''
+
+    modules_abc_size = os.path.getsize(abc_path)
+    if modules_abc_size <= 0:
+        info.result = options.TaskResult.failed
+        info.error_message = "abc file size is 0"
+        return ''
+
+    return disasm_abc(task, abc_path)
+
+
+def is_package_modules_to_module_abc(task, pa_file, module):
+    module_str = f'{task.hap_module}@{module}'
+
+    return utils.file_contains_specified_fields(pa_file, module_str)
+
+
+def is_normalized_ohm_url(task, is_debug, info):
+    build_path = os.path.join(task.path, *task.hap_module_path, *task.build_path)
+    cache_path = os.path.join(build_path, *task.cache_path, 'debug') if is_debug \
+        else os.path.join(build_path, *task.cache_path, 'release')
+    inc_modify_file = os.path.join(*task.inc_modify_file)
+    dir_name, base_name = os.path.split(inc_modify_file)
+    file_name, _ = os.path.splitext(base_name)
+    ts_file_name = f'{file_name}.ts'
+    ts_file_path = os.path.join(cache_path, dir_name, ts_file_name)
+    url_string = '@normalized'
+
+    passed = utils.file_contains_specified_fields(ts_file_path, url_string)
+    if not passed:
+        info.result = options.TaskResult.failed
+        logging.error(f'{ts_file_path} does not contain {url_string}')
+
+    return passed
+
+
+def is_npm_txt_included_ohpm_package(info, task, is_debug, package_name):
+    cache_file = os.path.join(task.path, *task.hap_module_path, *task.build_path, *task.cache_path)
+    npm_entries_path = os.path.join(cache_file, 'debug', 'npmEntries.txt') if is_debug else \
+        os.path.join(cache_file, 'release', 'npmEntries.txt')
+
+    if not os.path.exists(npm_entries_path):
+        logging.error(f'{npm_entries_path} does not exist')
+        info.result = options.TaskResult.failed
+        return False
+
+    is_included = utils.file_contains_specified_fields(npm_entries_path, package_name)
+    if not is_included:
+        info.result = options.TaskResult.failed
+        logging.error(f'{npm_entries_path} does not contain {package_name}')
+
+    return is_included
+
+
+def modify_sdk_version(task, api_version):
+    build_profile_json_file = os.path.join(task.path, 'build-profile.json5')
+    with open(build_profile_json_file, 'r+', encoding='utf-8') as json_file:
+        json_data = json5.load(json_file)
+        products = json_data["app"]["products"][0]
+        compatible_sdk_version = products["compatibleSdkVersion"]
+        if isinstance(compatible_sdk_version, str):
+            api_version_file_name_map = options.configs.get('api_version_file_name_map')
+            version_str = str(api_version)
+            for key in api_version_file_name_map.keys():
+                if version_str in key:
+                    version_str = key
+                    break
+            products["compatibleSdkVersion"] = version_str
+        else:
+            products["compatibleSdkVersion"] = api_version
+
+        json_file.seek(0)
+        json5.dump(json_data, json_file, indent=2)
+        json_file.truncate()
+
+    sync_project(task)
+
+
+# Preview files require significant modifications for comparison purposes.
+# Here, we will create a relatively simple page for testing.
+def add_or_delete_arkui_component(task, reverse, is_error=False):
+    preview_modify_file = os.path.join(task.path, *task.inc_modify_file)
+    preview_modify_file_bak = preview_modify_file + '.bak'
+
+    if reverse:
+        shutil.copy(preview_modify_file, preview_modify_file_bak)
+        with open(preview_modify_file, 'r+', encoding='utf-8') as file:
+            arkui_patch = options.configs.get('patch_content').get('arkui_patch')
+            content = arkui_patch.get('content')
+            pattern = re.compile(r'(build\(\)\s*\{\s*)([^{}]*)(\s*\})', re.DOTALL)
+            component = arkui_patch.get('error_component') if is_error else arkui_patch.get('component')
+            replacement = r'\1\2{}\3'.format(component)
+            new_content = re.sub(pattern, replacement, content)
+            file.seek(0)
+            file.write(new_content)
+            file.truncate()
+    else:
+        os.remove(preview_modify_file)
+        os.rename(preview_modify_file_bak, preview_modify_file)
 
 
 def execute(test_tasks):
@@ -1056,6 +2337,9 @@ def execute(test_tasks):
 
             if options.arguments.compile_mode in ['all', 'incremental']:
                 execute_incremental_compile(task)
+
+            if options.arguments.compile_mode in ['all', 'preview']:
+                execute_preview_compile(task)
 
             OtherTest.verify_binary_consistency(task)
 
@@ -1071,7 +2355,7 @@ def execute(test_tasks):
             if 'ohosTest' in task.type:
                 OtherTest.compile_ohos_test(task)
 
-            logging.info(f"======> Running task: {task.name} finised")
+            logging.info(f"======> Running task: {task.name} finished")
         except Exception as e:
             logging.exception(e)
         finally:

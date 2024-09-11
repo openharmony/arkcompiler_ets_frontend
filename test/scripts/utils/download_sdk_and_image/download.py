@@ -105,8 +105,9 @@ def get_download_url(task_name, image_date):
 def retry_after_download_failed(download_url, temp_file, temp_file_name, max_retries=3):
     for i in range(max_retries):
         try:
-            download(download_url, temp_file, temp_file_name)
-            return True
+            is_download_success = download(download_url, temp_file, temp_file_name)
+            if is_download_success:
+                return True
         except Exception as e:
             print(f"download failed! retrying... ({i + 1}/{max_retries})")
             time.sleep(2)
@@ -128,12 +129,43 @@ def download_progress_bar(response, temp, temp_file_name):
             pbar.update(len(chunk))
 
 
+def supports_resume(download_url):
+    with httpx.Client() as client:
+        response = client.head(download_url)
+        return response.headers.get("Accept-Ranges") == "bytes"
+
+
 def download(download_url, temp_file, temp_file_name):
-    with httpx.stream('GET', download_url) as response:
-        flags = os.O_WRONLY | os.O_CREAT
-        mode = stat.S_IWUSR | stat.S_IRUSR
-        with os.fdopen(os.open(temp_file, flags, mode), 'wb') as temp:
-            download_progress_bar(response, temp, temp_file_name)
+    existing_size = 0
+    if os.path.exists(temp_file):
+        existing_size = os.path.getsize(temp_file)
+
+    headers = {}
+    if existing_size:
+        headers['Range'] = f'bytes={existing_size}-'
+
+    with httpx.Client() as client:
+        response = client.head(download_url)
+        total_file_size = int(response.headers['Content-Length'])
+        free_space = shutil.disk_usage(os.path.dirname(temp_file)).free
+        if free_space < total_file_size - existing_size:
+            print('Insufficient disk space; download has been halted.')
+            return False
+
+        if existing_size >= total_file_size:
+            print(f"{temp_file_name} has already been downloaded.")
+            return True
+
+        resume_supported = supports_resume(download_url)
+        # If the server supports resuming from breakpoints, it will continue to append modifications to the file.
+        mode = 'ab' if resume_supported else 'wb'
+        flags = os.O_WRONLY | os.O_CREAT | (os.O_APPEND if resume_supported else 0)
+        file_mode = stat.S_IWUSR | stat.S_IRUSR
+
+        with client.stream('GET', download_url, headers=headers) as response:
+            with os.fdopen(os.open(temp_file, flags, file_mode), mode) as temp:
+                download_progress_bar(response, temp, temp_file_name)
+
     return True
 
 
@@ -162,12 +194,12 @@ def check_zip_file(file_path):
 
 def get_remote_download_name(task_name):
     if is_windows():
-        if 'sdk' in task_name:
+        if 'sdk' in task_name.lower():
             return 'ohos-sdk-full.tar.gz'
         return 'dayu200.tar.gz'
     elif is_mac():
-        if 'sdk' in task_name:
-            return 'L2-MAC-SDK-FULL.tar.gz'
+        if 'sdk' in task_name.lower():
+            return 'L2-SDK-MAC-FULL.tar.gz'
         return 'dayu200.tar.gz'
     else:
         print('Unsuport platform to get sdk from daily build')
@@ -233,7 +265,7 @@ def get_the_unzip_file(download_url, save_path):
 
 
 def unpack_sdk_file(path):
-    sdk_zip_path_list = [path, 'ohos-sdk', 'windows']
+    sdk_zip_path_list = [path, 'windows']
     if is_mac():
         sdk_zip_path_list = [path, 'sdk',
                              'packages', 'ohos-sdk', 'darwin']
@@ -251,7 +283,7 @@ def get_task_config(file_name):
     configs = parse_configs()
     download_list = configs['download_list']
     for item in download_list:
-        if item['name'] in file_name:
+        if file_name in item['name']:
             url = item['url']
             date = item['date']
             output_path_list = item['output_path_list']
@@ -347,7 +379,7 @@ def main():
     if arguments.dayu_url is not None:
         get_the_image('dayu', arguments.dayu_url, arguments.dayu_date, arguments.dayu_path)
     else:
-        dayu_config = get_task_config('sdk')
+        dayu_config = get_task_config('dayu')
         get_the_image('dayu', dayu_config[0], dayu_config[1], dayu_config[2])
 
 

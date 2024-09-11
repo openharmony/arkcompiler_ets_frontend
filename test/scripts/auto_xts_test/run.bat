@@ -29,7 +29,7 @@ cd /d %~dp0
 for /f "tokens=1,2 delims==" %%i in (running_modules.txt) do (
 if "%%i"=="modules" set value=%%j
 )
-call %var%\dayu200_xts\suites\acts\run.bat run -l %value%
+call %var%\dayu200_xts\suites\acts\acts\run.bat run -l %value%
 
 REM get result
 cd /d %~dp0

@@ -34,15 +34,21 @@ configs = {}
 
 
 class TaskResult(Enum):
-    undefind = 0
+    undefined = 0
     passed = 1
     failed = 2
 
 
+class OutputType(Enum):
+    unsigned = 0
+    signed = 1
+    har = 2
+
+
 class CompilationInfo:
     def __init__(self):
-        self.result = TaskResult.undefind
-        self.runtime_result = TaskResult.undefind
+        self.result = TaskResult.undefined
+        self.runtime_result = TaskResult.undefined
         self.error_message = ''
         self.time = 0
         self.abc_size = 0
@@ -52,6 +58,7 @@ class FullCompilationInfo:
     def __init__(self):
         self.debug_info = CompilationInfo()
         self.release_info = CompilationInfo()
+        self.name = ''
 
 
 class IncCompilationInfo:
@@ -65,7 +72,11 @@ class BackupInfo:
     def __init__(self):
         self.cache_path = ''
         self.cache_debug = ''
+        self.preview_cache_debug = ''
+        self.hsp_signed_output_debug = ''
         self.cache_release = ''
+        self.preview_cache_release = ''
+        self.hsp_signed_output_release = ''
         self.output_debug = []
         self.output_release = []
 
@@ -83,8 +94,9 @@ class TestTask:
         self.output_app_path = ''
         self.inc_modify_file = []
 
-        self.full_compilation_info = FullCompilationInfo()
+        self.full_compilation_info = {}
         self.incre_compilation_info = {}
+        self.preview_compilation_info = {}
         self.other_tests = {}
 
         self.backup_info = BackupInfo()
@@ -130,23 +142,28 @@ def parse_configs():
         configs = yaml.safe_load(config_file)
 
 
-def get_ark_disasm_path(task_path):
-    ark_disasm = 'ark_disasm.exe' if utils.is_windows() else 'ark_disasm'
+def get_sdk_path_in_the_project(task_path):
     profile_file = os.path.join(task_path, 'build-profile.json5')
-    with open(profile_file, 'r') as file:
+    with open(profile_file, 'r', encoding='utf-8') as file:
         profile_data = json5.load(file)
-        api_version = profile_data['app']['products'][0]['compileSdkVersion']
+        api_version = profile_data['app']['products'][0]['compatibleSdkVersion']
         if isinstance(api_version, int):
             openharmony_sdk_path = configs.get('deveco_openharmony_sdk_path')
-            return os.path.join(openharmony_sdk_path, str(api_version), 'toolchains', ark_disasm)
+            return os.path.join(openharmony_sdk_path, str(api_version))
         else:
             harmonyos_sdk_path = configs.get('deveco_harmonyos_sdk_path')
             api_version_file_map = configs.get('api_version_file_name_map')
             file_name = api_version_file_map.get(api_version)
-            return os.path.join(harmonyos_sdk_path, file_name, 'base', 'toolchains', ark_disasm)
+            return os.path.join(harmonyos_sdk_path, file_name, 'openharmony')
 
 
-def create_test_tasks():
+def get_ark_disasm_path(task_path):
+    ark_disasm = 'ark_disasm.exe' if utils.is_windows() else 'ark_disasm'
+    sdk_path = get_sdk_path_in_the_project(task_path)
+    return os.path.join(sdk_path, 'toolchains', ark_disasm)
+
+
+def create_test_tasks() -> object:
     task_list = []
     haps_list = configs.get('haps')
     test_cases = 'all' if arguments.test_case == 'all' else []
@@ -170,12 +187,31 @@ def create_test_tasks():
             task.ability_name = hap['ability_name']
             task.type = hap['type']
             task.hap_module = hap['hap_module']
+            task.hap_module_path = hap['hap_module_path']
+            # If it is not a stage model, this HSP module cannot be created.
+            task.hsp_module = hap.get('hsp_module', '')
+            task.hsp_module_path = hap.get('hsp_module_path', '')
+            task.cpp_module = hap['cpp_module']
+            task.cpp_module_path = hap['cpp_module_path']
+            task.har_module = hap['har_module']
+            task.har_module_path = hap['har_module_path']
             task.build_path = hap['build_path']
+            task.preview_path = hap['preview_path']
             task.cache_path = hap['cache_path']
-            task.output_hap_path = hap['output_hap_path']
-            task.output_hap_path_signed = hap['output_hap_path_signed']
-            task.output_app_path = hap['output_app_path']
+            task.preview_cache_path = hap['preview_cache_path']
+            task.hap_output_path = hap['hap_output_path']
+            task.hap_output_path_signed = hap['hap_output_path_signed']
+            task.har_output_path_har = hap['har_output_path_har']
+            task.hsp_output_path = hap.get('hsp_output_path', '')
+            task.hsp_output_path_signed = hap.get('hsp_output_path_signed', '')
+            task.hsp_output_path_har = hap.get('hsp_output_path_har', '')
+            task.cpp_output_path = hap.get('cpp_output_path')
+            task.cpp_output_path_signed = hap.get('cpp_output_path_signed')
+            task.main_pages_json_path = hap['main_pages_json_path']
             task.inc_modify_file = hap['inc_modify_file']
+            task.har_modify_file = hap['har_modify_file']
+            task.hsp_modify_file = hap.get('hsp_modify_file', '')
+            task.cpp_modify_file = hap['cpp_modify_file']
             task.backup_info.cache_path = os.path.join(task.path, 'test_suite_cache')
             task.ark_disasm_path = get_ark_disasm_path(task.path)
 
