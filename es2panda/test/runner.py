@@ -1006,7 +1006,7 @@ class BcVersionRunner(Runner):
 
     def add_cmd(self):
         api_sub_version_list = ["beta1", "beta2", "beta3"]
-        for api_version in range(8, 14):
+        for api_version in range(8, 17):
             cmd = self.cmd_prefix + [self.es2panda]
             cmd += ["--target-bc-version"]
             cmd += ["--target-api-version"]
@@ -1049,8 +1049,10 @@ class BcVersionTest(Test):
             "12_beta1": "12.0.2.0",
             "12_beta2": "12.0.2.0",
             "12_beta3": "12.0.6.0",
-            13: "13.0.0.0",
-            14: "13.0.0.0"
+            13: "12.0.6.0",
+            14: "12.0.6.0",
+            15: "13.0.0.0",
+            16: "13.0.0.0"
         }
         self.es2abc_script_expect = {
             8: "0.0.0.2",
@@ -1061,8 +1063,10 @@ class BcVersionTest(Test):
             "12_beta1": "12.0.2.0",
             "12_beta2": "12.0.2.0",
             "12_beta3": "12.0.6.0",
-            13: "13.0.0.0",
-            14: "13.0.0.0"
+            13: "12.0.6.0",
+            14: "12.0.6.0",
+            15: "13.0.0.0",
+            16: "13.0.0.0"
         }
 
     def run(self):
