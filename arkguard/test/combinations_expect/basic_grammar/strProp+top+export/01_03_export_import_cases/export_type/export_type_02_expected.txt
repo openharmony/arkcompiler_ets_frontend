@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-type f = number;
-export { type f as e };
-let g = 3;
-export { g as h };
+type e = number;
+export { type e as default };
+let f = 3;
+export { f as g };

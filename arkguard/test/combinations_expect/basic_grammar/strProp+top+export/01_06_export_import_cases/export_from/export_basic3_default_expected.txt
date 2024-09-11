@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export default function m(r: number[]): number[] {
-    return r.filter(s => s % 2 === 0);
+export default function l(q: number[]): number[] {
+    return q.filter(r => r % 2 === 0);
 }
-export function n(q: number[]): number | null {
-    if (q.length === 0)
-        return null;
-    return Math.max(...q);
-}
-function o(p: number[]): number | null {
+export function m(p: number[]): number | null {
     if (p.length === 0)
         return null;
-    return Math.min(...p);
+    return Math.max(...p);
+}
+function n(o: number[]): number | null {
+    if (o.length === 0)
+        return null;
+    return Math.min(...o);
 }

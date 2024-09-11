@@ -51,7 +51,7 @@ export namespace UnobfuscationCollections {
   export let reservedLangForProperty: Set<string> = new Set();
   // declare global {}
   // In the above syntax, 'global' is named '__global' in tsc.
-  export let reservedLangForTopLevel: Set<string> = new Set(['__global']); // Will not add new elements anymore
+  export let reservedLangForTopLevel: Set<string> = new Set(['__global', 'default']); // Will not add new elements anymore
   export let reservedExportName: Set<string> = new Set();
   export let reservedExportNameAndProp: Set<string> = new Set();
   export let reservedStrProp: Set<string> = new Set();

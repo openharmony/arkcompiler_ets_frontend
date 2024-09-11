@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import v from 'assert';
-import y from './export_namespaces_default';
-import { x } from './export_namespaces_default';
-let z = new y.Person(2);
-v(z.doubleProp1() === 4);
-v(x() === 3);
+import t from 'assert';
+import w from './export_namespaces_default';
+import { v } from './export_namespaces_default';
+let x = new w.Person(2);
+t(x.doubleProp1() === 4);
+t(v() === 3);
