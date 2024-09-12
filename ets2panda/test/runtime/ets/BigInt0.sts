@@ -289,6 +289,42 @@ function test_double(): void {
     assert bigIntFromDouble(1.2345678848e-21) : "BigInt(1.2345678484e-21)"
 }
 
+function test_sign(): void {
+    assert new BigInt().negative()     == false : 'BigInt() is negative'
+    assert new BigInt(0).negative()    == false : 'BigInt(0) is negative'
+    assert new BigInt(-0).negative()   == false : 'BigInt(-0) is negative'
+    assert new BigInt(0.0).negative()  == false : 'BigInt(0.0) is negative'
+    assert new BigInt(-0.0).negative() == false : 'BigInt(-0.0) is negative'
+    assert new BigInt("0").negative()  == false : 'BigInt("0") is negative'
+    assert new BigInt("-0").negative() == false : 'BigInt("-0") is negative'
+
+    assert new BigInt().positive()     == true : 'BigInt() is not positive'
+    assert new BigInt(0).positive()    == true : 'BigInt(0) is not positive'
+    assert new BigInt(-0).positive()   == true : 'BigInt(-0) is not positive'
+    assert new BigInt(0.0).positive()  == true : 'BigInt(0.0) is not positive'
+    assert new BigInt(-0.0).positive() == true : 'BigInt(-0.0) is not positive'
+    assert new BigInt("0").positive()  == true : 'BigInt("0") is not positive'
+    assert new BigInt("-0").positive() == true : 'BigInt("-0") is not positive'
+
+    assert new BigInt("0").negate().positive()  == true : 'BigInt("0").negate() is not positive'
+    assert new BigInt("-0").negate().positive() == true : 'BigInt("-0").negate() is not positive'
+
+    assert (new BigInt("1")  + new BigInt("-1")).positive() : 'BigInt(1 + -1) is not positive'
+    assert (new BigInt("-1") + new BigInt("1")).positive()  : 'BigInt(-1 + 1) is not positive'
+    assert (new BigInt("1")  - new BigInt("1")).positive()  : 'BigInt(1 - 1) is not positive'
+    assert (new BigInt("-1") - new BigInt("-1")).positive() : 'BigInt(-1 - -1) is not positive'
+    assert (new BigInt("1")  * new BigInt("0")).positive()  : 'BigInt(1 * 0) is not positive'
+    assert (new BigInt("-1") * new BigInt("0")).positive()  : 'BigInt(-1 * 0) is not positive'
+    assert (new BigInt("0")  * new BigInt("1")).positive()  : 'BigInt(0 * 1) is not positive'
+    assert (new BigInt("0")  * new BigInt("-1")).positive() : 'BigInt(0 * -1) is not positive'
+    assert (new BigInt("0")  / new BigInt("1")).positive()  : 'BigInt(0 / 1) is not positive'
+    assert (new BigInt("0")  / new BigInt("-1")).positive() : 'BigInt(0 / -1) is not positive'
+    assert (new BigInt("4")  % new BigInt("2")).positive()  : 'BigInt(4 % 2) is not positive'
+    assert (new BigInt("4")  % new BigInt("-2")).positive() : 'BigInt(4 % -2) is not positive'
+    assert (new BigInt("-4") % new BigInt("2")).positive()  : 'BigInt(-4 % 2) is not positive'
+    assert (new BigInt("-4") % new BigInt("-2")).positive() : 'BigInt(-4 % -2) is not positive'
+}
+
 function main() : void {
     test_create_empty_bigint();
     test_bigint_as_string();
@@ -301,6 +337,7 @@ function main() : void {
     test_bigint_methods();
     test_shift();
     test_double();
+    test_sign();
     // NOTE(aakmaev): Enable after fix #17683.
     // test_scientific();
 }
