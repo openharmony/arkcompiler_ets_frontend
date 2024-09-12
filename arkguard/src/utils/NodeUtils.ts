@@ -13,7 +13,16 @@
  * limitations under the License.
  */
 
-import type {Expression, Identifier, Node, ObjectBindingPattern, SourceFile, TypeChecker} from 'typescript';
+import type {
+  Expression,
+  Identifier,
+  Node,
+  ObjectBindingPattern,
+  SourceFile,
+  TypeChecker,
+  TransformationContext,
+  TransformerFactory
+} from 'typescript';
 import {
   Symbol,
   SyntaxKind,
@@ -41,9 +50,16 @@ import {
   isQualifiedName,
   isSetAccessor,
   isVariableDeclaration,
+  visitEachChild
 } from 'typescript';
-import { isParameterPropertyModifier } from './OhsUtil';
+import {
+  getViewPUClassProperties,
+  isParameterPropertyModifier,
+  isViewPUBasedClass,
+  visitEnumInitializer
+} from './OhsUtil';
 import { Extension } from '../common/type';
+import { MergedConfig } from '../initialization/ConfigResolver';
 
 export class NodeUtils {
   public static isPropertyDeclarationNode(node: Node): boolean {
@@ -254,4 +270,44 @@ export class NodeUtils {
     }
     return sym;
   }
+}
+
+/**
+ * When enabling property obfuscation, collect the properties of struct.
+ * When enabling property obfuscation and the compilation output is a TS file,
+ * collect the Identifier names in the initialization expressions of enum members.
+ */
+export function collectReservedNameForObf(obfuscationConfig: MergedConfig | undefined, shouldTransformToJs: boolean): TransformerFactory<SourceFile> {
+  const disableObf = obfuscationConfig?.options === undefined || obfuscationConfig.options.disableObfuscation;
+  const enablePropertyObf = obfuscationConfig?.options.enablePropertyObfuscation;
+  // process.env.compiler === 'on': indicates that during the Webpack packaging process,
+  // the code is executed here for the first time.
+  // During the Webpack packaging process, this step will be executed twice,
+  // but only the first time will it perform subsequent operations to prevent repetition.
+  const shouldCollect = (process.env.compiler === 'on' || process.env.compileTool === 'rollup') &&
+                        !disableObf && enablePropertyObf;
+
+  return (context: TransformationContext) => {
+    return (node: SourceFile) => {
+      if (shouldCollect) {
+        node = visitEachChild(node, collectReservedNames, context);
+      }
+      return node;
+    };
+
+    function collectReservedNames(node: Node): Node {
+      // collect properties of struct
+      if (isClassDeclaration(node) && isViewPUBasedClass(node)) {
+        getViewPUClassProperties(node);
+      }
+
+      // collect enum properties
+      if (!shouldTransformToJs && isEnumMember(node) && node.initializer) {
+        node.initializer.forEachChild(visitEnumInitializer);
+        return node;
+      }
+
+      return visitEachChild(node, collectReservedNames, context);
+    }
+  };
 }

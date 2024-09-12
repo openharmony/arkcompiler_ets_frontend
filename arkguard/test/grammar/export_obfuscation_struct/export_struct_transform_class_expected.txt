@@ -19,15 +19,15 @@ export class g extends ViewPU {
     constructor() {
         super();
     }
-    scroller3: string;
-    controller3: number;
-    callMethod3(): void { }
+    i: string;
+    j: number;
+    k(): void { }
 }
 class h extends ViewPU {
     constructor() {
         super();
     }
-    scroller4: string;
-    controller4: number;
-    callMethod4(): void { }
+    l: string;
+    m: number;
+    o(): void { }
 }

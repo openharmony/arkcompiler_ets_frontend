@@ -15,9 +15,11 @@
 
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
-import { NodeUtils } from '../../../src/utils/NodeUtils'
+import { NodeUtils, collectReservedNameForObf } from '../../../src/utils/NodeUtils';
 import * as ts from 'typescript'
 import sinon from 'sinon';
+import { MergedConfig } from '../../../src/initialization/ConfigResolver';
+import { UnobfuscationCollections } from '../../../src/utils/CommonCollections';
 
 type Mutable<T extends object> = { -readonly [K in keyof T]: T[K] }
 
@@ -379,6 +381,147 @@ describe('test for NodeUtils', function () {
             const parent = ts.factory.createMetaProperty(ts.SyntaxKind.ImportKeyword, node);
             (node as Mutable<ts.Identifier>).parent = parent;
             expect(NodeUtils.isNewTargetNode(node)).to.be.false;
+        })
+    })
+
+    describe('test for collectReservedNameForObf', function () {
+        process.env.compileTool = 'rollup';
+        const ENUM_TEST1: string =
+            'enum ANIMAL {\n' +
+            ' CAT,\n' +
+            ' DOG = CAT + 1,\n' +
+            ' GOOSE = DOG + 1,\n' +
+            ' DUCK = GOOSE + 1,\n' +
+            '}';
+        it('test1 collectReservedNameForObf-enum: -enable-property-obfuscation, shouldETSOrTSFileTransformToJS = false', function () {
+            const arkConfig = new MergedConfig();
+            arkConfig.options.enablePropertyObfuscation = true;
+            const result: ts.TranspileOutput = ts.transpileModule(ENUM_TEST1, {
+                compilerOptions: {
+                    "target": ts.ScriptTarget.ES2021
+                },
+                fileName: "enum.ts",
+                transformers: { before: [collectReservedNameForObf(arkConfig, false)] }
+            });
+            expect(UnobfuscationCollections.reservedEnum.has('CAT')).to.be.true;
+            expect(UnobfuscationCollections.reservedEnum.has('DOG')).to.be.true;
+            expect(UnobfuscationCollections.reservedEnum.has('GOOSE')).to.be.true;
+            expect(UnobfuscationCollections.reservedEnum.has('DUCK')).to.be.false;
+            UnobfuscationCollections.clear();
+        })
+
+        const ENUM_TEST2: string =
+            'let test = 1;\n' +
+            'enum ANIMAL {\n' +
+            ' CAT,\n' +
+            ' DOG = (CAT + 1) + test,\n' +
+            '}';
+        it('test2 collectReservedNameForObf-enum: -enable-property-obfuscation, shouldETSOrTSFileTransformToJS = false', function () {
+            const arkConfig = new MergedConfig();
+            arkConfig.options.enablePropertyObfuscation = true;
+            const result: ts.TranspileOutput = ts.transpileModule(ENUM_TEST2, {
+                compilerOptions: {
+                    "target": ts.ScriptTarget.ES2021
+                },
+                fileName: "enum.ts",
+                transformers: { before: [collectReservedNameForObf(arkConfig, false)] }
+            });
+            expect(UnobfuscationCollections.reservedEnum.has('CAT')).to.be.true;
+            expect(UnobfuscationCollections.reservedEnum.has('test')).to.be.true;
+            expect(UnobfuscationCollections.reservedEnum.has('DOG')).to.be.false;
+            UnobfuscationCollections.clear();
+        })
+
+        const ENUM_TEST3: string =
+            'class TEST{\n' +
+            ' prop1 = 1\n' +
+            '}\n' +
+            'let myclass = new TEST();\n' +
+            'enum TEST1{\n' +
+            ' AAA,\n' +
+            ' BBB = AAA + myclass.prop1\n' +
+            '}';
+        it('test3 collectReservedNameForObf-enum: -enable-property-obfuscation, shouldETSOrTSFileTransformToJS = false', function () {
+            const arkConfig = new MergedConfig();
+            arkConfig.options.enablePropertyObfuscation = true;
+            const result: ts.TranspileOutput = ts.transpileModule(ENUM_TEST3, {
+                compilerOptions: {
+                    "target": ts.ScriptTarget.ES2021
+                },
+                fileName: "enum.ts",
+                transformers: { before: [collectReservedNameForObf(arkConfig, false)] }
+            });
+            expect(UnobfuscationCollections.reservedEnum.has('AAA')).to.be.true;
+            expect(UnobfuscationCollections.reservedEnum.has('myclass')).to.be.true;
+            expect(UnobfuscationCollections.reservedEnum.has('BBB')).to.be.false;
+            expect(UnobfuscationCollections.reservedEnum.has('prop1')).to.be.false;
+            UnobfuscationCollections.clear();
+        })
+
+        it('test4 collectReservedNameForObf-enum: -enable-property-obfuscation, shouldETSOrTSFileTransformToJS = true', function () {
+            const arkConfig = new MergedConfig();
+            arkConfig.options.enablePropertyObfuscation = true;
+            const result: ts.TranspileOutput = ts.transpileModule(ENUM_TEST3, {
+                compilerOptions: {
+                    "target": ts.ScriptTarget.ES2021
+                },
+                fileName: "enum.js",
+                transformers: { before: [collectReservedNameForObf(arkConfig, true)] }
+            });
+            expect(UnobfuscationCollections.reservedEnum.size === 0).to.be.true;
+            UnobfuscationCollections.clear();
+        })
+
+        const STRUCT_TEST1: string =
+            'class ViewPU {}\n' +
+            'export class Retransmission1 extends ViewPU {\n' +
+            ' constructor() {\n' +
+            '  super();\n' +
+            ' }\n' +
+            ' scroller1: string;\n' +
+            ' controller1: number;\n' +
+            ' callMethod1(): void {};\n' +
+            '}\n' +
+            'class Retransmission2 extends ViewPU {\n' +
+            ' constructor() {\n' +
+            '  super();\n' +
+            ' }\n' +
+            ' scroller2: string;\n' +
+            ' controller2: number;\n' +
+            ' callMethod2(): void {};\n' +
+            '}';
+        it('test5 collectReservedNameForObf-struct: -enable-property-obfuscation, shouldETSOrTSFileTransformToJS = false', function () {
+            const arkConfig = new MergedConfig();
+            arkConfig.options.enablePropertyObfuscation = true;
+            const result: ts.TranspileOutput = ts.transpileModule(STRUCT_TEST1, {
+                compilerOptions: {
+                    "target": ts.ScriptTarget.ES2021
+                },
+                fileName: "enum.ts",
+                transformers: { before: [collectReservedNameForObf(arkConfig, false)] }
+            });
+            expect(UnobfuscationCollections.reservedStruct.has('scroller1')).to.be.true;
+            expect(UnobfuscationCollections.reservedStruct.has('controller1')).to.be.true;
+            expect(UnobfuscationCollections.reservedStruct.has('callMethod1')).to.be.true;
+            expect(UnobfuscationCollections.reservedStruct.has('scroller2')).to.be.true;
+            expect(UnobfuscationCollections.reservedStruct.has('controller2')).to.be.true;
+            expect(UnobfuscationCollections.reservedStruct.has('callMethod2')).to.be.true;
+            UnobfuscationCollections.clear();
+        })
+
+        it('test6 collectReservedNameForObf-struct: -disable-obfuscation', function () {
+            const arkConfig = new MergedConfig();
+            arkConfig.options.disableObfuscation = true;
+            arkConfig.options.enablePropertyObfuscation = true;
+            const result: ts.TranspileOutput = ts.transpileModule(STRUCT_TEST1, {
+                compilerOptions: {
+                    "target": ts.ScriptTarget.ES2021
+                },
+                fileName: "enum.ts",
+                transformers: { before: [collectReservedNameForObf(arkConfig, false)] }
+            });
+            expect(UnobfuscationCollections.reservedStruct.size === 0).to.be.true;
+            UnobfuscationCollections.clear();
         })
     })
 })

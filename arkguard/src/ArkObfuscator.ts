@@ -89,6 +89,9 @@ export {
   writeObfuscationNameCache,
   writeUnobfuscationContent
 } from './initialization/ConfigResolver';
+export {
+  collectReservedNameForObf
+} from './utils/NodeUtils';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
 export const renameFileNameModule = require('./transformers/rename/RenameFileNameTransformer');
@@ -155,16 +158,23 @@ export class ArkObfuscator {
   // Pass the collected whitelists related to property obfuscation to Arkguard.
   public addReservedSetForPropertyObf(properties: ReseverdSetForArkguard): void {
     if (properties.structPropertySet && properties.structPropertySet.size > 0) {
-      UnobfuscationCollections.reservedStruct = properties.structPropertySet;
+      for (let reservedProperty of properties.structPropertySet) {
+        UnobfuscationCollections.reservedStruct.add(reservedProperty);
+      }
     }
+
     if (properties.stringPropertySet && properties.stringPropertySet.size > 0) {
       UnobfuscationCollections.reservedStrProp = properties.stringPropertySet;
     }
+
     if (properties.exportNameAndPropSet && properties.exportNameAndPropSet.size > 0) {
       UnobfuscationCollections.reservedExportNameAndProp = properties.exportNameAndPropSet;
     }
+
     if (properties.enumPropertySet && properties.enumPropertySet.size > 0) {
-      UnobfuscationCollections.reservedEnum = properties.enumPropertySet;
+      for (let reservedEnum of properties.enumPropertySet) {
+        UnobfuscationCollections.reservedEnum.add(reservedEnum);
+      }
     }
   }
 

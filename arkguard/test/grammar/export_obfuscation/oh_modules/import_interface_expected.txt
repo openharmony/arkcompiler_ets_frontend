@@ -12,15 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { publicFoo1 as x3 } from './export_interface';
+import { publicFoo1 as v3 } from './export_interface';
 import { publicFoo2 } from './export_interface';
 import { publicFoo3Alias as publicFoo3 } from './export_interface';
 import { publicFoo4 } from './export_interface';
-import y3 from './export_interface';
-import { default as z3 } from './export_interface';
-x3();
+import w3 from './export_interface';
+import { default as x3 } from './export_interface';
+v3();
 publicFoo2();
 publicFoo3();
 publicFoo4();
-y3;
-z3;
+w3;
+x3;

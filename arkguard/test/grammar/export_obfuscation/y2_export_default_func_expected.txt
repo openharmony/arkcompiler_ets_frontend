@@ -12,6 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export default function x5(y5: number, z5: number) {
-    return y5 * z5;
+export default function v5(w5: number, x5: number) {
+    return w5 * x5;
 }

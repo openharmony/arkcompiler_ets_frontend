@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 import { i, g } from './export_obfuscation_1';
-let c2 = new i();
-const d2: string = c2.name;
-const e2: number = c2.j;
+let a2 = new i();
+const b2: string = a2.name;
+const c2: number = a2.j;
 g(1, 2);
-export function a2(): void {
+export function w1(): void {
     return;
 }
-export function b2(): void {
+export function z1(): void {
     return;
 }

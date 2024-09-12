@@ -170,13 +170,6 @@ namespace secharmony {
         manager.analyze(node, checker, exportObfuscation);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
 
-        // the reservedNames of manager contain the struct name.
-        if (!exportObfuscation) {
-          manager.getReservedNames().forEach((name) => {
-            LocalVariableCollections.reservedStruct.add(name);
-          });
-        }
-
         let root: Scope = manager.getRootScope();
         fileExportNames = root.fileExportNames;
         fileImportNames = root.fileImportNames;

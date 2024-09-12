@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 import { t, u } from './export_obfuscation_2';
-type f2 = t;
+type d2 = t;
 let newValue = u + 1;
-export { a2, b2 } from './import_obfuscation_1';
+export { w1, z1 } from './import_obfuscation_1';
 function publicFoo1(): void { }
 function publicFoo2(): void { }
