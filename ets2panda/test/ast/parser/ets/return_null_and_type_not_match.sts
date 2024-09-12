@@ -13,10 +13,15 @@
  * limitations under the License.
  */
 
-function main(){
-    let r: Record<number, number> = {
-        "hello": 1,
-    }
+
+
+function main(): int {
+    return test();
 }
-/* @@? 18:9 Error TypeError: Type '"hello"' is not compatible with type 'Double' at index 1  */
-/* @@? 1:1 Error TypeError: No matching call signature for set("hello", int)  */
+
+function test():string {
+    return;
+}
+/* @@? 19:12 Error TypeError: Type 'String' is not compatible with the enclosing method's return type 'int'  */
+/* @@? 23:5 Error TypeError: Missing return value. */
+

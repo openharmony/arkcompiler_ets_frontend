@@ -2073,6 +2073,37 @@ checker::Type *ETSAnalyzer::Check(ir::ExpressionStatement *st) const
     return st->GetExpression()->Check(checker);
 }
 
+static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, ir::ForOfStatement *const st)
+{
+    checker::Type *iterType = GetIteratorType(checker, elemType, st->Left());
+    if (iterType->IsTypeError()) {
+        return false;
+    }
+    auto *const relation = checker->Relation();
+    relation->SetFlags(checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
+    relation->SetNode(st->Left()->IsVariableDeclaration()
+                          ? st->Left()->AsVariableDeclaration()->Declarators().front()->Id()
+                          : st->Left()->AsIdentifier());
+
+    if (!relation->IsAssignableTo(elemType, iterType)) {
+        std::stringstream ss {};
+        ss << "Source element type '" << elemType->ToString() << "' is not assignable to the loop iterator type '"
+           << iterType->ToString() << "'.";
+        checker->LogTypeError(ss.str(), st->Start());
+        return false;
+    }
+
+    relation->SetNode(nullptr);
+    relation->SetFlags(checker::TypeRelationFlag::NONE);
+
+    if (iterType->Variable() == nullptr && !iterType->IsETSObjectType() && elemType->IsETSObjectType() &&
+        st->Left()->IsVariableDeclaration()) {
+        for (auto &declarator : st->Left()->AsVariableDeclaration()->Declarators()) {
+            checker->AddBoxingUnboxingFlagsToNode(declarator->Id(), iterType);
+        }
+    }
+    return true;
+}
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 static constexpr char const MISSING_SOURCE_EXPR_TYPE[] =
     "Cannot determine source expression type in the 'for-of' statement.";
@@ -2114,29 +2145,10 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     }
 
     st->Left()->Check(checker);
-    checker::Type *iterType = GetIteratorType(checker, elemType, st->Left());
-    auto *const relation = checker->Relation();
-    relation->SetFlags(checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
-    relation->SetNode(st->Left()->IsVariableDeclaration()
-                          ? st->Left()->AsVariableDeclaration()->Declarators().front()->Id()
-                          : st->Left()->AsIdentifier());
 
-    if (!relation->IsAssignableTo(elemType, iterType)) {
-        checker->LogTypeError("Source element type '" + elemType->ToString() +
-                                  "' is not assignable to the loop iterator type '" + iterType->ToString() + "'.",
-                              st->Start());
+    if (!ValidateAndProcessIteratorType(checker, elemType, st)) {
         return checker->GlobalTypeError();
-    }
-
-    relation->SetNode(nullptr);
-    relation->SetFlags(checker::TypeRelationFlag::NONE);
-
-    if (iterType->Variable() == nullptr && !iterType->IsETSObjectType() && elemType->IsETSObjectType() &&
-        st->Left()->IsVariableDeclaration()) {
-        for (auto &declarator : st->Left()->AsVariableDeclaration()->Declarators()) {
-            checker->AddBoxingUnboxingFlagsToNode(declarator->Id(), iterType);
-        }
-    }
+    };
 
     st->Body()->Check(checker);
 

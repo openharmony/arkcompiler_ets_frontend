@@ -221,7 +221,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     }
 #endif
 
-    return true;
+    return !ctx->checker->ErrorLogger()->IsAnyError();
 }
 
 static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,

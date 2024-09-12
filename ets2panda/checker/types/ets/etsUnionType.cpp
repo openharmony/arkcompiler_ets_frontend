@@ -422,7 +422,7 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
         }
     }
 
-    return nullptr;
+    return checker->GlobalTypeError();
 }
 
 checker::Type *ETSUnionType::GetAssignableBuiltinType(

@@ -198,12 +198,12 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 
 void TypeRelation::RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const
 {
-    checker_->ThrowTypeError(errMsg, loc);
+    checker_->LogTypeError(errMsg, loc);
 }
 
 void TypeRelation::RaiseError(std::initializer_list<TypeErrorMessageElement> list,
                               const lexer::SourcePosition &loc) const
 {
-    checker_->ThrowTypeError(list, loc);
+    checker_->LogTypeError(list, loc);
 }
 }  // namespace ark::es2panda::checker
