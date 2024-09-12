@@ -751,6 +751,7 @@ ir::ThisExpression *ETSParser::ParseThisExpression()
         case lexer::TokenType::PUNCTUATOR_PERIOD:
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
         case lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_BRACE:
         case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
         case lexer::TokenType::PUNCTUATOR_COLON:
         case lexer::TokenType::PUNCTUATOR_EQUAL:
