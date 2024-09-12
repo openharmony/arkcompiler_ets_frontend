@@ -1,3 +1,6 @@
+# 19351
+test262/data/test_es2021/intl402/language-tags-invalid.js
+
 # 18949
 test262/data/test_es2021/language/statements/for/S12.6.3_A10_T2.js
 test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
