@@ -385,6 +385,8 @@ private:
                                                   const lexer::SourcePosition &startLoc);
     ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                 ir::ModifierFlags memberModifiers, const lexer::SourcePosition &startLoc);
+    void CheckAccessorDeclaration(ir::ModifierFlags memberModifiers);
+
     ir::AstNode *ParseAmbientSignature();
 
     ir::ClassDefinition *CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,

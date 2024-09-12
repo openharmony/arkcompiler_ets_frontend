@@ -487,6 +487,14 @@ ir::Identifier *ETSParser::CreateInvokeIdentifier()
     return ident;
 }
 
+void ETSParser::CheckAccessorDeclaration(ir::ModifierFlags memberModifiers)
+{
+    ir::ModifierFlags methodModifiersNotAccessorModifiers = ir::ModifierFlags::NATIVE | ir::ModifierFlags::ASYNC;
+    if ((memberModifiers & methodModifiersNotAccessorModifiers) != 0) {
+        ThrowSyntaxError("Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override').");
+    }
+}
+
 ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &properties,
                                        ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags memberModifiers,
                                        const lexer::SourcePosition &startLoc)
@@ -494,6 +502,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     if (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_PAREN && Lexer()->Lookahead() != lexer::LEX_CHAR_LESS_THAN &&
         (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
          Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET)) {
+        CheckAccessorDeclaration(memberModifiers);
         return ParseClassGetterSetterMethod(properties, modifiers, memberModifiers);
     }
 

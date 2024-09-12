@@ -127,10 +127,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             checker->LogTypeError("'Native' method should have explicit return type", scriptFunc->Start());
             node->SetTsType(checker->GlobalTypeError());
         }
-        if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
-            checker->LogTypeError("'Native' modifier is invalid for Accessors", scriptFunc->Start());
-            node->SetTsType(checker->GlobalTypeError());
-        }
+        ASSERT(!scriptFunc->IsGetter() && !scriptFunc->IsSetter());
     }
 
     if (IsAsyncMethod(node)) {
