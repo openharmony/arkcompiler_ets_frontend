@@ -19,3 +19,4 @@ interface Test {
 
 /* @@? 17:25 Error SyntaxError: Unexpected token '('. */
 /* @@? 17:25 Error SyntaxError: ',' expected */
+/* @@? 17:25 Error SyntaxError: Unexpected token: '('. */

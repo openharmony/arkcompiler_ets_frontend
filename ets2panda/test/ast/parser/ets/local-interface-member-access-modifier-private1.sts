@@ -20,4 +20,6 @@ function foo()
         private property : int;
     }
 }
-/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifies  */
+
+/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifiers */
+/* @@? 20:26 Error SyntaxError: Unexpected token, expected '(' */

@@ -439,7 +439,7 @@ private:
     void ValidateRestParameter(ir::Expression *param) override;
     bool ValidateBreakLabel(util::StringView label) override;
     bool ValidateContinueLabel(util::StringView label) override;
-    void CheckPredefinedMethods(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const;
+    void CheckPredefinedMethods(ir::ScriptFunction const *function, const lexer::SourcePosition &position);
 
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
