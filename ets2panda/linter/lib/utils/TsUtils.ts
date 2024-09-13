@@ -2541,14 +2541,6 @@ export class TsUtils {
     return true;
   }
 
-  static isMethodWithThisReturnType(node: ts.Node | undefined): boolean {
-    if (node?.kind !== ts.SyntaxKind.MethodDeclaration) {
-      return false;
-    }
-    const method = node as ts.MethodDeclaration;
-    return method.type?.kind === ts.SyntaxKind.ThisType;
-  }
-
   // If it is an overloaded function, all declarations for that function are found
   static hasSendableDecoratorFunctionOverload(decl: ts.FunctionDeclaration): boolean {
     const decorators = TsUtils.getFunctionOverloadDecorators(decl);
