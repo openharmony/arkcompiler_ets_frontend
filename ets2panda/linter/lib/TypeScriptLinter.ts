@@ -1793,9 +1793,6 @@ export class TypeScriptLinter {
     );
     const tsElemAccessArgType = this.tsTypeChecker.getTypeAtLocation(tsElementAccessExpr.argumentExpression);
 
-    const isGet = TsUtils.isGetExpression(tsElementAccessExpr);
-    const isGetIndexable = isGet && this.tsUtils.isGetIndexableType(tsElemAccessBaseExprType, tsElemAccessArgType);
-
     const isSet = TsUtils.isSetExpression(tsElementAccessExpr);
     const isSetIndexable =
       isSet &&
@@ -1804,6 +1801,9 @@ export class TypeScriptLinter {
         tsElemAccessArgType,
         this.tsTypeChecker.getTypeAtLocation((tsElementAccessExpr.parent as ts.BinaryExpression).right)
       );
+
+    const isGet = !isSet;
+    const isGetIndexable = isGet && this.tsUtils.isGetIndexableType(tsElemAccessBaseExprType, tsElemAccessArgType);
 
     if (
       // unnamed types do not have symbol, so need to check that explicitly
@@ -2029,7 +2029,7 @@ export class TypeScriptLinter {
       const tsParamDecl = tsParamSym.valueDeclaration;
       if (tsParamDecl && ts.isParameter(tsParamDecl)) {
         let tsParamType = this.tsTypeChecker.getTypeOfSymbolAtLocation(tsParamSym, tsParamDecl);
-        if (tsParamDecl.dotDotDotToken && TsUtils.isGenericArrayType(tsParamType) && tsParamType.typeArguments) {
+        if (tsParamDecl.dotDotDotToken && this.tsUtils.isGenericArrayType(tsParamType) && tsParamType.typeArguments) {
           tsParamType = tsParamType.typeArguments[0];
         }
         if (!tsParamType) {
