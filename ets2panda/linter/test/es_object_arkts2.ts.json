@@ -635,6 +635,15 @@
             "severity": "ERROR"
         },
         {
+            "line": 103,
+            "column": 22,
+            "endLine": 103,
+            "endColumn": 30,
+            "problem": "DynamicCtorCall",
+            "rule": "\"new\" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)",
+            "severity": "ERROR"
+        },
+        {
             "line": 105,
             "column": 11,
             "endLine": 105,

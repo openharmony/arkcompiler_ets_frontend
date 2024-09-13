@@ -133,6 +133,7 @@ export enum FaultID {
   ObjectLiteralProperty,
   OptionalMethod,
   ImportType,
+  DynamicCtorCall,
   // this should always be last enum
   LAST_ID
 }
