@@ -15,6 +15,9 @@ jmespath_test
 #18350
 jsbn_test
 
+#19284
+mathjs_test
+
 #18383
 memory-cache_test
 
