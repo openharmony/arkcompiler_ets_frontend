@@ -25,6 +25,7 @@ import re
 import shutil
 import subprocess
 import sys
+from config import API_VERSION_MAP, MIN_SUPPORT_BC_VERSION, MIX_COMPILE_ENTRY_POINT
 
 
 def is_directory(parser, arg):
@@ -1472,6 +1473,93 @@ class ArkJsVmDownload:  # Obtain different versions of ark_js_vm and their depen
             print("\ndownload finish.\n")
 
 
+class AbcTestCasesPrepare:
+    def __init__(self, args):
+        self.test_root = path.dirname(path.abspath(__file__))
+        self.es2panda = path.join(args.build_dir, "es2abc")
+        self.args = args
+        self.valid_mode_list = ["non_merge_mode", "merge_mode"]
+        self.test_abc_path_list = set()
+
+    @staticmethod
+    def split_api_version(version_str):
+        parts = version_str.split("API")[1].split("beta")
+        main_part = parts[0]
+        beta_part = "beta%s" % parts[1] if len(parts) > 1 else ""
+        return (main_part, beta_part)
+
+    def add_abc_directory(self, directory, extension):
+        test_directory = path.join(self.test_root, directory)
+        glob_expression = path.join(test_directory, "*.%s" % (extension))
+        files = glob(glob_expression)
+        files = fnmatch.filter(files, self.test_root + "**" + self.args.filter)
+        return files
+
+    def gen_abc_versions(self, flags, source_path):
+        for api_version in API_VERSION_MAP:
+            main_version, beta_version = AbcTestCasesPrepare.split_api_version(api_version)
+            output_path = "%s_version_API%s%s.abc" % (
+                path.splitext(source_path)[0],
+                main_version,
+                beta_version,
+            )
+            self.test_abc_path_list.add(output_path)
+            _, stderr = self.compile_for_target_version(flags, source_path, output_path, main_version, beta_version)
+            if stderr:
+                raise RuntimeError(f"abc generate error: " % (stderr.decode("utf-8", errors="ignore")))
+
+    def gen_abc_tests(self, directory, extension, flags, abc_mode):
+        if abc_mode not in self.valid_mode_list:
+            raise ValueError(f"Invalid abc_mode value: {abc_mode}")
+        test_source_list = self.add_abc_directory(directory, extension)
+        for input_path in test_source_list:
+            self.gen_abc_versions(flags, input_path)
+
+    def compile_for_target_version(self, flags, input_path, output_path, target_api_version, target_api_sub_version=""):
+        cmd = []
+        cmd.append(self.es2panda)
+        cmd.append(input_path)
+        cmd.extend(flags)
+        cmd.append("--target-api-version=%s" % (target_api_version))
+        cmd.extend(["--output=%s" % (output_path)])
+        if target_api_version != "":
+            cmd.append("--target-api-sub-version=%s" % (target_api_sub_version))
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate(timeout=10)
+        if stderr:
+            stderr = "Error executing command: %s\n%s" % (cmd, stderr)
+        return stdout, stderr
+
+    def remove_abc_tests(self):
+        for abc_path in self.test_abc_path_list:
+            if path.exists(abc_path):
+                os.remove(abc_path)
+
+
+class AbcVersionControlRunner(Runner):
+    def __init__(self, args):
+        super().__init__(args, "AbcVersionControl")
+        self.valid_mode_list = ["non_merge_mode", "merge_mode", "mix_compile_mode"]
+
+    def add_directory(self, directory, extension, flags, abc_mode, is_discard=False):
+        if abc_mode not in self.valid_mode_list:
+            raise ValueError(f"Invalid abc_mode value: {abc_mode}")
+        glob_expression = path.join(self.test_root, directory, "*.%s" % (extension))
+        files = glob(glob_expression)
+        files = fnmatch.filter(files, self.test_root + "**" + self.args.filter)
+        if abc_mode == "mix_compile_mode":
+            files = [f for f in files if not f.endswith("-expected.txt")]
+        self.tests += list(map(lambda f: TestAbcVersionControl(f, flags, abc_mode, is_discard), files))
+
+    def test_path(self, src):
+        return src
+
+    def run(self):
+        for test in self.tests:
+            test.run(self)
+        self.args.abc_tests_prepare.remove_abc_tests()
+
+
 class VersionControlRunner(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "VersionControl")
@@ -1502,6 +1590,202 @@ class VersionControlRunner(Runner):
     def run(self):
         for test in self.tests:
             test.run(self)
+
+
+class TestAbcVersionControl(Test):
+    def __init__(self, test_path, flags, abc_mode, is_discard):
+        super().__init__(test_path, flags)
+        self.min_support_version_number = API_VERSION_MAP.get(MIN_SUPPORT_BC_VERSION)
+        self.abc_mode = abc_mode
+        self.is_discard = is_discard
+        self.output = None
+        self.process = None
+        self.is_support = False
+        self.test_abc_list = list()
+        self.test_input = None
+        self.target_abc_path = None
+        self.entry_point = self.get_entry_point()
+
+    @staticmethod
+    def compare_version_number(version1, version2):
+        v1 = TestAbcVersionControl.version_number_to_tuple(version1)
+        v2 = TestAbcVersionControl.version_number_to_tuple(version2)
+        for num1, num2 in zip(v1, v2):
+            if num1 > num2:
+                return 1
+            elif num1 < num2:
+                return -1
+        return 0
+
+    @staticmethod
+    def version_number_to_tuple(version):
+        return tuple(int(part) for part in version.split("."))
+
+    def get_entry_point(self):
+        if self.abc_mode == "merge_mode":
+            base_name = os.path.basename(self.path)
+            return os.path.splitext(base_name)[0]
+        elif self.abc_mode == "mix_compile_mode":
+            return MIX_COMPILE_ENTRY_POINT
+        return ""
+
+    def get_path_to_expected(self, is_support=False, test_stage=""):
+        support_name = "supported_" if is_support else "unsupported_"
+        if self.abc_mode == "mix_compile_mode" and test_stage != "runtime":
+            support_name = ""
+        expected_name = path.splitext(self.path)[0].split("_version_API")[0]
+        expected_path = "%s_%s%s-expected.txt" % (expected_name, support_name, test_stage)
+        return expected_path
+
+    def run_process(self, cmd):
+        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = self.process.communicate(timeout=10)
+        self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore").split("\n")[0]
+        if stderr:
+            stderr = "Error executing command: %s\n%s" % (cmd, stderr)
+        return stdout, stderr
+
+    def compile_for_target_version(
+        self, runner, input_path, output_path, target_api_version, target_api_sub_version=""
+    ):
+        cmd = []
+        cmd.append(runner.es2panda)
+        if self.abc_mode == "mix_compile_mode":
+            input_path = "@%s" % (input_path)
+        cmd.append(input_path)
+        cmd.extend(self.flags)
+        cmd.append("--target-api-version=%s" % (target_api_version))
+        cmd.extend(["--output=%s" % (output_path)])
+        if target_api_version != "":
+            cmd.append("--target-api-sub-version=%s" % (target_api_sub_version))
+        stdout, stderr = self.run_process(cmd)
+        return stdout, stderr
+
+    def generate_abc(self, runner, target_api_version, target_api_sub_version=""):
+        compile_expected_path = None
+        target_abc_name = (
+            "%s_target_%s%s.abc" % (path.splitext(self.path)[0], target_api_version, target_api_sub_version)
+        ).replace("/", "_")
+        self.target_abc_path = path.join(runner.build_dir, target_abc_name)
+        _, stderr = self.compile_for_target_version(
+            runner, self.path, self.target_abc_path, target_api_version, target_api_sub_version
+        )
+        format_content = ""
+        self.is_support = False
+
+        # Extract the API versions of the input abc files from the file name of the test case.
+        input_api_versions = self.extract_api_versions(path.split(self.path)[1])
+        input_version_numbers = [API_VERSION_MAP.get(api) for api in input_api_versions]
+        sorted(input_version_numbers, key=TestAbcVersionControl.version_number_to_tuple)
+        min_input_version_number = input_version_numbers[0]
+        max_input_version_number = input_version_numbers[-1]
+        target_version = "API" + target_api_version + target_api_sub_version
+        target_version_number = API_VERSION_MAP.get(target_version)
+
+        if TestAbcVersionControl.compare_version_number(target_version_number, self.min_support_version_number) < 0:
+            compile_expected_path = self.get_path_to_expected(
+                self.is_support, "compile_target_version_below_min_support"
+            )
+            format_content = target_api_version
+        elif (
+            TestAbcVersionControl.compare_version_number(min_input_version_number, self.min_support_version_number) < 0
+        ):
+            compile_expected_path = self.get_path_to_expected(self.is_support, "compile_cur_version_below_min_support")
+            format_content = self.path
+        elif TestAbcVersionControl.compare_version_number(target_version_number, max_input_version_number) < 0:
+            compile_expected_path = self.get_path_to_expected(self.is_support, "compile_target_version_below_cur")
+            format_content = self.path
+        elif self.is_discard:
+            compile_expected_path = self.get_path_to_expected(self.is_support, "compile_discard")
+        else:
+            self.is_support = True
+            if stderr:
+                self.passed = False
+            return stderr
+
+        try:
+            with open(compile_expected_path, "r") as fp:
+                expected = fp.read()
+                self.passed = expected.format(format_content) in self.output and self.process.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+        return stderr
+
+    def execute_abc(self, runner, vm_api_version, vm_api_sub_version="", entry_point=""):
+        cmd = []
+        if vm_api_version != "12":
+            vm_api_sub_version = ""
+        # there is no virtual machine with version api12beta2 available.
+        # chosen api12beta1 as a replacement.
+        elif vm_api_version == "12" and vm_api_sub_version == "beta2":
+            vm_api_sub_version = "beta1"
+        ark_js_vm_dir = os.path.join(
+            runner.build_dir,
+            "ark_js_vm_version",
+            "API%s%s" % (vm_api_version, vm_api_sub_version),
+        )
+        ld_library_path = os.path.join(ark_js_vm_dir, "lib")
+        os.environ["LD_LIBRARY_PATH"] = ld_library_path
+        ark_js_vm_path = os.path.join(ark_js_vm_dir, "ark_js_vm")
+        cmd.append(ark_js_vm_path)
+        if entry_point != "":
+            cmd.append("--entry-point=%s" % entry_point)
+        cmd.append(self.target_abc_path)
+        stdout, stderr = self.run_process(cmd)
+        return stdout, stderr
+
+    def test_abc_execution(self, runner, target_api_version, target_api_sub_version=""):
+        stderr = None
+        target_version = "API" + target_api_version + target_api_sub_version
+        target_version_number = API_VERSION_MAP.get(target_version)
+        for api_version in API_VERSION_MAP:
+            vm_api_version, vm_api_sub_version = AbcTestCasesPrepare.split_api_version(api_version)
+            vm_version = "API" + vm_api_version + vm_api_sub_version
+            vm_version_number = API_VERSION_MAP.get(vm_version)
+            _, stderr = self.execute_abc(runner, vm_api_version, vm_api_sub_version, self.entry_point)
+            self.is_support = (
+                TestAbcVersionControl.compare_version_number(vm_version_number, target_version_number) >= 0
+            )
+            runtime_expect_path = self.get_path_to_expected(self.is_support, "runtime")
+            try:
+                with open(runtime_expect_path, "r") as fp:
+                    expected = fp.read()
+                    if self.is_support and self.abc_mode != "merge_mode":
+                        self.passed = expected == self.output and self.process.returncode in [0, 1, 255]
+                    else:
+                        self.passed = expected in self.output
+                    pass
+            except Exception:
+                self.passed = False
+            if not self.passed:
+                return stderr
+        return stderr
+
+    def extract_api_versions(self, file_name):
+        pattern = r"(API\d+)(beta\d+)?"
+        matches = re.findall(pattern, file_name)
+        api_versions = [f"{api}{f'{beta}' if beta else ''}" for api, beta in matches]
+        return api_versions
+
+    def remove_abc(self, abc_path):
+        if path.exists(abc_path):
+            os.remove(abc_path)
+
+    def run(self, runner):
+        for api_version in API_VERSION_MAP:
+            target_api_version, target_api_sub_version = AbcTestCasesPrepare.split_api_version(api_version)
+            stderr = self.generate_abc(runner, target_api_version, target_api_sub_version)
+            if not self.passed:
+                self.error = stderr.decode("utf-8", errors="ignore")
+                return self
+            if stderr:
+                continue
+            stderr = self.test_abc_execution(runner, target_api_version, target_api_sub_version)
+            self.remove_abc(self.target_abc_path)
+            if not self.passed:
+                self.error = stderr.decode("utf-8", errors="ignore")
+                return self
+        return self
 
 
 class TestVersionControl(Test):
@@ -1898,6 +2182,47 @@ def add_directory_for_version_control(runners, args):
     )
     runners.append(runner)
 
+    abc_tests_prepare = AbcTestCasesPrepare(args)
+    abc_tests_prepare.gen_abc_tests(
+        "version_control/bytecode_version_control/non_merge_mode",
+        "js",
+        ["--module"],
+        "non_merge_mode",
+    )
+    abc_tests_prepare.gen_abc_tests(
+        "version_control/bytecode_version_control/merge_mode",
+        "js",
+        ["--module", "--merge-abc"],
+        "merge_mode",
+    )
+    abc_tests_prepare.gen_abc_tests(
+        "version_control/bytecode_version_control/mixed_compile",
+        "js",
+        ["--module", "--merge-abc"],
+        "merge_mode",
+    )
+
+    args.abc_tests_prepare = abc_tests_prepare
+    abc_version_control_runner = AbcVersionControlRunner(args)
+    abc_version_control_runner.add_directory(
+        "version_control/bytecode_version_control/non_merge_mode",
+        "abc",
+        ["--module", "--enable-abc-input"],
+        "non_merge_mode",
+    )
+    abc_version_control_runner.add_directory(
+        "version_control/bytecode_version_control/merge_mode",
+        "abc",
+        ["--module", "--enable-abc-input", "--merge-abc"],
+        "merge_mode",
+    )
+    abc_version_control_runner.add_directory(
+        "version_control/bytecode_version_control/mixed_compile",
+        "txt",
+        ["--module", "--enable-abc-input", "--merge-abc"],
+        "mix_compile_mode",
+    )
+    runners.append(abc_version_control_runner)
 
 def add_directory_for_regression(runners, args):
     runner = RegressionRunner(args)
