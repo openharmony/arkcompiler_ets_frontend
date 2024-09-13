@@ -1,3 +1,6 @@
 # Known failure list for test262 - fastverify-x64
+#19413
+test262/data/test_es2021/built-ins/Object/getOwnPropertyDescriptor/15.2.3.3-4-154.js
+
 ##19208
 test262/data/test_es2021/language/module-code/instn-iee-err-circular-as.js

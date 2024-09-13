@@ -12,6 +12,9 @@ dayjs_test
 #18340
 Drools_test
 
+#19070
+float-mm
+
 #19231
 jBox2d_test
 
@@ -20,6 +23,9 @@ hi-base32_test
 
 #18425
 gson_test
+
+#19501
+lodash_test
 
 #18383
 memory-cache_test
@@ -30,11 +36,20 @@ mathjs_test
 #18487
 pako_test
 
+#18424
+pcx_test
+
+#19251
+pdfview_test
+
 #19426
 validator_test
 
 #18437
 zxing_test
+
+#19424
+zxing-text-encoding_test
 
 #18425
 Matrix_test

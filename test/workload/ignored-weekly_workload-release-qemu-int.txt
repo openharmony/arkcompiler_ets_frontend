@@ -11,6 +11,9 @@ json-parse-inspector
 #18745
 json-stringify-inspector
 
+#19072
+OfflineAssembler
+
 #19008
 regex-dna
 

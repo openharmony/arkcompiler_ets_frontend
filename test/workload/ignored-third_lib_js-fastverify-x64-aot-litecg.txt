@@ -11,6 +11,9 @@ dayjs_test
 #18340
 Drools_test
 
+#18424
+htmlParser2_test
+
 #18546
 gson_test
 
@@ -32,6 +35,8 @@ pdfview_test
 #18437
 zxing_test
 
+#19248
+pinyin4js_test
 
 
 #18546

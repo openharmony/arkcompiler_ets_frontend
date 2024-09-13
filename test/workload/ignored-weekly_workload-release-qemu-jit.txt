@@ -16,6 +16,9 @@ json-stringify-inspector
 #19243
 hash-map
 
+#19072
+OfflineAssembler
+
 #19008
 regex-dna
 
