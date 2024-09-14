@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2022-2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2024 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -15,25 +15,25 @@
     ],
     "nodes": [
         {
-            "line": 22,
-            "column": 1,
-            "problem": "ImportAfterStatement",
+            "line": 20,
+            "column": 16,
+            "problem": "SendableCapturedVars",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
         },
         {
-            "line": 23,
-            "column": 1,
-            "problem": "ImportAfterStatement",
+            "line": 20,
+            "column": 5,
+            "problem": "SendablePropType",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
-            "line": 24,
-            "column": 1,
-            "problem": "ImportAfterStatement",
+            "line": 21,
+            "column": 5,
+            "problem": "SendablePropType",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         }
     ]
 }

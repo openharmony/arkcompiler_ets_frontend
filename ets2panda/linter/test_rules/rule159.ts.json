@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2022-2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2024 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -16,24 +16,10 @@
     "nodes": [
         {
             "line": 22,
-            "column": 1,
-            "problem": "ImportAfterStatement",
+            "column": 12,
+            "problem": "SendableObjectInitialization",
             "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
-        },
-        {
-            "line": 23,
-            "column": 1,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
-        },
-        {
-            "line": 24,
-            "column": 1,
-            "problem": "ImportAfterStatement",
-            "suggest": "",
-            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+            "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         }
     ]
 }

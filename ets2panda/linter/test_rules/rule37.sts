@@ -13,15 +13,4 @@
  * limitations under the License.
  */
 
-const person = {
-    firstName: "aa",
-    fullName: function (): string {
-        return this.firstName
-    }
-}
-const person1 = {
-    firstName: "Mary"
-}
-// This will log "Mary":
-const boundFullName = person.fullName.bind(person1)
-console.log(boundFullName())
+ let regex: RegExp = /bc*d/
