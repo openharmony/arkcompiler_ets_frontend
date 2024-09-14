@@ -22,24 +22,17 @@
 
 namespace ark::es2panda::ir {
 
-class ThisExpressionBuilder : public AstBuilder {
+class ThisExpressionBuilder : public AstBuilder<ir::ThisExpression> {
 public:
     explicit ThisExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
-    ThisExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     ThisExpression *Build()
     {
-        auto etsTypeReference = AllocNode<ir::ThisExpression>();
-        return etsTypeReference;
+        auto node = AllocNode();
+        return node;
     }
 
 private:
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

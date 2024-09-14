@@ -123,7 +123,7 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
         const SavedTypeRelationFlagsContext savedFlagsCtx(
             relation, TypeRelationFlag::NO_BOXING | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_WIDENING);
 
-        if (!relation->IsAssignableTo(tupleSource->GetTypeAtIndex(idx), GetTypeAtIndex(idx))) {
+        if (!relation->IsIdenticalTo(GetTypeAtIndex(idx), tupleSource->GetTypeAtIndex(idx))) {
             relation->Result(false);
             return;
         }

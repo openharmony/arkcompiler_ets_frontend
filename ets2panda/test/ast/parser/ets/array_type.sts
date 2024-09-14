@@ -25,3 +25,4 @@ class array_type  {
 }
 
 /* @@? 21:5 Error TypeError: Function with a non void return type must return a value.  */
+/* @@? 23:13 Error TypeError: Function with a non void return type must return a value.  */

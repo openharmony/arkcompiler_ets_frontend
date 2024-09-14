@@ -36,4 +36,5 @@ function main(): void {
     d.b.a.c = 127;
 }
 
+/* @@? 30:5 Warning Warning: Variable 'd' is used before being assigned.  */
 /* @@? 1:1 Error TypeError: There were errors during assign analysis (1)  */

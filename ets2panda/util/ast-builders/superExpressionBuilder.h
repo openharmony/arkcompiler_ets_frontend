@@ -22,24 +22,17 @@
 
 namespace ark::es2panda::ir {
 
-class SuperExpressionBuilder : public AstBuilder {
+class SuperExpressionBuilder : public AstBuilder<ir::SuperExpression> {
 public:
     explicit SuperExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
-    SuperExpressionBuilder SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     SuperExpression *Build()
     {
-        auto node = AllocNode<ir::SuperExpression>();
+        auto node = AllocNode();
         return node;
     }
 
 private:
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

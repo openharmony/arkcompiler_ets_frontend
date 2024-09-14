@@ -52,13 +52,20 @@ private:
     checker::Type *GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const;
     checker::Type *SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr, ETSObjectType *objectType) const;
     checker::Type *UnwrapPromiseType(checker::Type *type) const;
+    bool CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
+                                         checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
+                                         ETSChecker *checker) const;
 
     checker::Type *GetCalleeType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr) const
     {
         checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
+        if (calleeType == nullptr) {
+            return nullptr;
+        }
 
         if (!calleeType->IsETSObjectType()) {
-            checker->ThrowTypeError("This expression is not constructible.", expr->Start());
+            checker->LogTypeError("This expression is not constructible.", expr->Start());
+            return checker->GlobalTypeError();
         }
 
         return calleeType;

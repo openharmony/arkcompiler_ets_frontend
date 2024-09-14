@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class IdentifierBuilder : public AstBuilder {
+class IdentifierBuilder : public AstBuilder<ir::Identifier> {
 public:
     explicit IdentifierBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -32,22 +32,14 @@ public:
         return *this;
     }
 
-    IdentifierBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     Identifier *Build()
     {
-        auto *node = AllocNode<ir::Identifier>(name_, Allocator());
-        node->SetParent(parent_);
+        auto *node = AllocNode(name_, Allocator());
         return node;
     }
 
 private:
     util::StringView name_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

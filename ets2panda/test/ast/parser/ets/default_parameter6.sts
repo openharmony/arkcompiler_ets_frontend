@@ -23,4 +23,5 @@ function foo(a : Int, b : string = "a", c : Int = 30) : Int
     return 2;
 }
 
-/* @@? 1:1 Error TypeError: Function foo with this assembly signature already declared.  */
+/* @@? 21:1 Error TypeError: Function foo with this assembly signature already declared.  */
+/* @@? 21:1 Error TypeError: Function foo is already declared.  */

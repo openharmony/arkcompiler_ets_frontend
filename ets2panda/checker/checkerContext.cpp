@@ -30,6 +30,14 @@ CheckerContext::CheckerContext(Checker *checker, CheckerStatus newStatus, ETSObj
 {
 }
 
+void CheckerContext::SetSmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept
+{
+    // Just block captured and modified variables here instead of finding all their usage occurrences.
+    if (!variable->HasFlag(varbinder::VariableFlags::CAPTURED_MODIFIED)) {
+        smartCasts_.insert_or_assign(variable, smartType);
+    }
+}
+
 SmartCastTypes CheckerContext::CloneTestSmartCasts(bool const clearData) noexcept
 {
     if (testSmartCasts_.empty()) {

@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class StringLiteralBuilder : public AstBuilder {
+class StringLiteralBuilder : public AstBuilder<ir::StringLiteral> {
 public:
     explicit StringLiteralBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -32,22 +32,14 @@ public:
         return *this;
     }
 
-    StringLiteralBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     ir::StringLiteral *Build()
     {
-        auto *node = AllocNode<ir::StringLiteral>(value_);
-        node->SetParent(parent_);
+        auto *node = AllocNode(value_);
         return node;
     }
 
 private:
     util::StringView value_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

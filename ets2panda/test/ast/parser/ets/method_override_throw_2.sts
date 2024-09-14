@@ -22,3 +22,4 @@ class AClass implements A {
 }
 
 /* @@? 21:26 Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */
+/* @@? 6:17 Error TypeError: Method foo(): void in AClass not overriding any method  */

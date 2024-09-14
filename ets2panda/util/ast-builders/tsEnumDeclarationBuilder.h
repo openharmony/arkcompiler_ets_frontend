@@ -22,17 +22,11 @@
 
 namespace ark::es2panda::ir {
 
-class TSEnumDeclarationBuilder : public AstBuilder {
+class TSEnumDeclarationBuilder : public AstBuilder<ir::TSEnumDeclaration> {
 public:
     explicit TSEnumDeclarationBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), members_(allocator->Adapter())
     {
-    }
-
-    TSEnumDeclarationBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
     }
 
     TSEnumDeclarationBuilder &SetKey(Identifier *key)
@@ -67,14 +61,12 @@ public:
 
     TSEnumDeclaration *Build()
     {
-        auto node =
-            AllocNode<ir::TSEnumDeclaration>(Allocator(), key_, std::move(members_),
-                                             ir::TSEnumDeclaration::ConstructorFlags {isConst_, isStatic_, isDeclare_});
+        auto node = AllocNode(Allocator(), key_, std::move(members_),
+                              ir::TSEnumDeclaration::ConstructorFlags {isConst_, isStatic_, isDeclare_});
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     Identifier *key_ {};
     ArenaVector<AstNode *> members_;
     bool isConst_ = false;

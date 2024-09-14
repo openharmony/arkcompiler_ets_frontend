@@ -193,8 +193,8 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     AnalyzeNodes(node);
 
     if (numErrors_ > 0) {
-        checker_->ThrowTypeError("There were errors during assign analysis (" + std::to_string(numErrors_) + ")",
-                                 node->Start());
+        checker_->LogTypeError("There were errors during assign analysis (" + std::to_string(numErrors_) + ")",
+                               node->Start());
     }
 }
 

@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class MemberExpressionBuilder : public AstBuilder {
+class MemberExpressionBuilder : public AstBuilder<ir::MemberExpression> {
 public:
     explicit MemberExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    MemberExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     MemberExpressionBuilder &SetObject(Expression *obj)
     {
@@ -52,15 +46,14 @@ public:
 
     MemberExpression *Build()
     {
-        auto etsTypeReference = AllocNode<ir::MemberExpression>(object_, property_, kind_, false, false);
-        return etsTypeReference;
+        auto node = AllocNode(object_, property_, kind_, false, false);
+        return node;
     }
 
 private:
     Expression *object_ {};
     Expression *property_ {};
     MemberExpressionKind kind_ = MemberExpressionKind::NONE;
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

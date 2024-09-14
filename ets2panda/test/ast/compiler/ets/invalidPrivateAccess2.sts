@@ -26,3 +26,4 @@ function main(): void {
 }
 
 /* @@? 25:24 Error TypeError: Signature constructor(): void is not visible here.  */
+/* @@? 25:24 Error TypeError: No matching construct signature  */

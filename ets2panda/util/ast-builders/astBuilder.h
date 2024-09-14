@@ -21,23 +21,39 @@
 
 namespace ark::es2panda::ir {
 
+template <typename NodeType>
 class AstBuilder {
 public:
     explicit AstBuilder(ark::ArenaAllocator *allocator) : allocator_(allocator) {}
+    NO_COPY_SEMANTIC(AstBuilder);
+    NO_MOVE_SEMANTIC(AstBuilder);
+    virtual ~AstBuilder() = default;
 
     ark::ArenaAllocator *Allocator()
     {
         return allocator_;
     }
 
-    template <typename T, typename... Args>
-    T *AllocNode(Args &&...args)
+    template <typename BuilderType>
+    BuilderType &SetParent(AstNode *parent)
     {
-        return util::NodeAllocator::ForceSetParent<T>(allocator_, std::forward<Args>(args)...);
+        parent_ = parent;
+        return *static_cast<BuilderType *>(this);
+    }
+
+    template <typename... Args>
+    NodeType *AllocNode(Args &&...args)
+    {
+        auto node = util::NodeAllocator::ForceSetParent<NodeType>(allocator_, std::forward<Args>(args)...);
+        if (parent_ != nullptr) {
+            node->SetParent(parent_);
+        }
+        return node;
     }
 
 private:
     ark::ArenaAllocator *allocator_;
+    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

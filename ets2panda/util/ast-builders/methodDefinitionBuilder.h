@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class MethodDefinitionBuilder : public AstBuilder {
+class MethodDefinitionBuilder : public AstBuilder<ir::MethodDefinition> {
 public:
     explicit MethodDefinitionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -50,16 +50,9 @@ public:
         return *this;
     }
 
-    MethodDefinitionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     MethodDefinition *Build()
     {
-        auto *node = AllocNode<ir::MethodDefinition>(kind_, key_, value_, flags_, Allocator(), false);
-        node->SetParent(parent_);
+        auto *node = AllocNode(kind_, key_, value_, flags_, Allocator(), false);
         return node;
     }
 
@@ -68,7 +61,6 @@ private:
     Expression *key_ {};
     Expression *value_ {};
     ModifierFlags flags_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

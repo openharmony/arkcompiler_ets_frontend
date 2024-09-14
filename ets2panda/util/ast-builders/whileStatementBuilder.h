@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class WhileStatementBuilder : public AstBuilder {
+class WhileStatementBuilder : public AstBuilder<ir::WhileStatement> {
 public:
     explicit WhileStatementBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    WhileStatementBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     WhileStatementBuilder &SetTest(Expression *test)
     {
@@ -46,12 +40,11 @@ public:
 
     WhileStatement *Build()
     {
-        auto node = AllocNode<ir::WhileStatement>(test_, body_);
+        auto node = AllocNode(test_, body_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     Expression *test_ {};
     Statement *body_ {};
 };

@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class ExpressionStatementBuilder : public AstBuilder {
+class ExpressionStatementBuilder : public AstBuilder<ir::ExpressionStatement> {
 public:
     explicit ExpressionStatementBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -32,22 +32,14 @@ public:
         return *this;
     }
 
-    ExpressionStatementBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     ExpressionStatement *Build()
     {
-        auto *node = AllocNode<ir::ExpressionStatement>(expression_);
-        node->SetParent(parent_);
+        auto *node = AllocNode(expression_);
         return node;
     }
 
 private:
     Expression *expression_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

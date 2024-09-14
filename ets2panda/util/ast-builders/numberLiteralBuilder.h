@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class NumberLiteralBuilder : public AstBuilder {
+class NumberLiteralBuilder : public AstBuilder<ir::NumberLiteral> {
 public:
     explicit NumberLiteralBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -32,22 +32,14 @@ public:
         return *this;
     }
 
-    NumberLiteralBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     NumberLiteral *Build()
     {
-        auto *node = AllocNode<ir::NumberLiteral>(value_);
-        node->SetParent(parent_);
+        auto *node = AllocNode(value_);
         return node;
     }
 
 private:
     util::StringView value_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

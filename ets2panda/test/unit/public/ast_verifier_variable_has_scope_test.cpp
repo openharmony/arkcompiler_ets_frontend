@@ -119,7 +119,7 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(ASTVerifierTest, AsyncLambda)
+TEST_F(ASTVerifierTest, AsyncLambda1)
 {
     ASTVerifier verifier {Allocator()};
 
@@ -155,4 +155,39 @@ TEST_F(ASTVerifierTest, AsyncLambda)
 
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(ASTVerifierTest, AsyncLambda2)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        let global: int;
+        async function func(param: int): Promise<String | null> {
+            let local: int;
+            let async_lambda: () => Promise<Object | null> = async (): Promise<Object | null> => {
+                param;
+                local;
+                global;
+                let x = 0;
+                return null;
+            }
+
+            return null;
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("VariableHasScopeForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+
 }  // namespace

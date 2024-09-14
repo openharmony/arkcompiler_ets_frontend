@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class BigIntLiteralBuilder : public AstBuilder {
+class BigIntLiteralBuilder : public AstBuilder<ir::BigIntLiteral> {
 public:
     explicit BigIntLiteralBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    BigIntLiteralBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     BigIntLiteralBuilder &SetValue(util::StringView val)
     {
@@ -40,12 +34,11 @@ public:
 
     BigIntLiteral *Build()
     {
-        auto node = AllocNode<ir::BigIntLiteral>(value_);
+        auto node = AllocNode(value_);
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     util::StringView value_;
 };
 

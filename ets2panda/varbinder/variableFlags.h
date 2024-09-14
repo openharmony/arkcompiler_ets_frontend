@@ -155,6 +155,7 @@ enum class VariableFlags : uint64_t {
     LEXICAL_BOUND = 1U << 30U,
 
     BUILTIN_TYPE = 1ULL << 31ULL,
+    CAPTURED_MODIFIED = 1ULL << 32ULL,
 
     HOIST_VAR = HOIST | VAR,
     CLASS_OR_INTERFACE = CLASS | INTERFACE,

@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_AST_NODE_H
 #define ES2PANDA_IR_AST_NODE_H
 
-#include "ir/astNodeFlags.h"
-#include "ir/astNodeMapping.h"
+#include "astNodeFlags.h"
+#include "astNodeMapping.h"
 #include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
 #include "macros.h"
@@ -498,6 +498,8 @@ public:
      *      ASTVisitorT::accept(this, v);
      *  }
      */
+    void SetOriginalNode(AstNode *originalNode);
+
 protected:
     AstNode(AstNode const &other);
 
@@ -520,8 +522,6 @@ private:
     AstNode *originalNode_ = nullptr;
     // {lowering_phase_name, new_generated_node}
     std::optional<std::pair<std::string_view, AstNode *>> transformedNode_ = std::nullopt;
-
-    void SetOriginalNode(AstNode *originalNode);
 };
 
 template <typename T>

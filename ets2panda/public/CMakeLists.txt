@@ -1,0 +1,576 @@
+# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+#CMake for generate es2panda_lib files
+
+set(LIB_NAME es2panda_lib)
+set(LIBGEN_DIR ${GENERATED_DIR}/${LIB_NAME})
+make_directory(${LIBGEN_DIR})
+set(RB_LIST "")
+
+set(ES2PANDA_API
+    ${CMAKE_CURRENT_SOURCE_DIR}/cppToCTypes.yaml
+)
+
+set (HEADERS_TO_BE_PARSED
+    ${ES2PANDA_ROOT}/varbinder/variableFlags.h
+    ${ES2PANDA_ROOT}/lexer/regexp/regexp.h
+    ${ES2PANDA_ROOT}/util/language.h
+    ${ES2PANDA_ROOT}/lexer/token/tokenType.h
+    ${ES2PANDA_ROOT}/ir/astNodeFlags.h
+    ${ES2PANDA_ROOT}/ir/astNodeMapping.h
+    ${ES2PANDA_ROOT}/ir/module/exportDefaultDeclaration.h
+    ${ES2PANDA_ROOT}/ir/statements/forInStatement.h
+    ${ES2PANDA_ROOT}/checker/types/ts/voidType.h
+    ${ES2PANDA_ROOT}/ir/expressions/classExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsConditionalType.h
+    ${ES2PANDA_ROOT}/ir/expressions/templateLiteral.h
+    ${ES2PANDA_ROOT}/ir/statements/breakStatement.h
+    ${ES2PANDA_ROOT}/ir/ets/etsImportDeclaration.h
+    ${ES2PANDA_ROOT}/ir/ts/tsArrayType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/numberType.h
+    ${ES2PANDA_ROOT}/ir/module/importDefaultSpecifier.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsFunctionType.h
+    ${ES2PANDA_ROOT}/ir/base/classDefinition.h
+    ${ES2PANDA_ROOT}/checker/types/ts/typeParameter.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsEnumType.h
+    ${ES2PANDA_ROOT}/ir/statement.h
+    ${ES2PANDA_ROOT}/ir/irnode.h
+    ${ES2PANDA_ROOT}/checker/types/typeRelation.h
+    ${ES2PANDA_ROOT}/ir/visitor/AstVisitor.h
+    ${ES2PANDA_ROOT}/ir/statements/classDeclaration.h
+    ${ES2PANDA_ROOT}/ir/base/tsMethodSignature.h
+    ${ES2PANDA_ROOT}/ir/ts/tsExternalModuleReference.h
+    ${ES2PANDA_ROOT}/ir/ts/tsInterfaceBody.h
+    ${ES2PANDA_ROOT}/checker/types/ts/nonPrimitiveType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeParameterInstantiation.h
+    ${ES2PANDA_ROOT}/ir/module/importDeclaration.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsDynamicType.h
+    ${ES2PANDA_ROOT}/ir/statements/doWhileStatement.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/bigIntLiteral.h
+    ${ES2PANDA_ROOT}/ir/expressions/assignmentExpression.h
+    ${ES2PANDA_ROOT}/ir/srcDump.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsBooleanType.h
+    ${ES2PANDA_ROOT}/ir/expressions/sequenceExpression.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/nullLiteral.h
+    ${ES2PANDA_ROOT}/ir/ts/tsStringKeyword.h
+    ${ES2PANDA_ROOT}/ir/ts/tsUnionType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsClassImplements.h
+    ${ES2PANDA_ROOT}/checker/types/typeFlag.h
+    ${ES2PANDA_ROOT}/ir/base/tsPropertySignature.h
+    ${ES2PANDA_ROOT}/checker/types/ts/stringLiteralType.h
+    ${ES2PANDA_ROOT}/ir/expressions/conditionalExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsFunctionType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/undefinedType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/numberLiteralType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsObjectKeyword.h
+    ${ES2PANDA_ROOT}/checker/types/ts/tupleType.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsStringType.h
+    ${ES2PANDA_ROOT}/ir/base/property.h
+    ${ES2PANDA_ROOT}/ir/astDump.h
+    ${ES2PANDA_ROOT}/ir/base/tsSignatureDeclaration.h
+    ${ES2PANDA_ROOT}/ir/ets/etsReExportDeclaration.h
+    ${ES2PANDA_ROOT}/ir/ts/tsUndefinedKeyword.h
+    ${ES2PANDA_ROOT}/ir/expressions/arrowFunctionExpression.h
+    ${ES2PANDA_ROOT}/ir/expressions/callExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsInterfaceHeritage.h
+    ${ES2PANDA_ROOT}/ir/expressions/updateExpression.h
+    ${ES2PANDA_ROOT}/ir/module/importSpecifier.h
+    ${ES2PANDA_ROOT}/ir/ets/etsNewClassInstanceExpression.h
+    ${ES2PANDA_ROOT}/ir/statements/labelledStatement.h
+    ${ES2PANDA_ROOT}/ir/ts/tsModuleBlock.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypePredicate.h
+    ${ES2PANDA_ROOT}/ir/base/catchClause.h
+    ${ES2PANDA_ROOT}/ir/base/classProperty.h
+    ${ES2PANDA_ROOT}/ir/base/tsIndexSignature.h
+    ${ES2PANDA_ROOT}/checker/types/ts/arrayType.h
+    ${ES2PANDA_ROOT}/ir/astNode.h
+    ${ES2PANDA_ROOT}/ir/statements/ifStatement.h
+    ${ES2PANDA_ROOT}/ir/ets/etsTuple.h
+    ${ES2PANDA_ROOT}/ir/module/exportSpecifier.h
+    ${ES2PANDA_ROOT}/ir/ts/tsNamedTupleMember.h
+    ${ES2PANDA_ROOT}/ir/statements/returnStatement.h
+    ${ES2PANDA_ROOT}/checker/types/ts/neverType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/unionType.h
+    ${ES2PANDA_ROOT}/ir/statements/tryStatement.h
+    ${ES2PANDA_ROOT}/ir/ts/tsQualifiedName.h
+    ${ES2PANDA_ROOT}/checker/types/ts/types.h
+    ${ES2PANDA_ROOT}/ir/ts/tsLiteralType.h
+    ${ES2PANDA_ROOT}/checker/types/typeMapping.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsBigIntType.h
+    ${ES2PANDA_ROOT}/ir/expressions/arrayExpression.h
+    ${ES2PANDA_ROOT}/ir/ets/etsUnionType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeParameter.h
+    ${ES2PANDA_ROOT}/ir/ts/tsConstructorType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeParameterDeclaration.h
+    ${ES2PANDA_ROOT}/checker/types/ts/enumLiteralType.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/charLiteral.h
+    ${ES2PANDA_ROOT}/ir/base/classElement.h
+    ${ES2PANDA_ROOT}/ir/statements/switchStatement.h
+    ${ES2PANDA_ROOT}/ir/expressions/identifier.h
+    ${ES2PANDA_ROOT}/ir/expressions/objectExpression.h
+    ${ES2PANDA_ROOT}/ir/statements/functionDeclaration.h
+    ${ES2PANDA_ROOT}/ir/as/prefixAssertionExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ts/typeReference.h
+    ${ES2PANDA_ROOT}/ir/expressions/memberExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsExtensionFuncHelperType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsNullishTypes.h
+    ${ES2PANDA_ROOT}/ir/ets/etsLaunchExpression.h
+    ${ES2PANDA_ROOT}/ir/expressions/awaitExpression.h
+    ${ES2PANDA_ROOT}/ir/ets/etsFunctionType.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsArrayType.h
+    ${ES2PANDA_ROOT}/ir/expressions/binaryExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsNullishTypes.h
+    ${ES2PANDA_ROOT}/ir/expressions/newExpression.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/stringLiteral.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTupleType.h
+    ${ES2PANDA_ROOT}/checker/types/ets/longType.h
+    ${ES2PANDA_ROOT}/ir/module/exportAllDeclaration.h
+    ${ES2PANDA_ROOT}/checker/types/ts/bigintType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsParenthesizedType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsModuleDeclaration.h
+    ${ES2PANDA_ROOT}/ir/ets/etsPackageDeclaration.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsDynamicFunctionType.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/regExpLiteral.h
+    ${ES2PANDA_ROOT}/ir/ets/etsNewArrayInstanceExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsVoidType.h
+    ${ES2PANDA_ROOT}/ir/base/metaProperty.h
+    ${ES2PANDA_ROOT}/checker/types/type.h
+    ${ES2PANDA_ROOT}/checker/types/ts/booleanLiteralType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/anyType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsScript.h
+    ${ES2PANDA_ROOT}/ir/ts/tsInferType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsMappedType.h
+    ${ES2PANDA_ROOT}/ir/statements/debuggerStatement.h
+    ${ES2PANDA_ROOT}/ir/ts/tsBooleanKeyword.h
+    ${ES2PANDA_ROOT}/ir/ts/tsEnumDeclaration.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsObjectType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/interfaceType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/functionType.h
+    ${ES2PANDA_ROOT}/ir/statements/emptyStatement.h
+    ${ES2PANDA_ROOT}/ir/expressions/omittedExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsNeverKeyword.h
+    ${ES2PANDA_ROOT}/ir/expressions/blockExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ts/objectDescriptor.h
+    ${ES2PANDA_ROOT}/ir/ts/tsBigintKeyword.h
+    ${ES2PANDA_ROOT}/ir/statements/blockStatement.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/numberLiteral.h
+    ${ES2PANDA_ROOT}/checker/types/ets/shortType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/bigintLiteralType.h
+    ${ES2PANDA_ROOT}/ir/expression.h
+    ${ES2PANDA_ROOT}/checker/types/ts/objectLiteralType.h
+    ${ES2PANDA_ROOT}/ir/typeNode.h
+    ${ES2PANDA_ROOT}/ir/base/spreadElement.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeAssertion.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeOperator.h
+    ${ES2PANDA_ROOT}/ir/ts/tsAsExpression.h
+    ${ES2PANDA_ROOT}/ir/statements/expressionStatement.h
+    ${ES2PANDA_ROOT}/checker/types/ts/elementFlags.h
+    ${ES2PANDA_ROOT}/ir/ts/tsImportType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/indexInfo.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsTupleType.h
+    ${ES2PANDA_ROOT}/checker/types/signature.h
+    ${ES2PANDA_ROOT}/ir/ets/etsPrimitiveType.h
+    ${ES2PANDA_ROOT}/ir/as/namedType.h
+    ${ES2PANDA_ROOT}/ir/statements/throwStatement.h
+    ${ES2PANDA_ROOT}/ir/statements/forOfStatement.h
+    ${ES2PANDA_ROOT}/ir/statements/switchCaseStatement.h
+    ${ES2PANDA_ROOT}/ir/base/templateElement.h
+    ${ES2PANDA_ROOT}/checker/types/ets/charType.h
+    ${ES2PANDA_ROOT}/checker/types/ets/intType.h
+    ${ES2PANDA_ROOT}/ir/statements/forUpdateStatement.h
+    ${ES2PANDA_ROOT}/checker/types/ets/floatType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsImportSource.h
+    ${ES2PANDA_ROOT}/ir/ets/etsTypeReferencePart.h
+    ${ES2PANDA_ROOT}/ir/ts/tsUnknownKeyword.h
+    ${ES2PANDA_ROOT}/ir/ets/etsStructDeclaration.h
+    ${ES2PANDA_ROOT}/checker/types/ts/objectType.h
+    ${ES2PANDA_ROOT}/ir/expressions/chainExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ets/byteType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsVoidKeyword.h
+    ${ES2PANDA_ROOT}/ir/statements/whileStatement.h
+    ${ES2PANDA_ROOT}/ir/expressions/taggedTemplateExpression.h
+    ${ES2PANDA_ROOT}/ir/statements/assertStatement.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsUnionType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/stringType.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/booleanLiteral.h
+    ${ES2PANDA_ROOT}/ir/expressions/functionExpression.h
+    ${ES2PANDA_ROOT}/ir/statements/variableDeclarator.h
+    ${ES2PANDA_ROOT}/ir/module/importNamespaceSpecifier.h
+    ${ES2PANDA_ROOT}/ir/module/exportNamedDeclaration.h
+    ${ES2PANDA_ROOT}/ir/expressions/thisExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeReference.h
+    ${ES2PANDA_ROOT}/ir/base/classStaticBlock.h
+    ${ES2PANDA_ROOT}/ir/expressions/unaryExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsThisType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsNullKeyword.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsTypeParameter.h
+    ${ES2PANDA_ROOT}/checker/types/typeFacts.h
+    ${ES2PANDA_ROOT}/ir/base/decorator.h
+    ${ES2PANDA_ROOT}/checker/types/globalTypesHolder.h
+    ${ES2PANDA_ROOT}/ir/ets/etsClassLiteral.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeAliasDeclaration.h
+    ${ES2PANDA_ROOT}/ir/ts/tsNonNullExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeLiteral.h
+    ${ES2PANDA_ROOT}/ir/ts/tsNumberKeyword.h
+    ${ES2PANDA_ROOT}/ir/opaqueTypeNode.h
+    ${ES2PANDA_ROOT}/ir/base/scriptFunction.h
+    ${ES2PANDA_ROOT}/ir/expressions/literal.h
+    ${ES2PANDA_ROOT}/ir/ts/tsInterfaceDeclaration.h
+    ${ES2PANDA_ROOT}/ir/ts/tsImportEqualsDeclaration.h
+    ${ES2PANDA_ROOT}/ir/validationInfo.h
+    ${ES2PANDA_ROOT}/ir/base/methodDefinition.h
+    ${ES2PANDA_ROOT}/ir/ts/tsIntersectionType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/nullType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/unknownType.h
+    ${ES2PANDA_ROOT}/ir/ts/tsEnumMember.h
+    ${ES2PANDA_ROOT}/ir/expressions/superExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ts/constructorType.h
+    ${ES2PANDA_ROOT}/ir/ets/etsTypeReference.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsNonNullishType.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsObjectTypeConstants.h
+    ${ES2PANDA_ROOT}/checker/types/ets/types.h
+    ${ES2PANDA_ROOT}/ir/statements/variableDeclaration.h
+    ${ES2PANDA_ROOT}/ir/opcodeMap.h
+    ${ES2PANDA_ROOT}/ir/ts/tsAnyKeyword.h
+    ${ES2PANDA_ROOT}/checker/types/ets/doubleType.h
+    ${ES2PANDA_ROOT}/ir/visitor/IterateAstVisitor.h
+    ${ES2PANDA_ROOT}/checker/types/ts/enumType.h
+    ${ES2PANDA_ROOT}/ir/expressions/directEvalExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsParameterProperty.h
+    ${ES2PANDA_ROOT}/ir/statements/continueStatement.h
+    ${ES2PANDA_ROOT}/ir/ets/etsWildcardType.h
+    ${ES2PANDA_ROOT}/ir/expressions/literals/undefinedLiteral.h
+    ${ES2PANDA_ROOT}/ir/ts/tsIndexedAccessType.h
+    ${ES2PANDA_ROOT}/checker/types/ets/wildcardType.h
+    ${ES2PANDA_ROOT}/checker/types/ts/booleanType.h
+    ${ES2PANDA_ROOT}/ir/expressions/typeofExpression.h
+    ${ES2PANDA_ROOT}/checker/types/ets/etsAsyncFuncReturnType.h
+    ${ES2PANDA_ROOT}/ir/statements/loopStatement.h
+    ${ES2PANDA_ROOT}/ir/base/scriptFunctionSignature.h
+    ${ES2PANDA_ROOT}/ir/expressions/yieldExpression.h
+    ${ES2PANDA_ROOT}/ir/ets/etsNewMultiDimArrayInstanceExpression.h
+    ${ES2PANDA_ROOT}/ir/ets/etsParameterExpression.h
+    ${ES2PANDA_ROOT}/ir/ts/tsTypeQuery.h
+    ${ES2PANDA_ROOT}/ir/expressions/importExpression.h
+)
+
+set (ES2PANDA_API_GENERATED
+    ${LIBGEN_DIR}/gen/headers/ir/statements/labelledStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/unknownType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/throwStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/classProperty.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsVoidKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/stringLiteralType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsFunctionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeOperator.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/ifStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsConstructorType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/decorator.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsEnumDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsNeverKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/importDefaultSpecifier.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/objectType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/objectExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/importSpecifier.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/conditionalExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsDynamicFunctionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/callExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/bigIntLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/classElement.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/types.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsImportType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/taggedTemplateExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/visitor/IterateAstVisitor.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/functionDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsTypeReference.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/tupleType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeReference.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/functionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsImportSource.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/as/namedType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/numberLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsFunctionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/templateElement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsInterfaceDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/typeReference.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/variableDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/booleanType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/neverType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/numberType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/undefinedLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/allEnums.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/indexInfo.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsFunctionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/memberExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsClassImplements.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsObjectKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/unionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsUnionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/tsPropertySignature.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/objectDescriptor.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsConditionalType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsLiteralType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeAliasDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/debuggerStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/elementFlags.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/returnStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/exportDefaultDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/scriptFunction.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/classDefinition.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsArrayType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/interfaceType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/arrayExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsInterfaceBody.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeQuery.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsBigintKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/property.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/variableDeclarator.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/stringLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeAssertion.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsExternalModuleReference.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsUndefinedKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/signature.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsTuple.yaml
+    ${LIBGEN_DIR}/gen/headers/util/language.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/tryStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsBigIntType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/anyType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/globalTypesHolder.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/longType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/astNode.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/unaryExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/forInStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/thisExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/tsMethodSignature.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/binaryExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/bigintLiteralType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/superExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/assertStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsStringKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsAsyncFuncReturnType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/assignmentExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/astNodeMapping.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/voidType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/doubleType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/expressionStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsScript.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/metaProperty.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsArrayType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/tsSignatureDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/exportAllDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/exportSpecifier.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTupleType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/functionExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsExtensionFuncHelperType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/tsIndexSignature.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/nullType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsModuleDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsVoidType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsNonNullishType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/bigintType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/importDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsStringType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsParenthesizedType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/astNodeFlags.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/typeParameter.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literal.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/charLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/intType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/objectLiteralType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/typeFlag.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsPackageDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsImportDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsStructDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsModuleBlock.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsNewArrayInstanceExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/loopStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/emptyStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsLaunchExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/whileStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/scriptFunctionSignature.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/numberLiteralType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/typeMapping.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/chainExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsIntersectionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/updateExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsEnumType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/blockExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeParameter.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsDynamicType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/charType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsBooleanKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/spreadElement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypePredicate.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/importNamespaceSpecifier.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/module/exportNamedDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsParameterExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeParameterInstantiation.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/nullLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsInferType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/switchCaseStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/yieldExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/undefinedType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsImportEqualsDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/stringType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/booleanLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsNumberKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/nonPrimitiveType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/classStaticBlock.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsNullishTypes.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/type.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsNonNullExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/as/prefixAssertionExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/typeFacts.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/classExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsTupleType.yaml
+    ${LIBGEN_DIR}/gen/headers/pathsToHeaders.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/forOfStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/typeRelation.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/templateLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsUnionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsUnknownKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/identifier.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/opaqueTypeNode.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/blockStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/directEvalExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsTypeParameterDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/methodDefinition.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsNullKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsInterfaceHeritage.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/enumLiteralType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/srcDump.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/types.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/floatType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsClassLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/irnode.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/breakStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/byteType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/literals/regExpLiteral.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsTypeParameter.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsObjectTypeConstants.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsMappedType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/opcodeMap.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsAnyKeyword.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsUnionType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/classDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/enumType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsIndexedAccessType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsQualifiedName.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/awaitExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/validationInfo.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/continueStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsNewMultiDimArrayInstanceExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsNamedTupleMember.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/importExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/astDump.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsNullishTypes.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/typeofExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsEnumMember.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/wildcardType.yaml
+    ${LIBGEN_DIR}/gen/headers/lexer/regexp/regexp.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/switchStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsBooleanType.yaml
+    ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/doWhileStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/base/catchClause.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/constructorType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/visitor/AstVisitor.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/sequenceExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/arrowFunctionExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/booleanLiteralType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsObjectType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/omittedExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ts/arrayType.yaml
+    ${LIBGEN_DIR}/gen/headers/lexer/token/tokenType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsNewClassInstanceExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsAsExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/forUpdateStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsTypeReferencePart.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsReExportDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsPrimitiveType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/typeNode.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/expressions/newExpression.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsParameterProperty.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsWildcardType.yaml
+    ${LIBGEN_DIR}/gen/headers/checker/types/ets/shortType.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ts/tsThisType.yaml
+)
+
+
+list(APPEND ES2PANDA_API ${ES2PANDA_API_GENERATED})
+foreach(_ IN LISTS ES2PANDA_API)
+    list(APPEND RB_LIST "${CMAKE_CURRENT_SOURCE_DIR}/${LIB_NAME}.rb")
+endforeach()
+
+set (ES2PANDA_INC
+    ${LIB_NAME}_include.inc.erb
+    ${LIB_NAME}_decl.inc.erb
+    ${LIB_NAME}_enums.inc.erb
+    ${LIB_NAME}_impl.inc.erb
+    ${LIB_NAME}_list.inc.erb
+)
+
+panda_gen(
+    DATA ${ES2PANDA_API}
+    TARGET_NAME gen_api
+    TEMPLATES ${ES2PANDA_INC}
+    API ${RB_LIST}
+    DESTINATION ${LIBGEN_DIR}
+    SOURCE ${CMAKE_CURRENT_SOURCE_DIR}
+    EXTRA_DEPENDENCIES gen_yamls ${ES2PANDA_API_GENERATED}
+)
+
+add_custom_command(
+    OUTPUT ${ES2PANDA_API_GENERATED}
+    COMMAND python3 -B ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/main.py
+        "${ES2PANDA_ROOT}" "${LIBGEN_DIR}" ${HEADERS_TO_BE_PARSED}
+    DEPENDS ${HEADERS_TO_BE_PARSED}
+)
+
+add_custom_target(gen_yamls DEPENDS ${ES2PANDA_API_GENERATED})
+
+
+set(ES2PANDA_PUBLIC_SOURCES
+    ${LIB_NAME}.cpp
+    ../util/generateBin.cpp
+    ../util/options.cpp
+    ../util/plugin.cpp
+)
+
+
+panda_add_library(es2panda-public ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_PUBLIC_SOURCES})
+add_dependencies(es2panda-lib gen_api)
+add_dependencies(es2panda-public es2panda-lib)
+
+
+panda_target_include_directories(es2panda-public
+    PRIVATE ${ES2PANDA_ROOT}/
+    PRIVATE ${OUTPUT_DIR}
+)
+
+panda_target_compile_options(es2panda-public
+  PRIVATE -fexceptions -Werror=shadow
+)
+
+panda_target_link_libraries(es2panda-public
+  PUBLIC arkbase es2panda-lib
+  PRIVATE arkbytecodeopt
+)
+
+panda_add_sanitizers(TARGET es2panda-public SANITIZERS
+  ${PANDA_SANITIZERS_LIST})

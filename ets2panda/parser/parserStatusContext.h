@@ -135,6 +135,11 @@ public:
         return flags_;
     }
 
+    bool IsAsync() const
+    {
+        return (flags_ & ir::ScriptFunctionFlags::ASYNC) != 0;
+    }
+
     void AddFlag(ir::ScriptFunctionFlags flags)
     {
         flags_ |= flags;

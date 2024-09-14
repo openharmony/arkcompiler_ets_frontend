@@ -22,16 +22,16 @@
 
 namespace ark::es2panda::ir {
 
-class ClassDefinitionBuilder : public AstBuilder {
+class ClassDefinitionBuilder : public AstBuilder<ClassDefinition> {
 public:
     explicit ClassDefinitionBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), body_(Allocator()->Adapter()), implements_(Allocator()->Adapter())
     {
     }
 
-    ClassDefinitionBuilder &SetIdentifier(util::StringView id)
+    ClassDefinitionBuilder &SetIdentifier(ir::Identifier *id)
     {
-        ident_ = AllocNode<ir::Identifier>(id, Allocator());
+        ident_ = id;
         return *this;
     }
 
@@ -50,12 +50,6 @@ public:
     ClassDefinitionBuilder &AddProperty(AstNode *property)
     {
         body_.push_back(property);
-        return *this;
-    }
-
-    ClassDefinitionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
         return *this;
     }
 
@@ -85,12 +79,10 @@ public:
 
     ClassDefinition *Build()
     {
-        auto classDef = AllocNode<ClassDefinition>(util::StringView(), ident_, typeParams_, superTypeParams_,
-                                                   std::move(implements_), ctor_, superClass_, std::move(body_),
-                                                   ir::ClassDefinitionModifiers::CLASS_DECL, ir::ModifierFlags::NONE,
-                                                   Language(Language::Id::ETS));
-        classDef->SetParent(parent_);
-        return classDef;
+        auto node = AllocNode(util::StringView(), ident_, typeParams_, superTypeParams_, std::move(implements_), ctor_,
+                              superClass_, std::move(body_), ir::ClassDefinitionModifiers::CLASS_DECL,
+                              ir::ModifierFlags::NONE, Language(Language::Id::ETS));
+        return node;
     }
 
 private:
@@ -102,7 +94,6 @@ private:
     TSTypeParameterDeclaration *typeParams_ {};
     TSTypeParameterInstantiation *superTypeParams_ {};
     ArenaVector<TSClassImplements *> implements_;
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

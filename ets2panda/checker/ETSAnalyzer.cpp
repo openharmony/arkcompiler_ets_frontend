@@ -102,6 +102,10 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 
     auto *func = st->Function();
     checker->BuildFunctionSignature(func);
+    if (func->Signature() == nullptr) {
+        st->SetTsType(checker->GlobalTypeError());
+        return st->TsTypeOrError();
+    }
     st->SetTsType(checker->BuildNamedFunctionType(func));
     checker::ScopeContext scopeCtx(checker, func->Scope());
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
@@ -134,7 +138,9 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             }
         }
 
-        ComposeAsyncImplMethod(checker, node);
+        if (node->Function()->HasBody()) {
+            ComposeAsyncImplMethod(checker, node);
+        }
     }
 }
 
@@ -272,7 +278,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
                                       expr->Range().start);
     expr->SetTsType(ctx.Result());
 
-    return expr->TsType();
+    return expr->TsTypeOrError();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
@@ -367,8 +373,8 @@ void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr,
     ETSChecker *checker = GetETSChecker();
     if (expr->ClassDefinition() != nullptr) {
         if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && calleeObj->GetDeclNode()->IsFinal()) {
-            checker->ThrowTypeError({"Class ", calleeObj->Name(), " cannot be both 'abstract' and 'final'."},
-                                    calleeObj->GetDeclNode()->Start());
+            checker->LogTypeError({"Class ", calleeObj->Name(), " cannot be both 'abstract' and 'final'."},
+                                  calleeObj->GetDeclNode()->Start());
         }
 
         bool fromInterface = calleeObj->HasObjectFlag(checker::ETSObjectFlags::INTERFACE);
@@ -383,13 +389,13 @@ void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr,
         checker->CheckInnerClassMembers(classType);
         expr->SetTsType(classType);
     } else if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
-        checker->ThrowTypeError({calleeObj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
+        checker->LogTypeError({calleeObj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
     }
 
     if (calleeObj->HasObjectFlag(ETSObjectFlags::REQUIRED) &&
         !expr->HasAstNodeFlags(ir::AstNodeFlags::ALLOW_REQUIRED_INSTANTIATION)) {
-        checker->ThrowTypeError("Required type can be instantiated only with object literal",
-                                expr->GetTypeRef()->Start());
+        checker->LogTypeError("Required type can be instantiated only with object literal",
+                              expr->GetTypeRef()->Start());
     }
 }
 
@@ -397,6 +403,14 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     auto *calleeType = GetCalleeType(checker, expr);
+    if (calleeType == nullptr) {
+        return expr->TsType();
+    }
+
+    if (calleeType->IsTypeError()) {
+        expr->SetTsType(calleeType);
+        return expr->TsTypeOrError();
+    }
     auto *calleeObj = calleeType->AsETSObjectType();
     expr->SetTsType(calleeObj);
 
@@ -407,6 +421,11 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
         expr->SetSignature(checker->ResolveDynamicCallExpression(expr->GetTypeRef(), expr->GetArguments(), lang, true));
     } else {
         auto *signature = checker->ResolveConstructExpression(calleeObj, expr->GetArguments(), expr->Start());
+
+        if (signature == nullptr) {
+            expr->SetTsType(checker->GlobalTypeError());
+            return expr->TsTypeOrError();
+        }
 
         checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
 
@@ -429,7 +448,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
         }
     }
 
-    return expr->TsType();
+    return expr->TsTypeOrError();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *expr) const
@@ -516,11 +535,10 @@ checker::Type *ETSAnalyzer::GetPreferredType(ir::ArrayExpression *expr) const
     return expr->preferredType_;
 }
 
-static void CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
+static bool CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
                               std::vector<checker::Type *> targetElementType, ir::Expression *currentElement,
                               bool &isSecondaryChosen)
 {
-    // clang-format off
     if ((targetElementType[0]->IsETSArrayType() &&
          targetElementType[0]->AsETSArrayType()->ElementType()->IsETSArrayType() &&
          !(targetElementType[0]->AsETSArrayType()->ElementType()->IsETSTupleType() &&
@@ -529,38 +547,47 @@ static void CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
                                      currentElement->Start(),
                                      {"Array element type '", elementType, "' is not assignable to explicit type '",
                                       targetElementType[0], "'"},
-                                     TypeRelationFlag::NO_THROW).IsAssignable() &&
+                                     TypeRelationFlag::NO_THROW)
+              .IsAssignable() &&
          !(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()))) {
         if (targetElementType[1] == nullptr) {
-            checker->ThrowTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
-                                     targetElementType[0], "'"},
-                                    currentElement->Start());
-        } else if (!(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()) &&
-                   !checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType[1],
-                                               currentElement->Start(),
-                                               {"Array element type '", elementType,
-                                                "' is not assignable to explicit type '", targetElementType[1], "'"},
-                                               TypeRelationFlag::NO_THROW).IsAssignable()) {
-            checker->ThrowTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
-                                     targetElementType[1], "'"},
-                                    currentElement->Start());
-            // clang-format on
-        } else {
-            isSecondaryChosen = true;
+            checker->LogTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
+                                   targetElementType[0], "'"},
+                                  currentElement->Start());
+            return false;
         }
+
+        if (!(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()) &&
+            !checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType[1],
+                                        currentElement->Start(),
+                                        {"Array element type '", elementType, "' is not assignable to explicit type '",
+                                         targetElementType[1], "'"},
+                                        TypeRelationFlag::NO_THROW)
+                 .IsAssignable()) {
+            checker->LogTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
+                                   targetElementType[1], "'"},
+                                  currentElement->Start());
+            return false;
+        }
+        isSecondaryChosen = true;
     }
+    return true;
 }
 
-static void CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::vector<checker::Type *> targetElementType,
+static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::vector<checker::Type *> targetElementType,
                          bool isPreferredTuple)
 {
     bool isSecondaryChosen = false;
+    bool ok = true;
 
     for (std::size_t idx = 0; idx < expr->Elements().size(); ++idx) {
         auto *const currentElement = expr->Elements()[idx];
 
         if (currentElement->IsArrayExpression()) {
-            expr->HandleNestedArrayExpression(checker, currentElement->AsArrayExpression(), isPreferredTuple, idx);
+            if (!expr->HandleNestedArrayExpression(checker, currentElement->AsArrayExpression(), isPreferredTuple,
+                                                   idx)) {
+                continue;
+            }
         }
 
         if (currentElement->IsObjectExpression()) {
@@ -575,14 +602,21 @@ static void CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
 
             auto *compareType = tupleType->GetTypeAtIndex(idx);
             if (compareType == nullptr) {
-                checker->ThrowTypeError({"Too many elements in array initializer for tuple with size of ",
-                                         static_cast<uint32_t>(tupleType->GetTupleSize())},
-                                        currentElement->Start());
+                checker->LogTypeError({"Too many elements in array initializer for tuple with size of ",
+                                       static_cast<uint32_t>(tupleType->GetTupleSize())},
+                                      currentElement->Start());
+                ok = false;
+                continue;
             }
-
-            checker::AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
-                                       currentElement->Start(),
-                                       {"Array initializer's type is not assignable to tuple type at index: ", idx});
+            // clang-format off
+            if (!AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
+                                   currentElement->Start(), {}, TypeRelationFlag::NO_THROW).IsAssignable()) {
+                checker->LogTypeError({"Array initializer's type is not assignable to tuple type at index: ", idx},
+                                      currentElement->Start());
+                                      ok=false;
+                continue;
+            }
+            // clang-format on
 
             elementType = compareType;
         }
@@ -591,8 +625,13 @@ static void CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
             continue;
         }
 
-        CheckArrayElement(checker, elementType, targetElementType, currentElement, isSecondaryChosen);
+        if (!CheckArrayElement(checker, elementType, targetElementType, currentElement, isSecondaryChosen)) {
+            ok = false;
+            continue;
+        }
     }
+
+    return ok;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
@@ -604,8 +643,10 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
     if (expr->preferredType_ != nullptr && !expr->preferredType_->IsETSArrayType() &&
         !checker->Relation()->IsSupertypeOf(expr->preferredType_, checker->GlobalETSObjectType())) {
-        checker->ThrowTypeError({"Expected type for array literal should be an array type, got ", expr->preferredType_},
-                                expr->Start());
+        checker->LogTypeError({"Expected type for array literal should be an array type, got ", expr->preferredType_},
+                              expr->Start());
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsTypeOrError();
     }
 
     const bool isArray = (expr->preferredType_ != nullptr) && expr->preferredType_->IsETSArrayType() &&
@@ -623,17 +664,22 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
             targetElementTypeSecondary = expr->GetPreferredType()->AsETSTupleType()->ElementType();
         }
 
-        CheckElement(expr, checker, {targetElementType, targetElementTypeSecondary}, isPreferredTuple);
+        if (!CheckElement(expr, checker, {targetElementType, targetElementTypeSecondary}, isPreferredTuple)) {
+            expr->SetTsType(checker->GlobalTypeError());
+            return expr->TsTypeOrError();
+        }
     }
 
     if (expr->preferredType_ == nullptr) {
-        checker->ThrowTypeError("Can't resolve array type", expr->Start());
+        checker->LogTypeError("Can't resolve array type", expr->Start());
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsTypeOrError();
     }
 
     expr->SetTsType(expr->preferredType_);
     auto *const arrayType = expr->TsType()->AsETSArrayType();
     checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
-    return expr->TsType();
+    return expr->TsTypeOrError();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
@@ -643,7 +689,6 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     if (expr->TsTypeOrError() != nullptr) {
         return expr->TsTypeOrError();
     }
-
     checker::ScopeContext scopeCtx(checker, expr->Function()->Scope());
 
     if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
@@ -672,6 +717,10 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     checker->Context().SetContainingLambda(expr);
 
     checker->BuildFunctionSignature(expr->Function(), false);
+    if (expr->Function()->Signature() == nullptr) {
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsTypeOrError();
+    }
     auto *signature = expr->Function()->Signature();
 
     checker->Context().SetContainingSignature(signature);
@@ -925,6 +974,10 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     }
 
     checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
+    if (signature == nullptr) {
+        return nullptr;
+    }
+
     if (signature->Function()->IsExtensionMethod()) {
         checker->ThrowTypeError({"No matching call signature"}, expr->Start());
     }
@@ -959,6 +1012,10 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
 
     checker::Signature *signature =
         ResolveSignature(checker, expr, calleeType, isFunctionalInterface, isUnionTypeWithFunctionalInterface);
+
+    if (signature == nullptr) {
+        return checker->GlobalTypeError();
+    }
 
     checker->CheckObjectLiteralArguments(signature, expr->Arguments());
 
@@ -1013,6 +1070,18 @@ static void CheckCallee(ETSChecker *checker, ir::CallExpression *expr)
     }
 }
 
+checker::Type *GetReturnTypeFromSignature(ir::CallExpression *expr, ETSChecker *checker)
+{
+    checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
+    expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
+    if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
+        expr->Signature()->Function()->HasBody()) {
+        checker->CollectReturnStatements(expr->Signature()->Function());
+    }
+    return expr->Signature()->ReturnType();
+    // NOTE(vpukhov): #14902 substituted signature is not updated
+}
+
 checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1026,6 +1095,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         expr->SetTsType(checker->GlobalTypeError());
         return checker->GlobalTypeError();
     }
+
     if (expr->Callee() != oldCallee) {
         // If it is a static invoke, the callee will be transformed from an identifier to a member expression
         // Type check the callee again for member expression
@@ -1044,6 +1114,10 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     } else {
         returnType = GetReturnType(expr, calleeType);
     }
+    if (returnType->IsTypeError()) {
+        expr->SetTsType(returnType);
+        return expr->TsTypeOrError();
+    }
 
     if (expr->Signature()->RestVar() != nullptr) {
         auto *const elementType = expr->Signature()->RestVar()->TsType()->AsETSArrayType()->ElementType();
@@ -1052,19 +1126,17 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
 
     if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
-        checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
-        expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
-        if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
-            expr->Signature()->Function()->HasBody()) {
-            checker->CollectReturnStatements(expr->Signature()->Function());
-        }
-        returnType = expr->Signature()->ReturnType();
-        // NOTE(vpukhov): #14902 substituted signature is not updated
+        returnType = GetReturnTypeFromSignature(expr, checker);
     }
     expr->SetTsType(returnType);
     expr->SetUncheckedType(checker->GuaranteedTypeForUncheckedCallReturn(expr->Signature()));
     if (expr->UncheckedType() != nullptr) {
         checker->ComputeApparentType(returnType);
+    }
+
+    if (returnType->IsTypeError()) {
+        expr->SetTsType(returnType);
+        return expr->TsTypeOrError();
     }
 
     CheckVoidTypeExpression(checker, expr);
@@ -1201,6 +1273,15 @@ std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *
     return ret;
 }
 
+static void TypeErrorOnMissingProperty(ir::MemberExpression *expr, checker::Type *baseType,
+                                       checker::ETSChecker *checker)
+{
+    checker->LogTypeError(
+        {"Property '", expr->Property()->AsIdentifier()->Name(), "' does not exist on type '", baseType, "'"},
+        expr->Object()->Start());
+    expr->SetTsType(checker->GlobalTypeError());
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     if (expr->TsTypeOrError() != nullptr) {
@@ -1228,7 +1309,10 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
         }
     }
 
-    checker->CheckNonNullish(expr->Object());
+    if (!checker->CheckNonNullish(expr->Object())) {
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsType();
+    }
 
     if (expr->IsComputed()) {
         return expr->AdjustType(checker, expr->CheckComputed(checker, baseType));
@@ -1256,14 +1340,8 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (baseType->IsETSUnionType()) {
         return expr->AdjustType(checker, expr->CheckUnionMember(checker, baseType));
     }
-
-    if (baseType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        checker->ThrowTypeError(
-            {"Property '", expr->Property()->AsIdentifier()->Name(), "' does not exist on type '", baseType, "'"},
-            expr->Object()->Start());
-    }
-
-    checker->ThrowTypeError({"Cannot access property of non-object or non-enum type"}, expr->Object()->Start());
+    TypeErrorOnMissingProperty(expr, baseType, checker);
+    return expr->TsTypeOrError();
 }
 
 checker::Type *ETSAnalyzer::PreferredType(ir::ObjectExpression *expr) const
@@ -1492,6 +1570,66 @@ checker::Type *ETSAnalyzer::Check(ir::ThisExpression *expr) const
     return expr->TsType();
 }
 
+// Get string literal type as potential typeof result type with respect to spec p.7.17
+static checker::Type *GetTypeOfStringType(checker::Type *argType, ETSChecker *checker)
+{
+    if (auto unboxed = checker->MaybePrimitiveBuiltinType(argType);
+        unboxed->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        switch (checker->TypeKind(unboxed)) {
+            case TypeFlag::ETS_BOOLEAN: {
+                return checker->CreateETSStringLiteralType("boolean");
+            }
+            case TypeFlag::BYTE:
+            case TypeFlag::CHAR:
+            case TypeFlag::SHORT:
+            case TypeFlag::INT:
+            case TypeFlag::LONG:
+            case TypeFlag::FLOAT:
+            case TypeFlag::DOUBLE: {
+                return checker->CreateETSStringLiteralType("number");
+            }
+            default:
+                UNREACHABLE();
+        }
+    }
+    if (argType->IsETSUndefinedType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("undefined"));
+    }
+    if (argType->IsETSArrayType() || argType->IsETSNullType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("object"));
+    }
+    if (argType->IsETSIntEnumType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("number"));
+    }
+    if (argType->IsETSStringType() || argType->IsETSStringEnumType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("string"));
+    }
+    if (argType->IsETSBigIntType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("bigint"));
+    }
+    if (argType->IsETSFunctionType()) {
+        return checker->CreateETSStringLiteralType(util::StringView("function"));
+    }
+
+    return checker->GlobalBuiltinETSStringType();
+}
+
+static checker::Type *ComputeTypeOfType(ETSChecker *checker, checker::Type *argType)
+{
+    checker::Type *ret = nullptr;
+    ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
+    if (argType->IsETSUnionType()) {
+        for (auto *it : argType->AsETSUnionType()->ConstituentTypes()) {
+            checker::Type *elType = ComputeTypeOfType(checker, it);
+            types.push_back(elType);
+        }
+        ret = checker->CreateETSUnionType(std::move(types));
+    } else {
+        ret = GetTypeOfStringType(argType, checker);
+    }
+    return ret;
+}
+
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TypeofExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1500,7 +1638,7 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TypeofExpression *expr) c
     }
 
     expr->Argument()->Check(checker);
-    expr->SetTsType(GetETSChecker()->GlobalBuiltinETSStringType());
+    expr->SetTsType(ComputeTypeOfType(checker, expr->Argument()->TsType()));
     return expr->TsType();
 }
 
@@ -1785,7 +1923,11 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
 checker::Type *ETSAnalyzer::Check(ir::BreakStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    st->SetTarget(checker->FindJumpTarget(st));
+    auto node = checker->FindJumpTarget(st);
+    if (!node.has_value()) {
+        return checker->GlobalTypeError();
+    }
+    st->SetTarget(*node);
 
     checker->Context().OnBreakStatement(st);
     return nullptr;
@@ -1801,7 +1943,11 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDeclaration *st) const
 checker::Type *ETSAnalyzer::Check(ir::ContinueStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    st->SetTarget(checker->FindJumpTarget(st));
+    auto node = checker->FindJumpTarget(st);
+    if (!node.has_value()) {
+        return checker->GlobalTypeError();
+    }
+    st->SetTarget(*node);
 
     checker->AddStatus(CheckerStatus::MEET_CONTINUE);
     return nullptr;
@@ -1988,6 +2134,50 @@ checker::Type *ETSAnalyzer::Check(ir::LabelledStatement *st) const
     return nullptr;
 }
 
+bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
+                                                  checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
+                                                  ETSChecker *checker) const
+{
+    funcReturnType = returnTypeAnnotation->GetType(checker);
+    if (returnTypeAnnotation->IsTSThisType() && (st->Argument() == nullptr || !st->Argument()->IsThisExpression())) {
+        checker->LogTypeError("The only allowed return value is 'this' if the method's return type is the 'this' type",
+                              st->Start());
+        return false;
+    }
+
+    // Case when function's return type is defined explicitly:
+
+    if (st->argument_ == nullptr) {
+        if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
+            !funcReturnType->IsETSAsyncFuncReturnType()) {
+            checker->LogTypeError("Missing return value.", st->Start());
+            return false;
+        }
+        funcReturnType = checker->GlobalVoidType();
+    } else {
+        const auto name = containingFunc->Scope()->InternalName().Mutf8();
+        if (!CheckArgumentVoidType(funcReturnType, checker, name, st)) {
+            return false;
+        }
+
+        if (st->argument_->IsObjectExpression()) {
+            st->argument_->AsObjectExpression()->SetPreferredType(funcReturnType);
+        }
+        if (st->argument_->IsMemberExpression()) {
+            checker->SetArrayPreferredTypeForNestedMemberExpressions(st->argument_->AsMemberExpression(),
+                                                                     funcReturnType);
+        }
+
+        if (st->argument_->IsArrayExpression()) {
+            st->argument_->AsArrayExpression()->SetPreferredType(funcReturnType);
+        }
+
+        checker::Type *argumentType = st->argument_->Check(checker);
+        CheckReturnType(checker, funcReturnType, argumentType, st->argument_, containingFunc->IsAsyncFunc());
+    }
+    return true;
+}
+
 checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const
 {
     ASSERT(containingFunc->ReturnTypeAnnotation() != nullptr || containingFunc->Signature()->ReturnType() != nullptr);
@@ -1996,39 +2186,8 @@ checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::S
     checker::Type *funcReturnType = nullptr;
 
     if (auto *const returnTypeAnnotation = containingFunc->ReturnTypeAnnotation(); returnTypeAnnotation != nullptr) {
-        if (returnTypeAnnotation->IsTSThisType() &&
-            (st->Argument() == nullptr || !st->Argument()->IsThisExpression())) {
-            checker->ThrowTypeError(
-                "The only allowed return value is 'this' if the method's return type is the 'this' type", st->Start());
-        }
-
-        // Case when function's return type is defined explicitly:
-        funcReturnType = returnTypeAnnotation->GetType(checker);
-
-        if (st->argument_ == nullptr) {
-            if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
-                !funcReturnType->IsETSAsyncFuncReturnType()) {
-                checker->ThrowTypeError("Missing return value.", st->Start());
-            }
-            funcReturnType = checker->GlobalVoidType();
-        } else {
-            const auto name = containingFunc->Scope()->InternalName().Mutf8();
-            CheckArgumentVoidType(funcReturnType, checker, name, st);
-
-            if (st->argument_->IsObjectExpression()) {
-                st->argument_->AsObjectExpression()->SetPreferredType(funcReturnType);
-            }
-            if (st->argument_->IsMemberExpression()) {
-                checker->SetArrayPreferredTypeForNestedMemberExpressions(st->argument_->AsMemberExpression(),
-                                                                         funcReturnType);
-            }
-
-            if (st->argument_->IsArrayExpression()) {
-                st->argument_->AsArrayExpression()->SetPreferredType(funcReturnType);
-            }
-
-            checker::Type *argumentType = st->argument_->Check(checker);
-            CheckReturnType(checker, funcReturnType, argumentType, st->argument_, containingFunc->IsAsyncFunc());
+        if (!CheckInferredFunctionReturnType(st, containingFunc, funcReturnType, returnTypeAnnotation, checker)) {
+            return funcReturnType;
         }
     } else {
         //  Case when function's return type should be inferred from return statement(s):

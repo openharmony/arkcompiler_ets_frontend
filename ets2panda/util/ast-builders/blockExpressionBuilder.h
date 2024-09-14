@@ -22,17 +22,11 @@
 
 namespace ark::es2panda::ir {
 
-class BlockExpressionBuilder : public AstBuilder {
+class BlockExpressionBuilder : public AstBuilder<ir::BlockExpression> {
 public:
     explicit BlockExpressionBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), statements_(allocator->Adapter())
     {
-    }
-
-    BlockExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
     }
 
     BlockExpressionBuilder &SetStatements(ArenaVector<Statement *> statements)
@@ -49,12 +43,11 @@ public:
 
     BlockExpression *Build()
     {
-        auto *node = AllocNode<ir::BlockExpression>(std::move(statements_));
+        auto *node = AllocNode(std::move(statements_));
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     ArenaVector<ir::Statement *> statements_;
 };
 

@@ -392,14 +392,14 @@ public:
     void MaybeSubstituteLambdaArguments(const ArenaVector<ir::Expression *> &params, ir::CallExpression *callExpr);
     bool ValidateSignatureRequiredParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                          TypeRelationFlag flags, const std::vector<bool> &argTypeInferenceRequired,
-                                         bool throwError);
+                                         bool reportError);
     bool ValidateSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument, const Type *targetType,
                                             std::size_t index, TypeRelationFlag flags);
     bool CheckInvokable(Signature *substitutedSig, ir::Expression *argument, std::size_t index, TypeRelationFlag flags);
     bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index);
     bool ValidateArgumentAsIdentifier(const ir::Identifier *identifier);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
-                                     TypeRelationFlag flags, bool throwError);
+                                     TypeRelationFlag flags, bool reportError);
     Signature *ValidateSignatures(ArenaVector<Signature *> &signatures,
                                   const ir::TSTypeParameterInstantiation *typeArguments,
                                   const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
@@ -419,7 +419,7 @@ public:
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
     Signature *ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
                                                       ir::CallExpression *callExpr, const lexer::SourcePosition &pos,
-                                                      TypeRelationFlag throwFlag = TypeRelationFlag::NONE);
+                                                      TypeRelationFlag reportFlag = TypeRelationFlag::NONE);
     Signature *ResolveConstructExpression(ETSObjectType *type, const ArenaVector<ir::Expression *> &arguments,
                                           const lexer::SourcePosition &pos);
     void CheckObjectLiteralArguments(Signature *sig, ArenaVector<ir::Expression *> const &arguments);
@@ -438,7 +438,7 @@ public:
     void CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
                                  const ir::MethodDefinition *currentFunc);
     Signature *AdjustForTypeParameters(Signature *source, Signature *target);
-    void ThrowOverrideError(Signature *signature, Signature *overriddenSignature, const OverrideErrorCode &errorCode);
+    void ReportOverrideError(Signature *signature, Signature *overriddenSignature, const OverrideErrorCode &errorCode);
     void CheckOverride(Signature *signature);
     bool CheckOverride(Signature *signature, ETSObjectType *site);
     OverrideErrorCode CheckOverride(Signature *signature, Signature *other);
@@ -446,7 +446,7 @@ public:
     bool IsOverridableIn(Signature *signature);
     [[nodiscard]] bool AreOverrideEquivalent(Signature *s1, Signature *s2);
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);
-    void CheckThrowMarkers(Signature *source, Signature *target);
+    bool CheckThrowMarkers(Signature *source, Signature *target);
     void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
                                         const lexer::SourcePosition &pos, char const *errorMessage = nullptr);
     void CheckCapturedVariables();
@@ -515,7 +515,7 @@ public:
                                                    ir::Expression *init, checker::Type *initType);
     void CheckTruthinessOfType(ir::Expression *expr);
 
-    void CheckNonNullish(ir::Expression const *expr);
+    bool CheckNonNullish(ir::Expression const *expr);
     Type *GetNonNullishType(Type *type);
     Type *RemoveNullType(Type *type);
     Type *RemoveUndefinedType(Type *type);
@@ -530,13 +530,13 @@ public:
     ir::AstNode *FindAncestorGivenByType(ir::AstNode *node, ir::AstNodeType type, const ir::AstNode *endNode = nullptr);
     util::StringView GetContainingObjectNameFromSignature(Signature *signature);
     bool IsFunctionContainsSignature(ETSFunctionType *funcType, Signature *signature);
-    void CheckFunctionContainsClashingSignature(const ETSFunctionType *funcType, Signature *signature);
+    bool CheckFunctionContainsClashingSignature(const ETSFunctionType *funcType, Signature *signature);
     bool IsTypeBuiltinType(const Type *type) const;
     static bool IsReferenceType(const Type *type)
     {
         return type->IsETSReferenceType();
     }
-    const ir::AstNode *FindJumpTarget(ir::AstNode *node);
+    std::optional<const ir::AstNode *> FindJumpTarget(ir::AstNode *node);
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);
     varbinder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
     Type *CheckSwitchDiscriminant(ir::Expression *discriminant);
@@ -546,7 +546,6 @@ public:
     void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
-    util::StringView TypeToName(Type *type) const;
     Type *MaybeBoxExpression(ir::Expression *expr);
     Type *MaybeUnboxExpression(ir::Expression *expr);
     Type *MaybePromotedBuiltinType(Type *type) const;
@@ -560,11 +559,11 @@ public:
     std::string GetStringFromLiteral(ir::Expression *caseTest) const;
     varbinder::Variable *FindVariableInFunctionScope(util::StringView name,
                                                      const varbinder::ResolveBindingOptions options);
-    std::pair<const varbinder::Variable *, const ETSObjectType *> FindVariableInClassOrEnclosing(
+    std::pair<varbinder::Variable *, const ETSObjectType *> FindVariableInClassOrEnclosing(
         util::StringView name, const ETSObjectType *classType);
     varbinder::Variable *FindVariableInGlobal(const ir::Identifier *identifier,
                                               const varbinder::ResolveBindingOptions options);
-    void ExtraCheckForResolvedError(ir::Identifier *ident);
+    varbinder::Variable *ExtraCheckForResolvedError(ir::Identifier *ident);
     void ValidateResolvedIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
     static bool IsVariableStatic(const varbinder::Variable *var);
     static bool IsVariableGetterSetter(const varbinder::Variable *var);
@@ -584,7 +583,7 @@ public:
     bool CheckRethrowingParams(const ir::AstNode *ancestorFunction, const ir::AstNode *node);
     void CheckThrowingStatements(ir::AstNode *node);
     bool CheckThrowingPlacement(ir::AstNode *node, const ir::AstNode *ancestorFunction);
-    void CheckNumberOfTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
+    bool CheckNumberOfTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                                     const lexer::SourcePosition &pos);
     ir::BlockStatement *FindFinalizerOfTryStatement(ir::AstNode *startFrom, const ir::AstNode *p);
     void CheckExceptionClauseType(const std::vector<checker::ETSObjectType *> &exceptions, ir::CatchClause *catchClause,
@@ -597,7 +596,7 @@ public:
     static ETSObjectType *GetOriginalBaseType(Type *object);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotationType);
     bool ExtensionETSFunctionType(checker::Type *type);
-    void ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
+    bool ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
     Type *TryGettingFunctionTypeFromInvokeFunction(Type *type);
@@ -617,7 +616,7 @@ public:
                                                 checker::ETSObjectType *lastObjectType, ir::Identifier *id);
     bool CheckValidUnionEqual(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType);
-    void CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
+    bool CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
 
     // Utility type handler functions
     ir::TypeNode *GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,
@@ -740,13 +739,13 @@ private:
                                    bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
-    [[noreturn]] void ThrowError(ir::Identifier *ident);
+    void LogUnResolvedError(ir::Identifier *ident);
     void LogOperatorCannotBeApplied(lexer::TokenType operationType, checker::Type *const leftType,
                                     checker::Type *const rightType, lexer::SourcePosition pos);
     void WrongContextErrorClassifyByType(ir::Identifier *ident, varbinder::Variable *resolved);
     void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id);
-    [[noreturn]] void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
-                                       const ETSObjectType *classType);
+    void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
+                          const ETSObjectType *classType);
     void ValidateCallExpressionIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
                                           Type *const type);
     void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved);
@@ -771,8 +770,10 @@ private:
     const varbinder::Variable *GetTargetRef(const ir::MemberExpression *memberExpr);
     Type *GetTypeOfSetterGetter([[maybe_unused]] varbinder::Variable *var);
     void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
-    void CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
+    bool CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                    checker::Type *annotationType, varbinder::Variable *const bindingVar);
+    void CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> const &cases);
+    void CheckItemCasesDuplicate(ArenaVector<ir::SwitchCaseStatement *> const &cases);
 
     template <typename EnumType>
     EnumType *CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);

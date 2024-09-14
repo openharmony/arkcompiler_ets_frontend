@@ -196,7 +196,8 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
 
     for (auto *phase : phases) {
         if (!phase->Apply(&context, &program)) {
-            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError());
+            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError() ||
+                                        context.parser->ErrorLogger()->IsAnyError());
             return false;
         }
 
@@ -230,7 +231,8 @@ static bool RunPhases(CompilerImpl *compilerImpl, public_lib::Context &context, 
 {
     for (auto *phase : phases) {
         if (!phase->Apply(&context, &program)) {
-            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError());
+            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError() ||
+                                        context.parser->ErrorLogger()->IsAnyError());
             return false;
         }
     }
@@ -239,6 +241,19 @@ static bool RunPhases(CompilerImpl *compilerImpl, public_lib::Context &context, 
 
 using EmitCb = std::function<pandasm::Program *(public_lib::Context *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
+
+static bool ParserErrorChecker(bool isAnyError, parser::Program *program, CompilerImpl *compilerImpl,
+                               const CompilationUnit &unit)
+{
+    if (isAnyError) {
+        compilerImpl->SetIsAnyError(isAnyError);
+        if (unit.options.CompilerOptions().dumpAst) {
+            std::cout << program->Dump() << std::endl;
+        }
+        return false;
+    }
+    return true;
+}
 
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
@@ -278,6 +293,9 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     varbinder->SetContext(&context);
 
     parser.ParseScript(unit.input, unit.options.CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB);
+    if (!ParserErrorChecker(parser.ErrorLogger()->IsAnyError(), &program, compilerImpl, unit)) {
+        return nullptr;
+    }
 #ifndef NDEBUG
     if (unit.ext == ScriptExtension::ETS) {
         if (!RunVerifierAndPhases(compilerImpl, context, getPhases(unit.ext), program)) {

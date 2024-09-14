@@ -21,6 +21,7 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "macros.h"
 
 namespace ark::es2panda::ir {
 void ETSPrimitiveType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
@@ -131,9 +132,12 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
             return TsType();
         }
         case PrimitiveType::VOID: {
-            checker->CheckVoidAnnotation(this);
-            SetTsType(checker->GlobalVoidType());
-            return TsType();
+            if (LIKELY(checker->CheckVoidAnnotation(this))) {
+                SetTsType(checker->GlobalVoidType());
+            } else {
+                SetTsType(checker->GlobalTypeError());
+            }
+            return TsTypeOrError();
         }
         default: {
             UNREACHABLE();

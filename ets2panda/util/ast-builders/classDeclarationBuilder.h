@@ -22,17 +22,11 @@
 
 namespace ark::es2panda::ir {
 
-class ClassDeclarationBuilder : public AstBuilder {
+class ClassDeclarationBuilder : public AstBuilder<ir::ClassDeclaration> {
 public:
     explicit ClassDeclarationBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), decorators_(Allocator()->Adapter())
     {
-    }
-
-    ClassDeclarationBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
     }
 
     ClassDeclarationBuilder &SetDefinition(ClassDefinition *def)
@@ -49,13 +43,12 @@ public:
 
     ClassDeclaration *Build()
     {
-        auto *node = AllocNode<ir::ClassDeclaration>(def_, Allocator());
+        auto *node = AllocNode(def_, Allocator());
         node->AddDecorators(std::move(decorators_));
         return node;
     }
 
 private:
-    AstNode *parent_ {};
     ClassDefinition *def_ = nullptr;
     ArenaVector<Decorator *> decorators_;
 };

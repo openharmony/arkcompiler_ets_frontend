@@ -110,18 +110,24 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
         } else if (caseType->IsETSStringEnumType() && comparedExprType->IsETSStringEnumType()) {
             validCaseType = comparedExprType->AsETSStringEnumType()->IsSameEnumType(caseType->AsETSStringEnumType());
         } else {
-            checker::AssignmentContext(
-                checker->Relation(), node, caseType, unboxedDiscType, test_->Start(),
-                {"Switch case type '", caseType, "' is not comparable to discriminant type '", comparedExprType, "'"},
-                (comparedExprType->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
-                                                     : checker::TypeRelationFlag::NO_UNBOXING) |
-                    checker::TypeRelationFlag::NO_BOXING);
+            if (!checker::AssignmentContext(
+                     checker->Relation(), node, caseType, unboxedDiscType, test_->Start(), {},
+                     (comparedExprType->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
+                                                          : checker::TypeRelationFlag::NO_UNBOXING) |
+                         checker::TypeRelationFlag::NO_BOXING | checker::TypeRelationFlag::NO_THROW)
+                     .IsAssignable()) {
+                checker->LogTypeError({"Switch case type '", caseType, "' is not comparable to discriminant type '",
+                                       comparedExprType, "'"},
+                                      test_->Start());
+                return;
+            }
         }
 
         if (!validCaseType) {
-            checker->ThrowTypeError(
+            checker->LogTypeError(
                 {"Switch case type '", caseType, "' is not comparable to discriminant type '", comparedExprType, "'"},
                 test_->Start());
+            return;
         }
     } else {
         isDefaultCase = true;

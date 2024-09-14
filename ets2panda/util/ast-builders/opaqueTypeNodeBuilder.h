@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class OpaqueTypeNodeBuilder : public AstBuilder {
+class OpaqueTypeNodeBuilder : public AstBuilder<ir::OpaqueTypeNode> {
 public:
-    OpaqueTypeNodeBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    OpaqueTypeNodeBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
+    explicit OpaqueTypeNodeBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
     OpaqueTypeNodeBuilder &SetType(checker::Type *type)
     {
@@ -40,13 +34,12 @@ public:
 
     OpaqueTypeNode *Build()
     {
-        auto etsTypeReference = AllocNode<ir::OpaqueTypeNode>(type_);
-        return etsTypeReference;
+        auto node = AllocNode(type_);
+        return node;
     }
 
 private:
-    AstNode *parent_ {};
-    checker::Type *type_;
+    checker::Type *type_ {};
 };
 
 }  // namespace ark::es2panda::ir

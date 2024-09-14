@@ -908,11 +908,6 @@ void ETSObjectType::UpdateTypeProperty(checker::ETSChecker *checker, varbinder::
 {
     auto *const propType = prop->Declaration()->Node()->Check(checker);
 
-    if (propType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-        checker->ThrowTypeError("Base type of a Utility type can only contain fields with reference type.",
-                                prop->Declaration()->Node()->Start());
-    }
-
     auto *const propCopy = func(prop, propType);
     if (fieldType == PropertyType::INSTANCE_FIELD) {
         RemoveProperty<PropertyType::INSTANCE_FIELD>(prop);

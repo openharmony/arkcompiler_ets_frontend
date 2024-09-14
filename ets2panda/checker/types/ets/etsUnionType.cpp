@@ -300,36 +300,16 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
             ct = checker->MaybePromotedBuiltinType(checker->GetNonConstantTypeFromPrimitiveType(ct));
         }
     }
-
-    // Reduce subtypes by iterating through the types vector and trying to merge them
-    ReduceSubtypes(relation, types);
-}
-
-void ETSUnionType::ReduceSubtypes(TypeRelation *relation, ArenaVector<Type *> &types)
-{
-    auto left = types.begin();
-    auto right = std::next(left);
-
-    while (left != types.end() && types.size() > 1) {
-        if (right == types.end()) {
-            left++;
-            right = std::next(left);
-            continue;
-        }
-        // If the two types can be merged then erase the subtype and start over the merging from the start of the types
-        // vector
-        if (auto merged = TryMergeTypes(relation, *left, *right); merged) {
-            if (*merged == *left) {
-                types.erase(right);
-            } else if (*merged == *right) {
-                types.erase(left);
+    // Reduce subtypes
+    for (auto cmpIt = types.begin(); cmpIt != types.end(); ++cmpIt) {
+        for (auto it = std::next(cmpIt); it != types.end();) {
+            if (auto merged = TryMergeTypes(relation, *cmpIt, *it); merged) {
+                *cmpIt = *merged;
+                it = types.erase(it);
+            } else {
+                it++;
             }
-            left = types.begin();
-            right = std::next(left);
-            continue;
         }
-
-        right++;
     }
 }
 

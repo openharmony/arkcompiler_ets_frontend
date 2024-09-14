@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class CallExpressionBuilder : public AstBuilder {
+class CallExpressionBuilder : public AstBuilder<ir::CallExpression> {
 public:
     explicit CallExpressionBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), arguments_(Allocator()->Adapter())
@@ -47,23 +47,15 @@ public:
         return *this;
     }
 
-    CallExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     CallExpression *Build()
     {
-        auto *node = AllocNode<ir::CallExpression>(callee_, std::move(arguments_), nullptr, false);
-        node->SetParent(parent_);
+        auto *node = AllocNode(callee_, std::move(arguments_), nullptr, false);
         return node;
     }
 
 private:
     Expression *callee_ = nullptr;
     ArenaVector<Expression *> arguments_;
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

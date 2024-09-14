@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class UpdateExpressionBuilder : public AstBuilder {
+class UpdateExpressionBuilder : public AstBuilder<ir::UpdateExpression> {
 public:
     explicit UpdateExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -38,12 +38,6 @@ public:
         return *this;
     }
 
-    UpdateExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     UpdateExpressionBuilder &SetIsPrefix(bool isPrefix)
     {
         prefix_ = isPrefix;
@@ -52,15 +46,13 @@ public:
 
     UpdateExpression *Build()
     {
-        auto *node = AllocNode<ir::UpdateExpression>(argument_, operator_, prefix_);
-        node->SetParent(parent_);
+        auto *node = AllocNode(argument_, operator_, prefix_);
         return node;
     }
 
 private:
     Expression *argument_ {};
     lexer::TokenType operator_ = lexer::TokenType::PUNCTUATOR_PLUS_PLUS;
-    AstNode *parent_ {};
     bool prefix_ = false;
 };
 

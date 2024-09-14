@@ -240,7 +240,7 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
     }
     SetTsType(type);
-    return TsType();
+    return TsTypeOrError();
 }
 
 bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const

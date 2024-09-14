@@ -26,3 +26,4 @@ function main(): void {
 
 
 /* @@? 19:1 Error TypeError: Function foo with this assembly signature already declared.  */
+/* @@? 23:5 Error TypeError: Reference to foo is ambiguous  */

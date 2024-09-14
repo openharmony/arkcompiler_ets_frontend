@@ -35,6 +35,8 @@
 #include "util/ast-builders/exportDefaultDeclarationBuilder.h"
 #include "util/ast-builders/expressionStatementBuilder.h"
 #include "util/ast-builders/ifStatementBuilder.h"
+#include "util/ast-builders/importDeclarationBuilder.h"
+#include "util/ast-builders/importSpecifierBuilder.h"
 #include "util/ast-builders/memberExpressionBuilder.h"
 #include "util/ast-builders/thisExpressionBuilder.h"
 #include "util/ast-builders/methodDefinitionBuilder.h"
@@ -76,6 +78,8 @@ using ark::es2panda::ir::ExpressionStatementBuilder;
 using ark::es2panda::ir::FunctionExpressionBuilder;
 using ark::es2panda::ir::IdentifierBuilder;
 using ark::es2panda::ir::IfStatementBuilder;
+using ark::es2panda::ir::ImportDeclarationBuilder;
+using ark::es2panda::ir::ImportSpecifierBuilder;
 using ark::es2panda::ir::MemberExpressionBuilder;
 using ark::es2panda::ir::MethodDefinitionBuilder;
 using ark::es2panda::ir::NumberLiteralBuilder;
@@ -96,7 +100,19 @@ using ark::es2panda::ir::VariableDeclarationBuilder;
 using ark::es2panda::ir::VariableDeclaratorBuilder;
 using ark::es2panda::ir::WhileStatementBuilder;
 
-namespace {
+TEST_F(ASTVerifierTest, arrowFunctionExpressionBuild)
+{
+    auto left = NumberLiteralBuilder(Allocator()).SetValue("10").Build();
+    auto right = NumberLiteralBuilder(Allocator()).SetValue("5").Build();
+    auto binaryExpr = BinaryExpressionBuilder(Allocator())
+                          .SetLeft(left)
+                          .SetRight(right)
+                          .SetOperator(ark::es2panda::lexer::TokenType::PUNCTUATOR_PLUS)
+                          .Build();
+    auto awaitExpr = AwaitExpressionBuilder(Allocator()).SetArgument(binaryExpr).Build();
+    ASSERT_TRUE(awaitExpr->IsAwaitExpression());
+}
+
 TEST_F(ASTVerifierTest, awaitExpressionBuild)
 {
     auto left = NumberLiteralBuilder(Allocator()).SetValue("10").Build();
@@ -192,7 +208,8 @@ TEST_F(ASTVerifierTest, classDeclarationBuild)
                              .AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE)
                              .Build();
 
-    auto classDef = ClassDefinitionBuilder(Allocator()).SetIdentifier("A").AddProperty(classProperty).Build();
+    auto classId = IdentifierBuilder(Allocator()).SetName("A").Build();
+    auto classDef = ClassDefinitionBuilder(Allocator()).SetIdentifier(classId).AddProperty(classProperty).Build();
     auto classDecl = ClassDeclarationBuilder(Allocator()).SetDefinition(classDef).Build();
     ASSERT_TRUE(classDecl->IsClassDeclaration());
 }
@@ -208,7 +225,8 @@ TEST_F(ASTVerifierTest, etsTypeReferenceBuild)
 
 TEST_F(ASTVerifierTest, exportDefaultDeclarationBuild)
 {
-    auto id = IdentifierBuilder(Allocator()).SetName("a").Build();
+    auto idParent = IdentifierBuilder(Allocator()).SetName("parent").Build();
+    auto id = IdentifierBuilder(Allocator()).SetName("a").SetParent<IdentifierBuilder>(idParent).Build();
     auto number = NumberLiteralBuilder(Allocator()).SetValue("10").Build();
     auto classProperty = ClassPropertyBuilder(Allocator())
                              .SetKey(id)
@@ -216,7 +234,8 @@ TEST_F(ASTVerifierTest, exportDefaultDeclarationBuild)
                              .AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE)
                              .Build();
 
-    auto classDef = ClassDefinitionBuilder(Allocator()).SetIdentifier("A").AddProperty(classProperty).Build();
+    auto classId = IdentifierBuilder(Allocator()).SetName("A").Build();
+    auto classDef = ClassDefinitionBuilder(Allocator()).SetIdentifier(classId).AddProperty(classProperty).Build();
     auto classDecl = ClassDeclarationBuilder(Allocator()).SetDefinition(classDef).Build();
     auto exportDefaultDecl =
         ExportDefaultDeclarationBuilder(Allocator()).SetDeclaration(classDecl).SetExportEquals(true).Build();
@@ -393,4 +412,19 @@ TEST_F(ASTVerifierTest, whileStatementBuild)
     auto whileStmnt = WhileStatementBuilder(Allocator()).SetTest(binaryExpr).SetBody(exprStmnt).Build();
     ASSERT_TRUE(whileStmnt->IsWhileStatement());
 }
-}  // namespace
+
+TEST_F(ASTVerifierTest, multipleImportTest)
+{
+    auto importedIdent = IdentifierBuilder(Allocator()).SetName("A").Build();
+    auto localIdent = IdentifierBuilder(Allocator()).SetName("A").Build();
+    auto stringLiteral = StringLiteralBuilder(Allocator()).SetValue("test").Build();
+    auto importSpecifier = ImportSpecifierBuilder(Allocator()).SetImported(importedIdent).SetLocal(localIdent).Build();
+    auto importDecl =
+        ImportDeclarationBuilder(Allocator()).SetSource(stringLiteral).AddSpecifier(importSpecifier).Build();
+    ASSERT_TRUE(importDecl->IsImportDeclaration());
+
+    auto classId = IdentifierBuilder(Allocator()).SetName("B").Build();
+    auto classDef = ClassDefinitionBuilder(Allocator()).SetIdentifier(classId).SetSuperClass(localIdent).Build();
+    auto classDecl = ClassDeclarationBuilder(Allocator()).SetDefinition(classDef).Build();
+    ASSERT_TRUE(classDecl->IsClassDeclaration());
+}

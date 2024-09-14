@@ -150,7 +150,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
         checker::Type *baseType = prev_->GetType(checker);
         SetTsType(checker->GetReferencedTypeFromBase(baseType, name_));
     }
-    return TsType();
+    return TsTypeOrError();
 }
 
 ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)

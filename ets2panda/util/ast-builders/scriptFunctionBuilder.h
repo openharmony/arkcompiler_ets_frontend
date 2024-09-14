@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class ScriptFunctionBuilder : public AstBuilder {
+class ScriptFunctionBuilder : public AstBuilder<ir::ScriptFunction> {
 public:
     explicit ScriptFunctionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    ScriptFunctionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
 
     ScriptFunctionBuilder &SetSignature(FunctionSignature *signature)
     {
@@ -40,16 +34,14 @@ public:
 
     ScriptFunction *Build()
     {
-        auto etsTypeReference = AllocNode<ir::ScriptFunction>(
-            Allocator(),
-            ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(*signature_), ir::ScriptFunctionFlags::METHOD,
-                                                    ir::ModifierFlags::NONE});
-        return etsTypeReference;
+        auto node = AllocNode(Allocator(), ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(*signature_),
+                                                                                   ir::ScriptFunctionFlags::METHOD,
+                                                                                   ir::ModifierFlags::NONE});
+        return node;
     }
 
 private:
     FunctionSignature *signature_ {};
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

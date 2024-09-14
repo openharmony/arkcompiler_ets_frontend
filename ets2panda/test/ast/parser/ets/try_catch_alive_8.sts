@@ -24,4 +24,5 @@ function foo(): int {
     return 0;
 }
 
+/* @@? 21:15 Warning Warning: Finally clause cannot complete normally  */
 /* @@? 24:5 Error TypeError: Unreachable statement.  */

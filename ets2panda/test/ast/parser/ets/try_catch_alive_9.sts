@@ -25,3 +25,4 @@ function foo(): int {
 }
 
 /* @@? 21:9 Error TypeError: Unreachable statement.  */
+/* @@? 22:15 Warning Warning: Finally clause cannot complete normally  */

@@ -15,6 +15,7 @@
 
 #include "typeRelationContext.h"
 #include "boxingConverter.h"
+#include "macros.h"
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "varbinder/declaration.h"
@@ -23,22 +24,30 @@
 #include "ir/ts/tsTypeParameter.h"
 
 namespace ark::es2panda::checker {
-void AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node,
+bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node,
                                                               ETSArrayType *target)
 {
+    bool ok = true;
     if (target->IsETSTupleType()) {
-        return;
+        return true;
     }
 
     for (uint32_t index = 0; index < node->Elements().size(); index++) {
         ir::Expression *currentArrayElem = node->Elements()[index];
         auto *const currentArrayElementType = currentArrayElem->Check(relation->GetChecker()->AsETSChecker());
 
-        AssignmentContext(relation, currentArrayElem, currentArrayElem->Check(relation->GetChecker()->AsETSChecker()),
-                          target->ElementType(), currentArrayElem->Start(),
-                          {"Array element at index ", index, " with type '", currentArrayElementType,
-                           "' is not compatible with the target array element type '", target->ElementType(), "'"});
+        if (!AssignmentContext(relation, currentArrayElem,
+                               currentArrayElem->Check(relation->GetChecker()->AsETSChecker()), target->ElementType(),
+                               currentArrayElem->Start(), {}, TypeRelationFlag::NO_THROW)
+                 .IsAssignable()) {
+            relation->GetChecker()->LogTypeError(
+                {"Array element at index ", index, " with type '", currentArrayElementType,
+                 "' is not compatible with the target array element type '", target->ElementType(), "'"},
+                currentArrayElem->Start());
+            ok = false;
+        }
     }
+    return ok;
 }
 
 bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
@@ -52,7 +61,11 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
         result_ = type;
         return true;
     }
-    checker_->CheckNumberOfTypeArguments(type, typeArgs, pos);
+    if (!checker_->CheckNumberOfTypeArguments(type, typeArgs, pos)) {
+        result_ = checker_->GlobalTypeError();
+        return true;
+        // the return value 'true' of this function let Instantiationcontext constructor return immediately.
+    }
     if (type->TypeArguments().empty()) {
         result_ = type;
         return true;
@@ -68,6 +81,9 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     if (typeArgs != nullptr) {
         for (auto *const it : typeArgs->Params()) {
             auto *paramType = it->GetType(checker_);
+            if (paramType->IsTypeError()) {
+                return;
+            }
 
             if (paramType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
                 checker_->Relation()->SetNode(it);
@@ -89,7 +105,8 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
 
     auto pos = (typeArgs == nullptr) ? lexer::SourcePosition() : typeArgs->Range().start;
     InstantiateType(type, std::move(typeArgTypes), pos);
-    result_->AddObjectFlag(ETSObjectFlags::NO_OPTS);
+    ASSERT(result_->IsETSObjectType());
+    result_->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::NO_OPTS);
 }
 
 static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type *> const &typeParams,
@@ -106,10 +123,13 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
         if (typeArg->IsWildcardType()) {
             continue;
         }
+        if (typeArg->IsTypeError()) {
+            continue;
+        }
         ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
         auto constraint = typeParam->GetConstraintType()->Substitute(relation, substitution);
         if (!relation->IsAssignableTo(typeArg, constraint)) {
-            checker->ThrowTypeError(  // NOTE(vpukhov): refine message
+            checker->LogTypeError(  // NOTE(vpukhov): refine message
                 {"Type ", typeArg, " is not assignable to", " constraint type ", constraint}, pos);
         }
     }
@@ -150,7 +170,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
     }
 
     result_ = type->Substitute(checker_->Relation(), substitution)->AsETSObjectType();
-    type->GetInstantiationMap().try_emplace(hash, result_);
+    type->GetInstantiationMap().try_emplace(hash, result_->AsETSObjectType());
     result_->AddTypeFlag(TypeFlag::GENERIC);
 
     ctScope.TryCheckConstraints();

@@ -305,6 +305,7 @@ public:
     bool IsSupertypeOf(Type *super, Type *sub);
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
     void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
+    void LogError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
 
     bool Result(bool res)
     {

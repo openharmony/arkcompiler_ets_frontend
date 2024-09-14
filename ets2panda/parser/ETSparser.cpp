@@ -375,8 +375,12 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::Identif
     }
     functionContext.AddFlag(throwMarker);
 
-    // clang-format off
     bool isDeclare = InAmbientContext();
+    if (functionContext.IsAsync() && isDeclare) {
+        ThrowSyntaxError("The modifier async cannot be used in an ambient context.");
+    }
+
+    // clang-format off
     ir::ModifierFlags mFlags = isDeclare ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE;
     ir::ScriptFunctionFlags funcFlags =
         isDeclare ? (functionContext.Flags() | ir::ScriptFunctionFlags::EXTERNAL) : functionContext.Flags();
@@ -457,8 +461,10 @@ ir::AstNode *ETSParser::ParseInnerConstructorDeclaration(ir::ModifierFlags membe
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
         ThrowSyntaxError({"Namespaces should not have a constructor"});
     }
-    if ((memberModifiers & ir::ModifierFlags::ASYNC) != 0) {
-        ThrowSyntaxError({"Constructor should not be async."});
+    if ((memberModifiers & (~(ir::ModifierFlags::ACCESS | ir::ModifierFlags::DECLARE))) != 0) {
+        ThrowSyntaxError(
+            {"The modifier for a constructor should be limited to access modifiers(private, internal, protected, "
+             "public)."});
     }
     auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     memberModifiers |= ir::ModifierFlags::CONSTRUCTOR;

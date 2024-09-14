@@ -28,7 +28,7 @@ class A<T, U, K> {
 function foo<T, U extends Number, K, L extends A<T, K, T>>(a: A<T, K, int>, b: U, c: K, d: U, e: L) {
     assert(typeof a.a == "int");
     assert(typeof a.b == "string");
-    assert(typeof a.c == "int");
+    assert(typeof a.c == "number");
     assert(typeof b == "number");
     assert(typeof c == "string");
     assert(typeof d == "number");
@@ -48,11 +48,11 @@ function main() {
     let a = new A<int, String, int>(10, "Test", 40);
     let b: number = 20;
     let c = foo(a, b, "Test", 20, a);
-    assert(typeof c.a == "int");
+    assert(typeof c.a == "number");
     assert(typeof c.b == "number");
     assert(typeof c.c == "string");
     let d = bar(a, b);
-    assert(typeof d.a == "int");
+    assert(typeof d.a == "number");
     assert(typeof d.b == "number");
     assert(typeof d.c == "string");
 }

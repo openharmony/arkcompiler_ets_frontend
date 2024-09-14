@@ -13,6 +13,21 @@
  * limitations under the License.
  */
 
+class GoodGreeter {
+    name: string;
+
+    static invoke(): int {
+        return 5;
+    }
+
+    constructor() {
+        this.name = "hello";
+    }
+}
+
+let a = GoodGreeter()
+
+
 function main() {
     let m: int = 1
     let n: int = 2

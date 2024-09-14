@@ -169,7 +169,8 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
         if ((flags & TypeRelationFlag::NO_THROW) != 0) {
             return nullptr;
         }
-        checker->ThrowTypeError({"Expected ", sigParams.size(), " type arguments, got ", instArgs.size(), " ."}, pos);
+        checker->LogTypeError({"Expected ", sigParams.size(), " type arguments, got ", instArgs.size(), " ."}, pos);
+        return nullptr;
     }
 
     for (size_t ix = 0; ix < sigParams.size(); ix++) {

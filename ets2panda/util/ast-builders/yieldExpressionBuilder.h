@@ -22,15 +22,9 @@
 
 namespace ark::es2panda::ir {
 
-class YieldExpressionBuilder : public AstBuilder {
+class YieldExpressionBuilder : public AstBuilder<ir::YieldExpression> {
 public:
-    YieldExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
-
-    YieldExpressionBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
+    explicit YieldExpressionBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
     YieldExpressionBuilder &SetArgument(Expression *argument)
     {
@@ -46,14 +40,13 @@ public:
 
     YieldExpression *Build()
     {
-        auto etsTypeReference = AllocNode<ir::YieldExpression>(argument_, delegate_);
-        return etsTypeReference;
+        auto node = AllocNode(argument_, delegate_);
+        return node;
     }
 
 private:
-    AstNode *parent_ {};
-    Expression *argument_;
-    bool delegate_;
+    Expression *argument_ {};
+    bool delegate_ = false;
 };
 
 }  // namespace ark::es2panda::ir

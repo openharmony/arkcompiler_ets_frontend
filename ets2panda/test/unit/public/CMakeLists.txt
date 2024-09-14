@@ -71,18 +71,74 @@ ets2panda_add_gtest(ast_verifier_check_infinite_loop_test
     CPP_SOURCES ast_verifier_check_infinite_loop_test.cpp
 )
 
+ets2panda_add_gtest(ast_verifier_check_abstract_call_test
+    CPP_SOURCES ast_verifier_check_abstract_call_test.cpp
+)
+
+ets2panda_add_gtest(ast_verifier_getter_setter_test
+    CPP_SOURCES ast_verifier_getter_setter_test.cpp
+)
+
 panda_add_library(e2p_test_plugin SHARED e2p_test_plugin.c)
-panda_target_include_directories(e2p_test_plugin PRIVATE  "${ES2PANDA_PATH}")
+panda_target_include_directories(e2p_test_plugin
+    PRIVATE "${ES2PANDA_PATH}"
+    PRIVATE ${OUTPUT_DIR}
+)
 panda_target_link_libraries(e2p_test_plugin es2panda-public)
+
+
+panda_add_library(e2p_test_plugin_dump_json SHARED e2p_test_plugin_dump_json.c)
+panda_target_include_directories(e2p_test_plugin_dump_json
+    PRIVATE "${ES2PANDA_PATH}"
+    PRIVATE ${OUTPUT_DIR}
+)
+panda_target_link_libraries(e2p_test_plugin_dump_json es2panda-public)
+
+
+panda_add_library(e2p_test_plugin_ets_src SHARED e2p_test_plugin_ets_src.c)
+panda_target_include_directories(e2p_test_plugin_ets_src
+    PRIVATE "${ES2PANDA_PATH}"
+    PRIVATE ${OUTPUT_DIR}
+)
+panda_target_link_libraries(e2p_test_plugin_ets_src es2panda-public)
+
+
+panda_add_library(e2p_test_plugin_is SHARED e2p_test_plugin_is.c)
+panda_target_include_directories(e2p_test_plugin_is
+    PRIVATE "${ES2PANDA_PATH}"
+    PRIVATE ${OUTPUT_DIR}
+)
+panda_target_link_libraries(e2p_test_plugin_is es2panda-public)
+
 
 add_custom_target(es2panda-plugin-test
   COMMENT "Test es2panda plugin functionality"
+
   COMMAND ${CMAKE_COMMAND} -E env
     LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin
     --extension=sts "${CMAKE_CURRENT_SOURCE_DIR}/t.sts" > "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out"
   COMMAND ${CMAKE_COMMAND} -E compare_files
-    "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out" "${CMAKE_CURRENT_SOURCE_DIR}/plugin_test.expected.txt"
+    "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out" "${CMAKE_CURRENT_SOURCE_DIR}/plugin_test-expected.txt"
+
+  COMMAND ${CMAKE_COMMAND} -E env
+    LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin_dump_json
+    "${CMAKE_CURRENT_SOURCE_DIR}/t.sts" > "${CMAKE_CURRENT_BINARY_DIR}/e2p_test_plugin_dump_json.out"
+  COMMAND ${CMAKE_COMMAND} -E compare_files
+    "${CMAKE_CURRENT_BINARY_DIR}/e2p_test_plugin_dump_json.out" "${CMAKE_CURRENT_SOURCE_DIR}/e2p_test_plugin_dump_json-expected.txt"
+
+  COMMAND ${CMAKE_COMMAND} -E env
+    LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin_ets_src
+    "${CMAKE_CURRENT_SOURCE_DIR}/t.sts" > "${CMAKE_CURRENT_BINARY_DIR}/e2p_test_plugin_ets_src.out"
+  COMMAND ${CMAKE_COMMAND} -E compare_files
+    "${CMAKE_CURRENT_BINARY_DIR}/e2p_test_plugin_ets_src.out" "${CMAKE_CURRENT_SOURCE_DIR}/e2p_test_plugin_ets_src-expected.txt"
+
+  COMMAND ${CMAKE_COMMAND} -E env
+    LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin_is
+    "${CMAKE_CURRENT_SOURCE_DIR}/t.sts" > "${CMAKE_CURRENT_BINARY_DIR}/e2p_test_plugin_is.out"
+  COMMAND ${CMAKE_COMMAND} -E compare_files
+    "${CMAKE_CURRENT_BINARY_DIR}/e2p_test_plugin_is.out" "${CMAKE_CURRENT_SOURCE_DIR}/e2p_test_plugin_is-expected.txt"
 )
 
-add_dependencies(es2panda-plugin-test es2panda e2p_test_plugin)
+
+add_dependencies(es2panda-plugin-test es2panda e2p_test_plugin e2p_test_plugin_dump_json e2p_test_plugin_ets_src e2p_test_plugin_is)
 add_dependencies(es2panda_tests es2panda-plugin-test)

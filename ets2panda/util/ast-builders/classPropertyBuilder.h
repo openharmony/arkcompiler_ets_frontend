@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::ir {
 
-class ClassPropertyBuilder : public AstBuilder {
+class ClassPropertyBuilder : public AstBuilder<ir::ClassProperty> {
 public:
     explicit ClassPropertyBuilder(ark::ArenaAllocator *allocator) : AstBuilder(allocator) {}
 
@@ -44,16 +44,9 @@ public:
         return *this;
     }
 
-    ClassPropertyBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
-    }
-
     ClassProperty *Build()
     {
-        auto *node = AllocNode<ir::ClassProperty>(key_, value_, nullptr, modifiers_, Allocator(), false);
-        node->SetParent(parent_);
+        auto *node = AllocNode(key_, value_, nullptr, modifiers_, Allocator(), false);
         return node;
     }
 
@@ -61,7 +54,6 @@ private:
     Expression *key_ = nullptr;
     Expression *value_ = nullptr;
     ModifierFlags modifiers_ = ModifierFlags::NONE;
-    AstNode *parent_ {};
 };
 
 }  // namespace ark::es2panda::ir

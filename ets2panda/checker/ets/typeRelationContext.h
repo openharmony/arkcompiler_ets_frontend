@@ -34,7 +34,8 @@ public:
         auto *const etsChecker = relation->GetChecker()->AsETSChecker();
 
         if (target->IsETSArrayType() && node->IsArrayExpression()) {
-            ValidateArrayTypeInitializerByElement(relation, node->AsArrayExpression(), target->AsETSArrayType());
+            assignable_ =
+                ValidateArrayTypeInitializerByElement(relation, node->AsArrayExpression(), target->AsETSArrayType());
             return;
         }
 
@@ -73,7 +74,7 @@ public:
         return assignable_;
     }
 
-    void ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node, ETSArrayType *target);
+    bool ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node, ETSArrayType *target);
 
 private:
     TypeRelationFlag flags_ = TypeRelationFlag::IN_ASSIGNMENT_CONTEXT;
@@ -184,7 +185,7 @@ public:
         InstantiateType(type, std::move(typeArgs), pos);
     }
 
-    ETSObjectType *Result()
+    Type *Result()
     {
         return result_;
     }
@@ -199,7 +200,7 @@ private:
     util::StringView GetHashFromTypeArguments(ArenaVector<Type *> &typeArgTypes);
 
     ETSChecker *checker_;
-    ETSObjectType *result_ {};
+    Type *result_ {};
 };
 
 }  // namespace ark::es2panda::checker

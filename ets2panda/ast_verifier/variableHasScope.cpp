@@ -124,22 +124,15 @@ bool VariableHasScope::ScopeEncloseVariable(CheckContext &ctx, const varbinder::
 
 bool VariableHasScope::CheckAstExceptions(const ir::AstNode *ast)
 {
-    // NODE(kkonkuznetsov): scope warnings with async lambdas
-    if (ast->IsETSParameterExpression()) {
-        return true;
-    }
-
-    if (ast->IsLabelledStatement()) {
-        // Labels are attached to loop scopes,
-        // however label identifier is outside of loop.
-        // Example:
-        //
-        // loop: for (let i = 0; i < 10; i++) {
-        // }
-        return true;
-    }
-
-    return false;
+    // Labels are attached to loop scopes,
+    // however label identifier is outside of loop.
+    // Example:
+    //
+    // ```
+    // loop: for (let i = 0; i < 10; i++) {
+    // }
+    // ```
+    return ast->IsLabelledStatement();
 }
 
 }  // namespace ark::es2panda::compiler::ast_verifier

@@ -35,3 +35,6 @@ function main(): void {
 }
 
 /* @@? 20:1 Error TypeError: Function foo with this assembly signature already declared.  */
+/* @@? 25:5 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
+/* @@? 28:5 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
+/* @@? 32:5 Error TypeError: Reference to foo is ambiguous  */

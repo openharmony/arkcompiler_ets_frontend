@@ -359,7 +359,7 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
     return checker->CreateTupleType(desc, std::move(elementFlags), tupleTypeInfo);
 }
 
-void ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const checker,
+bool ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const checker,
                                                   ArrayExpression *const currentElement, const bool isPreferredTuple,
                                                   const std::size_t idx)
 {
@@ -367,25 +367,31 @@ void ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const che
         currentElement->SetPreferredType(preferredType_->AsETSTupleType()->GetTypeAtIndex(idx));
 
         if (currentElement->GetPreferredType()->IsETSTupleType()) {
-            checker->ValidateTupleMinElementSize(currentElement, currentElement->GetPreferredType()->AsETSTupleType());
+            if (!checker->ValidateTupleMinElementSize(currentElement,
+                                                      currentElement->GetPreferredType()->AsETSTupleType())) {
+                return false;
+            }
         }
 
-        return;
+        return true;
     }
 
     if (preferredType_->IsETSArrayType()) {
         if (preferredType_->AsETSArrayType()->ElementType()->IsETSTupleType()) {
-            checker->ValidateTupleMinElementSize(currentElement,
-                                                 preferredType_->AsETSArrayType()->ElementType()->AsETSTupleType());
+            if (!checker->ValidateTupleMinElementSize(
+                    currentElement, preferredType_->AsETSArrayType()->ElementType()->AsETSTupleType())) {
+                return false;
+            }
         }
 
         currentElement->SetPreferredType(preferredType_->AsETSArrayType()->ElementType());
-        return;
+        return true;
     }
 
     if (currentElement->GetPreferredType() == nullptr) {
         currentElement->SetPreferredType(preferredType_);
     }
+    return true;
 }
 
 checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)

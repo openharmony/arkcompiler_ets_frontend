@@ -161,7 +161,7 @@ ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefin
     auto *paramInst = CreateTypeParameterInstantiation(method, ctx);
     callExpression = checker->AllocNode<ir::CallExpression>(accessor != nullptr ? accessor : callee,
                                                             std::move(funcCallArgs), paramInst, false, false);
-
+    callExpression->SetStart(method->Start());  // NOTE: Used to locate the original node when an error occurs
     ir::Statement *stmt = nullptr;
     if ((method->Function()->ReturnTypeAnnotation() != nullptr) ||
         ((method->Function()->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
@@ -211,7 +211,6 @@ ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
 
     id = method->Id()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
     funcNode->SetIdent(id);
-
     return checker->AllocNode<ir::FunctionExpression>(funcNode);
 }
 
@@ -236,7 +235,8 @@ void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *meth
     }
 
     method->AddOverload(overloadMethod);
-    overloadMethod->SetParent(method);  // NOTE(aleksisch): It's incorrect and don't exist in class body
+    overloadMethod->SetStart(method->Start());  // NOTE: Used to locate the original node when an error occurs
+    overloadMethod->SetParent(method);          // NOTE(aleksisch): It's incorrect and don't exist in class body
 }
 
 void DefaultParameterLowering::RemoveInitializers(ArenaVector<ir::Expression *> params)

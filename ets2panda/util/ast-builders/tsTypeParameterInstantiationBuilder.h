@@ -22,17 +22,11 @@
 
 namespace ark::es2panda::ir {
 
-class TSTypeParameterInstantiationBuilder : public AstBuilder {
+class TSTypeParameterInstantiationBuilder : public AstBuilder<ir::TSTypeParameterInstantiation> {
 public:
     explicit TSTypeParameterInstantiationBuilder(ark::ArenaAllocator *allocator)
         : AstBuilder(allocator), params_(allocator->Adapter())
     {
-    }
-
-    TSTypeParameterInstantiationBuilder &SetParent(AstNode *const parent)
-    {
-        parent_ = parent;
-        return *this;
     }
 
     TSTypeParameterInstantiationBuilder &SetParams(ArenaVector<TypeNode *> &&params)
@@ -49,12 +43,11 @@ public:
 
     TSTypeParameterInstantiation *Build()
     {
-        auto *etsTypeReference = AllocNode<ir::TSTypeParameterInstantiation>(std::move(params_));
-        return etsTypeReference;
+        auto *node = AllocNode(std::move(params_));
+        return node;
     }
 
 private:
-    AstNode *parent_ {};
     ArenaVector<TypeNode *> params_;
 };
 
