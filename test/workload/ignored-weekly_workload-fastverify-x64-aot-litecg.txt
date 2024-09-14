@@ -1,6 +1,9 @@
 ##19297
 earley-boyer
 
+##19072
+OfflineAssembler
+
 ##18604
 typescript-compiler
 raytrace
