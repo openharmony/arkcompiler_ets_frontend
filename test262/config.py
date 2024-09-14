@@ -104,7 +104,7 @@ ESHOST_GIT_URL = "https://gitee.com/hufeng20/eshost.git"
 HARNESS_GIT_URL = "https://gitee.com/hufeng20/test262-harness.git"
 
 TEST262_JIT_GIT_URL = "https://gitee.com/lxy0115/test262.git"
-TEST262_JIT_GIT_HASH = "055b4a176a2583bb1189ff109a605b34ff29c974"
+TEST262_JIT_GIT_HASH = "1c923f96779aabbd4bed35a00e7078054c465334"
 TEST262_JIT_LABEL = os.path.join("test262", "data", "preheated.txt")
 
 SKIP_LIST_FILE = os.path.join("test262", "skip_tests.json")
