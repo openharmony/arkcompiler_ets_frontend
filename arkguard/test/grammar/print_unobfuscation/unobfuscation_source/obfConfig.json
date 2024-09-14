@@ -17,7 +17,7 @@
             "property1",
             "*de"
         ],
-        "mKeepStringProperty": false,
+        "mKeepStringProperty": true,
         "mTopLevel": true
     },
     "mUnobfuscationOption":{
@@ -26,5 +26,5 @@
     },
     "mEnableSourceMap": false,
     "mEnableNameCache": false,
-    "mExportObfuscation": true
+    "mExportObfuscation": false
 }

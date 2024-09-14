@@ -228,12 +228,15 @@ export function isReservedProperty(originalName: string): boolean {
     isMatchWildcard(PropCollections.universalReservedProperties, originalName);
 }
 
-enum WhitelistType {
+  /**
+   * Reasons for not being obfuscated.
+   */
+export enum WhitelistType {
   SDK = 'sdk',
   LANG = 'lang',
   CONF = 'conf',
   STRUCT = 'struct',
-  EXPORT = 'export',
+  EXPORT = 'exported',
   STRPROP = 'strProp',
   ENUM = 'enum'
 }
@@ -300,7 +303,13 @@ function needToReservedLocal(originalName: string, recordMap: Map<string, Set<st
   return reservedFlag;
 }
 
-function needToRecordProperty(originalName: string, recordMap?: Map<string, Set<string>>, nameWithScope?: string): boolean {
+/**
+ * If the property name is in the whitelist, record the reason for not being obfuscated.
+ * @param nameWithScope: If both property obfuscation and top-level obfuscation or export obfuscation are enabled,
+ * this interface is also used to record the reasons why the top-level names or export names were not obfuscated,
+ * and the top-level names or export names include the scope.
+ */
+export function needToRecordProperty(originalName: string, recordMap?: Map<string, Set<string>>, nameWithScope?: string): boolean {
   let reservedFlag = false;
   let recordName = nameWithScope ? nameWithScope : originalName;
   if (UnobfuscationCollections.reservedSdkApiForProp?.has(originalName)) {
