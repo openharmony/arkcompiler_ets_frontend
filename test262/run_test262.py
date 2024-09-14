@@ -89,6 +89,8 @@ def parse_args():
                         help='Other engine binarys to run tests(as:d8,qjs...)')
     parser.add_argument('--babel', action='store_true',
                         help='Whether to use Babel conversion')
+    parser.add_argument('--skip-list',action='append',dest='skip_list',
+                        help='Use explicitly specify skip list in txt format. Can be set several times')
     parser.add_argument('--timeout', default=DEFAULT_TIMEOUT, type=int,
                         help='Set a custom test timeout in milliseconds !!!\n')
     parser.add_argument('--threads', default=DEFAULT_THREADS, type=int,
@@ -217,12 +219,24 @@ def get_all_skip_tests(args):
         SKIP_LIST_FILES.append(ES2ABC_SKIP_LIST_FILE)
     else:
         SKIP_LIST_FILES.append(TS2ABC_SKIP_LIST_FILE)
+    
+    if args.skip_list:
+        SKIP_LIST_FILES.append(os.path.join("test262", args.skip_list[0]))
 
     for file in SKIP_LIST_FILES:
-        with open(file) as jsonfile:
-            json_data = json.load(jsonfile)
-            for key in json_data:
-                ALL_SKIP_TESTS.extend(key["files"])
+        if file.endswith('.txt'):
+            with open(file, 'r') as txtfile:
+                for line in txtfile:
+                    # skip "#"
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        new_line = "/".join(line.split("/")[3:])
+                        ALL_SKIP_TESTS.append(new_line)
+        else:
+            with open(file) as jsonfile:
+                json_data = json.load(jsonfile)
+                for key in json_data:
+                    ALL_SKIP_TESTS.extend(key["files"])
 
 
 def collect_files(path):
