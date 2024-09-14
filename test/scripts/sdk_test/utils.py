@@ -26,7 +26,6 @@ import shutil
 import subprocess
 import sys
 import time
-import uuid
 import zipfile
 
 from PIL import Image
@@ -73,7 +72,6 @@ def check_zip_file(file_path):
     except Exception as e:
         print(e)
         return False
-    return True
 
 
 def check_gzip_file(file_path):
@@ -137,7 +135,7 @@ def replace_file_content(file_path, old_content, new_content):
 
 def run_cmd(cmd):
     logging.debug(f'cmd: {cmd}')
-    result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    result = subprocess.run(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     logging.debug(f'cmd stdout: {result.stdout}')
     logging.error(f'cmd stderr: {result.stderr}')
     return result
@@ -148,7 +146,7 @@ def move_picture(task, image_name):
     if not os.path.exists(pic_save_dic):
         os.mkdir(pic_save_dic)
 
-    pic_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'pictures\{task.name}')
+    pic_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'pictures/{task.name}')
     if not os.path.exists(pic_save_path):
         os.mkdir(pic_save_path)
 
@@ -178,6 +176,14 @@ def get_running_screenshot(task, image_name, is_debug, module=''):
             else task.backup_info.hsp_signed_output_release
         run_cmd(['hdc', 'install', f'{hsp_output_path}'])
         time.sleep(3)
+    not_out_hsp_error_message = 'outHsp does not exist'
+    if not_out_hsp_error_message in result.stdout:
+        external_hsp_output_path = task.backup_info.external_hsp_signed_output_debug if is_debug \
+            else task.backup_info.external_hsp_signed_output_release
+        run_cmd(['hdc', 'install', f'{external_hsp_output_path}'])
+        time.sleep(3)
+
+    if not_hsp_error_message in result.stdout or not_out_hsp_error_message in result.stdout:
         run_cmd(['hdc', 'install', f'{out_path}'])
 
     run_cmd(['hdc', 'shell', 'aa', 'start', '-a', f'{task.ability_name}', '-b', f'{task.bundle_name}'])
@@ -285,6 +291,7 @@ def get_module_name(task, module=''):
     module_mapping = {
         'Hap': task.hap_module,
         'Har': task.har_module,
+        'BytecodeHar': task.har_module,
         'Hsp': task.hsp_module,
         'Cpp': task.cpp_module
     }
@@ -296,6 +303,7 @@ def get_module_path(task, module=''):
     module_mapping = {
         'Hap': task.hap_module_path,
         'Har': task.har_module_path,
+        'BytecodeHar': task.har_module_path,
         'Hsp': task.hsp_module_path,
         'Cpp': task.cpp_module_path
     }
@@ -324,15 +332,16 @@ def get_output_path_signed(task, module=''):
 def get_output_path_har(task, module=''):
     output_path_mapping = {
         "Har": task.har_output_path_har,
+        "BytecodeHar": task.har_output_path_har,
         "Hsp": task.hsp_output_path_har
     }
     return output_path_mapping.get(module, output_path_mapping['Har'])
 
 
-def get_output_path(task, module='', output_type=''):
-    if output_type.value == 0:
+def get_output_path(task, module, output_type):
+    if output_type == options.OutputType.unsigned:
         return get_output_path_unsigned(task, module)
-    elif output_type.value == 1:
+    elif output_type == options.OutputType.signed:
         return get_output_path_signed(task, module)
     else:
         return get_output_path_har(task, module)

@@ -206,6 +206,40 @@ haps:
     hsp_modify_file: [ hsp, Index.ets ]
     cpp_modify_file: [ cpp, src, main, cpp, types, libcpp, Index.d.ts ]
     description:
+# external_haps: descriptions about external haps list
+external_haps:
+  - external_demo_00:
+    name: Out
+    path: D:\sdk-test\Out
+    type: [stage, ohosTest, exceed_length_error, error]
+    hap_module: entry
+    hap_module_path: [ entry ]
+    har_module: outHar
+    har_module_path: [ outHar ]
+    hsp_module: outHsp
+    hsp_module_path: [ outHsp ]
+    cpp_module: outCpp
+    cpp_module_path: [ outCpp ]
+    build_path: [ build, default ]
+    preview_path: [ .preview, default ]
+    bundle_name: com.example.out
+    ability_name: EntryAbility
+    cache_path: [ cache, default, default@CompileArkTS, esmodule ]
+    preview_cache_path: [ cache, default, default@PreviewArkTS, esmodule ]
+    hap_output_path: [ outputs, default, entry-default-unsigned.hap ]
+    hap_output_path_signed: [ outputs, default, entry-default-signed.hap ]
+    har_output_path_har: [ outputs, default, outHar.har ]
+    hsp_output_path: [ outputs, default, outHsp-default-unsigned.hsp ]
+    hsp_output_path_signed: [ outputs, default, outHsp-default-signed.hsp ]
+    hsp_output_path_har: [ outputs, default, outHsp.har ]
+    cpp_output_path: [ outputs, default, outCpp-default-unsigned.hap ]
+    cpp_output_path_signed: [ outputs, default, outCpp-default-signed.hap ]
+    main_pages_json_path: [ entry, src, main, resources, base, profile, main_pages.json ]
+    inc_modify_file: [ entry, src, main, ets, pages, Index.ets ]
+    har_modify_file: [ outHar, Index.ets ]
+    hsp_modify_file: [ outHsp, Index.ets ]
+    cpp_modify_file: [ outCpp, src, main, cpp, types, libcpp, Index.d.ts ]
+    description:
 
 # modifications for incremental compilation and other tests
 patch_content:
@@ -240,6 +274,15 @@ patch_content:
       tail: "\nconsole.log(a().toString());\n"
     cpp:
       head: "import {a} from 'libcpp.so';\n"
+      tail: "\nconsole.log(a().toString());\n"
+    externalhar:
+      head: "import {a} from 'outHar';\n"
+      tail: "\nconsole.log(a().toString());\n"
+    externalhsp:
+      head: "import {a} from 'outHsp';\n"
+      tail: "\nconsole.log(a().toString());\n"
+    externalcpp:
+      head: "import {a} from 'outCpp';\n"
       tail: "\nconsole.log(a().toString());\n"
   patch_lines_2:
     tail: "\n console.log('This is a new line');\n"
