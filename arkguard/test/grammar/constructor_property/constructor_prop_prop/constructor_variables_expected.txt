@@ -13,35 +13,35 @@
  * limitations under the License.
  */
 namespace ts {
-    let r: {
-        g(o: s): number;
-        h(o: s, m: number): void;
+    let w: {
+        j(o: x): number;
+        k(o: x, m: number): void;
     };
-    class s {
+    class x {
         x: number;
-        constructor(b1: number) {
-            this.x = b1;
+        constructor(g1: number) {
+            this.x = g1;
         }
-        g() {
+        j() {
             return this.x;
         }
-        i() {
-            r = {
-                g(a1) { return a1.x; },
-                h(y, z) { y.x = z; }
+        l() {
+            w = {
+                j(f1) { return f1.x; },
+                k(d1, e1) { d1.x = e1; }
             };
         }
     }
     ;
-    class t {
-        constructor(w: s) {
-            const x = r.g(w); // ok
-            r.h(w, x + 1); // ok
+    class y {
+        constructor(b1: x) {
+            const c1 = w.j(b1); // ok
+            w.k(b1, c1 + 1); // ok
         }
     }
     ;
-    const u = new s(41);
-    u.i();
-    const v = new t(u);
-    u.g();
+    const z = new x(41);
+    z.l();
+    const a1 = new y(z);
+    z.j();
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -12,17 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import assert from "assert";
-class A5 {
-    u = 5;
-    constructor(public o: number, private p: string, protected q: boolean, readonly t: number, u: string) {
-        u = u + 1;
-        let v = o;
-        let w = p;
-        let x = q;
-        let y = t;
-        this.u = t;
-    }
+
+class MyClass {
+  prop1 = 1
+
+  constructor(public para1: number, private para2: string, protected para3: boolean, readonly para4: number, para5: string) {
+  }
 }
-let insA5 = new A5(1, '2', false, 4, '5');
-assert(insA5.u === 4);

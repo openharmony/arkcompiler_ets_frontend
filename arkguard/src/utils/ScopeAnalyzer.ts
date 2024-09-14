@@ -797,12 +797,9 @@ namespace secharmony {
         current = new Scope(scopeName, node, ScopeKind.CLASS, true, current);
         scopes.push(current);
         addSymbolInScope(node);
-        // Class members are seen as attribute names, and  the reference of external symbols can be renamed as the same
-        node.members?.forEach((elm: ClassElement) => {
-          // @ts-ignore
-          if (elm?.symbol && !getOriginalNode(elm).virtual) {
-            current.addDefinition(elm.symbol);
-          }
+        // Class members are seen as attribute names, and the reference of external symbols can be renamed as the same
+        node.symbol.members?.forEach((symbol: Symbol) => {
+          current.addDefinition(symbol);
         });
 
         forEachChild(node, analyzeScope);

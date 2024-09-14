@@ -13,25 +13,25 @@
  * limitations under the License.
  */
 class __BaseClass {
-    private g: string;
-    constructor(d: string) {
-        this.g = d;
+    private j: string;
+    constructor(m: string) {
+        this.j = m;
     }
 }
 class __PersonDetails {
-    public h: string;
-    private i: string;
-    protected j: number;
-    constructor(a: string, b: string, c: number) {
-        this.h = a;
-        this.i = b;
-        this.j = c;
+    public k: string;
+    private l: string;
+    protected m: number;
+    constructor(j: string, k: string, l: number) {
+        this.k = j;
+        this.l = k;
+        this.m = l;
     }
 }
 class __CustomTest {
-    constructor(public k: number, private l: string, protected m: number) {
-        this.k = 1;
-        this.l = "123";
-        this.m = 1;
+    constructor(public g: number, private h: string, protected i: number) {
+        this.g = 1;
+        this.h = "123";
+        this.i = 1;
     }
 }

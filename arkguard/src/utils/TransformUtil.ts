@@ -30,7 +30,7 @@ import type {
   Node,
   SourceFile,
   StructDeclaration,
-  TransformationContext 
+  TransformationContext
 } from 'typescript';
 import type { IOptions } from '../configs/IOptions';
 import { LocalVariableCollections, PropCollections, UnobfuscationCollections } from './CommonCollections';

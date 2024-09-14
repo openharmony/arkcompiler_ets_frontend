@@ -15,9 +15,8 @@
 
 import {ListUtil} from '../../../src/utils/ListUtil';
 import {describe, it} from 'mocha';
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
 import * as fs from 'fs';
-import sinon from 'sinon';
 import {TypeUtils} from '../../../src/utils/TypeUtils';
 import {
   Label,
@@ -478,6 +477,25 @@ describe('ScopeAnalyzer ut', function () {
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope, undefined);
           });
+        });
+      });
+
+      describe('analyzeClassLike', function () {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeClassLike.ts';
+        it('should collect symbol of class property parameters', function () {
+          InitScopeManager(filePath);
+          const rootScope = scopeManager.getRootScope();
+          const classScope = rootScope.children[0];
+          const nameSet = new Set();
+          classScope.defs.forEach((symbol) => {
+            nameSet.add(symbol.escapedName);
+          })
+          expect(nameSet.has('prop1')).to.be.true;
+          expect(nameSet.has('__constructor')).to.be.true;
+          expect(nameSet.has('para1')).to.be.true;
+          expect(nameSet.has('para2')).to.be.true;
+          expect(nameSet.has('para3')).to.be.true;
+          expect(nameSet.has('para4')).to.be.true;
         });
       });
     });
