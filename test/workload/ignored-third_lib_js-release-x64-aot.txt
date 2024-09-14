@@ -21,6 +21,22 @@ memory-cache_test
 #18424
 pcx_test
 
+#19551
+jmespath_test
+textEncoding_test
+jsonBigint_test
+eventBus_test
+dom4j_test
+brotli_test
+xml_js_test
+
+#19284
+mathjs_test
+sax_test
+
+#18911
+bignumber_test
+
 #19251
 pdfview_test
 

@@ -13,6 +13,7 @@ Drools_test
 
 #18546
 gson_test
+libphonenumber_test
 
 #18340
 jmespath_test
