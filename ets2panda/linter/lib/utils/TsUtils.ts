@@ -19,6 +19,7 @@ import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { FaultID } from '../Problems';
 import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
 import { ES_OBJECT } from './consts/ESObject';
+import { EXTENDED_BASE_TYPES } from './consts/ExtendedBaseTypes';
 import { SENDABLE_DECORATOR } from './consts/SendableAPI';
 import { USE_SHARED } from './consts/SharedModuleAPI';
 import { STANDARD_LIBRARIES } from './consts/StandardLibraries';
@@ -32,7 +33,7 @@ import {
 import { TYPED_ARRAYS } from './consts/TypedArrays';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 import { getScriptKind } from './functions/GetScriptKind';
-import { isStdLibraryType } from './functions/IsStdLibrary';
+import { isStdLibrarySymbol, isStdLibraryType } from './functions/IsStdLibrary';
 import { isStructDeclaration, isStructDeclarationKind } from './functions/IsStruct';
 import type { NameGenerator } from './functions/NameGenerator';
 import { srcFilePathContainsDirectory } from './functions/PathHelper';
@@ -49,7 +50,8 @@ export class TsUtils {
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly testMode: boolean,
     private readonly advancedClassChecks: boolean,
-    private readonly useSdkLogic: boolean
+    private readonly useSdkLogic: boolean,
+    private readonly arkts2: boolean
   ) {}
 
   entityNameToString(name: ts.EntityName): string {
@@ -551,7 +553,13 @@ export class TsUtils {
       if (isBISendable && ts.isClassDeclaration(typeADecl) && TsUtils.hasSendableDecorator(typeADecl)) {
         return true;
       }
-      if (!ts.isClassDeclaration(typeADecl) && !ts.isInterfaceDeclaration(typeADecl) || !typeADecl.heritageClauses) {
+      if (!ts.isClassDeclaration(typeADecl) && !ts.isInterfaceDeclaration(typeADecl)) {
+        continue;
+      }
+      if (this.processExtendedParentTypes(typeA, typeB)) {
+        return true;
+      }
+      if (!typeADecl.heritageClauses) {
         continue;
       }
       for (const heritageClause of typeADecl.heritageClauses) {
@@ -647,8 +655,11 @@ export class TsUtils {
     );
   }
 
-  // Does the 'arkts-no-structure-typing' rule need to be strictly enforced to complete previously missed scenarios
+  // Does the 'arkts-no-structural-typing' rule need to be strictly enforced to complete previously missed scenarios
   needStrictMatchType(lhsType: ts.Type, rhsType: ts.Type): boolean {
+    if (this.arkts2) {
+      return true;
+    }
     if (this.isStrictSendableMatch(lhsType, rhsType)) {
       return true;
     }
@@ -674,6 +685,40 @@ export class TsUtils {
       isStrictLhs = this.isSendableClassOrInterface(lhsType);
     }
     return isStrictLhs && this.typeContainsNonSendableClassOrInterface(rhsType);
+  }
+
+  private processExtendedParentTypes(typeA: ts.Type, typeB: ts.Type): boolean {
+
+    /*
+     * Most standard types in TS Stdlib do not use explicit inheritance and rely on
+     * structural compatibility. In contrast, the type definitions in ArkTS stdlib
+     * use inheritance with explicit base types. We check the inheritance hierarchy
+     * for such types according to how they are defined in ArkTS Stdlib.
+     */
+
+    if (!this.arkts2) {
+      return false;
+    }
+    if (!isStdLibrarySymbol(typeA.symbol) && !isStdLibrarySymbol(typeB.symbol)) {
+      return false;
+    }
+    return this.checkExtendedParentTypes(typeA.symbol.name, typeB.symbol.name);
+  }
+
+  private checkExtendedParentTypes(typeA: string, typeB: string): boolean {
+    if (typeA === typeB) {
+      return true;
+    }
+    const extBaseTypes = EXTENDED_BASE_TYPES.get(typeA);
+    if (!extBaseTypes) {
+      return false;
+    }
+    for (const extBaseType of extBaseTypes) {
+      if (this.checkExtendedParentTypes(extBaseType, typeB)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private processParentTypes(
