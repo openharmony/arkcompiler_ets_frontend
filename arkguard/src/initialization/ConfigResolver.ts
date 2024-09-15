@@ -776,7 +776,11 @@ export function collectResevedFileNameInIDEConfig(
 
   if (modulePathMap) {
     const modulePaths = Object.values(modulePathMap);
+    const moduleNames = Object.keys(modulePathMap);
     modulePaths.forEach((val) => {
+      FileUtils.collectPathReservedString(val, reservedFileNames);
+    });
+    moduleNames.forEach((val) => {
       FileUtils.collectPathReservedString(val, reservedFileNames);
     });
   }
