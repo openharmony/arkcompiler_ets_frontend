@@ -91,16 +91,24 @@ panda::pandasm::Program *Compiler::CompileAbcFile(const std::string &fname, cons
     return abcToAsmCompiler_->CompileAbcFile();
 }
 
-void Compiler::CompileAbcFileInParallel(const std::string &fname, const CompilerOptions &options,
+void Compiler::CompileAbcFileInParallel(SourceFile *src, const CompilerOptions &options,
                                         std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
                                         panda::ArenaAllocator *allocator)
 {
-    CheckOptionsAndFileForAbcInput(fname, options);
+    try {
+        CheckOptionsAndFileForAbcInput(src->fileName, options);
+    } catch (const class Error &e) {
+        std::cerr << e.TypeString() << ": " << e.Message();
+        std::cerr << " [" << src->fileName << "]" << std::endl;
+        throw;
+    }
+
     auto *compileAbcClassQueue = new compiler::CompileAbcClassQueue(options.abcClassThreadCount,
                                                                     options,
                                                                     *abcToAsmCompiler_,
                                                                     progsInfo,
-                                                                    allocator);
+                                                                    allocator,
+                                                                    src);
     try {
         compileAbcClassQueue->Schedule();
         compileAbcClassQueue->Consume();

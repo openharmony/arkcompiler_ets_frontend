@@ -16,7 +16,6 @@
 #include "options.h"
 
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -99,11 +98,19 @@ static std::vector<std::string> GetStringItems(std::string &input, const std::st
     return items;
 }
 
-void Options::CollectInputAbcFile(const std::string &fileName, const std::string &inputExtension)
+void Options::CollectInputAbcFile(const std::vector<std::string> &itemList, const std::string &inputExtension)
 {
+    std::string fileName = itemList[0];
+    // Split the fileInfo string to itemList by the delimiter ';'. If the element is empty, it will not be added to
+    // the itemList. The fileInfo string of the abc file only contains the file path and pkgName, so the index
+    // of pkgName is 1.
+    constexpr uint32_t PKG_NAME_IDX = 1;
     es2panda::SourceFile src(fileName, "", parser::ScriptKind::SCRIPT, GetScriptExtension(fileName,
                              inputExtension));
     src.isSourceMode = false;
+    if (itemList.size() > PKG_NAME_IDX && compilerOptions_.mergeAbc) {
+        src.pkgName = itemList[PKG_NAME_IDX];
+    }
     sourceFiles_.push_back(src);
 }
 
@@ -180,7 +187,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input, const std:
             return false;
         }
         if (IsAbcFile(itemList[0], inputExtension)) {
-            CollectInputAbcFile(itemList[0], inputExtension);
+            CollectInputAbcFile(itemList, inputExtension);
         } else {
             CollectInputSourceFile(itemList, inputExtension);
         }
@@ -231,6 +238,49 @@ void Options::ParseCacheFileOption(const std::string &cacheInput)
     }
 }
 
+void Options::ParseUpdateVersionInfo(nlohmann::json &compileContextInfoJson)
+{
+    if (compileContextInfoJson.contains("updateVersionInfo") &&
+        compileContextInfoJson["updateVersionInfo"].is_object()) {
+        std::unordered_map<std::string, std::unordered_map<std::string, PkgInfo>> updateVersionInfo {};
+        for (const auto& [abcName, versionInfo] : compileContextInfoJson["updateVersionInfo"].items()) {
+            if (!versionInfo.is_object()) {
+                std::cerr << "The input file '" << compilerOptions_.compileContextInfoPath
+                          << "' is incomplete format of json" << std::endl;
+            }
+            std::unordered_map<std::string, PkgInfo> pkgContextMap {};
+            for (const auto& [pkgName, version] : versionInfo.items()) {
+                PkgInfo pkgInfo;
+                pkgInfo.version = version;
+                pkgInfo.packageName = pkgName;
+                pkgContextMap[pkgName] = pkgInfo;
+            }
+            updateVersionInfo[abcName] = pkgContextMap;
+        }
+        compilerOptions_.compileContextInfo.updateVersionInfo = updateVersionInfo;
+    } else if (compileContextInfoJson.contains("pkgContextInfo") &&
+               compileContextInfoJson["pkgContextInfo"].is_object()) {
+        std::unordered_map<std::string, PkgInfo> pkgContextMap {};
+        for (const auto& [pkgName, pkgContextInfo] : compileContextInfoJson["pkgContextInfo"].items()) {
+            PkgInfo pkgInfo;
+            if (pkgContextInfo.contains("version") && pkgContextInfo["version"].is_string()) {
+                pkgInfo.version = pkgContextInfo["version"];
+            } else {
+                std::cerr << "Failed to get version from pkgContextInfo."  << std::endl;
+            }
+            if (pkgContextInfo.contains("packageName") && pkgContextInfo["packageName"].is_string()) {
+                pkgInfo.packageName = pkgContextInfo["packageName"];
+            } else {
+                std::cerr << "Failed to get package name from pkgContextInfo."  << std::endl;
+            }
+            pkgContextMap[pkgName] = pkgInfo;
+        }
+        compilerOptions_.compileContextInfo.pkgContextInfo = pkgContextMap;
+    } else {
+        UNREACHABLE();
+    }
+}
+
 void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
 {
     std::stringstream ss;
@@ -246,13 +296,11 @@ void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
     }
     // Parser compile context info base on the input json file.
     nlohmann::json compileContextInfoJson = nlohmann::json::parse(buffer);
-    if (!compileContextInfoJson.contains("compileEntries") || !compileContextInfoJson.contains("hspPkgNames") ||
-        !compileContextInfoJson.contains("pkgContextInfo")) {
+    if (!compileContextInfoJson.contains("compileEntries") || !compileContextInfoJson.contains("hspPkgNames")) {
         std::cerr << "The input json file '" << compileContextInfoPath << "' content format is incorrect" << std::endl;
         return;
     }
-    if (!compileContextInfoJson["compileEntries"].is_array() || !compileContextInfoJson["hspPkgNames"].is_array() ||
-        !compileContextInfoJson["pkgContextInfo"].is_object()) {
+    if (!compileContextInfoJson["compileEntries"].is_array() || !compileContextInfoJson["hspPkgNames"].is_array()) {
         std::cerr << "The input json file '" << compileContextInfoPath << "' content type is incorrect" << std::endl;
         return;
     }
@@ -264,22 +312,7 @@ void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
     }
     compilerOptions_.compileContextInfo.externalPkgNames = externalPkgNames;
     compilerOptions_.compileContextInfo.compileEntries = compileContextInfoJson["compileEntries"];
-    std::unordered_map<std::string, PkgInfo> pkgContextMap;
-    for (const auto& [key, value] : compileContextInfoJson["pkgContextInfo"].items()) {
-        PkgInfo pkgInfo;
-        if (value.contains("version") && value["version"].is_string()) {
-            pkgInfo.version = value["version"];
-        } else {
-            std::cerr << "Failed to get version from pkgContextInfo."  << std::endl;
-        }
-        if (value.contains("packageName") && value["packageName"].is_string()) {
-            pkgInfo.packageName = value["packageName"];
-        } else {
-            std::cerr << "Failed to get package name from pkgContextInfo."  << std::endl;
-        }
-        pkgContextMap[key] = pkgInfo;
-    }
-    compilerOptions_.compileContextInfo.pkgContextInfo = pkgContextMap;
+    ParseUpdateVersionInfo(compileContextInfoJson);
 }
 
 // Collect dependencies based on the compile entries.
@@ -654,8 +687,9 @@ bool Options::Parse(int argc, const char **argv)
         ParseCompileContextInfo(compileContextInfoPath.GetValue());
     }
     compilerOptions_.dumpDepsInfo = opDumpDepsInfo.GetValue();
-    compilerOptions_.updatePkgVersionForAbcInput = compilerOptions_.enableAbcInput
-        && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
+    compilerOptions_.updatePkgVersionForAbcInput = compilerOptions_.enableAbcInput &&
+        (!compilerOptions_.compileContextInfo.pkgContextInfo.empty() ||
+        !compilerOptions_.compileContextInfo.updateVersionInfo.empty());
     compilerOptions_.removeRedundantFile = opRemoveRedundantFile.GetValue();
     compilerOptions_.dumpString = opDumpString.GetValue();
     compilerOptions_.moduleRecordFieldName = moduleRecordFieldName.GetValue();
