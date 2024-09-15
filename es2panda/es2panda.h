@@ -237,7 +237,7 @@ public:
 
     panda::pandasm::Program *CompileAbcFile(const std::string &fname, const CompilerOptions &options);
 
-    void CompileAbcFileInParallel(const std::string &fname, const CompilerOptions &options,
+    void CompileAbcFileInParallel(SourceFile *src, const CompilerOptions &options,
                                   std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
                                   panda::ArenaAllocator *allocator);
 

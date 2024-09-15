@@ -24,6 +24,7 @@
                 "bounds_checking_function"
             ],
             "third_party": [
+                "json",
                 "icu",
                 "protobuf"
             ]
