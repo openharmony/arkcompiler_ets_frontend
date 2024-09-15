@@ -41,15 +41,9 @@ std::vector<std::string> Split(const std::string &str, const char delimiter)
     return items;
 }
 
-std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl)
+std::string GetPkgNameFromNormalizedImport(const std::string &normalizedImport)
 {
-    std::string normalizedImport {};
     std::string pkgName {};
-    auto items = Split(ohmurl, NORMALIZED_OHMURL_SEPARATOR);
-    if (items.size() <= NORMALIZED_IMPORT_POS) {
-        return pkgName;
-    }
-    normalizedImport = items[NORMALIZED_IMPORT_POS];
     size_t pos = normalizedImport.find(SLASH_TAG);
     if (pos != std::string::npos) {
         pkgName = normalizedImport.substr(0, pos);
@@ -61,6 +55,18 @@ std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl)
         }
     }
     return pkgName;
+}
+
+std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl)
+{
+    std::string normalizedImport {};
+    std::string pkgName {};
+    auto items = Split(ohmurl, NORMALIZED_OHMURL_SEPARATOR);
+    if (items.size() <= NORMALIZED_IMPORT_POS) {
+        return pkgName;
+    }
+    normalizedImport = items[NORMALIZED_IMPORT_POS];
+    return GetPkgNameFromNormalizedImport(normalizedImport);
 }
 
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl)
@@ -83,7 +89,8 @@ bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &
     return false;
 }
 
-std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const panda::es2panda::CompileContextInfo &info)
+std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl,
+                                         const std::unordered_map<std::string, PkgInfo> &pkgContextInfo)
 {
     // Input ohmurl format:
     // @normalized:{N|Y}&[module name]&[bundle name]&{<package name>|<@package/name>}/{import_path}&[version]
@@ -100,8 +107,8 @@ std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const panda:
     if (packageName.empty()) {
         return ohmurl;
     }
-    auto iter = info.pkgContextInfo.find(packageName);
-    if (iter == info.pkgContextInfo.end()) {
+    auto iter = pkgContextInfo.find(packageName);
+    if (iter == pkgContextInfo.end()) {
         return ohmurl;
     }
     auto versionStart = ohmurl.rfind(util::NORMALIZED_OHMURL_SEPARATOR);

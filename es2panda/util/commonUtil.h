@@ -30,6 +30,7 @@
 
 namespace panda::es2panda {
 struct CompileContextInfo;
+struct PkgInfo;
 };
 
 namespace panda::es2panda::util {
@@ -53,7 +54,9 @@ std::vector<std::string> Split(const std::string &str, const char delimiter);
 bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &externalPkgNames);
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);
-std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const CompileContextInfo &info);
+std::string GetPkgNameFromNormalizedImport(const std::string &normalizedImport);
+std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl,
+                                         const std::unordered_map<std::string, PkgInfo> &pkgContextInfo);
 bool RecordNotGeneratedFromBytecode(std::string recordName);
 
 template<bool isConst, typename T>
