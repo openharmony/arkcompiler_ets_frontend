@@ -6,7 +6,7 @@
       "definition": {
         "id": {
           "type": "Identifier",
-          "name": "Class",
+          "name": "Test",
           "decorators": [],
           "loc": {
             "start": {
@@ -15,7 +15,7 @@
             },
             "end": {
               "line": 16,
-              "column": 12
+              "column": 11
             }
           }
         },
@@ -366,7 +366,7 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 13
+            "column": 12
           },
           "end": {
             "line": 18,

@@ -225,6 +225,9 @@ builtins:
   - name: Object
     package: PKG_STD_CORE
     ref: BUILTIN_OBJECT
+  - name: Class
+    package: PKG_STD_CORE
+    ref: BUILTIN_CLASS
   - name: String
     package: PKG_STD_CORE
     ref: BUILTIN_STRING
@@ -984,7 +987,7 @@ signatures:
 
   - callee: BUILTIN_JSRUNTIME
     method_name: getValueObject
-    params: [BUILTIN_JSVALUE, BUILTIN_OBJECT] # 2nd argument is ClassClass
+    params: [BUILTIN_JSVALUE, BUILTIN_CLASS]
     return_type: BUILTIN_OBJECT
     ref: BUILTIN_JSRUNTIME_GET_VALUE_OBJECT
 
@@ -1228,13 +1231,13 @@ signatures:
 
   - callee: BUILTIN_JSRUNTIME
     method_name: __initJSCallClass
-    params: [BUILTIN_STRING]
+    params: []
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_INIT_DYNAMIC_CALL_CLASS
 
   - callee: BUILTIN_JSRUNTIME
     method_name: __initJSNewClass
-    params: [BUILTIN_STRING]
+    params: []
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_INIT_DYNAMIC_NEW_CLASS
 
@@ -1264,9 +1267,7 @@ signatures:
 
   - callee: BUILTIN_JSRUNTIME
     method_name: instanceOfStatic
-    # NOTE(v.cherkashin):
-    #  Replace BUILTIN_OBJECT by BUILTIN_TYPE when issue #15273 was resolved
-    params: [BUILTIN_JSVALUE, BUILTIN_OBJECT] # 2nd argument is ClassClass
+    params: [BUILTIN_JSVALUE, BUILTIN_CLASS]
     return_type: PRIMITIVE_BOOLEAN
     ref: BUILTIN_JSRUNTIME_INSTANCE_OF_STATIC
 
