@@ -265,6 +265,26 @@ export class TsUtils {
     );
   }
 
+  static isConcatArrayType(tsType: ts.Type): boolean {
+    return (
+      isStdLibraryType(tsType) &&
+      TsUtils.isTypeReference(tsType) &&
+      tsType.typeArguments?.length === 1 &&
+      tsType.target.typeParameters?.length === 1 &&
+      tsType.getSymbol()?.getName() === 'ConcatArray'
+    );
+  }
+
+  static isArrayLikeType(tsType: ts.Type): boolean {
+    return (
+      isStdLibraryType(tsType) &&
+      TsUtils.isTypeReference(tsType) &&
+      tsType.typeArguments?.length === 1 &&
+      tsType.target.typeParameters?.length === 1 &&
+      tsType.getSymbol()?.getName() === 'ArrayLike'
+    );
+  }
+
   isTypedArray(tsType: ts.Type): boolean {
     const symbol = tsType.symbol;
     if (!symbol) {
@@ -282,6 +302,16 @@ export class TsUtils {
 
   isArray(tsType: ts.Type): boolean {
     return TsUtils.isGenericArrayType(tsType) || TsUtils.isReadonlyArrayType(tsType) || this.isTypedArray(tsType);
+  }
+
+  isIndexableArray(tsType: ts.Type): boolean {
+    return (
+      TsUtils.isGenericArrayType(tsType) ||
+      TsUtils.isReadonlyArrayType(tsType) ||
+      TsUtils.isConcatArrayType(tsType) ||
+      TsUtils.isArrayLikeType(tsType) ||
+      this.isTypedArray(tsType)
+    );
   }
 
   static isTuple(tsType: ts.Type): boolean {

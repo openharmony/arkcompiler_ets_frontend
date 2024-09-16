@@ -45,12 +45,13 @@ import {
 import { NON_RETURN_FUNCTION_DECORATORS } from './utils/consts/NonReturnFunctionDecorators';
 import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyHasNoInitializerErrorCode';
 import {
+  SENDABLE_CLOSURE_DECLS,
   SENDABLE_DECORATOR,
   SENDABLE_DECORATOR_NODES,
-  SENDABLE_CLOSURE_DECLS,
-  SENDBALE_FUNCTION_START_VERSION,
-  SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12
+  SENDABLE_FUNCTION_UNSUPPORTED_STAGES_IN_API12,
+  SENDBALE_FUNCTION_START_VERSION
 } from './utils/consts/SendableAPI';
+import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } from './utils/consts/VersionInfo';
 import type { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
@@ -66,7 +67,6 @@ import {
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
-import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } from './utils/consts/VersionInfo';
 
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
@@ -1773,7 +1773,7 @@ export class TypeScriptLinter {
     return (
       this.tsUtils.isLibraryType(type) ||
       TsUtils.isAnyType(type) ||
-      this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isArray) ||
+      this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isIndexableArray) ||
       this.tsUtils.isOrDerivedFrom(type, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
