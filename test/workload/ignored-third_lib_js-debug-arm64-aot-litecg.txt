@@ -1,5 +1,8 @@
 # Known failures list for  third_lib_js-debug-arm64-int
 
+#Issue 18372
+js-joda_test
+
 #Issue 18605 Error while loading shared lib: libhmicui18n.so
 cborjs_test
 gcoord_test

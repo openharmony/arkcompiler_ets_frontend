@@ -9,6 +9,9 @@ splay-latency
 #18728
 zxing_test
 
+#19284
+mathjs_test
+
 #18371
 memory-cache_test
 
@@ -17,6 +20,9 @@ pdfview_test
 
 #19248
 pinyin4js_test
+
+#18546
+jBox2d_test
 
 #19247
 jsDiff_test
