@@ -1066,7 +1066,11 @@ export class TypeScriptLinter {
     const tsSignature = this.tsTypeChecker.getSignatureFromDeclaration(funcLikeDecl);
     if (tsSignature) {
       const tsRetType = this.tsTypeChecker.getReturnTypeOfSignature(tsSignature);
-      if (!tsRetType || TsUtils.isUnsupportedType(tsRetType)) {
+      if (
+        !tsRetType ||
+        !this.arkts2 && TsUtils.isUnsupportedType(tsRetType) ||
+        this.arkts2 && this.tsUtils.isUnsupportedTypeArkts2(tsRetType)
+      ) {
         hasLimitedRetTypeInference = true;
       } else if (hasLimitedRetTypeInference) {
         newRetTypeNode = this.tsTypeChecker.typeToTypeNode(tsRetType, funcLikeDecl, ts.NodeBuilderFlags.None);
