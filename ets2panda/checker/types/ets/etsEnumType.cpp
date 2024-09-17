@@ -72,10 +72,16 @@ bool ETSEnumType::AssignmentSource(TypeRelation *const relation, Type *const tar
 
 void ETSEnumType::AssignmentTarget(TypeRelation *const relation, Type *const source)
 {
-    auto const result = source->IsETSIntEnumType()
-                            ? IsSameEnumType(source->AsETSIntEnumType())
-                            : (source->IsETSStringEnumType() ? IsSameEnumType(source->AsETSStringEnumType()) : false);
-    relation->Result(result);
+    if (this->decl_->BoxedClass()->TsType() == source) {
+        relation->GetNode()->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_ENUM);
+        relation->Result(true);
+    } else {
+        auto const result =
+            source->IsETSIntEnumType()
+                ? IsSameEnumType(source->AsETSIntEnumType())
+                : (source->IsETSStringEnumType() ? IsSameEnumType(source->AsETSStringEnumType()) : false);
+        relation->Result(result);
+    }
 }
 
 void ETSEnumType::Cast(TypeRelation *relation, Type *target)

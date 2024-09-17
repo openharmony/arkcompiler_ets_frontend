@@ -1874,7 +1874,7 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
     auto *targetType = etsg->Checker()->GetApparentType(expr->TsType());
 
     if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-        etsg->ApplyUnboxingConversion(expr->Expr());
+        etsg->ApplyUnboxingConversion(expr->Expr(), targetType);
     }
 
     if (targetType->IsETSObjectType() &&
