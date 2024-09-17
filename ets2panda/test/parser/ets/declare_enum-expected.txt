@@ -1818,7 +1818,7 @@
                     }
                   }
                 },
-                "declare": true
+                "declare": true,
                 "throwMarker": "throws",
                 "loc": {
                   "start": {
@@ -2474,7 +2474,7 @@
                     }
                   }
                 },
-                "declare": true
+                "declare": true,
                 "throwMarker": "throws",
                 "loc": {
                   "start": {
@@ -2761,7 +2761,7 @@
                     }
                   }
                 },
-                "declare": true
+                "declare": true,
                 "throwMarker": "throws",
                 "loc": {
                   "start": {

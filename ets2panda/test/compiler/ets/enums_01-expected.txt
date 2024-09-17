@@ -5140,7 +5140,7 @@
                       "column": 1
                     }
                   }
-                }
+                },
                 "throwMarker": "throws",
                 "loc": {
                   "start": {
@@ -6306,7 +6306,7 @@
                       "column": 1
                     }
                   }
-                }
+                },
                 "throwMarker": "throws",
                 "loc": {
                   "start": {
@@ -6965,7 +6965,7 @@
                       "column": 1
                     }
                   }
-                }
+                },
                 "throwMarker": "throws",
                 "loc": {
                   "start": {

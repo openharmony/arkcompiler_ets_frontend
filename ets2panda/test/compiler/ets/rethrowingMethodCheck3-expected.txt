@@ -87,7 +87,7 @@
                               "column": 27
                             }
                           }
-                        }
+                        },
                         "throwMarker": "throws",
                         "loc": {
                           "start": {
@@ -150,7 +150,7 @@
                       "column": 53
                     }
                   }
-                }
+                },
                 "throwMarker": "rethrows",
                 "loc": {
                   "start": {
@@ -489,7 +489,7 @@
                       "column": 40
                     }
                   }
-                }
+                },
                 "throwMarker": "throws",
                 "loc": {
                   "start": {

@@ -127,6 +127,12 @@ void ScriptFunction::SetReturnTypeAnnotation(TypeNode *node) noexcept
 
 void ScriptFunction::Dump(ir::AstDumper *dumper) const
 {
+    const char *throwMarker = nullptr;
+    if (IsThrowing()) {
+        throwMarker = "throws";
+    } else if (IsRethrowing()) {
+        throwMarker = "rethrows";
+    }
     dumper->Add({{"type", "ScriptFunction"},
                  {"id", AstDumper::Nullish(id_)},
                  {"generator", IsGenerator()},
@@ -136,13 +142,8 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"returnType", AstDumper::Optional(irSignature_.ReturnType())},
                  {"typeParameters", AstDumper::Optional(irSignature_.TypeParams())},
                  {"declare", AstDumper::Optional(declare_)},
-                 {"body", AstDumper::Optional(body_)}});
-
-    if (IsThrowing()) {
-        dumper->Add({"throwMarker", "throws"});
-    } else if (IsRethrowing()) {
-        dumper->Add({"throwMarker", "rethrows"});
-    }
+                 {"body", AstDumper::Optional(body_)},
+                 {"throwMarker", AstDumper::Optional(throwMarker)}});
 }
 
 void ScriptFunction::Dump(ir::SrcDumper *dumper) const

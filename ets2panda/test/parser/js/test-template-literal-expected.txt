@@ -525,14 +525,8 @@
           {
             "type": "TemplateElement",
             "value": {
-              "raw": "
-
-
-",
-              "cooked": "
-
-
-"
+              "raw": "\n\n\n",
+              "cooked": "\n\n\n"
             },
             "loc": {
               "start": {

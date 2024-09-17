@@ -720,7 +720,7 @@
                                   },
                                   "consequent": {
                                     "type": "UndefinedLiteral",
-                                    "value": undefined,
+                                    "value": "undefined",
                                     "loc": {
                                       "start": {
                                         "line": 1,
@@ -992,7 +992,7 @@
                                   },
                                   "consequent": {
                                     "type": "UndefinedLiteral",
-                                    "value": undefined,
+                                    "value": "undefined",
                                     "loc": {
                                       "start": {
                                         "line": 1,
@@ -1385,7 +1385,7 @@
                       },
                       "consequent": {
                         "type": "UndefinedLiteral",
-                        "value": undefined,
+                        "value": "undefined",
                         "loc": {
                           "start": {
                             "line": 1,

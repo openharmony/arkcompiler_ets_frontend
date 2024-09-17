@@ -219,7 +219,7 @@
                                   "column": 54
                                 }
                               }
-                            }
+                            },
                             "throwMarker": "throws",
                             "loc": {
                               "start": {
@@ -397,7 +397,7 @@
                                           "column": 104
                                         }
                                       }
-                                    }
+                                    },
                                     "throwMarker": "throws",
                                     "loc": {
                                       "start": {
@@ -460,7 +460,7 @@
                                   "column": 133
                                 }
                               }
-                            }
+                            },
                             "throwMarker": "rethrows",
                             "loc": {
                               "start": {
@@ -591,7 +591,7 @@
                     "column": 23
                   }
                 }
-              }
+              },
               "throwMarker": "throws",
               "loc": {
                 "start": {
@@ -746,7 +746,7 @@
                             "column": 46
                           }
                         }
-                      }
+                      },
                       "throwMarker": "throws",
                       "loc": {
                         "start": {
@@ -795,7 +795,7 @@
                     "column": 62
                   }
                 }
-              }
+              },
               "throwMarker": "throws",
               "loc": {
                 "start": {

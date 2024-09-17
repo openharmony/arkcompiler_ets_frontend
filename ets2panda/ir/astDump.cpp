@@ -119,12 +119,12 @@ void AstDumper::SerializePropKey(const char *str)
 
 void AstDumper::SerializeString(const char *str)
 {
-    ss_ << "\"" << str << "\"";
+    ss_ << "\"" << util::Helpers::CreateEscapedString(str) << "\"";
 }
 
 void AstDumper::SerializeString(const util::StringView &str)
 {
-    ss_ << "\"" << str.Utf8() << "\"";
+    ss_ << "\"" << util::Helpers::CreateEscapedString(std::string(str)) << "\"";
 }
 
 void AstDumper::SerializeNumber(size_t number)
@@ -171,7 +171,7 @@ void AstDumper::SerializeConstant(Property::Constant constant)
             break;
         }
         case Property::Constant::PROP_UNDEFINED: {
-            ss_ << "undefined";
+            ss_ << "\"undefined\"";
             break;
         }
         case Property::Constant::EMPTY_ARRAY: {

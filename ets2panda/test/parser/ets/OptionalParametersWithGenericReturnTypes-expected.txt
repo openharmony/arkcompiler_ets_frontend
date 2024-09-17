@@ -564,7 +564,7 @@
                             "arguments": [
                               {
                                 "type": "UndefinedLiteral",
-                                "value": undefined,
+                                "value": "undefined",
                                 "loc": {
                                   "start": {
                                     "line": 1,
@@ -1449,7 +1449,7 @@
                             "arguments": [
                               {
                                 "type": "UndefinedLiteral",
-                                "value": undefined,
+                                "value": "undefined",
                                 "loc": {
                                   "start": {
                                     "line": 1,

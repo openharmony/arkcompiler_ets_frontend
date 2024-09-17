@@ -1477,8 +1477,7 @@
                             },
                             "right": {
                               "type": "StringLiteral",
-                              "value": "
-",
+                              "value": "\n",
                               "loc": {
                                 "start": {
                                   "line": 43,
@@ -1623,8 +1622,7 @@
                             },
                             "right": {
                               "type": "StringLiteral",
-                              "value": "
-",
+                              "value": "\n",
                               "loc": {
                                 "start": {
                                   "line": 44,
@@ -1769,8 +1767,7 @@
                             },
                             "right": {
                               "type": "StringLiteral",
-                              "value": "
-",
+                              "value": "\n",
                               "loc": {
                                 "start": {
                                   "line": 45,

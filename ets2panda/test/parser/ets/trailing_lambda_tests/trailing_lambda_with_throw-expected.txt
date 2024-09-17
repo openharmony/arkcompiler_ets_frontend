@@ -181,7 +181,7 @@
                               "column": 25
                             }
                           }
-                        }
+                        },
                         "throwMarker": "throws",
                         "loc": {
                           "start": {
