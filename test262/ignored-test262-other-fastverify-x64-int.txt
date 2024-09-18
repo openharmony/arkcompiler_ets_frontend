@@ -19,6 +19,7 @@ test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-
 #18547
 test262/data/test_es2021/built-ins/Atomics/sub/bad-range.js
 test262/data/other_tests/built-ins/Date/prototype/setMinutes/arg-sec-to-number.js
+test262/data/other_tests/built-ins/Date/prototype/S15.9.5_A33_T1.js
 test262/data/other_tests/built-ins/Number/string-numeric-separator-literal-bil-bd-nsl-bd.js
 test262/data/test_es2021/built-ins/String/prototype/trim/15.5.4.20-2-8.js
 test262/data/other_tests/language/expressions/class/dstr/async-gen-meth-static-dflt-ary-init-iter-get-err-array-prototype.js

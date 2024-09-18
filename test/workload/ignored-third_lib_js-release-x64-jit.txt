@@ -21,8 +21,14 @@ lodash_test
 #19248
 pinyin4js_test
 
+#19251
+pdfview_test
+
 #19426
 validator_test
+
+#18437
+zxing_test
 
 #19106
 memory-cache_test

@@ -52,7 +52,26 @@ test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-date-time
 test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-dayPeriod.js
 test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-fractinalSecondDigits.js
 test262/data/test_es2021/intl402/DateTimeFormat/test-option-date-time-components.js
-
+test262/data/test_es2021/intl402/DisplayNames/options-style-valid.js
+test262/data/test_es2021/intl402/DisplayNames/options-type-invalid-throws.js
+test262/data/test_es2021/intl402/DisplayNames/prototype/resolvedOptions/option-style.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/complex-language-subtag-replacement.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/complex-region-subtag-replacement.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/invalid-tags.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/preferred-grandfathered.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/preferred-variant.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-canonical.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-invalid.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-valid.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-calendar.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-col-strength.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-measurement-system.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-region.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-subdivision.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-timezone.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-key-with-digit.js
+test262/data/test_es2021/intl402/language-tags-invalid.js
+test262/data/test_es2021/intl402/Locale/invalid-tag-throws.js
 # --- end of Issue #17827
 
 #18857

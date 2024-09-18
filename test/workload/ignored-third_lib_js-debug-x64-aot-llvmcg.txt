@@ -21,8 +21,14 @@ pdfview_test
 #19248
 pinyin4js_test
 
+#19426
+validator_test
+
 #18546
 jBox2d_test
+
+#18372
+js-joda_test
 
 #19247
 jsDiff_test

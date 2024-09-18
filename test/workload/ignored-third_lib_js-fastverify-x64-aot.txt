@@ -18,6 +18,12 @@ float-mm
 #19231
 jBox2d_test
 
+#19551
+jmespath_test
+
+#19247
+jsDiff_tes
+
 #19104
 hi-base32_test
 

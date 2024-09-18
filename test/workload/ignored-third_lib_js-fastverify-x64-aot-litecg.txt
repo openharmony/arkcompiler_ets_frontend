@@ -36,6 +36,9 @@ pdfview_test
 #18437
 zxing_test
 
+#19424
+zxing-text-encoding_test
+
 #19248
 pinyin4js_test
 
