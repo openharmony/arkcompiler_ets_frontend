@@ -51,6 +51,7 @@ TEST_ES2022_DIR = os.path.join(DATA_DIR, "test_es2022")
 TEST_ES2023_DIR = os.path.join(DATA_DIR, "test_es2023")
 TEST_INTL_DIR = os.path.join(DATA_DIR, "test_intl")
 TEST_CI_DIR = os.path.join(DATA_DIR, "test_CI")
+TEST_SENDABLE_DIR = os.path.join(DATA_DIR, "test_sendable")
 
 HISPARK_TAURUS_PRODUCT_NAME = "hispark_taurus"
 RK3568_PRODUCT_NAME = "rk3568"
@@ -83,6 +84,7 @@ ES5_LIST_FILE = os.path.join("test262", "es5_tests.txt")
 ES2015_LIST_FILE = os.path.join("test262", "es2015_tests.txt")
 INTL_LIST_FILE = os.path.join("test262", "intl_tests.txt")
 ES2021_LIST_FILE = os.path.join("test262", "es2021_tests.txt")
+SENDABLE_LIST_FILE = os.path.join("test262", "sendable_tests.txt")
 OTHER_LIST_FILE = os.path.join("test262", "other_tests.txt")
 ES2022_LIST_FILE = os.path.join("test262", "es2022_tests.txt")
 ES2023_LIST_FILE = os.path.join("test262", "es2023_tests.txt")
@@ -94,11 +96,13 @@ with open(os.path.join("test262", "module_tests.txt")) as m_file:
 with open(os.path.join("test262", "dynamicImport_tests.txt")) as d_file:
     DYNAMIC_IMPORT_LIST = d_file.read().splitlines()
 
+SENDABLE_GIT_HASH = "3b438d2b80d14eb7f24d280ceac5030e7a81abd2"
 TEST262_GIT_HASH = "6f4601d095a3899d6102f2c320b671495cbe8757"
 HARNESS_GIT_HASH = "9c499f028eb24e67781435c0bb442e00343eb39d"
 ESHOST_GIT_HASH = "fa2d4d27d9d6152002bdef36ee2d17e98b886268"
 ESNEXT_GIT_HASH = "281eb10b2844929a7c0ac04527f5b42ce56509fd"
 
+SENDABLE_GIT_URL = "https://gitee.com/ark_standalone_build/test262_sendable.git"
 TEST262_GIT_URL = "https://gitee.com/hufeng20/test262.git"
 ESHOST_GIT_URL = "https://gitee.com/hufeng20/eshost.git"
 HARNESS_GIT_URL = "https://gitee.com/hufeng20/test262-harness.git"
