@@ -1,5 +1,11 @@
 # Known failures list for  third_lib_js-debug-arm64-int
 
+#Issue 19548
+commonmark-js_test
+
+#Issue 19284
+js-joda_test
+
 #Issue 18731
 memory-cache_test
 

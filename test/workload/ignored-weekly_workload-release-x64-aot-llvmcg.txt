@@ -3,6 +3,12 @@
 # Issue #18417
 box2d
 
+# Issue #19297
+earley-boyer
+
+# Issue #19070
+float-mm
+
 # Issue #19398
 raytrace
 

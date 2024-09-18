@@ -1,5 +1,8 @@
 # Known failures list for  third_lib_js-debug-arm64-aot
 
+#Issue 18372
+js-joda_test
+
 #Issue 18605 Error while loading shared lib: libhmicui18n.so
 zxing-text-encoding_test
 qrcodegen_test
