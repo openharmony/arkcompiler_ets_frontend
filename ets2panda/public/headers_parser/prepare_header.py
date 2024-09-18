@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding=utf-8
+#
 # Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,7 +32,7 @@ def remove_comments(data: str) -> str:
 
         if end_of_line == -1:
             end_of_line = len(data)
-            warning_log("Removing single-line comment at end of file:\n'" + data[double_slash_pos:end_of_line] + "'")
+            warning_log(f"Removing single-line comment at end of file:\n'{data[double_slash_pos:end_of_line]}'")
 
         data = data[:double_slash_pos] + data[end_of_line:]
         double_slash_pos = data.find("//")

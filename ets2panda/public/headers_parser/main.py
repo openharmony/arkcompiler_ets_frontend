@@ -24,7 +24,7 @@ import sys
 import traceback
 from typing import List
 
-# pyalint: disable=W0401,W0614
+# pylint: disable=W0401,W0614
 from cpp_parser import CppParser
 from log_tools import init_log, console_log, parsing_log, error_log, info_log
 from prepare_header import remove_comments, extract_and_remove_includes
@@ -96,7 +96,7 @@ def parse_files_in_list(paths_list: List[str], result_folder: str) -> None:
             parse_file(path, dst)
 
         else:
-            info_log("Error! File does not fit for parsing or does not exist: '" + path + "'")
+            info_log(f"Error! File does not fit for parsing or does not exist: '{path}'")
 
 
 if __name__ == "__main__":

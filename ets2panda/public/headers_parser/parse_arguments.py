@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding=utf-8
+#
 # Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,7 +52,8 @@ def parse_type(data: str) -> dict:
             if "other_modifiers" not in res:
                 res["other_modifiers"] = ""
 
-            res["other_modifiers"] += " " + modifier
+            res["other_modifiers"] += " "
+            res["other_modifiers"] += modifier
             res["other_modifiers"] = res["other_modifiers"].strip(" ")
 
     # Weakness (<>)
@@ -100,7 +104,7 @@ def extract_type_name(data: str, res: Dict[str, Any]) -> int:
 
     # Extract type name
     while type_name in modifiers_list or type_name == "":
-        prefix_modifiers += " " + type_name
+        prefix_modifiers += f" {type_name}" 
 
         type_name_start = find_first_not_restricted_character(" <*", data, type_name_end)
         type_name_end = find_first_of_characters(" <(*", data, type_name_start)

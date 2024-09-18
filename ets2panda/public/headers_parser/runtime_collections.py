@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding=utf-8
+#
 # Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,26 +34,26 @@ def init_collections(lib_gen_folder: str) -> None:  # pylint: disable=C
 
     statistics = {
         "unreachable": {
-            "log_file": LIB_GEN_FOLDER + "/gen/logs/unreachable.txt",
+            "log_file": os.path.join(LIB_GEN_FOLDER, "./gen/logs/unreachable.txt"),
             "collection": set(),
         },
         "skip": {
-            "log_file": LIB_GEN_FOLDER + "/gen/logs/skip.txt",
+            "log_file": os.path.join(LIB_GEN_FOLDER, "./gen/logs/skip.txt"),
             "collection": set()
         },
         "generated_yamls": {
-            "log_file": LIB_GEN_FOLDER + "/gen/logs/generated_yamls.txt",
+            "log_file": os.path.join(LIB_GEN_FOLDER, "./gen/logs/generated_yamls.txt"),
             "collection": set(),
         },
     }
 
     custom_yamls = {
         "allEnums": {
-            "yaml_file": LIB_GEN_FOLDER + "/gen/headers/allEnums.yaml",
+            "yaml_file": os.path.join(LIB_GEN_FOLDER, "./gen/headers/allEnums.yaml"),
             "collection": {"enums": []},
         },
         "pathsToHeaders": {
-            "yaml_file": LIB_GEN_FOLDER + "/gen/headers/pathsToHeaders.yaml",
+            "yaml_file": os.path.join(LIB_GEN_FOLDER, "./gen/headers/pathsToHeaders.yaml"),
             "collection": {"paths": []},
         },
     }
@@ -70,25 +73,28 @@ def add_to_custom_yamls(yaml_name: str, key: str, data: Any) -> None:
 
 
 def save_custom_yamls() -> None:
-    if not os.path.exists(LIB_GEN_FOLDER + "/gen/headers"):
-        os.makedirs(LIB_GEN_FOLDER + "/gen/headers")
+    headers_path = os.path.join(LIB_GEN_FOLDER, "./gen/headers")
+    if not os.path.exists(headers_path):
+        os.makedirs(headers_path)
 
     for _, value in custom_yamls.items():
-        print_to_yaml(value["yaml_file"], value["collection"])
-        info_log("Saved custom yaml: '" + value["yaml_file"] + "'")
+        yaml_file = value["yaml_file"]
+        print_to_yaml(yaml_file, value["collection"])
+        info_log(f"Saved custom yaml: '{yaml_file}'")
 
         statistics["generated_yamls"]["collection"].add(
-            os.path.basename(value["yaml_file"])
+            os.path.basename(yaml_file)
         )
 
 
 def save_statistics() -> None:
-    if not os.path.exists(LIB_GEN_FOLDER + "/gen/logs"):
-        os.makedirs(LIB_GEN_FOLDER + "/gen/logs")
+    logs_path = os.path.join(LIB_GEN_FOLDER, "./gen/logs")
+    if not os.path.exists(logs_path):
+        os.makedirs(logs_path)
 
     info_log(f"Parsed {len(custom_yamls['pathsToHeaders']['collection']['paths'])} / {len(sys.argv[3:])} headers.")
 
     for _, value in statistics.items():
-        with open(value["log_file"], "w", encoding="utf-8") as f:
+        with os.fdopen(os.open(value["log_file"], os.O_WRONLY|os.O_CREAT), "w", encoding="utf-8") as f:
             for item in value["collection"]:
                 f.write(item + "\n")
