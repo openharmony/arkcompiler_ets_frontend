@@ -22,6 +22,9 @@ LuaJSFight
 #19072
 OfflineAssembler
 
+#19398
+raytrace
+
 #19008
 regex-dna
 

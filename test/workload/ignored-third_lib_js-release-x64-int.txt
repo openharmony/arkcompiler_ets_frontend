@@ -14,3 +14,6 @@ mathjs_test
 
 #18383
 memory-cache_test
+
+#18437
+zxing_test
