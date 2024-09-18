@@ -36,7 +36,6 @@ assert(maxFunc3(3, 4) === 4);
 assert(reduceFunc(5, 4) === 1);
 
 // import ""; TypeError: The argument 'id' must be a non-empty string. Received ''
-// import '';
 import './export_api_01'
 
 import { moduleAlias } from './export_api_02'

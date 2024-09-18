@@ -288,7 +288,7 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
       const resultPath = path.join(this.mCustomProfiles.mOutputDir, relativePath);
       return {outputPath: resultPath, relativePath: relativePath};
     } else {
-      throw new Error('Please select a test type')
+      throw new Error('Please select a test type');
     }
   }
 

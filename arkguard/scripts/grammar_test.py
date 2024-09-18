@@ -153,7 +153,7 @@ def obfuscate_dir(task: Task):
     config_file_path = task.obf_config_path
     work_dir = task.work_dir
     test_type = task.test_type
-    cmd = "node lib/cli/SecHarmony.js %s --config-path %s --test-type %s"  % (
+    cmd = "node lib/cli/SecHarmony.js %s --config-path %s --test-type %s" % (
         work_dir,
         config_file_path,
         test_type
@@ -368,7 +368,14 @@ class Runner:
     def has_failed_cases(self):
         return (self.obfuscate_result.failed_count > 0) or \
         (self.run_with_node_result.failed_count > 0) or \
-        (self.content_compare_result.failed_count> 0)
+        (self.content_compare_result.failed_count > 0)
+
+    def get_expect_path(self, file_path):
+        base_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+        source_expect = SOURCE_EXPECT_MAP[self.test_type]
+        for source, expect in source_expect.items():
+            if file_path.startswith(os.path.join(base_dir, source)):
+                return file_path.replace(source, expect)
 
     def __filter_files(self, file_list):
         target = []
@@ -409,13 +416,6 @@ class Runner:
             logging.info("compare file, expect path:")
             logging.info(expectation_file)
             logging.info("\n".join(diff))
-
-    def get_expect_path(self, file_path):
-        base_dir =  os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
-        source_expect = SOURCE_EXPECT_MAP[self.test_type]
-        for source, expect in source_expect.items():
-            if file_path.startswith(os.path.join(base_dir, source)):
-                return file_path.replace(source, expect)
 
     def __compare_content(self, file_path):
         source_path = self.get_expect_path(file_path)
@@ -471,7 +471,6 @@ class Runner:
                     result_unobfuscation_path,
                     expect_unobfuscation_path,
                 )
-
 
 
 def parse_args():

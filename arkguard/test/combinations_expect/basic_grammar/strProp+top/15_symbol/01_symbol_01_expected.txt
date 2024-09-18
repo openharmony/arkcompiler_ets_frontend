@@ -47,7 +47,6 @@ let f = {
     [Symbol.toStringTag]: 11,
     [Symbol.unscopables]: 12,
 };
-//assert(o1[Symbol.asyncIterator] === 1);
 a(f[Symbol.hasInstance] === 2);
 a(f[Symbol.isConcatSpreadable] === 3);
 a(f[Symbol.iterator] === 4);

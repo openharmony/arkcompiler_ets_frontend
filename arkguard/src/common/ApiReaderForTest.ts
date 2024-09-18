@@ -17,7 +17,7 @@ import { ArkObfuscator } from '../ArkObfuscator';
 import { IOptions } from '../configs/IOptions';
 import { ReseverdSetForArkguard, readProjectPropertiesByCollectedPaths } from './ApiReader';
 import fs from 'fs';
-import path from 'path'
+import path from 'path';
 
 /**
  * Recursive retrieval of all subfile paths within a folder

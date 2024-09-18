@@ -32,7 +32,6 @@ assert(l1.l === 3);
 assert(m1(3, 4) === 4);
 assert(h(5, 4) === 1);
 // import ""; TypeError: The argument 'id' must be a non-empty string. Received ''
-// import '';
 import './export_api_01';
 import { t } from './export_api_02';
 import * as n1 from './export_api_02';

@@ -55,7 +55,6 @@ let o1 = {
   [Symbol.unscopables]:12,
 }
 
-//assert(o1[Symbol.asyncIterator] === 1);
 assert(o1[Symbol.hasInstance] === 2);
 assert(o1[Symbol.isConcatSpreadable] === 3);
 assert(o1[Symbol.iterator] === 4);
