@@ -175,7 +175,7 @@ void ETSGen::LoadAccumulator(const ir::AstNode *node, VReg vreg)
 IRNode *ETSGen::AllocMov(const ir::AstNode *const node, const VReg vd, const VReg vs)
 {
     const auto *const sourceType = GetVRegType(vs);
-
+    // CC-OFFNXT(G.FMT.14-CPP) project code style
     auto *const mov = [this, sourceType, node, vd, vs]() -> IRNode * {
         if (sourceType->HasTypeFlag(TYPE_FLAG_BYTECODE_REF)) {
             return Allocator()->New<MovObj>(node, vd, vs);
@@ -682,7 +682,7 @@ static bool IsAnyReferenceSupertype(checker::Type const *type)
     return constituent.size() == 3U && std::all_of(constituent.begin(), constituent.end(), [](checker::Type *t) {
                return t->IsETSNullType() || t->IsETSUndefinedType() ||
                       (t->IsETSObjectType() && t->AsETSObjectType()->IsGlobalETSObjectType());
-           });
+           });  // CC-OFF(G.FMT.02) project code style
 }
 
 void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VReg srcReg,
@@ -2231,9 +2231,10 @@ void ETSGen::RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label
         Ra().Emit<JneObj>(node, rhs, ifFalse);
         SetLabel(node, ifTrue);
     } else if (auto spec = SelectLooseObjComparator(  // try to select specific type
+                                                      // CC-OFFNXT(G.FMT.06-CPP) project code style
                    const_cast<checker::ETSChecker *>(Checker()), const_cast<checker::Type *>(ltype),
-                   const_cast<checker::Type *>(rtype));
-               spec.has_value()) {
+                   const_cast<checker::Type *>(rtype));  // CC-OFF(G.FMT.02) project code style
+               spec.has_value()) {                       // CC-OFF(G.FMT.02-CPP) project code style
         auto ifTrue = AllocLabel();
         if (ltype->PossiblyETSNullish() || rtype->PossiblyETSNullish()) {
             HandleLooseNullishEquality(node, lhs, rhs, ifFalse, ifTrue);

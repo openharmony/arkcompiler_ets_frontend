@@ -110,6 +110,14 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+    struct CheckPatternIsShorthandArgs {
+        checker::TSChecker *checker;
+        checker::Type *patternParamType;
+        varbinder::Variable *bindingVar;
+        ir::Property *prop;
+        varbinder::LocalVariable *foundVar;
+        bool isOptional;
+    };
     checker::Type *CheckPattern(checker::TSChecker *checker);
 
     bool CheckAssignmentPattern(Property *prop, varbinder::Variable *&bindingVar, checker::Type *&patternParamType,
@@ -121,6 +129,9 @@ public:
     }
 
 private:
+    std::tuple<bool, varbinder::Variable *, checker::Type *, varbinder::LocalVariable *> CheckPatternIsShorthand(
+        CheckPatternIsShorthandArgs *args);
+
     ArenaVector<Decorator *> decorators_;
     ArenaVector<Expression *> properties_;
     checker::Type *preferredType_ {};

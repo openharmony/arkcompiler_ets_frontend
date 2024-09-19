@@ -1942,6 +1942,7 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
     // clang-format off
     auto *const func = AllocNode<ir::ScriptFunction>(
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
+            // CC-OFFNXT(G.FMT.05-CPP) project codestyle clang format off
             body, ir::FunctionSignature(nullptr, std::move(params), returnType), flags, modifiers});
     // clang-format on
     func->SetScope(scope);

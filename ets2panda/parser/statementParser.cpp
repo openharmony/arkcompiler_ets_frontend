@@ -72,105 +72,118 @@ namespace ark::es2panda::parser {
 using namespace std::literals::string_literals;
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
+ir::Statement *ParserImpl::ParseStatementLiteralIdentHelper(StatementParsingFlags flags)
+{
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT) {
+        return ParseStructStatement(flags, ir::ClassDefinitionModifiers::NONE);
+    }
+
+    if (lexer_->Lookahead() == lexer::LEX_CHAR_COLON) {
+        const auto pos = lexer_->Save();
+        lexer_->NextToken();
+        return ParseLabelledStatement(pos);
+    }
+
+    return ParsePotentialExpressionStatement(flags);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Statement *ParserImpl::ParseStatementPunctuatorsHelper(StatementParsingFlags flags)
 {
     switch (lexer_->GetToken().Type()) {
-        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
+        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE:
             return ParseBlockStatement();
-        }
-        case lexer::TokenType::PUNCTUATOR_SEMI_COLON: {
+        case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
             return ParseEmptyStatement();
-        }
-        case lexer::TokenType::KEYW_ASSERT: {
-            return ParseAssertStatement();
-        }
-        case lexer::TokenType::KEYW_EXPORT: {
-            return ParseExportDeclaration(flags);
-        }
-        case lexer::TokenType::KEYW_IMPORT: {
-            return ParseImportDeclaration(flags);
-        }
-        case lexer::TokenType::KEYW_FUNCTION: {
-            return ParseFunctionStatement(flags);
-        }
-        case lexer::TokenType::KEYW_CLASS: {
-            return ParseClassStatement(flags, ir::ClassDefinitionModifiers::NONE);
-        }
-        case lexer::TokenType::KEYW_VAR: {
-            return ParseVarStatement();
-        }
-        case lexer::TokenType::KEYW_LET: {
-            return ParseLetStatement(flags);
-        }
-        case lexer::TokenType::KEYW_CONST: {
-            return ParseConstStatement(flags);
-        }
-        case lexer::TokenType::KEYW_IF: {
-            return ParseIfStatement();
-        }
-        case lexer::TokenType::KEYW_DO: {
-            return ParseDoWhileStatement();
-        }
-        case lexer::TokenType::KEYW_FOR: {
-            return ParseForStatement();
-        }
-        case lexer::TokenType::KEYW_TRY: {
-            return ParseTryStatement();
-        }
-        case lexer::TokenType::KEYW_WHILE: {
-            return ParseWhileStatement();
-        }
-        case lexer::TokenType::KEYW_BREAK: {
-            return ParseBreakStatement();
-        }
-        case lexer::TokenType::KEYW_CONTINUE: {
-            return ParseContinueStatement();
-        }
-        case lexer::TokenType::KEYW_THROW: {
-            return ParseThrowStatement();
-        }
-        case lexer::TokenType::KEYW_RETURN: {
-            return ParseReturnStatement();
-        }
-        case lexer::TokenType::KEYW_SWITCH: {
-            return ParseSwitchStatement();
-        }
-        case lexer::TokenType::KEYW_DEBUGGER: {
-            return ParseDebuggerStatement();
-        }
-        case lexer::TokenType::LITERAL_IDENT: {
-            if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT) {
-                return ParseStructStatement(flags, ir::ClassDefinitionModifiers::NONE);
-            }
-
-            if (lexer_->Lookahead() == lexer::LEX_CHAR_COLON) {
-                const auto pos = lexer_->Save();
-                lexer_->NextToken();
-                return ParseLabelledStatement(pos);
-            }
-
-            return ParsePotentialExpressionStatement(flags);
-        }
-        case lexer::TokenType::KEYW_WITH: {
-            LogSyntaxError("'With' is deprecated and not supported any more.");
-            lexer_->NextToken();
-            return nullptr;
-        }
-        case lexer::TokenType::KEYW_ENUM: {
-            return ParseEnumDeclaration();
-        }
-        case lexer::TokenType::KEYW_INTERFACE: {
-            return ParseInterfaceDeclaration(false);
-        }
-        case lexer::TokenType::PUNCTUATOR_FORMAT: {
+        case lexer::TokenType::PUNCTUATOR_FORMAT:  // 1
             if (lexer_->Lookahead() == static_cast<char32_t>(STATEMENT_FORMAT_NODE)) {
                 return ParseStatementFormatPlaceholder();
             }
             [[fallthrough]];
-        }
-        default: {
+        default:
             return ParseExpressionStatement(flags);
-        }
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Statement *ParserImpl::ParseStatementControlFlowTokenHelper(StatementParsingFlags flags)
+{
+    switch (lexer_->GetToken().Type()) {
+        case lexer::TokenType::KEYW_IF:
+            return ParseIfStatement();
+        case lexer::TokenType::KEYW_DO:
+            return ParseDoWhileStatement();
+        case lexer::TokenType::KEYW_FOR:
+            return ParseForStatement();
+        case lexer::TokenType::KEYW_TRY:
+            return ParseTryStatement();
+        case lexer::TokenType::KEYW_WHILE:
+            return ParseWhileStatement();
+        case lexer::TokenType::KEYW_BREAK:
+            return ParseBreakStatement();
+        case lexer::TokenType::KEYW_CONTINUE:
+            return ParseContinueStatement();
+        case lexer::TokenType::KEYW_THROW:
+            return ParseThrowStatement();
+        case lexer::TokenType::KEYW_RETURN:
+            return ParseReturnStatement();
+        case lexer::TokenType::KEYW_SWITCH:
+            return ParseSwitchStatement();
+        default:
+            return ParseExpressionStatement(flags);
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
+{
+    const auto tokenType = lexer_->GetToken().Type();
+    bool isPunctuatorToken = tokenType == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
+                             tokenType == lexer::TokenType::PUNCTUATOR_SEMI_COLON ||
+                             tokenType == lexer::TokenType::PUNCTUATOR_FORMAT;
+    if (isPunctuatorToken) {
+        return ParseStatementPunctuatorsHelper(flags);
+    }
+
+    bool isControlFlowToken = tokenType == lexer::TokenType::KEYW_IF || tokenType == lexer::TokenType::KEYW_DO ||
+                              tokenType == lexer::TokenType::KEYW_FOR || tokenType == lexer::TokenType::KEYW_TRY ||
+                              tokenType == lexer::TokenType::KEYW_WHILE || tokenType == lexer::TokenType::KEYW_BREAK ||
+                              tokenType == lexer::TokenType::KEYW_CONTINUE ||
+                              tokenType == lexer::TokenType::KEYW_THROW || tokenType == lexer::TokenType::KEYW_RETURN ||
+                              tokenType == lexer::TokenType::KEYW_SWITCH;
+    if (isControlFlowToken) {
+        return ParseStatementControlFlowTokenHelper(flags);
+    }
+
+    switch (lexer_->GetToken().Type()) {
+        case lexer::TokenType::KEYW_ASSERT:
+            return ParseAssertStatement();
+        case lexer::TokenType::KEYW_EXPORT:
+            return ParseExportDeclaration(flags);
+        case lexer::TokenType::KEYW_IMPORT:
+            return ParseImportDeclaration(flags);
+        case lexer::TokenType::KEYW_FUNCTION:
+            return ParseFunctionStatement(flags);
+        case lexer::TokenType::KEYW_CLASS:
+            return ParseClassStatement(flags, ir::ClassDefinitionModifiers::NONE);
+        case lexer::TokenType::KEYW_VAR:
+            return ParseVarStatement();
+        case lexer::TokenType::KEYW_LET:
+            return ParseLetStatement(flags);
+        case lexer::TokenType::KEYW_CONST:
+            return ParseConstStatement(flags);
+        case lexer::TokenType::KEYW_DEBUGGER:
+            return ParseDebuggerStatement();
+        case lexer::TokenType::LITERAL_IDENT:
+            return ParseStatementLiteralIdentHelper(flags);
+        case lexer::TokenType::KEYW_WITH:
+            ThrowSyntaxError("'With' is deprecated and not supported any more.");
+        case lexer::TokenType::KEYW_ENUM:
+            return ParseEnumDeclaration();
+        case lexer::TokenType::KEYW_INTERFACE:
+            return ParseInterfaceDeclaration(false);
+        default:
+            return ParseExpressionStatement(flags);
     }
 }
 

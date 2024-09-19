@@ -63,7 +63,7 @@ public:
     MemberExpression() = delete;
     ~MemberExpression() override = default;
 
-    NO_COPY_OPERATOR(MemberExpression);
+    MemberExpression &operator=(const MemberExpression &) = delete;
     NO_MOVE_SEMANTIC(MemberExpression);
 
     explicit MemberExpression(Expression *object, Expression *property, MemberExpressionKind kind, bool computed,

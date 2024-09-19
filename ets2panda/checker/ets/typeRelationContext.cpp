@@ -39,6 +39,7 @@ bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
         if (!AssignmentContext(relation, currentArrayElem,
                                currentArrayElem->Check(relation->GetChecker()->AsETSChecker()), target->ElementType(),
                                currentArrayElem->Start(), {}, TypeRelationFlag::NO_THROW)
+                 // CC-OFFNXT(G.FMT.06-CPP,G.FMT.02-CPP) project code style
                  .IsAssignable()) {
             relation->GetChecker()->LogTypeError(
                 {"Array element at index ", index, " with type '", currentArrayElementType,

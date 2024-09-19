@@ -23,6 +23,7 @@ class ETSChecker;
 
 class AssignmentContext {
 public:
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     AssignmentContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
                       const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
                       TypeRelationFlag flags = TypeRelationFlag::NONE)
@@ -38,7 +39,7 @@ public:
                 ValidateArrayTypeInitializerByElement(relation, node->AsArrayExpression(), target->AsETSArrayType());
             return;
         }
-
+        // CC-OFFNXT(G.FMT.02) project code style
         flags_ |= flags;
         relation->SetNode(node);
 
@@ -83,6 +84,7 @@ private:
 
 class InvocationContext {
 public:
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     InvocationContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
                       const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
                       TypeRelationFlag initialFlags = TypeRelationFlag::NONE)

@@ -100,6 +100,7 @@ bool BigIntLowering::Perform(public_lib::Context *const ctx, parser::Program *co
     auto checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx, checker](ir::AstNode *ast) -> ir::AstNode * {
             if (ast->IsBigIntLiteral() && ast->Parent() != nullptr && ast->Parent()->IsClassProperty()) {
                 return CreateBigInt(ctx, ast->AsBigIntLiteral());

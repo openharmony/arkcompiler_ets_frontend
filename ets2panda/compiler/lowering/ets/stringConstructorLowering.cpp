@@ -125,6 +125,7 @@ bool StringConstructorLowering::Perform(public_lib::Context *const ctx, parser::
     }
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *ast) -> ir::AstNode * {
             if (ast->IsETSNewClassInstanceExpression()) {
                 return ReplaceStringConstructor(ctx, ast->AsETSNewClassInstanceExpression());

@@ -207,6 +207,55 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
     return enumDeclaration;
 }
 
+bool ETSParser::ParseNumberEnumEnd()
+{
+    bool isBreak = false;
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
+        // enum5.sts
+        LogSyntaxError(MISSING_COMMA_IN_ENUM);
+        if (lexer::Token::IsPunctuatorToken((Lexer()->GetToken().Type()))) {
+            /*  enum Direction {
+                  Left = -1;
+                  Right = 1",
+                }*/
+            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
+            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
+        }
+        /* in another case just skip the token
+            enum Direction {
+              Left = -1
+              Right = 1,
+            }
+        */
+    } else {
+        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
+    }
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        isBreak = true;
+    }
+    return isBreak;
+}
+
+bool ETSParser::ParseNumberEnumHelper()
+{
+    bool minusSign = false;
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PLUS) {
+        Lexer()->NextToken();
+    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MINUS) {
+        minusSign = true;
+        Lexer()->NextToken();
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
+        // enum15.sts; will be zero by default
+        LogSyntaxError(INVALID_ENUM_TYPE);
+        Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_NUMBER);
+        Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
+    }
+    return minusSign;
+}
+
 void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
 {
     checker::ETSIntEnumType::ValueType currentValue {};
@@ -224,19 +273,7 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
             bool minusSign = false;
 
             Lexer()->NextToken();
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PLUS) {
-                Lexer()->NextToken();
-            } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MINUS) {
-                minusSign = true;
-                Lexer()->NextToken();
-            }
-
-            if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
-                // enum15.sts; will be zero by default
-                LogSyntaxError(INVALID_ENUM_TYPE);
-                Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_NUMBER);
-                Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
-            }
+            minusSign = ParseNumberEnumHelper();
 
             ordinal = ParseNumberLiteral()->AsNumberLiteral();
             if (minusSign) {
@@ -268,28 +305,7 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
     parseMember();
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-            // enum5.sts
-            LogSyntaxError(MISSING_COMMA_IN_ENUM);
-            if (lexer::Token::IsPunctuatorToken((Lexer()->GetToken().Type()))) {
-                /*  enum Direction {
-                      Left = -1;
-                      Right = 1",
-                    }*/
-                Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
-                Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-            }
-            /* in another case just skip the token
-                enum Direction {
-                  Left = -1
-                  Right = 1,
-                }
-            */
-        } else {
-            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-        }
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        if (ParseNumberEnumEnd()) {
             break;
         }
 

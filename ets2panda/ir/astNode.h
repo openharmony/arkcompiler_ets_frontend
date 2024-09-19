@@ -51,10 +51,12 @@ using NodeTraverser = std::function<void(AstNode *)>;
 using NodePredicate = std::function<bool(AstNode *)>;
 
 enum class AstNodeType {
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_NODE_TYPES(nodeType, className) nodeType,
     AST_NODE_MAPPING(DECLARE_NODE_TYPES)
 #undef DECLARE_NODE_TYPES
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_NODE_TYPES(nodeType1, nodeType2, baseClass, reinterpretClass) nodeType1, nodeType2,
         AST_NODE_REINTERPRET_MAPPING(DECLARE_NODE_TYPES)
@@ -70,11 +72,13 @@ class ClassElement;
 template <typename T>
 class Typed;
 
+/* CC-OFFNXT(G.PRE.02) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_CLASSES(nodeType, className) class className;
+#define DECLARE_CLASSES(nodeType, className) class className; /* CC-OFF(G.PRE.09) code gen*/
 AST_NODE_MAPPING(DECLARE_CLASSES)
 #undef DECLARE_CLASSES
 
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part code gen*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_CLASSES(nodeType1, nodeType2, baseClass, reinterpretClass) class baseClass;
 AST_NODE_REINTERPRET_MAPPING(DECLARE_CLASSES)
@@ -95,23 +99,27 @@ public:
     }
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_IS_CHECKS(nodeType, className) \
-    bool Is##className() const                 \
-    {                                          \
-        return type_ == AstNodeType::nodeType; \
+#define DECLARE_IS_CHECKS(nodeType, className)                                               \
+    bool Is##className() const                                                               \
+    {                                                                                        \
+        /* CC-OFFNXT(G.PRE.02) name part*/                                                   \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
+        return type_ == AstNodeType::nodeType; /* CC-OFF(G.PRE.02) name part*/               \
     }
     AST_NODE_MAPPING(DECLARE_IS_CHECKS)
 #undef DECLARE_IS_CHECKS
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_IS_CHECKS(nodeType1, nodeType2, baseClass, reinterpretClass) \
-    bool Is##baseClass() const                                               \
-    {                                                                        \
-        return type_ == AstNodeType::nodeType1;                              \
-    }                                                                        \
-    bool Is##reinterpretClass() const                                        \
-    {                                                                        \
-        return type_ == AstNodeType::nodeType2;                              \
+#define DECLARE_IS_CHECKS(nodeType1, nodeType2, baseClass, reinterpretClass)                 \
+    bool Is##baseClass() const                                                               \
+    {                                                                                        \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
+        return type_ == AstNodeType::nodeType1; /* CC-OFF(G.PRE.02) name part*/              \
+    }                                                                                        \
+    bool Is##reinterpretClass() const                                                        \
+    {                                                                                        \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
+        return type_ == AstNodeType::nodeType2; /* CC-OFF(G.PRE.02) name part*/              \
     }
     AST_NODE_REINTERPRET_MAPPING(DECLARE_IS_CHECKS)
 #undef DECLARE_IS_CHECKS
@@ -143,42 +151,53 @@ public:
         return reinterpret_cast<Typed<AstNode> const *>(this);
     }
 
+/* CC-OFFNXT(G.PRE.06) solid logic */
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_AS_CASTS(nodeType, className)             \
-    className *As##className()                            \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<className *>(this);       \
-    }                                                     \
-    const className *As##className() const                \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<const className *>(this); \
+#define DECLARE_AS_CASTS(nodeType, className)                                                         \
+    /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
+    className *As##className()                                                                        \
+    {                                                                                                 \
+        ASSERT(Is##className());                                                                      \
+        /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
+        return reinterpret_cast<className *>(this);                                                   \
+    }                                                                                                 \
+    const className *As##className() const                                                            \
+    {                                                                                                 \
+        ASSERT(Is##className());                                                                      \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
+        return reinterpret_cast<const className *>(this);                                             \
     }
     AST_NODE_MAPPING(DECLARE_AS_CASTS)
 #undef DECLARE_AS_CASTS
 
+/* CC-OFFNXT(G.PRE.06) solid logic */
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_AS_CASTS(nodeType1, nodeType2, baseClass, reinterpretClass) \
-    baseClass *As##baseClass()                                              \
-    {                                                                       \
-        ASSERT(Is##baseClass());                                            \
-        return reinterpret_cast<baseClass *>(this);                         \
-    }                                                                       \
-    baseClass *As##reinterpretClass()                                       \
-    {                                                                       \
-        ASSERT(Is##reinterpretClass());                                     \
-        return reinterpret_cast<baseClass *>(this);                         \
-    }                                                                       \
-    const baseClass *As##baseClass() const                                  \
-    {                                                                       \
-        ASSERT(Is##baseClass());                                            \
-        return reinterpret_cast<const baseClass *>(this);                   \
-    }                                                                       \
-    const baseClass *As##reinterpretClass() const                           \
-    {                                                                       \
-        ASSERT(Is##reinterpretClass());                                     \
-        return reinterpret_cast<const baseClass *>(this);                   \
+#define DECLARE_AS_CASTS(nodeType1, nodeType2, baseClass, reinterpretClass)                           \
+    /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
+    baseClass *As##baseClass()                                                                        \
+    {                                                                                                 \
+        ASSERT(Is##baseClass());                                                                      \
+        /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
+        return reinterpret_cast<baseClass *>(this);                                                   \
+    }                                                                                                 \
+    /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
+    baseClass *As##reinterpretClass()                                                                 \
+    {                                                                                                 \
+        ASSERT(Is##reinterpretClass());                                                               \
+        /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
+        return reinterpret_cast<baseClass *>(this);                                                   \
+    }                                                                                                 \
+    const baseClass *As##baseClass() const                                                            \
+    {                                                                                                 \
+        ASSERT(Is##baseClass());                                                                      \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
+        return reinterpret_cast<const baseClass *>(this);                                             \
+    }                                                                                                 \
+    const baseClass *As##reinterpretClass() const                                                     \
+    {                                                                                                 \
+        ASSERT(Is##reinterpretClass());                                                               \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
+        return reinterpret_cast<const baseClass *>(this);                                             \
     }
     AST_NODE_REINTERPRET_MAPPING(DECLARE_AS_CASTS)
 #undef DECLARE_AS_CASTS
@@ -421,31 +440,33 @@ public:
     }
 
     [[nodiscard]] bool HasExportAlias() const noexcept;
-
+    // CC-OFFNXT(G.PRE.06) solid logic
     // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_FLAG_OPERATIONS(flag_type, member_name)     \
-    void Set##flag_type(flag_type flags) const noexcept     \
-    {                                                       \
-        (member_name) = flags;                              \
-    }                                                       \
-                                                            \
-    void Add##flag_type(flag_type flag) const noexcept      \
-    {                                                       \
-        (member_name) |= flag;                              \
-    }                                                       \
-                                                            \
-    [[nodiscard]] flag_type Get##flag_type() const noexcept \
-    {                                                       \
-        return (member_name);                               \
-    }                                                       \
-                                                            \
-    bool Has##flag_type(flag_type flag) const noexcept      \
-    {                                                       \
-        return ((member_name)&flag) != 0U;                  \
-    }                                                       \
-    void Remove##flag_type(flag_type flag) const noexcept   \
-    {                                                       \
-        (member_name) &= ~flag;                             \
+#define DECLARE_FLAG_OPERATIONS(flag_type, member_name)                                     \
+    void Set##flag_type(flag_type flags) const noexcept                                     \
+    {                                                                                       \
+        (member_name) = flags;                                                              \
+    }                                                                                       \
+                                                                                            \
+    void Add##flag_type(flag_type flag) const noexcept                                      \
+    {                                                                                       \
+        (member_name) |= flag;                                                              \
+    }                                                                                       \
+                                                                                            \
+    [[nodiscard]] flag_type Get##flag_type() const noexcept                                 \
+    {                                                                                       \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return (member_name);                                                               \
+    }                                                                                       \
+                                                                                            \
+    bool Has##flag_type(flag_type flag) const noexcept                                      \
+    {                                                                                       \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return ((member_name)&flag) != 0U;                                                  \
+    }                                                                                       \
+    void Remove##flag_type(flag_type flag) const noexcept                                   \
+    {                                                                                       \
+        (member_name) &= ~flag;                                                             \
     }
 
     DECLARE_FLAG_OPERATIONS(BoxingUnboxingFlags, boxingUnboxingFlags_);
@@ -537,7 +558,7 @@ public:
     Annotated() = delete;
     ~Annotated() override = default;
 
-    NO_COPY_OPERATOR(Annotated);
+    Annotated &operator=(const Annotated &) = delete;
     NO_MOVE_SEMANTIC(Annotated);
 
     [[nodiscard]] TypeNode *TypeAnnotation() const noexcept

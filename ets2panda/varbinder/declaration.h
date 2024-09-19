@@ -32,8 +32,9 @@ namespace ark::es2panda::varbinder {
 class Scope;
 class LocalScope;
 
+// CC-OFFNXT(G.PRE.09) code gen
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_CLASSES(decl_kind, className) class className;
+#define DECLARE_CLASSES(decl_kind, className) class className;  // CC-OFF(G.PRE.02) name part
 DECLARATION_KINDS(DECLARE_CLASSES)
 #undef DECLARE_CLASSES
 
@@ -60,21 +61,26 @@ public:
         return node_;
     }
 
+/* CC-OFFNXT(G.PRE.06) solid logic */
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_CHECKS_CASTS(declKind, className)         \
-    bool Is##className() const                            \
-    {                                                     \
-        return Type() == DeclType::declKind;              \
-    }                                                     \
-    className *As##className()                            \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<className *>(this);       \
-    }                                                     \
-    const className *As##className() const                \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<const className *>(this); \
+#define DECLARE_CHECKS_CASTS(declKind, className)                                           \
+    bool Is##className() const                                                              \
+    {                                                                                       \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return Type() == DeclType::declKind; /* CC-OFF(G.PRE.02) name part */               \
+    }                                                                                       \
+    /* CC-OFFNXT(G.PRE.02) name part*/                                                      \
+    className *As##className()                                                              \
+    {                                                                                       \
+        ASSERT(Is##className());                                                            \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return reinterpret_cast<className *>(this); /* CC-OFF(G.PRE.02) name part */        \
+    }                                                                                       \
+    const className *As##className() const                                                  \
+    {                                                                                       \
+        ASSERT(Is##className());                                                            \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return reinterpret_cast<const className *>(this);                                   \
     }
     DECLARATION_KINDS(DECLARE_CHECKS_CASTS)
 #undef DECLARE_CHECKS_CASTS

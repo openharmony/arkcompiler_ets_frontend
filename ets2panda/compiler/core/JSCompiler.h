@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,12 +27,12 @@ namespace ark::es2panda::compiler {
 class JSCompiler final : public AstCompiler {
 public:
     JSCompiler() = default;
-
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_JSCOMPILER_COMPILE_METHOD(_, nodeType) void Compile(const ir::nodeType *node) const override;
     AST_NODE_MAPPING(DECLARE_JSCOMPILER_COMPILE_METHOD)
 #undef DECLARE_JSCOMPILER_COMPILE_METHOD
-
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_JSCOMPILER_COMPILE_METHOD(_, __, nodeType, ___) void Compile(const ir::nodeType *node) const override;
     AST_NODE_REINTERPRET_MAPPING(DECLARE_JSCOMPILER_COMPILE_METHOD)

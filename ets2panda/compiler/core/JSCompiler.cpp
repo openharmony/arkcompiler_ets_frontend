@@ -122,6 +122,26 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticPropertiesB
 }
 
 // NOLINTNEXTLINE(google-runtime-references)
+static std::tuple<size_t, compiler::LiteralBuffer, bool> CreateClassStaticPropertiesHelper(
+    compiler::LiteralBuffer &literalBuf, std::unordered_map<util::StringView, size_t> &nameMap, util::StringView name,
+    bool seenComputed)
+{
+    size_t bufferPos = literalBuf.size();
+    auto res = nameMap.insert({name, bufferPos});
+    if (res.second) {
+        if (seenComputed) {
+            return {bufferPos, literalBuf, true};
+        }
+
+        literalBuf.emplace_back(name);
+        literalBuf.emplace_back();
+    } else {
+        bufferPos = res.first->second;
+    }
+    return {bufferPos, literalBuf, false};
+}
+
+// NOLINTNEXTLINE(google-runtime-references)
 static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
     compiler::PandaGen *pg, util::BitSet &compiled, const ArenaVector<ir::AstNode *> &properties)
 {
@@ -169,16 +189,11 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
         }
 
         size_t bufferPos = literalBuf.size();
-        auto res = nameMap.insert({name, bufferPos});
-        if (res.second) {
-            if (seenComputed) {
-                break;
-            }
-
-            literalBuf.emplace_back(name);
-            literalBuf.emplace_back();
-        } else {
-            bufferPos = res.first->second;
+        bool stop = false;
+        std::tie(bufferPos, literalBuf, stop) =
+            CreateClassStaticPropertiesHelper(literalBuf, nameMap, name, seenComputed);
+        if (stop) {
+            break;
         }
 
         compiler::Literal value = PropertyMethodKind(propMethod, compiled, i);

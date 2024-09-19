@@ -27,8 +27,9 @@ namespace ark::es2panda::checker {
 class Signature;
 class IndexInfo;
 
+// CC-OFFNXT(G.PRE.02) name part
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_OBJECT_TYPENAMES(objectKind, typeName) class typeName;
+#define DECLARE_OBJECT_TYPENAMES(objectKind, typeName) class typeName;  // CC-OFF(G.PRE.09) code gen
 OBJECT_TYPE_MAPPING(DECLARE_OBJECT_TYPENAMES)
 #undef DECLARE_OBJECT_TYPENAMES
 
@@ -61,25 +62,30 @@ public:
     };
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define OBJECT_TYPE_IS_CHECKS(object_kind, type_name) \
-    bool Is##type_name() const                        \
-    {                                                 \
-        return kind_ == (object_kind);                \
+#define OBJECT_TYPE_IS_CHECKS(object_kind, type_name)        \
+    bool Is##type_name() const                               \
+    {                                                        \
+        /* CC-OFFNXT(G.PRE.02,G.PRE.09,G.PRE.05) name part*/ \
+        return kind_ == (object_kind);                       \
     }
     OBJECT_TYPE_MAPPING(OBJECT_TYPE_IS_CHECKS)
 #undef OBJECT_TYPE_IS_CHECKS
 
+// CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define OBJECT_TYPE_AS_CASTS(objectKind, typeName)       \
-    typeName *As##typeName()                             \
-    {                                                    \
-        ASSERT(Is##typeName());                          \
-        return reinterpret_cast<typeName *>(this);       \
-    }                                                    \
-    const typeName *As##typeName() const                 \
-    {                                                    \
-        ASSERT(Is##typeName());                          \
-        return reinterpret_cast<const typeName *>(this); \
+#define OBJECT_TYPE_AS_CASTS(objectKind, typeName)                                          \
+    /* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/                                             \
+    typeName *As##typeName()                                                                \
+    {                                                                                       \
+        ASSERT(Is##typeName());                                                             \
+        /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. */        \
+        return reinterpret_cast<typeName *>(this);                                          \
+    }                                                                                       \
+    const typeName *As##typeName() const                                                    \
+    {                                                                                       \
+        ASSERT(Is##typeName());                                                             \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return reinterpret_cast<const typeName *>(this);                                    \
     }
     OBJECT_TYPE_MAPPING(OBJECT_TYPE_AS_CASTS)
 #undef OBJECT_TYPE_AS_CASTS
@@ -194,6 +200,7 @@ public:
                                                     const ArenaVector<Signature *> &targetSignatures);
 
     bool FindPropertyAndCheckIdentical(TypeRelation *relation, ObjectType *otherObj);
+    bool IdenticalPropertiesHelper(TypeRelation *relation, ObjectType *otherObj);
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
 

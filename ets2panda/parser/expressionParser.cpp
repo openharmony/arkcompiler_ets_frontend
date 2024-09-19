@@ -152,6 +152,21 @@ ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
     return assignmentExpression;
 }
 
+void ParserImpl::ParseArrayExpressionRightBracketHelper()
+{
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+        // array_2.sts
+        LogSyntaxError("Unexpected token, expected ',' or ']'");
+        lexer_->NextToken();
+        if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
+            // [0, 1, 2} -> [0, 1, 2]
+            // the problem is that ["abc". "sss", "aaa"] -> ["abc"] "sss", "aaa"]
+            lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
+        }
+        // [0 1, 2] -> [0, 1, 2] ; we just skeep the token in this case
+    }
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags)
 {
@@ -201,17 +216,7 @@ ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags
             continue;
         }
 
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            // array_2.sts
-            LogSyntaxError("Unexpected token, expected ',' or ']'");
-            lexer_->NextToken();
-            if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
-                // [0, 1, 2} -> [0, 1, 2]
-                // the problem is that ["abc". "sss", "aaa"] -> ["abc"] "sss", "aaa"]
-                lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
-            }
-            // [0 1, 2] -> [0, 1, 2] ; we just skeep the token in this case
-        }
+        ParseArrayExpressionRightBracketHelper();
     }
 
     auto nodeType = inPattern ? ir::AstNodeType::ARRAY_PATTERN : ir::AstNodeType::ARRAY_EXPRESSION;
@@ -454,7 +459,7 @@ void ParserImpl::ValidateArrowFunctionRestParameter([[maybe_unused]] ir::SpreadE
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterList(
-    [[maybe_unused]] ExpressionParseFlags flags)
+    [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = lexer_->GetToken().Start();
@@ -596,6 +601,27 @@ ir::Expression *ParserImpl::ParsePrefixAssertionExpression()
     return nullptr;
 }
 
+ir::Expression *ParserImpl::ParseAssignmentExpressionHelper()
+{
+    lexer_->NextToken();
+    ir::Expression *consequent = ParseExpression();
+
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
+            // typo happened like ';'
+            // unexpected_token_41.sts - bad test
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_COLON);
+            lexer_->NextToken();  // eat ':'
+        } else {
+            // just go to the next token if we missed ':'
+            LogSyntaxError("Unexpected token, expected: ':'.");
+        }
+    } else {
+        lexer_->NextToken();  // eat ':'
+    }
+    return consequent;
+}
+
 ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpression, ExpressionParseFlags flags)
 {
     if (!ValidateGroupedExpression(lhsExpression)) {
@@ -605,22 +631,7 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
     lexer::TokenType tokenType = lexer_->GetToken().Type();
     switch (tokenType) {
         case lexer::TokenType::PUNCTUATOR_QUESTION_MARK: {
-            lexer_->NextToken();
-            ir::Expression *consequent = ParseExpression();
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
-                if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
-                    // typo happened like ';'
-                    // unexpected_token_41.sts - bad test
-                    LogExpectedToken(lexer::TokenType::PUNCTUATOR_COLON);
-                    lexer_->NextToken();  // eat ':'
-                } else {
-                    // just go to the next token if we missed ':'
-                    LogSyntaxError("Unexpected token, expected: ':'.");
-                }
-            } else {
-                lexer_->NextToken();  // eat ':'
-            }
+            ir::Expression *consequent = ParseAssignmentExpressionHelper();
 
             ir::Expression *alternate = ParseExpression();
 
@@ -2230,6 +2241,30 @@ ir::Expression *ParserImpl::ParsePropertyDefinition([[maybe_unused]] ExpressionP
     return returnProperty;
 }
 
+void ParserImpl::ParsePropertyEndErrorHendler()
+{
+    const auto pos = lexer_->Save();
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        lexer_->NextToken();
+        if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+            // {a. b} -> {a, b}
+            lexer_->Rewind(pos);
+            lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
+        } else {
+            lexer_->Rewind(pos);
+            if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
+                // {a, b) -> {a, b}
+                lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
+            }
+        }
+    } else {
+        lexer_->NextToken();  // {a b} -> we just skip the token
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+            lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
+        }
+    }
+}
+
 bool ParserImpl::ParsePropertyEnd()
 {
     // Property definiton must end with ',' or '}' otherwise we throw SyntaxError
@@ -2237,26 +2272,7 @@ bool ParserImpl::ParsePropertyEnd()
         lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         // test_object_literal3.ts
         LogSyntaxError("Unexpected token, expected ',' or '}'");
-        const auto pos = lexer_->Save();
-        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-            lexer_->NextToken();
-            if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-                // {a. b} -> {a, b}
-                lexer_->Rewind(pos);
-                lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
-            } else {
-                lexer_->Rewind(pos);
-                if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
-                    // {a, b) -> {a, b}
-                    lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
-                }
-            }
-        } else {
-            lexer_->NextToken();  // {a b} -> we just skip the token
-            if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-                lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
-            }
-        }
+        ParsePropertyEndErrorHendler();
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA &&

@@ -124,9 +124,10 @@ const ir::Identifier *TSDeclGen::GetKeyIdent(const ir::Expression *key)
 static char const *GetDebugTypeName(const checker::Type *checkerType)
 {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TYPE_CHECKS(type_flag, typeName) \
-    if (checkerType->Is##typeName()) {   \
-        return #typeName;                \
+#define TYPE_CHECKS(type_flag, typeName)                                                    \
+    if (checkerType->Is##typeName()) {                                                      \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return #typeName;                                                                   \
     }
     TYPE_MAPPING(TYPE_CHECKS)
 #undef TYPE_CHECKS
@@ -230,7 +231,7 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
 {
     const bool isConstructor = methodDef != nullptr ? methodDef->IsConstructor() : false;
     const bool isSetter = methodDef != nullptr ? methodDef->Kind() == ir::MethodDefinitionKind::SET : false;
-
+    // CC-OFFNXT(G.FMT.14-CPP) project code style
     const auto *sig = [this, methodDef, etsFunctionType]() -> const checker::Signature * {
         if (methodDef != nullptr) {
             return methodDef->Function()->Signature();

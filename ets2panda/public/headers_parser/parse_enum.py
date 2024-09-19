@@ -69,22 +69,22 @@ def parse_enum_class_body(data: str) -> dict:
     while value_start != -1 and value_start < len(data):
         value = data[value_start:value_end].strip(" \n")
 
-        if value != "":
-            if not is_union_value(value):
-                if "flags" not in res:
-                    res["flags"] = []
-                res["flags"].append(get_name_of_enum_value(value))
-            else:
+        if value != "" and (is_union_value(value) == False):
+            if "flags" not in res:
+                res["flags"] = []
+            res["flags"].append(get_name_of_enum_value(value))
 
-                union_flag: Dict[str, Any] = {}
-                union_flag["name"] = get_name_of_enum_value(value)
-                union_flag["flags"] = parse_enum_union(value)
+        elif value != "" and (is_union_value(value) == True):
 
-                if union_flag["flags"] != []:
-                    if "flag_unions" not in res:
-                        res["flag_unions"] = []
+            union_flag: Dict[str, Any] = {}
+            union_flag["name"] = get_name_of_enum_value(value)
+            union_flag["flags"] = parse_enum_union(value)
 
-                    res["flag_unions"].append(union_flag)
+            if (union_flag["flags"] != []) and ("flag_unions" not in res):
+                res["flag_unions"] = []
+                res["flag_unions"].append(union_flag)
+            elif (union_flag["flags"] != []) and ("flag_unions" not in res) == False:
+                res["flag_unions"].append(union_flag)
 
         if value_end == len(data):
             break

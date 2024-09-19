@@ -297,6 +297,7 @@ public:
     [[nodiscard]] bool CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
                                                                   const ir::Expression *left,
                                                                   const ir::Expression *right);
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                                    lexer::TokenType operationType, lexer::SourcePosition pos,
                                                    bool forcePromotion = false);
@@ -318,6 +319,7 @@ public:
     checker::Type *CheckBinaryOperatorBitwise(
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     checker::Type *CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                               lexer::SourcePosition pos, checker::Type *leftType,
                                               checker::Type *rightType, Type *unboxedL, Type *unboxedR);
@@ -328,12 +330,14 @@ public:
                                                                             checker::Type *const rightType,
                                                                             checker::Type *tsType,
                                                                             lexer::SourcePosition pos);
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     std::tuple<Type *, Type *> CheckBinaryOperatorEqual(ir::Expression *left, ir::Expression *right,
                                                         lexer::TokenType operationType, lexer::SourcePosition pos,
                                                         checker::Type *leftType, checker::Type *rightType,
                                                         Type *unboxedL, Type *unboxedR);
     std::tuple<Type *, Type *> CheckBinaryOperatorEqualDynamic(ir::Expression *left, ir::Expression *right,
                                                                lexer::SourcePosition pos);
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     std::tuple<Type *, Type *> CheckBinaryOperatorLessGreater(ir::Expression *left, ir::Expression *right,
                                                               lexer::TokenType operationType, lexer::SourcePosition pos,
                                                               bool isEqualOp, checker::Type *leftType,
@@ -416,6 +420,7 @@ public:
     bool ValidateArgumentAsIdentifier(const ir::Identifier *identifier);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                      TypeRelationFlag flags, bool reportError);
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     Signature *ValidateSignatures(ArenaVector<Signature *> &signatures,
                                   const ir::TSTypeParameterInstantiation *typeArguments,
                                   const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
@@ -477,6 +482,7 @@ public:
     ir::MethodDefinition *CreateAsyncImplMethod(ir::MethodDefinition *asyncMethod, ir::ClassDefinition *classDef);
     ir::MethodDefinition *CreateAsyncProxy(ir::MethodDefinition *asyncMethod, ir::ClassDefinition *classDef,
                                            bool createDecl = true);
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     ir::MethodDefinition *CreateMethod(const util::StringView &name, ir::ModifierFlags modifiers,
                                        ir::ScriptFunctionFlags flags, ArenaVector<ir::Expression *> &&params,
                                        varbinder::FunctionParamScope *paramScope, ir::TypeNode *returnType,

@@ -379,6 +379,7 @@ bool ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const che
     if (preferredType_->IsETSArrayType()) {
         if (preferredType_->AsETSArrayType()->ElementType()->IsETSTupleType()) {
             if (!checker->ValidateTupleMinElementSize(
+                    // CC-OFFNXT(G.FMT.06-CPP) project code style
                     currentElement, preferredType_->AsETSArrayType()->ElementType()->AsETSTupleType())) {
                 return false;
             }

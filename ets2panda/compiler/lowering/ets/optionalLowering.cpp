@@ -130,6 +130,7 @@ bool OptionalLowering::Perform(public_lib::Context *ctx, parser::Program *progra
     }
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *const node) -> ir::AstNode * {
             if (node->IsChainExpression()) {
                 return RefineSourceRanges(LowerChain(ctx, node->AsChainExpression()));

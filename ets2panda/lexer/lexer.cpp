@@ -420,83 +420,94 @@ void Lexer::ScanTemplateStringEnd()
     SkipWhiteSpaces();
 }
 
+void Lexer::CheckOctalDigit(char32_t const nextCp)
+{
+    if (IsOctalDigit(nextCp)) {
+        Iterator().Forward(1);
+
+        if (Iterator().Peek() != LEX_CHAR_BACK_TICK) {
+            ThrowError("Octal escape sequences are not allowed in template strings");
+        }
+
+        Iterator().Backward(1);
+    }
+}
+
+std::tuple<bool, bool, LexerTemplateString> Lexer::ScanTemplateStringCpHelper(char32_t cp,
+                                                                              LexerTemplateString templateStr)
+{
+    switch (cp) {
+        case util::StringView::Iterator::INVALID_CP:
+            ThrowError("Unexpected token, expected '${' or '`'");
+            return {true, false, templateStr};
+        case LEX_CHAR_BACK_TICK:
+            templateStr.end = Iterator().Index();
+            return {true, false, templateStr};
+        case LEX_CHAR_CR: {
+            Iterator().Forward(1);
+
+            if (Iterator().Peek() != LEX_CHAR_LF) {
+                Iterator().Backward(1);
+            }
+
+            [[fallthrough]];
+        }
+        case LEX_CHAR_LF:
+            pos_.line_++;
+            templateStr.str.Append(LEX_CHAR_LF);
+            Iterator().Forward(1);
+            return {false, true, templateStr};
+        case LEX_CHAR_BACKSLASH: {
+            Iterator().Forward(1);
+
+            char32_t nextCp = Iterator().Peek();
+            CheckOctalDigit(nextCp);
+
+            if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH || nextCp == LEX_CHAR_DOLLAR_SIGN) {
+                templateStr.str.Append(cp);
+                templateStr.str.Append(nextCp);
+                Iterator().Forward(1);
+                return {false, true, templateStr};
+            }
+
+            Iterator().Backward(1);
+            return {false, false, templateStr};
+        }
+        case LEX_CHAR_DOLLAR_SIGN:
+            templateStr.end = Iterator().Index();
+            Iterator().Forward(1);
+
+            if (Iterator().Peek() == LEX_CHAR_LEFT_BRACE) {
+                Iterator().Forward(1);
+                templateStr.scanExpression = true;
+                SkipWhiteSpaces();
+                return {true, false, templateStr};
+            }
+
+            templateStr.str.Append(cp);
+            return {false, true, templateStr};
+        default:
+            return {false, false, templateStr};
+    }
+    return {false, false, templateStr};
+}
+
 LexerTemplateString Lexer::ScanTemplateString()
 {
     LexerTemplateString templateStr(Allocator());
     size_t cpSize = 0U;
 
-    auto const checkOctalDigit = [this](char32_t const nextCp) -> void {
-        if (IsOctalDigit(nextCp)) {
-            Iterator().Forward(1);
-
-            if (Iterator().Peek() != LEX_CHAR_BACK_TICK) {
-                ThrowError("Octal escape sequences are not allowed in template strings");
-            }
-
-            Iterator().Backward(1);
-        }
-    };
-
     while (true) {
         char32_t cp = Iterator().PeekCp(&cpSize);
 
-        switch (cp) {
-            case util::StringView::Iterator::INVALID_CP: {
-                ThrowError("Unexpected token, expected '${' or '`'");
-                break;
-            }
-            case LEX_CHAR_BACK_TICK: {
-                templateStr.end = Iterator().Index();
-                return templateStr;
-            }
-            case LEX_CHAR_CR: {
-                Iterator().Forward(1);
-
-                if (Iterator().Peek() != LEX_CHAR_LF) {
-                    Iterator().Backward(1);
-                }
-
-                [[fallthrough]];
-            }
-            case LEX_CHAR_LF: {
-                pos_.line_++;
-                templateStr.str.Append(LEX_CHAR_LF);
-                Iterator().Forward(1);
-                continue;
-            }
-            case LEX_CHAR_BACKSLASH: {
-                Iterator().Forward(1);
-
-                char32_t nextCp = Iterator().Peek();
-                checkOctalDigit(nextCp);
-
-                if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH || nextCp == LEX_CHAR_DOLLAR_SIGN) {
-                    templateStr.str.Append(cp);
-                    templateStr.str.Append(nextCp);
-                    Iterator().Forward(1);
-                    continue;
-                }
-
-                Iterator().Backward(1);
-                break;
-            }
-            case LEX_CHAR_DOLLAR_SIGN: {
-                templateStr.end = Iterator().Index();
-                Iterator().Forward(1);
-
-                if (Iterator().Peek() == LEX_CHAR_LEFT_BRACE) {
-                    Iterator().Forward(1);
-                    templateStr.scanExpression = true;
-                    SkipWhiteSpaces();
-                    return templateStr;
-                }
-
-                templateStr.str.Append(cp);
-                continue;
-            }
-            default: {
-                break;
-            }
+        bool isReturn = false;
+        bool isContinue = false;
+        std::tie(isReturn, isContinue, templateStr) = ScanTemplateStringCpHelper(cp, templateStr);
+        if (isReturn) {
+            return templateStr;
+        }
+        if (isContinue) {
+            continue;
         }
 
         templateStr.str.Append(cp);
@@ -522,87 +533,67 @@ void Lexer::ScanStringUnicodePart(util::UString *str)
     }
 }
 
+char32_t Lexer::ScanUnicodeCharacterHelper(size_t cpSize, char32_t cp)
+{
+    Iterator().Forward(cpSize);
+    return cp;
+}
+
 char32_t Lexer::ScanUnicodeCharacter()
 {
     size_t cpSize {};
     char32_t cp = Iterator().PeekCp(&cpSize);
 
     switch (cp) {
-        case util::StringView::Iterator::INVALID_CP: {
+        case util::StringView::Iterator::INVALID_CP:
             ThrowError("Unterminated string");
-            break;
-        }
-        case LEX_CHAR_CR: {
+        case LEX_CHAR_CR:
             Iterator().Forward(1);
             if (Iterator().Peek() != LEX_CHAR_LF) {
                 Iterator().Backward(1);
             }
 
             [[fallthrough]];
-        }
         case LEX_CHAR_LS:
         case LEX_CHAR_PS:
-        case LEX_CHAR_LF: {
+        case LEX_CHAR_LF:
             pos_.line_++;
-            Iterator().Forward(cpSize);
-            return util::StringView::Iterator::INVALID_CP;
-        }
-        case LEX_CHAR_LOWERCASE_B: {
-            cp = LEX_CHAR_BS;
-            break;
-        }
-        case LEX_CHAR_LOWERCASE_T: {
-            cp = LEX_CHAR_TAB;
-            break;
-        }
-        case LEX_CHAR_LOWERCASE_N: {
-            cp = LEX_CHAR_LF;
-            break;
-        }
-        case LEX_CHAR_LOWERCASE_V: {
-            cp = LEX_CHAR_VT;
-            break;
-        }
-        case LEX_CHAR_LOWERCASE_F: {
-            cp = LEX_CHAR_FF;
-            break;
-        }
-        case LEX_CHAR_LOWERCASE_R: {
-            cp = LEX_CHAR_CR;
-            break;
-        }
-        case LEX_CHAR_LOWERCASE_X: {
+            return ScanUnicodeCharacterHelper(cpSize, util::StringView::Iterator::INVALID_CP);
+        case LEX_CHAR_LOWERCASE_B:
+            return ScanUnicodeCharacterHelper(cpSize, LEX_CHAR_BS);
+        case LEX_CHAR_LOWERCASE_T:
+            return ScanUnicodeCharacterHelper(cpSize, LEX_CHAR_TAB);
+        case LEX_CHAR_LOWERCASE_N:
+            return ScanUnicodeCharacterHelper(cpSize, LEX_CHAR_LF);
+        case LEX_CHAR_LOWERCASE_V:
+            return ScanUnicodeCharacterHelper(cpSize, LEX_CHAR_VT);
+        case LEX_CHAR_LOWERCASE_F:
+            return ScanUnicodeCharacterHelper(cpSize, LEX_CHAR_FF);
+        case LEX_CHAR_LOWERCASE_R:
+            return ScanUnicodeCharacterHelper(cpSize, LEX_CHAR_CR);
+        case LEX_CHAR_LOWERCASE_X:
             Iterator().Forward(1);
-            cp = ScanHexEscape<2U>();
-            return cp;
-        }
-        case LEX_CHAR_LOWERCASE_U: {
-            cp = ScanUnicodeEscapeSequence();
-            return cp;
-        }
+            return ScanHexEscape<2U>();
+        case LEX_CHAR_LOWERCASE_U:
+            return ScanUnicodeEscapeSequence();
         case LEX_CHAR_0: {
             Iterator().Forward(1);
             bool isDecimal = IsDecimalDigit(Iterator().Peek());
             Iterator().Backward(1);
 
             if (!isDecimal) {
-                cp = LEX_CHAR_NULL;
-                break;
+                return ScanUnicodeCharacterHelper(cpSize, LEX_CHAR_NULL);
             }
 
             [[fallthrough]];
         }
-        default: {
+        default:
             if (IsDecimalDigit(Iterator().Peek())) {
                 ThrowError("Invalid character escape sequence in strict mode");
             }
-
-            break;
-        }
     }
 
-    Iterator().Forward(cpSize);
-    return cp;
+    return ScanUnicodeCharacterHelper(cpSize, cp);
 }
 
 void Lexer::ScanQuestionPunctuator()
@@ -1187,13 +1178,49 @@ void Lexer::SetTokenEnd()
     pos_.token_.loc_.end = SourcePosition {Iterator().Index(), pos_.line_};
 }
 
+bool Lexer::SkipWhiteSpacesHelperSlash(char32_t *cp)
+{
+    Iterator().Forward(1);
+    *cp = Iterator().Peek();
+    if (*cp == LEX_CHAR_SLASH || *cp == LEX_CHAR_ASTERISK) {
+        Iterator().Forward(1);
+        *cp == LEX_CHAR_SLASH ? SkipSingleLineComment() : SkipMultiLineComment();
+        return true;
+    }
+
+    Iterator().Backward(1);
+    return false;
+}
+
+bool Lexer::SkipWhiteSpacesHelperDefault(const char32_t &cp)
+{
+    if (cp < LEX_ASCII_MAX_BITS) {
+        return false;
+    }
+
+    size_t cpSize {};
+
+    switch (Iterator().PeekCp(&cpSize)) {
+        case LEX_CHAR_LS:
+        case LEX_CHAR_PS:
+            pos_.nextTokenLine_++;
+            [[fallthrough]];
+        case LEX_CHAR_NBSP:
+        case LEX_CHAR_ZWNBSP:
+            Iterator().Forward(cpSize);
+            return true;
+        default:
+            return false;
+    }
+}
+
 void Lexer::SkipWhiteSpaces()
 {
     while (true) {
         auto cp = Iterator().Peek();
 
         switch (cp) {
-            case LEX_CHAR_CR: {
+            case LEX_CHAR_CR:
                 Iterator().Forward(1);
 
                 if (Iterator().Peek() != LEX_CHAR_LF) {
@@ -1201,60 +1228,26 @@ void Lexer::SkipWhiteSpaces()
                 }
 
                 [[fallthrough]];
-            }
-            case LEX_CHAR_LF: {
+            case LEX_CHAR_LF:
                 Iterator().Forward(1);
                 pos_.nextTokenLine_++;
                 continue;
-            }
             case LEX_CHAR_VT:
             case LEX_CHAR_FF:
             case LEX_CHAR_SP:
-            case LEX_CHAR_TAB: {
+            case LEX_CHAR_TAB:
                 Iterator().Forward(1);
                 continue;
-            }
-            case LEX_CHAR_SLASH: {
-                Iterator().Forward(1);
-                cp = Iterator().Peek();
-                if (cp == LEX_CHAR_SLASH) {
-                    Iterator().Forward(1);
-                    SkipSingleLineComment();
-                    continue;
-                }
-                if (cp == LEX_CHAR_ASTERISK) {
-                    Iterator().Forward(1);
-                    SkipMultiLineComment();
-                    continue;
-                }
-
-                Iterator().Backward(1);
-                return;
-            }
-            default: {
-                if (cp < LEX_ASCII_MAX_BITS) {
+            case LEX_CHAR_SLASH:
+                if (!SkipWhiteSpacesHelperSlash(&cp)) {
                     return;
                 }
-
-                size_t cpSize {};
-                cp = Iterator().PeekCp(&cpSize);
-
-                switch (cp) {
-                    case LEX_CHAR_LS:
-                    case LEX_CHAR_PS: {
-                        pos_.nextTokenLine_++;
-                        [[fallthrough]];
-                    }
-                    case LEX_CHAR_NBSP:
-                    case LEX_CHAR_ZWNBSP: {
-                        Iterator().Forward(cpSize);
-                        continue;
-                    }
-                    default: {
-                        return;
-                    }
+                continue;
+            default:
+                if (!SkipWhiteSpacesHelperDefault(cp)) {
+                    return;
                 }
-            }
+                continue;
         }
     }
 }
@@ -1287,6 +1280,7 @@ bool Lexer::ScanDollarPunctuator()
     return false;
 }
 
+// CC-OFFNXT(huge_method,huge_cyclomatic_complexity,G.FUN.01-CPP) big switch-case, solid logic
 // NOLINTNEXTLINE(readability-function-size)
 void Lexer::NextToken(Keywords *kws)
 {
@@ -1565,6 +1559,64 @@ void Lexer::ScanNumberLeadingZeroImplNonAllowedCases()
         default: {
             break;
         }
+    }
+}
+
+void Lexer::HandleNewlineHelper(util::UString *str, size_t *escapeEnd)
+{
+    GetToken().flags_ |= TokenFlags::HAS_ESCAPE;
+    str->Append(SourceView(*escapeEnd, Iterator().Index()));
+
+    if (Iterator().Peek() == LEX_CHAR_CR) {
+        Iterator().Forward(1);
+        if (Iterator().Peek() != LEX_CHAR_LF) {
+            Iterator().Backward(1);
+        }
+    }
+
+    pos_.line_++;
+    str->Append(LEX_CHAR_LF);
+    Iterator().Forward(1);
+    *escapeEnd = Iterator().Index();
+}
+
+void Lexer::HandleBackslashHelper(util::UString *str, size_t *escapeEnd)
+{
+    GetToken().flags_ |= TokenFlags::HAS_ESCAPE;
+    str->Append(SourceView(*escapeEnd, Iterator().Index()));
+    Iterator().Forward(1);
+    ScanStringUnicodePart(str);
+    *escapeEnd = Iterator().Index();
+}
+
+bool Lexer::HandleDollarSignHelper(const char32_t &end)
+{
+    Iterator().Forward(1);
+    if (end == LEX_CHAR_BACK_TICK) {
+        if (Iterator().Peek() == LEX_CHAR_LEFT_BRACE) {
+            Iterator().Backward(1);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Lexer::HandleDoubleQuoteHelper(const char32_t &end, const char32_t &cp)
+{
+    if (end == cp) {
+        return false;
+    }
+    Iterator().Forward(1);
+    return true;
+}
+
+void Lexer::FinalizeTokenHelper(util::UString *str, const size_t &startPos, size_t escapeEnd)
+{
+    if ((GetToken().flags_ & TokenFlags::HAS_ESCAPE) != 0U) {
+        str->Append(SourceView(escapeEnd, Iterator().Index()));
+        GetToken().src_ = str->View();
+    } else {
+        GetToken().src_ = SourceView(startPos, Iterator().Index());
     }
 }
 

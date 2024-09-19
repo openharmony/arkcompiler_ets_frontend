@@ -198,28 +198,24 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
             }
             break;
         }
-        case lexer::TokenType::KEYW_CONST: {
+        case lexer::TokenType::KEYW_CONST:
             memberModifiers |= ir::ModifierFlags::CONST;
             [[fallthrough]];
-        }
-        case lexer::TokenType::KEYW_LET: {
+        case lexer::TokenType::KEYW_LET:
             result = ParseStatement(flags);
             break;
-        }
         case lexer::TokenType::KEYW_NAMESPACE:
         case lexer::TokenType::KEYW_STATIC:
         case lexer::TokenType::KEYW_ABSTRACT:
         case lexer::TokenType::KEYW_FINAL:
         case lexer::TokenType::KEYW_ENUM:
         case lexer::TokenType::KEYW_INTERFACE:
-        case lexer::TokenType::KEYW_CLASS: {
+        case lexer::TokenType::KEYW_CLASS:
             result = ParseTypeDeclaration(false);
             break;
-        }
-        case lexer::TokenType::PUNCTUATOR_AT: {
+        case lexer::TokenType::PUNCTUATOR_AT:
             result = ParseAnnotation(flags, memberModifiers);
             break;
-        }
         case lexer::TokenType::LITERAL_IDENT: {
             result = ParseIdentKeyword();
             if (result == nullptr && (memberModifiers & (ir::ModifierFlags::EXPORTED)) != 0U) {

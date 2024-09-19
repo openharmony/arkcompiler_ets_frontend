@@ -26,7 +26,7 @@ public:
     Statement() = delete;
     ~Statement() override = default;
 
-    NO_COPY_OPERATOR(Statement);
+    Statement &operator=(const Statement &) = delete;
     NO_MOVE_SEMANTIC(Statement);
 
     [[nodiscard]] bool IsStatement() const noexcept override

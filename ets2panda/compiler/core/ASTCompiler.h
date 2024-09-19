@@ -177,12 +177,12 @@ public:
     virtual ~AstCompiler() = default;
     NO_COPY_SEMANTIC(AstCompiler);
     NO_MOVE_SEMANTIC(AstCompiler);
-
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_AST_NODE_COMPILE_METHOD(_, nodeType) virtual void Compile(const ir::nodeType *node) const = 0;
     AST_NODE_MAPPING(DECLARE_AST_NODE_COMPILE_METHOD)
 #undef DECLARE_AST_NODE_COMPILE_METHOD
-
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_AST_NODE_COMPILE_METHOD(_, __, nodeType, ___) virtual void Compile(const ir::nodeType *node) const = 0;
     AST_NODE_REINTERPRET_MAPPING(DECLARE_AST_NODE_COMPILE_METHOD)

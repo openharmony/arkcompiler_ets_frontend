@@ -83,6 +83,7 @@ bool RecordLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 
     // Replace Record Object Expressions with Block Expressions
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, ctx](ir::AstNode *ast) -> ir::AstNode * {
             if (ast->IsObjectExpression()) {
                 return UpdateObjectExpression(ast->AsObjectExpression(), ctx);

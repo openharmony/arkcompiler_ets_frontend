@@ -18,6 +18,7 @@
 
 #include "typeFlag.h"
 
+// CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #define TYPE_MAPPING(_)                                                \
     _(TypeFlag::ARRAY, ArrayType)                                      \

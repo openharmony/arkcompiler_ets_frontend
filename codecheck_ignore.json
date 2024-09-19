@@ -1,13 +1,13 @@
 {
     "arkguard": "*",
     "es2panda": "*",
-    "ets2panda": "*",
     "figures":  "*",
     "test": "*",
     "test262": "*",
     "testTs": "*",
     "test_ecma_bcopt": "*",
     "legacy_bin": "*",
-    "merge_abc": "*"
+    "merge_abc": "*",
+    "*": ["G.CMT.03", "G.FMT.11", "G.NAM.03", "huge_headerfile", "huge_non_headerfile", "bc-30001"]
 }
 

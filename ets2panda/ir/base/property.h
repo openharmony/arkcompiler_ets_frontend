@@ -30,7 +30,7 @@ public:
     Property() = delete;
     ~Property() override = default;
 
-    NO_COPY_OPERATOR(Property);
+    Property &operator=(const Property &) = delete;
     NO_MOVE_SEMANTIC(Property);
 
     explicit Property(Expression *const key, Expression *const value)

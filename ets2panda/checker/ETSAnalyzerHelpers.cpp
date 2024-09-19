@@ -509,6 +509,7 @@ static constexpr char const ITERATOR_TYPE_ABSENT[] = "Cannot obtain iterator typ
 checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir::AstNode *left)
 {
     // Just to avoid extra nested level(s)
+    // CC-OFFNXT(G.FMT.14-CPP) project code style
     auto const getIterType = [checker, elemType](ir::VariableDeclarator *const declarator) -> checker::Type * {
         if (declarator->TsType() == nullptr) {
             if (auto *resolved = checker->FindVariableInFunctionScope(declarator->Id()->AsIdentifier()->Name(),
@@ -570,6 +571,7 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
         if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType,
                                         stArgument->Start(), {},
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
             checker->LogTypeError({"Return statement type is not compatible with the enclosing method's return type."},
                                   stArgument->Start());
@@ -592,6 +594,7 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
     const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
     if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
                                     {}, checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+             // CC-OFFNXT(G.FMT.02) project code style
              .IsAssignable()) {
         checker->LogTypeError(
             {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
@@ -627,6 +630,7 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
         if (!checker::AssignmentContext(checker->Relation(), arrowFunc, argumentType, funcReturnType,
                                         stArgument->Start(), {},
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
+                 // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
             checker->LogTypeError({"Type '", sourceType,
                                    "' is not compatible with the enclosing method's return type '", targetType, "'"},

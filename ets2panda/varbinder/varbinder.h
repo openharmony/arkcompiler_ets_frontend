@@ -208,6 +208,8 @@ public:
     static constexpr uint32_t LEXICAL_CONTEXT_PARAM_REG = MANDATORY_PARAMS_NUMBER;
     static constexpr std::string_view STAR_IMPORT = "*";
 
+    void ResolveReferenceDoWhileHelper(ir::AstNode *childNode);
+    void ResolveReferenceWhileHelper(ir::AstNode *childNode);
     void ResolveReference(ir::AstNode *childNode);
 
 protected:

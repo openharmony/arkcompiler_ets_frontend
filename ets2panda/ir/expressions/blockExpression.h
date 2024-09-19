@@ -54,7 +54,7 @@ public:
                              statement->SetParent(this);
                              return true;
                          };
-                         return false;
+                         return false;  // CC-OFF(G.FMT.02) project code style
                      });
     }
 

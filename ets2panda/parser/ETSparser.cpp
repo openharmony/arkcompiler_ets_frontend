@@ -371,6 +371,7 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::Identif
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ETSParser::ParseFunctionBody(
+    // CC-OFFNXT(G.FMT.06-CPP) project code style
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus newStatus,
     [[maybe_unused]] ParserStatus contextStatus)
 {
@@ -992,23 +993,25 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation) co
 
 void ETSParser::ValidateRestParameter(ir::Expression *param)
 {
-    if (param->IsETSParameterExpression()) {
-        if (param->AsETSParameterExpression()->IsRestParameter()) {
-            GetContext().Status() |= ParserStatus::HAS_COMPLEX_PARAM;
-            if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-                // rest_parameter_04.sts
-                LogSyntaxError("Rest parameter must be the last formal parameter.");
-                const auto pos = Lexer()->Save();
-                Lexer()->NextToken();
-                if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-                    // ...a: int, b: int)
-                    Lexer()->Rewind(pos);
-                    Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-                }
-                // typo happened, just skip the token
-                // ...a: int,)
-            }
+    if (!param->IsETSParameterExpression()) {
+        return;
+    }
+    if (!param->AsETSParameterExpression()->IsRestParameter()) {
+        return;
+    }
+    GetContext().Status() |= ParserStatus::HAS_COMPLEX_PARAM;
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        // rest_parameter_04.sts
+        LogSyntaxError("Rest parameter must be the last formal parameter.");
+        const auto pos = Lexer()->Save();
+        Lexer()->NextToken();
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            // ...a: int, b: int)
+            Lexer()->Rewind(pos);
+            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
         }
+        // typo happened, just skip the token
+        // ...a: int,)
     }
 }
 
@@ -1391,6 +1394,44 @@ bool ETSParser::IsDefaultImport()
     return false;
 }
 
+bool ETSParser::ParseNamedSpecifiesHelper(bool *logError)
+{
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        // unexpected_token_48.sts
+        LogSyntaxError("Unexpected token, expected identifier or '}'.");
+        const auto pos = Lexer()->Save();
+        Lexer()->NextToken();
+        if (lexer::Token::IsPunctuatorToken(Lexer()->GetToken().Type())) {
+            // import {^}
+            Lexer()->Rewind(pos);
+            Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+            Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
+        } else {
+            // export type {B
+            // export type {B]
+            Lexer()->Rewind(pos);
+            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
+            return true;
+        }
+        *logError = true;
+    }
+    return false;
+}
+
+void ETSParser::ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
+                                                 const std::string &fileName)
+{
+    auto *imported = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    imported->SetRange(Lexer()->GetToken().Loc());
+    Lexer()->NextToken();
+    auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(imported);
+    specifier->SetRange({imported->Start(), imported->End()});
+
+    util::Helpers::CheckDefaultImportedName(*resultDefault, specifier, fileName);
+
+    resultDefault->emplace_back(specifier);
+}
+
 using ImportSpecifierVector = ArenaVector<ir::ImportSpecifier *>;
 using ImportDefaultSpecifierVector = ArenaVector<ir::ImportDefaultSpecifier *>;
 std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseNamedSpecifiers()
@@ -1416,24 +1457,8 @@ std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseN
 
         bool logError = false;
         if (!IsDefaultImport()) {
-            if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-                // unexpected_token_48.sts
-                LogSyntaxError("Unexpected token, expected identifier or '}'.");
-                const auto pos = Lexer()->Save();
-                Lexer()->NextToken();
-                if (lexer::Token::IsPunctuatorToken(Lexer()->GetToken().Type())) {
-                    // import {^}
-                    Lexer()->Rewind(pos);
-                    Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
-                    Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
-                } else {
-                    // export type {B
-                    // export type {B]
-                    Lexer()->Rewind(pos);
-                    Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-                    break;
-                }
-                logError = true;
+            if (ParseNamedSpecifiesHelper(&logError)) {
+                break;
             }
 
             lexer::Token importedToken = Lexer()->GetToken();
@@ -1457,15 +1482,7 @@ std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseN
 
             result.emplace_back(specifier);
         } else {
-            auto *imported = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            imported->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
-            auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(imported);
-            specifier->SetRange({imported->Start(), imported->End()});
-
-            util::Helpers::CheckDefaultImportedName(resultDefault, specifier, fileName);
-
-            resultDefault.emplace_back(specifier);
+            ParseNamedSpecifiesDefaultImport(&resultDefault, fileName);
         }
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat comma

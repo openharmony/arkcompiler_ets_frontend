@@ -602,6 +602,7 @@ static bool CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
                                      {"Array element type '", elementType, "' is not assignable to explicit type '",
                                       targetElementType[0], "'"},
                                      TypeRelationFlag::NO_THROW)
+              // CC-OFFNXT(G.FMT.02) project code style
               .IsAssignable() &&
          !(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()))) {
         if (targetElementType[1] == nullptr) {
@@ -617,6 +618,7 @@ static bool CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
                                         {"Array element type '", elementType, "' is not assignable to explicit type '",
                                          targetElementType[1], "'"},
                                         TypeRelationFlag::NO_THROW)
+                 // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
             checker->LogTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
                                    targetElementType[1], "'"},
@@ -1082,6 +1084,7 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
         calleeType->IsETSUnionType() &&
         calleeType->AsETSUnionType()->HasObjectType(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool isFunctionalInterface = calleeType->IsETSObjectType() && calleeType->AsETSObjectType()->HasObjectFlag(
+                                                                      // CC-OFFNXT(G.FMT.06-CPP) project code style
                                                                       checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool etsExtensionFuncHelperType = calleeType->IsETSExtensionFuncHelperType();
 
@@ -1433,6 +1436,21 @@ checker::Type *ETSAnalyzer::PreferredType(ir::ObjectExpression *expr) const
     return expr->preferredType_;
 }
 
+checker::Type *ETSAnalyzer::CheckDynamic(ir::ObjectExpression *expr) const
+{
+    ETSChecker *checker = GetETSChecker();
+    for (ir::Expression *propExpr : expr->Properties()) {
+        ASSERT(propExpr->IsProperty());
+        ir::Property *prop = propExpr->AsProperty();
+        ir::Expression *value = prop->Value();
+        value->Check(checker);
+        ASSERT(value->TsType());
+    }
+
+    expr->SetTsType(expr->PreferredType());
+    return expr->PreferredType();
+}
+
 static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checker)
 {
     auto preferredType = expr->PreferredType();
@@ -1463,16 +1481,7 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
     }
 
     if (expr->PreferredType()->IsETSDynamicType()) {
-        for (ir::Expression *propExpr : expr->Properties()) {
-            ASSERT(propExpr->IsProperty());
-            ir::Property *prop = propExpr->AsProperty();
-            ir::Expression *value = prop->Value();
-            value->Check(checker);
-            ASSERT(value->TsType());
-        }
-
-        expr->SetTsType(expr->PreferredType());
-        return expr->PreferredType();
+        return CheckDynamic(expr);
     }
 
     checker::ETSObjectType *objType = expr->PreferredType()->AsETSObjectType();

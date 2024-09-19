@@ -61,7 +61,7 @@ enum class CompilationMode {
     PROJECT,
     SINGLE_FILE,
 };
-
+// CC-OFFNXT(G.FUD.06) switch-case, ODR
 inline Language ToLanguage(ScriptExtension ext)
 {
     switch (ext) {

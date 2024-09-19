@@ -1267,10 +1267,10 @@ void ETSCompiler::Compile(const ir::NumberLiteral *expr) const
 
     if (expr->Number().IsInt()) {
         if (util::Helpers::IsTargetFitInSourceRange<checker::ByteType::UType, checker::IntType::UType>(
-                expr->Number().GetInt())) {
+                expr->Number().GetInt())) {  // CC-OFF(G.FMT.06-CPP) project code style
             etsg->LoadAccumulatorByte(expr, static_cast<int8_t>(expr->Number().GetInt()));
         } else if (util::Helpers::IsTargetFitInSourceRange<checker::ShortType::UType, checker::IntType::UType>(
-                       expr->Number().GetInt())) {
+                       expr->Number().GetInt())) {  // CC-OFF(G.FMT.06-CPP) project code style
             etsg->LoadAccumulatorShort(expr, static_cast<int16_t>(expr->Number().GetInt()));
         } else {
             etsg->LoadAccumulatorInt(expr, static_cast<int32_t>(expr->Number().GetInt()));

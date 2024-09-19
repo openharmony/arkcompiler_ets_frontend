@@ -113,6 +113,7 @@ protected:
     bool ParsePropertyModifiers(ExpressionParseFlags flags, ir::PropertyKind *propertyKind, ParserStatus *methodStatus);
     ir::Expression *ParsePropertyValue(const ir::PropertyKind *propertyKind, const ParserStatus *methodStatus,
                                        ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
+    void ParsePropertyEndErrorHendler();
     bool ParsePropertyEnd();
 
     // ExpressionParser.Cpp
@@ -215,6 +216,7 @@ protected:
                                                                   ArrowFunctionDescriptor *desc,
                                                                   ir::TSTypeParameterDeclaration *typeParamDecl,
                                                                   ir::TypeNode *returnTypeAnnotation);
+    ir::Expression *ParseAssignmentExpressionHelper();
     ir::Expression *ParseAssignmentExpression(ir::Expression *lhsExpression,
                                               ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::Expression *ParseAssignmentBinaryExpression(lexer::TokenType tokenType, ir::Expression *lhsExpression,
@@ -319,6 +321,12 @@ protected:
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile);
     // NOLINTNEXTLINE(google-default-arguments)
+    ir::Statement *ParseStatementLiteralIdentHelper(StatementParsingFlags flags = StatementParsingFlags::NONE);
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Statement *ParseStatementControlFlowTokenHelper(StatementParsingFlags flags = StatementParsingFlags::NONE);
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Statement *ParseStatementPunctuatorsHelper(StatementParsingFlags flags = StatementParsingFlags::NONE);
+    // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Statement *ParseStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
@@ -336,6 +344,7 @@ protected:
         [[maybe_unused]] ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::ObjectExpression *ParseObjectExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
+    void ParseArrayExpressionRightBracketHelper();
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::ArrayExpression *ParseArrayExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     void ParseArrayExpressionErrorCheck(ir::ArrayExpression *arrayExpressionNode, ExpressionParseFlags flags,

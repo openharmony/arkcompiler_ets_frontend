@@ -259,6 +259,9 @@ private:
     std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     bool IsDefaultImport();
+    bool ParseNamedSpecifiesHelper(bool *logError);
+    void ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
+                                          const std::string &fileName);
     std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> ParseNamedSpecifiers();
     ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
@@ -415,6 +418,8 @@ private:
     bool IsStringEnum();
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst,
                                             bool isStatic) override;
+    bool ParseNumberEnumEnd();
+    bool ParseNumberEnumHelper();
     void ParseNumberEnum(ArenaVector<ir::AstNode *> &members);
     void ParseStringEnum(ArenaVector<ir::AstNode *> &members);
 

@@ -35,8 +35,9 @@ class ETSDynamicFunctionType;
 class ETSTypeParameter;
 class ETSEnumType;
 
+// CC-OFFNXT(G.PRE.02) name part
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_TYPENAMES(typeFlag, typeName) class typeName;
+#define DECLARE_TYPENAMES(typeFlag, typeName) class typeName;  // CC-OFF(G.PRE.09) code gen
 TYPE_MAPPING(DECLARE_TYPENAMES)
 #undef DECLARE_TYPENAMES
 class ETSStringType;
@@ -58,25 +59,30 @@ public:
     virtual ~Type() = default;
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TYPE_IS_CHECKS(typeFlag, typeName) \
-    bool Is##typeName() const              \
-    {                                      \
-        return HasTypeFlag(typeFlag);      \
+#define TYPE_IS_CHECKS(typeFlag, typeName)                                                  \
+    bool Is##typeName() const                                                               \
+    {                                                                                       \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return HasTypeFlag(typeFlag);                                                       \
     }
     TYPE_MAPPING(TYPE_IS_CHECKS)
 #undef DECLARE_IS_CHECKS
 
+/* CC-OFFNXT(G.PRE.06,G.PRE.02) solid logic, name part */
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TYPE_AS_CASTS(typeFlag, typeName)                \
-    typeName *As##typeName()                             \
-    {                                                    \
-        ASSERT(Is##typeName());                          \
-        return reinterpret_cast<typeName *>(this);       \
-    }                                                    \
-    const typeName *As##typeName() const                 \
-    {                                                    \
-        ASSERT(Is##typeName());                          \
-        return reinterpret_cast<const typeName *>(this); \
+#define TYPE_AS_CASTS(typeFlag, typeName)                                                   \
+    /* CC-OFFNXT(G.PRE.02) name part*/                                                      \
+    typeName *As##typeName()                                                                \
+    {                                                                                       \
+        ASSERT(Is##typeName());                                                             \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return reinterpret_cast<typeName *>(this); /* CC-OFF(G.PRE.02) name part*/          \
+    }                                                                                       \
+    const typeName *As##typeName() const                                                    \
+    {                                                                                       \
+        ASSERT(Is##typeName());                                                             \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return reinterpret_cast<const typeName *>(this);                                    \
     }
     TYPE_MAPPING(TYPE_AS_CASTS)
 #undef TYPE_AS_CASTS

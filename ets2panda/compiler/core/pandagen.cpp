@@ -718,117 +718,71 @@ void PandaGen::Unary(const ir::AstNode *node, lexer::TokenType op, VReg operand)
     }
 }
 
+// CC-OFFNXT(huge_method,huge_cyclomatic_complexity,G.FUN.01-CPP) big switch-case, solid logic
 void PandaGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
 {
     switch (op) {
-        case lexer::TokenType::PUNCTUATOR_EQUAL: {
-            Ra().Emit<EcmaEqdyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
-            Ra().Emit<EcmaNoteqdyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL: {
-            Ra().Emit<EcmaStricteqdyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            Ra().Emit<EcmaStrictnoteqdyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
-            Ra().Emit<EcmaLessdyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL: {
-            Ra().Emit<EcmaLesseqdyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
-            Ra().Emit<EcmaGreaterdyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
-            Ra().Emit<EcmaGreatereqdyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+            return Ra().Emit<EcmaEqdyn>(node, lhs);
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+            return Ra().Emit<EcmaNoteqdyn>(node, lhs);
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+            return Ra().Emit<EcmaStricteqdyn>(node, lhs);
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
+            return Ra().Emit<EcmaStrictnoteqdyn>(node, lhs);
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+            return Ra().Emit<EcmaLessdyn>(node, lhs);
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+            return Ra().Emit<EcmaLesseqdyn>(node, lhs);
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+            return Ra().Emit<EcmaGreaterdyn>(node, lhs);
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+            return Ra().Emit<EcmaGreatereqdyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_PLUS:
-        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            Ra().Emit<EcmaAdd2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL:
+            return Ra().Emit<EcmaAdd2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_MINUS:
-        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL: {
-            Ra().Emit<EcmaSub2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL:
+            return Ra().Emit<EcmaSub2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_MULTIPLY:
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL: {
-            Ra().Emit<EcmaMul2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
+            return Ra().Emit<EcmaMul2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_DIVIDE:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL: {
-            Ra().Emit<EcmaDiv2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL:
+            return Ra().Emit<EcmaDiv2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_MOD:
-        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL: {
-            Ra().Emit<EcmaMod2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL:
+            return Ra().Emit<EcmaMod2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION: {
-            Ra().Emit<EcmaExpdyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION:
+            return Ra().Emit<EcmaExpdyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL: {
-            Ra().Emit<EcmaShl2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL:
+            return Ra().Emit<EcmaShl2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL: {
-            Ra().Emit<EcmaShr2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
+            return Ra().Emit<EcmaShr2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL: {
-            Ra().Emit<EcmaAshr2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL:
+            return Ra().Emit<EcmaAshr2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL: {
-            Ra().Emit<EcmaAnd2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
+            return Ra().Emit<EcmaAnd2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            Ra().Emit<EcmaOr2dyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL:
+            return Ra().Emit<EcmaOr2dyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL: {
-            Ra().Emit<EcmaXor2dyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::KEYW_IN: {
-            Ra().Emit<EcmaIsindyn>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::KEYW_INSTANCEOF: {
-            Ra().Emit<EcmaInstanceofdyn>(node, lhs);
-            break;
-        }
+        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
+            return Ra().Emit<EcmaXor2dyn>(node, lhs);
+        case lexer::TokenType::KEYW_IN:
+            return Ra().Emit<EcmaIsindyn>(node, lhs);
+        case lexer::TokenType::KEYW_INSTANCEOF:
+            return Ra().Emit<EcmaInstanceofdyn>(node, lhs);
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING:
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL: {
-            Unimplemented();
-            break;
-        }
-        default: {
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL:
+            return Unimplemented();
+        default:
             UNREACHABLE();
-        }
     }
 }
 

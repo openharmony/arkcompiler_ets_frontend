@@ -813,6 +813,7 @@ void ETSChecker::CheckAnnotationTypeForVariableDeclaration(checker::Type *annota
     }
 
     if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {}, TypeRelationFlag::NO_THROW)
+             // CC-OFFNXT(G.FMT.02) project code style
              .IsAssignable()) {
         Type *targetType = isUnionFunction ? annotationType : TryGettingFunctionTypeFromInvokeFunction(annotationType);
         LogTypeError({"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"}, init->Start());
@@ -1934,6 +1935,7 @@ bool ETSChecker::CheckRethrowingParams(const ir::AstNode *ancestorFunction, cons
 {
     for (const auto param : ancestorFunction->AsScriptFunction()->Signature()->Function()->Params()) {
         if (node->AsCallExpression()->Callee()->AsIdentifier()->Name().Is(
+                // CC-OFFNXT(G.FMT.06-CPP) project code style
                 param->AsETSParameterExpression()->Ident()->Name().Mutf8())) {
             return true;
         }

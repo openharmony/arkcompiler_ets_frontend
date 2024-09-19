@@ -29,7 +29,7 @@ public:
 
     NO_COPY_SEMANTIC(ClassElement);
     NO_MOVE_SEMANTIC(ClassElement);
-
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassElement(AstNodeType const elementType, Expression *const key, Expression *const value,
                           ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
         : TypedStatement(elementType, modifiers),

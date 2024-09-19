@@ -66,6 +66,7 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
         start_of_body, initializers = parse_initializers(data, colon_pos + 1)
         start_of_body, end_of_body = find_scope_borders(data, start_of_body, "{")
         end_of_function = end_of_body
+        # CC-OFFNXT(G.TYP.07) dict key exist
         updated_args, other_initializers = extract_init_args(res["args"], initializers)
 
         if updated_args != []:
@@ -112,8 +113,9 @@ def parse_declaration_without_postfix(data: str, start: int, res: Dict[str, Any]
 
 
 def parse_initializer(init: str) -> dict:
+
     """
-    ' left_(left_init) ' ---> {'class_field': 'left_', 'init_value': 'left_init'}
+    Note ' left (left init) ' ---> 'class field': 'left', 'init value': 'left init'
     """
     init = init.strip(" \n")
     res = {}

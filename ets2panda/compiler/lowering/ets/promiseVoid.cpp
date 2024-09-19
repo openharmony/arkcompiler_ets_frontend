@@ -36,6 +36,7 @@ ir::BlockStatement *PromiseVoidInferencePhase::HandleAsyncScriptFunctionBody(che
 {
     (void)checker;
     body->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [checker](ir::AstNode *ast) -> ir::AstNode * {
             if (ast->IsReturnStatement()) {
                 auto *returnStmt = ast->AsReturnStatement();
@@ -59,6 +60,7 @@ void PromiseVoidInferencePhase::SetRangeRecursively(ir::TypeNode *node, const le
 {
     node->SetRange(loc);
     node->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [loc](ir::AstNode *ast) -> ir::AstNode * {
             ast->SetRange(loc);
             return ast;

@@ -115,7 +115,7 @@ enum es2panda_ContextState {
     ES2PANDA_STATE_ERROR
 };
 typedef enum es2panda_ContextState es2panda_ContextState;
-
+// CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_enums.inc"
 
 struct es2panda_Impl {
@@ -150,6 +150,7 @@ struct es2panda_Impl {
 
     void *(*AllocMemory)(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement);
 
+// CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"
 };
 

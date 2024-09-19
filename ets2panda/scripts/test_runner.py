@@ -15,10 +15,13 @@
 # limitations under the License.
 
 import argparse
+import logging
 import os
 import subprocess
 import sys
 from pathlib import Path
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 def parse_options():
@@ -50,17 +53,17 @@ def main():
     options = parse_options()
 
     if not os.path.exists(options.arkdir):
-        print("The following ark directory does not exist: {0}".format(options.arkdir))
+        logging.info("The following ark directory does not exist: {0}", options.arkdir)
         sys.exit(1)
 
     if not os.path.exists(options.builddir):
-        print("The following build directory does not exist: {0}".format(options.builddir))
+        logging.info("The following build directory does not exist: {0}", options.builddir)
         sys.exit(1)
 
     testrunner = os.path.join(options.arkdir, 'tests', 'tests-u-runner', 'main.py')
 
     if not os.path.isfile(testrunner):
-        print("The following script is not executable or exist: {0}".format(testrunner))
+        logging.info("The following script is not executable or exist: {0}", testrunner)
 
     general_cmd = [
         'python', testrunner, '--build-dir', options.builddir, '--force-generate',

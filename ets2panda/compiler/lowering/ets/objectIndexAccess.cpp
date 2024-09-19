@@ -82,6 +82,7 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
     ASSERT(checker != nullptr);
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
             if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression() &&
                 ast->AsAssignmentExpression()->Left()->AsMemberExpression()->Kind() ==
@@ -97,6 +98,7 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
         Name());
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
             if (ast->IsMemberExpression() &&
                 ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {

@@ -51,7 +51,7 @@ def parse_type(data: str) -> dict:
 
             res["other_modifiers"] = f"{res['other_modifiers']} {modifier}".strip(" ")
 
-    # Weakness (<>)
+    # NOTE(@Zhelyapov Aleksey) Weakness (<>)
     start_of_parenthes = data.find("(")
     if start_of_parenthes != -1:
         start_of_parenthes, end_of_parenthes = find_scope_borders(data, start_of_parenthes, "(")

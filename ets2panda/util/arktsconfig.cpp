@@ -515,6 +515,7 @@ std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::s
 }
 #else
 std::vector<std::pair<std::string, std::string>> FindProjectSources(
+    // CC-OFFNXT(G.FMT.06-CPP) project code style
     [[maybe_unused]] const std::shared_ptr<ArkTsConfig> &arkts_config)
 {
     ASSERT(false);

@@ -306,6 +306,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
 
     // Only transforming a temporary cloned node, so no modification is made in the AST
     clonedNode->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, &checkTypealias, &exactTypeParams, typeAliasNode](ir::AstNode *const node) -> ir::AstNode * {
             if (!node->IsETSTypeReference()) {
                 return node;

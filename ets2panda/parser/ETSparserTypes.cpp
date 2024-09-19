@@ -190,7 +190,7 @@ ir::TypeNode *ETSParser::ParseFunctionType()
 {
     auto startLoc = Lexer()->GetToken().Start();
     auto fullParams = ParseFunctionParams();
-
+    // CC-OFFNXT(G.FMT.14-CPP) project code style
     auto *const returnTypeAnnotation = [this]() -> ir::TypeNode * {
         ExpectToken(lexer::TokenType::PUNCTUATOR_ARROW);
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;

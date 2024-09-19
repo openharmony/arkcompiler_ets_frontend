@@ -24,7 +24,7 @@ namespace ark::es2panda::checker {
 class TSAnalyzer final : public SemanticAnalyzer {
 public:
     explicit TSAnalyzer(Checker *checker) : SemanticAnalyzer(checker) {};
-
+    /* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
     // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_TSANALYZER_CHECK_METHOD(_, nodeType) checker::Type *Check(ir::nodeType *node) const override;
     AST_NODE_MAPPING(DECLARE_TSANALYZER_CHECK_METHOD)
@@ -32,7 +32,7 @@ public:
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_TSANALYZER_CHECK_METHOD(_, __, nodeType, ___) \
-    virtual checker::Type *Check(ir::nodeType *node) const override;
+    virtual checker::Type *Check(ir::nodeType *node) const override;  // CC-OFF(G.PRE.02,G.PRE.09) name part
     AST_NODE_REINTERPRET_MAPPING(DECLARE_TSANALYZER_CHECK_METHOD)
 #undef DECLARE_TSANALYZER_CHECK_METHOD
 

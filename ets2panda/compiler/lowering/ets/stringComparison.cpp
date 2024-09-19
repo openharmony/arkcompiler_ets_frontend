@@ -112,6 +112,7 @@ bool StringComparisonLowering::Perform(public_lib::Context *ctx, parser::Program
 
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
     [[maybe_unused]] ArenaVector<ir::BinaryExpression *> foundNodes(checker->Allocator()->Adapter());
+    // CC-OFFNXT(G.FMT.14-CPP) project code style
     program->Ast()->IterateRecursively([&foundNodes, this](ir::AstNode *ast) -> ir::AstNode * {
         if (IsStringComparison(ast)) {
             foundNodes.push_back(ast->AsBinaryExpression());

@@ -2567,7 +2567,7 @@ export class TypeScriptLinter {
      * We use a dirty hack to retrieve list of parsed comment directives by accessing
      * internal properties of SourceFile node.
      */
-
+    /* CC-OFFNXT(no_explicit_any) std lib */
     // Handle comment directive '@ts-nocheck'
     const pragmas = (sourceFile as any).pragmas;
     if (pragmas && pragmas instanceof Map) {
@@ -2578,13 +2578,14 @@ export class TypeScriptLinter {
          * The value is either a single entry or an array of entries.
          * Wrap up single entry with array to simplify processing.
          */
+        /* CC-OFFNXT(no_explicit_any) std lib */
         const noCheckEntries: any[] = Array.isArray(noCheckPragma) ? noCheckPragma : [noCheckPragma];
         for (const entry of noCheckEntries) {
           this.processNoCheckEntry(entry);
         }
       }
     }
-
+    /* CC-OFFNXT(no_explicit_any) std lib */
     // Handle comment directives '@ts-ignore' and '@ts-expect-error'
     const commentDirectives = (sourceFile as any).commentDirectives;
     if (commentDirectives && Array.isArray(commentDirectives)) {
@@ -2609,7 +2610,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private processNoCheckEntry(entry: any): void {
+  private processNoCheckEntry(entry: any): void { // CC-OFF(no_explicit_any) std lib
     if (entry.range?.kind === undefined || entry.range?.pos === undefined || entry.range?.end === undefined) {
       return;
     }

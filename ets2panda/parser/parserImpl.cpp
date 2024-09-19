@@ -890,6 +890,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 
             if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
                 lexer_->NextToken();
+                // CC-OFFNXT(G.FMT.06-CPP) project code style
             } else if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
                 LogSyntaxError("Invalid token: ',' or ')' expected.");
 
@@ -909,6 +910,7 @@ ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringVie
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
+    // CC-OFFNXT(G.FMT.06-CPP) project code style
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus newStatus,
     [[maybe_unused]] ParserStatus contextStatus)
 {
@@ -1118,6 +1120,7 @@ void ParserImpl::ValidateArrowParameterBindings(const ir::Expression *node)
         }
         case ir::AstNodeType::ASSIGNMENT_PATTERN: {
             ValidateArrowParameterBindings(node->AsAssignmentPattern()->Left());
+            // CC-OFFNXT(G.FMT.06-CPP) project code style
             break;
         }
         default: {
@@ -1137,6 +1140,7 @@ void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
 }
 
 ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder(
+    // CC-OFFNXT(G.FMT.06-CPP) project code style
     [[maybe_unused]] std::optional<NodeFormatType> nodeFormat) const
 {
     ThrowSyntaxError("Identifier expected.");

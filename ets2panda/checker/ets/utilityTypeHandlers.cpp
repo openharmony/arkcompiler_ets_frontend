@@ -656,7 +656,6 @@ ir::TSInterfaceDeclaration *ETSChecker::CreateInterfaceProto(util::StringView na
                                                      !isClassDeclaredInCurrentFile, Language(Language::Id::ETS)});
 
     const auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
-    // partialInterface->TypeParams()->SetScope(classCtx.GetScope());
     partialInterface->TypeParams()->SetParent(partialInterface);
     partialInterface->SetScope(classCtx.GetScope());
     partialInterface->SetVariable(var);

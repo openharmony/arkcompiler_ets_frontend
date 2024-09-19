@@ -627,7 +627,7 @@ ir::Expression *TSParser::ParseArrowFunctionNoParameter(lexer::SourcePosition st
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
-    [[maybe_unused]] ExpressionParseFlags flags)
+    [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();

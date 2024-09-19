@@ -1536,7 +1536,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
     if (!funcBody->Statements().empty() && funcBody->Statements()[0]->IsExpressionStatement() &&
         funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
         funcBody->Statements()[0]
-            ->AsExpressionStatement()
+            ->AsExpressionStatement()  // CC-OFF(G.FMT.06-CPP,G.FMT.02-CPP) project code style
             ->GetExpression()
             ->AsCallExpression()
             ->Callee()
@@ -1615,6 +1615,7 @@ varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpres
     // clang-format off
     auto *globalFunctionVar = Scope()
                                 ->FindInGlobal(memberExpr->Property()->AsIdentifier()->Name(),
+                                                // CC-OFFNXT(G.FMT.06-CPP) project code style
                                                 varbinder::ResolveBindingOptions::STATIC_METHODS)
                                 .variable;
     // clang-format on

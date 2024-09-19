@@ -30,8 +30,10 @@ class StringView {
 public:
     explicit StringView() noexcept = default;
     explicit StringView(const ArenaString *str) noexcept : sv_(*str) {}
+    // CC-OFFNXT(G.FMT.06-CPP,G.CLS.03-CPP) same as clang, project code style
     // NOLINTNEXTLINE(google-explicit-constructor)
     StringView(std::string_view sv) noexcept : sv_(sv) {}
+    // CC-OFFNXT(G.FMT.06-CPP, G.CLS.03-CPP) same as clang, project code style
     // NOLINTNEXTLINE(google-explicit-constructor)
     StringView(const char *str) noexcept : sv_(str == nullptr ? "" : str) {}
     DEFAULT_COPY_SEMANTIC(StringView);
