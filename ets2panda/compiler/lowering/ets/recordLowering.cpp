@@ -72,10 +72,12 @@ RecordLowering::KeyType RecordLowering::TypeToKey(checker::Type *type) const
 
 bool RecordLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            Perform(ctx, extProg);
+    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, extPrograms] : program->ExternalSources()) {
+            (void)_;
+            for (auto *extProg : extPrograms) {
+                Perform(ctx, extProg);
+            }
         }
     }
 
