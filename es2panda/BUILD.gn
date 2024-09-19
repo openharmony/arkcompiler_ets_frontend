@@ -51,6 +51,7 @@ es2panda_src = [
   "compiler/function/functionBuilder.cpp",
   "compiler/function/generatorFunctionBuilder.cpp",
   "ir/astDump.cpp",
+  "ir/base/annotation.cpp",
   "ir/base/catchClause.cpp",
   "ir/base/classDefinition.cpp",
   "ir/base/classProperty.cpp",

@@ -99,6 +99,7 @@ set(ES2PANDA_LIB_SRC
   compiler/function/functionBuilder.cpp
   compiler/function/generatorFunctionBuilder.cpp
   ir/astDump.cpp
+  ir/base/annotation.cpp
   ir/base/catchClause.cpp
   ir/base/classDefinition.cpp
   ir/base/classProperty.cpp

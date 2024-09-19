@@ -269,6 +269,7 @@
                 },
                 "overloads": [],
                 "decorators": [],
+                "annotations": [],
                 "loc": {
                   "start": {
                     "line": 27,
@@ -347,6 +348,7 @@
                   },
                   "overloads": [],
                   "decorators": [],
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 28,
@@ -372,6 +374,7 @@
               }
             },
             "decorators": [],
+            "isAnnotationDeclaration": false,
             "loc": {
               "start": {
                 "line": 27,

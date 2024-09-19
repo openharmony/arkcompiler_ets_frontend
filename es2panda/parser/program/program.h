@@ -224,6 +224,16 @@ public:
     {
         return moduleRecordFieldName_;
     }
+    
+    void SetEnableAnnotations(bool enableAnnotations)
+    {
+        enableAnnotations_ = enableAnnotations;
+    }
+
+    bool IsEnableAnnotations()
+    {
+        return enableAnnotations_;
+    }
 
     std::string Dump() const;
     void SetKind(ScriptKind kind);
@@ -248,6 +258,7 @@ private:
     int targetApiVersion_ {0};
     bool useDefineSemantic_ {true};
     bool isShared_ {false};
+    bool enableAnnotations_ {false};
     std::string targetApiSubVersion_ { util::Helpers::DEFAULT_SUB_API_VERSION };
     std::string moduleRecordFieldName_;
 };

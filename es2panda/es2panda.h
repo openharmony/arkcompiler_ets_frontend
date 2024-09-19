@@ -121,6 +121,7 @@ struct CompilerOptions {
     bool dumpString {false};
     std::string targetApiSubVersion;
     std::string moduleRecordFieldName;
+    bool enableAnnotations;
 };
 
 enum class ErrorType {

@@ -25,11 +25,26 @@
 #include <compiler/base/catchTable.h>
 #include <es2panda.h>
 #include <gen/isa.h>
+#include <ir/base/annotation.h>
+#include <ir/base/classDefinition.h>
 #include <ir/base/methodDefinition.h>
+#include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
+#include <ir/expressions/arrayExpression.h>
+#include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
 #include <ir/expressions/literal.h>
+#include <ir/expressions/literals/booleanLiteral.h>
+#include <ir/expressions/literals/numberLiteral.h>
+#include <ir/expressions/literals/stringLiteral.h>
+#include <ir/expressions/newExpression.h>
+#include <ir/expressions/objectExpression.h>
 #include <ir/statements/blockStatement.h>
+#include <ir/statements/classDeclaration.h>
+#include <ir/ts/tsArrayType.h>
+#include <ir/ts/tsEnumMember.h>
+#include <ir/ts/tsTypeParameterInstantiation.h>
+#include <ir/ts/tsTypeReference.h>
 #include <macros.h>
 #include <parser/program/program.h>
 #include <util/helpers.h>
@@ -43,7 +58,10 @@ namespace panda::es2panda::compiler {
 constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 
 FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
-    : pg_(pg), literalBuffers_(allocator->Adapter())
+    : pg_(pg),
+      literalBuffers_(allocator->Adapter()),
+      literalArrays_(allocator->Adapter()),
+      externalAnnotationRecords_(allocator->Adapter())
 {
     func_ = allocator->New<panda::pandasm::Function>(pg->InternalName().Mutf8(), LANG_EXT);
     CHECK_NOT_NULL(func_);
@@ -69,6 +87,7 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
     GenFunctionCatchTables();
     GenLiteralBuffers();
     GenConcurrentFunctionModuleRequests();
+    GenAnnotations();
     if (patchFixHelper != nullptr) {
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
     }
@@ -207,6 +226,213 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
         offset_ += insLen;
         pandaIns->ins_debug.column_number = columnNum;
     }
+}
+
+static std::vector<panda::pandasm::LiteralArray::Literal> ProcessNewExpressionInLiteralArray(
+    const ir::Expression *array)
+{
+    std::vector<panda::pandasm::LiteralArray::Literal> literals;
+
+    const auto &typeParams = array->AsNewExpression()->TypeParams()->Params();
+    auto type = typeParams[0]->Type();
+    literals.emplace_back(
+        pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::TAGVALUE,
+                                        static_cast<uint8_t>(panda::panda_file::LiteralTag::BUILTINTYPEINDEX)});
+    switch (type) {
+        case ir::AstNodeType::TS_NUMBER_KEYWORD: {
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::BUILTINTYPEINDEX,
+                                                              ir::Annotation::EMPTY_LITERAL_ARRAY_WITH_NUMBER_TYPE});
+            break;
+        }
+        case ir::AstNodeType::TS_BOOLEAN_KEYWORD: {
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::BUILTINTYPEINDEX,
+                                                              ir::Annotation::EMPTY_LITERAL_ARRAY_WITH_BOOLEAN_TYPE});
+            break;
+        }
+        case ir::AstNodeType::TS_STRING_KEYWORD: {
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::BUILTINTYPEINDEX,
+                                                              ir::Annotation::EMPTY_LITERAL_ARRAY_WITH_STRING_TYPE});
+            break;
+        }
+        case ir::AstNodeType::TS_TYPE_REFERENCE: {
+            const auto &args = array->AsNewExpression()->Arguments();
+            uint8_t value = args[0]->AsNumberLiteral()->Number<uint8_t>();
+            if (value == ir::Annotation::ENUM_LITERAL_ARRAY_WITH_EMPTY_INITIALIZER_NUMBER_TYPE) {
+                // By convention, this is an empty array of enums with underlying number type
+                literals.emplace_back(pandasm::LiteralArray::Literal {
+                    panda::panda_file::LiteralTag::BUILTINTYPEINDEX,
+                    ir::Annotation::EMPTY_LITERAL_ARRAY_WITH_NUMBER_TYPE});
+            } else if (value == ir::Annotation::ENUM_LITERAL_ARRAY_WITH_EMPTY_INITIALIZER_STRING_TYPE) {
+                // By convention, this is an empty array of enums with underlying string type
+                literals.emplace_back(pandasm::LiteralArray::Literal {
+                    panda::panda_file::LiteralTag::BUILTINTYPEINDEX,
+                    ir::Annotation::EMPTY_LITERAL_ARRAY_WITH_STRING_TYPE});
+            } else {
+                UNREACHABLE();
+            }
+            break;
+        }
+        default:
+            UNREACHABLE();
+    }
+
+    return literals;
+}
+
+static std::vector<panda::pandasm::LiteralArray::Literal> ProcessArrayExpressionInLiteralArray(
+    const ir::Expression *array, const std::string &baseName,
+    std::vector<std::pair<std::string, std::vector<Literal>>> &result)
+{
+    std::vector<panda::pandasm::LiteralArray::Literal> literals;
+    ArenaVector<ir::Expression *> elements {array->AsArrayExpression()->Elements()};
+
+    for (const auto *elem : elements) {
+        if (elem->IsArrayExpression() || elem->IsNewExpression()) {
+            auto litArrays = Emitter::CreateLiteralArray(elem, baseName);
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::TAGVALUE,
+                                                static_cast<uint8_t>(panda::panda_file::LiteralTag::LITERALARRAY)});
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::LITERALARRAY,
+                                                                  litArrays.back().first});
+            for (auto item : litArrays) {
+                result.push_back(item);
+            }
+        } else if (elem->IsNumberLiteral()) {
+            double doubleValue = elem->AsNumberLiteral()->Number();
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::TAGVALUE,
+                                                static_cast<uint8_t>(panda::panda_file::LiteralTag::DOUBLE)});
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::DOUBLE, doubleValue});
+        } else if (elem->IsBooleanLiteral()) {
+            bool boolValue = elem->AsBooleanLiteral()->Value();
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::TAGVALUE,
+                                                static_cast<uint8_t>(panda::panda_file::LiteralTag::BOOL)});
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::BOOL, boolValue});
+        } else if (elem->IsStringLiteral()) {
+            std::string stringValue {elem->AsStringLiteral()->Str().Utf8()};
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::TAGVALUE,
+                                                static_cast<uint8_t>(panda::panda_file::LiteralTag::STRING)});
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::STRING, stringValue});
+        } else {
+            UNREACHABLE();
+        }
+    }
+
+    return literals;
+}
+
+std::vector<std::pair<std::string, std::vector<Literal>>> Emitter::CreateLiteralArray(const ir::Expression *array,
+                                                                                      const std::string &baseName)
+{
+    std::vector<std::pair<std::string, std::vector<Literal>>> result;
+    std::vector<panda::pandasm::LiteralArray::Literal> literals;
+
+    if (array->IsNewExpression()) {
+        // special case, when initializer is an empty array
+        literals = ProcessNewExpressionInLiteralArray(array);
+    } else {
+        literals = ProcessArrayExpressionInLiteralArray(array, baseName, result);
+    }
+
+    static uint32_t litArrayValueCount = 0;
+    std::string litArrayName = baseName + "_" + std::to_string(litArrayValueCount);
+    ++litArrayValueCount;
+    result.push_back(std::make_pair(litArrayName, literals));
+    return result;
+}
+
+pandasm::AnnotationElement FunctionEmitter::CreateAnnotationElement(const std::string &propName,
+                                                                    const ir::Expression *initValue)
+{
+    if (initValue->IsArrayExpression() || initValue->IsNewExpression()) {
+        std::string baseName {func_->name + "_" + propName};
+        auto litArrays = Emitter::CreateLiteralArray(initValue, baseName);
+        for (auto item : litArrays) {
+            literalArrays_.push_back(item);
+        }
+        return pandasm::AnnotationElement {
+            propName,
+            std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::LITERALARRAY>(
+                std::string_view {litArrays.back().first}))};
+    } else if (initValue->IsNumberLiteral()) {
+        return pandasm::AnnotationElement {
+            propName, std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(
+                          initValue->AsNumberLiteral()->Number()))};
+    } else if (initValue->IsBooleanLiteral()) {
+        return pandasm::AnnotationElement {
+            propName, std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::U1>(
+                          initValue->AsBooleanLiteral()->Value()))};
+    } else if (initValue->IsStringLiteral()) {
+        std::string_view stringValue {initValue->AsStringLiteral()->Str().Utf8()};
+        return pandasm::AnnotationElement {
+            propName, std::make_unique<pandasm::ScalarValue>(
+                          pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(stringValue))};
+    } else {
+        UNREACHABLE();
+    }
+}
+
+static pandasm::Record CreateExternalAnnotationRecord(const std::string &name)
+{
+    pandasm::Record record(name, pandasm::extensions::Language::ECMASCRIPT);
+    record.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
+    record.metadata->SetAttribute("external");
+    return record;
+}
+
+pandasm::AnnotationData FunctionEmitter::CreateAnnotation(const ir::Annotation *anno)
+{
+    pandasm::AnnotationData annotation(anno->Name().Utf8());
+
+    if (anno->IsImported()) {
+        externalAnnotationRecords_.push_back(CreateExternalAnnotationRecord(std::string(anno->Name())));
+    }
+
+    if (!anno->Expr()->IsCallExpression()) {
+        [[maybe_unused]] auto checkExpr = anno->Expr()->IsIdentifier() || anno->Expr()->IsMemberExpression();
+        ASSERT(checkExpr == true);
+        return annotation;
+    }
+
+    const ir::CallExpression *callExpr = anno->Expr()->AsCallExpression();
+    if (callExpr->Arguments().size() == 0) {
+        return annotation;
+    }
+
+    // By convention, all properties are initialized in TSC, so that we don't need to process
+    // default arguments in annotation interface declaration
+    for (auto prop : callExpr->Arguments()[0]->AsObjectExpression()->Properties()) {
+        std::string propName {prop->AsProperty()->Key()->AsIdentifier()->Name()};
+        const ir::Expression *initValue = prop->AsProperty()->Value();
+        annotation.AddElement(CreateAnnotationElement(propName, initValue));
+    }
+
+    return annotation;
+}
+
+void FunctionEmitter::GenAnnotations()
+{
+    if (!pg_->RootNode()->IsScriptFunction()) {
+        return;
+    }
+
+    auto *scriptFunction = pg_->RootNode()->AsScriptFunction();
+    if (!scriptFunction->Parent() || !scriptFunction->Parent()->Parent() ||
+        !scriptFunction->Parent()->Parent()->IsMethodDefinition()) {
+        return;
+    }
+
+    auto *methodDefinition = scriptFunction->Parent()->Parent()->AsMethodDefinition();
+    std::vector<pandasm::AnnotationData> annotations;
+    for (auto *anno : methodDefinition->Annotations()) {
+        annotations.emplace_back(CreateAnnotation(anno));
+    }
+
+    func_->metadata->AddAnnotations(annotations);
 }
 
 void FunctionEmitter::GenFunctionInstructions()
@@ -414,6 +640,15 @@ void Emitter::AddFunction(FunctionEmitter *func, CompilerContext *context)
         prog_->literalarray_table.emplace(litId, std::move(literalArrayInstance));
     }
 
+    for (auto &[name, buf] : func->LiteralArrays()) {
+        auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(buf));
+        prog_->literalarray_table.emplace(name, std::move(literalArrayInstance));
+    }
+
+    for (auto &&rec : func->ExternalAnnotationRecords()) {
+        prog_->record_table.emplace(rec.name, std::move(rec));
+    }
+
     auto *function = func->Function();
     prog_->function_table.emplace(function->name, std::move(*function));
 }
@@ -442,8 +677,8 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
         val.value_ = std::string(scopeName);
         array.literals_.at(index * DOUBLE_SIZE + 1) = std::move(val);
     }
-    auto literalKey = std::string(context->Binder()->Program()->RecordName()) +
-                      "_" + std::to_string(context->NewLiteralIndex());
+    auto literalKey =
+        std::string(context->Binder()->Program()->RecordName()) + "_" + std::to_string(context->NewLiteralIndex());
     prog_->literalarray_table.emplace(literalKey, std::move(array));
 
     // ScopeNames is a literalarray in each record if it is in mergeAbc, it is a string array which put scope names.
@@ -454,7 +689,7 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
         scopeNamesField.type = panda::pandasm::Type("u32", 0);
         scopeNamesField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
-            static_cast<std::string_view>(literalKey)));
+                static_cast<std::string_view>(literalKey)));
         rec_->field_list.emplace_back(std::move(scopeNamesField));
     } else {
         auto scopeNamesRecord = panda::pandasm::Record("_ESScopeNamesRecord", LANG_EXT);
@@ -470,10 +705,188 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
         scopeNamesField.type = panda::pandasm::Type("u32", 0);
         scopeNamesField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
-            static_cast<std::string_view>(literalKey)));
+                static_cast<std::string_view>(literalKey)));
         scopeNamesRecord.field_list.emplace_back(std::move(scopeNamesField));
         prog_->record_table.emplace(scopeNamesRecord.name, std::move(scopeNamesRecord));
     }
+}
+
+void Emitter::CreateStringClass()
+{
+    if (prog_->record_table.find(ir::Annotation::stringClassName) == prog_->record_table.end()) {
+        pandasm::Record record(ir::Annotation::stringClassName, pandasm::extensions::Language::ECMASCRIPT);
+        record.metadata->SetAttribute("external");
+        prog_->record_table.emplace(ir::Annotation::stringClassName, std::move(record));
+    }
+}
+
+panda::pandasm::Type Emitter::DeduceArrayEnumType(const ir::Expression *value, uint8_t rank,
+                                                  bool &needToCreateArrayValue)
+{
+    // By convention, array of enum must always has initializer
+    ASSERT(value != nullptr);
+    while (value->IsArrayExpression()) {
+        const auto &elements = value->AsArrayExpression()->Elements();
+        value = elements[0];
+    }
+
+    if (value->IsNumberLiteral()) {
+        return panda::pandasm::Type("f64", rank);
+    } else if (value->IsStringLiteral()) {
+        CreateStringClass();
+        return panda::pandasm::Type(ir::Annotation::stringClassName, rank);
+    } else if (value->IsNewExpression()) {
+        const auto &args = value->AsNewExpression()->Arguments();
+        uint8_t value = args[0]->AsNumberLiteral()->Number<uint8_t>();
+        switch (value) {
+            // By convention, this is an array of enums with underlying number type without initializer
+            case ir::Annotation::ENUM_LITERAL_ARRAY_WITHOUT_INITIALIZER_NUMBER_TYPE: {
+                needToCreateArrayValue = false;
+                return panda::pandasm::Type("f64", rank);
+            }
+            case ir::Annotation::ENUM_LITERAL_ARRAY_WITH_EMPTY_INITIALIZER_NUMBER_TYPE: {
+                // By convention, this is an array of enums with underlying number type with empty array initializer
+                needToCreateArrayValue = true;
+                return panda::pandasm::Type("f64", rank);
+            }
+            case ir::Annotation::ENUM_LITERAL_ARRAY_WITHOUT_INITIALIZER_STRING_TYPE: {
+                // By convention, this is an array of enums with underlying string type without initializer
+                needToCreateArrayValue = false;
+                CreateStringClass();
+                return panda::pandasm::Type(ir::Annotation::stringClassName, rank);
+            }
+            case ir::Annotation::ENUM_LITERAL_ARRAY_WITH_EMPTY_INITIALIZER_STRING_TYPE: {
+                // By convention, this is an array of enums with underlying string type with empty array initializer
+                needToCreateArrayValue = true;
+                CreateStringClass();
+                return panda::pandasm::Type(ir::Annotation::stringClassName, rank);
+            }
+            default:
+                UNREACHABLE();
+        }
+    }
+    UNREACHABLE();
+}
+
+void Emitter::CreateLiteralArrayProp(const ir::ClassProperty *prop, const std::string &annoName,
+                                     panda::pandasm::Field &annoRecordField)
+{
+    uint8_t rank = 1;
+    auto *elemType = prop->TypeAnnotation()->AsTSArrayType()->ElementType();
+    while (elemType->Type() == ir::AstNodeType::TS_ARRAY_TYPE) {
+        ++rank;
+        elemType = elemType->AsTSArrayType()->ElementType();
+    }
+
+    if (elemType->Type() == ir::AstNodeType::TS_NUMBER_KEYWORD) {
+        annoRecordField.type = panda::pandasm::Type("f64", rank);
+    } else if (elemType->Type() == ir::AstNodeType::TS_BOOLEAN_KEYWORD) {
+        annoRecordField.type = panda::pandasm::Type("u1", rank);
+    } else if (elemType->Type() == ir::AstNodeType::TS_STRING_KEYWORD) {
+        CreateStringClass();
+        annoRecordField.type = panda::pandasm::Type(ir::Annotation::stringClassName, rank);
+    } else if (elemType->Type() == ir::AstNodeType::TS_TYPE_REFERENCE) {
+        bool needToCreateArrayValue = true;
+        annoRecordField.type = DeduceArrayEnumType(prop->Value(), rank, needToCreateArrayValue);
+        if (!needToCreateArrayValue) {
+            return;
+        }
+    } else {
+        UNREACHABLE();
+    }
+
+    auto value = prop->Value();
+    if (value != nullptr) {
+        std::string baseName = annoName + "_" + annoRecordField.name;
+        auto litArray = Emitter::CreateLiteralArray(value, baseName);
+        for (auto item : litArray) {
+            prog_->literalarray_table.emplace(item.first, pandasm::LiteralArray(item.second));
+        }
+        annoRecordField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
+                std::string_view {litArray.back().first}));
+    }
+}
+
+void Emitter::CreateEnumProp(const ir::ClassProperty *prop, const std::string &annoName,
+                             panda::pandasm::Field &annoRecordField)
+{
+    auto value = prop->Value();
+    if (value == nullptr) {
+        // By convention, if annotation interface prop has no init value,
+        // then underlying type of annotation is string
+        CreateStringClass();
+        annoRecordField.type = panda::pandasm::Type(ir::Annotation::stringClassName, 0);
+    } else if (value->IsTSAsExpression()) {
+        // By convention, if annotation interface prop has init value "new Number(0) as number",
+        // then underlying type of annotation is number
+        annoRecordField.type = panda::pandasm::Type("f64", 0);
+    } else if (value->IsStringLiteral()) {
+        CreateStringClass();
+        annoRecordField.type = panda::pandasm::Type(ir::Annotation::stringClassName, 0);
+        std::string_view stringValue {value->AsStringLiteral()->Str().Utf8()};
+        annoRecordField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(stringValue));
+    } else if (value->IsNumberLiteral()) {
+        annoRecordField.type = panda::pandasm::Type("f64", 0);
+        double doubleValue = value->AsNumberLiteral()->Number();
+        annoRecordField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::F64>(doubleValue));
+    } else {
+        UNREACHABLE();
+    }
+}
+
+panda::pandasm::Field Emitter::CreateAnnotationProp(const ir::ClassProperty *prop, const std::string &annoName)
+{
+    auto annoRecordField = panda::pandasm::Field(panda::panda_file::SourceLang::ECMASCRIPT);
+    annoRecordField.name = std::string(prop->Key()->AsIdentifier()->Name());
+
+    auto propType = prop->TypeAnnotation()->Type();
+    auto value = prop->Value();
+    if (propType == ir::AstNodeType::TS_NUMBER_KEYWORD) {
+        annoRecordField.type = panda::pandasm::Type("f64", 0);
+        if (value != nullptr) {
+            double doubleValue = value->AsNumberLiteral()->Number();
+            annoRecordField.metadata->SetValue(
+                panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::F64>(doubleValue));
+        }
+    } else if (propType == ir::AstNodeType::TS_BOOLEAN_KEYWORD) {
+        annoRecordField.type = panda::pandasm::Type("u1", 0);
+        if (value != nullptr) {
+            bool boolValue = value->AsBooleanLiteral()->Value();
+            annoRecordField.metadata->SetValue(
+                panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U1>(boolValue));
+        }
+    } else if (propType == ir::AstNodeType::TS_STRING_KEYWORD) {
+        CreateStringClass();
+        annoRecordField.type = panda::pandasm::Type(ir::Annotation::stringClassName, 0);
+        if (value != nullptr) {
+            std::string_view stringValue {value->AsStringLiteral()->Str().Utf8()};
+            annoRecordField.metadata->SetValue(
+                panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(stringValue));
+        }
+    } else if (propType == ir::AstNodeType::TS_ARRAY_TYPE) {
+        CreateLiteralArrayProp(prop, annoName, annoRecordField);
+    } else if (propType == ir::AstNodeType::TS_TYPE_REFERENCE) {
+        CreateEnumProp(prop, annoName, annoRecordField);
+    } else {
+        UNREACHABLE();
+    }
+
+    return annoRecordField;
+}
+
+void Emitter::AddAnnotationRecord(const std::string &annoName, const ir::ClassDeclaration *classDecl)
+{
+    pandasm::Record record(annoName, pandasm::extensions::Language::ECMASCRIPT);
+    record.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
+
+    for (auto bodyItem : classDecl->Definition()->Body()) {
+        record.field_list.emplace_back(CreateAnnotationProp(bodyItem->AsClassProperty(), annoName));
+    }
+
+    prog_->record_table.emplace(annoName, std::move(record));
 }
 
 void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context)
@@ -492,7 +905,7 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         moduleIdxField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
-            static_cast<std::string_view>(moduleLiteral)));
+                static_cast<std::string_view>(moduleLiteral)));
         rec_->field_list.emplace_back(std::move(moduleIdxField));
 
         if (context->PatchFixHelper()) {
@@ -509,7 +922,7 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         moduleIdxField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
-            static_cast<std::string_view>(moduleLiteral)));
+                static_cast<std::string_view>(moduleLiteral)));
         ecmaModuleRecord.field_list.emplace_back(std::move(moduleIdxField));
 
         if (context->PatchFixHelper()) {
@@ -561,8 +974,7 @@ void Emitter::AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *cont
         hasTLAField.name = "hasTopLevelAwait";
         hasTLAField.type = panda::pandasm::Type("u8", 0);
         hasTLAField.metadata->SetValue(
-            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(hasTLA))
-        );
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(hasTLA)));
         rec_->field_list.emplace_back(std::move(hasTLAField));
     } else if (hasTLA) {
         auto hasTLARecord = panda::pandasm::Record("_HasTopLevelAwait", LANG_EXT);
@@ -571,8 +983,7 @@ void Emitter::AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *cont
         hasTLAField.name = "hasTopLevelAwait";
         hasTLAField.type = panda::pandasm::Type("u8", 0);
         hasTLAField.metadata->SetValue(
-            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(true))
-        );
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(true)));
         hasTLARecord.field_list.emplace_back(std::move(hasTLAField));
 
         prog_->record_table.emplace(hasTLARecord.name, std::move(hasTLARecord));
@@ -587,8 +998,7 @@ void Emitter::AddSharedModuleRecord(const CompilerContext *context)
     sharedModuleField.name = "isSharedModule";
     sharedModuleField.type = panda::pandasm::Type("u8", 0);
     sharedModuleField.metadata->SetValue(
-        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isShared))
-    );
+        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isShared)));
 
     if (context->IsMergeAbc()) {
         rec_->field_list.emplace_back(std::move(sharedModuleField));

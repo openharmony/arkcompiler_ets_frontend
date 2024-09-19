@@ -311,7 +311,7 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
         }
         case ir::AstNodeType::CLASS_DECLARATION: {
             auto *node = childNode->AsClassDeclaration();
-            if (node->Definition()->Declare()) {
+            if (node->Definition()->Declare() || node->IsAnnotationDecl()) {
                 return node;
             }
             DuringClass duringClass(&classList_, node->Definition()->GetName(),
@@ -941,10 +941,12 @@ ir::MethodDefinition* Transformer::AddMethodToClass(ir::ClassDefinition *classDe
     }
 
     ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
+    ArenaVector<ir::Annotation *> annotations(Allocator()->Adapter());
     ArenaVector<ir::ParamDecorators> paramDecorators(Allocator()->Adapter());
     auto *method = AllocNode<ir::MethodDefinition>(methodInfo.kind, keyNode, funcExpr,
                                                    methodInfo.modifiers, Allocator(), std::move(decorators),
-                                                   std::move(paramDecorators), methodInfo.isComputed);
+                                                   std::move(annotations), std::move(paramDecorators),
+                                                   methodInfo.isComputed);
     classDefinition->AddToBody(method);
     if (methodInfo.isComputed) {
         AddComputedPropertyBinding(method, methodInfo.backupName);

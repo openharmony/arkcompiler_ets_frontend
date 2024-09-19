@@ -19,6 +19,7 @@
 #include "binder/tsBinding.h"
 #include "es2panda.h"
 #include "ir/astNode.h"
+#include "ir/base/annotation.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -28,6 +29,7 @@
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/callExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/privateIdentifier.h"
@@ -35,6 +37,7 @@
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
+#include "ir/statements/classDeclaration.h"
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/forInStatement.h"
 #include "ir/statements/forOfStatement.h"
@@ -110,6 +113,16 @@ void Binder::ThrowInvalidDstrTarget(const lexer::SourcePosition &pos, const util
 
     std::stringstream ss;
     ss << "Invalid destructuring assignment target: " << name;
+    throw Error(ErrorType::SYNTAX, ss.str(), loc.line, loc.col);
+}
+
+void Binder::ThrowInvalidAnnotationDeclaration(const lexer::SourcePosition &pos, const util::StringView &name)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    std::stringstream ss;
+    ss << "Invalid annotation declaration: " << name;
     throw Error(ErrorType::SYNTAX, ss.str(), loc.line, loc.col);
 }
 
@@ -605,7 +618,9 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
     }
     bool previousInSendableClass = inSendableClass_;
 
-    ResolveReference(classDef, classDef->Ctor());
+    if (!(classDef->Parent()->IsClassDeclaration() && classDef->Parent()->AsClassDeclaration()->IsAnnotationDecl())) {
+        ResolveReference(classDef, classDef->Ctor());
+    }
 
     if (classDef->NeedStaticInitializer()) {
         ResolveReference(classDef, classDef->StaticInitializer());
@@ -696,6 +711,30 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
                 scope_->SetSelfScopeName(ident->Name());
             }
 
+            ResolveReferences(childNode);
+            break;
+        }
+        case ir::AstNodeType::ANNOTATION: {
+            auto *annotation = childNode->AsAnnotation();
+            std::string annoName{annotation->Name()};
+            ScopeFindResult res = scope_->Find(annotation->Name(), bindingOptions_);
+            if (res.variable != nullptr) {
+                if (res.variable->Declaration()->Node()->IsImportSpecifier()) {
+                    annotation->SetIsImported();
+                } else if (!res.variable->Declaration()->Node()->IsClassDefinition()) {
+                    ThrowInvalidAnnotationDeclaration(annotation->Start(), annotation->Name());
+                }
+            } else if (annoName.find_first_of(".") != std::string::npos) {
+                auto importName = annoName.substr(0, annoName.find_first_of("."));
+                ScopeFindResult res = scope_->Find(util::StringView(importName), bindingOptions_);
+                if (res.variable != nullptr && res.variable->Declaration()->Node()->IsImportNamespaceSpecifier()) {
+                    annotation->SetIsImported();
+                } else {
+                    ThrowInvalidAnnotationDeclaration(annotation->Start(), annotation->Name());
+                }
+            } else {
+                ThrowInvalidAnnotationDeclaration(annotation->Start(), annotation->Name());
+            }
             ResolveReferences(childNode);
             break;
         }

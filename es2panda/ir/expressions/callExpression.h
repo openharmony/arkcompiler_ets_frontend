@@ -49,6 +49,11 @@ public:
         return callee_;
     }
 
+    Expression *Callee()
+    {
+        return callee_;
+    }
+
     const TSTypeParameterInstantiation *TypeParams() const
     {
         return typeParams_;

@@ -96,6 +96,7 @@ public:
     [[noreturn]] void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name);
     [[noreturn]] void ThrowUndeclaredExport(const lexer::SourcePosition &pos, const util::StringView &name);
     [[noreturn]] void ThrowInvalidDstrTarget(const lexer::SourcePosition &pos, const util::StringView &name);
+    [[noreturn]] void ThrowInvalidAnnotationDeclaration(const lexer::SourcePosition &pos, const util::StringView &name);
 
     void CheckMandatoryArguments(const ir::Identifier *ident);
 

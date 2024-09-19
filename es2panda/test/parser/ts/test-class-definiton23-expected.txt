@@ -216,6 +216,7 @@
           },
           "overloads": [],
           "decorators": [],
+          "annotations": [],
           "loc": {
             "start": {
               "line": 19,
@@ -241,6 +242,7 @@
         }
       },
       "decorators": [],
+      "isAnnotationDeclaration": false,
       "loc": {
         "start": {
           "line": 19,
@@ -469,6 +471,7 @@
           },
           "overloads": [],
           "decorators": [],
+          "annotations": [],
           "loc": {
             "start": {
               "line": 23,
@@ -494,6 +497,7 @@
         }
       },
       "decorators": [],
+      "isAnnotationDeclaration": false,
       "loc": {
         "start": {
           "line": 23,
@@ -739,6 +743,7 @@
                 },
                 "overloads": [],
                 "decorators": [],
+                "annotations": [],
                 "loc": {
                   "start": {
                     "line": 28,
@@ -764,6 +769,7 @@
               }
             },
             "decorators": [],
+            "isAnnotationDeclaration": false,
             "loc": {
               "start": {
                 "line": 28,
@@ -992,6 +998,7 @@
                 },
                 "overloads": [],
                 "decorators": [],
+                "annotations": [],
                 "loc": {
                   "start": {
                     "line": 32,
@@ -1017,6 +1024,7 @@
               }
             },
             "decorators": [],
+            "isAnnotationDeclaration": false,
             "loc": {
               "start": {
                 "line": 32,

@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_AST_NODE_MAPPING_H
 
 #define AST_NODE_MAPPING(_)                                          \
+    _(ANNOTATION, Annotation)                                        \
     _(ARROW_FUNCTION_EXPRESSION, ArrowFunctionExpression)            \
     _(ASSERT_CLAUSE, AssertClause)                                   \
     _(ASSERT_ENTRY, AssertEntry)                                     \

@@ -21,6 +21,7 @@
 #include <util/helpers.h>
 #include <ir/astDump.h>
 #include <ir/astNode.h>
+#include <ir/base/annotation.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/classProperty.h>
 #include <ir/base/classStaticBlock.h>
@@ -135,6 +136,7 @@ Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &o
     program_.SetDebug(options.isDebug);
     program_.SetTargetApiVersion(options.targetApiVersion);
     program_.SetTargetApiSubVersion(options.targetApiSubVersion);
+    program_.SetEnableAnnotations(options.enableAnnotations);
     program_.SetShared(sourceFile.isSharedModule);
     program_.SetModuleRecordFieldName(options.moduleRecordFieldName);
     if (Extension() == ScriptExtension::TS) {
@@ -2589,7 +2591,8 @@ void ParserImpl::ValidatePrivateProperty(ir::Statement *stmt, std::unordered_set
 ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
                                                    const ArenaVector<ir::Statement *> &properties,
                                                    ir::Expression *propName, lexer::SourcePosition *propEnd,
-                                                   ArenaVector<ir::Decorator *> &&decorators, bool isDeclare)
+                                                   ArenaVector<ir::Decorator *> &&decorators,
+                                                   ArenaVector<ir::Annotation *> &&annotations, bool isDeclare)
 {
     if (Extension() == ScriptExtension::TS) {
         if (desc->methodKind == ir::MethodDefinitionKind::SET || desc->methodKind == ir::MethodDefinitionKind::GET) {
@@ -2639,14 +2642,14 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
         auto privateIdStart = lexer::SourcePosition(propName->Start().index - 1, propName->Start().line);
         privateId->SetRange({privateIdStart, propName->End()});
         method = AllocNode<ir::MethodDefinition>(desc->methodKind, privateId, funcExpr, desc->modifiers, Allocator(),
-                                                 std::move(decorators), std::move(paramDecorators),
-                                                 desc->isComputed);
+                                                 std::move(decorators), std::move(annotations),
+                                                 std::move(paramDecorators), desc->isComputed);
         method->SetRange(funcExpr->Range());
         return method;
     }
 
     method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
-                                             std::move(decorators), std::move(paramDecorators),
+                                             std::move(decorators), std::move(annotations), std::move(paramDecorators),
                                              desc->isComputed);
     method->SetRange(funcExpr->Range());
     return method;
@@ -2667,16 +2670,21 @@ ir::ClassStaticBlock *ParserImpl::ParseStaticBlock(ClassElmentDescriptor *desc)
 
 ir::Statement *ParserImpl::ParseClassProperty(ClassElmentDescriptor *desc,
     const ArenaVector<ir::Statement *> &properties, ir::Expression *propName, ir::Expression *typeAnnotation,
-    ArenaVector<ir::Decorator *> &&decorators, bool isDeclare,
+    ArenaVector<ir::Decorator *> &&decorators, ArenaVector<ir::Annotation *> &&annotations, bool isDeclare,
     std::pair<binder::FunctionScope *, binder::FunctionScope *> implicitScopes)
 {
     lexer::SourcePosition propEnd = propName->End();
     ir::Statement *property = nullptr;
 
     if (desc->classMethod) {
-        property = ParseClassMethod(desc, properties, propName, &propEnd, std::move(decorators), isDeclare);
+        property = ParseClassMethod(desc, properties, propName, &propEnd, std::move(decorators),
+                                    std::move(annotations), isDeclare);
         property->SetRange({desc->propStart, propEnd});
         return property;
+    }
+
+    if (!annotations.empty()) {
+        ThrowSyntaxError("Annotations can not be used with class properties", annotations.front()->Start());
     }
 
     if (!desc->isComputed) {
@@ -2772,28 +2780,61 @@ ir::Expression *ParserImpl::ParseClassKeyAnnotation()
     return nullptr;
 }
 
-ir::Decorator *ParserImpl::ParseDecorator()
+ir::Statement *ParserImpl::ParseDecoratorAndAnnotation()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
 
+    auto lexPos = lexer_->Save();
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat '@'
 
-    ir::Expression *expr = ParseLeftHandSideExpression();
-    auto *result = AllocNode<ir::Decorator>(expr);
-    result->SetRange({start, expr->End()});
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+        // Annotation usage case
+        if (!program_.IsEnableAnnotations()) {
+            ThrowSyntaxError("Annotations are not enabled");
+        }
+        lexer_->NextToken();  // eat '#'
+        ir::Expression *expr = ParseLeftHandSideExpression();
+        ir::Statement *resultAnnotation = static_cast<ir::Statement *>(AllocNode<ir::Annotation>(expr));
+        resultAnnotation->SetRange({start, expr->End()});
+        return resultAnnotation;
+    }
 
-    return result;
+    ir::Expression *expr = ParseLeftHandSideExpression();
+    if (expr->IsIdentifier() && expr->AsIdentifier()->Name().Utf8() == ir::Annotation::interfaceString) {
+        // Annotation declaration case
+        if (!program_.IsEnableAnnotations()) {
+            ThrowSyntaxError("Annotations are not enabled");
+        }
+        lexer_->Rewind(lexPos);
+        return nullptr;
+    }
+
+    // Decorator case
+    ir::Statement *resultDecorator = static_cast<ir::Statement *>(AllocNode<ir::Decorator>(expr));
+    resultDecorator->SetRange({start, expr->End()});
+    return resultDecorator;
 }
 
-ArenaVector<ir::Decorator *> ParserImpl::ParseDecorators()
+std::pair<ArenaVector<ir::Decorator *>, ArenaVector<ir::Annotation *>> ParserImpl::ParseDecoratorsAndAnnotations()
 {
     ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
+    ArenaVector<ir::Annotation *> annotations(Allocator()->Adapter());
     auto savedStatus = context_.Status();
     context_.Status() |= ParserStatus::IN_DECORATOR;
 
     while (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
-        decorators.push_back(ParseDecorator());
+        ir::Statement *stmt = ParseDecoratorAndAnnotation();
+        if (stmt == nullptr) {
+            // Annotation declaration was encountered and will be processed further in ParseClassDeclaration
+            context_.Status() = savedStatus;
+            return {decorators, annotations};
+        }
+        if (stmt->IsDecorator()) {
+            decorators.push_back(stmt->AsDecorator());
+        } else {
+            annotations.push_back(stmt->AsAnnotation());
+        }
     }
 
     if (!decorators.empty() && lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS &&
@@ -2806,7 +2847,7 @@ ArenaVector<ir::Decorator *> ParserImpl::ParseDecorators()
     }
 
     context_.Status() = savedStatus;
-    return decorators;
+    return {decorators, annotations};
 }
 
 ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> &properties,
@@ -2820,7 +2861,9 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
     desc.hasSuperClass = hasSuperClass;
     desc.propStart = lexer_->GetToken().Start();
 
-    auto decorators = ParseDecorators();
+    auto decoratorsAndAnnotations = ParseDecoratorsAndAnnotations();
+    auto decorators = decoratorsAndAnnotations.first;
+    auto annotations = decoratorsAndAnnotations.second;
 
     desc.modifiers = ParseModifiers();
 
@@ -2915,7 +2958,8 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
     } else {
         ValidateClassMethodStart(&desc, typeAnnotation);
         property = ParseClassProperty(&desc, properties, propName, typeAnnotation, std::move(decorators),
-                                      isDeclare || (desc.modifiers & ir::ModifierFlags::DECLARE), implicitScopes);
+                                      std::move(annotations), isDeclare ||
+                                      (desc.modifiers & ir::ModifierFlags::DECLARE), implicitScopes);
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON &&
@@ -3012,10 +3056,11 @@ ir::MethodDefinition *ParserImpl::CreateImplicitMethod(ir::Expression *superClas
     auto methodKind = isConstructor ? ir::MethodDefinitionKind::CONSTRUCTOR : ir::MethodDefinitionKind::METHOD;
 
     ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
+    ArenaVector<ir::Annotation *> annotations(Allocator()->Adapter());
     ArenaVector<ir::ParamDecorators> paramDecorators(Allocator()->Adapter());
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, key, funcExpr,
                                                  ir::ModifierFlags::NONE, Allocator(), std::move(decorators),
-                                                 std::move(paramDecorators), false);
+                                                 std::move(annotations), std::move(paramDecorators), false);
 
     return method;
 }
@@ -3662,7 +3707,13 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams(bool isDeclare,
     size_t index = 0;
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         if (context_.Status() & ParserStatus::IN_METHOD_DEFINITION) {
-            auto decorators = ParseDecorators();
+            auto decoratorsAndAnnotations = ParseDecoratorsAndAnnotations();
+            auto decorators = decoratorsAndAnnotations.first;
+            auto annotations = decoratorsAndAnnotations.second;
+            if (!annotations.empty()) {
+                ThrowSyntaxError("Annotations can not be used with function parameters", annotations.front()->Start());
+            }
+
             if (!decorators.empty()) {
                 ASSERT(paramDecorators != nullptr);
                 paramDecorators->push_back({index, std::move(decorators)});

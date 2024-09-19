@@ -392,6 +392,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> targetApiSubVersion("target-api-sub-version",
         std::string {util::Helpers::DEFAULT_SUB_API_VERSION},
         "Specify the targeting api sub version for es2abc to generated the corresponding version of bytecode");
+    panda::PandArg<bool> enableAnnotations("enable-annotations", false, "Permits es2abc to compile annotations");
 
     // compile entries and pkg context info
     panda::PandArg<std::string> compileContextInfoPath("compile-context-info", "", "The path to compile context"\
@@ -461,6 +462,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&targetApiVersion);
     argparser_->Add(&targetBcVersion);
     argparser_->Add(&targetApiSubVersion);
+    argparser_->Add(&enableAnnotations);
 
     argparser_->Add(&compileContextInfoPath);
     argparser_->Add(&opDumpDepsInfo);
@@ -681,6 +683,8 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.patchFixOptions.hotReload = hotReload;
     compilerOptions_.patchFixOptions.coldReload = coldReload;
     compilerOptions_.patchFixOptions.coldFix = coldFix;
+
+    compilerOptions_.enableAnnotations = enableAnnotations.GetValue();
 
     bool transformLibIsEmpty = transformLib.GetValue().empty();
     if (!transformLibIsEmpty) {

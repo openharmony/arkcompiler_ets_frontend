@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_CLASS_DECLARATION_H
 #define ES2PANDA_IR_STATEMENT_CLASS_DECLARATION_H
 
+#include <ir/base/classDefinition.h>
 #include <ir/statement.h>
 
 namespace panda::es2panda::compiler {
@@ -31,9 +32,12 @@ namespace panda::es2panda::ir {
 
 class ClassDeclaration : public Statement {
 public:
-    explicit ClassDeclaration(ClassDefinition *def, ArenaVector<Decorator *> &&decorators)
-        : Statement(AstNodeType::CLASS_DECLARATION), def_(def), decorators_(std::move(decorators))
+    explicit ClassDeclaration(ClassDefinition *def, ArenaVector<Decorator *> &&decorators,
+                              ArenaVector<Annotation *> &&annotations, bool isAnnoDecl)
+        : Statement(AstNodeType::CLASS_DECLARATION), def_(def), decorators_(std::move(decorators)),
+          isAnnotationDecl_(isAnnoDecl)
     {
+        def_->Ctor()->SetAnnotations(std::move(annotations));
     }
 
     const ClassDefinition *Definition() const
@@ -56,6 +60,11 @@ public:
         return !decorators_.empty();
     }
 
+    bool IsAnnotationDecl() const
+    {
+        return isAnnotationDecl_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
@@ -65,6 +74,7 @@ public:
 private:
     ClassDefinition *def_;
     ArenaVector<Decorator *> decorators_;
+    bool isAnnotationDecl_ = false;
 };
 
 }  // namespace panda::es2panda::ir
