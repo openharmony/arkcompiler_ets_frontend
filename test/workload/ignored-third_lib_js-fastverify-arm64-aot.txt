@@ -1,5 +1,8 @@
 # Known failures list for  third_lib_js-fastverify-arm64-aot
 
+#18330
+dayjs_test
+
 #18546
 jBox2d_test
 

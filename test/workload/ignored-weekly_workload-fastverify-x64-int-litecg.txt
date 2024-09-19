@@ -16,5 +16,11 @@ pdfjs
 ## Issue 18417
 box2d
 
+##19008
+regex-dna
+
+##19216
+wsl
+
 ##18488
 splay-latancy

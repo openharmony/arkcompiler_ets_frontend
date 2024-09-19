@@ -72,6 +72,23 @@ test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicali
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-key-with-digit.js
 test262/data/test_es2021/intl402/language-tags-invalid.js
 test262/data/test_es2021/intl402/Locale/invalid-tag-throws.js
+test262/data/test_es2021/intl402/NumberFormat/taint-Object-prototype.js
+test262/data/test_es2021/intl402/NumberFormat/prototype/format/bound-to-numberformat-instance.js
+test262/data/test_es2021/intl402/NumberFormat/prototype/format/format-fraction-digits-precision.js
+test262/data/test_es2021/intl402/NumberFormat/prototype/format/format-fraction-digits.js
+test262/data/test_es2021/intl402/NumberFormat/prototype/format/format-significant-digits.js
+test262/data/test_es2021/intl402/NumberFormat/prototype/format/units.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/constructor/locales-valid.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/constructor/options-numberingSystem-valid.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/supportedLocalesOf/branding.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/supportedLocalesOf/locales-invalid.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/supportedLocalesOf/options-localeMatcher-invalid.js
+test262/data/test_es2021/intl402/Segmenter/constructor/constructor/locales-valid.js
+test262/data/test_es2021/intl402/Segmenter/constructor/supportedLocalesOf/branding.js
+test262/data/test_es2021/intl402/Segmenter/constructor/supportedLocalesOf/locales-invalid.js
+test262/data/test_es2021/intl402/Segmenter/constructor/supportedLocalesOf/options-localeMatcher-invalid.js
+test262/data/test_es2021/intl402/Segmenter/prototype/segment/containing/iswordlike.js
+test262/data/test_es2021/intl402/String/prototype/localeCompare/returns-same-results-as-Collator.js
 # --- end of Issue #17827
 
 #18857

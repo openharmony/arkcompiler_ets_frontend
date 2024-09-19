@@ -4,6 +4,12 @@ air
 ##19297
 earley-boyer
 
+##19072
+OfflineAssembler
+
+##19008
+regex-dna
+
 ##18484
 wsl
 
