@@ -491,6 +491,9 @@ void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interf
     state_.inInterface = true;
     const auto interfaceName = interfaceDecl->Id()->Name().Mutf8();
     DebugPrint("GenInterfaceDeclaration: " + interfaceName);
+    if (interfaceName.find("$partial") != std::string::npos) {
+        return;
+    }
     Out("interface ", interfaceName);
 
     GenTypeParameters(interfaceDecl->TypeParams());

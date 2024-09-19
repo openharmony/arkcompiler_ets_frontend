@@ -13,14 +13,20 @@
  * limitations under the License.
  */
 
-class Base<T> {
-	foo (p : T) {}
-	foo (p : Base) {}
-	foo (p : Derived) {}
+interface inter <T>{
+	get value(): Double;
+	set value(value: Double): void;
 }
 
-class Derived extends Base {}
+class A <T>{}
 
-/* @@? 18:11 Error TypeError: Type 'Base<T>' is generic but type argument were not provided.  */
-/* @@? 22:23 Error TypeError: Type 'Base<T>' is generic but type argument were not provided. */
-/* @@? 22:23 Error TypeError: The super type of 'Derived' class is not extensible. */
+class B <T> extends A <T> implements inter <T> {
+	value: Double = 1.0;
+}
+
+function foo(i: Partial<inter<String>>, a: Partial<A<String>>): void {}
+
+
+function foa(b: Partial<B<String>>): void {
+	foo(b, b);
+}

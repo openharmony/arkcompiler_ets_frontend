@@ -322,6 +322,7 @@ ir::ETSTypeReference *CreateETSTypeReference(checker::ETSChecker *checker, util:
     return checker->AllocNode<ir::ETSTypeReference>(typeRefPart);
 }
 
+// Be aware of lifecycle of string and string_view
 std::pair<std::string_view, std::string_view> SplitRecordName(std::string_view recordName)
 {
     std::string_view moduleName;

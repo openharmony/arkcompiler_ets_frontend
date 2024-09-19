@@ -794,7 +794,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 static bool IsInvalidArrayMemberAssignment(ir::AssignmentExpression *const expr, ETSChecker *checker)
 {
     if (expr->Left()->IsMemberExpression() &&
-        expr->Left()->AsMemberExpression()->Object()->TsType()->IsETSArrayType()) {
+        expr->Left()->AsMemberExpression()->Object()->TsTypeOrError()->IsETSArrayType()) {
         auto *const leftExpr = expr->Left()->AsMemberExpression();
         if (leftExpr->Property()->IsIdentifier() && leftExpr->Property()->AsIdentifier()->Name().Is("length")) {
             checker->LogTypeError("Setting the length of an array is not permitted", expr->Left()->Start());

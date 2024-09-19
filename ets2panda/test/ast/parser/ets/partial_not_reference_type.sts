@@ -13,14 +13,7 @@
  * limitations under the License.
  */
 
-class Base<T> {
-	foo (p : T) {}
-	foo (p : Base) {}
-	foo (p : Derived) {}
-}
 
-class Derived extends Base {}
+function foo(a:Partial<int>){}
 
-/* @@? 18:11 Error TypeError: Type 'Base<T>' is generic but type argument were not provided.  */
-/* @@? 22:23 Error TypeError: Type 'Base<T>' is generic but type argument were not provided. */
-/* @@? 22:23 Error TypeError: The super type of 'Derived' class is not extensible. */
+/* @@? 17:23 Error TypeError: Only reference types can be converted to utility types. */

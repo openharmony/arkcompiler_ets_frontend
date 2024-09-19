@@ -197,7 +197,10 @@ const FileDebugInfo::RecordsMap &DebugInfoStorage::LazyLoadRecords(FileDebugInfo
             continue;
         }
 
-        auto recordName = helpers::SplitRecordName(GetFullRecordName(*pf, classId)).second;
+        std::string fullRecordName = GetFullRecordName(*pf, classId);
+        // Be aware of lifecycle of string and string_view
+        auto splitedPair = helpers::SplitRecordName(fullRecordName);
+        auto recordName = splitedPair.second;
         auto recordNameView = util::UString(recordName, allocator_).View();
         if (!records.emplace(recordNameView, classId).second) {
             LOG(FATAL, ES2PANDA) << "Failed to emplace class '" << recordNameView << "' in records."

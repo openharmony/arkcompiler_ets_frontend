@@ -1972,13 +1972,18 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
             return;
         }
 
+        if (it->Declaration()->Type() == varbinder::DeclType::LET &&
+            found->Declaration()->Type() == varbinder::DeclType::READONLY) {
+            return;
+        }
+
         if (it->TsType()->IsETSFunctionType()) {
             auto getter = it->TsType()->AsETSFunctionType()->FindGetter();
-            if (getter != nullptr && getter->ReturnType() == found->TsType()) {
+            if (getter != nullptr && Relation()->IsIdenticalTo(getter->ReturnType(), found->TsType())) {
                 return;
             }
             auto setter = it->TsType()->AsETSFunctionType()->FindSetter();
-            if (setter != nullptr && setter->Params().front()->TsType() == found->TsType()) {
+            if (setter != nullptr && Relation()->IsIdenticalTo(setter->ReturnType(), found->TsType())) {
                 return;
             }
         }

@@ -13,14 +13,27 @@
  * limitations under the License.
  */
 
-class Base<T> {
-	foo (p : T) {}
-	foo (p : Base) {}
-	foo (p : Derived) {}
+interface inter <T>{
+	get value(): T;
+	set value(value: T): void;
 }
 
-class Derived extends Base {}
+class A <T>{}
 
-/* @@? 18:11 Error TypeError: Type 'Base<T>' is generic but type argument were not provided.  */
-/* @@? 22:23 Error TypeError: Type 'Base<T>' is generic but type argument were not provided. */
-/* @@? 22:23 Error TypeError: The super type of 'Derived' class is not extensible. */
+class B <T> extends A <T> implements inter <T> {
+	value: T;
+}
+
+class alpha {}
+class beta {}
+class gamma {}
+
+function foo(a: Partial<A<beta>>): void {}
+
+
+function foa(b: Partial<B<gamma>>): void {
+	foo(b);
+}
+
+/* @@? 35:6 Error TypeError: Type 'B$partial<gamma>' is not compatible with type 'A$partial<beta>' at index 1 */
+/* @@? 35:2 Error TypeError: No matching call signature for foo(B$partial<gamma>) */
