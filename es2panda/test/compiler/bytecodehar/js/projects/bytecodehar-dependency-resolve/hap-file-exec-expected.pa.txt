@@ -732,10 +732,10 @@ slotNum = 0x9
 label_1: 
 label_0: 
 	newlexenv 0x1
-	definefunc 0x0, &myapp/test-require&.#*#testRequire, 0x0
-	sta v0
 	ldundefined
 	stlexvar 0x0, 0x0
+	definefunc 0x0, &myapp/test-require&.#*#testRequire, 0x0
+	sta v0
 	tryldglobalbyname 0x1, require
 	sta v1
 	lda.str ./commonjs-say
@@ -1323,10 +1323,10 @@ slotNum = 0x9
 label_1: 
 label_0: 
 	newlexenv 0x1
-	definefunc 0x0, &myapp/test-require&.#*#testRequire, 0x0
-	sta v0
 	ldundefined
 	stlexvar 0x0, 0x0
+	definefunc 0x0, &myapp/test-require&.#*#testRequire, 0x0
+	sta v0
 	tryldglobalbyname 0x1, require
 	sta v1
 	lda.str ./commonjs-say

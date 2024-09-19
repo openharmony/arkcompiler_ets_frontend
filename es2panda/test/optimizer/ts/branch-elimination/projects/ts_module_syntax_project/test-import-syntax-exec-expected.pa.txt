@@ -349,9 +349,9 @@ slotNum = 0x6
 label_4: 
 label_0: 
 	newlexenv 0x1
+	definefunc 0x0, test-ts-namespace-exports.#*#foo, 0x0
 	ldundefined
 	stlexvar 0x0, 0x0
-	definefunc 0x0, test-ts-namespace-exports.#*#foo, 0x0
 	definefunc 0x1, test-ts-namespace-exports.#&#ns, 0x1
 	sta v0
 	ldlexvar 0x0, 0x0

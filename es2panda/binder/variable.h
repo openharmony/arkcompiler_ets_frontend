@@ -37,7 +37,7 @@ class VariableScope;
 class ExportBindings;
 class Variable;
 
-using VariableMap = ArenaUnorderedMap<util::StringView, Variable *>;
+using VariableMap = ArenaMap<util::StringView, Variable *>;
 
 #define DECLARE_CLASSES(type, className) class className;
 VARIABLE_TYPES(DECLARE_CLASSES)

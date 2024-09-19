@@ -266,9 +266,9 @@ slotNum = 0x12
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	definefunc 0x0, .#*#testBool, 0x0
+	definefunc 0x0, .#*#testBBStruct, 0x0
 	sta v0
-	definefunc 0x1, .#*#testBBStruct, 0x0
+	definefunc 0x1, .#*#testBool, 0x0
 	sta v1
 	definefunc 0x2, .#*#testFloatNumber, 0x0
 	sta v2
@@ -282,11 +282,11 @@ label_0:
 	callarg0 0x8
 	lda v2
 	callarg0 0xa
-	lda v0
+	lda v1
 	callarg0 0xc
 	lda v4
 	callarg0 0xe
-	lda v1
+	lda v0
 	callarg0 0x10
 	ldundefined
 	returnundefined

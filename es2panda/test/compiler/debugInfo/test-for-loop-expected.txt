@@ -1559,18 +1559,18 @@
           "length": 23
         },
         {
-          "name": "b",
-          "signature": "any",
-          "signatureType": "any",
-          "reg": 3,
-          "start": 3,
-          "length": 97
-        },
-        {
           "name": "this",
           "signature": "any",
           "signatureType": "any",
           "reg": 2,
+          "start": 3,
+          "length": 97
+        },
+        {
+          "name": "b",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 3,
           "start": 3,
           "length": 97
         },
