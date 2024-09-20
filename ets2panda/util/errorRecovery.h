@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,26 @@
  * limitations under the License.
  */
 
-async function asyncFunc): Promise<boolean> {
-    return true;
-}
+#ifndef ES2PANDA_UTIL_ERROR_RECOVERY_H
+#define ES2PANDA_UTIL_ERROR_RECOVERY_H
 
-/* @@? 16:25 Error SyntaxError: Unexpected token, expected: '('. */
-/* @@? 16:26 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 16:35 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 16:35 Error SyntaxError: Invalid token: ',' or ')' expected. */
-/* @@? 17:5 Error SyntaxError: Unexpected token in property key */
+#include "lexer/lexer.h"
+
+namespace ark::es2panda::util {
+
+class ErrorRecursionGuard {
+public:
+    explicit ErrorRecursionGuard(lexer::Lexer *lexer);
+    NO_COPY_SEMANTIC(ErrorRecursionGuard);
+    NO_MOVE_SEMANTIC(ErrorRecursionGuard);
+
+    ~ErrorRecursionGuard();
+
+private:
+    lexer::Lexer *lexer_;
+    lexer::LexerPosition savedPos_;
+};
+
+}  // namespace ark::es2panda::util
+
+#endif  // ES2PANDA_UTIL_ERROR_RECOVERY_H

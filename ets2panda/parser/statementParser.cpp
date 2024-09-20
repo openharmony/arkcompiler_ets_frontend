@@ -15,6 +15,7 @@
 
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
+#include "util/errorRecovery.h"
 #include "util/helpers.h"
 #include "ir/astNode.h"
 #include "ir/base/catchClause.h"
@@ -363,11 +364,10 @@ ArenaVector<ir::Statement *> ParserImpl::ParseStatementList(StatementParsingFlag
         (flags & StatementParsingFlags::GLOBAL) != 0 ? lexer::TokenType::EOS : lexer::TokenType::PUNCTUATOR_RIGHT_BRACE;
 
     while (lexer_->GetToken().Type() != endType && lexer_->GetToken().Type() != lexer::TokenType::EOS) {
-        auto savedPosition = lexer_->Save();
+        util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
+
         if (auto statement = ParseStatement(flags); statement != nullptr) {
             statements.push_back(statement);
-        } else if (savedPosition == lexer_->Save()) {
-            lexer_->NextToken();  // Error processing, avoid infinite loop.
         }
     }
 

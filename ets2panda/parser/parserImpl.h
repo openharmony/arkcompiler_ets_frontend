@@ -173,6 +173,7 @@ protected:
     [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list,
                                        const lexer::SourcePosition &pos) const;
     void LogExpectedToken(lexer::TokenType tokenType);
+    void LogUnexpectedToken(lexer::TokenType tokenType);
     void LogSyntaxError(std::string_view errorMessage);
     void LogSyntaxError(std::initializer_list<std::string_view> list);
     void LogSyntaxError(std::initializer_list<std::string_view> list, const lexer::SourcePosition &pos);

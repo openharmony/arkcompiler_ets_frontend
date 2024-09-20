@@ -20,6 +20,7 @@
 #include "macros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
+#include "util/errorRecovery.h"
 #include "util/helpers.h"
 #include "util/language.h"
 #include "utils/arena_containers.h"
@@ -127,16 +128,15 @@ ArenaVector<ir::Statement *> ETSParser::ParseTopLevelStatements()
 {
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
     while (Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+        util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
+
         if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SEMI_COLON)) {
             continue;
         }
-        auto savedPosition = Lexer()->Save();
         auto stmt = ParseTopLevelStatement();
         GetContext().Status() &= ~ParserStatus::IN_AMBIENT_CONTEXT;
         if (stmt != nullptr) {
             statements.emplace_back(stmt);
-        } else if (savedPosition == Lexer()->Save()) {
-            Lexer()->NextToken();  // Error processing, avoid infinite loop.
         }
     }
 

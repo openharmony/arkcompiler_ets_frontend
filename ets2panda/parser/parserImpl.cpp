@@ -44,6 +44,7 @@
 #include "lexer/token/letters.h"
 #include "lexer/token/sourceLocation.h"
 #include "parser/ETSparser.h"
+#include "util/errorRecovery.h"
 
 using namespace std::literals::string_literals;
 
@@ -875,7 +876,10 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
         lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
         params = std::move(ParseExpressionsArrayFormatPlaceholder());
     } else {
-        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS &&
+               lexer_->GetToken().Type() != lexer::TokenType::EOS) {
+            util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
+
             ir::Expression *parameter = ParseFunctionParameter();
             if (parameter == nullptr) {  // Error processing.
                 continue;
@@ -991,6 +995,10 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
         argument = ParseExpression(flags);
     }
 
+    if (argument == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     if (inPattern && argument->IsAssignmentExpression()) {
         ThrowSyntaxError("RestParameter does not support an initializer");
     }
@@ -1049,7 +1057,7 @@ void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node)
             break;
         }
         default: {
-            ThrowSyntaxError("Invalid left-hand side in assignment expression");
+            LogSyntaxError("Invalid left-hand side in assignment expression");
         }
     }
 }
@@ -1275,7 +1283,13 @@ void ParserImpl::ThrowSyntaxError(std::string_view errorMessage, const lexer::So
 
     throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col};
 }
-void ParserImpl::LogExpectedToken(lexer::TokenType const tokenType)
+
+void ParserImpl::LogUnexpectedToken(lexer::TokenType tokenType)
+{
+    LogSyntaxError("Unexpected token: '"s + TokenToString(tokenType) + "'."s);
+}
+
+void ParserImpl::LogExpectedToken(lexer::TokenType tokenType)
 {
     if (tokenType != lexer::TokenType::LITERAL_IDENT && tokenType != lexer::TokenType::LITERAL_STRING) {
         LogSyntaxError("Unexpected token, expected: '"s + TokenToString(tokenType) + "'."s);

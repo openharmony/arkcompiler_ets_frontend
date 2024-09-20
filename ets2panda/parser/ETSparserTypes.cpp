@@ -338,12 +338,12 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
          Lexer()->Lookahead() == lexer::LEX_CHAR_COLON || Lexer()->Lookahead() == lexer::LEX_CHAR_QUESTION)) {
         GetContext().Status() |= ParserStatus::ALLOW_DEFAULT_VALUE;
         auto typeAnnotation = ParseFunctionType();
+        GetContext().Status() ^= ParserStatus::ALLOW_DEFAULT_VALUE;
         if (typeAnnotation == nullptr) {  // Error processing.
             return nullptr;
         }
 
         typeAnnotation->SetStart(startLoc);
-        GetContext().Status() ^= ParserStatus::ALLOW_DEFAULT_VALUE;
         return typeAnnotation;
     }
 

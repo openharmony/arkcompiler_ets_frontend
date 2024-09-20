@@ -534,6 +534,7 @@ set(ES2PANDA_LIB_SRC
   util/bitset.cpp
   util/errorHandler.cpp
   util/errorLogger.cpp
+  util/errorRecovery.cpp
   util/helpers.cpp
   util/importPathManager.cpp
   util/path.cpp

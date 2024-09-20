@@ -70,6 +70,7 @@
 #include "lexer/token/sourceLocation.h"
 #include "lexer/token/token.h"
 #include "macros.h"
+#include "util/errorRecovery.h"
 
 #include <memory>
 
@@ -638,6 +639,9 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
 
             lexer_->NextToken();
             ir::Expression *assignmentExpression = ParseExpression(CarryPatternFlags(flags));
+            if (assignmentExpression == nullptr) {  // Error processing.
+                return nullptr;
+            }
 
             auto *binaryAssignmentExpression =
                 AllocNode<ir::AssignmentExpression>(lhsExpression, assignmentExpression, tokenType);
@@ -1335,6 +1339,22 @@ ir::Expression *ParserImpl::ParseExpressionOrTypeAnnotation([[maybe_unused]] lex
     return ParseExpression(ExpressionParseFlags::DISALLOW_YIELD);
 }
 
+static ir::Expression *FindAndAmendChildExpression(ir::Expression *expression, const ir::Expression *left,
+                                                   lexer::TokenType operatorType)
+{
+    bool shouldBeAmended = true;
+    ir::Expression *parentExpression = nullptr;
+    while (shouldBeAmended && GetAmendedChildExpression(expression)->IsBinaryExpression()) {
+        parentExpression = expression;
+        parentExpression->SetStart(left->Start());
+
+        expression = GetAmendedChildExpression(expression);
+        shouldBeAmended = ShouldExpressionBeAmended(expression, operatorType);
+    }
+
+    return shouldBeAmended ? expression : parentExpression;
+}
+
 ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, ExpressionParseFlags flags)
 {
     lexer::TokenType operatorType = lexer_->GetToken().Type();
@@ -1357,6 +1377,9 @@ ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, Expressi
 
     ir::Expression *rightExpr = ParseExpressionOrTypeAnnotation(operatorType, ExpressionParseFlags::DISALLOW_YIELD);
     ir::ConditionalExpression *conditionalExpr = nullptr;
+    if (rightExpr == nullptr) {  // Error processing.
+        return nullptr;
+    }
 
     if (rightExpr->IsConditionalExpression() && !rightExpr->IsGrouped()) {
         conditionalExpr = rightExpr->AsConditionalExpression();
@@ -1368,21 +1391,8 @@ ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, Expressi
             ThrowSyntaxError("Nullish coalescing operator ?? requires parens when mixing with logical operators.");
         }
 
-        bool shouldBeAmended = true;
-
-        ir::Expression *expression = rightExpr;
-        ir::Expression *parentExpression = nullptr;
-
-        while (shouldBeAmended && GetAmendedChildExpression(expression)->IsBinaryExpression()) {
-            parentExpression = expression;
-            parentExpression->SetStart(left->Start());
-
-            expression = GetAmendedChildExpression(expression);
-
-            shouldBeAmended = ShouldExpressionBeAmended(expression, operatorType);
-        }
-
-        CreateAmendedBinaryExpression(left, shouldBeAmended ? expression : parentExpression, operatorType);
+        ir::Expression *expression = FindAndAmendChildExpression(rightExpr, left, operatorType);
+        CreateAmendedBinaryExpression(left, expression, operatorType);
     } else {
         if (AreLogicalAndNullishMixedIncorrectly(rightExpr, operatorType)) {
             ThrowSyntaxError("Nullish coalescing operator ?? requires parens when mixing with logical operators.");
@@ -1413,7 +1423,10 @@ ArenaVector<ir::Expression *> ParserImpl::ParseCallExpressionArguments(bool &tra
             UNREACHABLE();
         }
     } else {
-        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS &&
+               lexer_->GetToken().Type() != lexer::TokenType::EOS) {
+            util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
+
             trailingComma = false;
             ir::Expression *argument {};
             if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
@@ -1422,7 +1435,9 @@ ArenaVector<ir::Expression *> ParserImpl::ParseCallExpressionArguments(bool &tra
                 argument = ParseExpression();
             }
 
-            arguments.push_back(argument);
+            if (argument != nullptr) {  // Error processing.
+                arguments.push_back(argument);
+            }
 
             if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
                 lexer_->NextToken();
@@ -1604,6 +1619,10 @@ ir::MemberExpression *ParserImpl::ParseElementAccess(ir::Expression *primaryExpr
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
     }
 
+    if (propertyNode == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     auto *memberExpr = AllocNode<ir::MemberExpression>(primaryExpr, propertyNode,
                                                        ir::MemberExpressionKind::ELEMENT_ACCESS, true, isOptional);
     memberExpr->SetRange({primaryExpr->Start(), lexer_->GetToken().End()});
@@ -1739,7 +1758,7 @@ void ParserImpl::ValidateUpdateExpression(ir::Expression *returnExpression, bool
     if ((!returnExpression->IsMemberExpression() && !returnExpression->IsIdentifier() &&
          !returnExpression->IsTSNonNullExpression()) ||
         isChainExpression) {
-        ThrowSyntaxError("Invalid left-hand side operator.");
+        LogSyntaxError("Invalid left-hand side operator.");
     }
 
     if (returnExpression->IsIdentifier()) {
