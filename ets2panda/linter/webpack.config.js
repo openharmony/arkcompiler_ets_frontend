@@ -21,7 +21,6 @@ module.exports = {
 	entry: './build/src/main.js',
 	externalsType: 'commonjs',
 	externals: {
-		typescript: 'typescript',
 		log4js: 'log4js'
 	},
 	output: {
