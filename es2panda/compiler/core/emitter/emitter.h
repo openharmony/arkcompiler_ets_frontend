@@ -105,6 +105,7 @@ private:
     void GenLiteralBuffers();
     void GenBufferLiterals(const LiteralBuffer *buff);
     void GenConcurrentFunctionModuleRequests();
+    void GenExpectedPropertyCountAnnotation();
 
     const PandaGen *pg_;
     panda::pandasm::Function *func_ {};
@@ -156,6 +157,7 @@ private:
     void AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context);
     void AddSharedModuleRecord(const CompilerContext *context);
     void AddModuleRequestPhaseRecord(ModuleRecordEmitter *module, CompilerContext *context);
+    void AddExpectedPropertyCountRecord();
 
     void CreateEnumProp(const ir::ClassProperty *prop, const std::string &annoName, panda::pandasm::Field &annoProp);
     void CreateLiteralArrayProp(const ir::ClassProperty *prop, const std::string &annoName,

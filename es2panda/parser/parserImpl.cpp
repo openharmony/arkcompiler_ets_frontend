@@ -3269,6 +3269,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     }
 
     classCtx.GetScope()->BindNode(classDefinition);
+
+    classDefinition->CalculateClassExpectedPropertyCount();
     return classDefinition;
 }
 
@@ -4077,6 +4079,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus,
     functionScope->BindNode(funcNode);
     funcParamScope->BindNode(funcNode);
     funcNode->SetRange({startLoc, endLoc});
+    funcNode->CalculateFunctionExpectedPropertyCount();
 
     return funcNode;
 }

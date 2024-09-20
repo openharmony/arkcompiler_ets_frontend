@@ -24,6 +24,12 @@ record_name: com.inter_app.hsp&myapp/inter-app-hsp-file-exec&
 
 .language ECMAScript
 
+
+======> literal array buffer <======
+======> strings <======
+
+.language ECMAScript
+
 slotNum = 0x0
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst(any a0, any a1, any a2) {
 	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
@@ -91,9 +97,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2004
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2057
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2008
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2061
 {
   index: 0
     tag: 2
@@ -231,9 +237,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2044
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2097
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2048
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2101
 {
   index: 0
     tag: 2
@@ -826,9 +832,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2004
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2057
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2008
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2061
 {
   index: 0
     tag: 2
@@ -966,9 +972,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2044
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2097
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2048
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2101
 {
   index: 0
     tag: 2
