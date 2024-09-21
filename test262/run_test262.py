@@ -55,6 +55,10 @@ def parse_args():
                         'only: Only include use cases for ES2021' +
                         'other: Contains all use cases for es5_tests and es2015_tests and es2021_tests and intl_tests' +
                         'and other_tests')
+    parser.add_argument('--sendable', default=False, const='sendable',
+                        nargs='?', choices=['sendable'],
+                        help='Run test262 - sendable. ' +
+                        'sendable: Contains all use cases for sendable')
     parser.add_argument('--es2022', default=False, const='all',
                         nargs='?', choices=['all', 'only', 'other'],
                         help='Run test262 - ES2022. ' +
@@ -208,6 +212,7 @@ def init(args):
     remove_dir(TEST_ES2015_DIR)
     remove_dir(TEST_INTL_DIR)
     remove_dir(TEST_ES2021_DIR)
+    remove_dir(TEST_SENDABLE_DIR)
     remove_dir(TEST_ES2022_DIR)
     remove_dir(TEST_ES2023_DIR)
     remove_dir(TEST_CI_DIR)
@@ -271,6 +276,9 @@ class TestPrepare():
             if self.args.run_jit:
                 git_clone(TEST262_JIT_GIT_URL, DATA_DIR)
                 git_checkout(TEST262_JIT_GIT_HASH, DATA_DIR)
+            elif self.args.sendable == "sendable":
+                git_clone(SENDABLE_GIT_URL, DATA_DIR)
+                git_checkout(SENDABLE_GIT_HASH, DATA_DIR)
             else:
                 git_clone(TEST262_GIT_URL, DATA_DIR)
                 git_checkout(TEST262_GIT_HASH, DATA_DIR)
@@ -298,6 +306,8 @@ class TestPrepare():
         git_clean(DATA_DIR)
         if self.args.run_jit:
             git_checkout(TEST262_JIT_GIT_HASH, DATA_DIR)
+        elif self.args.sendable == "sendable":
+            git_checkout(SENDABLE_GIT_HASH, DATA_DIR)
         else:
             git_checkout(TEST262_GIT_HASH, DATA_DIR)
 
@@ -358,6 +368,8 @@ class TestPrepare():
             self.out_dir = os.path.join(BASE_OUT_DIR, "test_es2023")
         elif self.args.ci_build:
             self.out_dir = os.path.join(BASE_OUT_DIR, "test_CI")
+        elif self.args.sendable:
+            self.out_dir = os.path.join(BASE_OUT_DIR, "test_sendable")
         elif self.args.other:
             self.out_dir = os.path.join(BASE_OUT_DIR, "other_tests")
         else:
@@ -375,6 +387,8 @@ class TestPrepare():
             self.args.dir = TEST_INTL_DIR
         elif self.args.es2021:
             self.args.dir = TEST_ES2021_DIR
+        elif self.args.sendable:
+            self.args.dir = TEST_SENDABLE_DIR
         elif self.args.es2022:
             self.args.dir = TEST_ES2022_DIR
         elif self.args.es2023:
@@ -403,6 +417,8 @@ class TestPrepare():
             dstdir = os.path.join(TEST_INTL_DIR, file)
         elif self.args.es2021:
             dstdir = os.path.join(TEST_ES2021_DIR, file)
+        elif self.args.sendable:
+            dstdir = os.path.join(TEST_SENDABLE_DIR, file)
         elif self.args.es2022:
             dstdir = os.path.join(TEST_ES2022_DIR, file)
         elif self.args.es2023:
@@ -446,6 +462,12 @@ class TestPrepare():
             files.extend(self.get_tests_from_file(INTL_LIST_FILE))
             files.extend(self.get_tests_from_file(ES2015_LIST_FILE))
             files.extend(self.get_tests_from_file(OTHER_LIST_FILE))
+        return files
+
+    def prepare_sendable_tests(self):
+        files = []
+        if self.args.sendable == "sendable":
+            files.extend(self.get_tests_from_file(SENDABLE_LIST_FILE))
         return files
 
     def prepare_es2022_tests(self):
@@ -531,6 +553,9 @@ class TestPrepare():
         elif self.args.es2023:
             test_dir = TEST_ES2023_DIR
             files = self.prepare_es2023_tests()
+        elif self.args.sendable:
+            test_dir = TEST_SENDABLE_DIR
+            files = self.prepare_sendable_tests()
         elif self.args.ci_build:
             test_dir = TEST_CI_DIR
             files = self.get_tests_from_file(CI_LIST_FILE)
@@ -560,6 +585,9 @@ class TestPrepare():
         elif self.args.es2021:
             self.prepare_test_suit()
             src_dir = TEST_ES2021_DIR
+        elif self.args.sendable:
+            self.prepare_test_suit()
+            src_dir = TEST_SENDABLE_DIR
         elif self.args.es2022:
             self.prepare_test_suit()
             src_dir = TEST_ES2022_DIR
