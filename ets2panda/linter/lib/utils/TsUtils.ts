@@ -391,6 +391,11 @@ export class TsUtils {
     );
   }
 
+  isUnsupportedTypeArkts2(tsType: ts.Type): boolean {
+    const typenode = this.tsTypeChecker.typeToTypeNode(tsType, undefined, ts.NodeBuilderFlags.None);
+    return !!typenode && !this.isSupportedType(typenode);
+  }
+
   static isNullableUnionType(type: ts.Type): boolean {
     if (type.isUnion()) {
       for (const t of type.types) {
