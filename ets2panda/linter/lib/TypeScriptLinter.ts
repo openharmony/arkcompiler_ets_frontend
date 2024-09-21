@@ -1227,7 +1227,7 @@ export class TypeScriptLinter {
         this.incrementCounters(tsLhsExpr, FaultID.MethodReassignment);
       }
       if (
-        TsUtils.isMethodAssignment(tsLhsSymbol) &&
+        (this.arkts2 || TsUtils.isMethodAssignment(tsLhsSymbol)) &&
         tsLhsBaseSymbol &&
         (tsLhsBaseSymbol.flags & ts.SymbolFlags.Function) !== 0
       ) {
