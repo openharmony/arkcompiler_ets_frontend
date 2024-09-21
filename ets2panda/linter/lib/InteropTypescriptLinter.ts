@@ -12,24 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as ts from 'typescript';
-import * as path from 'node:path';
 import * as fs from 'fs';
-import { TsUtils } from './utils/TsUtils';
-import { FaultID } from './Problems';
+import * as path from 'node:path';
+import * as ts from 'typescript';
+import { cookBookMsg, cookBookTag } from './CookBookMsg';
 import { faultsAttrs } from './FaultAttrs';
 import { faultDesc } from './FaultDesc';
-import { cookBookMsg, cookBookTag } from './CookBookMsg';
-import { LinterConfig } from './TypeScriptLinterConfig';
-import type { Autofix } from './autofixes/Autofixer';
-import type { Autofixer } from './autofixes/Autofixer';
+import { Logger } from './Logger';
 import type { ProblemInfo } from './ProblemInfo';
 import { ProblemSeverity } from './ProblemSeverity';
-import { Logger } from './Logger';
+import { FaultID } from './Problems';
+import { LinterConfig } from './TypeScriptLinterConfig';
 import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
-import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
+import type { Autofix, Autofixer } from './autofixes/Autofixer';
+import { TsUtils } from './utils/TsUtils';
 import { ARKTS_COLLECTIONS_D_ETS, ARKTS_LANG_D_ETS } from './utils/consts/SupportedDetsIndexableTypes';
-import { D_TS, D_ETS, ETS, KIT } from './utils/consts/TsSuffix';
+import { D_ETS, D_TS, ETS, KIT } from './utils/consts/TsSuffix';
+import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 
 export function consoleLog(...args: unknown[]): void {
   if (InteropTypescriptLinter.ideMode) {

@@ -247,8 +247,9 @@ export class TsUtils {
   }
 
   // Check whether type is generic 'Array<T>' type defined in TypeScript standard library.
-  static isGenericArrayType(tsType: ts.Type): tsType is ts.TypeReference {
+  isGenericArrayType(tsType: ts.Type): tsType is ts.TypeReference {
     return (
+      !(this.arkts2 && !isStdLibraryType(tsType)) &&
       TsUtils.isTypeReference(tsType) &&
       tsType.typeArguments?.length === 1 &&
       tsType.target.typeParameters?.length === 1 &&
@@ -256,8 +257,9 @@ export class TsUtils {
     );
   }
 
-  static isReadonlyArrayType(tsType: ts.Type): boolean {
+  isReadonlyArrayType(tsType: ts.Type): boolean {
     return (
+      !(this.arkts2 && !isStdLibraryType(tsType)) &&
       TsUtils.isTypeReference(tsType) &&
       tsType.typeArguments?.length === 1 &&
       tsType.target.typeParameters?.length === 1 &&
@@ -301,13 +303,13 @@ export class TsUtils {
   }
 
   isArray(tsType: ts.Type): boolean {
-    return TsUtils.isGenericArrayType(tsType) || TsUtils.isReadonlyArrayType(tsType) || this.isTypedArray(tsType);
+    return this.isGenericArrayType(tsType) || this.isReadonlyArrayType(tsType) || this.isTypedArray(tsType);
   }
 
   isIndexableArray(tsType: ts.Type): boolean {
     return (
-      TsUtils.isGenericArrayType(tsType) ||
-      TsUtils.isReadonlyArrayType(tsType) ||
+      this.isGenericArrayType(tsType) ||
+      this.isReadonlyArrayType(tsType) ||
       TsUtils.isConcatArrayType(tsType) ||
       TsUtils.isArrayLikeType(tsType) ||
       this.isTypedArray(tsType)
@@ -2727,14 +2729,6 @@ export class TsUtils {
     return false;
   }
 
-  static isGetExpression(accessExpr: ts.ElementAccessExpression): boolean {
-    if (!ts.isBinaryExpression(accessExpr.parent)) {
-      return false;
-    }
-    const binaryExpr = accessExpr.parent;
-    return binaryExpr.operatorToken.kind === ts.SyntaxKind.EqualsToken && binaryExpr.right === accessExpr;
-  }
-
   static isSetExpression(accessExpr: ts.ElementAccessExpression): boolean {
     if (!ts.isBinaryExpression(accessExpr.parent)) {
       return false;
@@ -2748,10 +2742,6 @@ export class TsUtils {
   }
 
   isGetIndexableType(type: ts.Type, indexType: ts.Type): boolean {
-    if (!type.isClassOrInterface()) {
-      return false;
-    }
-
     const getDecls = type.getProperty('$_get')?.getDeclarations();
     if (getDecls?.length !== 1 || getDecls[0].kind !== ts.SyntaxKind.MethodDeclaration) {
       return false;
