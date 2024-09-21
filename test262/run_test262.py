@@ -28,6 +28,8 @@ import sys
 import subprocess
 from multiprocessing import Pool
 import platform
+from typing import List
+
 from utils import *
 from config import *
 
@@ -85,6 +87,8 @@ def parse_args():
                         help='Run test262 ES2015 filter cases for build version')
     parser.add_argument('--esnext', action='store_true',
                         help='Run test262 - ES.next.')
+    parser.add_argument('--test-list', metavar='FILE', dest="test_list", default=None,
+                        help='File with list of tests to run')
     parser.add_argument('--engine', metavar='FILE',
                         help='Other engine binarys to run tests(as:d8,qjs...)')
     parser.add_argument('--babel', action='store_true',
@@ -256,6 +260,11 @@ class TestPrepare():
         self.args = args
         self.out_dir = BASE_OUT_DIR
 
+    @staticmethod
+    def get_tests_from_file(file):
+        with open(file) as fopen:
+            files = [line.strip() for line in fopen.readlines() if not line.startswith("#") and line.strip()]
+        return files
 
     def prepare_test262_code(self):
         if not os.path.isdir(os.path.join(DATA_DIR, '.git')):
@@ -424,11 +433,6 @@ class TestPrepare():
                     files.append(file_name.split(origin_dir)[1])
         return files
 
-    def get_tests_from_file(self, file):
-        with open(file) as fopen:
-            files = fopen.readlines()
-        return files
-
     def prepare_es2021_tests(self):
         files = []
         files = self.collect_tests()
@@ -533,7 +537,8 @@ class TestPrepare():
 
         for file in files:
             path = os.path.split(file)[0]
-            path = os.path.join(test_dir, path)
+            if not path.startswith(test_dir):
+                path = os.path.join(test_dir, path)
             mkdir(path)
 
             self.copyfile(file, ALL_SKIP_TESTS)
@@ -580,21 +585,16 @@ class TestPrepare():
         for file in files:
             mkdstdir(file, src_dir, self.out_dir)
 
-    def run(self):
+    def get_code(self):
         self.prepare_test262_code()
         self.prepare_clean_data()
         self.patching_the_plugin()
+
+    def run(self):
         self.prepare_args_es51_es2021()
         self.prepare_out_dir()
         self.prepare_args_testdir()
         self.prepare_test262_test()
-
-
-def run_test262_prepare(args):
-    init(args)
-
-    test_prepare = TestPrepare(args)
-    test_prepare.run()
 
 
 def modetype_to_string(mode):
@@ -798,6 +798,8 @@ def run_test262_test(args):
         execute_args = execute_args.replace("/","\\")
     test_cmd.append(f"--tempDir={BASE_OUT_DIR}")
     test_cmd.append(f"--test262Dir={DATA_DIR}")
+    if args.test_list:
+        test_cmd.append("--isTestListSet")
 
     if args.babel:
         test_cmd.append("--preprocessor='test262/babel-preprocessor.js'")
@@ -809,16 +811,60 @@ def run_test262_test(args):
 Check = collections.namedtuple('Check', ['enabled', 'runner', 'arg'])
 
 
+def prepare_test_list(args) -> List[str]:
+    if not os.path.exists(args.test_list):
+        args.test_list = os.path.join("test262", args.test_list)
+    test_list = TestPrepare.get_tests_from_file(args.test_list)
+    dirs: List[str] = []
+    for test in test_list:
+        parts = test.split(os.path.sep)[:3]
+        dirs.append(os.path.sep.join(parts))
+    return list(set(dirs))
+
+
+def reset_args(args):
+    args.es51 = None
+    args.es2015 = None
+    args.intl = None
+    args.other = None
+    args.es2021 = None
+    args.es2022 = None
+    args.es2023 = None
+    args.ci_build = None
+    args.esnext = None
+    args.dir = None
+
+
+def prepare_file_from_test_list(args, test_prepare):
+    folders = prepare_test_list(args)
+    for folder in folders:
+        reset_args(args)
+        args.dir = folder
+        test_prepare.run()
+    args.file = args.test_list
+
+
+def run(args):
+    init(args)
+
+    test_prepare = TestPrepare(args)
+    test_prepare.get_code()
+    if args.test_list:
+        prepare_file_from_test_list(args, test_prepare)
+    else:
+        test_prepare.run()
+    check = Check(True, run_test262_test, args)
+    check.runner(check.arg)
+
+
 def main(args):
     print("\nWait a moment..........\n")
     starttime = datetime.datetime.now()
-    run_test262_prepare(args)
-    check = Check(True, run_test262_test, args)
-    ret = check.runner(check.arg)
-    if ret:
-        sys.exit(ret)
+    run(args)
     endtime = datetime.datetime.now()
     print(f"used time is: {str(endtime - starttime)}")
 
+
 if __name__ == "__main__":
+    #  Script returns 0 if it's completed despite whether there are some failed tests or no
     sys.exit(main(parse_args()))
