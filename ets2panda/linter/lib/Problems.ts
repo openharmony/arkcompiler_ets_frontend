@@ -127,6 +127,7 @@ export enum FaultID {
   SendableBetaCompatible,
   ObjectLiteralProperty,
   OptionalMethod,
+  ImportType,
   // this should always be last enum
   LAST_ID
 }

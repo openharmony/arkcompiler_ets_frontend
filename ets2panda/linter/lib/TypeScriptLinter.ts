@@ -231,7 +231,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ExportDeclaration, this.handleExportDeclaration],
     [ts.SyntaxKind.ThisType, this.handleThisType],
     [ts.SyntaxKind.ReturnStatement, this.handleReturnStatement],
-    [ts.SyntaxKind.Decorator, this.handleDecorator]
+    [ts.SyntaxKind.Decorator, this.handleDecorator],
+    [ts.SyntaxKind.ImportType, this.handleImportType]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -2885,4 +2886,12 @@ export class TypeScriptLinter {
     }
     return false;
   }
+
+  private handleImportType(node: ts.Node): void {
+    if(!this.arkts2) { 
+      return;
+    }
+    this.incrementCounters(node, FaultID.ImportType);
+  }
 }
+

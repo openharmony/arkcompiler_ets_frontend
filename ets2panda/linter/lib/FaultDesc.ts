@@ -131,3 +131,4 @@ faultDesc[FaultID.SharedModuleExportsWarning] = 'Shared module exports Warning';
 faultDesc[FaultID.SendableBetaCompatible] = 'Sendable beta compatible';
 faultDesc[FaultID.ObjectLiteralProperty] = 'Object literal property';
 faultDesc[FaultID.OptionalMethod] = 'Optional method';
+faultDesc[FaultID.ImportType] = 'Import type syntax';
