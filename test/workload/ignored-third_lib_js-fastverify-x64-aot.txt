@@ -22,7 +22,7 @@ jBox2d_test
 jmespath_test
 
 #19247
-jsDiff_tes
+jsDiff_test
 
 #19104
 hi-base32_test
@@ -47,6 +47,9 @@ pcx_test
 
 #19251
 pdfview_test
+
+#19248
+pinyin4js_test
 
 #19426
 validator_test

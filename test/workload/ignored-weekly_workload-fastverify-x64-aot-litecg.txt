@@ -4,6 +4,9 @@ earley-boyer
 ##19072
 OfflineAssembler
 
+##19008
+regex-dna
+
 ##18604
 typescript-compiler
 raytrace

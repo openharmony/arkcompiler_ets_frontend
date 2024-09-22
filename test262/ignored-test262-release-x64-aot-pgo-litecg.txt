@@ -1,8 +1,5 @@
 # Known failure list for test262 - release-x64-aot-pgo-litecg
 
-#18596
-test262/data/test_es2021/built-ins/TypedArray/prototype/set/typedarray-arg-set-values-diff-buffer-other-type-conversions-sab.js
-
 #18676
 test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
 test262/data/test_es2021/language/module-code/instn-iee-err-circular-as.js
