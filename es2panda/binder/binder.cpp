@@ -437,6 +437,9 @@ void Binder::BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *sc
     if (bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM) {
         return;
     }
+    
+    auto *funcScope = scriptFunc->Scope();
+    funcScope->ParamScope()->SetParent(outerScope);
 
     if (scriptFunc->IsArrow()) {
         const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(scriptFunc);
@@ -824,6 +827,8 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
+            auto *classScope = childNode->AsClassDefinition()->Scope();
+            classScope->SetParent(scope_);
             BuildClassDefinition(childNode->AsClassDefinition());
 
             break;
