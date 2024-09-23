@@ -123,7 +123,7 @@ void CompileFileJob::Run()
         prog = compiler.CompileAbcFile(src_->fileName, *options_);
     } else {
         // If input is an abc file, in merge-abc mode, compile each class parallelly.
-        compiler.CompileAbcFileInParallel(src_->fileName, *options_, progsInfo_, allocator_);
+        compiler.CompileAbcFileInParallel(src_, *options_, progsInfo_, allocator_);
         return;
     }
     if (prog == nullptr) {
@@ -159,10 +159,10 @@ void CompileAbcClassJob::Run()
     compiler_.CompileAbcClass(recordId, *program);
 
     // Update version for abc input when needed
-    if (options_.updatePkgVersionForAbcInput) {
+    if (options_.updatePkgVersionForAbcInput && pkgVersionUpdateRequiredInAbc_) {
         UpdatePackageVersion(program, options_);
         // Remove redundant strings created due to version replacement
-        if (options_.removeRedundantFile) {
+        if (options_.removeRedundantFile && hasUpdatedVersion_) {
             program->strings.clear();
             for (const auto &[_, function] : program->function_table) {
                 const auto &funcStringSet = function.CollectStringsFromFunctionInsns();
@@ -187,11 +187,15 @@ void CompileAbcClassJob::Run()
 }
 
 void CompileAbcClassJob::UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
-                                                           const panda::es2panda::CompilerOptions &options)
+    const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[name, function] : prog->function_table) {
-        util::VisitDyanmicImports<false>(function, [&prog, options](std::string &ohmurl) {
-            const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(ohmurl, options.compileContextInfo);
+        util::VisitDyanmicImports<false>(function, [this, &prog, pkgContextInfo](std::string &ohmurl) {
+            const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(ohmurl, pkgContextInfo);
+            if (newOhmurl == ohmurl) {
+                return;
+            }
+            this->SetHasUpdatedVersion(true);
             prog->strings.insert(newOhmurl);
             ohmurl = newOhmurl;
         });
@@ -199,11 +203,16 @@ void CompileAbcClassJob::UpdateDynamicImportPackageVersion(panda::pandasm::Progr
 }
 
 void CompileAbcClassJob::UpdateStaticImportPackageVersion(panda::pandasm::Program *prog,
-                                                          const panda::es2panda::CompilerOptions &options)
+    const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[recordName, record] : prog->record_table) {
-        util::VisitStaticImports<false>(*prog, record, [options](std::string &ohmurl) {
-            ohmurl = util::UpdatePackageVersionIfNeeded(ohmurl, options.compileContextInfo);
+        util::VisitStaticImports<false>(*prog, record, [this, pkgContextInfo](std::string &ohmurl) {
+            const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(ohmurl, pkgContextInfo);
+            if (newOhmurl == ohmurl) {
+                return;
+            }
+            this->SetHasUpdatedVersion(true);
+            ohmurl = newOhmurl;
         });
     }
 }
@@ -211,10 +220,13 @@ void CompileAbcClassJob::UpdateStaticImportPackageVersion(panda::pandasm::Progra
 void CompileAbcClassJob::UpdatePackageVersion(panda::pandasm::Program *prog,
                                               const panda::es2panda::CompilerOptions &options)
 {
+    bool isAccurateUpdateVersion = !options.compileContextInfo.updateVersionInfo.empty();
+    const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo = isAccurateUpdateVersion ?
+        options.compileContextInfo.updateVersionInfo.at(abcPkgName_) : options.compileContextInfo.pkgContextInfo;
     // Replace for esm module static import
-    UpdateStaticImportPackageVersion(prog, options);
+    UpdateStaticImportPackageVersion(prog, pkgContextInfo);
     // Replace for dynamic import
-    UpdateDynamicImportPackageVersion(prog, options);
+    UpdateDynamicImportPackageVersion(prog, pkgContextInfo);
 }
 
 void PostAnalysisOptimizeFileJob::Run()
@@ -261,17 +273,29 @@ void CompileFileQueue::Schedule()
     jobsAvailable_.notify_all();
 }
 
+bool CompileAbcClassQueue::NeedUpdateVersion()
+{
+    std::unordered_map<std::string, std::unordered_map<std::string, panda::es2panda::PkgInfo>> updateVersionInfo =
+        options_.compileContextInfo.updateVersionInfo;
+    auto iter = updateVersionInfo.find(src_->pkgName);
+    return updateVersionInfo.empty() || (iter != updateVersionInfo.end() && !iter->second.empty());
+}
+
 void CompileAbcClassQueue::Schedule()
 {
     std::unique_lock<std::mutex> lock(m_);
 
     auto classIds = compiler_.GetAbcFile().GetClasses();
     size_t expectedProgsCountInAbcFile = 0;
+    bool needUpdateVersion = NeedUpdateVersion();
     for (size_t i = 0; i != classIds.size(); ++i) {
         if (!compiler_.CheckClassId(classIds[i], i)) {
             continue;
         }
-        auto *abcClassJob = new CompileAbcClassJob(classIds[i], options_, compiler_, progsInfo_, allocator_);
+
+        auto *abcClassJob = new CompileAbcClassJob(classIds[i], options_, compiler_, progsInfo_, allocator_,
+                                                   src_->pkgName, needUpdateVersion);
+
         jobs_.push_back(abcClassJob);
         jobsCount_++;
         expectedProgsCountInAbcFile++;

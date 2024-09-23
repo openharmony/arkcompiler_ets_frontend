@@ -105,9 +105,18 @@ public:
                                 const es2panda::CompilerOptions &options,
                                 abc2program::Abc2ProgramCompiler &compiler,
                                 std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-                                panda::ArenaAllocator *allocator)
+                                panda::ArenaAllocator *allocator,
+                                std::string abcPkgName,
+                                bool pkgVersionUpdateRequiredInAbc = true)
         : classId_(classId), options_(options), compiler_(compiler), progsInfo_(progsInfo),
-          allocator_(allocator) {};
+          allocator_(allocator), abcPkgName_(abcPkgName),
+          pkgVersionUpdateRequiredInAbc_(pkgVersionUpdateRequiredInAbc) {};
+
+    void SetHasUpdatedVersion(bool hasUpdatedVersion)
+    {
+        hasUpdatedVersion_ = hasUpdatedVersion;
+    }
+
     NO_COPY_SEMANTIC(CompileAbcClassJob);
     NO_MOVE_SEMANTIC(CompileAbcClassJob);
     ~CompileAbcClassJob() override = default;
@@ -116,14 +125,19 @@ public:
 
 private:
     void UpdatePackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
-    void UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
-    void UpdateStaticImportPackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
+    void UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
+        const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
+    void UpdateStaticImportPackageVersion(panda::pandasm::Program *prog,
+        const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
 
     const uint32_t classId_;
     const es2panda::CompilerOptions &options_;
     abc2program::Abc2ProgramCompiler &compiler_;
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     panda::ArenaAllocator *allocator_;
+    std::string abcPkgName_;
+    bool pkgVersionUpdateRequiredInAbc_;
+    bool hasUpdatedVersion_ {false};
 };
 
 class PostAnalysisOptimizeFileJob : public util::WorkerJob {
@@ -186,9 +200,10 @@ public:
                                   const es2panda::CompilerOptions &options,
                                   abc2program::Abc2ProgramCompiler &compiler,
                                   std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-                                  panda::ArenaAllocator *allocator)
+                                  panda::ArenaAllocator *allocator,
+                                  es2panda::SourceFile *src)
         : util::WorkerQueue(threadCount), options_(options), compiler_(compiler), progsInfo_(progsInfo),
-          allocator_(allocator) {}
+          allocator_(allocator), src_(src) {}
 
     NO_COPY_SEMANTIC(CompileAbcClassQueue);
     NO_MOVE_SEMANTIC(CompileAbcClassQueue);
@@ -197,11 +212,14 @@ public:
     void Schedule() override;
 
 private:
+    bool NeedUpdateVersion();
+
     static std::mutex globalMutex_;
     const es2panda::CompilerOptions &options_;
     abc2program::Abc2ProgramCompiler &compiler_;
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     panda::ArenaAllocator *allocator_;
+    es2panda::SourceFile *src_;
 };
 
 class PostAnalysisOptimizeFileQueue : public util::WorkerQueue {
