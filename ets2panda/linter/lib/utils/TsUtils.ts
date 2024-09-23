@@ -1250,7 +1250,8 @@ export class TsUtils {
     [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange],
     [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange],
     [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange],
-    [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange]
+    [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange],
+    [FaultID.StructuralIdentity, TsUtils.getStructuralIdentityHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1387,6 +1388,21 @@ export class TsUtils {
     const name = (nodeOrComment as ts.PropertyDeclaration).name;
     const exclamationToken = (nodeOrComment as ts.PropertyDeclaration).exclamationToken;
     return [name.getStart(), exclamationToken ? exclamationToken.getEnd() : name.getEnd()];
+  }
+
+  static getStructuralIdentityHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    let node: ts.Node | undefined;
+    if (nodeOrComment.kind === ts.SyntaxKind.ReturnStatement) {
+      node = (nodeOrComment as ts.ReturnStatement).expression;
+    } else if (nodeOrComment.kind === ts.SyntaxKind.PropertyDeclaration) {
+      node = (nodeOrComment as ts.PropertyDeclaration).name;
+    }
+
+    if (node !== undefined) {
+      return [node.getStart(), node.getEnd()];
+    }
+
+    return undefined;
   }
 
   isStdRecordType(type: ts.Type): boolean {
