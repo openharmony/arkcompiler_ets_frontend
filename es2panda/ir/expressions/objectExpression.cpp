@@ -273,7 +273,6 @@ static const Literal *CreateLiteral(compiler::PandaGen *pg, const ir::Property *
 void ObjectExpression::CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *compiled) const
 {
     bool hasMethod = false;
-    bool seenComputed = false;
     auto *buf = pg->NewLiteralBuffer();
     std::vector<std::vector<const Literal *>> tempLiteralBuffer(properties_.size());
     std::unordered_map<util::StringView, size_t> propNameMap;
@@ -282,27 +281,21 @@ void ObjectExpression::CompileStaticProperties(compiler::PandaGen *pg, util::Bit
 
     for (size_t i = 0; i < properties_.size(); i++) {
         if (properties_[i]->IsSpreadElement()) {
-            seenComputed = true;
-            continue;
+            break;
         }
 
         const ir::Property *prop = properties_[i]->AsProperty();
 
         if (!util::Helpers::IsConstantPropertyKey(prop->Key(), prop->IsComputed()) ||
             prop->Kind() == ir::PropertyKind::PROTO) {
-            seenComputed = true;
-            continue;
+            break;
         }
 
         std::vector<const Literal *> propBuf;
         util::StringView name = util::Helpers::LiteralToPropName(pg->Allocator(), prop->Key());
         size_t propIndex = i;
         auto res = propNameMap.insert({name, propIndex});
-        if (res.second) {    // name not found in map
-            if (seenComputed) {
-                break;
-            }
-        } else {
+        if (!res.second) {    // name is found in map
             propIndex = res.first->second;
 
             if (prop->Kind() != ir::PropertyKind::SET && getterIndxNameMap.find(name) != getterIndxNameMap.end()) {
