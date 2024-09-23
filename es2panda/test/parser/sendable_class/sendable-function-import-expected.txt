@@ -4,8 +4,8 @@ slotNum = 0x5
 .function any .#*#foo(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
-	definefunc 0x0, .#*@0*#ttt2, 0x0
-	definefunc 0x1, .#*@0*#ttt, 0x0
+	definefunc 0x0, .#*@0*#ttt, 0x0
+	definefunc 0x1, .#*@0*#ttt2, 0x0
 	tryldglobalbyname 0x2, print
 	sta v0
 	callruntime.ldsendableexternalmodulevar 0x0
@@ -172,9 +172,9 @@ slotNum = 0x4
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	definefunc 0x0, .#*#foo4, 0x0
+	definefunc 0x0, .#*#foo, 0x1
 	definefunc 0x1, .#*#foo3, 0x0
-	definefunc 0x2, .#*#foo, 0x1
+	definefunc 0x2, .#*#foo4, 0x0
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x3, .#~A=#A, _3, 0x0, v0

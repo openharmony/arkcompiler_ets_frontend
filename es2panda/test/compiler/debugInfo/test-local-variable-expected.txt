@@ -302,18 +302,18 @@
           "length": 3
         },
         {
-          "name": "a",
-          "signature": "any",
-          "signatureType": "any",
-          "reg": 3,
-          "start": 3,
-          "length": 14
-        },
-        {
           "name": "this",
           "signature": "any",
           "signatureType": "any",
           "reg": 2,
+          "start": 3,
+          "length": 14
+        },
+        {
+          "name": "a",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 3,
           "start": 3,
           "length": 14
         },

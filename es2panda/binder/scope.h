@@ -49,7 +49,7 @@ class Scope;
 class VariableScope;
 class Variable;
 
-using VariableMap = ArenaUnorderedMap<util::StringView, Variable *>;
+using VariableMap = ArenaMap<util::StringView, Variable *>;
 
 class TSBindings {
 public:

@@ -51,9 +51,9 @@ slotNum = 0x7
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 
-	definefunc 0x0, .#*#Test, 0x0
 	ldundefined
 	sta v0
+	definefunc 0x0, .#*#Test, 0x0
 	definefunc 0x1, .#%#City, 0x1
 	sta v1
 	lda v0

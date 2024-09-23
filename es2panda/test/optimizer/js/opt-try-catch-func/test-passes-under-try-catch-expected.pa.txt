@@ -120,27 +120,27 @@ label_0:
 	callarg1 0x2, v2
 label_2: 
 label_4: 
-	mov v2, v0
-	mov v3, v1
+	mov v2, v1
+	mov v3, v0
 	lda.str s1
 	sta v0
-	mov v2, v0
+	mov v3, v0
 	lda.str s2
 	sta v0
 	ldai 0x1
-	mov v3, v0
+	mov v2, v0
 	throw
 label_3: 
 end_label_3: 
 label_9: 
 label_6: 
-	lda v3
-	add2 0x4, v2
+	lda v2
+	add2 0x4, v3
 	sta v0
 	tryldglobalbyname 0x5, print
 	callarg1 0x6, v0
-	lda v3
-	add2 0x8, v2
+	lda v2
+	add2 0x8, v3
 	sta v0
 	tryldglobalbyname 0x9, print
 	callarg1 0xa, v0
@@ -156,23 +156,23 @@ slotNum = 0xc
 label_1: 
 label_0: 
 	newlexenv 0x1
-	definefunc 0x0, .#*#testTryWithRegAccAlloc, 0x0
+	definefunc 0x0, .#*#testCatchPhiDataflow, 0x0
 	sta v0
-	definefunc 0x1, .#*#testCatchPhiDataflow, 0x0
+	definefunc 0x1, .#*#testTryWithAccCatchPhi, 0x0
 	sta v1
 	definefunc 0x2, .#*#testTryWithMoveConstants, 0x0
 	sta v2
-	definefunc 0x3, .#*#testTryWithAccCatchPhi, 0x0
+	definefunc 0x3, .#*#testTryWithRegAccAlloc, 0x0
 	sta v3
 	ldtrue
 	stlexvar 0x0, 0x0
-	lda v1
+	lda v0
 	callarg0 0x4
-	lda v3
+	lda v1
 	callarg0 0x6
 	lda v2
 	callarg0 0x8
-	lda v0
+	lda v3
 	callarg0 0xa
 	ldundefined
 	returnundefined

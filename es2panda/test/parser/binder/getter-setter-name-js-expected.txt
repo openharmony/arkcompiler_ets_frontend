@@ -44,9 +44,9 @@ label_5:
 label_0: 
 	newlexenv 0x1
 	ldundefined
+	ldundefined
+	ldundefined
 	stlexvar 0x0, 0x0
-	ldundefined
-	ldundefined
 	tryldglobalbyname 0x0, Object
 	sta v0
 	ldobjbyname 0x1, create

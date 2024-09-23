@@ -210,12 +210,12 @@ label_7:
 	mov v13, v10
 	mov v14, v11
 	lda v7
-	less 0x0, v12
+	less 0x0, v9
 	jeqz label_82
 label_2: 
 	lda v8
-	add2 0x1, v12
-	sta v12
+	add2 0x1, v9
+	sta v9
 	ldundefined
 	sta v19
 label_55: 
@@ -236,14 +236,14 @@ label_12:
 	mov v13, v10
 	mov v14, v11
 	lda v7
-	less 0x2, v9
+	less 0x2, v12
 	jeqz label_33
 label_4: 
 	lda v8
-	add2 0x3, v9
-	sta v9
-	mov v29, v9
-	mov v23, v9
+	add2 0x3, v12
+	sta v12
+	mov v28, v12
+	mov v22, v12
 	ldundefined
 	sta v32
 label_51: 
@@ -269,7 +269,7 @@ label_62:
 	mov v50, v11
 	mov v48, v11
 	lda v6
-	stricteq 0x4, v12
+	stricteq 0x4, v9
 	jeqz label_5
 label_6: 
 	tryldglobalbyname 0x5, print
@@ -298,7 +298,7 @@ label_6:
 	jmp label_59
 label_5: 
 	lda v2
-	stricteq 0xe, v12
+	stricteq 0xe, v9
 	jeqz label_8
 label_9: 
 	tryldglobalbyname 0xf, print
@@ -326,7 +326,7 @@ label_9:
 	jmp label_39
 label_8: 
 	lda v6
-	stricteq 0x18, v9
+	stricteq 0x18, v12
 	jeqz label_10
 label_11: 
 	tryldglobalbyname 0x19, print
@@ -345,7 +345,7 @@ label_11:
 	jmp label_55
 label_10: 
 	lda v2
-	stricteq 0x1f, v9
+	stricteq 0x1f, v12
 	jeqz label_13
 label_14: 
 	tryldglobalbyname 0x20, print
@@ -364,12 +364,12 @@ label_14:
 	jmp label_33
 label_13: 
 	lda v1
-	stricteq 0x26, v12
+	stricteq 0x26, v9
 	callruntime.isfalse 0x27
 	jnez label_15
 label_16: 
 	lda v2
-	stricteq 0x29, v9
+	stricteq 0x29, v12
 	callruntime.isfalse 0x2a
 	jnez label_15
 label_17: 
@@ -377,12 +377,12 @@ label_17:
 	throw
 label_15: 
 	lda v0
-	stricteq 0x2c, v12
+	stricteq 0x2c, v9
 	callruntime.isfalse 0x2d
 	jnez label_21
 label_19: 
 	lda v2
-	stricteq 0x2f, v9
+	stricteq 0x2f, v12
 	callruntime.isfalse 0x30
 	jnez label_21
 label_20: 
@@ -738,13 +738,13 @@ slotNum = 0xc
 	nop
 label_12: 
 label_0: 
-	definefunc 0x0, .#*#testTryBlockWithLoop, 0x0
+	definefunc 0x0, .#*#testNestedTryBlock, 0x0
 	sta v0
-	definefunc 0x1, .#*#testNestedTryBlock, 0x0
+	definefunc 0x1, .#*#testTryBlockWithLoop, 0x0
 	sta v1
 label_3: 
 label_7: 
-	lda v1
+	lda v0
 	callarg0 0x2
 label_4: 
 end_label_4: 
@@ -756,16 +756,16 @@ label_10:
 	callarg1 0x5, v2
 label_5: 
 label_1: 
-	lda v0
+	lda v1
 	callarg0 0x7
 label_6: 
 end_label_6: 
 	jmp label_2
 label_15: 
-	sta v1
+	sta v0
 label_11: 
 	tryldglobalbyname 0x9, print
-	callarg1 0xa, v1
+	callarg1 0xa, v0
 label_2: 
 	ldundefined
 	returnundefined
