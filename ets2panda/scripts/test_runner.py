@@ -62,8 +62,10 @@ def main():
     if not os.path.isfile(testrunner):
         print("The following script is not executable or exist: {0}".format(testrunner))
 
-    general_cmd = ['python', testrunner, '--build-dir', options.builddir, '--force-generate',
-                   '--show-progress', '--processes', 'all', '--timeout', str(options.timeout)]
+    general_cmd = [
+        'python', testrunner, '--build-dir', options.builddir, '--force-generate',
+        '--show-progress', '--processes', 'all', '--timeout', str(options.timeout)
+    ]
 
     if options.all:
         options.regression = options.runtime = options.cts = options.functional = options.test262 = True

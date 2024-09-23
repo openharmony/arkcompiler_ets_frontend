@@ -53,14 +53,14 @@ def info_log(msg: str) -> None:
 def warning_log(msg: str) -> None:
     path = os.path.join(LIB_GEN_FOLDER, "./gen/logs/warning_logs.txt")
     if WARNING_LOGGING:
-        with os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT|os.O_APPEND), "a", encoding="utf-8") as f:
+        with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, mode=511), "a", encoding="utf-8") as f:
             f.write("Warning! " + msg + "\n")
 
 
 def error_log(msg: str) -> None:
     path = os.path.join(LIB_GEN_FOLDER, "./gen/logs/error_logs.txt")
     if ERROR_LOGGIN:
-        with os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT|os.O_APPEND), "a", encoding="utf-8") as f:
+        with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, mode=511), "a", encoding="utf-8") as f:
             f.write(msg)
 
 
@@ -75,6 +75,6 @@ def tmp_log(msg: str) -> None:
 
 def dump_to_file(file_name: str, msg: str) -> None:
     path = LIB_GEN_FOLDER + file_name
-    with os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT), "w", encoding="utf-8") as f:
+    with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, mode=511), "w", encoding="utf-8") as f:
         f.write(msg)
     console_log("Data dumped to '" + path + "'")

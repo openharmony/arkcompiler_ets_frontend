@@ -95,6 +95,6 @@ def save_statistics() -> None:
     info_log(f"Parsed {len(custom_yamls['pathsToHeaders']['collection']['paths'])} / {len(sys.argv[3:])} headers.")
 
     for _, value in statistics.items():
-        with os.fdopen(os.open(value["log_file"], os.O_WRONLY|os.O_CREAT), "w", encoding="utf-8") as f:
+        with os.fdopen(os.open(value["log_file"], os.O_WRONLY | os.O_CREAT, mode=511), "w", encoding="utf-8") as f:
             for item in value["collection"]:
                 f.write(item + "\n")
