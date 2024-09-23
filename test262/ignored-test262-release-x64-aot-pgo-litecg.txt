@@ -1,9 +1,5 @@
 # Known failure list for test262 - release-x64-aot-pgo-litecg
 
-#18756
-test262/data/test_es2021/built-ins/Array/prototype/find/predicate-is-not-callable-throws.js
-test262/data/test_es2021/built-ins/Array/prototype/findIndex/predicate-is-not-callable-throws.js
-
 #18596
 test262/data/test_es2021/built-ins/TypedArray/prototype/set/typedarray-arg-set-values-diff-buffer-other-type-conversions-sab.js
 
