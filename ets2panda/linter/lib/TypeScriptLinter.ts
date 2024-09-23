@@ -55,7 +55,7 @@ import { DEFAULT_COMPATIBLE_SDK_VERSION, DEFAULT_COMPATIBLE_SDK_VERSION_STAGE } 
 import type { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
-import { isStdLibraryType } from './utils/functions/IsStdLibrary';
+import { isStdLibrarySymbol, isStdLibraryType } from './utils/functions/IsStdLibrary';
 import { isStruct, isStructDeclaration } from './utils/functions/IsStruct';
 import {
   ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE,
@@ -67,6 +67,7 @@ import {
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
+import { StdClassVarDecls } from './utils/consts/StdClassVariableDeclarations';
 
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
@@ -747,7 +748,8 @@ export class TypeScriptLinter {
     }
 
     if (!!baseExprSym && TsUtils.symbolHasEsObjectType(baseExprSym)) {
-      this.incrementCounters(propertyAccessNode, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(propertyAccessNode, faultId);
     }
     if (TsUtils.isSendableFunction(baseExprType) || this.tsUtils.hasSendableTypeAlias(baseExprType)) {
       this.incrementCounters(propertyAccessNode, FaultID.SendableFunctionProperty);
@@ -1053,7 +1055,7 @@ export class TypeScriptLinter {
     const isSignature = ts.isMethodSignature(funcLikeDecl);
     if (isSignature || !funcLikeDecl.body) {
       // Ambient flag is not exposed, so we apply dirty hack to make it visible
-      const isAmbientDeclaration = !!(funcLikeDecl.flags & (ts.NodeFlags as any).Ambient);
+      const isAmbientDeclaration = TsUtils.isAmbientNode(funcLikeDecl);
       if ((isSignature || isAmbientDeclaration) && !funcLikeDecl.type) {
         this.incrementCounters(funcLikeDecl, FaultID.LimitedReturnTypeInference);
       }
@@ -1359,7 +1361,8 @@ export class TypeScriptLinter {
     const isInitializedWithESObject = !!initalizerTypeNode && TsUtils.isEsObjectType(initalizerTypeNode);
     const isLocal = TsUtils.isInsideBlock(node);
     if ((isDeclaredESObject || isInitializedWithESObject) && !isLocal) {
-      this.incrementCounters(node, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(node, faultId);
       return;
     }
 
@@ -1374,12 +1377,14 @@ export class TypeScriptLinter {
     const initalizerTypeNode = this.tsUtils.getVariableDeclarationTypeNode(initializer);
     const isInitializedWithESObject = !!initalizerTypeNode && TsUtils.isEsObjectType(initalizerTypeNode);
     if (isTypeAnnotated && !isDeclaredESObject && isInitializedWithESObject) {
-      this.incrementCounters(node, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(node, faultId);
       return;
     }
 
     if (isDeclaredESObject && !this.tsUtils.isValueAssignableToESObject(initializer)) {
-      this.incrementCounters(node, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(node, faultId);
     }
   }
 
@@ -1683,7 +1688,8 @@ export class TypeScriptLinter {
       (tsIdentSym.flags & ts.SymbolFlags.Transient) !== 0 &&
       tsIdentifier.text === 'globalThis'
     ) {
-      this.incrementCounters(node, FaultID.GlobalThis);
+      const faultId = this.arkts2 ? FaultID.GlobalThisError : FaultID.GlobalThis;
+      this.incrementCounters(node, faultId);
     } else {
       this.handleRestrictedValues(tsIdentifier, tsIdentSym);
     }
@@ -1713,6 +1719,31 @@ export class TypeScriptLinter {
     return false;
   }
 
+  private isStdlibClassVarDecl(ident: ts.Identifier, sym: ts.Symbol): boolean {
+
+    /*
+     * Most standard JS classes are defined in TS stdlib as ambient global
+     * variables with interface constructor type and require special check
+     * when they are being referenced in code.
+     */
+
+    if (
+      !isStdLibrarySymbol(sym) ||
+      !sym.valueDeclaration ||
+      !ts.isVariableDeclaration(sym.valueDeclaration) ||
+      !TsUtils.isAmbientNode(sym.valueDeclaration)
+    ) {
+      return false;
+    }
+
+    const classVarDeclType = StdClassVarDecls.get(sym.name);
+    if (!classVarDeclType) {
+      return false;
+    }
+    const declType = this.tsTypeChecker.getTypeAtLocation(ident);
+    return declType.symbol && declType.symbol.name === classVarDeclType;
+  }
+
   private handleRestrictedValues(tsIdentifier: ts.Identifier, tsIdentSym: ts.Symbol): void {
     const illegalValues =
       ts.SymbolFlags.ConstEnum |
@@ -1731,7 +1762,8 @@ export class TypeScriptLinter {
     }
 
     if (
-      (tsIdentSym.flags & illegalValues) === 0 ||
+      (tsIdentSym.flags & illegalValues) === 0 &&
+        !(this.arkts2 && this.isStdlibClassVarDecl(tsIdentifier, tsIdentSym)) ||
       isStruct(tsIdentSym) ||
       !identiferUseInValueContext(tsIdentifier, tsIdentSym)
     ) {
@@ -1748,7 +1780,8 @@ export class TypeScriptLinter {
       this.incrementCounters(tsIdentifier, FaultID.NamespaceAsObject);
     } else {
       // missing EnumAsObject
-      this.incrementCounters(tsIdentifier, FaultID.ClassAsObject);
+      const faultId = this.arkts2 ? FaultID.ClassAsObjectError : FaultID.ClassAsObject;
+      this.incrementCounters(tsIdentifier, faultId);
     }
   }
 
@@ -1816,7 +1849,8 @@ export class TypeScriptLinter {
     }
 
     if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
-      this.incrementCounters(node, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(node, faultId);
     }
   }
 
@@ -1885,7 +1919,8 @@ export class TypeScriptLinter {
       this.handleStdlibAPICall(tsCallExpr, calleeSym);
       this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
       if (TsUtils.symbolHasEsObjectType(calleeSym)) {
-        this.incrementCounters(tsCallExpr, FaultID.EsObjectType);
+        const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+        this.incrementCounters(tsCallExpr, faultId);
       }
     }
     if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(calleeSym)) {
@@ -1898,7 +1933,8 @@ export class TypeScriptLinter {
       ts.isPropertyAccessExpression(tsCallExpr.expression) &&
       this.tsUtils.hasEsObjectType(tsCallExpr.expression.expression)
     ) {
-      this.incrementCounters(node, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(node, faultId);
     }
   }
 
@@ -2002,7 +2038,8 @@ export class TypeScriptLinter {
       this.incrementCounters(tsCallExpr, FaultID.FunctionApplyCall);
     }
     if (TypeScriptLinter.listFunctionBindApis.includes(exprName)) {
-      this.incrementCounters(tsCallExpr, FaultID.FunctionBind);
+      const faultId = this.arkts2 ? FaultID.FunctionBindError : FaultID.FunctionBind;
+      this.incrementCounters(tsCallExpr, faultId);
     }
   }
 
@@ -2211,7 +2248,8 @@ export class TypeScriptLinter {
     const isESObject = TsUtils.isEsObjectType(typeRef);
     const isPossiblyValidContext = TsUtils.isEsObjectPossiblyAllowed(typeRef);
     if (isESObject && !isPossiblyValidContext) {
-      this.incrementCounters(node, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(node, faultId);
       return;
     }
 
@@ -2306,7 +2344,8 @@ export class TypeScriptLinter {
     const tsTypeExpr = node as ts.ExpressionWithTypeArguments;
     const symbol = this.tsUtils.trueSymbolAtLocation(tsTypeExpr.expression);
     if (!!symbol && TsUtils.isEsObjectSymbol(symbol)) {
-      this.incrementCounters(tsTypeExpr, FaultID.EsObjectType);
+      const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(tsTypeExpr, faultId);
     }
   }
 
@@ -2426,7 +2465,8 @@ export class TypeScriptLinter {
         return;
       }
     }
-    this.incrementCounters(decl, FaultID.DefiniteAssignment);
+    const faultId = this.arkts2 ? FaultID.DefiniteAssignmentError : FaultID.DefiniteAssignment;
+    this.incrementCounters(decl, faultId);
   }
 
   private readonly validatedTypesSet = new Set<ts.Type>();

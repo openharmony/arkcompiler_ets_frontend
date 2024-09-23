@@ -1243,6 +1243,7 @@ export class TsUtils {
     [FaultID.LimitedReturnTypeInference, TsUtils.getLimitedReturnTypeInferenceHighlightRange],
     [FaultID.LocalFunction, TsUtils.getLocalFunctionHighlightRange],
     [FaultID.FunctionBind, TsUtils.getFunctionApplyCallHighlightRange],
+    [FaultID.FunctionBindError, TsUtils.getFunctionApplyCallHighlightRange],
     [FaultID.FunctionApplyCall, TsUtils.getFunctionApplyCallHighlightRange],
     [FaultID.DeclWithDuplicateName, TsUtils.getDeclWithDuplicateNameHighlightRange],
     [FaultID.ObjectLiteralNoContextType, TsUtils.getObjectLiteralNoContextTypeHighlightRange],
@@ -2831,5 +2832,10 @@ export class TsUtils {
       }
     });
     return exportDeclSet;
+  }
+
+  static isAmbientNode(node: ts.Node): boolean {
+    // Ambient flag is not exposed, so we apply dirty hack to make it visible
+    return !!(node.flags & (ts.NodeFlags as any).Ambient);
   }
 }
