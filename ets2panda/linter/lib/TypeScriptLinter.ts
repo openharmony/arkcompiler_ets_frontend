@@ -229,7 +229,6 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.TypeLiteral, this.handleTypeLiteral],
     [ts.SyntaxKind.ExportKeyword, this.handleExportKeyword],
     [ts.SyntaxKind.ExportDeclaration, this.handleExportDeclaration],
-    [ts.SyntaxKind.ThisType, this.handleThisType],
     [ts.SyntaxKind.ReturnStatement, this.handleReturnStatement],
     [ts.SyntaxKind.Decorator, this.handleDecorator],
     [ts.SyntaxKind.ImportType, this.handleImportType]
@@ -471,12 +470,6 @@ export class TypeScriptLinter {
       if (isMethodDecl || isPropertyDecl) {
         this.countInterfaceExtendsDifferentPropertyTypes(node, prop2type, p.name, decl.type);
       }
-    }
-  }
-
-  private handleThisType(node: ts.Node): void {
-    if (node.parent.kind !== ts.SyntaxKind.MethodDeclaration && node.parent.kind !== ts.SyntaxKind.MethodSignature) {
-      this.incrementCounters(node, FaultID.ThisTyping);
     }
   }
 
@@ -2825,18 +2818,6 @@ export class TypeScriptLinter {
       return;
     }
     this.checkAssignmentMatching(node, lhsType, expr, true);
-    this.checkThisReturnType(expr);
-  }
-
-  private checkThisReturnType(returnExpr: ts.Expression): void {
-    const funcAncestor = ts.findAncestor(returnExpr, (node: ts.Node): boolean => {
-      return TsUtils.isFunctionLikeDeclaration(node as ts.Declaration);
-    });
-    if (TsUtils.isMethodWithThisReturnType(funcAncestor as ts.Node)) {
-      if (returnExpr.kind !== ts.SyntaxKind.ThisKeyword) {
-        this.incrementCounters(returnExpr, FaultID.ThisTyping);
-      }
-    }
   }
 
   /**
