@@ -66,6 +66,8 @@ def run_command(cmd, execution_path):
     print(" ".join(cmd) + " | execution_path: " + execution_path)
     proc = subprocess.Popen(cmd, cwd=execution_path)
     proc.wait()
+    if proc.returncode != 0:
+        raise subprocess.CalledProcessError(proc.returncode, cmd)
 
 
 def gen_abc_info(input_arguments):
@@ -107,7 +109,11 @@ def gen_abc_info(input_arguments):
         cmd.insert(src_index, '--enable-annotations')
         # insert d.ts option to cmd later
     cmd.append("--target-api-sub-version=beta3")
-    run_command(cmd, path)
+
+    try:
+        run_command(cmd, path)
+    except subprocess.CalledProcessError as e:
+        exit(e.returncode)
 
 
 if __name__ == '__main__':
