@@ -58,6 +58,17 @@ incremental_compile_tests = ["no_change",
                              "modify_sdk_version",
                              ]
 
+bytecode_har_compile_tests = ["build_bytecode_har",
+                               "build_har_then_bytecode_har",
+                               "import_bytecode_static_library",
+                               ]
+
+external_compile_tests = ["import_external_share_library",
+                          "import_external_static_library",
+                          "full_compile_external_static_library",
+                          "full_compile_external_share_library"
+                          ]
+
 preview_compile_tests = ["preview_compile",
                          "build_entry_then_preview",
                          "build_modify_file_name",
@@ -130,6 +141,36 @@ def print_result(test_result, test_tasks):
                          inc_task.release_info.time,
                          inc_task.release_info.error_message)
 
+        # print bytecode har compile result
+        logging.info("--bytecode har compilation result:")
+        for byte_task in task.bytecode_har_compilation_info.values():
+            logging.info("bytecode har test: %s", byte_task.name)
+            logging.info("debug: %s, abc_size(byte) %s, time(s) %s, error message: %s",
+                         byte_task.debug_info.result,
+                         byte_task.debug_info.abc_size,
+                         byte_task.debug_info.time,
+                         byte_task.debug_info.error_message)
+            logging.info("release: %s, abc_size(byte) %s, time(s) %s, error message: %s",
+                         byte_task.release_info.result,
+                         byte_task.release_info.abc_size,
+                         byte_task.release_info.time,
+                         byte_task.release_info.error_message)
+
+        # print external compile result
+        logging.info("--external compilation result:")
+        for external_task in task.external_compilation_info.values():
+            logging.info("external test: %s", external_task.name)
+            logging.info("debug: %s, abc_size(byte) %s, time(s) %s, error message: %s",
+                         external_task.debug_info.result,
+                         external_task.debug_info.abc_size,
+                         external_task.debug_info.time,
+                         external_task.debug_info.error_message)
+            logging.info("release: %s, abc_size(byte) %s, time(s) %s, error message: %s",
+                         external_task.release_info.result,
+                         external_task.release_info.abc_size,
+                         external_task.release_info.time,
+                         external_task.release_info.error_message)
+
         # print preview compile result
         for name, task_info in task.preview_compilation_info.items():
             logging.info("--test name: %s", name)
@@ -172,7 +213,9 @@ def is_compilation_passed(task_info, compile_mode):
 
 def is_task_passed(task):
     passed = is_compilation_passed(task.full_compilation_info, 'full') and \
-        is_compilation_passed(task.incre_compilation_info, 'incremental')
+             is_compilation_passed(task.incre_compilation_info, 'incremental') and \
+             is_compilation_passed(task.bytecode_har_compilation_info, 'bytecode_har') and \
+             is_compilation_passed(task.external_compilation_info, 'external')
 
     for test in task.preview_compilation_info.values():
         passed = passed and (test.result == options.TaskResult.passed)
@@ -242,6 +285,10 @@ def generate_detail_data(test_tasks):
                                                                                       task_time_size_data)
 
         get_incremental_build_test_result(task, task_result_data, task_time_size_data)
+
+        get_bytecode_har_build_test_result(task, task_result_data, task_time_size_data)
+
+        get_external_build_test_result(task, task_result_data, task_time_size_data)
 
         get_preview_build_test_result(task, task_result_data)
 
@@ -319,6 +366,42 @@ def get_incremental_build_test_result(task, task_result_data, task_time_size_dat
                 '[Incremental Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
 
 
+def get_bytecode_har_build_test_result(task, task_result_data, task_time_size_data):
+    for test in bytecode_har_compile_tests:
+        get_test_tesult(test, task_result_data, task.bytecode_har_compilation_info)
+
+        if test == 'build_bytecode_har':
+            debug_test_time = 0
+            release_test_time = 0
+            if test in task.bytecode_har_compilation_info.keys():
+                inc_task_info = task.bytecode_har_compilation_info[test]
+                debug_test_time = inc_task_info.debug_info.time
+                release_test_time = inc_task_info.release_info.time
+
+            task_time_size_data[
+                '[Bytecode Har Compilation]\n[Debug]\n[Compilation Time(s)]'] = debug_test_time
+            task_time_size_data[
+                '[Bytecode Har Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
+
+
+def get_external_build_test_result(task, task_result_data, task_time_size_data):
+    for test in external_compile_tests:
+        get_test_tesult(test, task_result_data, task.external_compilation_info)
+
+        if test == 'import_external_share_library':
+            debug_test_time = 0
+            release_test_time = 0
+            if test in task.external_compilation_info.keys():
+                inc_task_info = task.external_compilation_info[test]
+                debug_test_time = inc_task_info.debug_info.time
+                release_test_time = inc_task_info.release_info.time
+
+            task_time_size_data[
+                '[External Compilation]\n[Debug]\n[Compilation Time(s)]'] = debug_test_time
+            task_time_size_data[
+                '[External Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
+
+
 def get_preview_build_test_result(task, task_result_data):
     for test in preview_compile_tests:
         result = options.TaskResult.undefined
@@ -388,6 +471,18 @@ def get_result_table_content(result_df_rotate):
                                                                         merged_data)
     content += incremental_compile_section
 
+    # Bytecode Har Compilation section
+    bytecode_har_compile_section, start_index = generate_content_section("Bytecode Har Compilation",
+                                                                          bytecode_har_compile_tests, start_index,
+                                                                          merged_data)
+    content += bytecode_har_compile_section
+
+    # External Compilation section
+    external_compile_section, start_index = generate_content_section("External Compilation",
+                                                                     external_compile_tests, start_index,
+                                                                     merged_data)
+    content += external_compile_section
+
     content += f'<tr><th colspan=2 rowspan={len(preview_compile_tests)}>Preview Compilation</th>'
     for index, item in enumerate(preview_compile_tests):
         preview_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index]])
@@ -419,10 +514,12 @@ def generate_data_html(summary_data, detail_data):
         ''.join(
             [f'<th rowspan="2">{column}</th>' for column in time_size_df.columns[:2]])
     time_size_table_header += '<th colspan="2">Full Compilation Time(s)</th>' + \
-        f'<th colspan="2">Incremental Compilation Time(s)</th>' + \
-        f'<th colspan="2">Abc Size(byte)</th></tr>'
+                              f'<th colspan="2">Incremental Compilation Time(s)</th>' + \
+                              f'<th colspan="2">Bytecode Har Compilation Time(s)</th>' + \
+                              f'<th colspan="2">External Compilation Time(s)</th>' + \
+                              f'<th colspan="2">Abc Size(byte)</th></tr>'
     time_size_table_sub_header = '<tr>' + \
-        f'<th>[Debug]</th><th>[Release]</th>' * 3 + '</tr>'
+        f'<th>[Debug]</th><th>[Release]</th>' * 5 + '</tr>'
 
     time_size_table_content = ''.join([
         '<tr>' + ''.join([f'<td>{value}</td>' for _,

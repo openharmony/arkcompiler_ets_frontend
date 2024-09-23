@@ -24,8 +24,8 @@ import os
 from enum import Enum
 
 import yaml
-
 import json5
+
 import utils
 
 
@@ -68,6 +68,20 @@ class IncCompilationInfo:
         self.name = ''
 
 
+class BytecodeHarCompilationInfo:
+    def __init__(self):
+        self.debug_info = CompilationInfo()
+        self.release_info = CompilationInfo()
+        self.name = ''
+
+
+class ExternalCompilationInfo:
+    def __init__(self):
+        self.debug_info = CompilationInfo()
+        self.release_info = CompilationInfo()
+        self.name = ''
+
+
 class BackupInfo:
     def __init__(self):
         self.cache_path = ''
@@ -96,6 +110,8 @@ class TestTask:
 
         self.full_compilation_info = {}
         self.incre_compilation_info = {}
+        self.bytecode_har_compilation_info = {}
+        self.external_compilation_info = {}
         self.preview_compilation_info = {}
         self.other_tests = {}
 
@@ -113,7 +129,7 @@ def parse_args():
                         choices=['all', 'debug', 'release'],
                         help='specify hap mode')
     parser.add_argument('--compileMode', type=str, dest='compile_mode', default='all',
-                        choices=['all', 'full', 'incremental'],
+                        choices=['all', 'full', 'incremental', 'bytecode_har', 'external'],
                         help='specify compile mode')
     parser.add_argument('--testCase', type=str, dest='test_case', default='all',
                         choices=['all', 'fa', 'stage', 'compatible8', 'js'],
@@ -163,9 +179,8 @@ def get_ark_disasm_path(task_path):
     return os.path.join(sdk_path, 'toolchains', ark_disasm)
 
 
-def create_test_tasks() -> object:
+def create_test_tasks(haps_list):
     task_list = []
-    haps_list = configs.get('haps')
     test_cases = 'all' if arguments.test_case == 'all' else []
     test_haps = 'all' if arguments.test_hap == 'all' else []
     if test_cases != 'all':
@@ -224,4 +239,4 @@ def process_options():
     parse_args()
     utils.init_logger(arguments.log_level, arguments.log_file)
     parse_configs()
-    return create_test_tasks()
+    return create_test_tasks(configs.get('haps'))

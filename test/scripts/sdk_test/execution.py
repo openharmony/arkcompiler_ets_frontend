@@ -830,6 +830,239 @@ class IncrementalTest:
                 task, inc_task, is_debug, modified_files)
 
 
+class BytecodeHarTest:
+    @staticmethod
+    def prepare_bytecode_har_task(task, test_name):
+        if test_name in task.bytecode_har_compilation_info:
+            bytecode_har_task = task.bytecode_har_compilation_info[test_name]
+        else:
+            bytecode_har_task = options.BytecodeHarCompilationInfo()
+            bytecode_har_task.name = test_name
+            task.bytecode_har_compilation_info[test_name] = bytecode_har_task
+        return bytecode_har_task
+
+    @staticmethod
+    def build_bytecode_har(task, is_debug):
+        test_name = 'build_bytecode_har'
+        clean_compile(task)
+        bytecode_har_task = BytecodeHarTest.prepare_bytecode_har_task(task, test_name)
+        info = bytecode_har_task.debug_info if is_debug else bytecode_har_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        modify_bytecode_har_config(task, 1)
+        try:
+            is_passed, build_time = is_build_module_successful(task, is_debug, info, 'BytecodeHar')
+            if is_passed:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+        finally:
+            modify_bytecode_har_config(task, 0)
+
+    @staticmethod
+    def build_har_then_bytecode_har(task, is_debug):
+        if is_debug:
+            return
+        test_name = 'build_har_then_bytecode_har'
+        clean_compile(task)
+        bytecode_har_task = BytecodeHarTest.prepare_bytecode_har_task(task, test_name)
+        info = bytecode_har_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        is_passed, build_time = is_build_module_successful(task, is_debug, info, 'Har')
+        if not is_passed:
+            logging.error(f'build {task.har_module} failed')
+            return
+
+        modify_bytecode_har_config(task, 1)
+        try:
+            is_passed, build_time = is_build_module_successful(task, is_debug, info, 'BytecodeHar')
+            if is_passed:
+                info.result = options.TaskResult.passed
+                info.time = build_time
+        finally:
+            modify_bytecode_har_config(task, 0)
+
+    @staticmethod
+    def import_bytecode_static_library(task, is_debug):
+        test_name = 'import_bytecode_static_library'
+        clean_compile(task)
+        bytecode_har_task = BytecodeHarTest.prepare_bytecode_har_task(task, test_name)
+        info = bytecode_har_task.debug_info if is_debug else bytecode_har_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        modify_bytecode_har_config(task, 1)
+        try:
+            with manage_bytecode_har_dependency(task, is_debug, info, 'Har'):
+                cmd = get_hvigor_compile_cmd(task, is_debug)
+                [stdout, stderr] = compile_project(task, is_debug, cmd)
+                [is_success, time_string] = is_compile_success(stdout)
+                if not is_success:
+                    info.result = options.TaskResult.failed
+                    info.error_message = f'Full compile failed due to build {task.hap_module} module.'
+                    logging.error(f'build {task.hap_module} failed')
+                    return
+                else:
+                    info.result = options.TaskResult.passed
+                    info.time = collect_compile_time(time_string)
+                if options.arguments.run_haps:
+                    runtime_passed = run_compile_output(info, task, is_debug, 'import_bytecode_static_library')
+        finally:
+            modify_bytecode_har_config(task, 0)
+
+
+class ExternalTest:
+    @staticmethod
+    def prepare_current_task(task, test_name):
+        if test_name in task.external_compilation_info:
+            current_task = task.external_compilation_info[test_name]
+        else:
+            current_task = options.ExternalCompilationInfo()
+            current_task.name = test_name
+            task.external_compilation_info[test_name] = current_task
+        return current_task
+
+    @staticmethod
+    def get_external_task():
+        external_task = options.create_test_tasks(options.configs.get('external_haps'))[0]
+        return external_task
+
+    @staticmethod
+    def import_external_share_library(task, is_debug):
+        test_name = 'import_external_share_library'
+        external_task = ExternalTest.get_external_task()
+        clean_compile(task)
+        clean_compile(external_task)
+        current_task = ExternalTest.prepare_current_task(task, test_name)
+        info = current_task.debug_info if is_debug else current_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'ExternalHsp'):
+            cmd = get_hvigor_compile_cmd(task, is_debug, '')
+            [stdout, stderr] = compile_project(task, is_debug, cmd)
+            [is_success, time_string] = is_compile_success(stdout)
+            if not is_success:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Full compile failed due to {task.hap_module} module'
+                logging.error(f'Full compile failed due to {task.hap_module} module')
+                return
+            passed = validate_compile_output(info, task, is_debug, '', '')
+            if not passed:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Validate failed due to {task.hap_module} module'
+                logging.error(f'Validate failed due to {task.hap_module} module')
+                return
+            pa_file = get_disasm_abc_file(task, info, 'Hap')
+            if not pa_file:
+                return
+            is_packaged = is_package_modules_to_module_abc(task, pa_file, external_task.hsp_module)
+            if not is_packaged:
+                info.result = options.TaskResult.passed
+                info.time = collect_compile_time(time_string)
+            else:
+                logging.error(f'Unexpected changes have occurred.OutHsp should not be packaged into module abc')
+                info.result = options.TaskResult.failed
+                info.error_message = f'Unexpected changes have occurred.OutHsp should not be packaged into module abc'
+            if options.arguments.run_haps:
+                runtime_passed = run_compile_output(info, task, is_debug, 'import_external_share_library')
+
+    @staticmethod
+    def import_external_static_library(task, is_debug):
+        test_name = 'import_external_static_library'
+        external_task = ExternalTest.get_external_task()
+        clean_compile(task)
+        clean_compile(external_task)
+        current_task = ExternalTest.prepare_current_task(task, test_name)
+        info = current_task.debug_info if is_debug else current_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'ExternalHar'):
+            cmd = get_hvigor_compile_cmd(task, is_debug, '')
+            [stdout, stderr] = compile_project(task, is_debug, cmd)
+            [is_success, time_string] = is_compile_success(stdout)
+            if not is_success:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Full compile failed due to {task.hap_module} module'
+                logging.error(f'Full compile failed due to {task.hap_module} module')
+                return
+            passed = validate_compile_output(info, task, is_debug, '', '')
+            if not passed:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Validate failed due to {task.hap_module} module'
+                logging.error(f'Validate failed due to {task.hap_module} module')
+                return
+            pa_file = get_disasm_abc_file(task, info, 'Hap')
+            if not pa_file:
+                return
+            is_packaged = is_package_modules_to_module_abc(task, pa_file, external_task.har_module)
+            if is_packaged:
+                info.result = options.TaskResult.passed
+                info.time = collect_compile_time(time_string)
+            else:
+                logging.error(f'OutHar was not properly packaged into module abc')
+                info.result = options.TaskResult.failed
+                info.error_message = f'OutHar was not properly packaged into module abc'
+            if options.arguments.run_haps:
+                runtime_passed = run_compile_output(info, task, is_debug, 'import_external_static_library')
+
+    @staticmethod
+    def full_compile_external_static_library(task, is_debug):
+        if is_debug:
+            return
+        test_name = 'full_compile_external_static_library'
+        external_task = ExternalTest.get_external_task()
+        clean_compile(task)
+        clean_compile(external_task)
+        current_task = ExternalTest.prepare_current_task(task, test_name)
+        info = current_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'ExternalHar'):
+            cmd = get_hvigor_compile_cmd(external_task, is_debug, 'Har')
+            [stdout, stderr] = compile_project(external_task, is_debug, cmd)
+            [is_success, time_string] = is_compile_success(stdout)
+            if not is_success:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Full compile failed due to {external_task.har_module} module'
+                logging.error(f'Full compile failed due to {external_task.har_module} module')
+                return
+            passed = validate_compile_output(info, external_task, is_debug, '', 'Har')
+            if not passed:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Validate failed due to {external_task.har_module} module'
+                logging.error(f'Validate failed due to {external_task.har_module} module')
+            else:
+                info.result = options.TaskResult.passed
+                info.time = collect_compile_time(time_string)
+
+    @staticmethod
+    def full_compile_external_share_library(task, is_debug):
+        test_name = 'full_compile_external_share_library'
+        external_task = ExternalTest.get_external_task()
+        clean_compile(task)
+        clean_compile(external_task)
+        current_task = ExternalTest.prepare_current_task(task, test_name)
+        info = current_task.debug_info if is_debug else current_task.release_info
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        with manage_module_import_and_export_handle(task, 'ExternalHsp'):
+            cmd = get_hvigor_compile_cmd(external_task, is_debug, 'Hsp')
+            [stdout, stderr] = compile_project(external_task, is_debug, cmd)
+            [is_success, time_string] = is_compile_success(stdout)
+            if not is_success:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Full compile failed due to {external_task.hsp_module} module'
+                logging.error(f'Full compile failed due to {external_task.hsp_module} module')
+                return
+            passed = validate_compile_output(info, external_task, is_debug, '', 'Hsp')
+            if not passed:
+                info.result = options.TaskResult.failed
+                info.error_message = f'Validate failed due to {external_task.hsp_module} module'
+                logging.error(f'Validate failed due to {external_task.hsp_module} module')
+            else:
+                info.result = options.TaskResult.passed
+                info.time = collect_compile_time(time_string)
+
+
 class PreviewTest:
     @staticmethod
     def validate_preview_incremental_file(task, preview_task_info, is_debug, modified_files, module=''):
@@ -1252,7 +1485,7 @@ class OtherTest:
 
         logging.info(f"==========> Running {test_name} for task: {task.name}")
         # ohosTest has only debug mode
-        cmd = [*get_hvigor_path(task.path), '--mode', 'module',
+        cmd = [*get_hvigor_path(), '--mode', 'module',
                '-p', 'module=entry@ohosTest', 'assembleHap']
         [stdout, stderr] = compile_project(task, True, cmd)
         [is_success, time_string] = is_compile_success(stdout)
@@ -1365,7 +1598,7 @@ def validate_output_for_jsbundle(info, task, uncompressed_output_path, is_debug)
     return True
 
 
-def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug):
+def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug, module = ''):
     abc_generated_path = os.path.join(uncompressed_output_path, 'ets')
 
     modules_abc_path = os.path.join(abc_generated_path, 'modules.abc')
@@ -1405,6 +1638,9 @@ def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug)
 
     if is_debug:
         sourcemap_path = abc_generated_path
+    elif module == 'Hsp':
+        sourcemap_path = os.path.join(
+            task.path, *task.hsp_module_path, *(task.build_path), *(task.cache_path), 'release')
     else:
         sourcemap_path = os.path.join(
             task.path, *task.hap_module_path, *(task.build_path), *(task.cache_path), 'release')
@@ -1437,11 +1673,7 @@ def collect_compile_time(time_string):
 def get_compile_output_file_path(task, module, output_type):
     module_path = utils.get_module_path(task, module)
     output_path = utils.get_output_path(task, module, output_type)
-
-    if 'External' in module:
-        output_file = os.path.join(task.external_path, *module_path, *task.build_path, *output_path)
-    else:
-        output_file = os.path.join(task.path, *module_path, *task.build_path, *output_path)
+    output_file = os.path.join(task.path, *module_path, *task.build_path, *output_path)
 
     return output_file
 
@@ -1455,14 +1687,82 @@ def validate_compile_output_har(info, task, is_debug, output_file='', module='')
     return True
 
 
+def validate_compile_file_bytecode_har(task, info, module):
+    module_path = utils.get_module_path(task, module)
+    uncompressed_path = get_output_uncompressed_file(task, info, module, options.OutputType.har)
+    modules_abc_path = os.path.join(uncompressed_path, 'ets', 'modules.abc')
+    if not os.path.exists(modules_abc_path):
+        return False
+    is_success = find_file_by_suffix(['.d.ets'], uncompressed_path,
+                                     'Index.ets', '')
+    if not is_success:
+        return False
+    ets_path = os.path.join(task.path, *module_path, 'src', 'main', 'ets')
+    for root, dirs, files in os.walk(ets_path):
+        relative_path = os.path.relpath(root, os.path.join(task.path, *module_path))
+        for file in files:
+            if file.endswith('.ets'):
+                extension_list = ['.d.ets']
+            elif file.endswith('.ts'):
+                extension_list = ['.d.ts']
+            else:
+                continue
+            is_success = find_file_by_suffix(extension_list, uncompressed_path, file, relative_path)
+            if not is_success:
+                return False
+    return True
+
+
+def validate_compile_file_har(task, info, module):
+    module_path = utils.get_module_path(task, module)
+    uncompressed_path = get_output_uncompressed_file(task, info, module, options.OutputType.har)
+    is_success = find_file_by_suffix(['.d.ets', '.js'], uncompressed_path,
+                                     'Index.ets', '')
+    if not is_success:
+        return False
+    ets_path = os.path.join(task.path, *module_path, 'src', 'main', 'ets')
+    for root, dirs, files in os.walk(ets_path):
+        relative_path = os.path.relpath(root, os.path.join(task.path, *module_path))
+        for file in files:
+            if file.endswith('.ets'):
+                extension_list = ['.d.ets', '.js']
+            elif file.endswith('.ts'):
+                extension_list = ['.d.ts', '.js']
+            elif file.endswith('.js'):
+                extension_list = ['.js']
+            else:
+                continue
+            is_success = find_file_by_suffix(extension_list, uncompressed_path, file, relative_path)
+            if not is_success:
+                return False
+    return True
+
+
+def find_file_by_suffix(extension_list, uncompressed_path, filename, relative_path):
+    origin_extension = os.path.splitext(filename)[-1]
+    for extension in extension_list:
+        new_filename = filename.replace(origin_extension, extension)
+        new_filepath = os.path.join(uncompressed_path, relative_path, new_filename)
+        if not os.path.exists(new_filepath):
+            return False
+    return True
+
+
 def validate_compile_output(info, task, is_debug, output_file='', module=''):
     passed = False
 
     if output_file == '':
         output_file = get_compile_output_file_path(task, module, options.OutputType.unsigned)
 
+    if module == 'BytecodeHar':
+        # Har declaration files are not generated in debug mode.
+        if is_debug:
+            return True
+        return validate_compile_file_bytecode_har(task, info, module)
     if module == 'Har':
-        return validate_compile_output_har(info, task, is_debug, '', module)
+        if is_debug:
+            return True
+        return validate_compile_file_har(task, info, module)
 
     uncompressed_output_file = output_file + '.uncompressed'
     if not os.path.exists(output_file):
@@ -1488,7 +1788,7 @@ def validate_compile_output(info, task, is_debug, output_file='', module=''):
 
     if utils.is_esmodule(task.type):
         passed = validate_output_for_esmodule(
-            info, task, uncompressed_output_file, is_debug)
+            info, task, uncompressed_output_file, is_debug, module)
     else:
         passed = validate_output_for_jsbundle(
             info, task, uncompressed_output_file, is_debug)
@@ -1532,7 +1832,6 @@ def run_compile_output(info, task, is_debug, picture_name='', module=''):
     return runtime_passed
 
 
-
 # verify preview build picture
 def verify_preview_picture(info, task, is_debug, picture_name, module=''):
     return True
@@ -1573,8 +1872,8 @@ def validate(compilation_info, task, is_debug, stdout, stderr, picture_name='', 
     return passed
 
 
-def get_hvigor_path(project_path):
-    hvigor = ''
+def get_hvigor_path():
+    hvigor = []
     deveco_path = options.configs.get('deveco_path')
     node_js_path = os.path.join(deveco_path, 'tools', 'node')
     if utils.is_windows():
@@ -1582,16 +1881,18 @@ def get_hvigor_path(project_path):
         hvigor_script_path = os.path.join(deveco_path, 'tools', 'hvigor', 'bin', 'hvigorw.js')
         hvigor = [node_exe_path, hvigor_script_path]
     else:
-        hvigor = os.path.join(deveco_path, 'hvigorw')
+        hvigor = [os.path.join(deveco_path, 'hvigorw')]
         utils.add_executable_permission(hvigor)
     return hvigor
 
 
 def get_hvigor_compile_cmd(task, is_debug, module='', module_name='', module_target='default'):
-    cmd = [*get_hvigor_path(task.path)]
+    cmd = [*get_hvigor_path()]
     build_mode = 'debug' if is_debug else 'release'
     if not module:
         module = 'Hap'
+    if module == 'BytecodeHar':
+        module = 'Har'
     if not module_name:
         module_name = utils.get_module_name(task, module)
     cmd.extend(['--mode', 'module', '-p', 'product=default', '-p', f'module={module_name}@{module_target}', '-p',
@@ -1601,7 +1902,7 @@ def get_hvigor_compile_cmd(task, is_debug, module='', module_name='', module_tar
 
 
 def get_preview_mode_compile_cmd(task, is_debug, module='', module_target='default'):
-    cmd = [*get_hvigor_path(task.path)]
+    cmd = [*get_hvigor_path()]
     build_mode = 'debug' if is_debug else 'release'
     module_name = utils.get_module_name(task, module)
     page = os.path.join(*task.inc_modify_file)
@@ -1619,8 +1920,8 @@ def get_preview_mode_compile_cmd(task, is_debug, module='', module_target='defau
     return cmd
 
 
-def compile_project(task, is_debug, cmd=''):
-    if not cmd:
+def compile_project(task, is_debug, cmd=None):
+    if cmd is None:
         cmd = get_hvigor_compile_cmd(task, is_debug)
 
     logging.debug(f'cmd: {cmd}')
@@ -1660,7 +1961,7 @@ def preview_mode_build(info, task, is_debug, picture_name='', module=''):
 
 
 def clean_compile(task):
-    cmd = [*get_hvigor_path(task.path), 'clean']
+    cmd = [*get_hvigor_path(), 'clean']
     logging.debug(f'cmd: {cmd}')
     logging.debug(f"cmd execution path {task.path}")
     process = subprocess.Popen(cmd, shell=False, cwd=task.path,
@@ -1682,7 +1983,7 @@ def sync_project(task):
     ohpm_install_cmd_suffix = ' install --all --registry https://repo.harmonyos.com/ohpm/ --strict_ssl true'
     ohpm_install_cmd = f'"{ohpm_bat_path}"' + ohpm_install_cmd_suffix
     cmd_suffix = '--sync -p product=default -p buildMode=debug --analyze --parallel --incremental --daemon'
-    cmd = [*get_hvigor_path(task.path), cmd_suffix]
+    cmd = [*get_hvigor_path(), cmd_suffix]
     logging.debug(f"cmd execution path {task.path}")
     logging.debug(f'ohpm install cmd: {ohpm_install_cmd}')
     subprocess.Popen(ohpm_install_cmd, shell=False, cwd=task.path,
@@ -1757,6 +2058,25 @@ def compile_incremental(task, is_debug):
     IncrementalTest.compile_incremental_build_modify_sdk_version(task, is_debug)
 
 
+def compile_bytecode_har(task, is_debug):
+    logging.info(f"==========> Running task: {task.name} in bytecode har compilation")
+    clean_compile(task)
+
+    BytecodeHarTest.build_bytecode_har(task, is_debug)
+    BytecodeHarTest.build_har_then_bytecode_har(task, is_debug)
+    BytecodeHarTest.import_bytecode_static_library(task, is_debug)
+
+
+def compile_external(task, is_debug):
+    logging.info(f"==========> Running task: {task.name} in external compilation")
+    clean_compile(task)
+
+    ExternalTest.import_external_share_library(task, is_debug)
+    ExternalTest.import_external_static_library(task, is_debug)
+    ExternalTest.full_compile_external_static_library(task, is_debug)
+    ExternalTest.full_compile_external_share_library(task, is_debug)
+
+
 def compile_preview(task, is_debug):
     clean_preview_cache(task)
     if not PreviewTest.preview_compile(task, is_debug):
@@ -1818,6 +2138,17 @@ def backup_hsp_module_compile_signed_package(task, is_debug):
     stdout, stderr = compile_project(task, is_debug, cmd)
     passed, build_time = is_compile_success(stdout)
     if not passed:
+        logging.debug(f'cmd: {cmd}')
+        logging.debug(f"cmd execution path {task.path}")
+        return
+
+    external_task = ExternalTest.get_external_task()
+    cmd = get_hvigor_compile_cmd(external_task, is_debug, 'Hsp')
+    stdout, stderr = compile_project(task, is_debug, cmd)
+    passed, build_time = is_compile_success(stdout)
+    if not passed:
+        logging.debug(f'cmd: {cmd}')
+        logging.debug(f"cmd execution path {task.path}")
         return
 
     backup_output_path = os.path.join(backup_path, 'output', 'debug') if is_debug \
@@ -1825,14 +2156,18 @@ def backup_hsp_module_compile_signed_package(task, is_debug):
     if not os.path.exists(backup_output_path):
         os.makedirs(backup_output_path)
     output_file = get_compile_output_file_path(task, 'Hsp', options.OutputType.signed)
-    backup_output = os.path.join(
-        backup_output_path, os.path.basename(output_file))
+    backup_output = os.path.join(backup_output_path, os.path.basename(output_file))
+    shutil.copy(output_file, backup_output_path)
+    output_file = get_compile_output_file_path(external_task, 'Hsp', options.OutputType.signed)
+    external_hsp_backup_output = os.path.join(backup_output_path, os.path.basename(output_file))
     shutil.copy(output_file, backup_output_path)
 
     if is_debug:
         task.backup_info.hsp_signed_output_debug = backup_output
+        task.backup_info.external_hsp_signed_output_debug = external_hsp_backup_output
     else:
         task.backup_info.hsp_signed_output_release = backup_output
+        task.backup_info.external_hsp_signed_output_release = external_hsp_backup_output
 
 
 def backup_preview_output(task, is_debug, module):
@@ -1859,10 +2194,10 @@ def backup_preview_output(task, is_debug, module):
 
     preview_output_path = os.path.join((task.path, module, '.preview'))
     shutil.copy(preview_output_path, backup_path)
-    backup_preview_output = os.path.join(
+    backup_preview_output_dir = os.path.join(
         backup_preview_output_path, os.path.basename(preview_output_path))
     preview_backup_time_out = backup_preview_output_path + utils.get_time_string()
-    shutil.move(backup_preview_output, preview_backup_time_out)
+    shutil.move(backup_preview_output_dir, preview_backup_time_out)
     if is_debug:
         task.backup_info.output_debug.append(preview_backup_time_out)
     else:
@@ -1952,6 +2287,28 @@ def execute_incremental_compile(task):
         clean_compile(task)
 
 
+def execute_bytecode_har_compile(task):
+    logging.info(
+        f"==========> Running task: {task.name} in bytecode har compilation")
+    if options.arguments.hap_mode in ['all', 'release']:
+        compile_bytecode_har(task, False)
+        clean_compile(task)
+    if options.arguments.hap_mode in ['all', 'debug']:
+        compile_bytecode_har(task, True)
+        clean_compile(task)
+
+
+def execute_external_compile(task):
+    logging.info(
+        f"==========> Running task: {task.name} in external compilation")
+    if options.arguments.hap_mode in ['all', 'release']:
+        compile_external(task, False)
+        clean_compile(task)
+    if options.arguments.hap_mode in ['all', 'debug']:
+        compile_external(task, True)
+        clean_compile(task)
+
+
 def execute_preview_compile(task):
     logging.info(
         f"==========> Running task: {task.name} in preview compilation")
@@ -2001,7 +2358,7 @@ def is_get_expected_error(info, stderr, expect_errors):
 
 
 def is_build_ohos_test_successful(task, info):
-    cmd = [*get_hvigor_path(task.path), '--mode', 'module',
+    cmd = [*get_hvigor_path(), '--mode', 'module',
            '-p', 'module=entry@ohosTest', 'assembleHap']
     [stdout, stderr] = compile_project(task, True, cmd)
     [is_success, time_string] = is_compile_success(stdout)
@@ -2115,11 +2472,6 @@ def modify_normalize_ohmurl_options(task, reverse):
 
 
 def modify_module_import_handle(task, module, reverse):
-    module_dict = {
-        'Har': task.har_modify_file,
-        'Hsp': task.hsp_modify_file,
-        'Cpp': task.cpp_modify_file
-    }
     modify_file = os.path.join(task.path, *task.inc_modify_file)
     modify_file_patch = options.configs.get('patch_content').get('patch_lines_1').get(module.lower())
     if reverse:
@@ -2139,6 +2491,53 @@ def manage_module_import_and_export_handle(task, module_name):
         modify_module_import_handle(task, module_name, 0)
 
 
+@contextmanager
+def manage_bytecode_har_dependency(task, is_debug, info, module):
+    modify_module_import_handle(task, module, 1)
+    is_build_module_successful(task, is_debug, info, 'BytecodeHar')
+    modify_bytecode_module_dependency(task, module, 1)
+    try:
+        yield
+    finally:
+        modify_bytecode_module_dependency(task, module, 0)
+        modify_module_import_handle(task, module, 0)
+
+
+def modify_bytecode_module_dependency(task, module, reverse):
+    oh_package_json_path = os.path.join(task.path, task.hap_module, 'oh-package.json5')
+    with open(oh_package_json_path, 'r+', encoding='utf-8') as json_file:
+        json_data = json5.load(json_file)
+        dependencies_dic = json_data["dependencies"]
+        patch_lines = options.configs.get('patch_content').get('patch_lines_1')
+        dependency_name = utils.extract_library_names(patch_lines.get(module.lower()).get('head'))
+        if reverse:
+            dependency_path = os.path.join(task.har_module, *task.build_path, *task.har_output_path_har)
+        else:
+            dependency_path = utils.get_module_name(task, module)
+        dependencies_dic[dependency_name] = os.path.normpath(f"file:../{dependency_path}")
+        json_file.seek(0)
+        json.dump(json_data, json_file, indent=4)
+        json_file.truncate()
+    sync_project(task)
+
+
+def modify_bytecode_har_config(task, reverse):
+    modify_normalize_ohmurl_options(task, reverse)
+    module_path = utils.get_module_path(task, 'Har')
+    har_build_profile_json_path = os.path.join(task.path, *module_path, 'build-profile.json5')
+    with open(har_build_profile_json_path, 'r+', encoding='utf-8') as json_file:
+        json_data = json5.load(json_file)
+        build_option_dic = json_data["buildOption"]
+        if reverse:
+            build_option_dic["arkOptions"] = {"byteCodeHar": True}
+        else:
+            build_option_dic["arkOptions"] = {"byteCodeHar": False}
+        json_file.seek(0)
+        json.dump(json_data, json_file, indent=4)
+        json_file.truncate()
+    sync_project(task)
+
+
 def validate_cache_file(task, info, modified_files, cache_path, backup_path):
     cache_extension = utils.get_cache_extension(task.type)
     modified_cache_files = []
@@ -2152,8 +2551,7 @@ def validate_cache_file(task, info, modified_files, cache_path, backup_path):
             if not file.endswith(cache_extension):
                 continue
             file_absolute_path = os.path.join(root, file)
-            file_relative_path = os.path.relpath(
-                file_absolute_path, cache_path)
+            file_relative_path = os.path.relpath(file_absolute_path, cache_path)
             backup_file = os.path.join(backup_path, file_relative_path)
 
             if not os.path.exists(backup_file):
@@ -2177,9 +2575,7 @@ def validate_cache_file(task, info, modified_files, cache_path, backup_path):
     return True
 
 
-def get_output_uncompressed_file(task, info, module, output_type=''):
-    if not output_type:
-        output_type = options.OutputType.unsigned
+def get_output_uncompressed_file(task, info, module, output_type=options.OutputType.unsigned):
     output_file = get_compile_output_file_path(task, module, output_type)
     uncompressed_output_file = output_file + '.uncompressed'
     if not os.path.exists(output_file):
@@ -2199,12 +2595,13 @@ def get_output_uncompressed_file(task, info, module, output_type=''):
                 f"task: {task.name},not the expected file type for output file: {output_file}")
             info.result = options.TaskResult.failed
             return ''
-    except:
+    except Exception as e:
+        logging.error(e)
         logging.error(
             f"uncompressed output file for task {task.name} failed. output file: {output_file}")
         info.result = options.TaskResult.failed
         return ''
-    if module == 'Har' or module == 'ExternalHar':
+    if module == 'Har' or module == 'BytecodeHar':
         uncompressed_output_file = os.path.join(uncompressed_output_file, 'package')
     return uncompressed_output_file
 
@@ -2337,6 +2734,12 @@ def execute(test_tasks):
 
             if options.arguments.compile_mode in ['all', 'incremental']:
                 execute_incremental_compile(task)
+
+            if options.arguments.compile_mode in ['all', 'bytecode_har']:
+                execute_bytecode_har_compile(task)
+
+            if options.arguments.compile_mode in ['all', 'external']:
+                execute_external_compile(task)
 
             if options.arguments.compile_mode in ['all', 'preview']:
                 execute_preview_compile(task)

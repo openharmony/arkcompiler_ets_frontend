@@ -46,36 +46,11 @@ class PerformanceBuild():
         self.timeout = 1800
         self.error_log_str = ''
 
-    def start(self):
-        self.init()
-        self.start_test()
-        self.write_mail_msg()
-        os.chdir(self.config.project_path)
-
     @staticmethod
     def append_into_dic(key, value, dic):
         if key not in dic:
             dic[key] = []
         dic[key].append(value)
-
-    def init(self):
-        if self.config.ide == performance_config.IdeType.DevEco:
-            os.environ['path'] = self.config.node_js_path + ";" + os.environ['path']
-        os.chdir(self.config.project_path)
-        os.environ['path'] = os.path.join(self.config.jbr_path, "bin") + ";" + os.environ['path']
-        os.environ['JAVA_HOME'] = self.config.jbr_path
-        self.config.cmd_prefix = os.path.join(self.config.project_path, self.config.cmd_prefix)
-        self.config.debug_package_path = os.path.join(self.config.project_path, self.config.debug_package_path)
-        self.config.release_package_path = os.path.join(self.config.project_path, self.config.release_package_path)
-        self.config.incremental_code_path = os.path.join(self.config.project_path, self.config.incremental_code_path)
-        self.config.json5_path = os.path.join(self.config.project_path, self.config.json5_path)
-        if self.config.developing_test_data_path:
-            self.config.build_times = 3
-        else:
-            cmd = [self.config.node_js_path, self.config.cmd_prefix, "--stop-daemon"]
-            print(f'cmd: {cmd}')
-            subprocess.Popen(cmd, stderr=sys.stderr,
-                             stdout=sys.stdout).communicate(timeout=self.timeout)
 
     @staticmethod
     def add_code(code_path, start_pos, end_pos, code_str, lines):
@@ -100,6 +75,51 @@ class PerformanceBuild():
             modified_file.seek(0)
             modified_file.write(content)
             modified_file.truncate()
+
+    @staticmethod
+    def add_row(context):
+        return rf'<tr align="center">{context}</tr>'
+
+    @staticmethod
+    def add_td(context):
+        return rf'<td>{context}</td>'
+
+    @staticmethod
+    def add_th(context):
+        return rf'<th  width="30%">{context}</th>'
+
+    @staticmethod
+    def test_type_title(context):
+        return rf'<tr><th bgcolor="PaleGoldenRod" align="center" colspan="3">{context}</th></tr>'
+
+    @staticmethod
+    def app_title(context):
+        return rf'<th bgcolor="SkyBlue" colspan="3"><font size="4">{context}</font></th>'
+
+    def start(self):
+        self.init()
+        self.start_test()
+        self.write_mail_msg()
+        os.chdir(self.config.project_path)
+
+    def init(self):
+        if self.config.ide == performance_config.IdeType.DevEco:
+            os.environ['path'] = self.config.node_js_path + ";" + os.environ['path']
+        os.chdir(self.config.project_path)
+        os.environ['path'] = os.path.join(self.config.jbr_path, "bin") + ";" + os.environ['path']
+        os.environ['JAVA_HOME'] = self.config.jbr_path
+        self.config.cmd_prefix = os.path.join(self.config.project_path, self.config.cmd_prefix)
+        self.config.debug_package_path = os.path.join(self.config.project_path, self.config.debug_package_path)
+        self.config.release_package_path = os.path.join(self.config.project_path, self.config.release_package_path)
+        self.config.incremental_code_path = os.path.join(self.config.project_path, self.config.incremental_code_path)
+        self.config.json5_path = os.path.join(self.config.project_path, self.config.json5_path)
+        if self.config.developing_test_data_path:
+            self.config.build_times = 3
+        else:
+            cmd = [self.config.node_js_path, self.config.cmd_prefix, "--stop-daemon"]
+            print(f'cmd: {cmd}')
+            subprocess.Popen(cmd, stderr=sys.stderr,
+                             stdout=sys.stdout).communicate(timeout=self.timeout)
 
     def add_incremental_code(self, lines):
         PerformanceBuild.add_code(self.config.incremental_code_path,
@@ -328,26 +348,6 @@ class PerformanceBuild():
             self.cal_incremental_avg_time(self.preview_all_time_dic, self.preview_avg_time_dic)
         self.cal_incremental_avg_time(self.all_time_dic, self.time_avg_dic)
         self.cal_incremental_avg_size()
-
-    @staticmethod
-    def add_row(context):
-        return rf'<tr align="center">{context}</tr>'
-
-    @staticmethod
-    def add_td(context):
-        return rf'<td>{context}</td>'
-
-    @staticmethod
-    def add_th(context):
-        return rf'<th  width="30%">{context}</th>'
-
-    @staticmethod
-    def test_type_title(context):
-        return rf'<tr><th bgcolor="PaleGoldenRod" align="center" colspan="3">{context}</th></tr>'
-
-    @staticmethod
-    def app_title(context):
-        return rf'<th bgcolor="SkyBlue" colspan="3"><font size="4">{context}</font></th>'
 
     def add_preview_build_time_pic_data(self, dic, is_debug):
         for key in dic:
