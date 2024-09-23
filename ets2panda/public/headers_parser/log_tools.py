@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding=utf-8
+#
 # Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,7 +32,7 @@ LIB_GEN_FOLDER: str = ""
 def init_log(lib_gen_folder: str) -> None:
     global LIB_GEN_FOLDER  # pylint: disable=W0603
     LIB_GEN_FOLDER = lib_gen_folder
-    os.makedirs(LIB_GEN_FOLDER + "/gen/logs", exist_ok=True)
+    os.makedirs(os.path.join(LIB_GEN_FOLDER, "./gen/logs"), exist_ok=True)
 
 
 def debug_log(msg: str) -> None:
@@ -48,16 +51,16 @@ def info_log(msg: str) -> None:
 
 
 def warning_log(msg: str) -> None:
-    path = LIB_GEN_FOLDER + "/gen/logs/warning_logs.txt"
+    path = os.path.join(LIB_GEN_FOLDER, "./gen/logs/warning_logs.txt")
     if WARNING_LOGGING:
-        with open(path, "a", encoding="utf-8") as f:
+        with os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT|os.O_APPEND), "a", encoding="utf-8") as f:
             f.write("Warning! " + msg + "\n")
 
 
 def error_log(msg: str) -> None:
-    path = LIB_GEN_FOLDER + "/gen/logs/error_logs.txt"
+    path = os.path.join(LIB_GEN_FOLDER, "./gen/logs/error_logs.txt")
     if ERROR_LOGGIN:
-        with open(path, "a", encoding="utf-8") as f:
+        with os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT|os.O_APPEND), "a", encoding="utf-8") as f:
             f.write(msg)
 
 
@@ -72,6 +75,6 @@ def tmp_log(msg: str) -> None:
 
 def dump_to_file(file_name: str, msg: str) -> None:
     path = LIB_GEN_FOLDER + file_name
-    with open(path, "w", encoding="utf-8") as f:
+    with os.fdopen(os.open(path, os.O_WRONLY|os.O_CREAT), "w", encoding="utf-8") as f:
         f.write(msg)
     console_log("Data dumped to '" + path + "'")

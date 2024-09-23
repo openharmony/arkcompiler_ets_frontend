@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding=utf-8
+#
 # Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,8 +31,7 @@ def parse_enum_union(data: str) -> list:
         raise RuntimeError("Can't find '='.")
 
     if data.find("~") != -1 or data.find("&") != -1:
-        # union = [data[equally_pos + 1:].strip(" \n")]
-        union = []
+        union = [] # NOTE(morlovsky): instead of using [data[equally_pos + 1:].strip(" \n")]
     else:
         union = [x for x in data[equally_pos + 1 :].split(" ") if x.strip(" \n") != "" and x.strip(" \n") != "|"]
     return union

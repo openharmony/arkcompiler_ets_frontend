@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding=utf-8
+#
 # Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +35,6 @@ def parse_using(data: str, start: int = 0) -> Tuple[int, Dict]:
         var_end = len(data)
 
     value = parse_type(data[var_start:var_end].strip(" ;="))
-    res["type"] = value
-    # res["value"] = parse_argument(value)
+    res["type"] = value # NOTE(morlovsky): Not doing res["value"] = parse_argument(value)
 
     return var_end, res

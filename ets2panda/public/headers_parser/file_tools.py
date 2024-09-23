@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# coding=utf-8
+#
 # Copyright (c) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +16,10 @@
 
 
 import yaml
+import os
 
 
 def print_to_yaml(yaml_path: str, data_yaml: dict, write_mode: str = "w") -> None:
 
-    with open(yaml_path, write_mode, encoding="utf-8") as file:
+    with os.fdopen(os.open(yaml_path, os.O_RDWR|os.O_CREAT), write_mode, encoding="utf-8") as file:
         yaml.dump(data_yaml, file)
