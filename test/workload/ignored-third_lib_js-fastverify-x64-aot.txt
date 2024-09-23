@@ -63,5 +63,8 @@ zxing-text-encoding_test
 #18425
 Matrix_test
 
+#19703
+sax_test
+
 #18768
 asn-one_test

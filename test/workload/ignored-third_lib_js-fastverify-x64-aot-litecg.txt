@@ -52,5 +52,8 @@ crypto-js_test
 lodash_test
 Matrix_test
 
+#19703
+sax_test
+
 #18383
 memory-cache_test
