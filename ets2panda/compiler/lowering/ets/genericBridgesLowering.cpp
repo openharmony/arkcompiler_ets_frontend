@@ -156,10 +156,8 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
 
     ir::ScriptFunction const *derivedFunction = nullptr;
     checker::ETSFunctionType const *methodType = derivedMethod->Id()->Variable()->TsType()->AsETSFunctionType();
-
     for (auto *signature : methodType->CallSignatures()) {
         signature = signature->Substitute(relation, substitutions.derivedConstraints);
-
         if (overrides(baseSignature1, signature) || checker->HasSameAssemblySignature(baseSignature1, signature)) {
             //  NOTE: we already have custom-implemented method with the required bridge signature.
             //  Probably sometimes we will issue warning notification here...
