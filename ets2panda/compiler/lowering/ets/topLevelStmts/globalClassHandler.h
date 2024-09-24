@@ -24,27 +24,21 @@ namespace ark::es2panda::compiler {
 
 class GlobalClassHandler {
 public:
-    using TriggeringCCtorMethodProgramPair = std::pair<util::StringView, parser::Program *>;
-    using TriggeringCCtorMethodsAndPrograms =
-        ArenaUnorderedMap<util::StringView, ArenaVector<TriggeringCCtorMethodProgramPair>>;
+    using ModuleDependencies = ArenaUnorderedSet<parser::Program *>;
 
     struct GlobalStmts {
         parser::Program *program;
         ArenaVector<ir::Statement *> statements;
     };
-    explicit GlobalClassHandler(ArenaAllocator *allocator) : allocator_(allocator) {};
+    explicit GlobalClassHandler(parser::ETSParser *parser, ArenaAllocator *allocator)
+        : parser_(parser), allocator_(allocator) {};
 
     /**
      * Each "Module" has it's own global class, which contains all top level statements across "module"
      * Result - creation of global class and _$init$_ method
      * @param programs - vector of files in module
      */
-    void InitGlobalClass(const ArenaVector<parser::Program *> &programs,
-                         const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethods);
-    util::UString ReplaceSpecialCharacters(util::UString *word) const;
-    util::StringView FormTriggeringCCtorMethodName(util::StringView importPath) const;
-
-    constexpr static std::string_view TRIGGER_CCTOR = "_$trigger_cctor$_";
+    void SetupGlobalClass(const ArenaVector<parser::Program *> &programs, const ModuleDependencies *moduleDependencies);
 
 private:
     /**
@@ -52,41 +46,35 @@ private:
      * @param program program of module
      * @param init_statements statements which should be executed
      */
+    void SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&statements,
+                            bool mainExists = false, bool topLevelStatementsExist = false);
 
-    void AddTriggerCctrMethodsToInit(ir::BlockStatement *blockBody,
-                                     const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms);
-    void InitCallToCCTOR(parser::Program *program,
-                         const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms,
-                         const ArenaVector<GlobalStmts> &initStatements, bool mainExists = false,
-                         bool topLevelStatementsExist = false, bool triggeringCCtorMethodExists = false);
-
-private:
-    ir::MethodDefinition *CreateAndFillTopLevelMethod(
-        parser::Program *program,
-        const GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms,
-        const ArenaVector<GlobalClassHandler::GlobalStmts> &initStatements, const std::string_view name,
-        bool exportFunction = false);
-    void InitGlobalClass(ir::ClassDefinition *classDef, parser::ScriptKind scriptKind);
     ir::ClassDeclaration *CreateGlobalClass();
-    ir::ClassStaticBlock *CreateCCtor(const ArenaVector<ir::AstNode *> &properties, const lexer::SourcePosition &loc,
-                                      bool allowEmptyCctor);
+    ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);
+    ir::MethodDefinition *CreateGlobalMethod(const std::string_view name, ArenaVector<ir::Statement *> &&statements);
+    void AddInitCallFromStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
+
+    ArenaVector<ir::Statement *> FormInitMethodStatements(parser::Program *program,
+                                                          const ModuleDependencies *moduleDependencies,
+                                                          ArenaVector<GlobalStmts> &&initStatements);
+
+    void FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
+                                   const ModuleDependencies *moduleDependencies);
 
     /**
      *
-     * @param global_stmts leave only declarations here
+     * @param program leave only declarations here
      * @param class_def add new properties such as methods and fields
      * @param addInitializer $init$ should contain global variable initializers
      * @return Statements, which should be executed before the start
      */
-    ArenaVector<ir::Statement *> MakeGlobalStatements(ir::BlockStatement *globalStmts, ir::ClassDefinition *classDef,
-                                                      bool addInitializer);
-
-    void AddInitCall(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
+    ArenaVector<ir::Statement *> CollectProgramGlobalStatements(parser::Program *program, ir::ClassDefinition *classDef,
+                                                                bool addInitializer);
 
     ir::Identifier *RefIdent(const util::StringView &name);
+    util::UString ReplaceSpecialCharacters(util::UString *word) const;
 
-private:
-    constexpr static std::string_view INIT_NAME = compiler::Signatures::INIT_METHOD;
+    parser::ETSParser *const parser_;
     ArenaAllocator *const allocator_;
 };
 }  // namespace ark::es2panda::compiler

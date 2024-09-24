@@ -14,6 +14,8 @@
  */
 
 #include "compiler/lowering/ets/topLevelStmts/globalClassHandler.h"
+#include "compiler/lowering/ets/topLevelStmts/globalDeclTransformer.h"
+#include "compiler/lowering/util.h"
 
 #include "ir/statements/classDeclaration.h"
 #include "ir/base/classDefinition.h"
@@ -27,7 +29,6 @@
 #include "ir/expressions/callExpression.h"
 #include "ir/statements/expressionStatement.h"
 #include "ir/statements/blockStatement.h"
-#include "compiler/lowering/ets/topLevelStmts/globalDeclTransformer.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
 
@@ -45,22 +46,20 @@ static bool FunctionExists(const ArenaVector<ir::Statement *> &statements, const
     return false;
 }
 
-void GlobalClassHandler::InitGlobalClass(const ArenaVector<parser::Program *> &programs,
-                                         const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms)
+void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &programs,
+                                          const ModuleDependencies *moduleDependencies)
 {
     if (programs.empty()) {
         return;
     }
-    auto globalDecl = CreateGlobalClass();
-    auto globalClass = globalDecl->Definition();
+    ir::ClassDeclaration *const globalDecl = CreateGlobalClass();
+    ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
-    auto addCCtor = [this](ir::AstNode *node) {
+    auto addStaticBlock = [this](ir::AstNode *node) {
         if (node->IsClassDefinition()) {
             auto classDef = node->AsClassDefinition();
-            bool allowEmpty = false;
-            auto staticBlock = CreateCCtor(classDef->Body(), classDef->Start(), allowEmpty);
-            if (staticBlock != nullptr) {
-                classDef->Body().emplace_back(staticBlock);
+            if (auto staticBlock = CreateStaticBlock(classDef); staticBlock != nullptr) {
+                classDef->Body().emplace_back(staticBlock);  // NOTE(vpukhov): inserted to end for some reason
                 staticBlock->SetParent(classDef);
             }
         }
@@ -69,53 +68,45 @@ void GlobalClassHandler::InitGlobalClass(const ArenaVector<parser::Program *> &p
     ArenaVector<GlobalStmts> statements(allocator_->Adapter());
     bool mainExists = false;
     bool topLevelStatementsExist = false;
-    bool triggeringCCtorMethodExists = false;
+    parser::Program *const globalProgram = programs.front();
 
-    bool isEntrypoint = programs.size() == 1 ? programs.front()->IsEntryPoint() : false;
+    bool isEntrypoint = programs.size() == 1 ? globalProgram->IsEntryPoint() : false;
     for (auto program : programs) {
-        program->Ast()->IterateRecursively(addCCtor);
+        program->Ast()->IterateRecursively(addStaticBlock);
         if (program->IsEntryPoint() && !mainExists &&
             FunctionExists(program->Ast()->Statements(), compiler::Signatures::MAIN)) {
             mainExists = true;
         }
-        if (!triggeringCCtorMethodExists && FunctionExists(program->Ast()->Statements(), TRIGGER_CCTOR)) {
-            triggeringCCtorMethodExists = true;
-        }
-
-        auto stmts = MakeGlobalStatements(program->Ast(), globalClass, isEntrypoint);
+        auto stmts = CollectProgramGlobalStatements(program, globalClass, isEntrypoint);
         if (!topLevelStatementsExist && !stmts.empty()) {
             topLevelStatementsExist = true;
         }
         statements.emplace_back(GlobalStmts {program, std::move(stmts)});
         program->SetGlobalClass(globalClass);
     }
-    InitCallToCCTOR(programs.front(), triggeringCCtorMethodsAndPrograms, statements, mainExists,
-                    topLevelStatementsExist, triggeringCCtorMethodExists);
+
+    globalProgram->Ast()->Statements().emplace_back(globalDecl);
+    globalDecl->SetParent(globalProgram->Ast());
+    globalClass->SetGlobalInitialized();
+
+    // NOTE(vpukhov): stdlib checks are to be removed - do not extend the existing logic
+    if (globalProgram->Kind() != parser::ScriptKind::STDLIB) {
+        addStaticBlock(globalClass);
+        if (!util::Helpers::IsStdLib(globalProgram)) {
+            auto initStatements = FormInitMethodStatements(globalProgram, moduleDependencies, std::move(statements));
+            SetupGlobalMethods(globalProgram, std::move(initStatements), mainExists, topLevelStatementsExist);
+        }
+    }
 }
 
-ir::MethodDefinition *GlobalClassHandler::CreateAndFillTopLevelMethod(
-    parser::Program *program,
-    const GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms,
-    const ArenaVector<GlobalClassHandler::GlobalStmts> &initStatements, const std::string_view name,
-    bool exportFunction)
+ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_view name,
+                                                             ArenaVector<ir::Statement *> &&statements)
 {
     const auto functionFlags = ir::ScriptFunctionFlags::NONE;
     auto functionModifiers = ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC;
-    if (exportFunction) {
-        functionModifiers |= ir::ModifierFlags::EXPORT;
-    }
-    auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, name, allocator_);
-
-    ArenaVector<ir::Expression *> params(allocator_->Adapter());
-
-    ArenaVector<ir::Statement *> statements(allocator_->Adapter());
-
-    auto *body = NodeAllocator::Alloc<ir::BlockStatement>(allocator_, allocator_, std::move(statements));
-    if (!util::Helpers::IsStdLib(program) && util::StringView(name).Is(INIT_NAME)) {
-        AddTriggerCctrMethodsToInit(body, triggeringCCtorMethodsAndPrograms);
-    }
-
-    auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
+    auto ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, name, allocator_);
+    auto body = NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator_, allocator_, std::move(statements));
+    auto funcSignature = ir::FunctionSignature(nullptr, ArenaVector<ir::Expression *>(allocator_->Adapter()), nullptr);
 
     auto *func = NodeAllocator::Alloc<ir::ScriptFunction>(
         allocator_, allocator_,
@@ -126,26 +117,18 @@ ir::MethodDefinition *GlobalClassHandler::CreateAndFillTopLevelMethod(
     func->AddModifier(functionModifiers);
 
     auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, func);
-    auto *methodDef = NodeAllocator::Alloc<ir::MethodDefinition>(allocator_, ir::MethodDefinitionKind::METHOD,
-                                                                 ident->Clone(allocator_, nullptr)->AsExpression(),
-                                                                 funcExpr, functionModifiers, allocator_, false);
-
-    for (const auto &stmts : initStatements) {
-        for (auto stmt : stmts.statements) {
-            methodDef->Function()->Body()->AsBlockStatement()->Statements().emplace_back(stmt);
-            stmt->SetParent(methodDef->Function()->Body());
-        }
-    }
-    return methodDef;
+    return NodeAllocator::Alloc<ir::MethodDefinition>(allocator_, ir::MethodDefinitionKind::METHOD,
+                                                      ident->Clone(allocator_, nullptr)->AsExpression(), funcExpr,
+                                                      functionModifiers, allocator_, false);
 }
 
-void GlobalClassHandler::AddInitCall(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod)
+void GlobalClassHandler::AddInitCallFromStaticBlock(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod)
 {
     ASSERT(initMethod != nullptr);
 
     auto &globalBody = globalClass->Body();
     auto maybeStaticBlock = std::find_if(globalBody.begin(), globalBody.end(),
-                                         [](ir::AstNode *cctor) { return cctor->IsClassStaticBlock(); });
+                                         [](ir::AstNode *node) { return node->IsClassStaticBlock(); });
     ASSERT(maybeStaticBlock != globalBody.end());
 
     auto *staticBlock = (*maybeStaticBlock)->AsClassStaticBlock();
@@ -224,76 +207,58 @@ util::UString GlobalClassHandler::ReplaceSpecialCharacters(util::UString *word) 
     return util::UString(text, allocator_);
 }
 
-util::StringView GlobalClassHandler::FormTriggeringCCtorMethodName(util::StringView importPath) const
+ArenaVector<ir::Statement *> GlobalClassHandler::FormInitMethodStatements(parser::Program *program,
+                                                                          const ModuleDependencies *moduleDependencies,
+                                                                          ArenaVector<GlobalStmts> &&initStatements)
 {
-    auto path = util::UString(importPath.Mutf8(), allocator_);
-    auto modifiedPath = ReplaceSpecialCharacters(&path);
-    util::UString name = util::UString(util::StringView(TRIGGER_CCTOR).Mutf8(), allocator_);
-    name.Append(util::StringView("for_"));
-    name.Append(modifiedPath.View());
-    name.Append(util::StringView("$_"));
-
-    return name.View();
+    ArenaVector<ir::Statement *> statements(allocator_->Adapter());
+    if (!util::Helpers::IsStdLib(program) && moduleDependencies != nullptr) {
+        FormDependentInitTriggers(statements, moduleDependencies);
+    }
+    for (const auto &[p, ps] : initStatements) {
+        statements.insert(statements.end(), ps.begin(), ps.end());
+    }
+    for (auto st : statements) {
+        st->SetParent(nullptr);
+    }
+    return statements;
 }
 
-void GlobalClassHandler::AddTriggerCctrMethodsToInit(
-    ir::BlockStatement *blockBody, const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms)
+void GlobalClassHandler::FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
+                                                   const ModuleDependencies *moduleDependencies)
 {
-    if (triggeringCCtorMethodsAndPrograms == nullptr) {
-        return;
-    }
-    ArenaSet<util::StringView> calledTriggeringCCtors {allocator_->Adapter()};
-    for (auto &[packageName, triggeringCCtorProgramPairs] : *triggeringCCtorMethodsAndPrograms) {
-        for (auto [triggeringCCtorName, extProg] : triggeringCCtorProgramPairs) {
-            if (util::Helpers::IsStdLib(extProg)) {
-                continue;
-            }
-            auto &extGlobalBody = extProg->GlobalClass()->Body();
-            auto triggeringCCtorNode = std::find_if(extGlobalBody.begin(), extGlobalBody.end(), [](ir::AstNode *node) {
-                return node->IsMethodDefinition() &&
-                       node->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(TRIGGER_CCTOR);
-            });
-            if (triggeringCCtorNode == extGlobalBody.end()) {
-                continue;
-            }
-            if (!calledTriggeringCCtors.insert(triggeringCCtorName).second) {
-                continue;
-            }
-            auto *callee = RefIdent(triggeringCCtorName);
-            auto *const callExpr = NodeAllocator::Alloc<ir::CallExpression>(
-                allocator_, callee, ArenaVector<ir::Expression *>(allocator_->Adapter()), nullptr, false, false);
+    auto const sequence = [&statements](ir::Statement *stmt) { statements.push_back(stmt); };
 
-            auto exprStmt = NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, callExpr);
-            exprStmt->SetParent(blockBody);
-            blockBody->Statements().push_back(exprStmt);
-            if (extProg->IsPackageModule()) {
-                break;
-            }
+    auto triggerInitOf = [this, sequence, initialized = false](parser::Program *prog) mutable {
+        if (!initialized) {
+            initialized = true;
+            sequence(parser_->CreateFormattedStatement("const __linker = Class.ofCaller().getLinker();"));
         }
+        std::string name = (prog->OmitModuleName() ? "" : std::string(prog->ModuleName()) + ".") + "ETSGLOBAL";
+        sequence(parser_->CreateFormattedStatement("__linker.loadClass(\"" + name + "\", true);"));
+    };
+
+    for (auto depProg : *moduleDependencies) {
+        if (util::Helpers::IsStdLib(depProg)) {
+            continue;
+        }
+        triggerInitOf(depProg);
     }
 }
 
-ir::ClassStaticBlock *GlobalClassHandler::CreateCCtor(const ArenaVector<ir::AstNode *> &properties,
-                                                      const lexer::SourcePosition &loc, bool allowEmptyCctor)
+ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition *classDef)
 {
     bool hasStaticField = false;
-    for (const auto *prop : properties) {
+    for (const auto *prop : classDef->Body()) {
         if (prop->IsClassStaticBlock()) {
             return nullptr;
         }
-
-        if (!prop->IsClassProperty()) {
-            continue;
-        }
-
-        const auto *field = prop->AsClassProperty();
-
-        if (field->IsStatic()) {
+        if (prop->IsClassProperty() && prop->AsClassProperty()->IsStatic()) {
             hasStaticField = true;
         }
     }
 
-    if (!hasStaticField && !allowEmptyCctor) {
+    if (!hasStaticField && !classDef->IsGlobal()) {
         return nullptr;
     }
 
@@ -315,30 +280,20 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateCCtor(const ArenaVector<ir::AstN
     auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, func);
     auto *staticBlock = NodeAllocator::Alloc<ir::ClassStaticBlock>(allocator_, funcExpr, allocator_);
     staticBlock->AddModifier(ir::ModifierFlags::STATIC);
-    staticBlock->SetRange({loc, loc});
+    staticBlock->SetRange({classDef->Start(), classDef->Start()});
     return staticBlock;
 }
 
-ArenaVector<ir::Statement *> GlobalClassHandler::MakeGlobalStatements(ir::BlockStatement *globalStmts,
-                                                                      ir::ClassDefinition *classDef,
-                                                                      bool addInitializer)
+ArenaVector<ir::Statement *> GlobalClassHandler::CollectProgramGlobalStatements(parser::Program *program,
+                                                                                ir::ClassDefinition *classDef,
+                                                                                bool addInitializer)
 {
+    auto ast = program->Ast();
     auto globalDecl = GlobalDeclTransformer(allocator_);
-    auto statements = globalDecl.TransformStatements(globalStmts->Statements(), addInitializer);
+    auto statements = globalDecl.TransformStatements(ast->Statements(), addInitializer);
     classDef->AddProperties(util::Helpers::ConvertVector<ir::AstNode>(statements.classProperties));
-    globalDecl.FilterDeclarations(globalStmts->Statements());
+    globalDecl.FilterDeclarations(ast->Statements());
     return std::move(statements.initStatements);
-}
-
-void GlobalClassHandler::InitGlobalClass(ir::ClassDefinition *classDef, parser::ScriptKind scriptKind)
-{
-    auto &globalProperties = classDef->Body();
-    auto staticBlock = CreateCCtor(globalProperties, classDef->Start(), scriptKind != parser::ScriptKind::STDLIB);
-    if (staticBlock != nullptr) {
-        staticBlock->SetParent(classDef);
-        globalProperties.emplace_back(staticBlock);
-    }
-    classDef->SetGlobalInitialized();
 }
 
 ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass()
@@ -352,52 +307,33 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass()
     return classDecl;
 }
 
-void GlobalClassHandler::InitCallToCCTOR(parser::Program *program,
-                                         const TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms,
-                                         const ArenaVector<GlobalStmts> &initStatements, bool mainExists,
-                                         bool topLevelStatementsExist, bool triggeringCCtorMethodExists)
+void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements,
+                                            bool mainExists, bool topLevelStatementsExist)
 {
-    auto globalClass = program->GlobalClass();
-    auto globalDecl = globalClass->Parent()->AsClassDeclaration();
-    program->Ast()->Statements().emplace_back(globalDecl);
-    globalDecl->SetParent(program->Ast());
-    InitGlobalClass(globalClass, program->Kind());
-    auto &globalBody = globalClass->Body();
+    ir::ClassDefinition *const globalClass = program->GlobalClass();
 
-    if (program->Kind() == parser::ScriptKind::STDLIB || util::Helpers::IsStdLib(program)) {
-        return;
-    }
+    auto const insertInGlobal = [globalClass](ir::AstNode *node) {
+        // NOTE(vpukhov): inserted to begin for some reason
+        globalClass->Body().insert(globalClass->Body().begin(), node);
+        node->SetParent(globalClass);
+    };
+
     if (!program->IsDeclarationModule()) {
-        ir::MethodDefinition *initMethod = nullptr;
-        initMethod = CreateAndFillTopLevelMethod(program, triggeringCCtorMethodsAndPrograms, initStatements, INIT_NAME);
-        if (initMethod != nullptr) {
-            initMethod->SetParent(program->GlobalClass());
-            globalBody.insert(globalBody.begin(), initMethod);
-            if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
-                AddInitCall(program->GlobalClass(), initMethod);
-            }
+        ir::MethodDefinition *initMethod =
+            CreateGlobalMethod(compiler::Signatures::INIT_METHOD, std::move(initStatements));
+        insertInGlobal(initMethod);
+        if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
+            AddInitCallFromStaticBlock(globalClass, initMethod);
         }
     }
 
     // NOTE(rsipka): unclear call, OmitModuleName() used to determine the entry points without --ets-module option
     if (program->OmitModuleName()) {
-        ir::MethodDefinition *mainMethod = nullptr;
         if (!mainExists && topLevelStatementsExist) {
-            const ArenaVector<GlobalStmts> emptyStatements(allocator_->Adapter());
-            mainMethod = CreateAndFillTopLevelMethod(program, nullptr, emptyStatements, compiler::Signatures::MAIN);
+            ir::MethodDefinition *mainMethod =
+                CreateGlobalMethod(compiler::Signatures::MAIN, ArenaVector<ir::Statement *>(allocator_->Adapter()));
+            insertInGlobal(mainMethod);
         }
-        if (mainMethod != nullptr) {
-            mainMethod->SetParent(program->GlobalClass());
-            globalBody.insert(globalBody.begin(), mainMethod);
-        }
-    }
-
-    if (!triggeringCCtorMethodExists && !program->IsDeclarationModule()) {
-        const ArenaVector<GlobalStmts> emptyStatements(allocator_->Adapter());
-        ir::MethodDefinition *cctrTriggerMethod =
-            CreateAndFillTopLevelMethod(program, nullptr, emptyStatements, TRIGGER_CCTOR, true);
-        cctrTriggerMethod->SetParent(program->GlobalClass());
-        globalBody.insert(globalBody.end(), cctrTriggerMethod);
     }
 }
 

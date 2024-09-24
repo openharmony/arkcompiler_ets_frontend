@@ -55,8 +55,7 @@ public:
      * Verifies import errors, and add Exported flag to top level variables and methods
      * @param global_stmts program global statements
      */
-    GlobalClassHandler::TriggeringCCtorMethodsAndPrograms HandleGlobalStmts(ArenaVector<parser::Program *> &programs,
-                                                                            GlobalClassHandler *globalClass);
+    GlobalClassHandler::ModuleDependencies HandleGlobalStmts(ArenaVector<parser::Program *> &programs);
     void VerifyTypeExports(const ArenaVector<parser::Program *> &programs);
     void VerifyType(ir::Statement *stmt, parser::Program *program, std::set<util::StringView> &exportedTypes,
                     std::set<util::StringView> &exportedStatements,
@@ -71,16 +70,9 @@ public:
     void PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path);
 
 private:
-    void MatchImportDeclarationPathWithProgram(
-        ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *prog, const util::StringView moduleName,
-        const GlobalClassHandler *globalClass,
-        GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms);
-    void CollectImportedProgramsFromStmts(
-        ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *program, const GlobalClassHandler *globalClass,
-        GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms);
-    void AddImportSpecifierForTriggeringCCtorMethod(ark::es2panda::ir::ETSImportDeclaration *stmt,
-                                                    const GlobalClassHandler *globalClass,
-                                                    util::StringView triggeringCCtorMethodName);
+    bool MatchResolvedPathWithProgram(std::string_view resolvedPath, parser::Program *prog);
+    void CollectImportedProgramsFromStmts(ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *program,
+                                          GlobalClassHandler::ModuleDependencies *moduleDependencies);
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
     void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
