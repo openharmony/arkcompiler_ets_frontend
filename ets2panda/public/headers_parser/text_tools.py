@@ -116,7 +116,7 @@ def smart_split_by(data: str, delim: str = ",") -> list:
         else:
             warning_log("Warning: empty segment in smart_split_by")
 
-        segment_start = find_first_not_restricted_character(delim + " \n", data, next_delim)
+        segment_start = find_first_not_restricted_character(f"{delim} \n", data, next_delim)
 
     return res
 

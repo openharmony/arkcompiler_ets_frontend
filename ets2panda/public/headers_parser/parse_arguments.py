@@ -52,9 +52,7 @@ def parse_type(data: str) -> dict:
             if "other_modifiers" not in res:
                 res["other_modifiers"] = ""
 
-            res["other_modifiers"] += " "
-            res["other_modifiers"] += modifier
-            res["other_modifiers"] = res["other_modifiers"].strip(" ")
+            res["other_modifiers"] = f"{res['other_modifiers']} {modifier}".strip(" ")
 
     # Weakness (<>)
     start_of_parenthes = data.find("(")

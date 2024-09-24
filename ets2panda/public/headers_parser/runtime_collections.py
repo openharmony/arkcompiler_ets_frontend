@@ -97,4 +97,4 @@ def save_statistics() -> None:
     for _, value in statistics.items():
         with os.fdopen(os.open(value["log_file"], os.O_WRONLY|os.O_CREAT), "w", encoding="utf-8") as f:
             for item in value["collection"]:
-                f.write(item + "\n")
+                f.write(f"{item}\n")
