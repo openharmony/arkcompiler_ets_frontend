@@ -26,3 +26,6 @@ zxing-text-encoding_test
 
 #18437
 zxing_test
+
+#18383
+memory-cache_test
