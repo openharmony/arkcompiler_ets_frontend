@@ -2913,7 +2913,7 @@ export class TypeScriptLinter {
   }
 
   private handleImportType(node: ts.Node): void {
-    if(!this.arkts2) { 
+    if (!this.arkts2) {
       return;
     }
     this.incrementCounters(node, FaultID.ImportType);
