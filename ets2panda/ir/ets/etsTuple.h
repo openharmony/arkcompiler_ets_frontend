@@ -61,9 +61,9 @@ public:
         spreadType_ = newSpreadType;
     }
 
-    void SetTypeAnnotationsList(const ArenaVector<TypeNode *> &typeNodeList)
+    void SetTypeAnnotationsList(ArenaVector<TypeNode *> &&typeNodeList)
     {
-        typeAnnotationList_ = typeNodeList;
+        typeAnnotationList_ = std::move(typeNodeList);
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -84,6 +84,8 @@ public:
     // NOTE(vpukhov): hide in TypeCreation
     static checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList,
                                                checker::Type **spreadTypePtr);
+
+    [[nodiscard]] ETSTuple *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     ArenaVector<TypeNode *> typeAnnotationList_;

@@ -149,4 +149,29 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
     return TsType();
 }
 
+ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<ETSTuple>(allocator, size_); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        if (spreadType_ != nullptr) {
+            auto *const spreadType = spreadType_->Clone(allocator, clone)->AsTypeNode();
+            clone->SetSpreadType(spreadType);
+        }
+
+        ArenaVector<TypeNode *> typeList(allocator->Adapter());
+        for (auto *const type : typeAnnotationList_) {
+            auto *const t = type->Clone(allocator, clone);
+            typeList.push_back(t);
+        }
+
+        clone->SetTypeAnnotationsList(std::move(typeList));
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 }  // namespace ark::es2panda::ir

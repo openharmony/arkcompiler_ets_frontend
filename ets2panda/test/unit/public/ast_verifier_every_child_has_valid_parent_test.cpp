@@ -73,4 +73,28 @@ TEST_F(ASTVerifierTest, TSThisType)
 
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(ASTVerifierTest, TupleFieldInInterface)
+{
+    ASTVerifier verifier {Allocator()};
+    char const *text = R"(
+        interface I {
+            field: [String, String]
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("EveryChildHasValidParentForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+
 }  // namespace
