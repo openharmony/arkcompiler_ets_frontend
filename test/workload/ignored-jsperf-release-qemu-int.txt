@@ -23,6 +23,4 @@ TestCaseError_Intl.PluralRules_Error_selectRange
 TestCaseError_Intl.NumberFormat_Error_formatRangeToParts
 # --- end of Issue #18792
 
-#18851
-Array_join
 

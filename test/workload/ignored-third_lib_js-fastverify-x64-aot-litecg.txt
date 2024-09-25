@@ -2,21 +2,8 @@
 #19246
 asn-one_test
 
-#18911
-bignumber_test
-
-#18330
-dayjs_test
-
-#18340
-Drools_test
-
 #18424
 htmlParser2_test
-
-#18546
-gson_test
-libphonenumber_test
 
 #18340
 jmespath_test
@@ -27,14 +14,8 @@ jsDiff_test
 #18342
 mathjs_test
 
-#18424
-pcx_test
-
 #19251
 pdfview_test
-
-#18437
-zxing_test
 
 #19424
 zxing-text-encoding_test
@@ -51,9 +32,6 @@ gson_test
 crypto-js_test
 lodash_test
 Matrix_test
-
-#19703
-sax_test
 
 #18383
 memory-cache_test

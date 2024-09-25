@@ -1,16 +1,10 @@
 # Known failures list for test262-other-fastverify-x64-int
 
 #19351
-test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A2.5_T1.js
-test262/data/other_tests/language/module-code/top-level-await/syntax/for-of-await-expr-nested.js
 test262/data/other_tests/language/statements/generators/dstr/dflt-ary-ptrn-elem-id-init-fn-name-arrow.js
-
-#18791
-test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A2.3_T1.js
-test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-next-call-returns-abrupt.js
+test262/data/other_tests/language/expressions/object/dstr/gen-meth-ary-ptrn-elem-id-init-exhausted.js
 
 #19351
-test262/data/other_tests/built-ins/Set/prototype/entries/not-a-constructor.js
 test262/data/other_tests/language/statements/generators/dstr/dflt-ary-ptrn-elem-id-init-fn-name-arrow.js
 
 #18438
@@ -18,14 +12,5 @@ test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-
 
 #18547
 test262/data/test_es2021/built-ins/Atomics/sub/bad-range.js
-test262/data/other_tests/built-ins/Date/prototype/setMinutes/arg-sec-to-number.js
-test262/data/other_tests/built-ins/Date/prototype/S15.9.5_A33_T1.js
-test262/data/other_tests/built-ins/Number/string-numeric-separator-literal-bil-bd-nsl-bd.js
 test262/data/test_es2021/built-ins/String/prototype/trim/15.5.4.20-2-8.js
-test262/data/other_tests/language/expressions/class/dstr/async-gen-meth-static-dflt-ary-init-iter-get-err-array-prototype.js
-test262/data/other_tests/language/expressions/class/dstr/private-gen-meth-dflt-obj-ptrn-prop-id.js
-test262/data/other_tests/language/statements/class/dstr/private-gen-meth-static-obj-ptrn-prop-obj-init.js
-test262/data/other_tests/language/expressions/object/dstr/async-gen-meth-ary-ptrn-elem-id-init-unresolvable.js
 
-##18914
-test262/data/other_tests/built-ins/Object/entries/not-a-constructor.js

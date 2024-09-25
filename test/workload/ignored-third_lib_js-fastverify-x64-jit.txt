@@ -1,22 +1,10 @@
 # Known failures list for third_lib_js - fastverify-x64-jit
 
-#18330
-dayjs_test
-
-#18340
-Drools_test
-
 #18340
 jmespath_test
 
 #18342
 mathjs_test
-
-#18424
-pcx_test
-
-#18437
-zxing_test
 
 #18425
 crypto-js_test

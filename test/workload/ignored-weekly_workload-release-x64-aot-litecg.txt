@@ -9,9 +9,6 @@ box2d
 # Issue #19297
 earley-boyer
 
-# Issue #18491
-stanford-crypto-pbkdf2
-
 # Issue #18483
 typescript-compiler
 

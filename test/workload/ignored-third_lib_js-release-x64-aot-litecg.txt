@@ -1,11 +1,5 @@
 # Known failures list for third_lib_js - release-x64-aot-litegc
 
-# Issue #18911
-bignumber_test
-
-# Issue #18340
-Drools_test
-
 #18546
 jBox2d_test
 
@@ -27,9 +21,6 @@ memory-cache_test
 #19072
 OfflineAssembler
 
-#18424
-pcx_test
-
 #19251
 pdfview_test
 
@@ -38,9 +29,3 @@ rebound_test
 
 #19478
 htmlParser2_test
-
-#18425
-gson_test
-
-#18437
-zxing_test
