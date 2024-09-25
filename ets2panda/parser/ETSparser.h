@@ -253,9 +253,9 @@ private:
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
-    void TryParseSource(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
-                        const ArenaVector<util::StringView> &directImportsFromMainSource,
-                        std::vector<Program *> &programs);
+    void ParseSourceList(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
+                         const ArenaVector<util::StringView> &directImportsFromMainSource,
+                         std::vector<Program *> &programs);
     std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     bool IsDefaultImport();

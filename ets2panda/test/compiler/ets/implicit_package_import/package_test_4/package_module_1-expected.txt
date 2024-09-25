@@ -1,1 +1,0 @@
-SyntaxError: Package module cannot import from a file in it's own package [package_module_1.sts:17:1]

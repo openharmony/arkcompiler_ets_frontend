@@ -23,3 +23,5 @@ export let myvar: number = 8;
 // from package is thrown) as files in the package containing 'syntax errors' are ignored
 //
 // compiled with "--ets-module" switch the same error will be thrown as for 'package_module_1.sts'
+
+/* @@? package_module_1.sts:17:21 Error SyntaxError: Please compile `package_module_2.sts` with `--ets-module` option. It is being imported by another file. */

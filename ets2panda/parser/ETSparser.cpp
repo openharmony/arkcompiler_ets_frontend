@@ -186,29 +186,17 @@ void ETSParser::AddDirectImportsToDirectExternalSources(
     GetProgram()->DirectExternalSources().at(name).emplace_back(newProg);
 }
 
-void ETSParser::TryParseSource(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
-                               const ArenaVector<util::StringView> &directImportsFromMainSource,
-                               std::vector<Program *> &programs)
+void ETSParser::ParseSourceList(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
+                                const ArenaVector<util::StringView> &directImportsFromMainSource,
+                                std::vector<Program *> &programs)
 {
-    try {
-        parser::Program *newProg =
-            ParseSource({parseListIdx.sourcePath.Utf8(), extSrc->View().Utf8(), parseListIdx.sourcePath.Utf8(), false});
+    parser::Program *newProg =
+        ParseSource({parseListIdx.sourcePath.Utf8(), extSrc->View().Utf8(), parseListIdx.sourcePath.Utf8(), false});
 
-        if (!parseListIdx.isImplicitPackageImported || newProg->IsPackageModule()) {
-            AddDirectImportsToDirectExternalSources(directImportsFromMainSource, newProg);
-            // don't insert the separate modules into the programs, when we collect implicit package imports
-            programs.emplace_back(newProg);
-        }
-    } catch (const Error &) {
-        // Here file is not a valid STS source. Ignore and continue if it's implicit package import, else throw
-        // the syntax error as usual
-
-        if (!parseListIdx.isImplicitPackageImported) {
-            throw;
-        }
-
-        util::Helpers::LogWarning("Error during parse of file '", parseListIdx.sourcePath,
-                                  "' in compiled package. File will be omitted.");
+    if (!parseListIdx.isImplicitPackageImported || newProg->IsPackageModule()) {
+        AddDirectImportsToDirectExternalSources(directImportsFromMainSource, newProg);
+        // don't insert the separate modules into the programs, when we collect implicit package imports
+        programs.emplace_back(newProg);
     }
 }
 
@@ -271,13 +259,7 @@ std::vector<Program *> ETSParser::ParseSources(bool firstSource)
             auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
             importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
 
-            // In case of implicit package import, if we find a malformed STS file in the package's directory, instead
-            // of aborting compilation we just ignore the file
-
-            // NOTE (mmartin): after the multiple syntax error handling in the parser is implemented, this try-catch
-            // must be changed, as exception throwing will be removed
-
-            TryParseSource(parseList[idx], extSrc, directImportsFromMainSource, programs);
+            ParseSourceList(parseList[idx], extSrc, directImportsFromMainSource, programs);
 
             GetContext().SetLanguage(currentLang);
         }
