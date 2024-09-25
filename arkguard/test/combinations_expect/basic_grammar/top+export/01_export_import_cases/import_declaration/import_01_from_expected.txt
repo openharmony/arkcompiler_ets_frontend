@@ -32,7 +32,6 @@ p(u.var3 === 3);
 p(v(3, 4) === 4);
 p(reduceFunc(5, 4) === 1);
 // import ""; TypeError: The argument 'id' must be a non-empty string. Received ''
-// import '';
 import './export_api_01';
 import { moduleAlias } from './export_api_02';
 import * as w from './export_api_02';

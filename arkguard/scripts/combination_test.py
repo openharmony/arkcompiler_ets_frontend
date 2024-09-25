@@ -21,6 +21,7 @@ import os
 import json
 import copy
 import shutil
+import stat
 
 combination_config_path = os.path.join(os.path.dirname(__file__), 'combination_config.json')
 config_temp_dir = os.path.join(os.path.dirname(__file__), '../test/local/temp_configs')
@@ -71,6 +72,7 @@ CONFIG_ALIAS = {
     'mEnableSourceMap': 'sourcemap',
     'mEnableNameCache': 'namecache'
 }
+
 
 class CombinationRunner(Runner):
     def __init__(self, test_filter, root_dir, test_type):
@@ -130,8 +132,10 @@ class CombinationRunner(Runner):
             output_dir_for_current_option = os.path.normpath(os.path.join(output_abs_dir, alias_str))
             temp_config_path = os.path.normpath(os.path.join(config_temp_dir, alias_str + '_config.json'))
             merged_config = self.merge_config(combination, alias_str, whitelist, str(output_dir_for_current_option))
+            flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+            modes = stat.S_IRUSR | stat.S_IWUSR
             # write temp config file
-            with open(temp_config_path, 'w') as config_file:
+            with os.fdopen(os.open(temp_config_path, flags, modes), 'w') as config_file:
                 json.dump(merged_config, config_file, indent=INDENTATION)
             self.temp_files.append(temp_config_path)
             self.prepare_task(input_dirs, temp_config_path)

@@ -32,7 +32,6 @@ assert(k.var3 === 3);
 assert(l(3, 4) === 4);
 assert(reduceFunc(5, 4) === 1);
 // import ""; TypeError: The argument 'id' must be a non-empty string. Received ''
-// import '';
 import './export_api_01';
 import { moduleAlias } from './export_api_02';
 import * as o from './export_api_02';
