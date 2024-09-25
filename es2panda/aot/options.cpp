@@ -29,10 +29,11 @@
 #include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler_options.h"
 #include "os/file.h"
+#include "utils/pandargs.h"
+#include "utils/timers.h"
 
 #include "mergeProgram.h"
 #include "util/helpers.h"
-#include "utils/pandargs.h"
 
 namespace panda::es2panda::aot {
 constexpr char PROCESS_AS_LIST_MARK = '@';
@@ -392,6 +393,10 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> opCacheFile("cache-file", "", "cache file for incremental compile");
     panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
     panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
+    panda::PandArg<std::string> opPerfFile("perf-file", "perf.txt", "Specify the file path to dump time consuming data"\
+        " during compilation process, default to 'perf.txt' in the current directory");
+    panda::PandArg<int> opPerfLevel("perf-level", 0, "Specify the performance data output level:"\
+        "  0: Output compilation time data(default)");
     panda::PandArg<bool> opuseDefineSemantic("use-define-semantic", false, "Compile ts class fields "\
         "in accordance with ECMAScript2022");
     panda::PandArg<std::string> moduleRecordFieldName("module-record-field-name", "", "Specify the field name "\
@@ -478,6 +483,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opCacheFile);
     argparser_->Add(&opNpmModuleEntryList);
     argparser_->Add(&opMergeAbc);
+    argparser_->Add(&opPerfLevel);
+    argparser_->Add(&opPerfFile);
     argparser_->Add(&opuseDefineSemantic);
     argparser_->Add(&moduleRecordFieldName);
     argparser_->Add(&opBranchElimination);
@@ -661,6 +668,13 @@ bool Options::Parse(int argc, const char **argv)
     if (opSizePctStat.GetValue()) {
         options_ |= OptionFlags::SIZE_PCT_STAT;
     }
+
+    perfFile_ = "";
+    perfLevel_ = opPerfLevel.GetValue();
+    if (opPerfFile.WasSet() && (perfLevel_ == 0)) {
+        perfFile_ = opPerfFile.GetValue().empty() ? opPerfFile.GetDefaultValue() : opPerfFile.GetValue();
+    }
+    panda::Timer::InitializeTimer(perfFile_);
 
     compilerOptions_.recordDebugSource = opRecordDebugSource.GetValue();
     compilerOptions_.enableAbcInput = opEnableAbcInput.GetValue();

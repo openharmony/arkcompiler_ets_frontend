@@ -17,6 +17,7 @@
 
 #include <assembly-emitter.h>
 #include <mem/arena_allocator.h>
+#include "utils/timers.h"
 
 #include <es2panda.h>
 #include <protobufSnapshotGenerator.h>
@@ -81,6 +82,7 @@ void EmitFileQueue::Schedule()
 
 void EmitSingleAbcJob::Run()
 {
+    panda::Timer::timerStart(panda::EVENT_EMIT_SINGLE_PROGRAM, outputFileName_);
     if (!panda::pandasm::AsmEmitter::Emit(panda::os::file::File::GetExtendedFilePath(outputFileName_), *prog_, statp_,
         nullptr, true, nullptr, targetApiVersion_, targetApiSubVersion_)) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
@@ -89,10 +91,12 @@ void EmitSingleAbcJob::Run()
     for (auto *dependant : dependants_) {
         dependant->Signal();
     }
+    panda::Timer::timerEnd(panda::EVENT_EMIT_SINGLE_PROGRAM, outputFileName_);
 }
 
 void EmitMergedAbcJob::Run()
 {
+    panda::Timer::timerStart(panda::EVENT_EMIT_MERGED_PROGRAM, "");
     std::vector<panda::pandasm::Program*> progs;
     progs.reserve(progsInfo_.size());
     for (const auto &info: progsInfo_) {
@@ -106,6 +110,7 @@ void EmitMergedAbcJob::Run()
     for (auto *dependant : dependants_) {
         dependant->Signal();
     }
+    panda::Timer::timerEnd(panda::EVENT_EMIT_MERGED_PROGRAM, "");
 
     if (!success) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
@@ -123,7 +128,9 @@ void EmitCacheJob::Run()
 {
     std::unique_lock<std::mutex> lock(m_);
     cond_.wait(lock, [this] { return dependencies_ == 0; });
+    panda::Timer::timerStart(panda::EVENT_EMIT_CACHE_FILE, outputProtoName_);
     panda::proto::ProtobufSnapshotGenerator::UpdateCacheFile(progCache_, outputProtoName_);
+    panda::Timer::timerEnd(panda::EVENT_EMIT_CACHE_FILE, outputProtoName_);
 }
 
 }  // namespace panda::es2panda::util

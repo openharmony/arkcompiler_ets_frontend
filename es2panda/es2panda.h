@@ -36,6 +36,7 @@ struct PkgInfo;
 
 namespace parser {
 class ParserImpl;
+class Program;
 class Transformer;
 enum class ScriptKind;
 }  // namespace parser
@@ -217,7 +218,7 @@ public:
                                      util::SymbolTable *symbolTable = nullptr);
     panda::pandasm::Program *CompileFile(const CompilerOptions &options, SourceFile *src,
                                          util::SymbolTable *symbolTable);
-
+    void ProcessAstForTS(parser::Program *ast, const es2panda::CompilerOptions &options);
     static int CompileFiles(CompilerOptions &options,
         std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo, panda::ArenaAllocator *allocator);
 
