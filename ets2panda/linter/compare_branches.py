@@ -14,10 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import git
 import os
 import re
 import sys
+
+import git
 
 LINTER_PATH = 'ets2panda/linter'
 
