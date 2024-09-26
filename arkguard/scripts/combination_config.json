@@ -670,7 +670,7 @@
       },
       "export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["N", "E1","A","B","C","A1","NS1","NS2","t","a","foo"],
+          "mReservedToplevelNames": ["N", "E1","A","B","C","A1","NS1","NS2","t","a","foo","Y","Z","M2","I","temp3","temp5"],
           "mReservedProperties": []
         }
       },
@@ -718,7 +718,7 @@
       },
       "strProp+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["N", "E1","A","B","C","A1","NS1","NS2","a","foo","t","C"],
+          "mReservedToplevelNames": ["N", "E1","A","B","C","A1","NS1","NS2","a","foo","t","C","Y","Z","M2","I","temp3","temp5"],
           "mReservedProperties": []
         }
       },
@@ -730,13 +730,13 @@
       },
       "strProp+top+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["N","E1","B","C","t","A1","NS1","NS2","a","foo"],
+          "mReservedToplevelNames": ["N","E1","B","C","t","A1","NS1","NS2","a","foo","Y","Z","M2","I","temp3","temp5"],
           "mReservedProperties": []
         }
       },
       "top+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["N","E1","A1","B","NS1","NS2","t","a","foo"],
+          "mReservedToplevelNames": ["N","E1","A1","B","NS1","NS2","t","a","foo","Y","Z","M2","I","temp3","temp5"],
           "mReservedProperties": []
         }
       },

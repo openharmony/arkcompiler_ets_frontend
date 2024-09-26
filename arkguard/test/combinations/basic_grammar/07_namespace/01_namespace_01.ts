@@ -14,7 +14,9 @@
  */
 
 import assert from 'assert'
-
+// Only use for testing importEqualsDeclaration in toplevel
+import temp1 = require('fs');
+export import temp2 = require('fs');
 module X {
   export module Y {
     export interface Z {
@@ -29,7 +31,7 @@ let a:X.Y.Z = {a:1}
 assert(a.a === 1);
 let b:X.Y = {b:"1"}
 assert(b.b === "1");
-  
+
 module A {
   export module B {
     export class C {
@@ -37,10 +39,10 @@ module A {
     }
   }
 }
-  
+
 var c: A.B.C = new A.B.C();
 assert(c.c === true)
-  
+
 module M {
   export namespace N {
     export module M2 {
@@ -60,5 +62,20 @@ declare namespace Q2 {
 }
 let e:Q2.A = 3;
 assert(e ===3);
-  
+
+namespace ns1 {
+  namespace ns2 {
+      export var temp3 : string = "test-importEqualsDeclaration";
+  }
+  import temp4 = ns2.temp3;
+  export import temp5 = ns2.temp3;
+  assert(temp4 === "test-importEqualsDeclaration")
+  assert(temp5 === "test-importEqualsDeclaration")
+}
+
+namespace ns1 {
+  assert(temp5 === "test-importEqualsDeclaration")
+}
+
+assert(ns1.temp5 === "test-importEqualsDeclaration")
 export {}
