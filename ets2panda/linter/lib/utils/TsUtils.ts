@@ -1736,7 +1736,7 @@ export class TsUtils {
     return !symbol || (symbol.flags & ts.SymbolFlags.Class) === 0;
   }
 
-  isClassTypeExrepssion(expr: ts.Expression): boolean {
+  isClassTypeExpression(expr: ts.Expression): boolean {
     const sym = this.trueSymbolAtLocation(expr);
     return sym !== undefined && (sym.flags & ts.SymbolFlags.Class) !== 0;
   }

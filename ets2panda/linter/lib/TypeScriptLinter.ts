@@ -2175,17 +2175,18 @@ export class TypeScriptLinter {
   private handleNewExpression(node: ts.Node): void {
     const tsNewExpr = node as ts.NewExpression;
 
-    if (TypeScriptLinter.advancedClassChecks) {
+    if (TypeScriptLinter.advancedClassChecks || this.arkts2) {
       const calleeExpr = tsNewExpr.expression;
       const calleeType = this.tsTypeChecker.getTypeAtLocation(calleeExpr);
       if (
-        !this.tsUtils.isClassTypeExrepssion(calleeExpr) &&
+        !this.tsUtils.isClassTypeExpression(calleeExpr) &&
         !isStdLibraryType(calleeType) &&
         !this.tsUtils.isLibraryType(calleeType) &&
         !this.tsUtils.hasEsObjectType(calleeExpr)
       ) {
         // missing exact rule
-        this.incrementCounters(calleeExpr, FaultID.ClassAsObject);
+        const faultId = this.arkts2 ? FaultID.DynamicCtorCall : FaultID.ClassAsObject;
+        this.incrementCounters(calleeExpr, faultId);
       }
     }
     const sym = this.tsUtils.trueSymbolAtLocation(tsNewExpr.expression);
@@ -2913,10 +2914,9 @@ export class TypeScriptLinter {
   }
 
   private handleImportType(node: ts.Node): void {
-    if(!this.arkts2) { 
+    if (!this.arkts2) {
       return;
     }
     this.incrementCounters(node, FaultID.ImportType);
   }
 }
-

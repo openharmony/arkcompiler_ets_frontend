@@ -144,3 +144,4 @@ faultsAttrs[FaultID.SendableBetaCompatible] = new FaultAttributes(182);
 faultsAttrs[FaultID.ObjectLiteralProperty] = new FaultAttributes(183);
 faultsAttrs[FaultID.OptionalMethod] = new FaultAttributes(184);
 faultsAttrs[FaultID.ImportType] = new FaultAttributes(185);
+faultsAttrs[FaultID.DynamicCtorCall] = new FaultAttributes(186);
