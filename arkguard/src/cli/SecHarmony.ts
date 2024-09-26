@@ -47,7 +47,7 @@ const minParametersNum: number = 3;
   });
 
   let obfuscator: ArkObfuscatorForTest = new ArkObfuscatorForTest(fileList, configPath);
-  performancePrinter?.iniPrinter?.startEvent(EventList.OBFUSCATION_INITIALIZATION);
+  performancePrinter?.filesPrinter?.startEvent(EventList.OBFUSCATION_INITIALIZATION, performancePrinter.timeSumPrinter);
   const config: IOptions = FileUtils.readFileAsJson(configPath);
   const initSuccess: boolean = obfuscator.init(config);
   let inplace: boolean = program.opts()?.inplace;
@@ -59,7 +59,7 @@ const minParametersNum: number = 3;
   obfuscator.setTestType(testType);
 
   UnitTestUtil.initKeepPathConfig(obfuscator.customProfiles, obfuscator.configPath);
-  performancePrinter?.iniPrinter?.endEvent(EventList.OBFUSCATION_INITIALIZATION);
+  performancePrinter?.filesPrinter?.endEvent(EventList.OBFUSCATION_INITIALIZATION, performancePrinter.timeSumPrinter);
   if (!initSuccess) {
     console.error('init from config file error.');
     return;
