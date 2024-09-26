@@ -127,6 +127,7 @@ public:
     void Cast(TypeRelation *relation, Type *target) override;
     checker::RelationResult CastFunctionParams(TypeRelation *relation, Signature *targetInvokeSig);
     ETSFunctionType *BoxPrimitives(ETSChecker *checker);
+    void IsSubtypeOf(TypeRelation *relation, Type *target) override;
 
 private:
     ArenaVector<Signature *> callSignatures_;

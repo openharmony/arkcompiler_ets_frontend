@@ -259,6 +259,19 @@ void ETSFunctionType::Cast(TypeRelation *relation, Type *target)
     }
 }
 
+void ETSFunctionType::IsSubtypeOf(TypeRelation *relation, Type *target)
+{
+    ETSChecker *checker = relation->GetChecker()->AsETSChecker();
+    auto *source = checker->FunctionTypeToFunctionalInterfaceType(callSignatures_[0]);
+
+    if (relation->IsSupertypeOf(target, source)) {
+        relation->Result(true);
+        return;
+    }
+
+    relation->Result(false);
+}
+
 ETSFunctionType *ETSFunctionType::BoxPrimitives(ETSChecker *checker)
 {
     auto *allocator = checker->Allocator();
