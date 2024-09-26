@@ -697,16 +697,23 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
                 })) {
                 continue;
             }
+            implDecl = item->GetETSImportDeclarations();
         } else {
             ArenaVector<parser::Program *> record =
                 GetExternalProgram(item->GetETSImportDeclarations()->ResolvedSource()->Str(), importPath);
-            if (FindImportSpecifiersVariable(imported, record.front()->GlobalScope()->Bindings(), record) == nullptr) {
+            auto *const var = FindImportSpecifiersVariable(imported, record.front()->GlobalScope()->Bindings(), record);
+            if (var != nullptr) {
+                implDecl = item->GetETSImportDeclarations();
                 continue;
             }
+            auto reExportImport = item->GetETSImportDeclarations();
+            auto reExportImportPath = reExportImport->Source();
+            auto implDeclOrNullptr =
+                FindImportDeclInReExports(reExportImport, viewedReExport, imported, reExportImportPath);
+            if (implDeclOrNullptr != nullptr) {
+                implDecl = implDeclOrNullptr;
+            }
         }
-
-        // NOTE: ttamas - Duplication check created error
-        implDecl = item->GetETSImportDeclarations();
     }
     return implDecl;
 }
