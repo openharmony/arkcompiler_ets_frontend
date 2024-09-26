@@ -92,7 +92,7 @@ def parse_files_in_list(paths_list: List[str], result_folder: str) -> None:
             parse_files_in_list(nested_paths, result_folder)
 
         elif os.path.isfile(path) and os.path.splitext(path)[1] == ".h":
-            dst = os.path.join(result_folder, os.path.splitext(os.path.relpath(path, sys.argv[1]))[0] + ".yaml")
+            dst = os.path.join(result_folder, f"{os.path.splitext(os.path.relpath(path, sys.argv[1]))[0]}.yaml")
             parse_file(path, dst)
 
         else:
