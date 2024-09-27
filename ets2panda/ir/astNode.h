@@ -87,7 +87,6 @@ public:
     virtual ~AstNode() = default;
 
     AstNode() = delete;
-    NO_COPY_OPERATOR(AstNode);
     NO_MOVE_SEMANTIC(AstNode);
 
     bool IsProgram() const
@@ -518,6 +517,8 @@ protected:
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:
+    AstNode &operator=(const AstNode &) = default;
+
     varbinder::Variable *variable_ {};
     AstNode *originalNode_ = nullptr;
     // {lowering_phase_name, new_generated_node}
