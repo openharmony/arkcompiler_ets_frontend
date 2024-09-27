@@ -12,8 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@interface MyAnno {
+    a:string = "1"
+}
 
-@interface MyAnno {}
-type MA = MyAnno
+class A<T>{
+    a:T
+}
 
-/* @@? 17:11 Error TypeError: Annotations are only implemented at the parse stage.  */
+new A<MyAnno>()
+
+/* @@? 23:7 Error TypeError: Annotations cannot be used as a type.  */

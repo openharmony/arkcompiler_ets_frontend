@@ -12,21 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 @interface MyAnno {
     testProperty1: string
     testProperty2: number
 }
 
-@MyAnno({testProperty1: ""})
-function foo(): void {}
+@MyAnno({testProperty1: 1, testProperty2: ""})
+function foo(){}
 
-@MyAnno()
-class A{
-    @MyAnno({testProperty2: 1})
-    foo2(){}
-}
-
-/* @@? 20:2 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted.  */
-/* @@? 23:2 Error TypeError: The required field 'testProperty2' must be specified. Fields without default values cannot be omitted.  */
-/* @@? 23:2 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted.  */
-/* @@? 25:6 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted.  */
+/* @@? 21:10 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'int', but expected type is 'String'.  */
+/* @@? 21:28 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty2' is of type 'String', but expected type is 'double'.  */

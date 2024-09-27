@@ -331,6 +331,7 @@ private:
 
     bool ValidateForInStatement() override;
     bool ValidAnnotationValue(ir::Expression *initializer);
+
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;

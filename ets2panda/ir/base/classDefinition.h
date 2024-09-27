@@ -395,13 +395,14 @@ public:
     template <typename T>
     static void DumpItems(ir::SrcDumper *dumper, const std::string &prefix, const ArenaVector<T *> &items)
     {
-        if (!items.empty()) {
-            dumper->Add(prefix);
-            for (size_t i = 0; i < items.size(); ++i) {
-                items[i]->Dump(dumper);
-                if (i < items.size() - 1) {
-                    dumper->Add(", ");
-                }
+        if (items.empty()) {
+            return;
+        }
+        dumper->Add(prefix);
+        for (size_t i = 0; i < items.size(); ++i) {
+            items[i]->Dump(dumper);
+            if (i < items.size() - 1) {
+                dumper->Add(", ");
             }
         }
     }

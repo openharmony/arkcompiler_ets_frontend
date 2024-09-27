@@ -277,11 +277,6 @@ void ScopesInitPhase::VisitAnnotationDeclaration(ir::AnnotationDeclaration *anno
 
 void ScopesInitPhase::VisitAnnotationUsage(ir::AnnotationUsage *annoUsage)
 {
-    // Temporary solution to solve the problem of repeated use of annotations on an entity
-    const auto locStart = annoUsage->Ident()->Start();
-    const auto &annoName = annoUsage->Ident()->Name();
-    AddOrGetDecl<varbinder::AnnotationUsage>(VarBinder(), annoName, annoUsage, locStart, annoName, annoUsage);
-
     auto annoCtx = LexicalScopeCreateOrEnter<varbinder::AnnotationParamScope>(VarBinder(), annoUsage);
     auto *curScope = annoCtx.GetScope();
     BindScopeNode(curScope, annoUsage);

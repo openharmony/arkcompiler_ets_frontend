@@ -159,7 +159,7 @@ void ETSChecker::ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const id
 {
     const auto [target_ident, typeAnnotation] = GetTargetIdentifierAndType(ident);
 
-    if ((resolved != nullptr) && resolved->TsType()->IsETSFunctionType()) {
+    if ((resolved != nullptr) && resolved->TsType() != nullptr && resolved->TsType()->IsETSFunctionType()) {
         CheckEtsFunctionType(ident, target_ident);
         return;
     }
@@ -203,6 +203,10 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
 
 void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
 {
+    if (resolved->Declaration()->IsAnnotationDecl() && !ident->IsAnnotationUsage()) {
+        LogTypeError("Annotation missing '@' symbol before annotation name.", ident->Start());
+    }
+
     auto *smartType = Context().GetSmartCast(resolved);
     auto *const resolvedType = GetApparentType(smartType != nullptr ? smartType : GetTypeOfVariable(resolved));
 
@@ -250,6 +254,16 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
             break;
         }
     }
+}
+
+bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
+{
+    if (type->IsETSArrayType()) {
+        return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
+    }
+
+    return MaybePrimitiveBuiltinType(type)->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_BOOLEAN) ||
+           type->IsETSStringType() || type->IsETSBooleanType() || type->IsETSEnumType();
 }
 
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)

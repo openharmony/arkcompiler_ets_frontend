@@ -12,13 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+class OtherType{}
+
 @interface MyAnno {
-    testProperty1: string
-    testProperty2: number
+    testProperty1: OtherType;
+    testProperty2: Array<Int>;
+    testProperty3: [int ,number, string]
 }
 
-@MyAnno
-function foo(): void {}
-
-/* @@? 20:2 Error TypeError:  The required field 'testProperty2' must be specified. Fields without default values cannot be omitted.  */
-/* @@? 20:2 Error TypeError:  The required field 'testProperty1' must be specified. Fields without default values cannot be omitted.  */
+/* @@? 19:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
+/* @@? 20:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
+/* @@? 21:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */

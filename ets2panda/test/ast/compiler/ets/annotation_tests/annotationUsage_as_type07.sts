@@ -12,17 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-class C {}
-
-function alma(x: Object) {
-    return x;
+@interface MyAnno {
+    a:string = "1"
 }
 
-function main(): void {
-    alma(C);
+class A{
+    a:MyAnno
 }
 
-/* @@? 23:10 Error TypeError: Class or interface 'C' cannot be used as object  */
-/* @@? 23:10 Error TypeError: Class name can't be the argument of function or method.  */
-/* @@? 23:5 Error TypeError: No matching call signature for alma(*TYPE_ERROR*)  */
+let tuple:[int, string, MyAnno] = [1, "1", new MyAnno()]
+let union:int|string|MyAnno = 1
+
+/* @@? 23:25 Error TypeError: Annotations cannot be used as a type.  */
+/* @@? 24:22 Error TypeError: Annotations cannot be used as a type.  */
+/* @@? 23:48 Error TypeError: Annotations cannot be used as a type.  */
+/* @@? 20:7 Error TypeError: Annotations cannot be used as a type.  */

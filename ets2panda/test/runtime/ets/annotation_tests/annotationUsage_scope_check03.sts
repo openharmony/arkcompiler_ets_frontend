@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 @interface ClassAuthor {
-    authorName: string
+    authorName: string = "1"
 }
 
 class A{

@@ -1150,8 +1150,9 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         auto *var = id->Variable();
         // We are running this lowering only for ETS files
         // so it is correct to pass ETS extension here to isReference()
-        if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
-            var != nullptr && var->Declaration()->IsFunctionDecl() && !IsInCalleePosition(id)) {
+        if (id->IsReference(ScriptExtension::ETS) && id->TsTypeOrError() != nullptr &&
+            id->TsTypeOrError()->IsETSFunctionType() && var != nullptr && var->Declaration()->IsFunctionDecl() &&
+            !IsInCalleePosition(id)) {
             return ConvertFunctionReference(ctx, id);
         }
     }

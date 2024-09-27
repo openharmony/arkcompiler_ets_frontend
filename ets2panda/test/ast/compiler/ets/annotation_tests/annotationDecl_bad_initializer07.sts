@@ -12,9 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class OtherType {}
 
-@interface MyAnno {
-    testProperty: OtherType
+class A{
+    a:string = ""
+    static b:string = ""
 }
 
+@interface MyAnno {
+    testProperty1: string = new A().a
+    testProperty2: string = A.b
+}
+
+/* @@? 22:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 23:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */

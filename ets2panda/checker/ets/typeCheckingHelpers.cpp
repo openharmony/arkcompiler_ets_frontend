@@ -40,6 +40,7 @@
 #include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
+#include "utils/arena_containers.h"
 #include "varbinder/variable.h"
 #include "varbinder/scope.h"
 #include "varbinder/declaration.h"
@@ -622,6 +623,85 @@ Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *va
     }
 
     return var->TsTypeOrError();
+}
+
+bool ETSChecker::CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations)
+{
+    std::unordered_set<util::StringView> seenAnnotations;
+    for (const auto &anno : annotations) {
+        auto annoName = anno->Ident()->Name();
+        if (seenAnnotations.find(annoName) != seenAnnotations.end()) {
+            LogTypeError({"Duplicate annotations are not allowed. The annotation '", annoName,
+                          "' has already been applied to this element."},
+                         anno->Start());
+            return false;
+        }
+        seenAnnotations.insert(annoName);
+    }
+    return true;
+}
+
+void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
+{
+    // typeAnnotation check
+    if (!ValidateAnnotationPropertyType(property->TsType())) {
+        LogTypeError({"Invalid annotation field type. Only numeric, boolean, string, enum, or "
+                      "arrays of these types are permitted for annotation fields."},
+                     property->Start());
+    }
+
+    // The type of the Initializer has been check in the parser,
+    // except for the enumeration type, because it is a member expression,
+    // so here is an additional check to the enumeration type.
+    if (property->Value() != nullptr && property->Value()->IsMemberExpression() &&
+        !property->TsType()->IsETSEnumType()) {
+        LogTypeError("Invalid value for annotation field, expected a constant literal.", property->Value()->Start());
+    }
+}
+
+void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
+                                               ETSChecker *checker)
+{
+    auto *param = st->Properties().at(0)->AsClassProperty();
+    if (annoDecl->Properties().size() > 1) {
+        checker->LogTypeError({"Annotation '", st->Ident()->Name(), "' requires multiple fields to be specified."},
+                              st->Start());
+    }
+    auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
+    auto ctx = checker::AssignmentContext(checker->Relation(), param->Value(), param->TsType(), singleField->TsType(),
+                                          param->Start(), {}, TypeRelationFlag::NO_THROW);
+    if (!ctx.IsAssignable()) {
+        checker->LogTypeError({"The value provided for annotation '", st->Ident()->Name(), "' field '",
+                               param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
+                               singleField->TsType(), "'."},
+                              param->Start());
+    }
+}
+
+void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
+                                                   ETSChecker *checker,
+                                                   std::unordered_map<util::StringView, ir::ClassProperty *> &fieldMap)
+{
+    for (auto *it : st->Properties()) {
+        auto *param = it->AsClassProperty();
+        auto result = fieldMap.find(param->Id()->Name());
+        if (result == fieldMap.end()) {
+            checker->LogTypeError({"The parameter '", param->Id()->Name(),
+                                   "' does not match any declared property in the annotation '",
+                                   annoDecl->Ident()->Name(), "'."},
+                                  param->Start());
+            continue;
+        }
+        auto ctx = checker::AssignmentContext(checker->Relation(), param->Value(), param->TsType(),
+                                              result->second->TsType(), param->Start(), {}, TypeRelationFlag::NO_THROW);
+        if (!ctx.IsAssignable()) {
+            checker->LogTypeError({"The value provided for annotation '", st->Ident()->Name(), "' field '",
+                                   param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
+                                   result->second->TsType(), "'."},
+                                  param->Start());
+        }
+        fieldMap.erase(result);
+    }
 }
 
 bool ETSChecker::IsTypeBuiltinType(const Type *type) const

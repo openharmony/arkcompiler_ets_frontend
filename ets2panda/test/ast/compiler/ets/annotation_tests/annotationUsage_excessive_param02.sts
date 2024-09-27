@@ -13,16 +13,15 @@
  * limitations under the License.
  */
 
-class C {}
-
-function alma(x: Object) {
-    return x;
+@interface MyAnno {
+    testProperty1: string
 }
 
-function main(): void {
-    alma(C);
+@MyAnno({testProperty1:"", testProperty2: "", testProperty3: "", testProperty4: ""})
+class B{
+    @MyAnno({testProperty1:"", testProperty2: "", testProperty3: ""})
+    foo(){}
 }
 
-/* @@? 23:10 Error TypeError: Class or interface 'C' cannot be used as object  */
-/* @@? 23:10 Error TypeError: Class name can't be the argument of function or method.  */
-/* @@? 23:5 Error TypeError: No matching call signature for alma(*TYPE_ERROR*)  */
+/* @@? 20:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
+/* @@? 22:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */

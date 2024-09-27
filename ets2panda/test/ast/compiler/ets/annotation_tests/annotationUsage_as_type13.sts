@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class MyAnno {
+    a:string = "1"
+}
 
-@interface MyAnno {}
-class A extends MyAnno {}
+@MyAnno()
+class B{}
 
-/* @@? 17:17 Error TypeError: Annotations are only implemented at the parse stage.  */
-/* @@? 17:17 Error TypeError: The super type of 'A' class is not extensible.  */
+/* @@? 20:2 Error TypeError: 'MyAnno' is not an annotation.  */
+

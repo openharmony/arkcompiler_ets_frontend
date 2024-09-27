@@ -13,16 +13,20 @@
  * limitations under the License.
  */
 
-class C {}
-
-function alma(x: Object) {
-    return x;
+class A{
+    a:string = ""
+    static b:string = ""
 }
 
-function main(): void {
-    alma(C);
+@interface MyAnno {
+    testProperty1: string
+    testProperty2: string
 }
 
-/* @@? 23:10 Error TypeError: Class or interface 'C' cannot be used as object  */
-/* @@? 23:10 Error TypeError: Class name can't be the argument of function or method.  */
-/* @@? 23:5 Error TypeError: No matching call signature for alma(*TYPE_ERROR*)  */
+class B{
+    @MyAnno({testProperty1:new A().a, testProperty2: A.b})
+    foo(){}
+}
+
+/* @@? 27:28 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 27:54 Error TypeError: Invalid value for annotation field, expected a constant literal.  */

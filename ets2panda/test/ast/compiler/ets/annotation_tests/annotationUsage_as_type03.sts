@@ -12,9 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@interface MyAnno {
+    a:string = "1"
+}
 
-@interface MyAnno {}
-class A implements MyAnno {}
+function foo<T>(a:T){}
 
-/* @@? 17:20 Error TypeError: Annotations are only implemented at the parse stage.  */
-/* @@? 17:20 Error TypeError: Interface expected here.  */
+let array:Array<MyAnno> = new Array<MyAnno>()
+
+/* @@? 21:17 Error TypeError: Annotations cannot be used as a type.  */
+/* @@? 21:37 Error TypeError: Annotations cannot be used as a type. */

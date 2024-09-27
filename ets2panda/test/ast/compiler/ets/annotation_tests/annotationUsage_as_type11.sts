@@ -12,17 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-class C {}
-
-function alma(x: Object) {
-    return x;
+@interface MyAnno {
+    a:string = "1"
 }
 
-function main(): void {
-    alma(C);
-}
+let a = MyAnno.a
 
-/* @@? 23:10 Error TypeError: Class or interface 'C' cannot be used as object  */
-/* @@? 23:10 Error TypeError: Class name can't be the argument of function or method.  */
-/* @@? 23:5 Error TypeError: No matching call signature for alma(*TYPE_ERROR*)  */
+/* @@? 19:9 Error TypeError: Annotation missing '@' symbol before annotation name.  */
+/* @@? 19:9 Error TypeError: Unresolved reference MyAnno  */
+/* @@? 19:9 Error TypeError: Property 'a' does not exist on type '*TYPE_ERROR*'  */
+/* @@? 19:9 Error TypeError: Annotation missing '@' symbol before annotation name.  */
+/* @@? 19:9 Error TypeError: Unresolved reference MyAnno  */
+/* @@? 19:9 Error TypeError: Property 'a' does not exist on type '*TYPE_ERROR*'  */

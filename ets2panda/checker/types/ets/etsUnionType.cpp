@@ -74,6 +74,9 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
 
     Type *lub = nullptr;
     for (auto *t : un->ConstituentTypes()) {
+        if (t->IsTypeError()) {
+            return checker->GlobalTypeError();
+        }
         ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
         if (t->IsETSNullType() || lub == t) {
             continue;

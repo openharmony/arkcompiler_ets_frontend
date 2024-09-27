@@ -1437,7 +1437,7 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
             break;
         }
         case ir::AstNodeType::ANNOTATION_DECLARATION: {
-            LogTypeError("Annotations are only implemented at the parse stage.", name->Start());
+            LogTypeError("Annotations cannot be used as a type.", name->Start());
             tsType = GlobalTypeError();
             break;
         }

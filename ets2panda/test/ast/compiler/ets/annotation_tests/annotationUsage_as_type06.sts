@@ -12,17 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-class C {}
-
-function alma(x: Object) {
-    return x;
+@interface MyAnno {
+    a:string = "1"
 }
 
-function main(): void {
-    alma(C);
-}
+function foo1(a:MyAnno){}
+function foo2(): MyAnno {}
 
-/* @@? 23:10 Error TypeError: Class or interface 'C' cannot be used as object  */
-/* @@? 23:10 Error TypeError: Class name can't be the argument of function or method.  */
-/* @@? 23:5 Error TypeError: No matching call signature for alma(*TYPE_ERROR*)  */
+foo1(new MyAnno())
+
+/* @@? 20:18 Error TypeError: Annotations cannot be used as a type.  */
+/* @@? 19:17 Error TypeError: Annotations cannot be used as a type.  */
+/* @@? 22:10 Error TypeError: Annotations cannot be used as a type.  */

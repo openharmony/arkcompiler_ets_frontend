@@ -694,7 +694,7 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
 {
     const lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     auto ident = ExpectIdentifier();
-    ident->SetAnnotataionUsage();
+    ident->SetAnnotationUsage();
     auto flags = ir::ModifierFlags::ANNOTATION_USAGE;
     ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
 

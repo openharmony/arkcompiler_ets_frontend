@@ -202,6 +202,8 @@ public:
     void CheckInnerClassMembers(const ETSObjectType *classType);
     void CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus);
     void CheckClassDefinition(ir::ClassDefinition *classDef);
+    void CheckClassAnnotations(ir::ClassDefinition *classDef);
+    void CheckClassMembers(ir::ClassDefinition *classDef);
     void CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType *classType);
     void FindAssignment(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
     void FindAssignments(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
@@ -510,6 +512,14 @@ public:
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
+    bool ValidateAnnotationPropertyType(checker::Type *tsType);
+    bool CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
+    void CheckAnnotationPropertyType(ir::ClassProperty *property);
+    void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
+                                       ETSChecker *checker);
+    void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
+                                           ETSChecker *checker,
+                                           std::unordered_map<util::StringView, ir::ClassProperty *> &fieldMap);
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     bool TestUnionType(Type *type, TypeFlag test);
     std::tuple<Type *, bool> ApplyBinaryOperatorPromotion(Type *left, Type *right, TypeFlag test,
@@ -615,6 +625,7 @@ public:
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
     Type *TryGettingFunctionTypeFromInvokeFunction(Type *type);
+
     ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
                                                    const std::string &className);

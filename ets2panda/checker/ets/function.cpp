@@ -67,6 +67,9 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     if (typeArgument->IsWildcardType()) {
         return true;
     }
+    if (typeArgument->IsTypeError()) {
+        return true;
+    }
     ASSERT(IsReferenceType(typeArgument) || typeArgument->IsETSVoidType());
     auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
     bool retVal = false;
@@ -344,7 +347,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         auto &argument = arguments[index];
 
         if (argument->IsObjectExpression()) {
-            if (substitutedSig->Params()[index]->TsType()->IsETSObjectType()) {
+            if (substitutedSig->Params()[index]->TsTypeOrError()->IsETSObjectType()) {
                 // No chance to check the argument at this point
                 continue;
             }
@@ -353,7 +356,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
 
         if (argument->IsMemberExpression()) {
             SetArrayPreferredTypeForNestedMemberExpressions(arguments[index]->AsMemberExpression(),
-                                                            substitutedSig->Params()[index]->TsType());
+                                                            substitutedSig->Params()[index]->TsTypeOrError());
         } else if (argument->IsSpreadElement()) {
             if (reportError) {
                 LogTypeError("Spread argument cannot be passed for ordinary parameter.", argument->Start());
@@ -401,6 +404,9 @@ bool ETSChecker::CheckInvokable(Signature *substitutedSig, ir::Expression *argum
                                 TypeRelationFlag flags)
 {
     auto *argumentType = argument->Check(this);
+    if (argumentType->IsTypeError()) {
+        return true;
+    }
     auto *targetType = substitutedSig->Params()[index]->TsTypeOrError();
 
     auto const invocationCtx =

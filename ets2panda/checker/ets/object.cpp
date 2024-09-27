@@ -1059,6 +1059,34 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     TransformProperties(classType);
 
+    CheckClassAnnotations(classDef);
+    CheckClassMembers(classDef);
+
+    if (classDef->IsGlobal() || classType->SuperType() == nullptr) {
+        return;
+    }
+
+    CheckConstructors(classDef, classType);
+    CheckValidInheritance(classType, classDef);
+    CheckConstFields(classType);
+    CheckGetterSetterProperties(classType);
+    CheckInvokeMethodsLegitimacy(classType);
+}
+
+void ETSChecker::CheckClassAnnotations(ir::ClassDefinition *classDef)
+{
+    if (!CheckDuplicateAnnotations(classDef->Annotations())) {
+        return;
+    }
+    for (auto *it : classDef->Annotations()) {
+        if (!it->IsClassProperty()) {
+            it->Check(this);
+        }
+    }
+}
+
+void ETSChecker::CheckClassMembers(ir::ClassDefinition *classDef)
+{
     for (auto *it : classDef->Body()) {
         if (it->IsClassProperty()) {
             it->Check(this);
@@ -1070,16 +1098,6 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
             it->Check(this);
         }
     }
-
-    if (classDef->IsGlobal() || classType->SuperType() == nullptr) {
-        return;
-    }
-
-    CheckConstructors(classDef, classType);
-    CheckValidInheritance(classType, classDef);
-    CheckConstFields(classType);
-    CheckGetterSetterProperties(classType);
-    CheckInvokeMethodsLegitimacy(classType);
 }
 
 void ETSChecker::CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType *classType)
