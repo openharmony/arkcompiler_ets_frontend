@@ -12,14 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-class A {
-    fld: Number = 2
+
+
+function foo1 (x : int = 1) : readonly int[] {
+    return [1, 2]
 }
 
-function foo(): void {
-    let a: Readonly<A> = new A();
-    let a_class: A = a;
+function foo2 (x : int = 1) : readonly [int, string] {
+    return [1, "a"]
 }
 
-/* @@? 22:22 Error TypeError: Type 'Readonly<A>' cannot be assigned to type 'A'  */
+let arr = foo1()
+arr[0] = 1
+let tuple = foo2()
+tuple[1] = "c"
+
+/* @@? 26:1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
+/* @@? 28:1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */

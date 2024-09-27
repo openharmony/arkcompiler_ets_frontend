@@ -40,7 +40,13 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
         return GlobalTypeError();
     }
 
-    auto *const bareType = GetUtilityTypeTypeParamNode(typeParams, utilityType)->Check(this);
+    ir::TypeNode *typeParam = GetUtilityTypeTypeParamNode(typeParams, utilityType);
+
+    Type *bareType = typeParam->Check(this);
+
+    if (bareType == nullptr) {
+        bareType = typeParam->GetType(this);
+    }
 
     if (utilityType == compiler::Signatures::PARTIAL_TYPE_NAME) {
         return HandlePartialType(bareType);
@@ -455,6 +461,17 @@ Type *ETSChecker::GetReadonlyType(Type *type)
     }
 
     NamedTypeStackElement ntse(this, type);
+
+    if (type->IsETSArrayType() && !type->IsETSTupleType()) {
+        ETSArrayType *clonedArrayType = Allocator()->New<ETSArrayType>(type->AsETSArrayType()->ElementType());
+        clonedArrayType->AddTypeFlag(TypeFlag::READONLY);
+        return clonedArrayType;
+    }
+    if (type->IsETSTupleType()) {
+        Type *clonedType = type->Clone(this);
+        clonedType->AddTypeFlag(TypeFlag::READONLY);
+        return clonedType;
+    }
 
     if (type->IsETSObjectType()) {
         type->AsETSObjectType()->InstanceFields();

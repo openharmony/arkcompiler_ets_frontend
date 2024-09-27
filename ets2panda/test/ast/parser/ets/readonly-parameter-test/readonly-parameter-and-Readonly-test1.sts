@@ -12,14 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-class A {
-    fld: Number = 2
+
+
+function foo (tuple: Readonly<[number, string, boolean]>, arr: Readonly<int[]>) {
 }
 
-function foo(): void {
-    let a: Readonly<A> = new A();
-    let a_class: A = a;
+function foo (tuple: readonly [number, string, boolean], arr: readonly int[]) {
+
 }
 
-/* @@? 22:22 Error TypeError: Type 'Readonly<A>' cannot be assigned to type 'A'  */
+/* @@? 20:1 Error TypeError: Function foo is already declared. */

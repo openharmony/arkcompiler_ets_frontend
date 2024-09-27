@@ -101,7 +101,13 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 {
     result_ = CacheLookup(source, target, checker_->AssignableResults(), RelationType::ASSIGNABLE);
     if (result_ == RelationResult::CACHE_MISS) {
-        if (IsIdenticalTo(source, target)) {
+        // NOTE: we support assigning T to Readonly<T>, but do not support assigning Readonly<T> to T
+        // more details in spec
+        if (source->HasTypeFlag(TypeFlag::READONLY) && !target->HasTypeFlag(TypeFlag::READONLY)) {
+            result_ = RelationResult::FALSE;
+        }
+
+        if (result_ != RelationResult::FALSE && IsIdenticalTo(source, target)) {
             return true;
         }
 

@@ -321,6 +321,10 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
         return;
     }
 
+    const bool isReadonlyType = HasTypeFlag(TypeFlag::READONLY);
+    if (isReadonlyType) {
+        ss << "Readonly" << compiler::Signatures::GENERIC_BEGIN;
+    }
     const bool isRequiredType = HasObjectFlag(ETSObjectFlags::REQUIRED);
     if (isRequiredType) {
         ss << "Required" << compiler::Signatures::GENERIC_BEGIN;
@@ -345,6 +349,9 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
     }
 
     if (isRequiredType) {
+        ss << compiler::Signatures::GENERIC_END;
+    }
+    if (isReadonlyType) {
         ss << compiler::Signatures::GENERIC_END;
     }
 }
@@ -407,12 +414,8 @@ bool ETSObjectType::CheckIdenticalFlags(ETSObjectType *other) const
 {
     constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::INCOMPLETE_INSTANTIATION |
                                      ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY | ETSObjectFlags::READONLY;
-    // note(lujiahui): we support assigning T to Readonly<T>, but do not support assigning Readonly<T> to T
-    // more details in spec
-    if (!HasObjectFlag(ETSObjectFlags::READONLY) && other->HasObjectFlag(ETSObjectFlags::READONLY)) {
-        return false;
-    }
+                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+
     auto cleanedTargetFlags = other->ObjectFlags();
     cleanedTargetFlags &= ~FLAGS_TO_REMOVE;
 
@@ -429,7 +432,7 @@ bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unuse
 
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
-    if (source->IsETSObjectType() && source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::READONLY)) {
+    if (source->HasTypeFlag(TypeFlag::READONLY)) {
         relation->Result(false);
         return;
     }
@@ -939,7 +942,7 @@ void ETSObjectType::UpdateTypeProperty(checker::ETSChecker *checker, varbinder::
 
 void ETSObjectType::UpdateTypeProperties(checker::ETSChecker *checker, PropertyProcesser const &func)
 {
-    AddObjectFlag(ETSObjectFlags::READONLY);
+    AddTypeFlag(TypeFlag::READONLY);
     for (auto const &prop : InstanceFields()) {
         UpdateTypeProperty(checker, prop.second, PropertyType::INSTANCE_FIELD, func);
     }

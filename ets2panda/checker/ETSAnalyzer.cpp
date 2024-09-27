@@ -791,14 +791,20 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     return expr->TsType();
 }
 
-static bool IsInvalidArrayLengthAssignment(ir::AssignmentExpression *const expr, ETSChecker *checker)
+static bool IsInvalidArrayMemberAssignment(ir::AssignmentExpression *const expr, ETSChecker *checker)
 {
     if (expr->Left()->IsMemberExpression() &&
-        expr->Left()->AsMemberExpression()->Object()->TsType()->IsETSArrayType() &&
-        expr->Left()->AsMemberExpression()->Property()->IsIdentifier() &&
-        expr->Left()->AsMemberExpression()->Property()->AsIdentifier()->Name().Is("length")) {
-        checker->LogTypeError("Setting the length of an array is not permitted", expr->Left()->Start());
-        return true;
+        expr->Left()->AsMemberExpression()->Object()->TsType()->IsETSArrayType()) {
+        auto *const leftExpr = expr->Left()->AsMemberExpression();
+        if (leftExpr->Property()->IsIdentifier() && leftExpr->Property()->AsIdentifier()->Name().Is("length")) {
+            checker->LogTypeError("Setting the length of an array is not permitted", expr->Left()->Start());
+            return true;
+        }
+        if (leftExpr->Object()->TsType()->HasTypeFlag(TypeFlag::READONLY)) {
+            checker->LogTypeError("Cannot modify an array or tuple content that has the readonly parameter",
+                                  expr->Left()->Start());
+            return true;
+        }
     }
     return false;
 }
@@ -841,7 +847,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     ETSChecker *checker = GetETSChecker();
     auto *const leftType = expr->Left()->Check(checker);
 
-    if (IsInvalidArrayLengthAssignment(expr, checker)) {
+    if (IsInvalidArrayMemberAssignment(expr, checker)) {
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsTypeOrError();
     }

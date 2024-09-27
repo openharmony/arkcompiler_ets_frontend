@@ -325,6 +325,7 @@ private:
     ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
     void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
                                lexer::LexerPosition savedPos);
+    ir::TypeNode *ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;
 

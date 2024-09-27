@@ -448,7 +448,7 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     return thisType;
 }
 
-ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
+ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingOptions *options)
 {
     bool const reportError = ((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
 
@@ -492,6 +492,24 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
     }
 
     return typeAnnotation;
+}
+
+ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
+{
+    // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
+        auto startPos = Lexer()->GetToken().Start();
+        Lexer()->NextToken();  // eat 'readonly'
+        ir::TypeNode *typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
+            ThrowSyntaxError("'readonly' type modifier is only permitted on array and tuple types.");
+        }
+        typeAnnotation->SetStart(startPos);
+        typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);
+        return typeAnnotation;
+    }
+
+    return ParseTypeAnnotationNoPreferParam(options);
 }
 
 }  // namespace ark::es2panda::parser

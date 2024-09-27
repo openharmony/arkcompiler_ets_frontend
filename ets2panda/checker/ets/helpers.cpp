@@ -801,20 +801,10 @@ void ETSChecker::CheckAnnotationTypeForVariableDeclaration(checker::Type *annota
         }
     }
 
-    if (isUnionFunction) {
-        if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {},
-                               TypeRelationFlag::NO_THROW)
-                 .IsAssignable()) {
-            LogTypeError({"Type '", sourceType, "' cannot be assigned to type '", annotationType, "'"}, init->Start());
-        }
-    } else {
-        if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {},
-                               TypeRelationFlag::NO_THROW)
-                 .IsAssignable()) {
-            LogTypeError({"Type '", sourceType, "' cannot be assigned to type '",
-                          TryGettingFunctionTypeFromInvokeFunction(annotationType), "'"},
-                         init->Start());
-        }
+    if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {}, TypeRelationFlag::NO_THROW)
+             .IsAssignable()) {
+        Type *targetType = isUnionFunction ? annotationType : TryGettingFunctionTypeFromInvokeFunction(annotationType);
+        LogTypeError({"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"}, init->Start());
     }
 }
 

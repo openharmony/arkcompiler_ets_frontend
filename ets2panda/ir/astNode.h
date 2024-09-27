@@ -288,6 +288,12 @@ public:
         return (flags_ & ModifierFlags::READONLY) != 0;
     }
 
+    // NOTE: For readonly parameter type
+    [[nodiscard]] bool IsReadonlyType() const noexcept
+    {
+        return (flags_ & ModifierFlags::READONLY_PARAMETER) != 0;
+    }
+
     [[nodiscard]] bool IsOptionalDeclaration() const noexcept
     {
         return (flags_ & ModifierFlags::OPTIONAL) != 0;

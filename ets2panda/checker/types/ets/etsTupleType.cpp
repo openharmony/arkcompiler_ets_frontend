@@ -22,6 +22,10 @@
 namespace ark::es2panda::checker {
 void ETSTupleType::ToString(std::stringstream &ss, bool precise) const
 {
+    if (HasTypeFlag(TypeFlag::READONLY)) {
+        ss << "readonly ";
+    }
+
     ss << "[";
 
     for (auto it = typeList_.begin(); it != typeList_.end(); it++) {
@@ -94,6 +98,11 @@ bool ETSTupleType::AssignmentSource(TypeRelation *const relation, Type *const ta
 
 void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const source)
 {
+    if (source->HasTypeFlag(TypeFlag::READONLY)) {
+        relation->Result(false);
+        return;
+    }
+
     if (!(source->IsETSTupleType() || (source->IsETSArrayType() && HasSpreadType()))) {
         return;
     }
@@ -207,8 +216,10 @@ void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                 [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
-    return allocator->New<ETSTupleType>(GetTupleTypesList(),
-                                        ElementType()->Instantiate(allocator, relation, globalTypes), GetSpreadType());
+    auto *tupleType = allocator->New<ETSTupleType>(
+        GetTupleTypesList(), ElementType()->Instantiate(allocator, relation, globalTypes), GetSpreadType());
+    tupleType->typeFlags_ = typeFlags_;
+    return tupleType;
 }
 
 }  // namespace ark::es2panda::checker

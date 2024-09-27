@@ -12,14 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-class A {
-    fld: Number = 2
-}
 
-function foo(): void {
-    let a: Readonly<A> = new A();
-    let a_class: A = a;
-}
 
-/* @@? 22:22 Error TypeError: Type 'Readonly<A>' cannot be assigned to type 'A'  */
+function foo (x: Readonly<[int, string]>) {
+    let y: [int, string] = x
+}
+/* @@? 18:28 Error TypeError: Type 'readonly [Int, String]' cannot be assigned to type '[Int, String]' */
