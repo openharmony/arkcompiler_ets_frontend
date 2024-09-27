@@ -2285,7 +2285,7 @@ def add_directory_for_regression(runners, args):
 
     runners.append(transformer_api_version_10_runner)
 
-def add_directory_for_asm(runners, args, mode = ""):
+def add_directory_for_asm(runners, args, mode=""):
     runner = AbcToAsmRunner(args, True if mode == "debug" else False)
     runner.add_directory("abc2asm/js", "js", [])
     runner.add_directory("abc2asm/ts", "ts", [])
