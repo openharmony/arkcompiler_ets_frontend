@@ -30,3 +30,9 @@ splay
 
 ##18605
 stanford-crypto-sha256
+
+#19071
+mandreel
+
+##19070
+float-mm

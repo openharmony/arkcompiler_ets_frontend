@@ -99,8 +99,12 @@ test262/data/test_es2021/language/identifiers/start-unicode-8.0.0-escaped.js
 test262/data/test_es2021/language/identifiers/start-unicode-8.0.0.js
 test262/data/test_es2021/language/identifiers/start-unicode-9.0.0-escaped.js
 test262/data/test_es2021/language/identifiers/start-unicode-9.0.0.js
-
-
+test262/data/test_es2021/intl402/supportedLocalesOf-unicode-extensions-ignored.js
+test262/data/test_es2021/intl402/NumberFormat/constructor-unit.js
+test262/data/test_es2021/intl402/String/prototype/localeCompare/returns-same-results-as-Collator.js
+test262/data/test_es2021/intl402/supportedLocalesOf-consistent-with-resolvedOptions.js
+test262/data/test_es2021/intl402/NumberFormat/prototype/format/units.js
+test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
 
 #18857
 test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-function-eval-rqstd-abrupt-typeerror.js
@@ -168,3 +172,11 @@ test262/data/test_es2021/built-ins/TypedArray/prototype/set/BigInt/typedarray-ar
 #19352
 test262/data/test_es2021/built-ins/TypedArray/prototype/set/array-arg-negative-integer-offset-throws.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/set/typedarray-arg-negative-integer-offset-throws.js
+
+#18626
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-long-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-narrow-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-short-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-long-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-narrow-en.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-short-en.js
