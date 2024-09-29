@@ -1,14 +1,8 @@
 #19318
 code-load
 
-#18863
-json-parse-inspector
-
 #18745
 json-stringify-inspector
-
-#18740
-splay
 
 #18841
 json-stringify-inspector
@@ -26,9 +20,6 @@ regex-dna
 wsl
 
 #18483
-typescript-compiler
-box2d
-pdfjs
 raytrace
 
 #19243

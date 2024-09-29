@@ -10,23 +10,14 @@ box2d
 #18744
 bignumber_test
 
-#18863
-json-parse-inspector
-
 #18745
 json-stringify-inspector
-
-#18746
-LuaJSFight
 
 #19072
 OfflineAssembler
 
 #19398
 raytrace
-
-#19008
-regex-dna
 
 #18647
 splay
@@ -48,6 +39,3 @@ splay-latency
 
 #18483
 typescript-compiler
-
-#18745
-json-stringify-inspector

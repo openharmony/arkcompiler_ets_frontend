@@ -15,6 +15,9 @@ lodash_test
 #19353
 Matrix_test
 
+#18383
+memory-cache_test 
+
 #18424
 pcx_test
 
@@ -23,9 +26,6 @@ validator_test
 
 #19424
 zxing-text-encoding_test
-
-#18437
-zxing_test
 
 #18383
 memory-cache_test
