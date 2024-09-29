@@ -24,3 +24,6 @@ TestCaseError_Set_Error_union
 TestCaseError_SharedArrayBuffer_Error_grow
 TestCaseError_String_Error_isWellFormed
 TestCaseError_String_Error_toWellFormed
+Object_defineSetter
+Object_defineGetter
+Eval_Eval
