@@ -18,17 +18,3 @@ json-parse-inspector
 
 ##18489
 wsl
-
-##18605
-stanford-crypto-sha256
-string-unpack-code
-threeDRaytrace
-string-validate-input
-takecolor
-uni-poker
-StaticFunc_Call
-string-fasta
-tagcloud
-threeDCube
-test_for
-zlib

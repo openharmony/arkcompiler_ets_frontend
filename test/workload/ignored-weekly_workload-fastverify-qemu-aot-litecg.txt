@@ -28,9 +28,6 @@ wsl
 ##18647
 splay
 
-##18605
-stanford-crypto-sha256
-
 #19071
 mandreel
 
