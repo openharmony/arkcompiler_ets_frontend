@@ -68,8 +68,7 @@ def parse_file(src_path: str, dest_path: str) -> None:
             add_to_custom_yamls("pathsToHeaders", "paths", src_path)
 
         except Exception:  # pylint: disable=W0718
-            with open(dest_path, "w", encoding="utf-8"):
-                pass
+            os.fdopen(os.open(dest_path, os.O_CREAT, mode=511), "w", encoding="utf-8").close()
 
             error_log("Error while parsing '" + src_path + "'\n")
             error_log(traceback.format_exc() + "\n")

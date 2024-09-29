@@ -27,6 +27,7 @@ using ark::es2panda::ir::ETSParameterExpression;
 using ark::es2panda::ir::Identifier;
 using ark::es2panda::ir::MethodDefinitionKind;
 
+namespace {
 TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
 {
     ETSChecker checker {};
@@ -414,3 +415,4 @@ TEST_F(ASTVerifierTest, ValidateAmbientGettersSetters)
 
     impl_->DestroyContext(ctx);
 }
+}  // anonymous namespace

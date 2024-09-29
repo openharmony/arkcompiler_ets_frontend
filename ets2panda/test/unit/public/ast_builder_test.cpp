@@ -100,6 +100,7 @@ using ark::es2panda::ir::VariableDeclarationBuilder;
 using ark::es2panda::ir::VariableDeclaratorBuilder;
 using ark::es2panda::ir::WhileStatementBuilder;
 
+namespace {
 TEST_F(ASTVerifierTest, arrowFunctionExpressionBuild)
 {
     auto left = NumberLiteralBuilder(Allocator()).SetValue("10").Build();
@@ -428,3 +429,4 @@ TEST_F(ASTVerifierTest, multipleImportTest)
     auto classDecl = ClassDeclarationBuilder(Allocator()).SetDefinition(classDef).Build();
     ASSERT_TRUE(classDecl->IsClassDeclaration());
 }
+}  // anonymous namespace
