@@ -441,7 +441,12 @@ ohos_static_library("es2panda_lib") {
       ]
     }
   }
-
+  if (ark_standalone_build) {
+    external_deps += [
+      "protobuf:protobuf_lite_static",
+      "protobuf:protobuf_static",
+    ]
+  }
   cflags = [
     "-Wno-c++20-designator",
     "-Wno-implicit-fallthrough",
@@ -477,6 +482,12 @@ ohos_executable("es2panda") {
   ]
 
   external_deps = [ "zlib:libz" ]
+  if (ark_standalone_build) {
+    external_deps += [
+      "protobuf:protobuf_lite_static",
+      "protobuf:protobuf_static",
+    ]
+  }
 
   ldflags = []
   if (is_linux) {
