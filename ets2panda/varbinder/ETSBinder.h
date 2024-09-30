@@ -78,6 +78,11 @@ public:
         return recordTable_;
     }
 
+    void SetRecordTable(RecordTable *table)
+    {
+        recordTable_ = table;
+    }
+
     RecordTable *GetGlobalRecordTable()
     {
         return &globalRecordTable_;

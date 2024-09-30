@@ -29,6 +29,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "ir/base/scriptFunction.h"
 #include "util/helpers.h"
+#include "evaluate/scopedDebugInfoPlugin.h"
 
 namespace ark::es2panda::checker {
 
@@ -229,7 +230,17 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
         }
     }
 
+    bool isEvalMode = (debugInfoPlugin_ != nullptr);
+    if (UNLIKELY(isEvalMode)) {
+        debugInfoPlugin_->PreCheck();
+    }
+
     CheckProgram(Program(), true);
+
+    if (UNLIKELY(isEvalMode)) {
+        debugInfoPlugin_->PostCheck();
+    }
+
     BuildDynamicImportClass();
 
 #ifndef NDEBUG
@@ -247,6 +258,21 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
     }
 
     return !ErrorLogger()->IsAnyError();
+}
+
+evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin()
+{
+    return debugInfoPlugin_;
+}
+
+const evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin() const
+{
+    return debugInfoPlugin_;
+}
+
+void ETSChecker::SetDebugInfoPlugin(evaluate::ScopedDebugInfoPlugin *debugInfo)
+{
+    debugInfoPlugin_ = debugInfo;
 }
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)

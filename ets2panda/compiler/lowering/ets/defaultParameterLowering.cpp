@@ -270,7 +270,7 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinit
             checker->Allocator()->Adapter());  // will have ETSParameterExpression
         ArenaVector<ir::Expression *> funcCallArgs(checker->Allocator()->Adapter());  // will have ir::Identifier
 
-        // crate funciton/method definition with  less mandatory args than overloaded one
+        // create function/method definition with less mandatory args than overloaded one
         // 1. create copy of found function arguemnts
         // 2. move out of them optional ones (one by one),and each time the one
         // optional is moved out we need to create new overload method with the rest of

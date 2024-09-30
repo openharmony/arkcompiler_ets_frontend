@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -113,6 +113,13 @@ public:
     Scope *GetScope() const
     {
         return scope_;
+    }
+
+    void ResetAllScopes(GlobalScope *topScope, VariableScope *varScope, Scope *scope)
+    {
+        topScope_ = topScope;
+        varScope_ = varScope;
+        scope_ = scope;
     }
 
     void ResetTopScope(GlobalScope *topScope)

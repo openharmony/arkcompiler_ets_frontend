@@ -203,8 +203,10 @@ public:
         return &errorLogger_;
     }
 
-protected:
+    // NOTE: required only for evaluate.
     void Initialize(varbinder::VarBinder *varbinder);
+
+protected:
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);
 

@@ -58,8 +58,11 @@
 #include "mem/arena_allocator.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
+#include "checker/ETSchecker.h"
 #include "checker/types/type.h"
 #include "checker/types/ets/types.h"
+#include "evaluate/scopedDebugInfoPlugin.h"
+#include "public/public.h"
 
 namespace ark::es2panda::varbinder {
 
@@ -135,6 +138,17 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
                 iter = iter->Parent();
             }
         }
+    }
+
+    auto *checker = GetContext()->checker->AsETSChecker();
+    auto *debugInfoPlugin = checker->GetDebugInfoPlugin();
+    if (UNLIKELY(debugInfoPlugin)) {
+        auto *var = debugInfoPlugin->FindClass(ident);
+        if (var != nullptr) {
+            ident->SetVariable(var);
+            return;
+        }
+        // NOTE: search an imported module's name in case of 'import "file" as xxx'.
     }
 
     ThrowUnresolvableType(ident->Start(), name);

@@ -23,6 +23,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
+#include "evaluate/scopedDebugInfoPlugin.h"
 #include "types/ts/undefinedType.h"
 #include "ir/statements/namespaceDeclaration.h"
 
@@ -1902,6 +1903,11 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
             ++idx;
         }
     }
+    if (UNLIKELY(checker->GetDebugInfoPlugin() != nullptr)) {
+        // Compilation in eval-mode might require to create additional statements.
+        // In this case, they must be created after iteration through statements ends.
+        checker->GetDebugInfoPlugin()->AddPrologueEpilogue(st);
+    }
 
     //  Remove possible smart casts for variables declared in inner scope:
     if (auto const *const scope = st->Scope();
@@ -2568,6 +2574,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
         }
         varbinder::Variable *prop =
             baseType->AsETSObjectType()->GetProperty(searchName, checker::PropertySearchFlags::SEARCH_DECL);
+        // NOTE(dslynko): in debugger evaluation mode must lazily generate module's properties here.
 
         if (prop == nullptr) {
             checker->ThrowTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());

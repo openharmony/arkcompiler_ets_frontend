@@ -18,6 +18,10 @@
 
 #include "emitter.h"
 
+namespace ark::es2panda::parser {
+class Program;
+}  // namespace ark::es2panda::parser
+
 namespace ark::es2panda::varbinder {
 class RecordTable;
 }  // namespace ark::es2panda::varbinder

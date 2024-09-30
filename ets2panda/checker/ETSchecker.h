@@ -38,6 +38,10 @@ class RecordTable;
 class FunctionParamScope;
 }  // namespace ark::es2panda::varbinder
 
+namespace ark::es2panda::evaluate {
+class ScopedDebugInfoPlugin;
+}  // namespace ark::es2panda::evaluate
+
 namespace ark::es2panda::checker {
 
 struct Accessor {
@@ -721,6 +725,11 @@ public:
     [[nodiscard]] ir::ScriptFunction *FindFunction(ir::TSEnumDeclaration const *const enumDecl,
                                                    const std::string_view &name);
 
+    evaluate::ScopedDebugInfoPlugin *GetDebugInfoPlugin();
+    const evaluate::ScopedDebugInfoPlugin *GetDebugInfoPlugin() const;
+
+    void SetDebugInfoPlugin(evaluate::ScopedDebugInfoPlugin *debugInfo);
+
     using ClassBuilder = std::function<void(ArenaVector<ir::AstNode *> *)>;
     using ClassInitializerBuilder =
         std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *)>;
@@ -855,6 +864,7 @@ private:
     TypeMapping apparentTypes_;
     std::array<DynamicCallNamesMap, 2U> dynamicCallNames_;
     std::recursive_mutex mtx_;
+    evaluate::ScopedDebugInfoPlugin *debugInfoPlugin_ {nullptr};
 };
 
 }  // namespace ark::es2panda::checker
