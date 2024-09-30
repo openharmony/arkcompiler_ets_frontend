@@ -850,11 +850,11 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
     }
 
     //  In case of Union left-hand type we have to select the proper type from the Union
-    //  NOTE: it always exists at this point!
+    //  Because now we have logging of errors we have to continue analyze incorrect program, for
+    //  this case we change typeError to source type.
     if (targetType->IsETSUnionType()) {
-        sourceType = targetType->AsETSUnionType()->GetAssignableType(this, sourceType);
-        ASSERT(sourceType != nullptr);
-        return sourceType;
+        auto component = targetType->AsETSUnionType()->GetAssignableType(this, sourceType);
+        return component->IsTypeError() ? MaybePromotedBuiltinType(sourceType) : component;
     }
 
     //  If source is reference type, set it as the current and use it for identifier smart cast
