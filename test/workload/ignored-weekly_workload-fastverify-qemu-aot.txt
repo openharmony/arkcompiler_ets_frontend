@@ -9,6 +9,7 @@ json-parse-inspector
 
 #19703
 float-mm
+stanford-crypto-pbkdf2
 
 ##18604
 raytrace
