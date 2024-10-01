@@ -528,6 +528,25 @@ Type *ETSChecker::GlobalTypeError() const
     return GetGlobalTypesHolder()->GlobalTypeError();
 }
 
+Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
+{
+    node->SetTsType(GlobalTypeError());
+    return node->TsTypeOrError();
+}
+
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)
+{
+    LogTypeError(message, at);
+    return InvalidateType(node);
+}
+
+Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at)
+{
+    LogTypeError(message, at);
+    var->SetTsType(GlobalTypeError());
+    return var->TsTypeOrError();
+}
+
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)
 {
     VarBinder()->AsETSBinder()->HandleCustomNodes(callExpr);

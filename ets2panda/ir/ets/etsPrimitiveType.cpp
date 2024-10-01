@@ -134,10 +134,10 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
         case PrimitiveType::VOID: {
             if (LIKELY(checker->CheckVoidAnnotation(this))) {
                 SetTsType(checker->GlobalVoidType());
-            } else {
-                SetTsType(checker->GlobalTypeError());
+                return TsType();
             }
-            return TsTypeOrError();
+
+            return checker->InvalidateType(this);
         }
         default: {
             UNREACHABLE();

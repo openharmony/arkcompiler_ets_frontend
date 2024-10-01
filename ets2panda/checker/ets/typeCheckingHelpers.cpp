@@ -606,9 +606,7 @@ Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable 
     } else if (itemInit->IsStringLiteral()) {  // NOLINT(readability-else-after-return)
         return CreateEnumStringTypeFromEnumDeclaration(enumDecl);
     } else {  // NOLINT(readability-else-after-return)
-        LogTypeError("Invalid enumeration value type.", enumDecl->Start());
-        var->SetTsType(GlobalTypeError());
-        return var->TsTypeOrError();
+        return TypeError(var, "Invalid enumeration value type.", enumDecl->Start());
     }
 }
 
@@ -618,11 +616,10 @@ Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *va
     if ((var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsClassDefinition() ||
          var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsTSInterfaceDeclaration()) &&
         HasStatus(CheckerStatus::IN_STATIC_CONTEXT)) {
-        LogTypeError({"Cannot make a static reference to the non-static type ", var->Name()}, pos);
-        var->SetTsType(GlobalTypeError());
+        return TypeError(var, FormatMsg({"Cannot make a static reference to the non-static type ", var->Name()}), pos);
     }
 
-    return var->TsTypeOrError();
+    return var->TsType();
 }
 
 bool ETSChecker::CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations)

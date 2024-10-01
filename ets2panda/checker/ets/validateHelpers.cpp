@@ -79,8 +79,7 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
             return;
         }
 
-        LogTypeError({"Property ", var->Name(), " is not visible here."}, pos);
-        var->SetTsType(GlobalTypeError());
+        std::ignore = TypeError(var, FormatMsg({"Property ", var->Name(), " is not visible here."}), pos);
     }
 }
 
@@ -89,8 +88,9 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
 {
     if (resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
         ident->Parent()->AsCallExpression()->Callee() != ident) {
-        LogTypeError({"Class or interface '", ident->Name(), "' cannot be used as object"}, ident->Start());
-        ident->Variable()->SetTsType(GlobalTypeError());
+        std::ignore =
+            TypeError(ident->Variable(),
+                      FormatMsg({"Class or interface '", ident->Name(), "' cannot be used as object"}), ident->Start());
     }
 
     if (ident->Parent()->AsCallExpression()->Callee() != ident) {
@@ -99,8 +99,9 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
     if (ident->Variable() != nullptr &&  // It should always be true!
         ident->Variable()->Declaration()->Node() != nullptr &&
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
-        LogTypeError({"Namespace style identifier ", ident->Name(), " is not callable."}, ident->Start());
-        ident->Variable()->SetTsType(GlobalTypeError());
+        std::ignore =
+            TypeError(ident->Variable(), FormatMsg({"Namespace style identifier ", ident->Name(), " is not callable."}),
+                      ident->Start());
     }
     if (type->IsETSFunctionType() || type->IsETSDynamicType() ||
         (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
@@ -120,8 +121,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
         }
     }
 
-    LogTypeError({"This expression is not callable."}, ident->Start());
-    ident->Variable()->SetTsType(GlobalTypeError());
+    std::ignore = TypeError(ident->Variable(), FormatMsg({"This expression is not callable."}), ident->Start());
 }
 
 void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
@@ -192,9 +192,10 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     bool isFinished = false;
     if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Right() == ident) {
         if (!IsReferenceType(type)) {
-            LogTypeError({R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""},
-                         ident->Start());
-            ident->Variable()->SetTsType(GlobalTypeError());
+            std::ignore = TypeError(
+                ident->Variable(),
+                FormatMsg({R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""}),
+                ident->Start());
         }
         isFinished = true;
     }
@@ -276,15 +277,14 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         std::string_view fieldType = variable->Declaration()->IsConstDecl() ? "constant" : "readonly";
         if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
             !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
-            LogTypeError({"Cannot reassign ", fieldType, " ", variable->Name()},
-                         variable->Declaration()->Node()->Start());
-            variable->SetTsType(GlobalTypeError());
+            std::ignore = TypeError(variable, FormatMsg({"Cannot reassign ", fieldType, " ", variable->Name()}),
+                                    variable->Declaration()->Node()->Start());
             return;
         }
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
-            LogTypeError({"Cannot assign to a ", fieldType, " variable ", variable->Name()},
-                         variable->Declaration()->Node()->Start());
-            variable->SetTsType(GlobalTypeError());
+            std::ignore =
+                TypeError(variable, FormatMsg({"Cannot assign to a ", fieldType, " variable ", variable->Name()}),
+                          variable->Declaration()->Node()->Start());
         }
     }
 }

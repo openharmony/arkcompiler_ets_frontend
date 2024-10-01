@@ -1398,9 +1398,7 @@ void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjec
 
 Type *ETSChecker::GetReferencedTypeFromBase([[maybe_unused]] Type *baseType, [[maybe_unused]] ir::Expression *name)
 {
-    LogTypeError("Invalid type reference.", name->Start());
-    name->SetTsType(GlobalTypeError());
-    return name->TsTypeOrError();
+    return TypeError(name, "Invalid type reference.", name->Start());
 }
 
 Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)

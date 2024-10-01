@@ -138,6 +138,10 @@ public:
     const GlobalArraySignatureMap &GlobalArrayTypes() const;
 
     Type *GlobalTypeError() const;
+    [[nodiscard]] Type *InvalidateType(ir::Typed<ir::AstNode> *node);
+    [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, std::string_view message,
+                                  const lexer::SourcePosition &at);
+    [[nodiscard]] Type *TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at);
 
     void InitializeBuiltins(varbinder::ETSBinder *varbinder);
     void InitializeBuiltin(varbinder::Variable *var, const util::StringView &name);

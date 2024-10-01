@@ -19,4 +19,3 @@ let arr : Object[] | null = [new Object(), new A()];
 let elem : Object | undefined = arr[0];
 
 /* @@? 19:33 Error TypeError: Value is possibly nullish.  */
-/* @@? 0:0 Error TypeError:   */
