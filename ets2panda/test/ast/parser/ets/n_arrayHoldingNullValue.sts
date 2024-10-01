@@ -19,3 +19,4 @@ function main(): void {
 }
 
 /* @@? 17:24 Error TypeError: Type 'null' cannot be assigned to type 'float[]'  */
+/* @@? 18:21 Error TypeError: Type 'null' cannot be assigned to type 'char[]'  */

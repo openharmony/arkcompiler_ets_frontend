@@ -22,3 +22,4 @@ class B extends A<Object> {
 }
 
 /* @@? 21:14 Error TypeError: fn(t: int): void in B cannot override fn(t: int): int in A<T> because overriding return type is not compatible with the other return type.  */
+/* @@? 21:14 Error TypeError: Method fn(t: int): void in B not overriding any method  */

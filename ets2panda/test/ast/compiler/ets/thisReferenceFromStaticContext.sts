@@ -22,3 +22,4 @@ class Klass {
 }
 
 /* @@? 18:14 Error TypeError: 'a' is a static property of 'Klass'  */
+/* @@? 18:9 Error TypeError: 'this' cannot be referenced from a static context  */

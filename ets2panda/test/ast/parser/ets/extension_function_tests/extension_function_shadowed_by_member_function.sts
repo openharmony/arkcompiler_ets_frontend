@@ -47,3 +47,4 @@ function A.xxx(id: int) {
 }
 
 /* @@? 43:20 Warning Warning: extension is shadowed by a instance member function 'price(): int' in class B  */
+/* @@? 40:36 Warning Warning: extension is shadowed by a instance member function 'sweetness1(id: String): void' in class B  */

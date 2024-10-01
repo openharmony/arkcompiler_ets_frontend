@@ -22,3 +22,4 @@ function getD(d : double): Int {
 function main(): void { }
 
 /* @@? 17:18 Error TypeError: Type 'Double' is not compatible with the enclosing method's return type 'Int'  */
+/* @@? 19:22 Error TypeError: Type 'Double' is not compatible with the enclosing method's return type 'Int'  */
