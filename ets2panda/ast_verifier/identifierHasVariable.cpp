@@ -13,9 +13,7 @@
  * limitations under the License.
  */
 
-#include "helpers.h"
 #include "identifierHasVariable.h"
-#include "ir/base/scriptFunction.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/typeNode.h"
@@ -48,23 +46,9 @@ CheckResult IdentifierHasVariable::operator()(CheckContext &ctx, const ir::AstNo
 
 bool IdentifierHasVariable::CheckMoreAstExceptions(const ir::Identifier *ast) const
 {
-    // NOTE(kkonkuznetsov): skip async functions
-    auto parent = ast->Parent();
-    while (parent != nullptr) {
-        if (parent->IsScriptFunction()) {
-            auto script = parent->AsScriptFunction();
-            if (script->IsAsyncFunc()) {
-                return true;
-            }
-
-            break;
-        }
-
-        parent = parent->Parent();
-    }
-
     // NOTE(kkonkuznetsov): skip reexport declarations
-    if (ast->Parent() != nullptr && ast->Parent()->Parent() != nullptr) {
+    auto const *parent = ast->Parent();
+    if (parent != nullptr && parent->Parent() != nullptr) {
         parent = ast->Parent()->Parent();
         if (parent->IsETSReExportDeclaration()) {
             return true;

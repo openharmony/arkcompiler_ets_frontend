@@ -19,6 +19,7 @@
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ets/etsTypeReference.h"
+#include "ir/ets/etsNullishTypes.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
@@ -70,9 +71,7 @@ ir::TypeNode *PromiseVoidInferencePhase::CreatePromiseVoidType(checker::ETSCheck
 {
     auto *voidParam = [checker]() {
         auto paramsVector = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
-        auto *voidId = checker->AllocNode<ir::Identifier>(compiler::Signatures::UNDEFINED, checker->Allocator());
-        auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(voidId);
-        paramsVector.push_back(checker->AllocNode<ir::ETSTypeReference>(part));
+        paramsVector.push_back(checker->AllocNode<ir::ETSUndefinedType>());
         auto *params = checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(paramsVector));
         return params;
     }();
@@ -111,20 +110,12 @@ static bool CheckForPromiseVoid(const ir::TypeNode *type)
     }
 
     const auto &param = params.at(0);
-    if (!param->IsETSTypeReference()) {
-        return false;
-    }
-
-    const auto *paramRef = param->AsETSTypeReference();
-    const auto *paramPart = paramRef->Part();
-    if (paramPart->Previous() != nullptr) {
+    if (!param->IsETSUndefinedType()) {
         return false;
     }
 
     const auto isTypePromise = typePart->Name()->AsIdentifier()->Name() == compiler::Signatures::BUILTIN_PROMISE_CLASS;
-    const auto isParamVoid = paramPart->Name()->AsIdentifier()->Name() == compiler::Signatures::UNDEFINED;
-
-    return isTypePromise && isParamVoid;
+    return isTypePromise;
 }
 
 using AstNodePtr = ir::AstNode *;
