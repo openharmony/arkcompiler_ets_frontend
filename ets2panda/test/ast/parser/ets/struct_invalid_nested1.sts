@@ -13,10 +13,16 @@
  * limitations under the License.
  */
 
-/* @@ label */struct A {
+struct A {
     struct B {
         
     }
 }
 
-/* @@@ label Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Illegal start of STRUCT expression  */
+/* @@? 17:12 Error SyntaxError: Field type annotation expected  */
+/* @@? 17:14 Error SyntaxError: Field type annotation expected  */
+/* @@? 17:14 Error SyntaxError: Identifier expected, got '{'.  */
+/* @@? 19:5 Error SyntaxError: Field type annotation expected  */
+/* @@? 20:1 Error SyntaxError: Unexpected token '}'.  */

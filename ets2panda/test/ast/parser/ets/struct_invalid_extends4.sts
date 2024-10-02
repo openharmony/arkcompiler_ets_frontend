@@ -16,8 +16,9 @@
 interface MyInterface {
 }
 
-/* @@ label */struct B extends MyInterface {
+struct B extends MyInterface {
     
 }
 
-/* @@@ label Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 19:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 19:1 Error SyntaxError: Illegal start of STRUCT expression  */

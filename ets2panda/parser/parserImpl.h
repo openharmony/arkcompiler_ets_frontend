@@ -175,12 +175,15 @@ protected:
     [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list) const;
     [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list,
                                        const lexer::SourcePosition &pos) const;
+
+    void LogError(ErrorType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);
     void LogSyntaxError(std::string_view errorMessage);
     void LogSyntaxError(std::initializer_list<std::string_view> list);
     void LogSyntaxError(std::initializer_list<std::string_view> list, const lexer::SourcePosition &pos);
     void LogParameterModifierError(ir::ModifierFlags status);
+    void LogGenericError(std::string_view errorMessage);
 
     template <typename T, typename... Args>
     T *AllocNode(Args &&...args)

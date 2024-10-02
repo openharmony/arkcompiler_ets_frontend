@@ -17,3 +17,5 @@ import { foo, bar } kjfjf 988 from "./import_tests/modules/module"
 
 /* @@? 16:21 Error SyntaxError: Unexpected token, expected: 'from'.  */
 /* @@? 16:27 Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@? 16:31 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 16:36 Error SyntaxError: Unexpected token 'string literal'.  */

@@ -20,6 +20,7 @@
 #include "util/importPathManager.h"
 #include "TypedParser.h"
 #include "ir/base/classDefinition.h"
+#include "ir/module/importDeclaration.h"
 #include <utility>
 
 namespace ark::es2panda::ir {
@@ -265,6 +266,9 @@ private:
     std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> ParseNamedSpecifiers();
     ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
+    ir::ETSImportDeclaration *ParseImportDeclarationHelper(lexer::SourcePosition startLoc,
+                                                           ArenaVector<ir::AstNode *> &specifiers,
+                                                           ir::ImportKinds importKind);
     parser::Program *ParseSource(const SourceFile &sourceFile);
     void AddExternalSource(const std::vector<Program *> &programs);
     ir::ETSScript *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
@@ -311,7 +315,7 @@ private:
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
-    std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
+    std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function);
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
     std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const;
     std::string GetNameForETSUnionType(const ir::TypeNode *typeAnnotation) const;

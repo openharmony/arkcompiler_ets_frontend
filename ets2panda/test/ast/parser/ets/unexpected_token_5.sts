@@ -18,3 +18,4 @@ import * as ~path from 'node:path';
 /* @@? 16:13 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 16:14 Error SyntaxError: Unexpected token, expected: 'from'.  */
 /* @@? 16:19 Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@? 16:24 Error SyntaxError: Unexpected token 'string literal'.  */

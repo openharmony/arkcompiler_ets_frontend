@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-/* @@ label */struct bigint{
+struct bigint{
   a : string = "15";
 }
 
-/* @@@ label Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Illegal start of STRUCT expression  */
+/* @@? 16:8 Error SyntaxError: Cannot be used as user-defined type.  */
