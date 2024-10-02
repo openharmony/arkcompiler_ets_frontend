@@ -17,7 +17,7 @@ set -e
 SCRIPT_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
 usage() {
-    echo "Usage: $0 path/to/panda/build/bin/es2panda path/to/tsproject [PANDA_RUN_PREFIX]"
+    echo "Usage: $0 path/to/panda/build/bin/es2panda path/to/tsproject [PANDA_RUN_PREFIX] panda/root"
 }
 
 ensure_exists() {
@@ -65,5 +65,5 @@ if [ "$RES" -ne 0 ]; then
     echo "diff $(realpath $EXPECTED) $(pwd)/actual.txt"
 fi
 rm "$ACTUAL"
-rm -r "$BUILD"
+rm -r -f "$BUILD"
 exit $RES

@@ -49,6 +49,7 @@ if(PANDA_WITH_ETS)
       "  }\n"
       "}\n"
   )
+  MESSAGE("Generated default arktsconfig to ${GENERATED_DIR}/arktsconfig.json")
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${DEFAULT_ARKTSCONFIG}/")
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin")
 endif()

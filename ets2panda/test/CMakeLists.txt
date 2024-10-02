@@ -41,8 +41,6 @@ function(ets2panda_add_gtest TARGET)
             ${ARGN}
     )
 
-    MESSAGE(${TARGET})
-
     panda_add_gtest(
             NAME ${TARGET}
             SOURCES

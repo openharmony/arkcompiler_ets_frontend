@@ -46,6 +46,7 @@ static bool Check(bool cond, const Ts &...msgs)
 {
     if (!cond) {
         ((std::cerr << "ArkTsConfig error: ") << ... << msgs);
+        std::cerr << '\n';
         return false;
     }
 
@@ -149,20 +150,24 @@ static std::string ResolveConfigLocation(const std::string &relPath, const std::
     return resolvedPath;
 }
 
-bool ArkTsConfig::ParseExtends(const std::string &extends, const std::string &configDir)
+static std::optional<ArkTsConfig> ParseExtends(const std::string &configPath, const std::string &extends,
+                                               const std::string &configDir)
 {
     auto basePath = ResolveConfigLocation(extends, configDir);
     if (!Check(!basePath.empty(), "Can't resolve config path: ", extends)) {
-        return false;
+        return {};
+    }
+
+    if (!Check(basePath != configPath, "Encountered cyclic import in 'extends' field")) {
+        return {};
     }
 
     auto base = ArkTsConfig(basePath);
     if (!Check(base.Parse(), "Failed to parse base config: ", extends)) {
-        return false;
+        return {};
     }
 
-    Inherit(base);
-    return true;
+    return base;
 }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
@@ -270,16 +275,18 @@ template <class Collection, class Function>
 static bool ParseCollection(const JsonObject *config, Collection &out, const std::string &target,
                             Function &&constructor)
 {
-    auto arr = config->GetValue<JsonObject::ArrayT>(target);
-    if (arr != nullptr) {
-        out = {};
-        if (!Check(!arr->empty(), "The '", target, "' list in config file is empty")) {
-            return false;
-        }
+    auto *arr = config->GetValue<JsonObject::ArrayT>(target);
+    if (!Check(arr != nullptr, "'", target, "'", " must be an array")) {
+        return false;
+    }
 
-        for (auto &i : *arr) {
-            out.emplace_back(constructor(*i.Get<JsonObject::StringT>()));
-        }
+    out = {};
+    if (!Check(!arr->empty(), "The '", target, "' list in config file is empty")) {
+        return false;
+    }
+
+    for (auto &i : *arr) {
+        out.emplace_back(constructor(*i.Get<JsonObject::StringT>()));
     }
 
     return true;
@@ -310,15 +317,6 @@ static void ParseRelDir(std::string &dst, const std::string &key, const JsonObje
 
 bool ArkTsConfig::Parse()
 {
-    static const std::string BASE_URL = "baseUrl";
-    static const std::string COMPILER_OPTIONS = "compilerOptions";
-    static const std::string EXCLUDE = "exclude";
-    static const std::string EXTENDS = "extends";
-    static const std::string FILES = "files";
-    static const std::string INCLUDE = "include";
-    static const std::string OUT_DIR = "outDir";
-    static const std::string ROOT_DIR = "rootDir";
-
     ASSERT(!isParsed_);
     isParsed_ = true;
     auto arktsConfigDir = ParentPath(ark::os::GetAbsolutePath(configPath_));
@@ -337,9 +335,16 @@ bool ArkTsConfig::Parse()
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     // Parse "extends"
-    auto extends = arktsConfig->GetValue<JsonObject::StringT>(EXTENDS);
-    if (extends != nullptr && !ParseExtends(*extends, arktsConfigDir)) {
-        return false;
+    if (arktsConfig->HasKey(EXTENDS)) {
+        auto *extends = arktsConfig->GetValue<JsonObject::StringT>(EXTENDS);
+        if (!Check(extends != nullptr, "'", EXTENDS, "'", " must be a string")) {
+            return false;
+        }
+        const auto &base = ParseExtends(configPath_, *extends, arktsConfigDir);
+        if (!base.has_value()) {
+            return false;
+        }
+        Inherit(*base);
     }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
@@ -357,18 +362,22 @@ bool ArkTsConfig::Parse()
 
     // Parse "files"
     auto concatPath = [&arktsConfigDir](const auto &val) { return MakeAbsolute(val, arktsConfigDir); };
-    if (!ParseCollection(arktsConfig.get(), files_, FILES, concatPath)) {
+    if (arktsConfig->HasKey(FILES) && !ParseCollection(arktsConfig.get(), files_, FILES, concatPath)) {
         return false;
     }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     // Parse "include" and "exclude"
     auto consPattern = [&arktsConfigDir](const auto &val) { return Pattern {val, arktsConfigDir}; };
-    return ParseCollection(arktsConfig.get(), include_, INCLUDE, consPattern) &&
-           ParseCollection(arktsConfig.get(), exclude_, EXCLUDE, consPattern);
-#else
-    return true;
+    if (arktsConfig->HasKey(INCLUDE) && !ParseCollection(arktsConfig.get(), include_, INCLUDE, consPattern)) {
+        return false;
+    }
+    if (arktsConfig->HasKey(EXCLUDE) && !ParseCollection(arktsConfig.get(), exclude_, EXCLUDE, consPattern)) {
+        return false;
+    }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
+
+    return true;
 }
 
 void ArkTsConfig::Inherit(const ArkTsConfig &base)

@@ -464,7 +464,6 @@ struct AllArgs {
         PushingEnabledWarnings(compilerOptions);
 
         compilerOptions.compilationMode = compilationMode;
-        compilerOptions.arktsConfig = std::make_shared<ark::es2panda::ArkTsConfig>(arktsConfig.GetValue());
     }
 
 private:
@@ -613,8 +612,8 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     allArgs.InitCompilerOptions(compilerOptions_, compilationMode);
-    // Some additional checks for ETS extension
-    if (!CheckEtsSpecificOptions(compilationMode, allArgs.arktsConfig)) {
+
+    if (!ProcessEtsSpecificOptions(allArgs.arktsConfig.GetValue(), compilationMode)) {
         return false;
     }
 
