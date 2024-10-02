@@ -35,7 +35,26 @@ export class SupportedStdCallApiChecker {
     ['ObjectConstructor', this.stdObjectEntry]
   ]);
 
-  isSupportedStdCallAPI(callExpr: ts.CallExpression, parentSymName: string | undefined, symName: string): boolean {
+  private static getCallExprNode(node: ts.Identifier): ts.CallExpression | undefined {
+    let callExpr: ts.CallExpression | undefined;
+    if (ts.isCallExpression(node.parent)) {
+      callExpr = node.parent;
+    } else if (ts.isPropertyAccessExpression(node.parent) && ts.isCallExpression(node.parent.parent)) {
+      callExpr = node.parent.parent;
+    }
+    return callExpr;
+  }
+
+  isSupportedStdCallAPI(
+    node: ts.Identifier | ts.CallExpression,
+    parentSymName: string | undefined,
+    symName: string
+  ): boolean {
+    const callExpr = ts.isIdentifier(node) ? SupportedStdCallApiChecker.getCallExprNode(node) : node;
+    if (!callExpr) {
+      return false;
+    }
+
     const entry = this.StdCallApi.get(parentSymName);
     if (entry) {
       const stdCallApiCheckCb = entry.get(symName);
