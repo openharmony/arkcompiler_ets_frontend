@@ -1139,34 +1139,32 @@ void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
                      lexer_->GetToken().Start());
 }
 
-ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder(
-    // CC-OFFNXT(G.FMT.06-CPP) project code style
-    [[maybe_unused]] std::optional<NodeFormatType> nodeFormat) const
+ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder([[maybe_unused]] std::optional<NodeFormatType> nodeFormat)
 {
     ThrowSyntaxError("Identifier expected.");
 }
 
-ir::Statement *ParserImpl::ParseStatementFormatPlaceholder() const
+ir::Statement *ParserImpl::ParseStatementFormatPlaceholder()
 {
     ThrowSyntaxError("Statement expected.");
 }
 
-ir::AstNode *ParserImpl::ParseTypeParametersFormatPlaceholder() const
+ir::AstNode *ParserImpl::ParseTypeParametersFormatPlaceholder()
 {
     ThrowSyntaxError("Type parameter(s) expected.");
 }
 
-ArenaVector<ir::Statement *> &ParserImpl::ParseStatementsArrayFormatPlaceholder() const
+ArenaVector<ir::Statement *> &ParserImpl::ParseStatementsArrayFormatPlaceholder()
 {
     ThrowSyntaxError("ArenaVector of ir::Statement *'s expected.");
 }
 
-ArenaVector<ir::AstNode *> &ParserImpl::ParseAstNodesArrayFormatPlaceholder() const
+ArenaVector<ir::AstNode *> &ParserImpl::ParseAstNodesArrayFormatPlaceholder()
 {
     ThrowSyntaxError("ArenaVector of ir::AstNode *'s expected.");
 }
 
-ArenaVector<ir::Expression *> &ParserImpl::ParseExpressionsArrayFormatPlaceholder() const
+ArenaVector<ir::Expression *> &ParserImpl::ParseExpressionsArrayFormatPlaceholder()
 {
     ThrowSyntaxError("ArenaVector of ir::Expression *'s expected.");
 }

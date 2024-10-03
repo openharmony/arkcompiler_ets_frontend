@@ -46,7 +46,7 @@ static constexpr char const INVALID_CLASS_FIELD[] = "Cannot parse class field de
 static constexpr char const INVALID_CLASS_METHOD[] = "Cannot parse class method definition property.";
 // NOLINTEND(modernize-avoid-c-arrays)
 
-ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType() const
+ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT);
     Lexer()->NextToken();
@@ -63,7 +63,8 @@ ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType() const
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cert-err34-c)
     auto identNumber = std::atoi(identData + 1U);
     if (identNumber <= 0) {
-        ThrowSyntaxError(INVALID_NUMBER_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_NUMBER_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     return {isArray, *identData,
@@ -73,12 +74,14 @@ ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType() const
 ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat)) {
-        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     if (auto const placeholderType = std::get<1>(nodeFormat); placeholderType == TYPE_FORMAT_NODE) {
@@ -86,14 +89,16 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
     } else if (placeholderType == IDENTIFIER_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
         return ParseIdentifierFormatPlaceholder(std::make_optional(std::move(nodeFormat)));
     } else if (placeholderType != EXPRESSION_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
-        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto *const insertExpression = insertingNode->AsExpression();
@@ -105,12 +110,14 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
 {
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
-            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+            LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+            UNREACHABLE();
         }
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != TYPE_FORMAT_NODE) {
-            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+            LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+            UNREACHABLE();
         }
     }
 
@@ -118,7 +125,8 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsTypeNode()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto *const insertType = insertingNode->AsExpression()->AsTypeNode();
@@ -126,16 +134,18 @@ ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::No
     return insertType;
 }
 
-ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> nodeFormat) const
+ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> nodeFormat)
 {
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
-            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+            LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+            UNREACHABLE();
         }
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != IDENTIFIER_FORMAT_NODE) {
-            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+            LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+            UNREACHABLE();
         }
     }
 
@@ -143,7 +153,8 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsIdentifier()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto *const insertIdentifier = insertingNode->AsExpression()->AsIdentifier();
@@ -151,110 +162,125 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
     return insertIdentifier;
 }
 
-ir::Statement *ETSParser::ParseStatementFormatPlaceholder() const
+ir::Statement *ETSParser::ParseStatementFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != STATEMENT_FORMAT_NODE) {
-        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsStatement()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     Lexer()->NextToken();
     return insertingNode->AsStatement();
 }
 
-ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder() const
+ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder()
 {
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != EXPRESSION_FORMAT_NODE) {
-        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     if (placeholderNumber >= insertingNodes_.size()) {
-        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto *const insertingNode = insertingNodes_[placeholderNumber];
     if (insertingNode != nullptr && !insertingNode->IsTSTypeParameterDeclaration() &&
         !insertingNode->IsTSTypeParameterInstantiation()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     Lexer()->NextToken();
     return insertingNode;
 }
 
-ArenaVector<ir::AstNode *> &ETSParser::ParseAstNodesArrayFormatPlaceholder() const
+ArenaVector<ir::AstNode *> &ETSParser::ParseAstNodesArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != GENERAL_FORMAT_NODE) {
-        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsTSInterfaceBody()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     Lexer()->NextToken();
     return insertingNode->AsTSInterfaceBody()->Body();
 }
 
-ArenaVector<ir::Statement *> &ETSParser::ParseStatementsArrayFormatPlaceholder() const
+ArenaVector<ir::Statement *> &ETSParser::ParseStatementsArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != STATEMENT_FORMAT_NODE) {
-        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsBlockExpression()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     Lexer()->NextToken();
     return insertingNode->AsBlockExpression()->Statements();
 }
 
-ArenaVector<ir::Expression *> &ETSParser::ParseExpressionsArrayFormatPlaceholder() const
+ArenaVector<ir::Expression *> &ETSParser::ParseExpressionsArrayFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
     if (!std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != EXPRESSION_FORMAT_NODE) {
-        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     auto const placeholderNumber = std::get<2>(nodeFormat);
     auto *const insertingNode =
         placeholderNumber < insertingNodes_.size() ? insertingNodes_[placeholderNumber] : nullptr;
     if (insertingNode == nullptr || !insertingNode->IsSequenceExpression()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        LogSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+        UNREACHABLE();
     }
 
     Lexer()->NextToken();
@@ -328,7 +354,8 @@ ir::AstNode *ETSParser::CreateFormattedClassFieldDefinition(std::string_view sou
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
     if (!property->IsTSInterfaceBody() || property->AsTSInterfaceBody()->Body().empty()) {
-        ThrowSyntaxError(INVALID_CLASS_FIELD);
+        LogSyntaxError(INVALID_CLASS_FIELD);
+        UNREACHABLE();
     }
 
     insertingNodes_.swap(insertingNodes);
@@ -343,7 +370,8 @@ ir::AstNode *ETSParser::CreateFormattedClassMethodDefinition(std::string_view so
 
     auto *const property = CreateClassElement(sourceCode, DUMMY_ARRAY, ir::ClassDefinitionModifiers::NONE);
     if (!property->IsMethodDefinition()) {
-        ThrowSyntaxError(INVALID_CLASS_METHOD);
+        LogSyntaxError(INVALID_CLASS_METHOD);
+        UNREACHABLE();
     }
 
     insertingNodes_.swap(insertingNodes);
@@ -449,7 +477,8 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
     }
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
-        ThrowSyntaxError({"Constructor should not be async."});
+        LogSyntaxError({"Constructor should not be async."});
+        UNREACHABLE();
     }
 
     auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
