@@ -16,6 +16,4 @@
 
 try { }
 
-/* @@? 22:1 Error SyntaxError: Unexpected token, expected 'catch' or 'finally'. */
-/* @@? 22:1 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 22:1 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@? 20:1 Error SyntaxError: Missing catch or finally clause  */

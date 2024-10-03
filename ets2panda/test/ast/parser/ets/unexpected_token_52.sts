@@ -21,4 +21,4 @@ let a = {
 /* @@? 1:1 Node {
     "type": "Program"
 }  */
-/* @@? 17:9 Error SyntaxError: Unexpected token ']'.  */
+/* @@? 17:9 Error SyntaxError: Unexpected token, expected: ']'.  */

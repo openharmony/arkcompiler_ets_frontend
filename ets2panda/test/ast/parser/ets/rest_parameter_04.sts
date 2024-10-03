@@ -18,4 +18,4 @@ function hehe(...items: number[]: void {
 }
 
 /* @@? 16:33 Error SyntaxError: Rest parameter must be the last formal parameter.  */
-/* @@? 16:40 Error SyntaxError: Unexpected token  */
+/* @@? 16:40 Error SyntaxError: Unexpected token '{'.  */

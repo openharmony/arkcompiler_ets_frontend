@@ -19,3 +19,4 @@ const enum Foo {
 }
 
 /* @@? 18:12 Error SyntaxError: Unexpected token in enum member  */
+/* @@? 18:15 Error SyntaxError: Unexpected token in enum member  */

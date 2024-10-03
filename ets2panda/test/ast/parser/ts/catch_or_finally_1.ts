@@ -17,8 +17,9 @@ try {} ss (fgf) {}
 try {} sfsfsf (fgf) {} finally {}
 try {} catch (fgf) {} aaaaaaa {}
 
-/* @@? 16:8 Error SyntaxError: Missing catch or finally clause   */
+/* @@? 16:8 Error SyntaxError: Missing catch or finally clause  */
 /* @@? 16:17 Error SyntaxError: Unexpected token '{'.  */
 /* @@? 17:8 Error SyntaxError: Missing catch or finally clause  */
 /* @@? 17:21 Error SyntaxError: Unexpected token '{'.  */
-/* @@? 17:24 Error SyntaxError: Unexpected token 'finally'.  */
+/* @@? 17:24 Error SyntaxError: Unexpected token: 'finally'.  */
+/* @@? 18:31 Error SyntaxError: Unexpected token '{'.  */

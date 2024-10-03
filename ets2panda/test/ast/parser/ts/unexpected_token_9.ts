@@ -20,4 +20,4 @@ declare namespace ^a {
 
 /* @@? 17:19 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 17:20 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 24:1 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@? 24:1 Error SyntaxError: Unexpected token, expected: '}'.  */

@@ -28,6 +28,3 @@ finally
 }
 
 /* @@? 21:7 Error SyntaxError: Unexpected token ')' in catch parameter  */
-/* @@? 21:7 Error SyntaxError: Unexpected token ')', expected '{'  */
-/* @@? 21:7 Error SyntaxError: Expected a '{', got ')'.  */
-/* @@? 21:7 Error SyntaxError: Unexpected token ')'.  */

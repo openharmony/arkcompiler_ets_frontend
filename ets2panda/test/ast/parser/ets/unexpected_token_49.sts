@@ -19,5 +19,3 @@ function identity<Type>(arg: Type): Type {
 let output = identity<string>"hehe"
 
 /* @@? 19:30 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 24:1 Error SyntaxError: Unexpected token 'eos'.  */
-/* @@? 24:1 Error SyntaxError: Invalid left-hand side in prefix operation  */

@@ -18,3 +18,4 @@ function main(): void {
 }
 
 /* @@? 17:11 Error SyntaxError: Unexpected token ';'.  */
+/* @@? 17:11 Error SyntaxError: Only call expressions are allowed after 'launch'  */

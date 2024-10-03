@@ -18,9 +18,10 @@ type B = short;
 let x: G<A, B> // OK
 let y: G<{a:String}, B> // Error
 
-/* @@? 19:10 Error SyntaxError: Invalid Type */
-/* @@? 19:10 Error SyntaxError: Expected closing '>'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token '{'. */
-/* @@? 19:13 Error SyntaxError: Label must be followed by a loop statement */
-/* @@? 19:20 Error SyntaxError: Unexpected token ','. */
-/* @@? 27:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 19:10 Error SyntaxError: Invalid Type  */
+/* @@? 19:10 Error SyntaxError: Unexpected token, expected: '>'.  */
+/* @@? 19:11 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 19:13 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 19:19 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 19:20 Error SyntaxError: Unexpected token ','.  */
+/* @@? 28:1 Error SyntaxError: Unexpected token 'eos'.  */

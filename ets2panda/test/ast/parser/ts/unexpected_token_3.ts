@@ -16,7 +16,7 @@
 
 function 8274()
 
-/* @@? 17:10 Error Unexpected token, expected identifier after 'function' keyword  */
+/* @@? 17:10 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */

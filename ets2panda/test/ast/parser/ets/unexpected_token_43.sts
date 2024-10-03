@@ -16,4 +16,5 @@
 let v2 = `--- ${y + abc ${y} = ${ n*2 }!`} ---`;
 
 /* @@? 16:25 Error SyntaxError: Unexpected token, expected: '}'.  */
-/* @@? 16:42 Error SyntaxError: Unexpected token: '}'.  */
+/* @@? 16:42 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 21:1 Error SyntaxError: Unterminated string  */

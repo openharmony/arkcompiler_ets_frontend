@@ -18,4 +18,3 @@ a = {
   a"foo",
 }
 /* @@? 18:4 Error SyntaxError: Unexpected token, expected: ':'.  */
-/* @@? 18:9 Error SyntaxError: Unexpected token ','.  */

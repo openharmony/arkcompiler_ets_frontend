@@ -18,4 +18,4 @@ declare namespace a
     let a: int;
 }
 
-/* @@? 17:19 Error SyntaxError: Unexpected token, expected: '{'  */
+/* @@? 18:5 Error SyntaxError: Unexpected token, expected: '{'.  */

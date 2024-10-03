@@ -20,4 +20,6 @@ flags: [module]
 import(import )
 
 /* @@? 20:15 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 24:1 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@? 26:1 Error SyntaxError: Unexpected token: 'eos'.  */
+/* @@? 26:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 26:1 Error SyntaxError: Unexpected token, expected: ')'.  */

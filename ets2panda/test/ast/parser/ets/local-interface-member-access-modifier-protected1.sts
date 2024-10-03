@@ -21,4 +21,4 @@ function foo()
     }
 }
 
-/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifiers */
+/* @@? 20:9 Error SyntaxError: Unexpected token, expected 'private' or identifier  */

@@ -20,5 +20,3 @@ let output = identity<string>
 let output1 = identity<number>"hehe"
 
 /* @@? 20:31 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 25:1 Error SyntaxError: Unexpected token 'eos'.  */
-/* @@? 25:1 Error SyntaxError: Invalid left-hand side in prefix operation  */

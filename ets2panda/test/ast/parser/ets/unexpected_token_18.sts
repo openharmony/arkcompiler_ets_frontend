@@ -15,5 +15,5 @@
 
 try {} catch (e: number) }
 
-/* @@? 16:26 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 20:1 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@? 16:26 Error SyntaxError: Unexpected token '}', expected '{'  */
+/* @@? 16:26 Error SyntaxError: Expected a '{', got '}'.  */

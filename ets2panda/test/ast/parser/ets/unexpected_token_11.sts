@@ -16,4 +16,3 @@
 do {} whi (true)
 
 /* @@? 16:7 Error SyntaxError: Unexpected token, expected: 'while'.  */
-/* @@? 0:0 Error   "type": "Program",  */

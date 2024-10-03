@@ -18,5 +18,3 @@ import * as ~path from 'node:path';
 /* @@? 16:13 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 16:14 Error SyntaxError: Unexpected token, expected: 'from'.  */
 /* @@? 16:19 Error SyntaxError: Unexpected token, expected string literal.  */
-/* @@? 0:0 Error Error: Can't find prefix for 'from' in bin/arktsconfig.json  */
-

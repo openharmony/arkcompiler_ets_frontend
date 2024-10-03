@@ -15,4 +15,4 @@
 
 
 var a: { a new ()}
-/* @@? 17:12 Error SyntaxError: ',' expected  */
+/* @@? 17:12 Error SyntaxError: Unexpected token, expected: ','.  */

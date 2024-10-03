@@ -19,4 +19,5 @@ class Foo {
     constructor?() { };
 }
 
-/* @@? 19:16 Error SyntaxError: Unexpected token, expected: '('  */
+/* @@? 19:5 Error SyntaxError: Classes may not have a field named 'constructor'  */
+/* @@? 19:16 Error SyntaxError: Unexpected token, expected: '('.  */

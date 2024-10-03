@@ -21,6 +21,7 @@ let output1 = identity<number>
 console.log(output("hehehe"))
 console.log(output(4))
 
+// bug with type error is here
 /* @@? 21:20 Error TypeError: Type '"hehehe"' is not compatible with type 'Type' at index 1  */
 /* @@? 21:13 Error TypeError: No matching call signature for invoke0("hehehe")  */
 /* @@? 22:20 Error TypeError: Type 'int' is not compatible with type 'Type' at index 1  */
@@ -28,4 +29,3 @@ console.log(output(4))
 /* @@? 1:1 Node {
     "type": "Program"
 }  */
-// bug with type error is here

@@ -18,4 +18,4 @@ class Foo {
     a b;
 }
 
-/* @@? 18:7 Error SyntaxError: ';' expected.  */
+/* @@? 18:7 Error SyntaxError: Unexpected token, expected: ';'.  */

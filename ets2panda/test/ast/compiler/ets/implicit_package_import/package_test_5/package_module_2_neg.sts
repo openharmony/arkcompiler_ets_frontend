@@ -20,3 +20,21 @@ let wont_exist: number = 8;
 this file will contain parse error, but compilation of 'package_module_1' is not aborted, file is just ignored
 
 /* @@? 20:6 Error SyntaxError: Unexpected token: 'identification literal'. */
+/* @@? 20:6 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:11 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:16 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:24 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:30 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:35 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:35 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:41 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:53 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:56 Error SyntaxError: Unexpected token 'string literal'. */
+/* @@? 20:75 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:78 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:82 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:89 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:89 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:96 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:99 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:104 Error SyntaxError: Unexpected token 'identification literal'. */

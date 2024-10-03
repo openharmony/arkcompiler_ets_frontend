@@ -26,3 +26,4 @@ abstract class A {
 } 
 
 /* @@? 25:14 Error SyntaxError: Annotations cannot be applied to an abstract class or method.  */
+/* @@? 25:14 Error SyntaxError: Annotations are not allowed on an abstract class or methods.  */

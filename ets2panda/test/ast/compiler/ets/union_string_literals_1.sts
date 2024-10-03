@@ -18,4 +18,4 @@ function foo<T extends "abc"| "ff">(a: T) {
     return a
 }
 
-/* @@? 17:9 Error TypeError: Type '"abc"' cannot be assigned to type 'T' */
+/* @@? 17:9 Error TypeError: Type '"abc"' cannot be assigned to type 'T'  */

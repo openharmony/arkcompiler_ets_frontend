@@ -35,4 +35,3 @@ abstract class method_full  {
 /* @@? 23:19 Error TypeError: Function with a non void return type must return a value.  */
 /* @@? 25:18 Error TypeError: Function with a non void return type must return a value.  */
 /* @@? 27:22 Error TypeError: Function with a non void return type must return a value.  */
-
