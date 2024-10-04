@@ -16,4 +16,5 @@
 
 var var1: (is: number | string) => (number | string) is number;
 
-/* @@? 17:54 Error SyntaxError: Unexpected token  */
+/* @@? 17:54 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 17:57 Error SyntaxError: Unexpected token 'identification literal'. */

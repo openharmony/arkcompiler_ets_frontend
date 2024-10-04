@@ -170,15 +170,18 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
     const auto varianceEndLoc = Lexer()->GetToken().End();
     const auto varianceModifier = ParseTypeVarianceModifier(options);
 
-    auto *typeReference = [this, &varianceModifier, options]() -> ir::ETSTypeReference * {
-        if (varianceModifier == ir::ModifierFlags::OUT &&
-            (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_GREATER_THAN ||
-             Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA)) {
-            // unbounded 'out'
+    bool isUnboundOut = varianceModifier == ir::ModifierFlags::OUT &&
+                        (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_GREATER_THAN ||
+                         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA);
+    ir::ETSTypeReference *typeReference = nullptr;
+    if (!isUnboundOut) {
+        auto reference = ParseTypeReference(options);
+        if (reference == nullptr) {  // Error processing.
             return nullptr;
         }
-        return ParseTypeReference(options)->AsETSTypeReference();
-    }();
+
+        typeReference = reference->AsETSTypeReference();
+    }
 
     auto *wildcardType = AllocNode<ir::ETSWildcardType>(typeReference, varianceModifier);
     wildcardType->SetRange({varianceStartLoc, typeReference == nullptr ? varianceEndLoc : typeReference->End()});

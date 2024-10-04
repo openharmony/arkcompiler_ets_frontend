@@ -20,4 +20,4 @@ function foo()
         public method() : void;
     }
 }
-/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifies  */
+/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifiers */

@@ -15,4 +15,5 @@
 
 
 if()
-/* @@? 17:4 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 17:4 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 20:1 Error SyntaxError: Unexpected token: 'eos'. */

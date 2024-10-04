@@ -17,7 +17,9 @@
 a = {
   get a[b](){},
 }
-/* @@? 18:8 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 18:10 Error SyntaxError: Invalid token: ',' or ')' expected.  */
-/* @@? 18:11 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 18:12 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 18:8 Error SyntaxError: Unexpected token, expected: '('. */
+/* @@? 18:10 Error SyntaxError: Invalid token: ',' or ')' expected. */
+/* @@? 18:11 Error SyntaxError: Unexpected token, expected: '{'. */
+/* @@? 18:12 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 18:15 Error SyntaxError: Unexpected token: ','. */
+/* @@? 26:1 Error SyntaxError: Getter must not have formal parameters */

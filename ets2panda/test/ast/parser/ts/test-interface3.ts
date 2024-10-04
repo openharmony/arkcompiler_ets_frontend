@@ -17,4 +17,7 @@
 interface foo extends 5 {
 
 }
-/* @@? 17:23 Error SyntaxError: Identifier expected  */
+/* @@? 17:23 Error SyntaxError: Identifier expected */
+/* @@? 17:23 Error SyntaxError: ',' expected */
+/* @@? 17:23 Error SyntaxError: Unexpected token, expected '{' */
+/* @@? 17:25 Error SyntaxError: Unexpected token in property key */

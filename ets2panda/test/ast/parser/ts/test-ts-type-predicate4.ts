@@ -15,4 +15,4 @@
 
 
 var var1: (is: number | string) => asserts is is number;
-/* @@? 17:50 Error SyntaxError: Unexpected token  */
+/* @@? 17:50 Error SyntaxError: Unexpected token 'identification literal'. */

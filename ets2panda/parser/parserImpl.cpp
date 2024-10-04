@@ -394,7 +394,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         default: {
-            ThrowSyntaxError("Unexpected token in class property");
+            LogSyntaxError("Unexpected token in class property");
         }
     }
 
@@ -622,6 +622,11 @@ ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &pro
     }
 
     ir::Expression *propName = ParseClassKey(&desc);
+    if (propName == nullptr) {  // Error processing.
+        context_.Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
+        return nullptr;
+    }
+
     ValidateClassMethodStart(&desc, nullptr);
     ir::ClassElement *property = ParseClassProperty(&desc, properties, propName, nullptr);
 
@@ -1027,10 +1032,10 @@ void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType) const
     }
 }
 
-void ParserImpl::CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos) const
+void ParserImpl::CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos)
 {
     if (ident.Is("eval") || ident.Is("arguments")) {
-        ThrowSyntaxError(
+        LogSyntaxError(
             "'eval' or 'arguments' can't be defined or assigned to "
             "in strict mode code",
             pos);
@@ -1124,19 +1129,19 @@ void ParserImpl::ValidateArrowParameterBindings(const ir::Expression *node)
             break;
         }
         default: {
-            ThrowSyntaxError("Unexpected ArrowParameter element");
+            LogSyntaxError("Unexpected ArrowParameter element");
         }
     }
 }
 
-void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
+void ParserImpl::LogParameterModifierError(ir::ModifierFlags status)
 {
-    ThrowSyntaxError({"'",
-                      (status & ir::ModifierFlags::STATIC) != 0  ? "static"
-                      : (status & ir::ModifierFlags::ASYNC) != 0 ? "async"
-                                                                 : "declare",
-                      "' modifier cannot appear on a parameter."},
-                     lexer_->GetToken().Start());
+    LogSyntaxError({"'",
+                    (status & ir::ModifierFlags::STATIC) != 0  ? "static"
+                    : (status & ir::ModifierFlags::ASYNC) != 0 ? "async"
+                                                               : "declare",
+                    "' modifier cannot appear on a parameter."},
+                   lexer_->GetToken().Start());
 }
 
 ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder(

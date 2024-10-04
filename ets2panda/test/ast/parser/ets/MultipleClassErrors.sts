@@ -30,4 +30,7 @@ class 77 {}
 class {}
 
 /* @@? 17:5 Error SyntaxError: Identifier expected, got 'function'. */
-/* @@? 17:14 Error SyntaxError: Field type annotation expected */
+/* @@? 21:5 Error SyntaxError: Identifier expected, got 'let'. */
+/* @@? 22:5 Error SyntaxError: Identifier expected, got 'let'. */
+/* @@? 28:7 Error SyntaxError: Identifier expected, got 'number literal'. */
+/* @@? 30:7 Error SyntaxError: Identifier expected, got '{'. */

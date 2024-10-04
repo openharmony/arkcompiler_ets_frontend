@@ -16,4 +16,4 @@
 
 fa`${}`
 
-/* @@? 17:6 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 17:6 Error SyntaxError: Unexpected token: '}'. */

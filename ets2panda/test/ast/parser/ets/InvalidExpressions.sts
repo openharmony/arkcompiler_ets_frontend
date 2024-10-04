@@ -70,10 +70,10 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 30:8 Error SyntaxError: Invalid left-hand side in assignment expression */
 /* @@? 33:27 Error SyntaxError: Rest parameter cannot have the default value. */
 /* @@? 33:29 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 33:29 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 33:41 Error SyntaxError: Not enable default value with default undefined */
 /* @@? 35:10 Error SyntaxError: Unexpected token ':'. */
 /* @@? 35:10 Error SyntaxError: Unexpected token, expected ')' */
+/* @@? 35:10 Error SyntaxError: Unexpected token ':'. */
 /* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? 35:16 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 35:21 Error SyntaxError: return keyword should be used in function body */
@@ -89,5 +89,4 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 55:24 Error SyntaxError: Unexpected token: '@@'. */
 /* @@? 55:24 Error SyntaxError: Invalid token: comma or right parenthesis expected. */
 /* @@? 55:24 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 55:24 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 57:26 Error SyntaxError: Default value is allowed only for optional parameters */

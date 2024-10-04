@@ -17,4 +17,3 @@
 [a;
 
 /* @@? 17:3 Error SyntaxError: Unexpected token, expected ',' or ']'  */
-/* @@? 21:1 Error SyntaxError: Unexpected token 'eos'.  */

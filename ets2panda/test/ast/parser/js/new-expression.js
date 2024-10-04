@@ -15,4 +15,4 @@
 
 
 new a(){};
-/* @@? 17:8 Error SyntaxError: Unexpected token  */
+/* @@? 17:8 Error SyntaxError: Unexpected token '{'. */

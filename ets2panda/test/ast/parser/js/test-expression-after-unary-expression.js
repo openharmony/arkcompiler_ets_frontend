@@ -15,4 +15,4 @@
 
 
 ~a b
-/* @@? 17:4 Error SyntaxError: Unexpected token  */
+/* @@? 17:4 Error SyntaxError: Unexpected token 'identification literal'. */

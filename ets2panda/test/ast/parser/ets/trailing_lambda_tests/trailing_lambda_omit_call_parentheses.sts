@@ -23,4 +23,4 @@ function main() {
     }
 }
 
-/* @@? 21:7 Error SyntaxError: Unexpected token  */
+/* @@? 21:7 Error SyntaxError: Unexpected token '{'. */

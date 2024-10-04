@@ -15,4 +15,5 @@
 
 
 interface 5 { }
-/* @@? 17:11 Error SyntaxError: Identifier expected.  */
+/* @@? 17:11 Error SyntaxError: Identifier expected, got 'number literal'. */
+/* @@? 17:13 Error SyntaxError: Unexpected token '{'. */

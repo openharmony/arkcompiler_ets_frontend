@@ -800,7 +800,8 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
             [[fallthrough]];
         }
         default: {
-            ThrowUnexpectedToken(Lexer()->GetToken().Type());
+            LogUnexpectedToken(Lexer()->GetToken().Type());
+            return nullptr;
         }
     }
 }
@@ -1251,6 +1252,9 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
     Lexer()->NextToken();
 
     ir::Expression *name = ParseQualifiedName();
+    if (name == nullptr) {  // Error processing.
+        return nullptr;
+    }
 
     auto *packageDeclaration = AllocNode<ir::ETSPackageDeclaration>(name);
     packageDeclaration->SetRange({startLoc, Lexer()->GetToken().End()});

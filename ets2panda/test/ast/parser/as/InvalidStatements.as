@@ -23,6 +23,8 @@ export {
     77
 }
 
+function s() {}
+
 /* @@? 17:5 Error SyntaxError: 'import' and 'export' may only appear at the top level */
 /* @@? 17:5 Error SyntaxError: 'import' and 'export' may appear only with 'sourceType: module' */
 /* @@? 17:14 Error SyntaxError: Unexpected token '{', expected 'from'. */

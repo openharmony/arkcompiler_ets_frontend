@@ -15,4 +15,4 @@
 
 
 a++ ++b;
-/* @@? 17:5 Error SyntaxError: Unexpected token  */
+/* @@? 17:5 Error SyntaxError: Unexpected token '++'. */

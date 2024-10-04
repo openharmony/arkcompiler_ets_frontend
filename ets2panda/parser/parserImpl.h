@@ -137,6 +137,8 @@ protected:
     void ValidateArrowParameterBindings(const ir::Expression *node);
     ir::Identifier *ParseNamedExport(lexer::Token *exportedToken);
     virtual void ParseTrailingBlock([[maybe_unused]] ir::CallExpression *callExpr) {}
+    ir::Expression *CreateBinaryAssignmentExpression(ir::Expression *assignmentExpression,
+                                                     ir::Expression *lhsExpression, lexer::TokenType tokenType);
 
     // StatementParser.Cpp
 
@@ -159,6 +161,8 @@ protected:
     ir::CatchClause *ParseCatchClause();
     ir::VariableDeclaration *ParseContextualLet(VariableParsingFlags flags,
                                                 StatementParsingFlags stmFlags = StatementParsingFlags::ALLOW_LEXICAL);
+    ir::Statement *CreateForStatement(struct ForStatementNodes &&nodes, ForStatementKind forKind,
+                                      const lexer::SourcePosition &startLoc, bool isAwait);
 
     friend class Lexer;
     friend class SavedParserContext;
@@ -167,7 +171,6 @@ protected:
     friend class ETSNolintParser;
     friend class lexer::RegExpParser;
 
-    [[noreturn]] void ThrowParameterModifierError(ir::ModifierFlags status) const;
     [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;
     [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage) const;
     [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list) const;
@@ -178,6 +181,7 @@ protected:
     void LogSyntaxError(std::string_view errorMessage);
     void LogSyntaxError(std::initializer_list<std::string_view> list);
     void LogSyntaxError(std::initializer_list<std::string_view> list, const lexer::SourcePosition &pos);
+    void LogParameterModifierError(ir::ModifierFlags status);
 
     template <typename T, typename... Args>
     T *AllocNode(Args &&...args)
@@ -308,7 +312,7 @@ protected:
     void ValidateDeclaratorId();
     void CheckRestrictedBinding() const;
     void CheckRestrictedBinding(lexer::TokenType keywordType) const;
-    void CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos) const;
+    void CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos);
 
     ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags);
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous = false,
@@ -344,7 +348,8 @@ protected:
         [[maybe_unused]] ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::ObjectExpression *ParseObjectExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
-    void ParseArrayExpressionRightBracketHelper();
+    bool ParseArrayExpressionRightBracketHelper(bool containsRest, bool trailingComma,
+                                                const lexer::SourcePosition &startLoc);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::ArrayExpression *ParseArrayExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     void ParseArrayExpressionErrorCheck(ir::ArrayExpression *arrayExpressionNode, ExpressionParseFlags flags,
