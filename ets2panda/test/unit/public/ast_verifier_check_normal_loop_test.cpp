@@ -29,63 +29,46 @@ struct TestData {
 };
 
 // NOLINTNEXTLINE(fuchsia-multiple-inheritance)
-class InfiniteLoopTests : public ASTVerifierTest, public testing::WithParamInterface<TestData> {};
+class NormalLoopTests : public ASTVerifierTest, public testing::WithParamInterface<TestData> {};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(,
-    InfiniteLoopTests,
+    NormalLoopTests,
     testing::Values(
         TestData {
             R"(
-                function main () {
-                    while (true) {}
+                function main() {
+                    let counter = 0;
+                    while (counter < 10) {
+                        counter = counter + 1;
+                    }
                 }
             )",
         },
         TestData {
             R"(
-                function main () {
-                    while (2 > 1) {}
-                }
-            )",
-        },
-        TestData {
-            R"(
-                function main () {
+                function main() {
+                    let counter = 0;
                     do {
-                    } while (true)
+                        counter = counter + 1
+                    } while (counter < 10)
                 }
             )",
         },
         TestData {
             R"(
-                function main () {
-                    do {
-                    } while (2 > 1)
-                }
-            )",
-        },
-        TestData {
-            R"(
-                function main () {
-                    for (;;) {}
-                }
-            )",
-        },
-        TestData {
-            R"(
-                function main () {
-                    for (; 2 > 1;) {}
+                function main() {
+                    for (let i = 0; i < 10; ++i) {}
                 }
             )",
         }));
 // clang-format on
 
-TEST_P(InfiniteLoopTests, InfiniteLoop)
+TEST_P(NormalLoopTests, NormalLoop)
 {
     ASTVerifier verifier {Allocator()};
-    TestData data = GetParam();
 
+    TestData data = GetParam();
     char const *text = data.program;
 
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
@@ -98,9 +81,8 @@ TEST_P(InfiniteLoopTests, InfiniteLoop)
     checks.insert("CheckInfiniteLoopForAll");
     const auto &messages = verifier.Verify(ast, checks);
 
-    // Expecting warning
-    ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Cause(), "INFINITE LOOP");
+    // Expecting no warnings
+    ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
 }

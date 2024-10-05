@@ -71,12 +71,20 @@ ets2panda_add_gtest(ast_verifier_check_infinite_loop_test
     CPP_SOURCES ast_verifier_check_infinite_loop_test.cpp
 )
 
+ets2panda_add_gtest(ast_verifier_check_normal_loop_test
+    CPP_SOURCES ast_verifier_check_normal_loop_test.cpp
+)
+
 ets2panda_add_gtest(ast_verifier_check_abstract_call_test
     CPP_SOURCES ast_verifier_check_abstract_call_test.cpp
 )
 
 ets2panda_add_gtest(ast_verifier_getter_setter_test
     CPP_SOURCES ast_verifier_getter_setter_test.cpp
+)
+
+ets2panda_add_gtest(ast_verifier_getter_setter_neg_test
+    CPP_SOURCES ast_verifier_getter_setter_neg_test.cpp
 )
 
 panda_add_library(e2p_test_plugin SHARED e2p_test_plugin.c)
