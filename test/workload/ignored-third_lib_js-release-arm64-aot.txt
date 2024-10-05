@@ -11,9 +11,3 @@ jsDiff_test
 
 # Issue #18383
 memory-cache_test
-
-# Issue #19130
-pako_test
-
-# Issue #19073
-zxing_test

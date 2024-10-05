@@ -23,7 +23,4 @@ TestCaseError_Set_Error_intersection
 TestCaseError_Set_Error_difference
 Eval_Eval
 TestCaseError_Intl.PluralRules_Error_selectRange
-AsyncFromSyncIterator_next
-AsyncFromSyncIterator_throw
-AsyncFromSyncIterator_return
 Object_defineSetter

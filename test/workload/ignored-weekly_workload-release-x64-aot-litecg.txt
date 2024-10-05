@@ -1,16 +1,1 @@
 # Known failures list for weekly workload - release-x64-aot-litecg
-
-# Issue #19083
-air
-
-# Issue #18417
-box2d
-
-# Issue #19297
-earley-boyer
-
-# Issue #18483
-typescript-compiler
-
-# Issue #19398
-raytrace

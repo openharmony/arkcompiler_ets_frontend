@@ -1,25 +1,3 @@
 # Known failures list for third_lib_js - release-x64-aot
-
-#18350
-jsbn_test
-
-#19247
-jsDiff_test
-
-#18383
-memory-cache_test
-
-#19551
-jmespath_test
-
-#19284
-mathjs_test
-
-#19251
-pdfview_test
-
-zxing_test
-
 #19231
 jBox2d_test
-

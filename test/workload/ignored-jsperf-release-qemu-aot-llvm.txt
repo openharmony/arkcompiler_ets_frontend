@@ -23,14 +23,7 @@ TestCaseError_InternalError_Error_InternalError
 TestCaseError_Set_Error_symmetricDifference
 Object_defineGetter
 Eval_Eval
-AsyncFromSyncIterator_next
-AsyncFromSyncIterator_return
-AsyncFromSyncIterator_throw
 Proxy.handler_applyProxy
-String_substring
-Array_join
-String_length
-String_repeat
 # --- end of Issue #18851
 
 #19077

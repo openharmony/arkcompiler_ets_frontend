@@ -1,10 +1,1 @@
 # Known failures list for third_lib_js - release-arm64-int
-
-#19285
-crypto-js_test
-
-#19247
-jsDiff_test
-
-#19703
-jBox2d_test
