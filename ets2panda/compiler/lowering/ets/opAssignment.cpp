@@ -203,6 +203,8 @@ ir::AstNode *HandleOpAssignment(public_lib::Context *ctx, ir::AssignmentExpressi
     auto *loweringResult = ConstructOpAssignmentResult(ctx, assignment);
 
     loweringResult->SetParent(assignment->Parent());
+    // NOTE(dslynko, #19200): required for correct debug-info
+    loweringResult->SetRange(assignment->Range());
 
     auto *const scope = NearestScope(assignment);
 
@@ -301,6 +303,8 @@ static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression 
     checker::ScopeContext sc {checker, scope};
 
     loweringResult->SetParent(upd->Parent());
+    // NOTE(dslynko, #19200): required for correct debug-info
+    loweringResult->SetRange(upd->Range());
     InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->checker->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(loweringResult,

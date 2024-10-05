@@ -40,6 +40,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
     auto *const loweringResult = parser->CreateFormattedExpression(
         CALL_EXPRESSION, memberExpression->Object(), memberExpression->Property(), assignmentExpression->Right());
     loweringResult->SetParent(assignmentExpression->Parent());
+    loweringResult->SetRange(assignmentExpression->Range());
 
     loweringResult->Check(checker);
     return loweringResult;
@@ -57,6 +58,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
     auto *const loweringResult =
         parser->CreateFormattedExpression(CALL_EXPRESSION, memberExpression->Object(), memberExpression->Property());
     loweringResult->SetParent(memberExpression->Parent());
+    loweringResult->SetRange(memberExpression->Range());
 
     loweringResult->Check(checker);
     loweringResult->SetBoxingUnboxingFlags(memberExpression->GetBoxingUnboxingFlags());
