@@ -67,3 +67,7 @@ export class TestClassC {
 export class TestClassD {
   public ccc: string = '';
 }
+
+
+export declare function foo_lib(p1: number, p2: string): undefined;
+export declare function foo_lib(p1: string, p2: number): undefined;
