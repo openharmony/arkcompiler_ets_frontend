@@ -291,6 +291,10 @@ struct AllArgs {
         "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list"};
     ark::PandArg<std::string> dumpEtsSrcAfterPhases {
         "dump-ets-src-after-phases", "", "Generate program dump as ets source code after running phases in the list"};
+    ark::PandArg<std::string> exitBeforePhase {"exit-before-phase", "",
+                                               "Exit compilation before running the provided phase"};
+    ark::PandArg<std::string> exitAfterPhase {"exit-after-phase", "",
+                                              "Exit compilation after running the provided phase"};
     ark::PandArg<std::string> dumpAfterPhases {"dump-after-phases", "",
                                                "Generate program dump after running phases in the list"};
     ark::PandArg<bool> opListPhases {"list-phases", false, "Dump list of available phases"};
@@ -380,8 +384,10 @@ struct AllArgs {
         argparser.Add(&verifierErrors);
         argparser.Add(&dumpBeforePhases);
         argparser.Add(&dumpEtsSrcBeforePhases);
+        argparser.Add(&exitBeforePhase);
         argparser.Add(&dumpAfterPhases);
         argparser.Add(&dumpEtsSrcAfterPhases);
+        argparser.Add(&exitAfterPhase);
         argparser.Add(&opListPhases);
         argparser.Add(&arktsConfig);
 
@@ -426,8 +432,10 @@ struct AllArgs {
         compilerOptions.verifierErrors = SplitToStringSet(verifierErrors.GetValue());
         compilerOptions.dumpBeforePhases = SplitToStringSet(dumpBeforePhases.GetValue());
         compilerOptions.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
+        compilerOptions.exitBeforePhase = exitBeforePhase.GetValue();
         compilerOptions.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
         compilerOptions.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
+        compilerOptions.exitAfterPhase = exitAfterPhase.GetValue();
 
         // ETS-Warnings
         compilerOptions.etsSubsetWarnings = opEtsSubsetWarnings.GetValue();

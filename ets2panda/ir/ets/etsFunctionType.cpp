@@ -67,6 +67,13 @@ void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
         dumper->Add("=> ");
         ReturnType()->Dump(dumper);
     }
+
+    if (IsThrowing()) {
+        dumper->Add(" throws");
+    } else if (IsRethrowing()) {
+        dumper->Add(" rethrows");
+    }
+
     dumper->Add(")");
 }
 

@@ -99,10 +99,15 @@ static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
 
-static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
-                                    const std::string &name);
-static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
-                                   const std::string &name);
+enum class ActionAfterCheckPhase {
+    NONE,
+    EXIT,
+};
+
+static ActionAfterCheckPhase CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
+                                                     const std::string &name);
+static ActionAfterCheckPhase CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
+                                                    const std::string &name);
 
 std::vector<Phase *> GetETSPhaseList()
 {
@@ -197,7 +202,9 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return true;
     }
 
-    CheckOptionsBeforePhase(options, program, name);
+    if (CheckOptionsBeforePhase(options, program, name) == ActionAfterCheckPhase::EXIT) {
+        return false;
+    }
 
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
@@ -211,7 +218,9 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return false;
     }
 
-    CheckOptionsAfterPhase(options, program, name);
+    if (CheckOptionsAfterPhase(options, program, name) == ActionAfterCheckPhase::EXIT) {
+        return false;
+    }
 
 #ifndef NDEBUG
     if (!Postcondition(ctx, program)) {
@@ -224,8 +233,8 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     return !ctx->checker->ErrorLogger()->IsAnyError() && !ctx->parser->ErrorLogger()->IsAnyError();
 }
 
-static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
-                                    const std::string &name)
+static ActionAfterCheckPhase CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
+                                                     const std::string &name)
 {
     if (options.dumpBeforePhases.count(name) > 0) {
         std::cout << "Before phase " << name << ":" << std::endl;
@@ -237,10 +246,16 @@ static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }
+
+    if (options.exitBeforePhase == name) {
+        return ActionAfterCheckPhase::EXIT;
+    }
+
+    return ActionAfterCheckPhase::NONE;
 }
 
-static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
-                                   const std::string &name)
+static ActionAfterCheckPhase CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
+                                                    const std::string &name)
 {
     if (options.dumpAfterPhases.count(name) > 0) {
         std::cout << "After phase " << name << ":" << std::endl;
@@ -252,6 +267,12 @@ static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser:
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }
+
+    if (options.exitAfterPhase == name) {
+        return ActionAfterCheckPhase::EXIT;
+    }
+
+    return ActionAfterCheckPhase::NONE;
 }
 
 }  // namespace ark::es2panda::compiler

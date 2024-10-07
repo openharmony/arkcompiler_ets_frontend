@@ -189,6 +189,8 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
 
     if (IsThrowing()) {
         dumper->Add(" throws");
+    } else if (IsRethrowing()) {
+        dumper->Add(" rethrows");
     }
 
     if (HasBody()) {

@@ -129,8 +129,10 @@ struct CompilerOptions {
     std::unordered_set<std::string> verifierErrors {};
     std::unordered_set<std::string> dumpBeforePhases {};
     std::unordered_set<std::string> dumpEtsSrcBeforePhases {};
+    std::string exitBeforePhase {};
     std::unordered_set<std::string> dumpAfterPhases {};
     std::unordered_set<std::string> dumpEtsSrcAfterPhases {};
+    std::string exitAfterPhase {};
     std::shared_ptr<ArkTsConfig> arktsConfig {};
     CompilationMode compilationMode {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
