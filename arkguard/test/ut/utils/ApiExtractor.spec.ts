@@ -325,8 +325,8 @@ describe('test for ApiExtractor', function () {
             mkeepFilesAndDependencies: new Set(["test/ut/utils/module_exports_test/exportFile3.js"]),
           }
         }, true);
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties == undefined ? [] : projectAndLibs.projectAndLibsReservedProperties;
-      let reservedExportNames = projectAndLibs.libExportNames == undefined ? [] : projectAndLibs.libExportNames;
+      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties == undefined? [] : projectAndLibs.projectAndLibsReservedProperties;
+      let reservedExportNames = projectAndLibs.libExportNames == undefined? [] : projectAndLibs.libExportNames;
       assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment1'), false);
       assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment2'), false);
       assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment3'), false);
@@ -420,8 +420,8 @@ describe('test for ApiExtractor', function () {
             mkeepFilesAndDependencies: new Set(["test/ut/utils/module_exports_test/exportFile3.js"]),
           }
         }, true);
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties == undefined ? [] : projectAndLibs.projectAndLibsReservedProperties;
-      let reservedExportNames = projectAndLibs.libExportNames == undefined ? [] : projectAndLibs.libExportNames;
+      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties == undefined? [] : projectAndLibs.projectAndLibsReservedProperties;
+      let reservedExportNames = projectAndLibs.libExportNames == undefined? [] : projectAndLibs.libExportNames;
       assert.strictEqual(reservedProperties.includes('projectPropertyAssignment1'), false);
       assert.strictEqual(reservedProperties.includes('projectPropertyAssignment2'), false);
       assert.strictEqual(reservedProperties.includes('projectPropertyAssignment3'), false);
