@@ -247,7 +247,7 @@ export class NodeUtils {
       const localSym = localSyms[i];
       // `localSym` named "Ability" has property `exportSymbol` named "default" that we find by `getSymbolAtLocation`,
       // So the `localSym` is what we want to obfuscate.
-      if (localSym && localSym.name === node.escapedText && localSym.exportSymbol === sym) {
+      if (localSym && localSym.name === node.text && localSym.exportSymbol === sym) {
         sym = localSym;
         break;
       }

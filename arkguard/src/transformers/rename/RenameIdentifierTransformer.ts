@@ -585,7 +585,7 @@ namespace secharmony {
 
         let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
         let mangledPropertyNameOfNoSymbolImportExport = '';
-        if ((!sym)) {
+        if (!sym) {
           if (exportObfuscation && noSymbolIdentifier.has(node.text) && trySearchImportExportSpecifier(node)) {
             mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(node.text);
           } else {
