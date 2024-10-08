@@ -710,3 +710,4 @@
   }
 }
 TypeError: Call to `foo` is ambiguous  [functions_with_ambiguous_rest_parameter.sts:25:5]
+TypeError: Reference to foo is ambiguous [functions_with_ambiguous_rest_parameter.sts:25:5]

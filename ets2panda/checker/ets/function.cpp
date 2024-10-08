@@ -922,7 +922,8 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
         if (signatures.size() > 1 && std::any_of(signatures.begin(), signatures.end(), [signatures](const auto *param) {
                 return param->RestVar()->TsType() != signatures.front()->RestVar()->TsType();
             })) {
-            ThrowTypeError({"Call to `", signatures.front()->Function()->Id()->Name(), "` is ambiguous "}, pos);
+            LogTypeError({"Call to `", signatures.front()->Function()->Id()->Name(), "` is ambiguous "}, pos);
+            return nullptr;
         }
         // Else return the signature with the rest parameter
         auto restParamSignature = std::find_if(signatures.begin(), signatures.end(),
@@ -1451,7 +1452,7 @@ bool ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
     if ((source->Function()->IsRethrowing() && target->Function()->IsThrowing()) ||
         (!source->Function()->IsThrowing() &&
          (target->Function()->IsRethrowing() || target->Function()->IsThrowing()))) {
-        ThrowTypeError(
+        LogTypeError(
             "A method that overrides or hides another method cannot change throw or rethrow clauses of the "
             "overridden "
             "or hidden method.",

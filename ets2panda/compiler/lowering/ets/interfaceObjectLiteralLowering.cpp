@@ -158,7 +158,9 @@ static void FillClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstNode 
         auto *ifaceMethod = it->AsMethodDefinition();
 
         if (!ifaceMethod->Function()->IsGetter() && !ifaceMethod->Function()->IsSetter()) {
-            checker->ThrowTypeError("Interface has methods", objExpr->Start());
+            checker->LogTypeError("Interface has methods", objExpr->Start());
+            objExpr->SetTsType(checker->GlobalTypeError());
+            return;
         }
 
         if (!ifaceMethod->Function()->IsGetter()) {
@@ -189,9 +191,9 @@ static void FillAnonClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstN
     FillClassBody(checker, classBody, ifaceNode->Body()->Body(), objExpr);
 }
 
-static checker::ETSObjectType *GenerateAnonClassTypeFromInterface(checker::ETSChecker *checker,
-                                                                  ir::TSInterfaceDeclaration *ifaceNode,
-                                                                  ir::ObjectExpression *objExpr)
+static checker::Type *GenerateAnonClassTypeFromInterface(checker::ETSChecker *checker,
+                                                         ir::TSInterfaceDeclaration *ifaceNode,
+                                                         ir::ObjectExpression *objExpr)
 {
     if (ifaceNode->GetAnonClass() != nullptr) {
         return ifaceNode->GetAnonClass()->Definition()->TsType()->AsETSObjectType();
@@ -215,7 +217,8 @@ static checker::ETSObjectType *GenerateAnonClassTypeFromInterface(checker::ETSCh
     // Class type params
     if (ifaceNode->TypeParams() != nullptr) {
         // NOTE: to be done
-        checker->ThrowTypeError("Object literal cannot be of typed interface type", objExpr->Start());
+        checker->LogTypeError("Object literal cannot be of typed interface type", objExpr->Start());
+        return checker->GlobalTypeError();
     }
 
     // Class implements
@@ -235,7 +238,7 @@ static void HandleInterfaceLowering(checker::ETSChecker *checker, ir::ObjectExpr
     const auto *const targetType = objExpr->TsType();
     ASSERT(targetType->AsETSObjectType()->GetDeclNode()->IsTSInterfaceDeclaration());
     auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
-    auto *resultType = GenerateAnonClassTypeFromInterface(checker, ifaceNode, objExpr);
+    checker::Type *resultType = GenerateAnonClassTypeFromInterface(checker, ifaceNode, objExpr);
 
     if (const auto *const parent = objExpr->Parent(); parent->IsArrayExpression()) {
         for (auto *elem : parent->AsArrayExpression()->Elements()) {
@@ -281,7 +284,7 @@ bool InterfaceObjectLiteralLowering::Postcondition(public_lib::Context *ctx, con
     }
 
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
-        return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType());
+        return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsTypeOrError());
     });
 }
 }  // namespace ark::es2panda::compiler

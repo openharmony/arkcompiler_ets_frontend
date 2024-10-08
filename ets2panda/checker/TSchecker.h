@@ -280,6 +280,9 @@ public:
     bool IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Variable *searchVar);
     bool FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
     bool IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
+    [[noreturn]] void ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos);
+    [[noreturn]] void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list,
+                                     const lexer::SourcePosition &pos);
     [[noreturn]] void ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
                                            lexer::SourcePosition lineInfo);
     [[noreturn]] void ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo,

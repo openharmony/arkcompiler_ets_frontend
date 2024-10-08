@@ -108,19 +108,22 @@ void RecordLowering::CheckDuplicateKey(KeySetType &keySet, ir::ObjectExpression 
                     (number.IsDouble() && keySet.insert(number.GetDouble()).second)) {
                     continue;
                 }
-                ctx->checker->AsETSChecker()->ThrowTypeError(
+                ctx->checker->AsETSChecker()->LogTypeError(
                     "An object literal cannot multiple properties with same name", expr->Start());
+                break;
             }
             case ir::AstNodeType::STRING_LITERAL: {
                 if (keySet.insert(prop->Key()->AsStringLiteral()->Str()).second) {
                     continue;
                 }
-                ctx->checker->AsETSChecker()->ThrowTypeError(
+                ctx->checker->AsETSChecker()->LogTypeError(
                     "An object literal cannot multiple properties with same name", expr->Start());
+                break;
             }
             case ir::AstNodeType::IDENTIFIER: {
-                ctx->checker->AsETSChecker()->ThrowTypeError("Object literal may only specify known properties",
-                                                             expr->Start());
+                ctx->checker->AsETSChecker()->LogTypeError("Object literal may only specify known properties",
+                                                           expr->Start());
+                break;
             }
             default: {
                 UNREACHABLE();
@@ -138,7 +141,7 @@ void RecordLowering::CheckLiteralsCompleteness(KeySetType &keySet, ir::ObjectExp
     }
     for (auto &ct : keyType->AsETSUnionType()->ConstituentTypes()) {
         if (ct->IsConstantType() && keySet.find(TypeToKey(ct)) == keySet.end()) {
-            ctx->checker->AsETSChecker()->ThrowTypeError(
+            ctx->checker->AsETSChecker()->LogTypeError(
                 "All variants of literals listed in the union type must be listed in the object literal",
                 expr->Start());
         }
@@ -175,7 +178,8 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     auto checker = ctx->checker->AsETSChecker();
     if (expr->TsType() == nullptr) {
         // Hasn't been through checker
-        checker->ThrowTypeError("Unexpected type error in Record object literal", expr->Start());
+        checker->LogTypeError("Unexpected type error in Record object literal", expr->Start());
+        return expr;
     }
 
     if (!expr->PreferredType()->IsETSObjectType()) {

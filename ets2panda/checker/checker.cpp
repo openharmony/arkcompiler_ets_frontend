@@ -75,19 +75,6 @@ std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> li
     return ss.str();
 }
 
-void Checker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
-{
-    ThrowTypeError(FormatMsg(list), pos);
-}
-
-void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos)
-{
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    throw Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col};
-}
-
 void Checker::LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
 {
     LogTypeError(FormatMsg(list), pos);
