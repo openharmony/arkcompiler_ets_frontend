@@ -15,6 +15,7 @@
 
 #include "options.h"
 
+#include "os/filesystem.h"
 #include "utils/pandargs.h"
 
 #include "arktsconfig.h"
@@ -317,6 +318,7 @@ struct AllArgs {
 
         sourceFile = inputFile.GetValue();
         if (compilationMode == CompilationMode::SINGLE_FILE) {
+            sourceFile = os::GetAbsolutePath(inputFile.GetValue());
             std::ifstream inputStream(sourceFile.c_str());
             if (inputStream.fail()) {
                 errorMsg = "Failed to open file: ";
