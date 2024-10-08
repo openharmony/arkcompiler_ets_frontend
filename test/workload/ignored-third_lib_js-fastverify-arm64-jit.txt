@@ -29,3 +29,6 @@ zxing-text-encoding_test
 
 #18383
 memory-cache_test
+
+#19703
+js-sha256_test
