@@ -245,7 +245,7 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
 
 #ifndef NDEBUG
     for (auto *func : varbinder->Functions()) {
-        ASSERT(!func->Node()->AsScriptFunction()->Scope()->InternalName().Empty());
+        ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());
     }
 #endif
 
