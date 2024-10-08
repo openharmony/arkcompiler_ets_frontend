@@ -1,6 +1,6 @@
 .language ECMAScript
 
-slotNum = 0x2e
+slotNum = 0x26
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_49: 
@@ -25,14 +25,14 @@ label_35:
 	jnez label_1
 label_2: 
 	lda v1
-	callthis0 0x7, v0
+	callthis0 0x6, v0
 	sta v8
 	throw.ifnotobject v8
-	ldobjbyname 0x9, done
+	ldobjbyname 0x8, done
 	sta v3
 	mov v6, v3
 	mov v4, v3
-	callruntime.isfalse 0xb
+	callruntime.isfalse 0xa
 	jnez label_3
 label_4: 
 	ldtrue
@@ -43,7 +43,7 @@ label_4:
 	jmp label_1
 label_3: 
 	lda v8
-	ldobjbyname 0xd, value
+	ldobjbyname 0xb, value
 	sta v8
 	jmp label_5
 label_1: 
@@ -66,23 +66,23 @@ label_44:
 label_5: 
 	mov v4, v3
 	lda v8
-	sttoglobalrecord 0xf, a
+	sttoglobalrecord 0xd, a
 label_27: 
 label_38: 
 	mov v6, v3
 	lda v3
-	callruntime.istrue 0x10
+	callruntime.istrue 0xe
 	jnez label_6
 label_7: 
 	lda v1
-	callthis0 0x12, v0
+	callthis0 0xf, v0
 	sta v1
 	throw.ifnotobject v1
-	ldobjbyname 0x14, done
+	ldobjbyname 0x11, done
 	sta v3
 	mov v6, v3
 	mov v4, v3
-	callruntime.isfalse 0x16
+	callruntime.isfalse 0x13
 	jnez label_8
 label_9: 
 	ldtrue
@@ -93,7 +93,7 @@ label_9:
 	jmp label_6
 label_8: 
 	lda v1
-	ldobjbyname 0x18, value
+	ldobjbyname 0x14, value
 	sta v1
 	jmp label_10
 label_6: 
@@ -116,16 +116,16 @@ label_45:
 label_10: 
 	mov v4, v3
 	lda v1
-	sttoglobalrecord 0x1a, b
+	sttoglobalrecord 0x16, b
 label_34: 
 end_label_34: 
 label_36: 
 	lda v3
-	callruntime.istrue 0x1b
+	callruntime.istrue 0x17
 	jnez label_11
 label_12: 
 	lda v2
-	callruntime.istrue 0x1d
+	callruntime.istrue 0x18
 	jnez label_11
 label_14: 
 	ldtrue
@@ -136,14 +136,14 @@ label_14:
 label_29: 
 label_40: 
 	lda v0
-	ldobjbyname 0x1f, return
+	ldobjbyname 0x19, return
 	sta v6
 	ldundefined
-	eq 0x21, v6
+	eq 0x1b, v6
 	jnez label_11
 label_15: 
 	lda v6
-	callthis0 0x22, v0
+	callthis0 0x1c, v0
 	sta v0
 label_30: 
 end_label_30: 
@@ -158,7 +158,7 @@ label_16:
 	ldhole
 	sta v0
 	lda v2
-	noteq 0x24, v0
+	noteq 0x1e, v0
 	jeqz label_17
 label_18: 
 	lda v2
@@ -170,11 +170,11 @@ label_54:
 	sta v5
 label_47: 
 	lda v4
-	callruntime.istrue 0x25
+	callruntime.istrue 0x1f
 	jnez label_19
 label_20: 
 	lda v2
-	callruntime.istrue 0x27
+	callruntime.istrue 0x20
 	jnez label_21
 label_22: 
 	ldtrue
@@ -183,14 +183,14 @@ label_22:
 label_31: 
 label_42: 
 	lda v0
-	ldobjbyname 0x29, return
+	ldobjbyname 0x21, return
 	sta v1
 	ldundefined
-	eq 0x2b, v1
+	eq 0x23, v1
 	jnez label_21
 label_23: 
 	lda v1
-	callthis0 0x2c, v0
+	callthis0 0x24, v0
 label_32: 
 end_label_32: 
 	jmp label_24

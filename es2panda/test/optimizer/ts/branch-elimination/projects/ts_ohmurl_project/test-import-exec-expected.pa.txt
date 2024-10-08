@@ -90,7 +90,7 @@ label_2:
 
 .language ECMAScript
 
-slotNum = 0x13
+slotNum = 0xd
 .function any &myapp/test-import-datatypes&.#*#testDataTypeRegularImport(any a0, any a1, any a2) {
 label_16: 
 label_0: 
@@ -109,7 +109,7 @@ label_0:
 label_17: 
 }
 
-slotNum = 0x1f
+slotNum = 0x1a
 .function any &myapp/test-import-datatypes&.func_main_0(any a0, any a1, any a2) {
 label_15: 
 label_0: 
@@ -121,13 +121,13 @@ label_0:
 	lda v0
 	ldobjbyname 0x1, CONST_INT
 	lda v0
-	ldobjbyname 0x6, CONST_DOUBLE
+	ldobjbyname 0x5, CONST_DOUBLE
 	lda v0
-	ldobjbyname 0xb, CONST_BOOL
+	ldobjbyname 0x9, CONST_BOOL
 	lda v0
-	ldobjbyname 0x11, CONST_BOOL
+	ldobjbyname 0xd, CONST_BOOL
 	lda v1
-	ldobjbyname 0x19, CONST_STRING
+	ldobjbyname 0x14, CONST_STRING
 	ldundefined
 	returnundefined
 label_16: 
@@ -136,7 +136,7 @@ label_16:
 
 .language ECMAScript
 
-slotNum = 0x29
+slotNum = 0x24
 .function any &myapp/test-import-exec&.#*#testUrlType(any a0, any a1, any a2) {
 label_24: 
 label_0: 
@@ -154,79 +154,79 @@ label_0:
 	sta v0
 	throw.undefinedifholewithname NONURL_FILE_TYPE
 	lda.str none
-	strictnoteq 0x12, v0
+	strictnoteq 0xd, v0
 	jeqz label_13
 label_14: 
-	tryldglobalbyname 0x13, print
+	tryldglobalbyname 0xe, print
 	sta v0
 	lda.str good1
 	sta v1
 	lda v0
-	callarg1 0x14, v1
+	callarg1 0xf, v1
 	jmp label_15
 label_13: 
-	tryldglobalbyname 0x16, print
+	tryldglobalbyname 0x11, print
 	sta v0
 	lda.str good2
 	sta v1
 	lda v0
-	callarg1 0x17, v1
+	callarg1 0x12, v1
 label_15: 
 	ldexternalmodulevar 0x1
 	sta v0
 	throw.undefinedifholewithname BUNDLE_FILE_TYPE_LET
 	lda.str bundle
-	strictnoteq 0x19, v0
+	strictnoteq 0x14, v0
 	jeqz label_16
 label_17: 
-	tryldglobalbyname 0x1a, print
+	tryldglobalbyname 0x15, print
 	sta v0
 	lda.str good3
 	sta v1
 	lda v0
-	callarg1 0x1b, v1
+	callarg1 0x16, v1
 label_16: 
 	ldexternalmodulevar 0x9
 	sta v0
 	throw.undefinedifholewithname PACKAGE_FILE_TYPE_VAR
 	lda.str package
-	strictnoteq 0x1d, v0
+	strictnoteq 0x18, v0
 	jeqz label_18
 label_19: 
-	tryldglobalbyname 0x1e, print
+	tryldglobalbyname 0x19, print
 	sta v0
 	lda.str good4
 	sta v1
 	lda v0
-	callarg1 0x1f, v1
+	callarg1 0x1a, v1
 label_18: 
 	ldexternalmodulevar 0x6
 	sta v0
 	throw.undefinedifholewithname NORMALIZED_FILE_TYPE_LET_1
 	lda.str normalized
-	strictnoteq 0x21, v0
+	strictnoteq 0x1c, v0
 	jeqz label_20
 label_21: 
-	tryldglobalbyname 0x22, print
+	tryldglobalbyname 0x1d, print
 	sta v0
 	lda.str good5
 	sta v1
 	lda v0
-	callarg1 0x23, v1
+	callarg1 0x1e, v1
 label_20: 
 	ldexternalmodulevar 0x7
 	sta v0
 	throw.undefinedifholewithname NORMALIZED_FILE_TYPE_LET_2
 	lda.str normalized
-	strictnoteq 0x25, v0
+	strictnoteq 0x20, v0
 	jeqz label_22
 label_23: 
-	tryldglobalbyname 0x26, print
+	tryldglobalbyname 0x21, print
 	sta v0
 	lda.str good6
 	sta v1
 	lda v0
-	callarg1 0x27, v1
+	callarg1 0x22, v1
 label_22: 
 	ldundefined
 	returnundefined
@@ -272,7 +272,7 @@ label_1:
 label_4: 
 }
 
-slotNum = 0x3f
+slotNum = 0x3b
 .function any &myapp/test-import-namespace&.func_main_0(any a0, any a1, any a2) {
 label_23: 
 label_0: 
@@ -293,105 +293,105 @@ label_0:
 	lda v0
 	ldobjbyname 0x1, FILE_TYPE
 	lda v1
-	ldobjbyname 0x6, FILE_TYPE
+	ldobjbyname 0x5, FILE_TYPE
 	lda v2
-	ldobjbyname 0xb, FILE_TYPE
+	ldobjbyname 0x9, FILE_TYPE
 	lda v3
-	ldobjbyname 0x10, FILE_TYPE
+	ldobjbyname 0xd, FILE_TYPE
 	lda v4
-	ldobjbyname 0x18, FILE_TYPE
+	ldobjbyname 0x14, FILE_TYPE
 	sta v4
 	lda.str none
-	strictnoteq 0x1a, v4
+	strictnoteq 0x16, v4
 	jeqz label_10
 label_11: 
-	tryldglobalbyname 0x1b, print
+	tryldglobalbyname 0x17, print
 	sta v4
 	lda.str good1
 	sta v5
 	lda v4
-	callarg1 0x1c, v5
+	callarg1 0x18, v5
 	jmp label_12
 label_10: 
-	tryldglobalbyname 0x1e, print
+	tryldglobalbyname 0x1a, print
 	sta v4
 	lda.str good2
 	sta v5
 	lda v4
-	callarg1 0x1f, v5
+	callarg1 0x1b, v5
 label_12: 
 	lda v0
-	ldobjbyname 0x21, FILE_TYPE_LET
+	ldobjbyname 0x1d, FILE_TYPE_LET
 	sta v0
 	lda.str bundle
-	strictnoteq 0x23, v0
+	strictnoteq 0x1f, v0
 	jeqz label_13
 label_14: 
-	tryldglobalbyname 0x24, print
+	tryldglobalbyname 0x20, print
 	sta v0
 	lda.str good3
 	sta v4
 	lda v0
-	callarg1 0x25, v4
+	callarg1 0x21, v4
 label_13: 
 	lda v1
-	ldobjbyname 0x27, FILE_TYPE_VAR
+	ldobjbyname 0x23, FILE_TYPE_VAR
 	sta v0
 	lda.str package
-	strictnoteq 0x29, v0
+	strictnoteq 0x25, v0
 	jeqz label_15
 label_16: 
-	tryldglobalbyname 0x2a, print
+	tryldglobalbyname 0x26, print
 	sta v0
 	lda.str good4
 	sta v1
 	lda v0
-	callarg1 0x2b, v1
+	callarg1 0x27, v1
 label_15: 
 	lda v2
-	ldobjbyname 0x2d, FILE_TYPE_LET
+	ldobjbyname 0x29, FILE_TYPE_LET
 	sta v0
 	lda.str normalized
-	strictnoteq 0x2f, v0
+	strictnoteq 0x2b, v0
 	jeqz label_17
 label_18: 
-	tryldglobalbyname 0x30, print
+	tryldglobalbyname 0x2c, print
 	sta v0
 	lda.str good5
 	sta v1
 	lda v0
-	callarg1 0x31, v1
+	callarg1 0x2d, v1
 label_17: 
 	lda v3
-	ldobjbyname 0x33, FILE_TYPE_LET
+	ldobjbyname 0x2f, FILE_TYPE_LET
 	sta v0
 	lda.str normalized
-	strictnoteq 0x35, v0
+	strictnoteq 0x31, v0
 	jeqz label_19
 label_20: 
-	tryldglobalbyname 0x36, print
+	tryldglobalbyname 0x32, print
 	sta v0
 	lda.str good6
 	sta v1
 	lda v0
-	callarg1 0x37, v1
+	callarg1 0x33, v1
 label_19: 
 	ldlexvar 0x0, 0x0
 	sta v0
 	throw.undefinedifholewithname NORMALIZED_LEXVAR
 	lda v0
-	ldobjbyname 0x39, FILE_TYPE
+	ldobjbyname 0x35, FILE_TYPE
 	sta v0
 	lda.str normalized
-	strictnoteq 0x3b, v0
+	strictnoteq 0x37, v0
 	jeqz label_21
 label_22: 
-	tryldglobalbyname 0x3c, print
+	tryldglobalbyname 0x38, print
 	sta v0
 	lda.str good7
 	sta v1
 	lda v0
-	callarg1 0x3d, v1
+	callarg1 0x39, v1
 label_21: 
 	ldundefined
 	returnundefined

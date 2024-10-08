@@ -45,7 +45,7 @@ label_0:
 label_2: 
 }
 
-slotNum = 0xd
+slotNum = 0xb
 .function any .func_main_0(any a0, any a1, any a2) {
 label_6: 
 label_0: 
@@ -59,18 +59,18 @@ label_0:
 	callruntime.isfalse 0x3
 	jnez label_1
 label_2: 
-	definefunc 0x5, .#*#foo, 0x0
+	definefunc 0x4, .#*#foo, 0x0
 	jmp label_3
 label_1: 
-	definefunc 0x6, .#*#^1, 0x0
-	callarg0 0x7
-	callruntime.isfalse 0x9
+	definefunc 0x5, .#*#^1, 0x0
+	callarg0 0x6
+	callruntime.isfalse 0x8
 	jnez label_4
 label_5: 
-	definefunc 0xb, .#*#foo^1, 0x0
+	definefunc 0x9, .#*#foo^1, 0x0
 	jmp label_3
 label_4: 
-	definefunc 0xc, .#*#foo^2, 0x0
+	definefunc 0xa, .#*#foo^2, 0x0
 label_3: 
 	ldundefined
 	returnundefined

@@ -173,7 +173,7 @@ label_46:
 
 .catchall label_30, end_label_31, label_51
 
-slotNum = 0x58
+slotNum = 0x54
 .function any .#*#testTryBlockWithLoop(any a0, any a1, any a2) {
 	nop
 label_71: 
@@ -369,25 +369,25 @@ label_13:
 	jnez label_15
 label_16: 
 	lda v2
-	stricteq 0x29, v12
-	callruntime.isfalse 0x2a
+	stricteq 0x28, v12
+	callruntime.isfalse 0x29
 	jnez label_15
 label_17: 
 	lda v11
 	throw
 label_15: 
 	lda v0
-	stricteq 0x2c, v9
-	callruntime.isfalse 0x2d
+	stricteq 0x2a, v9
+	callruntime.isfalse 0x2b
 	jnez label_21
 label_19: 
 	lda v2
-	stricteq 0x2f, v12
-	callruntime.isfalse 0x30
+	stricteq 0x2c, v12
+	callruntime.isfalse 0x2d
 	jnez label_21
 label_20: 
-	tryldglobalbyname 0x32, print
-	callarg1 0x33, v11
+	tryldglobalbyname 0x2e, print
+	callarg1 0x2f, v11
 	mov v50, v5
 	mov v48, v5
 	mov v45, v5
@@ -396,8 +396,8 @@ label_20:
 	mov v24, v5
 	mov v17, v5
 	mov v14, v5
-	tryldglobalbyname 0x35, print
-	callarg1 0x36, v5
+	tryldglobalbyname 0x31, print
+	callarg1 0x32, v5
 	mov v50, v4
 	mov v48, v4
 	mov v45, v4
@@ -406,8 +406,8 @@ label_20:
 	mov v24, v4
 	mov v17, v4
 	mov v14, v4
-	tryldglobalbyname 0x38, print
-	callarg1 0x39, v4
+	tryldglobalbyname 0x34, print
+	callarg1 0x35, v4
 	mov v50, v3
 	mov v48, v3
 	mov v45, v3
@@ -416,8 +416,8 @@ label_20:
 	mov v24, v3
 	mov v17, v3
 	mov v14, v3
-	tryldglobalbyname 0x3b, print
-	callarg1 0x3c, v3
+	tryldglobalbyname 0x37, print
+	callarg1 0x38, v3
 	mov v50, v1
 	mov v48, v1
 	mov v45, v1
@@ -480,16 +480,16 @@ label_22:
 	mov v13, v10
 	mov v14, v11
 	ldundefined
-	eq 0x3e, v47
+	eq 0x3a, v47
 	jeqz label_23
 label_24: 
-	tryldglobalbyname 0x3f, print
+	tryldglobalbyname 0x3b, print
 	mov v33, v32
 	mov v34, v19
 	mov v35, v10
 	mov v36, v12
 	mov v37, v9
-	callarg1 0x40, v11
+	callarg1 0x3c, v11
 	mov v11, v5
 label_23: 
 	mov v45, v11
@@ -501,7 +501,7 @@ label_23:
 	ldhole
 	sta v47
 	lda v49
-	noteq 0x42, v47
+	noteq 0x3e, v47
 	jeqz label_27
 label_26: 
 	lda v49
@@ -531,10 +531,10 @@ label_65:
 	mov v17, v45
 	mov v13, v42
 	mov v14, v45
-	tryldglobalbyname 0x43, print
-	callarg1 0x44, v46
-	tryldglobalbyname 0x46, print
-	callarg1 0x47, v45
+	tryldglobalbyname 0x3f, print
+	callarg1 0x40, v46
+	tryldglobalbyname 0x42, print
+	callarg1 0x43, v45
 label_52: 
 end_label_52: 
 label_81: 
@@ -587,7 +587,7 @@ label_28:
 	mov v13, v10
 	mov v14, v11
 	ldundefined
-	eq 0x49, v32
+	eq 0x45, v32
 	jeqz label_29
 label_30: 
 	mov v26, v19
@@ -598,8 +598,8 @@ label_30:
 	mov v21, v10
 	mov v22, v12
 	mov v23, v9
-	tryldglobalbyname 0x4a, print
-	callarg1 0x4b, v11
+	tryldglobalbyname 0x46, print
+	callarg1 0x47, v11
 	mov v11, v4
 label_29: 
 	mov v30, v11
@@ -609,7 +609,7 @@ label_29:
 	ldhole
 	sta v32
 	lda v39
-	noteq 0x4d, v32
+	noteq 0x49, v32
 	jeqz label_54
 label_32: 
 	lda v39
@@ -653,13 +653,13 @@ label_34:
 	mov v13, v10
 	mov v14, v11
 	ldundefined
-	eq 0x4e, v19
+	eq 0x4a, v19
 	jeqz label_35
 label_36: 
 	mov v16, v10
 	mov v13, v10
-	tryldglobalbyname 0x4f, print
-	callarg1 0x50, v11
+	tryldglobalbyname 0x4b, print
+	callarg1 0x4c, v11
 	mov v11, v3
 label_35: 
 	mov v17, v11
@@ -667,7 +667,7 @@ label_35:
 	ldhole
 	sta v19
 	lda v25
-	noteq 0x52, v19
+	noteq 0x4e, v19
 	jeqz label_58
 label_38: 
 	lda v25
@@ -697,16 +697,16 @@ label_80:
 	mov v10, v13
 label_40: 
 	ldundefined
-	eq 0x53, v10
+	eq 0x4f, v10
 	jeqz label_41
 label_42: 
-	tryldglobalbyname 0x54, print
-	callarg1 0x55, v3
+	tryldglobalbyname 0x50, print
+	callarg1 0x51, v3
 label_41: 
 	ldhole
 	sta v0
 	lda v15
-	noteq 0x57, v0
+	noteq 0x53, v0
 	jeqz label_43
 label_44: 
 	lda v15

@@ -1,6 +1,6 @@
 .language ECMAScript
 
-slotNum = 0x4
+slotNum = 0x2
 .function any .func_main_0(any a0, any a1, any a2) {
 label_5: 
 label_0: 
@@ -13,7 +13,7 @@ label_2:
 label_1: 
 	ldfalse
 label_3: 
-	callruntime.isfalse 0x2
+	callruntime.isfalse 0x1
 	ldundefined
 	returnundefined
 label_6: 
