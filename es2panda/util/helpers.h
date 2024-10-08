@@ -51,6 +51,9 @@ struct CompileContextInfo {
     std::vector<std::string> compileEntries;
     std::set<std::string> externalPkgNames;
     std::unordered_map<std::string, PkgInfo> pkgContextInfo;
+    // The key of updateVersionInfo is the package name for an abc file, and the value contains the name of its
+    // dependent pacakge and corresponding package version which need to update version.
+    std::unordered_map<std::string, std::unordered_map<std::string, PkgInfo>> updateVersionInfo;
 };
 }  // namespace panda::es2panda
 
