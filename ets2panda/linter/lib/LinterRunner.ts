@@ -33,7 +33,7 @@ import {
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
-import { pathContainsDirectory } from './utils/functions/PathHelper';
+import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
@@ -131,6 +131,8 @@ export function lint(options: LintOptions, etsLoaderPath: string | undefined): L
   const [errorNodesTotal, warningNodes] = countProblems(linter);
   logTotalProblemsInfo(errorNodesTotal, warningNodes, linter);
   logProblemsPercentageByFeatures(linter);
+
+  freeMemory();
 
   return {
     errorNodes: errorNodesTotal,
@@ -280,4 +282,8 @@ function shouldProcessFile(options: LintOptions, fileFsPath: string): boolean {
     !pathContainsDirectory(path.resolve(fileFsPath), ARKTS_IGNORE_DIRS_OH_MODULES) ||
     !!options.isFileFromModuleCb?.(fileFsPath)
   );
+}
+
+function freeMemory(): void {
+  clearPathHelperCache();
 }

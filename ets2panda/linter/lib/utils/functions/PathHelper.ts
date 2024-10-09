@@ -25,13 +25,13 @@ export function pathContainsDirectory(path: string, dir: string): boolean {
   return false;
 }
 
-const srcFilePathComponents = new Map<ts.SourceFile, string[]>();
+const srcFilePathComponentsCache = new Map<ts.SourceFile, string[]>();
 
 export function srcFilePathContainsDirectory(srcFile: ts.SourceFile, dir: string): boolean {
-  let pathComps = srcFilePathComponents.get(srcFile);
+  let pathComps = srcFilePathComponentsCache.get(srcFile);
   if (!pathComps) {
     pathComps = npath.dirname(npath.normalize(srcFile.fileName)).split(npath.sep);
-    srcFilePathComponents.set(srcFile, pathComps);
+    srcFilePathComponentsCache.set(srcFile, pathComps);
   }
   for (const subdir of pathComps) {
     if (subdir === dir) {
@@ -39,4 +39,8 @@ export function srcFilePathContainsDirectory(srcFile: ts.SourceFile, dir: string
     }
   }
   return false;
+}
+
+export function clearPathHelperCache(): void {
+  srcFilePathComponentsCache.clear();
 }
