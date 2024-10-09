@@ -21,4 +21,3 @@ function main(): void {
 }
 
 /* @@? 20:19 Error TypeError: Wrong number of type parameters for generic type alias  */
-/* @@? 0:0 Error TypeError:   */

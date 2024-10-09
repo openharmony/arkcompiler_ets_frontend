@@ -21,4 +21,3 @@ function main() {
 }
 
 /* @@? 18:13 Error TypeError: Expected type for array literal should be an array type, got Array<Int>  */
-/* @@? 18:13 Error TypeError:  Cannot cast type '*TYPE_ERROR*' to 'Array<Int>'  */

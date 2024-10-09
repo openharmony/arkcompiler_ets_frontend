@@ -16,5 +16,7 @@ class A<T extends A<T>>{}
 class D extends A<D>{}
 class B extends A<B>{}
 class T<P extends B|D>{}
-class C extends A<C|B|D|T>{} 
+class C extends A<C|B|D|T>{}
+
 /* @@? 19:25 Error TypeError: Type 'T<P>' is generic but type argument were not provided.  */
+/* @@? 19:17 Error TypeError: The super type of 'C' class is not extensible.  */

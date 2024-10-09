@@ -25,3 +25,4 @@ function main(){
     a_obj.foo<C>(y) 
 }
 /* @@? 25:18 Error TypeError: Type 'D' is not compatible with type 'C' at index 1  */
+/* @@? 25:5 Error TypeError: No matching call signature for foo(D)  */

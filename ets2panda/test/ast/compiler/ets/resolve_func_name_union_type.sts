@@ -27,3 +27,4 @@ function main() {
 
 /* @@? 24:17 Error TypeError: Type '() => double' cannot be assigned to type '() => void|Double'  */
 /* @@? 25:12 Error TypeError: Cannot use type 'void' as value.  */
+/* @@? 25:12 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */

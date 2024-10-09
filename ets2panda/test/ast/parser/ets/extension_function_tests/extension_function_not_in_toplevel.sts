@@ -28,3 +28,4 @@ function main() {
 }
 
 /* @@? 20:5 Error SyntaxError: Nested functions are not allowed  */
+/* @@? 20:19 Error SyntaxError: Unexpected token, expected '('  */

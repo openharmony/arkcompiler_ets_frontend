@@ -20,4 +20,7 @@ function foo(a: "aa"|"bb") {
 let x = ["aa", "bb", "aa"] // type of x is string[]
 let y = foo(x)
 
-/* @@? 21:13 Error TypeError: Type 'String[]' is not compatible with type '"aa"|"bb"' at index 1 */
+/* @@? 21:13 Error TypeError: Type 'String[]' is not compatible with type '"aa"|"bb"' at index 1  */
+/* @@? 21:9 Error TypeError: No matching call signature for foo(String[])  */
+/* @@? 21:13 Error TypeError: Type 'String[]' is not compatible with type '"aa"|"bb"' at index 1  */
+/* @@? 21:9 Error TypeError: No matching call signature for foo(String[])  */

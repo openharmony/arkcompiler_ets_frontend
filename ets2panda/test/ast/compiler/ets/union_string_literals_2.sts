@@ -23,4 +23,5 @@ function main(): void {
     foo<"abc">("ff");
 }
 
-/* @@? 23:16 Error TypeError: Type '"ff"' is not compatible with type '"abc"' at index 1 */
+/* @@? 23:16 Error TypeError: Type '"ff"' is not compatible with type '"abc"' at index 1  */
+/* @@? 23:5 Error TypeError: No matching call signature for foo("ff")  */
