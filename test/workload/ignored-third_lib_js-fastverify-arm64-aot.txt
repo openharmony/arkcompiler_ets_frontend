@@ -3,6 +3,15 @@
 #18330
 dayjs_test
 
+#19703
+pinyin4js_test
+
+#19285
+crypto-js_test
+
+#19247
+jsDiff_test
+
 #18546
 jBox2d_test
 
