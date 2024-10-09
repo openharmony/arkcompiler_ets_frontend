@@ -20,3 +20,8 @@ AsyncGenerator_next
 
 #19077
 Function_applyFunction
+
+#19246
+DisplayNames_constructor
+DisplayNames_of
+DisplayNames_resolvedOptions
