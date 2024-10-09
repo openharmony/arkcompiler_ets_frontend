@@ -27,3 +27,4 @@ function main()
 }
 
 /* @@? 26:5 Error TypeError: Function name "a" used in the wrong context  */
+/* @@? 26:5 Error TypeError: Indexed access is not supported for such expression type.  */

@@ -24,3 +24,4 @@ function main()
 }
 
 /* @@? 23:9 Error TypeError: Class name "a" used in the wrong context  */
+/* @@? 23:9 Error TypeError: Type 'a' cannot be assigned to type 'int'  */

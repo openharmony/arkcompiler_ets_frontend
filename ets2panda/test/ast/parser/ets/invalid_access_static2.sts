@@ -23,3 +23,4 @@ let a = new G<String>();
 a.y();
 
 /* @@? 23:1 Error TypeError: No matching call signature  */
+/* @@? 23:3 Error TypeError: 'y' is a static property of 'G'  */

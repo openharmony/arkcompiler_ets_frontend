@@ -20,3 +20,4 @@ import * as Test from "import_tests/packages";
 let x = foo(dbl /* double based signature */);
 
 /* @@? 20:9 Error TypeError: Unresolved reference foo  */
+/* @@? 20:9 Error TypeError: Unresolved reference foo  */

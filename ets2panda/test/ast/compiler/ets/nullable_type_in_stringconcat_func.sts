@@ -26,4 +26,5 @@ function main() {
     let result2 = foo2(null, null);
 }
 
+/* @@? 17:12 Error TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality.  */
 /* @@? 21:12 Error TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality.  */

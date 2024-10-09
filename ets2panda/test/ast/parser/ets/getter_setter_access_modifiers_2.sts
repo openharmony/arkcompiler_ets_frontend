@@ -40,3 +40,6 @@ class Hex extends Core {
 }
 
 /* @@? 33:22 Error TypeError: size(s: int): void in Hex cannot override size(s: int): void in Core because overridden method is final.  */
+/* @@? 33:22 Error TypeError: Method size(s: int): void in Hex not overriding any method  */
+/* @@? 37:22 Error TypeError: size(): int in Hex cannot override size(): int in Core because overridden method is final.  */
+/* @@? 37:22 Error TypeError: Method size(): int in Hex not overriding any method  */
