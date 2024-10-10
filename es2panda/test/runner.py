@@ -807,7 +807,7 @@ class CompilerProjectTest(Test):
                 abc_files_info_fd = os.open(abc_files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
                 abc_files_info_f = os.fdopen(abc_files_info_fd, 'w')
                 abc_files_info_f.writelines(abc_files_info)
-                final_file_info_f.writelines('%s-abcinput.abc;;;;\n' % (abc_input_path))
+                final_file_info_f.writelines('%s-abcinput.abc;;;;%s;\n' % (abc_input_path, abc_files_info_name))
 
     def gen_files_info(self, runner):
         # After collect_record_mapping, self.file_record_mapping stores {'source file name' : 'source file record name'}
