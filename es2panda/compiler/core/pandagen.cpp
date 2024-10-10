@@ -1295,7 +1295,7 @@ void PandaGen::CallThis(const ir::AstNode *node, VReg startReg, size_t argCount)
             break;
         }
         default: {
-            int64_t actualArgs = static_cast<int64_t>(argCount - 1);
+            int64_t actualArgs = static_cast<int64_t>(argCount) - 1;
             if (actualArgs <= util::Helpers::MAX_INT8) {
                 ra_.EmitRange<Callthisrange>(node, argCount, 0, actualArgs, thisReg);
                 break;
