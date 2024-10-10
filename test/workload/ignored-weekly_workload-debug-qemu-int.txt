@@ -1,15 +1,6 @@
 ##19070
 float-mm
 
-##18483
-typescript-compiler
-
-##18485
-raytrace
-
-##18486
-pdfjs
-
 ##18417
 box2d
 

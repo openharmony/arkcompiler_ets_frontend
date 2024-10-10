@@ -204,6 +204,8 @@ private:
     bool IsStartOfTsTypePredicate() const;
     bool IsStartOfAbstractConstructorType() const;
 
+    ir::Expression* SetupChainExpr(ir::Expression *const top, lexer::SourcePosition startLoc);
+
     bool CurrentTokenIsModifier(char32_t nextCp) const;
     [[noreturn]] void ThrowParameterModifierError(ir::ModifierFlags status) const;
     [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage) const;
