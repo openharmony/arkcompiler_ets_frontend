@@ -6,10 +6,10 @@ dayjs_test
 #19703
 pinyin4js_test
 
-#19285
+#19246
 crypto-js_test
 
-#19247
+#19246
 jsDiff_test
 
 #18546

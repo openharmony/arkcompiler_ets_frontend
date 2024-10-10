@@ -39,3 +39,6 @@ splay-latency
 
 #18483
 typescript-compiler
+
+#19246
+json-parse-inspector

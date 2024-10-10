@@ -4,6 +4,9 @@ raytrace
 #19072
 OfflineAssembler
 
+#18863
+json-parse-inspector
+
 #19216
 wsl
 

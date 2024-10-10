@@ -27,5 +27,8 @@ mathjs_test
 #19426
 validator_test
 
+#18383
+memory-cache_test
+
 #19424
 zxing-text-encoding_test
