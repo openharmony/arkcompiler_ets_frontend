@@ -165,6 +165,13 @@ void Scope::MergeBindings(VariableMap const &bindings)
 
 Scope::VariableMap::size_type Scope::EraseBinding(const util::StringView &name)
 {
+    if (auto toBeErased = bindings_.find(name);
+        toBeErased == bindings_.end() ||
+        (toBeErased->second->IsLocalVariable() &&
+         toBeErased->second->AsLocalVariable()->Declaration()->Node()->IsImportNamespaceSpecifier())) {
+        return 0;
+    }
+
     return bindings_.erase(name);
 }
 

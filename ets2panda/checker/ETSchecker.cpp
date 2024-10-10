@@ -138,25 +138,13 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
     GetGlobalTypesHolder()->InitializeBuiltin(name, type);
 }
 
-bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
+bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOptions &options)
 {
     Initialize(varbinder);
-
-    if (options.dumpAst) {
-        std::cout << Program()->Dump() << std::endl;
-    }
-
-    if (options.opDumpAstOnlySilent) {
-        Program()->DumpSilent();
-        return false;
-    }
 
     if (options.parseOnly) {
         return false;
     }
-
-    varbinder->SetGenStdLib(options.compilationMode == CompilationMode::GEN_STD_LIB);
-    varbinder->IdentifierAnalysis();
 
     auto *etsBinder = varbinder->AsETSBinder();
     InitializeBuiltins(etsBinder);
@@ -185,7 +173,7 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
         CheckWarnings(Program(), options);
     }
 
-    return true;
+    return !ErrorLogger()->IsAnyError();
 }
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
@@ -196,12 +184,18 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
+            checker::SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass());
+            AddStatus(checker::CheckerStatus::IN_EXTERNAL);
             CheckProgram(extProg, VarBinder()->IsGenStdLib());
         }
     }
 
     ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
+
+    if (ErrorLogger()->IsAnyError()) {
+        return;
+    }
 
     if (runAnalysis) {
         AliveAnalyzer aliveAnalyzer(Program()->Ast(), this);
@@ -428,6 +422,11 @@ GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes()
 const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
 {
     return globalArraySignatures_;
+}
+
+Type *ETSChecker::GlobalTypeError() const
+{
+    return GetGlobalTypesHolder()->GlobalTypeError();
 }
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)

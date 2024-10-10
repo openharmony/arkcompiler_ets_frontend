@@ -108,18 +108,18 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
 {
     auto *const allocator = checker->Allocator();
 
-    auto *const classType = objExpr->PreferredType()->AsETSObjectType();
+    auto *const classType = objExpr->TsType()->AsETSObjectType();
 
     auto addNode = [&newStmts](ir::AstNode *node) -> int {
         newStmts.emplace_back(node);
         return newStmts.size();
     };
 
-    // Generating: let <genSym>: <preferredType> = new <preferredType>();
+    // Generating: let <genSym>: <TsType> = new <TsType>();
     auto *genSymIdent = Gensym(allocator);
-    auto *preferredType = checker->AllocNode<ir::OpaqueTypeNode>(classType);
-    ss << "let @@I" << addNode(genSymIdent) << ": @@T" << addNode(preferredType) << " = new @@T"
-       << addNode(checker->AllocNode<ir::OpaqueTypeNode>(classType)) << "();" << std::endl;
+    auto *type = checker->AllocNode<ir::OpaqueTypeNode>(classType);
+    ss << "let @@I" << addNode(genSymIdent) << ": @@T" << addNode(type) << " = new @@T"
+       << addNode(type->Clone(allocator, nullptr)) << "();" << std::endl;
 
     // Generating: <genSym>.key_i = value_i      ( i <= [0, object_literal.properties.size) )
     for (auto *propExpr : objExpr->Properties()) {
@@ -155,13 +155,13 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
      * For given object literal of class type generates following block expression:
      *
      *  ({
-     *     let <genSym>: <preferredType> = new <preferredType>();
+     *     let <genSym>: <TsType> = new <TsType>();
      *     <genSym>.key_i = value_i      ( i <= [0, object_literal.properties.size) )
      *     <genSym>;                     <-- NOTE: result of block expression
      *  })
      */
 
-    if (objExpr->PreferredType() == nullptr) {
+    if (objExpr->TsType() == nullptr) {
         return objExpr;
     }
 
@@ -179,7 +179,7 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
     loweringResult->SetParent(objExpr->Parent());
 
-    MaybeAllowConstAssign(objExpr->PreferredType(), loweringResult->AsBlockExpression()->Statements());
+    MaybeAllowConstAssign(objExpr->TsType(), loweringResult->AsBlockExpression()->Statements());
 
     auto scopeCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(objExpr));
     InitScopesPhaseETS::RunExternalNode(loweringResult, varbinder);
@@ -210,9 +210,8 @@ bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *p
     program->Ast()->TransformChildrenRecursively(
         [ctx](ir::AstNode *ast) -> ir::AstNode * {
             // Skip processing dynamic objects
-            if (ast->IsObjectExpression() &&
-                !ast->AsObjectExpression()->PreferredType()->AsETSObjectType()->HasObjectFlag(
-                    checker::ETSObjectFlags::DYNAMIC)) {
+            if (ast->IsObjectExpression() && !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(
+                                                 checker::ETSObjectFlags::DYNAMIC)) {
                 return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
             }
             return ast;
@@ -236,8 +235,7 @@ bool ObjectLiteralLowering::Postcondition(public_lib::Context *ctx, const parser
     // In all object literal contexts (except dynamic) a substitution should take place
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
         return ast->IsObjectExpression() &&
-               !ast->AsObjectExpression()->PreferredType()->AsETSObjectType()->HasObjectFlag(
-                   checker::ETSObjectFlags::DYNAMIC);
+               !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
     });
 }
 

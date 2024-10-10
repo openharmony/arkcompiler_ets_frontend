@@ -15,7 +15,7 @@
 
 #include "compilerImpl.h"
 
-#include "compiler/core/ASTVerifier.h"
+#include "ast_verifier/ASTVerifier.h"
 #include "es2panda.h"
 #include "checker/ETSAnalyzer.h"
 #include "checker/TSAnalyzer.h"
@@ -187,15 +187,16 @@ static public_lib::Context::CodeGenCb MakeCompileJob()
 
 #ifndef NDEBUG
 
-static bool RunVerifierAndPhases(ArenaAllocator &allocator, public_lib::Context &context,
+static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context &context,
                                  const std::vector<Phase *> &phases, parser::Program &program)
 {
-    auto runner = ASTVerificationRunner(allocator, context);
+    auto runner = ASTVerificationRunner(*context.allocator, context);
     auto verificationCtx = ast_verifier::VerificationContext {};
     const auto runAllChecks = context.config->options->CompilerOptions().verifierAllChecks;
 
     for (auto *phase : phases) {
         if (!phase->Apply(&context, &program)) {
+            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError());
             return false;
         }
 
@@ -223,6 +224,18 @@ static bool RunVerifierAndPhases(ArenaAllocator &allocator, public_lib::Context 
     return true;
 }
 #endif
+
+static bool RunPhases(CompilerImpl *compilerImpl, public_lib::Context &context, const std::vector<Phase *> &phases,
+                      parser::Program &program)
+{
+    for (auto *phase : phases) {
+        if (!phase->Apply(&context, &program)) {
+            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError());
+            return false;
+        }
+    }
+    return true;
+}
 
 using EmitCb = std::function<pandasm::Program *(public_lib::Context *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
@@ -267,21 +280,15 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     parser.ParseScript(unit.input, unit.options.CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB);
 #ifndef NDEBUG
     if (unit.ext == ScriptExtension::ETS) {
-        if (!RunVerifierAndPhases(allocator, context, getPhases(unit.ext), program)) {
+        if (!RunVerifierAndPhases(compilerImpl, context, getPhases(unit.ext), program)) {
             return nullptr;
         }
-    } else {
-        for (auto *phase : getPhases(unit.ext)) {
-            if (!phase->Apply(&context, &program)) {
-                return nullptr;
-            }
-        }
+    } else if (!RunPhases(compilerImpl, context, getPhases(unit.ext), program)) {
+        return nullptr;
     }
 #else
-    for (auto *phase : getPhases(unit.ext)) {
-        if (!phase->Apply(&context, &program)) {
-            return nullptr;
-        }
+    if (!RunPhases(compilerImpl, context, getPhases(unit.ext), program)) {
+        return nullptr;
     }
 #endif
 

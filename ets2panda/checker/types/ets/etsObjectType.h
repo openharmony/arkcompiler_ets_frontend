@@ -338,6 +338,19 @@ public:
     }
 
     template <PropertyType TYPE>
+    void AddProperty(varbinder::LocalVariable *prop, util::StringView localName) const
+    {
+        util::StringView nameToAccess = prop->Name();
+
+        if (!localName.Empty()) {
+            nameToAccess = localName;
+        }
+
+        properties_[static_cast<size_t>(TYPE)].emplace(nameToAccess, prop);
+        propertiesInstantiated_ = true;
+    }
+
+    template <PropertyType TYPE>
     void RemoveProperty(varbinder::LocalVariable *prop)
     {
         properties_[static_cast<size_t>(TYPE)].erase(prop->Name());

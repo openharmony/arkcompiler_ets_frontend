@@ -168,11 +168,8 @@ void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
             }
         }
         if (initializer_ != nullptr) {
-            ASSERT(initializer_->IsNumberLiteral());
-            if (initializer_->AsNumberLiteral()->Str().Length() > 0) {
-                dumper->Add(" = ");
-                initializer_->Dump(dumper);
-            }
+            dumper->Add(" = ");
+            initializer_->Dump(dumper);
         }
     }
 }

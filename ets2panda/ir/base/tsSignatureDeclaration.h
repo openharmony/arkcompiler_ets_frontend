@@ -18,7 +18,7 @@
 
 #include "ir/astNode.h"
 #include "ir/base/scriptFunctionSignature.h"
-#include "ir/statement.h"
+#include "ir/typed.h"
 
 namespace ark::es2panda::checker {
 class TSAnalyzer;

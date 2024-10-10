@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token: 'async'. [assign-func-iface.ets:17:5]

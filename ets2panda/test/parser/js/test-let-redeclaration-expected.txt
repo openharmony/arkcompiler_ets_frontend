@@ -1,1 +1,0 @@
-SyntaxError: Variable 'a' has already been declared. [test-let-redeclaration.js:19:5]

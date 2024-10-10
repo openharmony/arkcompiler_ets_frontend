@@ -24,3 +24,4 @@
 /test262/ignored*.txt		@shirunova_viktoria @gavin1012_hw @kuchkovairina @zhuheng27
 /test_ecma_bcopt/ @gavin1012_hw
 /ets2panda/linter/              @ragnvald
+/test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27

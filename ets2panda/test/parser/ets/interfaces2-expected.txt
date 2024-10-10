@@ -1,1 +1,0 @@
-SyntaxError: Interface declaration cannot have 'implements' clause. [interfaces2.ets:18:13]

@@ -72,11 +72,22 @@ public:
         return &queue_;
     }
 
+    bool IsAnyError()
+    {
+        return isAnyError_;
+    }
+
+    void SetIsAnyError(bool value)
+    {
+        isAnyError_ = value;
+    }
+
 private:
     static void HandleContextLiterals(public_lib::Context *context);
 
     CompileQueue queue_;
     std::vector<util::Plugin> const *plugins_;
+    bool isAnyError_ = false;
 };
 }  // namespace ark::es2panda::compiler
 

@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token '}'. [test-template-literal-2.js:17:6]

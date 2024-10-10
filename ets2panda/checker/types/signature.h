@@ -249,6 +249,11 @@ public:
         return (flags_ & flag) != 0U;
     }
 
+    [[nodiscard]] SignatureFlags GetFlags() const noexcept
+    {
+        return flags_;
+    }
+
     bool IsFinal() const noexcept
     {
         return HasSignatureFlag(SignatureFlags::FINAL);

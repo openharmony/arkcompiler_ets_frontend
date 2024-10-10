@@ -1,1 +1,0 @@
-SyntaxError: An index signature must have a type annotation. [ambient_indexer_4.ets:18:1]

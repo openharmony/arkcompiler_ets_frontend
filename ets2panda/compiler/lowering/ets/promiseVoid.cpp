@@ -16,7 +16,6 @@
 #include "promiseVoid.h"
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
-#include "compiler/core/ASTVerifier.h"
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ets/etsTypeReference.h"

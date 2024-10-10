@@ -87,6 +87,7 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
 {
     Substitution *substitution = checker->NewSubstitution();
     auto *sigInfo = signature->GetSignatureInfo();
+    auto &sigParams = signature->GetSignatureInfo()->typeParams;
 
     for (size_t ix = 0; ix < arguments.size(); ix++) {
         auto *arg = arguments[ix];
@@ -111,16 +112,22 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
         }
     }
 
-    if (substitution->size() != sigInfo->typeParams.size()) {
-        for (const auto it : sigInfo->typeParams) {
-            if (substitution->find(it->AsETSTypeParameter()) == substitution->end() &&
-                it->AsETSTypeParameter()->GetDefaultType() != nullptr) {
-                ETSChecker::EmplaceSubstituted(substitution, it->AsETSTypeParameter(),
-                                               it->AsETSTypeParameter()->GetDefaultType());
+    if (substitution->size() != sigParams.size()) {
+        for (const auto typeParam : sigParams) {
+            auto newTypeParam = typeParam->AsETSTypeParameter();
+            if (auto it = substitution->find(newTypeParam); it != substitution->cend()) {
+                continue;
+            }
+            if (newTypeParam->GetDefaultType() == nullptr) {
+                return nullptr;
+            }
+            auto dflt = newTypeParam->GetDefaultType()->Substitute(checker->Relation(), substitution);
+            if (!checker->EnhanceSubstitutionForType(sigInfo->typeParams, newTypeParam, dflt, substitution)) {
+                return nullptr;
             }
         }
 
-        if (substitution->size() != sigInfo->typeParams.size() &&
+        if (substitution->size() != sigParams.size() &&
             (signature->Function()->ReturnTypeAnnotation() == nullptr ||
              !checker->EnhanceSubstitutionForType(sigInfo->typeParams,
                                                   signature->Function()->ReturnTypeAnnotation()->TsType(),
@@ -139,10 +146,14 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
 {
     auto &sigParams = signature->GetSignatureInfo()->typeParams;
     auto *substitution = checker->NewSubstitution();
+    auto *constraintsSubstitution = checker->NewSubstitution();
     ArenaVector<Type *> instArgs {checker->Allocator()->Adapter()};
 
-    for (auto *taExpr : params) {
-        instArgs.push_back(MaybeBoxedType(checker, taExpr->GetType(checker), taExpr));
+    for (size_t ix = 0; ix < params.size(); ++ix) {
+        instArgs.push_back(MaybeBoxedType(checker, params[ix]->GetType(checker), params[ix]));
+        if (ix < sigParams.size()) {
+            ETSChecker::EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
+        }
     }
     for (size_t ix = instArgs.size(); ix < sigParams.size(); ++ix) {
         auto *dflt = sigParams[ix]->AsETSTypeParameter()->GetDefaultType();
@@ -150,7 +161,9 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
             break;
         }
 
+        dflt = dflt->Substitute(checker->Relation(), constraintsSubstitution);
         instArgs.push_back(dflt);
+        ETSChecker::EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
     }
     if (sigParams.size() != instArgs.size()) {
         if ((flags & TypeRelationFlag::NO_THROW) != 0) {
@@ -159,11 +172,6 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
         checker->ThrowTypeError({"Expected ", sigParams.size(), " type arguments, got ", instArgs.size(), " ."}, pos);
     }
 
-    auto *constraintsSubstitution = checker->NewSubstitution();
-
-    for (size_t ix = 0; ix < sigParams.size(); ix++) {
-        ETSChecker::EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
-    }
     for (size_t ix = 0; ix < sigParams.size(); ix++) {
         if (!checker->IsCompatibleTypeArgument(sigParams[ix]->AsETSTypeParameter(), instArgs[ix],
                                                constraintsSubstitution)) {
@@ -186,9 +194,7 @@ static Signature *MaybeSubstituteTypeParameters(ETSChecker *checker, Signature *
     const Substitution *substitution =
         (typeArguments != nullptr)
             ? BuildExplicitSubstitutionForArguments(checker, signature, typeArguments->Params(), pos, flags)
-            : (signature->GetSignatureInfo()->params.empty() && signature->GetSignatureInfo()->restVar == nullptr
-                   ? nullptr
-                   : BuildImplicitSubstitutionForArguments(checker, signature, arguments));
+            : BuildImplicitSubstitutionForArguments(checker, signature, arguments);
 
     return (substitution == nullptr) ? nullptr : signature->Substitute(checker->Relation(), substitution);
 }

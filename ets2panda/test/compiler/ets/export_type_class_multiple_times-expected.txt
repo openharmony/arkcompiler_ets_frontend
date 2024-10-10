@@ -1,1 +1,0 @@
-SyntaxError: Cannot export the same 'MyA' type twice. [export_type_class_multiple_times.ets:20:14]

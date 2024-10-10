@@ -103,21 +103,6 @@ private:
         }
     }
 
-    template <typename SType>
-    int CalculateIntValue(SType value)
-    {
-        if (std::isinf(value)) {
-            if (std::signbit(value)) {
-                return std::numeric_limits<int32_t>::min();
-            }
-            return std::numeric_limits<int32_t>::max();
-        }
-        if (std::isnan(value)) {
-            return 0;
-        }
-        return static_cast<int32_t>(value);
-    }
-
     template <typename From, typename To>
     To CastFloatingPointToIntOrLong(From value)
     {
@@ -153,7 +138,10 @@ private:
             case TypeFlag::BYTE:
             case TypeFlag::CHAR:
             case TypeFlag::SHORT: {
-                return CalculateIntValue<SType>(value);
+                if (source->HasTypeFlag(checker::TypeFlag::DOUBLE) || source->HasTypeFlag(checker::TypeFlag::FLOAT)) {
+                    return static_cast<TType>(CastFloatingPointToIntOrLong<SType, int32_t>(value));
+                }
+                return static_cast<TType>(value);
             }
             case TypeFlag::INT:
             case TypeFlag::LONG: {
@@ -180,6 +168,15 @@ private:
 
         if (Source()->HasTypeFlag(TypeFlag::CONSTANT)) {
             SType value = reinterpret_cast<SourceType *>(Source())->GetValue();
+            if (!Relation()->InCastingContext() && Source()->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT) &&
+                Target()->HasTypeFlag(TypeFlag::ETS_INTEGRAL)) {
+                auto narrowedValue = CalculateNarrowedValue<TType, SType>(Target(), Source(), value);
+                if (narrowedValue != value) {
+                    Relation()->Result(RelationResult::ERROR);
+                    return;
+                }
+            }
+
             if (Relation()->InCastingContext() || util::Helpers::IsTargetFitInSourceRange<TType, SType>(value)) {
                 auto narrowedValue = CalculateNarrowedValue<TType, SType>(Target(), Source(), value);
                 TargetType *newType = Checker()->Allocator()->New<TargetType>(narrowedValue);

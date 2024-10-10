@@ -1,1 +1,0 @@
-SyntaxError: Expected an identifier [test-object-expression4.js:18:3]

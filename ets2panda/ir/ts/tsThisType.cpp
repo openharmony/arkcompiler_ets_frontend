@@ -68,4 +68,19 @@ checker::Type *TSThisType::GetType([[maybe_unused]] checker::ETSChecker *checker
 {
     return checker->Context().ContainingClass();
 }
+
+TSThisType *TSThisType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<TSThisType>(); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        clone->SetRange(Range());
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 }  // namespace ark::es2panda::ir

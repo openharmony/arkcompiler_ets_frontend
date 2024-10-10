@@ -106,7 +106,7 @@
         },
         "right": {
           "type": "Identifier",
-          "name": "ets",
+          "name": "sts",
           "decorators": [],
           "loc": {
             "start": {

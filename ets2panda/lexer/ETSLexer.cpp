@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -91,56 +91,6 @@ void ETSLexer::CheckUtf16Compatible(char32_t cp) const
 {
     if (cp >= util::StringView::Constants::CELESTIAL_OFFSET) {
         ThrowError("Unsupported character literal");
-    }
-}
-
-void ETSLexer::SkipMultiLineComment()
-{
-    uint32_t depth = 1U;
-
-    // Just to reduce extra nested level(s)
-    auto const checkAsterisk = [this, &depth]() -> bool {
-        if (Iterator().Peek() == LEX_CHAR_SLASH) {
-            Iterator().Forward(1);
-
-            if (--depth == 0U) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    while (true) {
-        switch (Iterator().Next()) {
-            case util::StringView::Iterator::INVALID_CP: {
-                ThrowError("Unterminated multi-line comment");
-                break;
-            }
-            case LEX_CHAR_LF:
-            case LEX_CHAR_CR:
-            case LEX_CHAR_LS:
-            case LEX_CHAR_PS: {
-                Pos().NextTokenLine()++;
-                continue;
-            }
-            case LEX_CHAR_ASTERISK: {
-                if (!checkAsterisk()) {
-                    return;
-                }
-                break;
-            }
-            case LEX_CHAR_SLASH: {
-                if (Iterator().Peek() == LEX_CHAR_ASTERISK) {
-                    Iterator().Forward(1);
-                    depth++;
-                }
-                break;
-            }
-
-            default: {
-                break;
-            }
-        }
     }
 }
 

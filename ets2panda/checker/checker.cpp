@@ -88,6 +88,19 @@ void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePositi
     throw Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col};
 }
 
+void Checker::LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+{
+    LogTypeError(FormatMsg(list), pos);
+}
+
+void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition &pos)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    errorLogger_.WriteLog(Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col});
+}
+
 void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
 {
     lexer::LineIndex index(program_->SourceCode());

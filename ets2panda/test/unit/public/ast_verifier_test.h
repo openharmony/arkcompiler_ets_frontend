@@ -16,7 +16,7 @@
 #ifndef TEST_UNIT_PUBLIC_AST_VERIFIER_TEST_H
 #define TEST_UNIT_PUBLIC_AST_VERIFIER_TEST_H
 
-#include "compiler/core/ASTVerifier.h"
+#include "ast_verifier/ASTVerifier.h"
 #include "test/utils/panda_executable_path_getter.h"
 
 #include <gtest/gtest.h>

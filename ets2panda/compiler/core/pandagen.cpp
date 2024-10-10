@@ -939,80 +939,88 @@ void PandaGen::Call1This(const ir::AstNode *node, VReg callee, VReg thisReg, VRe
     Ra().Emit<EcmaCall1thisdyn>(node, callee, thisReg);
 }
 
+void PandaGen::Call0Args(const ir::AstNode *n, VReg c, VReg thisR, bool hasThis)
+{
+    if (hasThis) {
+        Call0This(n, c, thisR);
+    } else {
+        Sa().Emit<EcmaCall0dyn>(n);
+    }
+}
+
+void PandaGen::Call1Arg(const ir::AstNode *n, VReg c, VReg thisR, const ArenaVector<ir::Expression *> &args,
+                        bool hasThis)
+{
+    const auto *arg0 = args[0];
+    arg0->Compile(this);
+
+    if (hasThis) {
+        Ra().Emit<EcmaCall1thisdyn>(n, c, thisR);
+    } else {
+        Ra().Emit<EcmaCall1dyn>(n, c);
+    }
+}
+
+void PandaGen::Call2Args(const ir::AstNode *n, VReg c, VReg thisR, const ArenaVector<ir::Expression *> &args,
+                         bool hasThis)
+{
+    const auto *arg0 = args[0];
+    arg0->Compile(this);
+    compiler::VReg arg0Reg = AllocReg();
+    StoreAccumulator(arg0, arg0Reg);
+
+    const auto *arg1 = args[1];
+    arg1->Compile(this);
+
+    if (hasThis) {
+        Ra().Emit<EcmaCall2thisdyn>(n, c, thisR, arg0Reg);
+    } else {
+        Ra().Emit<EcmaCall2dyn>(n, c, arg0Reg);
+    }
+}
+
+void PandaGen::Call3Args(const ir::AstNode *n, VReg c, VReg thisR, const ArenaVector<ir::Expression *> &args,
+                         bool hasThis)
+{
+    const auto *arg0 = args[0];
+    arg0->Compile(this);
+    compiler::VReg arg0Reg = AllocReg();
+    StoreAccumulator(arg0, arg0Reg);
+
+    const auto *arg1 = args[1];
+    arg1->Compile(this);
+    compiler::VReg arg1Reg = AllocReg();
+    StoreAccumulator(arg1, arg1Reg);
+
+    const auto *arg2 = args[2];
+    arg2->Compile(this);
+
+    if (hasThis) {
+        Ra().Emit<EcmaCall3thisdyn>(n, c, thisR, arg0Reg, arg1Reg);
+    } else {
+        Ra().Emit<EcmaCall3dyn>(n, c, arg0Reg, arg1Reg);
+    }
+}
+
 void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg thisReg, const ArenaVector<ir::Expression *> &arguments)
 {
     bool hasThis = !thisReg.IsInvalid();
-    const auto call0Args = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR) {
-        if (hasThis) {
-            Call0This(n, c, thisR);
-        } else {
-            Sa().Emit<EcmaCall0dyn>(n);
-        }
-    };
-    const auto call1Arg = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR,
-                                          const ArenaVector<ir::Expression *> &args) {
-        const auto *arg0 = args[0];
-        arg0->Compile(this);
-
-        if (hasThis) {
-            Ra().Emit<EcmaCall1thisdyn>(n, c, thisR);
-        } else {
-            Ra().Emit<EcmaCall1dyn>(n, c);
-        }
-    };
-    const auto call2Args = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR,
-                                           const ArenaVector<ir::Expression *> &args) {
-        const auto *arg0 = args[0];
-        arg0->Compile(this);
-        compiler::VReg arg0Reg = AllocReg();
-        StoreAccumulator(arg0, arg0Reg);
-
-        const auto *arg1 = args[1];
-        arg1->Compile(this);
-
-        if (hasThis) {
-            Ra().Emit<EcmaCall2thisdyn>(n, c, thisR, arg0Reg);
-        } else {
-            Ra().Emit<EcmaCall2dyn>(n, c, arg0Reg);
-        }
-    };
-    const auto call3Args = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR,
-                                           const ArenaVector<ir::Expression *> &args) {
-        const auto *arg0 = args[0];
-        arg0->Compile(this);
-        compiler::VReg arg0Reg = AllocReg();
-        StoreAccumulator(arg0, arg0Reg);
-
-        const auto *arg1 = args[1];
-        arg1->Compile(this);
-        compiler::VReg arg1Reg = AllocReg();
-        StoreAccumulator(arg1, arg1Reg);
-
-        const auto *arg2 = args[2];
-        arg2->Compile(this);
-
-        if (hasThis) {
-            Ra().Emit<EcmaCall3thisdyn>(n, c, thisR, arg0Reg, arg1Reg);
-        } else {
-            Ra().Emit<EcmaCall3dyn>(n, c, arg0Reg, arg1Reg);
-        }
-    };
 
     switch (arguments.size()) {
         case 0: {  // 0 args
-            call0Args(node, callee, thisReg);
+            Call0Args(node, callee, thisReg, hasThis);
             return;
         }
         case 1: {  // 1 arg
-            call1Arg(node, callee, thisReg, arguments);
+            Call1Arg(node, callee, thisReg, arguments, hasThis);
             return;
         }
         case 2: {  // 2 args
-            call2Args(node, callee, thisReg, arguments);
+            Call2Args(node, callee, thisReg, arguments, hasThis);
             return;
         }
         case 3: {  // 3 args
-            call3Args(node, callee, thisReg, arguments);
+            Call3Args(node, callee, thisReg, arguments, hasThis);
             return;
         }
         default: {
@@ -1036,23 +1044,9 @@ void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg thisReg, const Ar
     }
 }
 
-void PandaGen::CallTagged(const ir::AstNode *node, VReg callee, VReg thisReg,
-                          const ArenaVector<ir::Expression *> &arguments)
+bool PandaGen::CallArgsTagged(const ir::AstNode *node, VReg callee, VReg thisReg,
+                              const ArenaVector<ir::Expression *> &arguments, bool hasThis)
 {
-    bool hasThis = !thisReg.IsInvalid();
-
-    StoreAccumulator(node, callee);
-    Literals::GetTemplateObject(this, node->AsTaggedTemplateExpression());
-
-    if (arguments.empty()) {
-        if (hasThis) {
-            Ra().Emit<EcmaCall1thisdyn>(node, callee, thisReg);
-        } else {
-            Sa().Emit<EcmaCall1dyn>(node, callee);
-        }
-        return;
-    }
-
     VReg arg0Reg = AllocReg();
     StoreAccumulator(node, arg0Reg);
 
@@ -1087,15 +1081,38 @@ void PandaGen::CallTagged(const ir::AstNode *node, VReg callee, VReg thisReg,
     switch (arguments.size()) {
         case 1: {
             call1(node, callee, thisReg, arguments);
-            return;
+            return true;
         }
         case 2: {  // 2:2 args
             call2(node, callee, thisReg, arguments);
-            return;
+            return true;
         }
         default: {
             break;
         }
+    }
+    return false;
+}
+
+void PandaGen::CallTagged(const ir::AstNode *node, VReg callee, VReg thisReg,
+                          const ArenaVector<ir::Expression *> &arguments)
+{
+    bool hasThis = !thisReg.IsInvalid();
+
+    StoreAccumulator(node, callee);
+    Literals::GetTemplateObject(this, node->AsTaggedTemplateExpression());
+
+    if (arguments.empty()) {
+        if (hasThis) {
+            Ra().Emit<EcmaCall1thisdyn>(node, callee, thisReg);
+        } else {
+            Sa().Emit<EcmaCall1dyn>(node, callee);
+        }
+        return;
+    }
+
+    if (CallArgsTagged(node, callee, thisReg, arguments, hasThis)) {
+        return;
     }
 
     for (const auto *it : arguments) {

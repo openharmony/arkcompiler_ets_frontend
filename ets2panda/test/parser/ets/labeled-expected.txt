@@ -1,1 +1,0 @@
-SyntaxError: Label must be followed by a loop statement [labeled.ets:19:13]

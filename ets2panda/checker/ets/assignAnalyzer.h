@@ -37,15 +37,15 @@ public:
 
     void Reset();
     bool IsReset();
-    void Incl(int id);
-    void InclRange(int start, int limit);
-    void ExcludeFrom(int start);
-    void Excl(int id);
-    bool IsMember(int id) const;
+    void Incl(const int id);
+    void InclRange(const int start, const int limit);
+    void ExcludeFrom(const int start);
+    void Excl(const int id);
+    bool IsMember(const int id) const;
     Set &AndSet(const Set &xs);
     Set &OrSet(const Set &xs);
     Set &DiffSet(const Set &xs);
-    int Next(int id);
+    int Next(const int id);
 
 protected:
     void InternalAndSet(const Set &xs);

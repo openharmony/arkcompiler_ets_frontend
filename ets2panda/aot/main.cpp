@@ -57,8 +57,11 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
     if (program == nullptr) {
         const auto &err = compiler.GetError();
 
-        // Intentional exit or --parse-only option usage.
         if (err.Type() == ErrorType::INVALID) {
+            if (compiler.IsAnyError()) {
+                return 1;
+            }
+            // Intentional exit or --parse-only option usage.
             return 0;
         }
 
@@ -146,7 +149,7 @@ static int Run(int argc, const char **argv)
     std::string_view sourceFile;
     std::string_view parserInput;
     if (options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        sourceFile = "etsstdlib.ets";
+        sourceFile = "etsstdlib.sts";
         parserInput = "";
     } else {
         sourceFile = options->SourceFile();

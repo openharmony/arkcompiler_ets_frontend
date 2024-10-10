@@ -1,1 +1,0 @@
-TypeError: Type 'double' cannot be assigned to type 'String' [dynamic_class_method_decl_import_bad_2.ets:23:21]

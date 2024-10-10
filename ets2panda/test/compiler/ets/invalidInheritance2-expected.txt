@@ -1,1 +1,0 @@
-SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [invalidInheritance2.ets:24:5]

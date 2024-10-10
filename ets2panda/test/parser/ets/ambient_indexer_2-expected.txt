@@ -1,1 +1,0 @@
-SyntaxError: Identifier expected. [ambient_indexer_2.ets:17:6]

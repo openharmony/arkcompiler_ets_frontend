@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token ''. [lambda_infer_type_param1.ets:17:38]

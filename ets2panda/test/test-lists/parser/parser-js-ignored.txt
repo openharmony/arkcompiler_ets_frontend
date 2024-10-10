@@ -1,68 +1,16 @@
-# panda#15005: Added to the skip list to stabilize fe_dev_202312
-parser/ets/declare_iface.ets
-parser/ets/interfaces.ets
-parser/ets/test_interface.ets
-# End of panda#15005
-
-parser/ets/import_tests/modules/module.ets
-parser/ets/import_tests/import_class_members_1.ets
-parser/ets/import_tests/import_class_members_2.ets
-parser/ets/import_tests/import_class_members_3.ets
-parser/ets/import_tests/import_invalid_package.ets
-parser/ets/import_tests/import_name_conflict_1.ets
-parser/ets/import_tests/import_name_conflict_3.ets
-parser/ets/import_tests/import_nested_class_1.ets
-parser/ets/import_tests/import_nested_class_2.ets
-parser/ets/import_tests/import_nested_class_3.ets
-parser/ets/import_tests/import_separate_module.ets
-parser/ets/import_tests/import_several_8.ets
-# panda#17052
-parser/ets/import_tests/import_recursive.ets
-parser/ets/import_tests/packages/recursive/subpackage/subpackage_module_1.ets
-parser/ets/import_tests/packages/recursive/subpackage_module_1.ets
-
-# panda#11580 ([ETS front-end] Overriding issues)
-compiler/ets/override3.ets
-compiler/ets/override4.ets
-compiler/ets/override5.ets
-
-# Requires smart casts
-parser/ets/null-coalesc-negative.ets
-
 # Lambda tests, disabled because crash during compiler
-parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_variable.ets
+parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_variable.sts
 
 # Bad test shadows Object with type parameter name #14913
-compiler/ets/override13.ets
+compiler/ets/override13.sts
 
 # 15095
-compiler/ets/override17.ets
+compiler/ets/override17.sts
 
 # Throwing function types
-compiler/ets/throwingFunctionType2.ets
-compiler/ets/throwingFunctionAsParameter2.ets
-
-# 15276
-parser/ets/n_overrideWithNullable.ets
-parser/ets/nullableType.ets
-
-# 15577 inference for union-typed targets
-compiler/ets/optionalLambdaParameter.ets
-compiler/ets/tuple_types_9_neg.ets
-
-# 15771 broken ast varbinder scopes in etsglobal
-parser/ets/optional-chaining-array.ets
-parser/ets/optional_chaining_invalid_property.ets
-parser/ets/optional_chaining_nested_property.ets
-parser/ets/optional_chaining_object_property.ets
+compiler/ets/throwingFunctionType2.sts
+compiler/ets/throwingFunctionAsParameter2.sts
 
 # 15642
-compiler/ets/etsObjectToString4.ets
-compiler/ets/generic_variance_1.ets
-
-# Related to void revert
-compiler/ets/lambda_infer_type/lambda_cast_infer_type_void.ets
-
-# panda#15575
-compiler/ets/promiseVoid.ets
-
+compiler/ets/etsObjectToString4.sts
+compiler/ets/generic_variance_1.sts

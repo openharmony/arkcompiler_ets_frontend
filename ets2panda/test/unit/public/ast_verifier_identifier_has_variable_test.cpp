@@ -25,6 +25,7 @@ using ark::es2panda::compiler::ast_verifier::ASTVerifier;
 using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
 using ark::es2panda::ir::AstNode;
 
+namespace {
 TEST_F(ASTVerifierTest, LabelsHaveReferences)
 {
     ASTVerifier verifier {Allocator()};
@@ -37,7 +38,7 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -70,7 +71,7 @@ TEST_F(ASTVerifierTest, ExtensionFunction)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -95,7 +96,7 @@ TEST_F(ASTVerifierTest, Imports)
         import * as Time from "std/time";
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -121,7 +122,7 @@ TEST_F(ASTVerifierTest, TSQualifiedName)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
@@ -134,3 +135,86 @@ TEST_F(ASTVerifierTest, TSQualifiedName)
 
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        let b = 1;
+        let f = (p: double) => b + p;
+        function main () {
+            assert f(42) == 43
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("IdentifierHasVariableForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, Lambdas)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        type asyncLambda = () => Promise<void>;
+
+        async function asyncFunc(): Promise<boolean> {
+            return true;
+        }
+
+        function callAsyncLambda(): void {
+            let is_call_async_lambda: boolean = false;
+
+            let async_lambda: asyncLambda = async (): Promise<void> => {
+                await asyncFunc();
+                is_call_async_lambda = true;
+            };
+        }
+
+        type I2v = (i: int) => void;
+        type T1 = (lambda: (arg: int) => int, arg: int) => int;
+        type T2 = (c: int) => int;
+
+        const F1: I2v = (counter: int) => {
+            let funcWithLambda: T1 = (lambda: (arg: int) => int, arg: int) => {
+                return lambda(arg);
+            };
+
+            let it: T2 = (c: int): int => {
+                return c;
+            };
+
+            while (counter > 0) counter = funcWithLambda(it, counter);
+        };
+
+        function main() {
+            F1(44);
+            return 0;
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("IdentifierHasVariableForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+}  // namespace

@@ -20,6 +20,7 @@
 
 #include "checker/checkerContext.h"
 #include "checker/SemanticAnalyzer.h"
+#include "util/errorLogger.h"
 
 namespace ark::es2panda::parser {
 class Program;
@@ -166,6 +167,8 @@ public:
     [[noreturn]] void ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos);
     [[noreturn]] void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list,
                                      const lexer::SourcePosition &pos);
+    void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
+    void LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
     void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
     void ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
 
@@ -195,6 +198,11 @@ public:
 
     varbinder::VarBinder *VarBinder() const;
 
+    util::ErrorLogger *ErrorLogger()
+    {
+        return &errorLogger_;
+    }
+
 protected:
     void Initialize(varbinder::VarBinder *varbinder);
     parser::Program *Program() const;
@@ -209,6 +217,7 @@ private:
     varbinder::VarBinder *varbinder_ {};
     parser::Program *program_ {};
     varbinder::Scope *scope_ {};
+    util::ErrorLogger errorLogger_;
 
     RelationHolder identicalResults_ {{}, RelationType::IDENTICAL};
     RelationHolder assignableResults_ {{}, RelationType::ASSIGNABLE};
@@ -308,7 +317,12 @@ public:
                                  Signature *containingSignature)
         : checker_(checker), prev_(checker->context_)
     {
+        const bool inExternal = checker->HasStatus(CheckerStatus::IN_EXTERNAL);
         checker_->context_ = CheckerContext(checker, newStatus, containingClass, containingSignature);
+        if (inExternal) {
+            // handled here instead of at call sites to make things more foolproof
+            checker_->context_.Status() |= CheckerStatus::IN_EXTERNAL;
+        }
     }
 
     NO_COPY_SEMANTIC(SavedCheckerContext);

@@ -508,6 +508,8 @@ public:
     void CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeFlag);
     void CastToReftype(const ir::AstNode *node, const checker::Type *targetType, bool unchecked);
     void CastDynamicToObject(const ir::AstNode *node, const checker::Type *targetType);
+    void CastUnionToFunctionType(const ir::AstNode *node, const checker::ETSUnionType *unionType,
+                                 checker::Signature *signatureTarget);
 
     void InternalIsInstance(const ir::AstNode *node, const checker::Type *target);
     void InternalCheckCast(const ir::AstNode *node, const checker::Type *target);
@@ -663,6 +665,8 @@ public:
     ~ETSGen() override = default;
     NO_COPY_SEMANTIC(ETSGen);
     NO_MOVE_SEMANTIC(ETSGen);
+
+    void EmitUnboxEnum(const ir::AstNode *node, const checker::Type *enumType);
 
 private:
     const VReg dummyReg_ = VReg::RegStart();
@@ -830,7 +834,7 @@ private:
                 BinaryNumberComparison<CmpWide, CondCompare>(node, lhs, ifFalse);
                 break;
             }
-            case checker::TypeFlag::ETS_ENUM:
+            case checker::TypeFlag::ETS_INT_ENUM:
             case checker::TypeFlag::ETS_STRING_ENUM:
             case checker::TypeFlag::ETS_BOOLEAN:
             case checker::TypeFlag::BYTE:
@@ -1209,8 +1213,8 @@ void ETSGen::SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag
         }
         case checker::TypeFlag::ETS_STRING_ENUM:
             [[fallthrough]];
-        case checker::TypeFlag::ETS_ENUM: {
-            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumInterface::UType>(number));
+        case checker::TypeFlag::ETS_INT_ENUM: {
+            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumType::UType>(number));
             SetAccumulatorType(Checker()->GlobalIntType());
             break;
         }

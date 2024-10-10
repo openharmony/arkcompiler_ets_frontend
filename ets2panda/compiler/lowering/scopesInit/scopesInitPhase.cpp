@@ -840,6 +840,7 @@ void AddOverload(ir::MethodDefinition *overload, varbinder::Variable *variable) 
     auto *currentNode = variable->Declaration()->Node();
     currentNode->AsMethodDefinition()->AddOverload(overload);
     overload->Id()->SetVariable(variable);
+    overload->SetParent(currentNode);
 }
 
 void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
@@ -963,10 +964,16 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 void InitScopesPhaseETS::VisitETSFunctionType(ir::ETSFunctionType *funcType)
 {
     auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), funcType->TypeParams());
-    varbinder::LexicalScope<varbinder::FunctionParamScope> lexicalScope(VarBinder());
-    auto *funcParamScope = lexicalScope.GetScope();
-    BindScopeNode(funcParamScope, funcType);
-    Iterate(funcType);
+
+    // Check for existing scope
+    // In some cases we can visit function again with scope that already exists
+    // Example: async lambda, we "move" original function to another place and visit it again
+    if (funcType->Scope() == nullptr) {
+        varbinder::LexicalScope<varbinder::FunctionParamScope> lexicalScope(VarBinder());
+        auto *funcParamScope = lexicalScope.GetScope();
+        BindScopeNode(funcParamScope, funcType);
+        Iterate(funcType);
+    }
 }
 
 void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *newClassExpr)

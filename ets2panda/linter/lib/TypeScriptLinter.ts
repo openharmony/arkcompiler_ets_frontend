@@ -114,7 +114,7 @@ export class TypeScriptLinter {
      * some syntax elements are ArkTs-specific and are only implemented inside patched
      * compiler, so we initialize those handlers if corresponding properties do exist
      */
-    const etsComponentExpression: ts.SyntaxKind | undefined = (ts.SyntaxKind as any).EtsComponentExpression;
+    const etsComponentExpression: ts.SyntaxKind | undefined = ts.SyntaxKind.EtsComponentExpression;
     if (etsComponentExpression) {
       this.handlersMap.set(etsComponentExpression, this.handleEtsComponentExpression);
     }
@@ -491,7 +491,7 @@ export class TypeScriptLinter {
       return;
     }
     const arrayLitNode = node as ts.ArrayLiteralExpression;
-    let noContextTypeForArrayLiteral = false;
+    let emptyContextTypeForArrayLiteral = false;
 
     const arrayLitType = this.tsTypeChecker.getContextualType(arrayLitNode);
     if (arrayLitType && this.tsUtils.typeContainsSendableClassOrInterface(arrayLitType)) {
@@ -511,7 +511,7 @@ export class TypeScriptLinter {
           !this.tsUtils.isDynamicLiteralInitializer(arrayLitNode) &&
           !this.tsUtils.isObjectLiteralAssignable(elementContextType, element)
         ) {
-          noContextTypeForArrayLiteral = true;
+          emptyContextTypeForArrayLiteral = true;
           break;
         }
       }
@@ -519,7 +519,7 @@ export class TypeScriptLinter {
         this.checkAssignmentMatching(element, elementContextType, element, true);
       }
     }
-    if (noContextTypeForArrayLiteral) {
+    if (emptyContextTypeForArrayLiteral) {
       this.incrementCounters(node, FaultID.ArrayLiteralNoContextType);
     }
   }
@@ -2070,8 +2070,9 @@ export class TypeScriptLinter {
         this.incrementCounters(calleeExpr, FaultID.ClassAsObject);
       }
     }
+    const sym = this.tsUtils.trueSymbolAtLocation(tsNewExpr.expression);
     const callSignature = this.tsTypeChecker.getResolvedSignature(tsNewExpr);
-    if (callSignature !== undefined) {
+    if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(sym)) {
       this.handleStructIdentAndUndefinedInArgs(tsNewExpr, callSignature);
       this.handleGenericCallWithNoTypeArgs(tsNewExpr, callSignature);
     }
@@ -2476,18 +2477,19 @@ export class TypeScriptLinter {
 
   private handleConstructorDeclaration(node: ts.Node): void {
     const ctorDecl = node as ts.ConstructorDeclaration;
-    if (
-      ctorDecl.parameters.some((x) => {
-        return this.tsUtils.hasAccessModifier(x);
-      })
-    ) {
-      let paramTypes: ts.TypeNode[] | undefined;
-      if (ctorDecl.body) {
-        paramTypes = this.collectCtorParamTypes(ctorDecl);
-      }
-
-      const autofix = this.autofixer?.fixCtorParameterProperties(ctorDecl, paramTypes);
-      this.incrementCounters(node, FaultID.ParameterProperties, autofix);
+    const paramProperties = ctorDecl.parameters.filter((x) => {
+      return this.tsUtils.hasAccessModifier(x);
+    });
+    if (paramProperties.length === 0) {
+      return;
+    }
+    let paramTypes: ts.TypeNode[] | undefined;
+    if (ctorDecl.body) {
+      paramTypes = this.collectCtorParamTypes(ctorDecl);
+    }
+    const autofix = this.autofixer?.fixCtorParameterProperties(ctorDecl, paramTypes);
+    for (const param of paramProperties) {
+      this.incrementCounters(param, FaultID.ParameterProperties, autofix);
     }
   }
 

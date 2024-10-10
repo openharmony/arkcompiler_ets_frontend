@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token ';'. [test-throw-statement-without-expression.js:17:7]

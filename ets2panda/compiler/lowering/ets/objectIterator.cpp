@@ -160,12 +160,19 @@ bool ObjectIteratorLowering::Perform(public_lib::Context *ctx, parser::Program *
     auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
     ASSERT(varbinder != nullptr);
 
+    auto hasIterator = [](checker::Type const *const exprType) -> bool {
+        return exprType != nullptr &&
+               ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) || exprType->IsETSTypeParameter());
+    };
+
     program->Ast()->TransformChildrenRecursively(
-        [this, parser, checker, varbinder](ir::AstNode *ast) -> ir::AstNode * {
+        // clang-format off
+        [this, parser, checker, varbinder, &hasIterator](ir::AstNode *ast) -> ir::AstNode* {
+            // clang-format on
             if (ast->IsForOfStatement()) {
                 if (auto const *const exprType = ast->AsForOfStatement()->Right()->TsType();
-                    exprType != nullptr && ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) ||
-                                            exprType->IsETSUnionType() || exprType->IsETSTypeParameter())) {
+                    hasIterator(exprType) || (exprType != nullptr && exprType->IsETSUnionType() &&
+                                              exprType->AsETSUnionType()->AllOfConstituentTypes(hasIterator))) {
                     return ProcessObjectIterator(parser, checker, varbinder, ast->AsForOfStatement());
                 }
             }

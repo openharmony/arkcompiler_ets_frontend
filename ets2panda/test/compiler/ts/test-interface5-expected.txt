@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token in property key [test-interface5.ts:17:24]

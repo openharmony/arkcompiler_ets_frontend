@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token [test-multiple-update-expression.js:17:5]

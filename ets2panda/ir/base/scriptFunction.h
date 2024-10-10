@@ -83,6 +83,11 @@ public:
         return irSignature_.Params();
     }
 
+    size_t DefaultParamIndex() const noexcept
+    {
+        return this->irSignature_.DefaultParamIndex();
+    }
+
     const ArenaVector<ReturnStatement *> &ReturnStatements() const
     {
         return returnStatements_;

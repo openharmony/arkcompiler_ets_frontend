@@ -1,76 +1,84 @@
 # SyntaxError: Cannot find type 'Class'.
 # panda#10421
-ClassNewInstance.ets
+ClassNewInstance.sts
 
 # SyntaxError: Cannot find type 'HashMap'.
 # panda#10422
-StringFasta.ets
+StringFasta.sts
 
 # SyntaxError: Cannot find type 'Class'.
 # panda#10423
-generics_1.ets
+generics_1.sts
 
 # panda#11502
-nullCoalesc.ets
+nullCoalesc.sts
 
 # panda#11104
-unboxing.ets
+unboxing.sts
 
 # panda#11326
-GenericsTest.ets
+GenericsTest.sts
 
 # panda#11327
-objectEquality.ets
+objectEquality.sts
 
 # FailKind.ES2PANDA_FAIL # panda#12518
-CastReference3.ets
-conditionalExpressionGenericLUB.ets
+CastReference3.sts
+conditionalExpressionGenericLUB.sts
 
 # Failed due to lambda captures
-trailing-lambda-with-capture.ets
+trailing-lambda-with-capture.sts
 
 # ignored until union types are properly implemented and non nullish base type of array types can be properly handled
-notNullMultidimensionalArray.ets
+notNullMultidimensionalArray.sts
 
 # ignored until verifier can't handle if a field name can be static and non-static at the same time
-class-fields-same-name.ets
+class-fields-same-name.sts
 
 # Disabled temporarily #I8EM2T implementation struct directly expanded to class
-struct-identifier.ets
-struct-init.ets
-struct-init2.ets
-struct_implements.ets
-top_level_03.ets
+struct-identifier.sts
+struct-init.sts
+struct-init2.sts
+struct_implements.sts
+top_level_03.sts
 
 # Functional type with rest parameter
-lambdaExpressionWithRestParameter.ets
-funcRefWithRestArguments.ets
+lambdaExpressionWithRestParameter.sts
+funcRefWithRestArguments.sts
 
 # Wrong type inferred for lambda
-type_param_in_union.ets
+type_param_in_union.sts
 
 # verifier false positive for 64 bit instructions on union types.
 # Issue: #16216
-union_wide_property_access.ets
+union_wide_property_access.sts
 
 # Issue: #16049
-increment-on-nullish-type.ets
+increment-on-nullish-type.sts
 
 # Issue: #17711
-annotation_tests/AnnotationDeclare01.ets
-annotation_tests/AnnotationDeclare02.ets
-annotation_tests/AnnotationForAbstractClass.ets
-annotation_tests/AnnotationForFunction01.ets
-annotation_tests/AnnotationForFunction02.ets
-annotation_tests/AnnotationNoNeedToSetProperties01.ets
-annotation_tests/AnnotationNoNeedToSetProperties02.ets
-annotation_tests/AnnotationNoNeedToSetProperties03.ets
-annotation_tests/AnnotationsDefineAndUseForClass.ets
-annotation_tests/AnnotationsFieldType01.ets
-annotation_tests/AnnotationsFieldType02.ets
-annotation_tests/AnnotationsFieldType03.ets
-annotation_tests/AnnotationsFieldType04.ets
-annotation_tests/ExportForAnnotation01.ets
-annotation_tests/ImportForAnnotation01.ets
-annotation_tests/ImportForAnnotation02.ets
-annotation_tests/Muti-AnnotationsDefineAndUseForClass.ets
+annotation_tests/AnnotationDeclare01.sts
+annotation_tests/AnnotationDeclare02.sts
+annotation_tests/AnnotationForAbstractClass.sts
+annotation_tests/AnnotationForFunction01.sts
+annotation_tests/AnnotationForFunction02.sts
+annotation_tests/AnnotationNoNeedToSetProperties01.sts
+annotation_tests/AnnotationNoNeedToSetProperties02.sts
+annotation_tests/AnnotationNoNeedToSetProperties03.sts
+annotation_tests/AnnotationsDefineAndUseForClass.sts
+annotation_tests/AnnotationsFieldType01.sts
+annotation_tests/AnnotationsFieldType02.sts
+annotation_tests/AnnotationsFieldType03.sts
+annotation_tests/AnnotationsFieldType04.sts
+annotation_tests/ExportForAnnotation01.sts
+annotation_tests/ImportForAnnotation01.sts
+annotation_tests/ImportForAnnotation02.sts
+annotation_tests/Muti-AnnotationsDefineAndUseForClass.sts
+
+# 15276
+n_overrideWithNullable.sts
+nullableType.sts
+
+#Issue 17949
+#SyntaxError: Cannot find type 'C'.
+lambdaWithLocalClassAccess.sts

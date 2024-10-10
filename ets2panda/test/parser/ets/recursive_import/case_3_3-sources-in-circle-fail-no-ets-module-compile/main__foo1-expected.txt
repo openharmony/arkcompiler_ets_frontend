@@ -1,1 +1,0 @@
-SyntaxError: Please compile `main__foo1.ets` with `--ets-module` option. It is being imported by another file. [foo2__module.ets:16:17]
