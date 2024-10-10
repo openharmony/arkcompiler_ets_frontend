@@ -91,7 +91,7 @@ void ETSEnumType::Cast(TypeRelation *relation, Type *target)
         return;
     }
 
-    if (target->IsIntType()) {
+    if (target->HasTypeFlag(TypeFlag::ETS_NUMERIC)) {
         relation->Result(true);
         return;
     }
