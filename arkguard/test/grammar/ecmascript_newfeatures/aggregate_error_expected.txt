@@ -13,22 +13,22 @@
  * limitations under the License.
  */
 import assert = require('assert');
-const g = new Promise((w, x) => {
-    setTimeout(() => x(new Error('Promise 1 error')), 1000);
+const g = new Promise((p, q) => {
+    setTimeout(() => q(new Error('Promise 1 error')), 1000);
 });
-const h = new Promise((t, u) => {
-    setTimeout(() => u(new Error('Promise 2 error')), 2000);
+const h = new Promise((n, o) => {
+    setTimeout(() => o(new Error('Promise 2 error')), 2000);
 });
-const i = new Promise((q, r) => {
-    setTimeout(() => r(new Error('Promise 3 error')), 3000);
+const i = new Promise((l, m) => {
+    setTimeout(() => m(new Error('Promise 3 error')), 3000);
 });
 Promise.any([g, h, i])
-    .then((p) => {
+    .then((k) => {
 })
-    .catch((o) => {
-    if (o instanceof AggregateError) {
-        assert(o.errors[0].message === 'Promise 1 error', 'success');
-        assert(o.errors[1].message === 'Promise 2 error', 'success');
-        assert(o.errors[2].message === 'Promise 3 error', 'success');
+    .catch((j) => {
+    if (j instanceof AggregateError) {
+        assert(j.errors[0].message === 'Promise 1 error', 'success');
+        assert(j.errors[1].message === 'Promise 2 error', 'success');
+        assert(j.errors[2].message === 'Promise 3 error', 'success');
     }
 });

@@ -582,10 +582,10 @@ namespace secharmony {
         if (NodeUtils.isNewTargetNode(node)) {
           return node;
         }
-        
-        let sym: Symbol | undefined = checker.getSymbolAtLocation(node);
+
+        let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
         let mangledPropertyNameOfNoSymbolImportExport = '';
-        if ((!sym || sym.name === 'default')) {
+        if (!sym) {
           if (exportObfuscation && noSymbolIdentifier.has(node.text) && trySearchImportExportSpecifier(node)) {
             mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(node.text);
           } else {

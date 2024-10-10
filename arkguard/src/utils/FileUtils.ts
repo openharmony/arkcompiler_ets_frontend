@@ -32,7 +32,7 @@ export class FileUtils {
    */
   public static readFile(filePath: string): string | undefined {
     if (!existsSync(filePath)) {
-      console.error(`File <${this.getFileName(filePath)} is not found.>`);
+      console.error(`File <${this.getFileName(filePath)}> is not found.`);
       return undefined;
     }
     return readFileSync(filePath, 'utf-8');
@@ -45,7 +45,7 @@ export class FileUtils {
    */
   public static readFileAsJson(filePath: string): IOptions | undefined {
     if (!existsSync(filePath)) {
-      console.error(`File <${this.getFileName(filePath)} is not found.>`);
+      console.error(`File <${this.getFileName(filePath)}> is not found.`);
       return undefined;
     }
 
@@ -182,5 +182,11 @@ export class FileUtils {
   public static getAbsPathBaseConfigPath(configPath: string, relativePath: string): string {
     const absPath: string = path.join(path.dirname(configPath), relativePath);
     return this.toUnixPath(absPath);
+  }
+
+  public static deleteFile(filePath: string): void {
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
   }
 }

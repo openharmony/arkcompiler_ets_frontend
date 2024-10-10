@@ -10,9 +10,12 @@
   "scripts": {
     "clean": "rm -rf lib/*",
     "build": "npm run clean && node node_modules/typescript/lib/tsc.js",
+    "pre_run_test": "cd ./test && npm install && cd ..",
     "test": "npm run test:ut && npm run test:grammar",
-    "test:ut": "node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=10000 ./test/ut/**/*.ts",
-    "test:grammar": "rm -rf test/local && node --loader ts-node/esm ./scripts/obfuscate_script.js && node --loader ts-node/esm ./scripts/execute_result_statistics.js",
+    "test:ut": "npm run pre_run_test && node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=10000 ./test/ut/**/*.ts",
+    "test:grammar": "python scripts/grammar_test.py",
+    "coverage": "nyc npm run test",
+    "coverage_ut": "nyc npm run test:ut",
     "benchmark": "cd ./test && npm install && cd ../ && node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=5000 ./test/benchmark/**/*.ts"
   },
   "repository": {
@@ -32,8 +35,8 @@
     "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^9.1.1",
     "@types/node": "18.11.7",
-    "chai": "^4.3.6",
-    "mocha": "^10.0.0",
+    "chai": "4.3.7",
+    "mocha": "10.2.0",
     "ts-node": "^10.9.1",
     "diff": "5.0.0"
   },

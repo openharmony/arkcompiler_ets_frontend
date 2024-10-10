@@ -34,6 +34,13 @@ import {
   isExpressionStatement,
   isClassExpression,
   getModifiers,
+  isGetAccessor,
+  isSetAccessor,
+  isShorthandPropertyAssignment,
+  isSpreadAssignment,
+  isMethodDeclaration,
+  isGetAccessorDeclaration,
+  isAccessor,
 } from 'typescript';
 
 import type {
@@ -42,12 +49,18 @@ import type {
   ElementAccessExpression,
   EnumDeclaration,
   Expression,
+  GetAccessorDeclaration,
   HeritageClause,
+  Identifier,
   InterfaceDeclaration,
+  MethodDeclaration,
   Modifier,
   NodeArray,
   ObjectLiteralExpression,
+  PropertyAssignment,
   PropertyName,
+  SetAccessorDeclaration,
+  ShorthandPropertyAssignment,
   Statement,
   StructDeclaration,
   TypeAliasDeclaration,
@@ -67,6 +80,11 @@ export const structPropsSet: Set<string> = new Set();
  * since enum elements in js file cannot be obfuscated properly.
  */
 export const enumPropsSet: Set<string> = new Set();
+
+/**
+ * Collect the original name of export elements to ensure we can collect their properties
+ */
+export const exportOriginalNameSet: Set<string> = new Set();
 
 function containViewPU(heritageClauses: NodeArray<HeritageClause>): boolean {
   if (!heritageClauses) {
@@ -100,7 +118,7 @@ function containViewPU(heritageClauses: NodeArray<HeritageClause>): boolean {
  * used to ignore user defined ui component class property name
  * @param classNode
  */
-export function isViewPUBasedClass(classNode: ClassDeclaration): boolean {
+export function isViewPUBasedClass(classNode: ClassDeclaration | undefined): boolean {
   if (!classNode) {
     return false;
   }
@@ -326,4 +344,74 @@ export function getStructProperties(structNode: StructDeclaration, propertySet: 
     }
     collectPropertyNamesAndStrings(memberName, propertySet);
   });
+}
+
+/**
+ * collect elements into export whitelist for module.exports = {A, B, C, D}
+ * since these elements can be import by `const {A, B, C, D} = require("./filePath");`
+ */
+export function getObjectExportNames(objNode: ObjectLiteralExpression, exportNames: Set<string>): void {
+  if (!objNode || !objNode.properties) {
+    return;
+  }
+
+  objNode.properties.forEach((propertyElement) => {
+    if (isPropertyAssignment(propertyElement)) {
+      /**
+       * { prop1: 123 } // collect prop1
+       * { 'prop2': 123 } // collect prop2
+       * { ['prop3']: 123 } // collect prop3
+       */
+      addExportPropertyName(propertyElement, exportNames);
+
+      let initializer = propertyElement.initializer;
+      if (isIdentifier(initializer)) {
+        /**
+         * { prop: testObj } // collect testObj into exportOriginalNameSet so that its properties can be collected
+         */
+        exportOriginalNameSet.add(initializer.text);
+      }
+      return;
+    }
+
+    if (isShorthandPropertyAssignment(propertyElement)) {
+      /**
+       * let shorthandNode = {prop1: 123};
+       * module.exports = { shorthandNode } // collect shorthandNode
+       */
+      exportNames.add(propertyElement.name.text);
+      return;
+    }
+
+    if (isMethodDeclaration(propertyElement) || isGetAccessor(propertyElement) || isSetAccessor(propertyElement)) {
+      /**
+       * { method() {} } // collect method
+       * { 'method'() {} } // collect method
+       * { ['method']() {} } // collect method
+       * { get getProp() {} } // collect getProp
+       * { get 'getProp'() {} } // collect getProp
+       * { get ['getProp']() {}} // collect getProp
+       */
+      addExportPropertyName(propertyElement, exportNames);
+      return;
+    }
+  });
+
+  return;
+}
+
+/**
+ * Collect property names in ObjectLiteralExpression
+ */
+export function addExportPropertyName(propertyElement: PropertyAssignment | MethodDeclaration |
+   GetAccessorDeclaration | SetAccessorDeclaration, exportNames: Set<string>): void {
+    let nameNode = propertyElement.name;
+
+    if (isIdentifier(nameNode) || isStringLiteral(nameNode)) {
+      exportNames.add(nameNode.text);
+    }
+
+    if (isComputedPropertyName(nameNode) && isStringLiteral(nameNode.expression)) {
+      exportNames.add(nameNode.expression.text);
+    }
 }

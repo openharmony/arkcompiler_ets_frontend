@@ -15,6 +15,8 @@
 
 import { ApiExtractor } from '../../../src/common/ApiExtractor';
 import {assert} from 'chai';
+import { readProjectPropertiesByCollectedPaths } from '../../../src/common/ApiReader';
+import { NameGeneratorType } from '../../../src/generator/NameFactory';
 
 function collectApi(apiPath: string): void {
   clearAll();
@@ -203,6 +205,365 @@ describe('test for ApiExtractor', function () {
       assert.strictEqual(ApiExtractor.mPropertySet.has('prop4'), true);
       assert.strictEqual(ApiExtractor.mPropertySet.has('prop5'), true);
       clearAll();
+    });
+  });
+
+  describe('test for visitProjectExport', function () {
+    const fileList: Set<string> = new Set([
+      "test/ut/utils/module_exports_test/exportFile1.js",
+      "test/ut/utils/oh_modules/exportFile.js"
+    ]);
+    it('test for module.exports(property)', function () {
+      let projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+        {
+          mNameObfuscation: {
+            mEnable: true,
+            mReservedProperties: [],
+            mRenameProperties: true,
+            mKeepStringProperty: false,
+            mNameGeneratorType: NameGeneratorType.ORDERED,
+            mReservedNames: [], 
+            mReservedToplevelNames: []
+          },
+          mExportObfuscation: false,
+          mKeepFileSourceCode: {
+            mKeepSourceOfPaths: new Set(),
+            mkeepFilesAndDependencies: new Set(),
+          }
+        }, true);
+      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties == undefined? [] : projectAndLibs.projectAndLibsReservedProperties;
+      let reservedExportNames = projectAndLibs.libExportNames == undefined? [] : projectAndLibs.libExportNames;
+      console.log(reservedProperties)
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment1'), true);
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment2'), true);
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment3'), true);
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment4'), true);
+      assert.strictEqual(reservedProperties.includes('projectIndirectObj'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp1'), true);
+      assert.strictEqual(reservedProperties.includes('projectShorthand'), true);
+      assert.strictEqual(reservedProperties.includes('projectShorthandProp'), true);
+      assert.strictEqual(reservedProperties.includes('projectMethod1'), true);
+      assert.strictEqual(reservedProperties.includes('projectMethod2'), true);
+      assert.strictEqual(reservedProperties.includes('projectMethod3'), true);
+      assert.strictEqual(reservedProperties.includes('projectGetProp1'), true);
+      assert.strictEqual(reservedProperties.includes('projectGetProp2'), true);
+      assert.strictEqual(reservedProperties.includes('projectGetProp3'), true);
+      assert.strictEqual(reservedProperties.includes('projectSetProp1'), true);
+      assert.strictEqual(reservedProperties.includes('projectSetProp2'), true);
+      assert.strictEqual(reservedProperties.includes('projectSetProp3'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement1'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement2'), true);
+      assert.strictEqual(reservedProperties.includes('indirectClass1'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp2'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement3'), true);
+      assert.strictEqual(reservedProperties.includes('indirectClass2'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp3'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement4'), true);
+      assert.strictEqual(reservedProperties.includes('indirectProp4'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement5'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement6'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement7'), true);
+      assert.strictEqual(reservedProperties.includes('indirectClass3'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp5'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement8'), true);
+      assert.strictEqual(reservedProperties.includes('indirectClass4'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp6'), true);
+      assert.strictEqual(reservedProperties.includes('projectExportElement9'), true);
+      assert.strictEqual(reservedProperties.includes('indirectProp7'), true);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment1'), true);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment2'), true);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment3'), true);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment4'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectObj'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp1'), true);
+      assert.strictEqual(reservedProperties.includes('ohShorthand'), true);
+      assert.strictEqual(reservedProperties.includes('ohShorthandProp'), true);
+      assert.strictEqual(reservedProperties.includes('ohMethod1'), true);
+      assert.strictEqual(reservedProperties.includes('ohMethod2'), true);
+      assert.strictEqual(reservedProperties.includes('ohMethod3'), true);
+      assert.strictEqual(reservedProperties.includes('ohGetProp1'), true);
+      assert.strictEqual(reservedProperties.includes('ohGetProp2'), true);
+      assert.strictEqual(reservedProperties.includes('ohGetProp3'), true);
+      assert.strictEqual(reservedProperties.includes('ohSetProp1'), true);
+      assert.strictEqual(reservedProperties.includes('ohSetProp2'), true);
+      assert.strictEqual(reservedProperties.includes('ohSetProp3'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement1'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement2'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass1'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp2'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement3'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass2'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp3'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement4'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp4'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement5'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement6'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement7'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass3'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp5'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement8'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass4'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp6'), true);
+      assert.strictEqual(reservedExportNames.length === 0, true);
+    });
+
+    it('test for module.exports(export)', function () {
+      let projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+        {
+          mNameObfuscation: {
+            mEnable: true,
+            mReservedProperties: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mNameGeneratorType: NameGeneratorType.ORDERED,
+            mReservedNames: [], 
+            mReservedToplevelNames: []
+          },
+          mExportObfuscation: true,
+          mKeepFileSourceCode: {
+            mKeepSourceOfPaths: new Set(),
+            mkeepFilesAndDependencies: new Set(["test/ut/utils/module_exports_test/exportFile3.js"]),
+          }
+        }, true);
+      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties == undefined? [] : projectAndLibs.projectAndLibsReservedProperties;
+      let reservedExportNames = projectAndLibs.libExportNames == undefined? [] : projectAndLibs.libExportNames;
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment4'), false);
+      assert.strictEqual(reservedExportNames.includes('projectIndirectObj'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectShorthand'), false);
+      assert.strictEqual(reservedExportNames.includes('projectShorthandProp'), false);
+      assert.strictEqual(reservedExportNames.includes('projectMethod1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectMethod2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectMethod3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectGetProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectGetProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectGetProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectSetProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectSetProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectSetProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement2'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass1'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement3'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass2'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement4'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp4'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement5'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement6'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement7'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass3'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp5'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement8'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass4'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp6'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement9'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp7'), false);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment4'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectObj'), false);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('ohShorthand'), true);
+      assert.strictEqual(reservedExportNames.includes('ohShorthandProp'), false);
+      assert.strictEqual(reservedExportNames.includes('ohMethod1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohMethod2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohMethod3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohGetProp1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohGetProp2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohGetProp3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohSetProp1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohSetProp2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohSetProp3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass2'), false);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement4'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp4'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement5'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement6'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement7'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp5'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement8'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass4'), false);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp6'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement9'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp7'), false);
+      assert.strictEqual(reservedProperties.length === 0, true);
+    });
+
+    it('test for module.exports(property + export)', function () {
+      let projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+        {
+          mNameObfuscation: {
+            mEnable: true,
+            mReservedProperties: [],
+            mRenameProperties: true,
+            mKeepStringProperty: false,
+            mNameGeneratorType: NameGeneratorType.ORDERED,
+            mReservedNames: [], 
+            mReservedToplevelNames: []
+          },
+          mExportObfuscation: true,
+          mKeepFileSourceCode: {
+            mKeepSourceOfPaths: new Set(),
+            mkeepFilesAndDependencies: new Set(["test/ut/utils/module_exports_test/exportFile3.js"]),
+          }
+        }, true);
+      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties == undefined? [] : projectAndLibs.projectAndLibsReservedProperties;
+      let reservedExportNames = projectAndLibs.libExportNames == undefined? [] : projectAndLibs.libExportNames;
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment1'), false);
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment2'), false);
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment3'), false);
+      assert.strictEqual(reservedProperties.includes('projectPropertyAssignment4'), false);
+      assert.strictEqual(reservedProperties.includes('projectIndirectObj'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp1'), false);
+      assert.strictEqual(reservedProperties.includes('projectShorthand'), false);
+      assert.strictEqual(reservedProperties.includes('projectShorthandProp'), false);
+      assert.strictEqual(reservedProperties.includes('projectMethod1'), false);
+      assert.strictEqual(reservedProperties.includes('projectMethod2'), false);
+      assert.strictEqual(reservedProperties.includes('projectMethod3'), false);
+      assert.strictEqual(reservedProperties.includes('projectGetProp1'), false);
+      assert.strictEqual(reservedProperties.includes('projectGetProp2'), false);
+      assert.strictEqual(reservedProperties.includes('projectGetProp3'), false);
+      assert.strictEqual(reservedProperties.includes('projectSetProp1'), false);
+      assert.strictEqual(reservedProperties.includes('projectSetProp2'), false);
+      assert.strictEqual(reservedProperties.includes('projectSetProp3'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement1'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement2'), false);
+      assert.strictEqual(reservedProperties.includes('indirectClass1'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp2'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement3'), false);
+      assert.strictEqual(reservedProperties.includes('indirectClass2'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp3'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement4'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp4'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement5'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement6'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement7'), false);
+      assert.strictEqual(reservedProperties.includes('indirectClass3'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp5'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement8'), false);
+      assert.strictEqual(reservedProperties.includes('indirectClass4'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp6'), false);
+      assert.strictEqual(reservedProperties.includes('projectExportElement9'), false);
+      assert.strictEqual(reservedProperties.includes('indirectProp7'), false);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment1'), true);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment2'), true);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment3'), true);
+      assert.strictEqual(reservedProperties.includes('ohPropertyAssignment4'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectObj'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp1'), true);
+      assert.strictEqual(reservedProperties.includes('ohShorthand'), true);
+      assert.strictEqual(reservedProperties.includes('ohShorthandProp'), true);
+      assert.strictEqual(reservedProperties.includes('ohMethod1'), true);
+      assert.strictEqual(reservedProperties.includes('ohMethod2'), true);
+      assert.strictEqual(reservedProperties.includes('ohMethod3'), true);
+      assert.strictEqual(reservedProperties.includes('ohGetProp1'), true);
+      assert.strictEqual(reservedProperties.includes('ohGetProp2'), true);
+      assert.strictEqual(reservedProperties.includes('ohGetProp3'), true);
+      assert.strictEqual(reservedProperties.includes('ohSetProp1'), true);
+      assert.strictEqual(reservedProperties.includes('ohSetProp2'), true);
+      assert.strictEqual(reservedProperties.includes('ohSetProp3'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement1'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement2'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass1'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp2'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement3'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass2'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp3'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement4'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp4'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement5'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement6'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement7'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass3'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp5'), true);
+      assert.strictEqual(reservedProperties.includes('ohExportElement8'), true);
+      assert.strictEqual(reservedProperties.includes('ohIndirectClass4'), false);
+      assert.strictEqual(reservedProperties.includes('ohIndirectProp6'), true);
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectPropertyAssignment4'), false);
+      assert.strictEqual(reservedExportNames.includes('projectIndirectObj'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectShorthand'), false);
+      assert.strictEqual(reservedExportNames.includes('projectShorthandProp'), false);
+      assert.strictEqual(reservedExportNames.includes('projectMethod1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectMethod2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectMethod3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectGetProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectGetProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectGetProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectSetProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectSetProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectSetProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement1'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement2'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass1'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement3'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass2'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement4'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp4'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement5'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement6'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement7'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass3'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp5'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement8'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectClass4'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp6'), false);
+      assert.strictEqual(reservedExportNames.includes('projectExportElement9'), false);
+      assert.strictEqual(reservedExportNames.includes('indirectProp7'), false);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohPropertyAssignment4'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectObj'), false);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp1'), false);
+      assert.strictEqual(reservedExportNames.includes('ohShorthand'), true);
+      assert.strictEqual(reservedExportNames.includes('ohShorthandProp'), false);
+      assert.strictEqual(reservedExportNames.includes('ohMethod1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohMethod2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohMethod3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohGetProp1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohGetProp2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohGetProp3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohSetProp1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohSetProp2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohSetProp3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement2'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass1'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp2'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass2'), false);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp3'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement4'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp4'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement5'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement6'), true);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement7'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass3'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp5'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement8'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectClass4'), false);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp6'), false);
+      assert.strictEqual(reservedExportNames.includes('ohExportElement9'), true);
+      assert.strictEqual(reservedExportNames.includes('ohIndirectProp7'), false);
     });
   });
 });

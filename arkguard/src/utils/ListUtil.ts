@@ -57,7 +57,7 @@ export class ListUtil {
     const secondList: string[] = listB ? listB : [];
     const thirdList: string[] = listC ? listC : [];
 
-    const tmpList: string[] = thirdList ? [...firstList, ...secondList, ...thirdList] : [...firstList, ...secondList];
+    const tmpList: string[] = [...firstList, ...secondList, ...thirdList];
     const elementSet: Set<string> = new Set<string>(tmpList);
     return Array.from(elementSet);
   }

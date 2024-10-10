@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export var kmp = function (n) {
-    class o {
+export var kmp = function (m) {
+    class n {
     }
-    class p extends o {
-        constructor(s, t) {
+    class o extends n {
+        constructor(r, s) {
             super();
-            return new.target.m(s, t);
+            return new.target.m(r, s);
         }
-        static m(q, r) {
-            return new p();
+        static m(p, q) {
+            return new o();
         }
     }
 };

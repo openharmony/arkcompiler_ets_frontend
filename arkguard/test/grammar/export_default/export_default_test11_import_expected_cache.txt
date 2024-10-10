@@ -1,0 +1,7 @@
+{
+  "IdentifierCache": {
+    "#ComplexTest": "m",
+    "#cpt": "p"
+  },
+  "MemberMethodCache": {}
+}
