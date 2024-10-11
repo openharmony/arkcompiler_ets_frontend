@@ -87,5 +87,4 @@ class A<T extends A<T>>{
 /* @@? 1:1 Error TypeError: The super type of 'ArkMyStructComponent$partial' class is not extensible. */
 /* @@? 70:9 Error TypeError: Partial is not implemented where type parameter is generic. */
 /* @@? 75:9 Error TypeError: Partial is not implemented where type parameter is generic. */
-/* @@? 77:13 Error TypeError: Unresolved reference initializers */
 /* @@? 77:13 Error TypeError: Property 'baz' does not exist on type '*TYPE_ERROR*' */

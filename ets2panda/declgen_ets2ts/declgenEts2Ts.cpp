@@ -237,7 +237,7 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
         if (methodDef != nullptr) {
             return methodDef->Function()->Signature();
         }
-        if (etsFunctionType->CallSignatures().size() != 1) {
+        if (!etsFunctionType->IsETSArrowType()) {
             const auto loc = methodDef != nullptr ? methodDef->Start() : lexer::SourcePosition();
             ThrowError("Method overloads are not supported", loc);
         }
@@ -311,7 +311,7 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
         Out("string");
         return;
     }
-    if (objectType->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
+    if (objectType->IsETSUnboxableObject()) {
         Out("number");  // NOTE(ivagin): create precise builtin type
         return;
     }

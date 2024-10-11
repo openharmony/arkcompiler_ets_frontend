@@ -534,11 +534,11 @@ bool ETSObjectType::TryCastFloating(TypeRelation *const relation, Type *const ta
 bool ETSObjectType::TryCastUnboxable(TypeRelation *const relation, Type *const target)
 {
     if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-        if (!target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+        if (!target->IsETSUnboxableObject()) {
             conversion::WideningReference(relation, this, target->AsETSObjectType());
             return true;
         }
-        auto unboxedTarget = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+        auto unboxedTarget = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(target);
         CastNumericObject(relation, unboxedTarget);
         if (relation->IsTrue()) {
             conversion::Boxing(relation, unboxedTarget);
@@ -553,8 +553,7 @@ bool ETSObjectType::TryCastUnboxable(TypeRelation *const relation, Type *const t
 
 bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const target)
 {
-    if (!target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
-                             TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
+    if (!target->IsETSPrimitiveType()) {
         return false;
     }
     if (relation->IsIdenticalTo(this, target)) {
@@ -566,15 +565,18 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
     if (TryCastFloating(relation, target)) {
         return true;
     }
+    if (this->HasObjectFlag(ETSObjectFlags::BOXED_ENUM) && target->HasTypeFlag(TypeFlag::ETS_ENUM)) {
+        conversion::Unboxing(relation, this);
+        return true;
+    }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN) && target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
         conversion::Unboxing(relation, this);
         return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+    if (this->IsETSUnboxableObject()) {
         return TryCastUnboxable(relation, target);
     }
-    if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
-                            TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
+    if (target->IsETSPrimitiveType()) {
         conversion::NarrowingReferenceUnboxing(relation, this, target);
         return true;
     }
@@ -615,12 +617,6 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         SavedTypeRelationFlagsContext const savedFlags(relation, relation->GetTypeRelationFlags() |
                                                                      TypeRelationFlag::IGNORE_TYPE_PARAMETERS);
         relation->IsSupertypeOf(this, target);
-        return;
-    }
-
-    if (target->IsETSEnumType()) {
-        relation->GetNode()->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_ENUM);
-        relation->Result(true);
         return;
     }
 
@@ -829,9 +825,11 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
         copiedType->AddInterface(it);
     }
 
+    ArenaVector<Type *> typeArgs(allocator->Adapter());
     for (auto *const typeArgument : TypeArguments()) {
-        copiedType->TypeArguments().emplace_back(typeArgument->Instantiate(allocator, relation, globalTypes));
+        typeArgs.emplace_back(typeArgument->Instantiate(allocator, relation, globalTypes));
     }
+    copiedType->SetTypeArguments(std::move(typeArgs));
     copiedType->SetBaseType(this);
     copiedType->propertiesInstantiated_ = false;
     copiedType->relation_ = relation;
@@ -1026,8 +1024,7 @@ ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaV
     ASSERT(typeArguments_.size() == arguments.size());
 
     for (size_t ix = 0; ix < typeArguments_.size(); ix++) {
-        substitution->emplace(typeArguments_[ix]->AsETSTypeParameter(),
-                              checker->MaybePromotedBuiltinType(arguments[ix]));
+        substitution->emplace(typeArguments_[ix]->AsETSTypeParameter(), checker->MaybeBoxType(arguments[ix]));
     }
 
     return Substitute(relation, substitution);

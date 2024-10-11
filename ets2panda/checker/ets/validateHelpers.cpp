@@ -83,10 +83,9 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
     }
 }
 
-void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
-                                                  Type *const type)
+void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type)
 {
-    if (resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
+    if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
         ident->Parent()->AsCallExpression()->Callee() != ident) {
         std::ignore =
             TypeError(ident->Variable(),
@@ -103,7 +102,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
             TypeError(ident->Variable(), FormatMsg({"Namespace style identifier ", ident->Name(), " is not callable."}),
                       ident->Start());
     }
-    if (type->IsETSFunctionType() || type->IsETSDynamicType() ||
+    if (type->IsETSFunctionType() || type->IsETSDynamicType() ||  // NOTE(vpukhov): #19822
         (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
         return;
     }
@@ -112,7 +111,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
         return;
     }
 
-    if (type->IsETSUnionType()) {
+    if (type->IsETSUnionType()) {  // NOTE(vpukhov): #19822
         for (auto it : type->AsETSUnionType()->ConstituentTypes()) {
             if (it->IsETSFunctionType() || it->IsETSDynamicType() ||
                 (it->IsETSObjectType() && it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
@@ -124,64 +123,58 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
     std::ignore = TypeError(ident->Variable(), FormatMsg({"This expression is not callable."}), ident->Start());
 }
 
-void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
+void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident)
 {
+    auto const resolved = ident->Variable();
     if (ident->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == ident && (resolved != nullptr) &&
         !resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
-        LogUnResolvedError(ident);
+        LogUnresolvedReferenceError(ident);
         return;
     }
 }
 
-void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
-                                          Type *const type)
+void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident)
 {
+    auto const resolved = ident->Variable();
     if (resolved->Declaration()->Node()->IsTSEnumDeclaration() &&
         ident->Parent()->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::ELEMENT_ACCESS)) {
         return;
     }
     if (ident->Parent()->AsMemberExpression()->IsComputed()) {
         if ((resolved != nullptr) && !resolved->Declaration()->PossibleTDZ()) {
-            WrongContextErrorClassifyByType(ident, resolved);
+            WrongContextErrorClassifyByType(ident);
         }
-
-        return;
-    }
-
-    if (!IsReferenceType(type) && !type->IsETSEnumType() && !type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-        LogUnResolvedError(ident);
         return;
     }
 }
 
-void ETSChecker::ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident,
-                                                        varbinder::Variable *const resolved)
+void ETSChecker::ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident)
 {
     const auto [target_ident, typeAnnotation] = GetTargetIdentifierAndType(ident);
-
+    auto const resolved = ident->Variable();
     if ((resolved != nullptr) && resolved->TsType() != nullptr && resolved->TsType()->IsETSFunctionType()) {
         CheckEtsFunctionType(ident, target_ident);
         return;
     }
 
     if ((resolved != nullptr) && !resolved->Declaration()->PossibleTDZ()) {
-        LogUnResolvedError(ident);
+        LogUnresolvedReferenceError(ident);
         return;
     }
 }
 
-void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
-                                              Type *const type)
+void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, Type *const type)
 {
+    auto const resolved = ident->Variable();
     const auto *const assignmentExpr = ident->Parent()->AsAssignmentExpression();
     if (assignmentExpr->Left() == ident && (resolved != nullptr) && !resolved->Declaration()->PossibleTDZ()) {
-        WrongContextErrorClassifyByType(ident, resolved);
+        WrongContextErrorClassifyByType(ident);
         return;
     }
 
     if (assignmentExpr->Right() == ident && (resolved != nullptr) &&
         (!resolved->Declaration()->PossibleTDZ() && !type->IsETSFunctionType())) {
-        WrongContextErrorClassifyByType(ident, resolved);
+        WrongContextErrorClassifyByType(ident);
         return;
     }
 }
@@ -202,8 +195,22 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     return isFinished;
 }
 
-void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
+static void ValidateOverloadedFunctionIdentifier(ETSChecker *checker, ir::Identifier *const ident)
 {
+    auto const callable =
+        ident->Parent()->IsMemberExpression() && ident->Parent()->AsMemberExpression()->Property() == ident
+            ? ident->Parent()
+            : ident;
+    if (callable->Parent()->IsCallExpression() && callable->Parent()->AsCallExpression()->Callee() == callable) {
+        return;
+    }
+    checker->LogTypeError({"Overloaded function identifier \"", ident->Name(), "\" can not be used as value"},
+                          ident->Start());
+}
+
+void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
+{
+    varbinder::Variable *const resolved = ident->Variable();
     if (resolved->Declaration()->IsAnnotationDecl() && !ident->IsAnnotationUsage()) {
         LogTypeError("Annotation missing '@' symbol before annotation name.", ident->Start());
     }
@@ -211,49 +218,44 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
     auto *smartType = Context().GetSmartCast(resolved);
     auto *const resolvedType = GetApparentType(smartType != nullptr ? smartType : GetTypeOfVariable(resolved));
 
+    if (resolvedType->IsETSFunctionType() && !resolvedType->IsETSArrowType()) {
+        ValidateOverloadedFunctionIdentifier(this, ident);
+        return;
+    }
+
     switch (ident->Parent()->Type()) {
-        case ir::AstNodeType::CALL_EXPRESSION: {
+        case ir::AstNodeType::CALL_EXPRESSION:
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            ValidateCallExpressionIdentifier(ident, resolved, resolvedType);
+            ValidateCallExpressionIdentifier(ident, resolvedType);
             break;
-        }
-        case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
-            ValidateNewClassInstanceIdentifier(ident, resolved);
+        case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION:
+            ValidateNewClassInstanceIdentifier(ident);
             break;
-        }
-        case ir::AstNodeType::MEMBER_EXPRESSION: {
-            ValidateMemberIdentifier(ident, resolved, resolvedType);
+        case ir::AstNodeType::MEMBER_EXPRESSION:
+            ValidateMemberIdentifier(ident);
             break;
-        }
-        case ir::AstNodeType::BINARY_EXPRESSION: {
+        case ir::AstNodeType::BINARY_EXPRESSION:
             if (ValidateBinaryExpressionIdentifier(ident, resolvedType)) {
                 return;
             }
-
             [[fallthrough]];
-        }
         case ir::AstNodeType::UPDATE_EXPRESSION:
-        case ir::AstNodeType::UNARY_EXPRESSION: {
+        case ir::AstNodeType::UNARY_EXPRESSION:
             if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ()) {
-                WrongContextErrorClassifyByType(ident, resolved);
+                WrongContextErrorClassifyByType(ident);
             }
             break;
-        }
         case ir::AstNodeType::CLASS_PROPERTY:
-        case ir::AstNodeType::VARIABLE_DECLARATOR: {
-            ValidatePropertyOrDeclaratorIdentifier(ident, resolved);
+        case ir::AstNodeType::VARIABLE_DECLARATOR:
+            ValidatePropertyOrDeclaratorIdentifier(ident);
             break;
-        }
-        case ir::AstNodeType::ASSIGNMENT_EXPRESSION: {
-            ValidateAssignmentIdentifier(ident, resolved, resolvedType);
+        case ir::AstNodeType::ASSIGNMENT_EXPRESSION:
+            ValidateAssignmentIdentifier(ident, resolvedType);
             break;
-        }
-        default: {
+        default:
             if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
-                WrongContextErrorClassifyByType(ident, resolved);
+                WrongContextErrorClassifyByType(ident);
             }
-            break;
-        }
     }
 }
 
@@ -263,7 +265,7 @@ bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
         return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
     }
 
-    return MaybePrimitiveBuiltinType(type)->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_BOOLEAN) ||
+    return MaybeUnboxType(type)->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_BOOLEAN) ||
            type->IsETSStringType() || type->IsETSBooleanType() || type->IsETSEnumType();
 }
 

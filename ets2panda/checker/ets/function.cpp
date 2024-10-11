@@ -70,9 +70,11 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     if (typeArgument->IsTypeError()) {
         return true;
     }
+    // NOTE(vpukhov): #19701 void refactoring
     ASSERT(IsReferenceType(typeArgument) || typeArgument->IsETSVoidType());
     auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
     bool retVal = false;
+    // NOTE(vpukhov): #19701 void refactoring
     if (typeArgument->IsETSVoidType()) {
         retVal = Relation()->IsSupertypeOf(constraint, GlobalETSUndefinedType());
     } else if (typeArgument->IsETSFunctionType()) {
@@ -161,8 +163,8 @@ bool ETSChecker::EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeP
 bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType, Type *argumentType,
                                             Substitution *substitution)
 {
-    if (argumentType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-        argumentType = PrimitiveTypeAsETSBuiltinType(argumentType);
+    if (argumentType->IsETSPrimitiveType()) {
+        argumentType = MaybeBoxInRelation(argumentType);
     }
     if (paramType->IsETSTypeParameter()) {
         auto *const tparam = paramType->AsETSTypeParameter();
@@ -1133,12 +1135,10 @@ Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func)
         if (func->IsAsyncFunc()) {
             auto implicitPromiseVoid = [this]() {
                 const auto &promiseGlobal = GlobalBuiltinPromiseType()->AsETSObjectType();
-                auto promiseType =
-                    promiseGlobal->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsETSObjectType();
-                promiseType->AddTypeFlag(checker::TypeFlag::GENERIC);
-                promiseType->TypeArguments().clear();
-                promiseType->TypeArguments().emplace_back(GlobalVoidType());
-                return promiseType;
+                auto substitutuon = NewSubstitution();
+                ETSChecker::EmplaceSubstituted(substitutuon, promiseGlobal->TypeArguments()[0]->AsETSTypeParameter(),
+                                               GlobalVoidType());
+                return promiseGlobal->Substitute(Relation(), substitutuon);
             };
 
             returnType = implicitPromiseVoid();
@@ -1767,10 +1767,15 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // A method declaration d1 with return type R1 is return-type-substitutable for another method d2 with return
     // type R2 if any of the following is true:
 
+    // NOTE(vpukhov): void type leaks into type arguments, so we have to check the original signature if the return type
+    // is parametrized or not to use a proper subtyping check. To be replaced with IsETSPrimitiveType after #19701.
+    auto const hasPrimitiveReturnType = [](Signature *s) {
+        bool origIsRef = s->Function()->Signature()->ReturnType()->IsETSReferenceType();
+        ASSERT(origIsRef == s->ReturnType()->IsETSReferenceType());
+        return !origIsRef;
+    };
     // - If R1 is a primitive type then R2 is identical to R1.
-    if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_INT_ENUM | TypeFlag::ETS_STRING_ENUM |
-                        TypeFlag::ETS_VOID) ||
-        r2->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_INT_ENUM | TypeFlag::ETS_STRING_ENUM)) {
+    if (hasPrimitiveReturnType(s1) || hasPrimitiveReturnType(s2)) {
         return Relation()->IsIdenticalTo(r2, r1);
     }
 
@@ -1778,6 +1783,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // subtype of R2.
     ASSERT(IsReferenceType(r1));
 
+    // Starting from this line, everything should be be restored to IsSupertypeOf check, to be reverted in #18866
     if (Relation()->IsSupertypeOf(r2, r1)) {
         return true;
     }

@@ -133,8 +133,6 @@ public:
 
     ETSObjectType *GlobalBuiltinDynamicType(Language lang) const;
 
-    const checker::WrapperDesc &PrimitiveWrapper() const;
-
     GlobalArraySignatureMap &GlobalArrayTypes();
     const GlobalArraySignatureMap &GlobalArrayTypes() const;
 
@@ -255,8 +253,8 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
-    ETSIntEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
-    ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    ETSIntEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
+    ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
 
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
@@ -329,17 +327,6 @@ public:
     std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::TokenType operationType,
                                                               lexer::SourcePosition pos, checker::Type *leftType,
                                                               checker::Type *rightType);
-    std::optional<std::tuple<Type *, Type *>> CheckBinaryOperatorEqualError(checker::Type *const leftType,
-                                                                            checker::Type *const rightType,
-                                                                            checker::Type *tsType,
-                                                                            lexer::SourcePosition pos);
-    // CC-OFFNXT(G.FUN.01-CPP) solid logic
-    std::tuple<Type *, Type *> CheckBinaryOperatorEqual(ir::Expression *left, ir::Expression *right,
-                                                        lexer::TokenType operationType, lexer::SourcePosition pos,
-                                                        checker::Type *leftType, checker::Type *rightType,
-                                                        Type *unboxedL, Type *unboxedR);
-    std::tuple<Type *, Type *> CheckBinaryOperatorEqualDynamic(ir::Expression *left, ir::Expression *right,
-                                                               lexer::SourcePosition pos);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     std::tuple<Type *, Type *> CheckBinaryOperatorLessGreater(ir::Expression *left, ir::Expression *right,
                                                               lexer::TokenType operationType, lexer::SourcePosition pos,
@@ -535,8 +522,6 @@ public:
                                            std::unordered_map<util::StringView, ir::ClassProperty *> &fieldMap);
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     bool TestUnionType(Type *type, TypeFlag test);
-    std::tuple<Type *, bool> ApplyBinaryOperatorPromotion(Type *left, Type *right, TypeFlag test,
-                                                          bool doPromotion = true);
     checker::Type *ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxedL,
                                                      checker::Type *unboxedR);
     Type *ApplyUnaryOperatorPromotion(Type *type, bool createConst = true, bool doPromotion = true,
@@ -544,8 +529,7 @@ public:
     Type *HandleBooleanLogicalOperators(Type *leftType, Type *rightType, lexer::TokenType tokenType);
     Type *HandleBooleanLogicalOperatorsExtended(Type *leftType, Type *rightType, ir::BinaryExpression *expr);
 
-    checker::Type *FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags,
-                                           ir::Expression *init);
+    checker::Type *FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags);
     void CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName);
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
@@ -569,7 +553,6 @@ public:
     util::StringView GetContainingObjectNameFromSignature(Signature *signature);
     bool IsFunctionContainsSignature(ETSFunctionType *funcType, Signature *signature);
     bool CheckFunctionContainsClashingSignature(const ETSFunctionType *funcType, Signature *signature);
-    bool IsTypeBuiltinType(const Type *type) const;
     static bool IsReferenceType(const Type *type)
     {
         return type->IsETSReferenceType();
@@ -578,17 +561,18 @@ public:
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);
     varbinder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
     Type *CheckSwitchDiscriminant(ir::Expression *discriminant);
-    Type *ETSBuiltinTypeAsPrimitiveType(Type *objectType);
-    Type *ETSBuiltinTypeAsConditionalType(Type *objectType);
-    Type *PrimitiveTypeAsETSBuiltinType(Type *objectType);
+    Type *MaybeUnboxInRelation(Type *objectType);
+    Type *MaybeUnboxConditionalInRelation(Type *objectType);
+    Type *MaybeBoxInRelation(Type *objectType);
     void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
     Type *MaybeBoxExpression(ir::Expression *expr);
     Type *MaybeUnboxExpression(ir::Expression *expr);
-    Type *MaybePromotedBuiltinType(Type *type) const;
-    Type const *MaybePromotedBuiltinType(Type const *type) const;
-    Type *MaybePrimitiveBuiltinType(Type *type) const;
+    Type *MaybeBoxType(Type *type) const;
+    Type *MaybeUnboxType(Type *type) const;
+    Type const *MaybeBoxType(Type const *type) const;
+    Type const *MaybeUnboxType(Type const *type) const;
     void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> const &cases);
     std::string GetStringFromIdentifierValue(checker::Type *caseType) const;
     bool CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue);
@@ -602,14 +586,14 @@ public:
     varbinder::Variable *FindVariableInGlobal(const ir::Identifier *identifier,
                                               const varbinder::ResolveBindingOptions options);
     varbinder::Variable *ExtraCheckForResolvedError(ir::Identifier *ident);
-    void ValidateResolvedIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
+    void ValidateResolvedIdentifier(ir::Identifier *ident);
     static bool IsVariableStatic(const varbinder::Variable *var);
     static bool IsVariableGetterSetter(const varbinder::Variable *var);
     bool IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare);
     void SaveCapturedVariable(varbinder::Variable *var, ir::Identifier *ident);
     bool SaveCapturedVariableInLocalClass(varbinder::Variable *var, ir::Identifier *ident);
-    void AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target);
-    void AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *source, Type *self);
+    void MaybeAddBoxingFlagInRelation(TypeRelation *relation, Type *target);
+    void MaybeAddUnboxingFlagInRelation(TypeRelation *relation, Type *source, Type *self);
     void CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target, Type *self);
     void CheckUnboxedTypesAssignable(TypeRelation *relation, Type *source, Type *target);
     void CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target);
@@ -809,25 +793,22 @@ public:
                                             ir::ModifierFlags modifierFlags, const MethodBuilder &builder);
     ir::ClassDeclaration *BuildClass(util::StringView name, const ClassBuilder &builder);
 
+    void LogUnresolvedReferenceError(ir::Identifier *ident);
+    void WrongContextErrorClassifyByType(ir::Identifier *ident);
+
 private:
     ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
                                    bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
-    void LogUnResolvedError(ir::Identifier *ident);
-    void LogOperatorCannotBeApplied(lexer::TokenType operationType, checker::Type *const leftType,
-                                    checker::Type *const rightType, lexer::SourcePosition pos);
-    void WrongContextErrorClassifyByType(ir::Identifier *ident, varbinder::Variable *resolved);
     void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id);
     void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
                           const ETSObjectType *classType);
-    void ValidateCallExpressionIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
-                                          Type *const type);
-    void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved);
-    void ValidateMemberIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved, Type *const type);
-    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved);
-    void ValidateAssignmentIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
-                                      Type *const type);
+    void ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type);
+    void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident);
+    void ValidateMemberIdentifier(ir::Identifier *const ident);
+    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident);
+    void ValidateAssignmentIdentifier(ir::Identifier *const ident, Type *const type);
     bool ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type);
     void ValidateGetterSetter(const ir::MemberExpression *const memberExpr, const varbinder::LocalVariable *const prop,
                               PropertySearchFlags searchFlag);

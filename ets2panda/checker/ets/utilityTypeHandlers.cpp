@@ -296,11 +296,6 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
         propTypeAnn = Allocator()->New<ir::OpaqueTypeNode>(prop->TsType());
     }
 
-    // NOTE (mmartin): Union type check fails if it contains ETSEnum type, workaround until fix
-    if ((prop->TsType() != nullptr) && prop->TsType()->IsETSIntEnumType()) {
-        propTypeAnn = Allocator()->New<ir::OpaqueTypeNode>(GlobalETSObjectType());
-    }
-
     // Create new nullish type
     types.push_back(propTypeAnn);
     types.push_back(AllocNode<ir::ETSUndefinedType>());
@@ -337,11 +332,6 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
             prop->Check(this);
         }
         propTypeAnn = Allocator()->New<ir::OpaqueTypeNode>(prop->TsType());
-    }
-
-    // NOTE (mmartin): Union type check fails if it contains ETSEnum type, workaround until fix
-    if ((prop->TsType() != nullptr) && prop->TsType()->IsETSIntEnumType()) {
-        propTypeAnn = Allocator()->New<ir::OpaqueTypeNode>(GlobalETSObjectType());
     }
 
     // Create new nullish type
@@ -800,11 +790,6 @@ Type *ETSChecker::HandleUnionForPartialType(ETSUnionType *const typeToBePartial)
     ArenaVector<checker::Type *> newTypesForUnion(Allocator()->Adapter());
 
     for (auto *const typeFromUnion : unionTypeNode->ConstituentTypes()) {
-        if (typeFromUnion->IsETSIntEnumType()) {
-            // NOTE (mmartin): Union type check fails if it contains ETSEnum type, workaround until fix
-            return typeFromUnion;
-        }
-
         if ((typeFromUnion->Variable() != nullptr) && (typeFromUnion->Variable()->Declaration() != nullptr)) {
             newTypesForUnion.emplace_back(HandlePartialType(typeFromUnion));
         } else {

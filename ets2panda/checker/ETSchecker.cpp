@@ -55,7 +55,7 @@ static void SetupFunctionalInterface(ETSObjectType *type)
     type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
     auto *invoke = type->GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
     auto *invokeType = invoke->TsType()->AsETSFunctionType();
-    ASSERT(invokeType->CallSignatures().size() == 1);
+    ASSERT(invokeType->IsETSArrowType());
     auto *signature = invokeType->CallSignatures()[0];
     signature->AddSignatureFlag(SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
 }
@@ -511,11 +511,6 @@ ETSObjectType *ETSChecker::GlobalBuiltinBoxType(Type *contents)
             return base->Substitute(Relation(), substitution);
         }
     }
-}
-
-const checker::WrapperDesc &ETSChecker::PrimitiveWrapper() const
-{
-    return primitiveWrappers_.Wrappers();
 }
 
 GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes()

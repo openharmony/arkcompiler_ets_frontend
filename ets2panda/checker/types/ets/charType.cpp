@@ -29,7 +29,7 @@ void CharType::Identical(TypeRelation *relation, Type *other)
 void CharType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] Type *source)
 {
     if (relation->ApplyUnboxing()) {
-        relation->GetChecker()->AsETSChecker()->AddUnboxingFlagToPrimitiveType(relation, source, this);
+        relation->GetChecker()->AsETSChecker()->MaybeAddUnboxingFlagInRelation(relation, source, this);
     }
     NarrowingWideningConverter(relation->GetChecker()->AsETSChecker(), relation, this, source);
 }
@@ -84,7 +84,7 @@ void CharType::Cast(TypeRelation *const relation, Type *const target)
         }
 
         if (target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE)) {
-            auto unboxedTarget = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+            auto unboxedTarget = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(target);
             if (unboxedTarget == nullptr) {
                 conversion::Forbidden(relation);
                 return;

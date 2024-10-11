@@ -148,12 +148,10 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
 void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
 {
     const auto &promiseGlobal = checker->GlobalBuiltinPromiseType()->AsETSObjectType();
-    auto promiseType =
-        promiseGlobal->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder())
-            ->AsETSObjectType();
-    promiseType->AddTypeFlag(checker::TypeFlag::GENERIC);
-    promiseType->TypeArguments().clear();
-    promiseType->TypeArguments().emplace_back(scriptFunc->Signature()->ReturnType());
+    auto substitutuon = checker->NewSubstitution();
+    ETSChecker::EmplaceSubstituted(substitutuon, promiseGlobal->TypeArguments()[0]->AsETSTypeParameter(),
+                                   scriptFunc->Signature()->ReturnType());
+    auto promiseType = promiseGlobal->Substitute(checker->Relation(), substitutuon);
 
     auto *objectId =
         checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());
@@ -699,8 +697,9 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
 
 ETSObjectType *CreateOptionalSignaturesForFunctionalType(ETSChecker *checker, ir::ETSFunctionType *node,
                                                          ETSObjectType *genericInterfaceType,
-                                                         Substitution *substitution, size_t optionalParameterIndex)
+                                                         size_t optionalParameterIndex)
 {
+    auto substitution = checker->NewSubstitution();
     const auto &params = node->Params();
     auto returnType = node->ReturnType()->GetType(checker);
 
@@ -728,8 +727,9 @@ ETSObjectType *CreateOptionalSignaturesForFunctionalType(ETSChecker *checker, ir
 }
 
 ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ETSFunctionType *node,
-                                                     ETSObjectType *genericInterfaceType, Substitution *substitution)
+                                                     ETSObjectType *genericInterfaceType)
 {
+    auto substitution = checker->NewSubstitution();
     size_t i = 0;
     if (auto const &params = node->Params(); params.size() < checker->GlobalBuiltinFunctionTypeVariadicThreshold()) {
         for (; i < params.size(); i++) {
@@ -766,15 +766,16 @@ Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *param
 
 Type *InstantiateBoxedPrimitiveType(ETSChecker *checker, ir::Expression *param, Type *paramType)
 {
-    if (paramType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        auto node = checker->Relation()->GetNode();
-        checker->Relation()->SetNode(param);
-        auto *const boxedTypeArg = checker->PrimitiveTypeAsETSBuiltinType(paramType);
-        ASSERT(boxedTypeArg);
-        paramType =
-            boxedTypeArg->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
-        checker->Relation()->SetNode(node);
+    if (paramType->IsETSReferenceType()) {
+        return paramType;
     }
+
+    auto node = checker->Relation()->GetNode();
+    checker->Relation()->SetNode(param);
+    auto boxedTypeArg = checker->MaybeBoxInRelation(paramType);
+    paramType = boxedTypeArg->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
+    checker->Relation()->SetNode(node);
+    ASSERT(paramType->IsETSReferenceType());
 
     return paramType;
 }

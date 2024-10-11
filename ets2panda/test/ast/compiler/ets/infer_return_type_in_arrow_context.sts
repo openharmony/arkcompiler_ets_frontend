@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,12 @@
  * limitations under the License.
  */
 
-let a:(a: int, b: int) => void = max;
-
-/* @@? 16:34 Error TypeError: Overloaded function identifier "max" can not be used as value  */
-/* @@? 16:34 Error TypeError: Type '(v: double, u: double) => double' cannot be assigned to type '(p1: Int, p2: Int) => void'  */
+class A {
+    foo() {
+        let b = 5;
+        ((s: boolean) => { this.bar(b) })(true)
+    }
+    private bar(b: number | undefined) {
+        if (b == undefined) return
+    }
+}

@@ -635,7 +635,7 @@ static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *c
         auto argName = lambdaParam->Name();
         auto *type = lambdaParam->TsType()->Substitute(checker->Relation(), lciInfo->substitution);
         auto *arg = wrapToObject ? parser->CreateFormattedExpression("@@I1 as @@T2 as @@T3", argName,
-                                                                     checker->MaybePromotedBuiltinType(type), type)
+                                                                     checker->MaybeBoxType(type), type)
                                  : allocator->New<ir::Identifier>(argName, allocator);
         callArguments.push_back(arg);
     }
@@ -886,7 +886,7 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
     ASSERT(ast->TsType()->IsETSFunctionType());
     auto *type = ast->TsType()->AsETSFunctionType();
 
-    if (type->CallSignatures().size() == 1) {
+    if (type->IsETSArrowType()) {
         return type->CallSignatures()[0];
     }
 
@@ -1072,6 +1072,7 @@ static bool IsFunctionOrMethodCall(ir::AstNode const *node)
         return true;
     }
 
+    // NOTE(vpukhov): #20510 member access pattern Enum.Const.<method>()
     if (callee->IsMemberExpression() && callee->AsMemberExpression()->Object()->TsType() != nullptr &&
         (callee->AsMemberExpression()->Object()->TsType()->IsETSEnumType())) {
         return true;
@@ -1125,10 +1126,6 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         auto boxingFlags = arg->GetBoxingUnboxingFlags();
         Recheck(varBinder, checker, arg);
         arg->SetBoxingUnboxingFlags(boxingFlags);
-        // NOTE (psiket) Temporal solution
-        if (arg->TsType()->IsETSEnumType()) {
-            arg->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
-        }
     }
 
     return call;

@@ -379,13 +379,11 @@ Signature *Signature::BoxPrimitives(ETSChecker *checker)
     auto *allocator = checker->Allocator();
     auto *sigInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
     for (auto param : sigInfo->params) {
-        if (param->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-            param->SetTsType(checker->PrimitiveTypeAsETSBuiltinType(param->TsType()));
+        if (param->TsType()->IsETSPrimitiveType()) {
+            param->SetTsType(checker->MaybeBoxInRelation(param->TsType()));
         }
     }
-    auto *retType = returnType_->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)
-                        ? checker->PrimitiveTypeAsETSBuiltinType(returnType_)
-                        : returnType_;
+    auto *retType = returnType_->IsETSPrimitiveType() ? checker->MaybeBoxInRelation(returnType_) : returnType_;
 
     auto *resultSig = allocator->New<Signature>(sigInfo, retType, func_);
     resultSig->flags_ = flags_;

@@ -350,7 +350,7 @@ void ETSEmitter::GenField(const GenFieldArguments &data)
 
     if (data.external) {
         field.metadata->SetAttribute(Signatures::EXTERNAL);
-    } else if (data.tsType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) || data.tsType->IsETSStringType()) {
+    } else if (data.tsType->IsETSPrimitiveType() || data.tsType->IsETSStringType()) {
         EmitDefaultFieldValue(field, data.value);
     }
 

@@ -29,14 +29,14 @@ void Identity(TypeRelation *const relation, Type *const source, Type *const targ
 
 void WideningPrimitive(TypeRelation *const relation, Type *const source, Type *const target)
 {
-    ASSERT(source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && target->HasTypeFlag(TypeFlag::ETS_PRIMITIVE));
+    ASSERT(source->IsETSPrimitiveType() && target->IsETSPrimitiveType());
 
     WideningConverter(relation->GetChecker()->AsETSChecker(), relation, target, source);
 }
 
 void NarrowingPrimitive(TypeRelation *const relation, Type *const source, Type *const target)
 {
-    ASSERT(source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && target->HasTypeFlag(TypeFlag::ETS_PRIMITIVE));
+    ASSERT(source->IsETSPrimitiveType() && target->IsETSPrimitiveType());
 
     NarrowingConverter(relation->GetChecker()->AsETSChecker(), relation, target, source);
 }
@@ -311,7 +311,7 @@ void UnboxingWideningNarrowingPrimitive(TypeRelation *const relation, ETSObjectT
 
 void NarrowingReferenceUnboxing(TypeRelation *const relation, ETSObjectType *const source, Type *const target)
 {
-    auto *const boxedTarget = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(target);
+    auto *const boxedTarget = relation->GetChecker()->AsETSChecker()->MaybeBoxInRelation(target);
     if (boxedTarget == nullptr) {
         return;
     }

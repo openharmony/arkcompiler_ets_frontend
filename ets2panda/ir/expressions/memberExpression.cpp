@@ -172,24 +172,16 @@ static varbinder::LocalVariable *GetEnumMethodVariable(checker::ETSEnumType cons
     return methodVar;
 }
 
-std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(checker::ETSChecker *checker,
-                                                                                           checker::Type *type) const
+std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(
+    checker::ETSChecker *checker, checker::ETSEnumType *type) const
 {
-    auto const *const enumInterface = [type]() -> checker::ETSEnumType const * {
-        if (type->IsETSIntEnumType()) {
-            return type->AsETSIntEnumType();
-        }
-        return type->AsETSStringEnumType();
-    }();
-
     if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
-        auto *const memberType = enumInterface->LookupMethod(checker, object_, property_->AsIdentifier());
-        varbinder::LocalVariable *const memberVar =
-            GetEnumMethodVariable(enumInterface, property_->AsIdentifier()->Name());
+        auto *const memberType = type->LookupMethod(checker, object_, property_->AsIdentifier());
+        varbinder::LocalVariable *const memberVar = GetEnumMethodVariable(type, property_->AsIdentifier()->Name());
         return {memberType, memberVar};
     }
 
-    auto *const literalType = enumInterface->LookupConstant(checker, object_, property_->AsIdentifier());
+    auto *const literalType = type->LookupConstant(checker, object_, property_->AsIdentifier());
     if (literalType == nullptr) {
         return {nullptr, nullptr};
     }
@@ -246,8 +238,6 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
             addPropType(ResolveObjectMember(checker).first);
-        } else if (apparent->IsETSEnumType()) {
-            addPropType(ResolveEnumMember(checker, apparent).first);
         } else {
             checker->LogTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
         }
@@ -438,7 +428,8 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
         SetObjectType(baseType->AsETSObjectType());
         return CheckIndexAccessMethod(checker);
     }
-    if ((baseType->IsETSEnumType()) && (kind_ == MemberExpressionKind::ELEMENT_ACCESS)) {
+    // NOTE(vpukhov): #20510 lowering
+    if (baseType->IsETSEnumType()) {
         property_->Check(checker);
         if (property_->TsType()->IsETSEnumType()) {
             AddAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME);

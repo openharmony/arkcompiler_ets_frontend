@@ -95,7 +95,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
     const ir::BoxingUnboxingFlags oldUnboxingFlag {oldExpr->GetBoxingUnboxingFlags() &
                                                    ir::BoxingUnboxingFlags::UNBOXING_FLAG};
 
-    if (exprToProcess->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+    if (exprToProcess->TsType()->IsETSPrimitiveType()) {
         loweringResult->SetBoxingUnboxingFlags(oldBoxingFlag);
     } else if (exprToProcess->TsType()->IsETSObjectType()) {
         loweringResult->SetBoxingUnboxingFlags(oldUnboxingFlag);
@@ -105,7 +105,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
 static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir::Expression *expr)
 {
     auto *lcType = expr->TsType();
-    if (auto *lcTypeAsPrimitive = checker->ETSBuiltinTypeAsPrimitiveType(lcType); lcTypeAsPrimitive != nullptr) {
+    if (auto *lcTypeAsPrimitive = checker->MaybeUnboxInRelation(lcType); lcTypeAsPrimitive != nullptr) {
         lcType = lcTypeAsPrimitive;
     }
     return checker->AllocNode<ir::OpaqueTypeNode>(lcType);

@@ -46,7 +46,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
 {
     auto *dimension = newInstanceExpression->Dimension();
     auto *dimType = dimension->TsType();
-    if (auto *unboxed = checker->ETSBuiltinTypeAsPrimitiveType(dimType); unboxed != nullptr) {
+    if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
         dimType = unboxed;
     }
     if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
@@ -95,7 +95,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
     for (std::size_t i = 0U; i < newInstanceExpression->Dimensions().size(); ++i) {
         auto *dimension = newInstanceExpression->Dimensions()[i];
         auto *dimType = dimension->TsType();
-        if (auto *unboxed = checker->ETSBuiltinTypeAsPrimitiveType(dimType); unboxed != nullptr) {
+        if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
             dimType = unboxed;
         }
         if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
