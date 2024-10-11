@@ -1686,7 +1686,7 @@ void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
     if (st->Init() != nullptr) {
         if (!etsg->TryLoadConstantExpression(st->Init())) {
             st->Init()->Compile(etsg);
-            etsg->ApplyConversion(st->Init(), nullptr);
+            etsg->ApplyConversion(st->Init(), st->TsType());
         }
     } else {
         etsg->LoadDefaultValue(st, st->Id()->AsIdentifier()->Variable()->TsType());
