@@ -756,7 +756,7 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
             }
 
             arguments[index]->Check(this);
-            arguments[index]->TsType()->ToString(ss);
+            arguments[index]->TsTypeOrError()->ToString(ss);
 
             if (index == arguments.size() - 1) {
                 ss << ")";
