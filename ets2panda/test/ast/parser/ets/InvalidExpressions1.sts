@@ -61,8 +61,6 @@ let a = [1, 2, 3);
 /* @@? 26:7 Error SyntaxError: Unexpected token: '||='.  */
 /* @@? 28:20 Error SyntaxError: Unexpected token, expected: '}'.  */
 /* @@? 30:13 Error SyntaxError: Invalid Type  */
-/* @@? 30:13 Error SyntaxError: Unexpected token 'import'.  */
-/* @@? 30:13 Error SyntaxError: Unexpected token 'import'.  */
 /* @@? 33:10 Error SyntaxError: Unexpected super keyword  */
 /* @@? 36:8 Error SyntaxError: Unexpected token, expected: ']'.  */
 /* @@? 38:17 Error SyntaxError: Unexpected token, expected ',' or ']'  */

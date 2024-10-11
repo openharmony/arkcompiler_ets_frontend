@@ -702,4 +702,15 @@ Type *ETSChecker::ResolveFunctionalInterfaces(ArenaVector<Signature *> &signatur
     return CreateETSUnionType(std::move(types));
 }
 
+ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
+{
+    ETSObjectType *const promiseType = GlobalBuiltinPromiseType();
+    ASSERT(promiseType->TypeArguments().size() == 1);
+    Substitution *substitution = NewSubstitution();
+    ETSChecker::EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
+                                   type);
+
+    return promiseType->Substitute(Relation(), substitution);
+}
+
 }  // namespace ark::es2panda::checker

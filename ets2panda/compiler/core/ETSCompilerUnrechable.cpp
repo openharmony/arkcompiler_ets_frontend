@@ -173,11 +173,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::FunctionExpression *expr) c
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) const
-{
-    UNREACHABLE();
-}
-
 void ETSCompiler::Compile([[maybe_unused]] const ir::NewExpression *expr) const
 {
     UNREACHABLE();

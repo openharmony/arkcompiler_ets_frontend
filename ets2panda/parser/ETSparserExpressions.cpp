@@ -397,6 +397,9 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         case lexer::TokenType::KEYW_TYPEOF: {
             return ParseUnaryOrPrefixUpdateExpression();
         }
+        case lexer::TokenType::KEYW_IMPORT: {
+            return ParseETSImportExpression();
+        }
         default: {
             return ParsePrimaryExpressionWithLiterals(flags);
         }
@@ -737,6 +740,20 @@ ir::Expression *ETSParser::ParseAwaitExpression()
     auto *awaitExpression = AllocNode<ir::AwaitExpression>(argument);
     awaitExpression->SetRange({start, Lexer()->GetToken().End()});
     return awaitExpression;
+}
+
+ir::Expression *ETSParser::ParseETSImportExpression()
+{
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
+    ExpectToken(lexer::TokenType::KEYW_IMPORT);
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ir::Expression *source = ParseExpression();
+    lexer::SourcePosition endLoc = Lexer()->GetToken().Start();
+    ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
+
+    auto *importExpression = AllocNode<ir::ImportExpression>(source);
+    importExpression->SetRange({startLoc, endLoc});
+    return importExpression;
 }
 
 ir::ThisExpression *ETSParser::ParseThisExpression()

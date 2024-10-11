@@ -458,6 +458,29 @@ void ETSCompiler::Compile(const ir::AwaitExpression *expr) const
     etsg->SetAccumulatorType(expr->TsType());
 }
 
+void ETSCompiler::UnimplementedPathError(const ir::AstNode *node, util::StringView message) const
+{
+    ETSGen *etsg = GetETSGen();
+
+    compiler::RegScope rs(etsg);
+    const auto errorReg = etsg->AllocReg();
+    const auto msgReg = etsg->AllocReg();
+    etsg->LoadAccumulatorString(node, message);
+    etsg->StoreAccumulator(node, msgReg);
+    etsg->NewObject(node, Signatures::BUILTIN_ERROR, errorReg);
+    etsg->CallExact(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, msgReg);
+    etsg->EmitThrow(node, errorReg);
+}
+
+void ETSCompiler::Compile(const ir::ImportExpression *expr) const
+{
+    ETSGen *etsg = GetETSGen();
+    expr->Source()->Compile(etsg);
+
+    UnimplementedPathError(expr, "Dynamic import is not supported");
+    etsg->SetAccumulatorType(expr->TsType());  // dead code
+}
+
 static void CompileNullishCoalescing(compiler::ETSGen *etsg, ir::BinaryExpression const *const node)
 {
     auto const compileOperand = [etsg, optype = node->OperationType()](ir::Expression const *expr) {
@@ -1212,7 +1235,12 @@ void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
     etsg->ApplyConversion(expr->Argument(), nullptr);
     etsg->ApplyCast(expr->Argument(), expr->TsType());
 
-    etsg->Unary(expr, expr->OperatorType());
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR) {
+        UnimplementedPathError(expr, "$$ operator can only be used with ARKUI plugin");
+        etsg->SetAccumulatorType(expr->TsType());  // dead code
+    } else {
+        etsg->Unary(expr, expr->OperatorType());
+    }
 
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
