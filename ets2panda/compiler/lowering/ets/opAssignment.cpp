@@ -204,7 +204,14 @@ ir::AstNode *HandleOpAssignment(public_lib::Context *ctx, ir::AssignmentExpressi
 
     loweringResult->SetParent(assignment->Parent());
     // NOTE(dslynko, #19200): required for correct debug-info
-    loweringResult->SetRange(assignment->Range());
+    auto rng = assignment->Range();
+    loweringResult->SetRange(rng);
+    loweringResult->TransformChildrenRecursively(
+        [rng](auto *node) {
+            node->SetRange(rng);
+            return node;
+        },
+        "");
 
     auto *const scope = NearestScope(assignment);
 
@@ -304,7 +311,14 @@ static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression 
 
     loweringResult->SetParent(upd->Parent());
     // NOTE(dslynko, #19200): required for correct debug-info
-    loweringResult->SetRange(upd->Range());
+    auto rng = upd->Range();
+    loweringResult->SetRange(rng);
+    loweringResult->TransformChildrenRecursively(
+        [rng](auto *node) {
+            node->SetRange(rng);
+            return node;
+        },
+        "");
     InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->checker->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(loweringResult,
