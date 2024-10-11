@@ -769,19 +769,6 @@
                               {
                                 "type": "Identifier",
                                 "name": "a0",
-                                "typeAnnotation": {
-                                  "type": "ETSPrimitiveType",
-                                  "loc": {
-                                    "start": {
-                                      "line": 21,
-                                      "column": 20
-                                    },
-                                    "end": {
-                                      "line": 21,
-                                      "column": 23
-                                    }
-                                  }
-                                },
                                 "decorators": [],
                                 "loc": {
                                   "start": {
@@ -797,19 +784,6 @@
                               {
                                 "type": "Identifier",
                                 "name": "a1",
-                                "typeAnnotation": {
-                                  "type": "ETSPrimitiveType",
-                                  "loc": {
-                                    "start": {
-                                      "line": 21,
-                                      "column": 30
-                                    },
-                                    "end": {
-                                      "line": 21,
-                                      "column": 33
-                                    }
-                                  }
-                                },
                                 "decorators": [],
                                 "loc": {
                                   "start": {

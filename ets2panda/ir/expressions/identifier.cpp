@@ -49,6 +49,25 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
+Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
+        clone->SetTsType(TsType());
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        clone->SetRange(Range());
+
+        if (clone->IsReference(ScriptExtension::ETS) && (clone->TypeAnnotation() != nullptr)) {
+            clone->SetTsTypeAnnotation(nullptr);
+        }
+
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 void Identifier::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (auto *typeAnnotation = TypeAnnotation(); typeAnnotation != nullptr) {

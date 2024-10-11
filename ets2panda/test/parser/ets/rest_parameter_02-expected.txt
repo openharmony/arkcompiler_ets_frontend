@@ -774,19 +774,6 @@
                               {
                                 "type": "Identifier",
                                 "name": "x",
-                                "typeAnnotation": {
-                                  "type": "ETSPrimitiveType",
-                                  "loc": {
-                                    "start": {
-                                      "line": 20,
-                                      "column": 18
-                                    },
-                                    "end": {
-                                      "line": 20,
-                                      "column": 21
-                                    }
-                                  }
-                                },
                                 "decorators": [],
                                 "loc": {
                                   "start": {
@@ -802,19 +789,6 @@
                               {
                                 "type": "Identifier",
                                 "name": "y",
-                                "typeAnnotation": {
-                                  "type": "ETSPrimitiveType",
-                                  "loc": {
-                                    "start": {
-                                      "line": 20,
-                                      "column": 26
-                                    },
-                                    "end": {
-                                      "line": 20,
-                                      "column": 29
-                                    }
-                                  }
-                                },
                                 "decorators": [],
                                 "loc": {
                                   "start": {

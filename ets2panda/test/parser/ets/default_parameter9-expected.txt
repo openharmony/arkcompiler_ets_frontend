@@ -755,60 +755,6 @@
                               {
                                 "type": "Identifier",
                                 "name": "self",
-                                "typeAnnotation": {
-                                  "type": "TSArrayType",
-                                  "elementType": {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "T",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 16,
-                                            "column": 37
-                                          },
-                                          "end": {
-                                            "line": 16,
-                                            "column": 38
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 16,
-                                          "column": 37
-                                        },
-                                        "end": {
-                                          "line": 16,
-                                          "column": 39
-                                        }
-                                      }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 16,
-                                        "column": 37
-                                      },
-                                      "end": {
-                                        "line": 16,
-                                        "column": 39
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 1,
-                                      "column": 1
-                                    },
-                                    "end": {
-                                      "line": 1,
-                                      "column": 1
-                                    }
-                                  }
-                                },
                                 "decorators": [],
                                 "loc": {
                                   "start": {

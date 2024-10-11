@@ -558,47 +558,6 @@
                               {
                                 "type": "Identifier",
                                 "name": "s",
-                                "typeAnnotation": {
-                                  "type": "ETSTypeReference",
-                                  "part": {
-                                    "type": "ETSTypeReferencePart",
-                                    "name": {
-                                      "type": "Identifier",
-                                      "name": "string",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 17,
-                                          "column": 12
-                                        },
-                                        "end": {
-                                          "line": 17,
-                                          "column": 18
-                                        }
-                                      }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 17,
-                                        "column": 12
-                                      },
-                                      "end": {
-                                        "line": 17,
-                                        "column": 19
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 17,
-                                      "column": 12
-                                    },
-                                    "end": {
-                                      "line": 17,
-                                      "column": 19
-                                    }
-                                  }
-                                },
                                 "decorators": [],
                                 "loc": {
                                   "start": {
