@@ -22,11 +22,13 @@
 #include "utils/arena_containers.h"
 #include "ir/statement.h"
 #include "varbinder/ETSBinder.h"
+#include "util/errorHandler.h"
 
 namespace ark::es2panda::compiler {
 
 std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir::ScriptFunction *function,
-                                                                       parser::Program *program)
+                                                                       parser::Program *program,
+                                                                       util::ErrorLogger *logger)
 {
     bool hasDefaultParameter = false;
     bool hasRestParameter = false;
@@ -41,7 +43,8 @@ std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir:
         }
 
         if (hasRestParameter) {
-            ThrowSyntaxError("Rest parameter should be the last one.", param->Start(), program);
+            util::ErrorHandler::LogSyntaxError(logger, program, "Rest parameter should be the last one.",
+                                               param->Start());
         }
 
         if (param->IsDefault()) {
@@ -50,15 +53,17 @@ std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir:
         }
 
         if (hasDefaultParameter) {
-            ThrowSyntaxError("Required parameter follows default parameter(s).", param->Start(), program);
+            util::ErrorHandler::LogSyntaxError(logger, program, "Required parameter follows default parameter(s).",
+                                               param->Start());
         }
 
         ++requiredParametersNumber;
     }
 
     if (hasDefaultParameter && hasRestParameter) {
-        ThrowSyntaxError("Both optional and rest parameters are not allowed in function's parameter list.",
-                         function->Start(), program);
+        util::ErrorHandler::LogSyntaxError(
+            logger, program, "Both optional and rest parameters are not allowed in function's parameter list.",
+            function->Start());
     }
 
     return std::make_pair(hasDefaultParameter, requiredParametersNumber);
@@ -345,11 +350,12 @@ bool DefaultParameterLowering::Perform(public_lib::Context *ctx, parser::Program
     }
 
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
+    util::ErrorLogger *logger = ctx->parser->ErrorLogger();
     ArenaVector<ir::MethodDefinition *> foundNodes(checker->Allocator()->Adapter());
-    program->Ast()->IterateRecursively([&foundNodes, this, program](ir::AstNode *ast) {
+    program->Ast()->IterateRecursively([&foundNodes, this, program, logger](ir::AstNode *ast) {
         if (ast->IsMethodDefinition()) {
             auto [hasDefaultParam, requiredParamsCount] =
-                HasDefaultParam(ast->AsMethodDefinition()->Function(), program);
+                HasDefaultParam(ast->AsMethodDefinition()->Function(), program, logger);
             if (hasDefaultParam) {
                 // store all nodes (which is function definition with default/optional parameters)
                 // to specific list, to process them later, as for now we can't modify AST in the

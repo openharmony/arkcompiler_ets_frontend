@@ -16,3 +16,5 @@
 package import_tests.packages.subpackage_b;
 
 export let b: String = "SubpackageA";
+
+/* @@? 1:1 Error SyntaxError: Files 'subpackage_module_2' and 'subpackage_module_1' are in the same folder, but have different package names.  */

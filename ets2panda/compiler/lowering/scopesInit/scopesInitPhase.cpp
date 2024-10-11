@@ -15,6 +15,7 @@
 
 #include "util/errorHandler.h"
 #include "scopesInitPhase.h"
+#include "util/errorLogger.h"
 
 namespace ark::es2panda::compiler {
 
@@ -407,9 +408,9 @@ void ScopesInitPhase::IterateNoTParams(ir::ClassDefinition *classDef)
     CallNode(classDef->Body());
 }
 
-void ScopesInitPhase::ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
+void ScopesInitPhase::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    util::ErrorHandler::ThrowSyntaxError(Program(), errorMessage, pos);
+    util::ErrorHandler::LogSyntaxError(ctx_->parser->ErrorLogger(), Program(), errorMessage, pos);
 }
 
 void ScopesInitPhase::CreateFuncDecl(ir::ScriptFunction *func)
@@ -513,7 +514,7 @@ void ScopesInitPhase::AnalyzeExports()
 {
     if (Program()->Kind() == parser::ScriptKind::MODULE && VarBinder()->TopScope()->IsModuleScope() &&
         !VarBinder()->TopScope()->AsModuleScope()->ExportAnalysis()) {
-        ThrowSyntaxError("Invalid exported binding", Program()->Ast()->End());
+        LogSyntaxError("Invalid exported binding", Program()->Ast()->End());
     }
 }
 
@@ -565,7 +566,7 @@ void ScopeInitTyped::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *int
     if (res == bindings.end()) {
         decl = VarBinder()->AddTsDecl<varbinder::InterfaceDecl>(ident->Start(), Allocator(), name);
     } else if (!AllowInterfaceRedeclaration()) {
-        ThrowSyntaxError("Interface redeclaration is not allowed", interfDecl->Start());
+        LogSyntaxError("Interface redeclaration is not allowed", interfDecl->Start());
     } else if (!res->second->Declaration()->IsInterfaceDecl()) {
         VarBinder()->ThrowRedeclaration(ident->Start(), ident->Name());
     } else {
@@ -585,6 +586,10 @@ void ScopeInitTyped::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *int
     BindScopeNode(localScope.GetScope(), interfDecl);
 
     CallNode(interfDecl->Body());
+    if (decl == nullptr) {  // Error processing.
+        return;
+    }
+
     if (!alreadyExists) {
         decl->BindNode(interfDecl);
     }
@@ -935,7 +940,7 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
         }
     } else {
         if (methodName->Name().Is(compiler::Signatures::MAIN) && clsScope->Parent()->IsGlobalScope()) {
-            ThrowSyntaxError("Main overload is not enabled", methodName->Start());
+            LogSyntaxError("Main overload is not enabled", methodName->Start());
         }
         AddOverload(method, found);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
@@ -1193,7 +1198,7 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
             if (!classProp->TypeAnnotation()->IsETSPrimitiveType()) {
                 pos.index--;
             }
-            ThrowSyntaxError("Missing initializer in const declaration", pos);
+            LogSyntaxError("Missing initializer in const declaration", pos);
         }
         AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     } else if (classProp->IsReadonly()) {
@@ -1256,7 +1261,7 @@ void InitScopesPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)
     for (auto decl : global->Body()) {
         if (decl->IsDefaultExported()) {
             if (VarBinder()->AsETSBinder()->DefaultExport() != nullptr) {
-                ThrowSyntaxError("Only one default export is allowed in a module", decl->Start());
+                LogSyntaxError("Only one default export is allowed in a module", decl->Start());
             }
             VarBinder()->AsETSBinder()->SetDefaultExport(decl);
         }

@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-function foo(): void {}
-class TestClass {}
+/* not a test */
+/* file for export */
+package subpackage_a;
 
-export {foo}
-export type {TestClass as foo}
+export let myvar: number = 8;
+export let myvar2: number = 9;
 
-/* @@? 20:27 Error SyntaxError: The given name 'foo' is already used in another export  */
-/* @@? 1:1 Error SyntaxError: The given name 'foo' is already used in another export  */
+/* @@? import_multi_error.sts:20:21 Error SyntaxError: Please compile `package_module.sts` with `--ets-module` option. It is being imported by another file. */

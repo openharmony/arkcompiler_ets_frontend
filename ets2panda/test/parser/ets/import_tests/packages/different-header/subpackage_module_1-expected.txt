@@ -1,1 +1,0 @@
-SyntaxError: Files 'subpackage_module_1' and 'subpackage_module_2' are in the same folder, but have different package names. [subpackage_module_1.sts:1:1]

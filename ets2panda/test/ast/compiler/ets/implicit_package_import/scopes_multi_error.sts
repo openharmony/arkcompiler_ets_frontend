@@ -13,11 +13,19 @@
  * limitations under the License.
  */
 
-function foo(): void {}
-class TestClass {}
+function main(): void {
+    return;
+}
 
-export {foo}
-export type {TestClass as foo}
+function main(i : string[]): void {
+    return;
+}
 
-/* @@? 20:27 Error SyntaxError: The given name 'foo' is already used in another export  */
-/* @@? 1:1 Error SyntaxError: The given name 'foo' is already used in another export  */
+function main(i : string[], g : int): void {
+    return;
+}
+
+export default function TestFunc(): void {}
+export default function TestFuncToo(): void {}
+
+/* @@? 29:16 Error SyntaxError: Only one default export is allowed in a module  */
