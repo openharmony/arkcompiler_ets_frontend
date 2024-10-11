@@ -378,7 +378,6 @@ public:
     void CreateAsyncGeneratorObj(const ir::AstNode *node, VReg funcObj);
     void CreateIterResultObject(const ir::AstNode *node, VReg value, VReg done);
     void SuspendGenerator(const ir::AstNode *node, VReg genObj);
-    void SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj);
 
     void AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj, VReg value, VReg canSuspend);
     void AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj);
@@ -427,7 +426,6 @@ public:
 
     void PopLexEnv(const ir::AstNode *node);
     void GenDebugger(const ir::AstNode *node);
-    void CopyLexEnv(const ir::AstNode *node);
     void NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::VariableScope *scope);
     void NewLexEnv(const ir::AstNode *node, uint32_t num);
     void NewSendableEnv(const ir::AstNode *node, uint32_t num);

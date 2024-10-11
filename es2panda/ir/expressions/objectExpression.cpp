@@ -125,7 +125,6 @@ ValidationInfo ObjectExpression::ValidateExpression()
 
 bool ObjectExpression::ConvertibleToObjectPattern()
 {
-    // TODO(rsipka): throw more precise messages in case of false results
     bool restFound = false;
     bool convResult = true;
 
@@ -406,7 +405,6 @@ void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const 
                                                   compiler::VReg objReg) const
 {
     for (size_t i = 0; i < properties_.size(); i++) {
-        // TODO: Compile and store only the last one of re-declared prop
         if (compiled->Test(i)) {
             continue;
         }

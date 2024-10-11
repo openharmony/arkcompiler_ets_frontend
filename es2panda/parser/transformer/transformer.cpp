@@ -1088,7 +1088,6 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
 
 ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
 {
-    // TODO(xucheng): maybe will support metadata later
     auto name = node->Definition()->GetName();
     std::vector<ir::AstNode *> res;
     bool hasClassDecorators = node->HasDecorators();

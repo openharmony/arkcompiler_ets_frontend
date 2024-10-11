@@ -57,15 +57,6 @@ def check_deveco_env():
     return True
 
 
-def prepare_image():
-    if options.arguments.run_haps:
-        return True
-
-    # TODO: get pictures reference
-
-    return True
-
-
 def clean_log():
     output_log_file = options.configs.get('log_file')
     daily_report_file = options.configs.get('output_html_file')
@@ -82,5 +73,4 @@ def prepare_test_env():
     clean_log()
     prepared = check_deveco_env()
     setup_env()
-    prepared = prepared and prepare_image()
     return prepared

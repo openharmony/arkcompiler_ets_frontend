@@ -4069,9 +4069,7 @@ ir::TSParameterProperty *ParserImpl::CreateTsParameterProperty(ir::Expression *p
     if (modifiers & ir::ModifierFlags::STATIC) {
         isStatic = true;
     }
-
-    // TODO(Csaba Repasi): Handle export property of TSParameterProperty
-
+    
     return AllocNode<ir::TSParameterProperty>(accessibility, parameter, readonly, isOverride, isStatic, isExport);
 }
 
@@ -4083,7 +4081,6 @@ ir::Expression *ParserImpl::ParseFunctionParameter(bool isDeclare)
 
     lexer::SourcePosition parameterStart = lexer_->GetToken().Start();
     ir::ModifierFlags modifiers = ParseModifiers();
-    // TODO(Csaba Repasi): throw error if using strick mode reserved keyword here
     if (!(context_.Status() & ParserStatus::CONSTRUCTOR_FUNCTION) && modifiers != ir::ModifierFlags::NONE) {
         ThrowSyntaxError("A parameter property is only allowed in a constructor implementation.", parameterStart);
     }
