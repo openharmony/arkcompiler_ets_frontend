@@ -23,3 +23,6 @@ function main(): void {
 }
 
 /* @@? 19:23 Error TypeError: No enum item method called 'ordinal'  */
+/* @@? 20:27 Error TypeError: No enum item method called 'ordinal'  */
+/* @@? 21:25 Error TypeError: No enum item method called 'ordinal'  */
+/* @@? 22:27 Error TypeError: No enum item method called 'ordinal'  */

@@ -20,3 +20,5 @@ function main(): void {
 }
 
 /* @@? 19:36 Error TypeError: Functions that can throw exceptions cannot be assigned to non throwing functions.  */
+/* @@? 19:36 Error TypeError: Functions that can throw exceptions cannot be assigned to non throwing functions.  */
+/* @@? 19:36 Error TypeError: Type '() => void' cannot be assigned to type '() => void'  */
