@@ -1,6 +1,6 @@
 .language ECMAScript
 
-slotNum = 0x4
+slotNum = 0x3
 .function any .#~@0<#getPrivateProperty(any a0, any a1, any a2, any a3) {
 label_3: 
 label_0: 

@@ -54,7 +54,7 @@ label_0:
 label_2: 
 }
 
-slotNum = 0x24
+slotNum = 0x21
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_38: 
@@ -70,27 +70,27 @@ label_3:
 	callruntime.isfalse 0x3
 	jnez label_1
 label_2: 
-	definefunc 0x5, .#*#foo, 0x0
+	definefunc 0x4, .#*#foo, 0x0
 	jmp label_3
 label_1: 
 	ldai 0x5
 	sta v0
-	definefunc 0x6, .#*#^1, 0x0
-	callarg0 0x7
+	definefunc 0x5, .#*#^1, 0x0
+	callarg0 0x6
 	sta v1
 label_6: 
 	lda v0
-	less 0x9, v1
+	less 0x8, v1
 	jeqz label_4
 label_5: 
-	definefunc 0xa, .#*#foo1, 0x0
+	definefunc 0x9, .#*#foo1, 0x0
 	lda v1
-	tonumeric 0xb
-	inc 0xc
+	tonumeric 0xa
+	inc 0xb
 	sta v1
 	jmp label_6
 label_4: 
-	createemptyarray 0xd
+	createemptyarray 0xc
 	sta v0
 label_21: 
 label_22: 
@@ -103,26 +103,26 @@ label_34:
 	throw
 label_7: 
 	lda v0
-	getiterator 0xe
+	getiterator 0xd
 	sta v1
-	ldobjbyname 0x10, next
+	ldobjbyname 0xf, next
 	sta v2
 	ldfalse
 	sta v3
 label_15: 
 	lda v2
-	callthis0 0x12, v1
+	callthis0 0x11, v1
 	sta v4
 	throw.ifnotobject v4
-	ldobjbyname 0x14, done
-	callruntime.istrue 0x16
+	ldobjbyname 0x13, done
+	callruntime.istrue 0x15
 	jnez label_25
 label_9: 
 	lda v4
-	ldobjbyname 0x18, value
+	ldobjbyname 0x16, value
 label_23: 
 label_29: 
-	definefunc 0x1a, .#*#foo2, 0x0
+	definefunc 0x18, .#*#foo2, 0x0
 label_24: 
 end_label_24: 
 	jmp label_15
@@ -130,7 +130,7 @@ label_41:
 	sta v4
 label_35: 
 	lda v3
-	callruntime.istrue 0x1b
+	callruntime.istrue 0x19
 	jnez label_11
 label_12: 
 	ldtrue
@@ -139,14 +139,14 @@ label_12:
 label_19: 
 label_31: 
 	lda v1
-	ldobjbyname 0x1d, return
+	ldobjbyname 0x1a, return
 	sta v0
 	ldundefined
-	eq 0x1f, v0
+	eq 0x1c, v0
 	jnez label_11
 label_13: 
 	lda v0
-	callthis0 0x20, v1
+	callthis0 0x1d, v1
 label_20: 
 end_label_20: 
 	jmp label_14
@@ -175,10 +175,10 @@ label_16:
 	getnextpropname v0
 	sta v1
 	ldundefined
-	eq 0x22, v1
+	eq 0x1f, v1
 	jnez label_17
 label_18: 
-	definefunc 0x23, .#*#foo3, 0x0
+	definefunc 0x20, .#*#foo3, 0x0
 	jmp label_16
 label_17: 
 	ldundefined

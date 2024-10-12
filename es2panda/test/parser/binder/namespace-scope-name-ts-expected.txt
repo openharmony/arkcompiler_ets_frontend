@@ -75,7 +75,7 @@ label_0:
 label_2: 
 }
 
-slotNum = 0x12
+slotNum = 0xf
 .function any .func_main_0(any a0, any a1, any a2) {
 label_10: 
 label_0: 
@@ -98,11 +98,11 @@ label_12:
 	mov v2, v0
 label_3: 
 	lda v1
-	callarg1 0x6, v2
-	definefunc 0x8, .#&#A^1, 0x1
+	callarg1 0x5, v2
+	definefunc 0x7, .#&#A^1, 0x1
 	sta v1
 	lda v0
-	callruntime.istrue 0x9
+	callruntime.istrue 0x8
 	jnez label_13
 label_5: 
 	createemptyobject
@@ -113,18 +113,18 @@ label_13:
 	mov v2, v0
 label_6: 
 	lda v1
-	callarg1 0xb, v2
-	definefunc 0xd, .#&#A^2, 0x1
+	callarg1 0x9, v2
+	definefunc 0xb, .#&#A^2, 0x1
 	sta v1
 	lda v0
-	callruntime.istrue 0xe
+	callruntime.istrue 0xc
 	jnez label_9
 label_8: 
 	createemptyobject
 	sta v0
 label_9: 
 	lda v1
-	callarg1 0x10, v0
+	callarg1 0xd, v0
 	ldundefined
 	returnundefined
 label_11: 

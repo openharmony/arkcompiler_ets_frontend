@@ -1,6 +1,6 @@
 .language ECMAScript
 
-slotNum = 0x2
+slotNum = 0x1
 .function any .#~@0<#greet1(any a0, any a1, any a2, any a3) {
 label_4: 
 label_0: 
@@ -38,7 +38,7 @@ label_4:
 label_6: 
 }
 
-slotNum = 0x8
+slotNum = 0x7
 .function any .#~@0>#greet2(any a0, any a1, any a2, any a3) {
 label_4: 
 label_0: 
@@ -49,17 +49,17 @@ label_2:
 	lda.str 
 	sta v0
 	lda a3
+	add2 0x1, v0
+	sta v0
+	lda.str 
 	add2 0x2, v0
 	sta v0
-	lda.str 
-	add2 0x3, v0
-	sta v0
 	lda a2
-	ldobjbyname 0x4, name
-	add2 0x6, v0
+	ldobjbyname 0x3, name
+	add2 0x5, v0
 	sta v0
 	lda.str 
-	add2 0x7, v0
+	add2 0x6, v0
 	jmp label_3
 label_1: 
 	lda.str hello Mi

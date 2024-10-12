@@ -67,7 +67,7 @@ label_0:
 label_2: 
 }
 
-slotNum = 0x1b
+slotNum = 0x1a
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 
@@ -118,7 +118,7 @@ label_6:
 	mov v2, v0
 label_3: 
 	lda v4
-	callthis3 0x19, v3, v5, v6, v2
+	callthis3 0x18, v3, v5, v6, v2
 	ldundefined
 	returnundefined
 label_5: 

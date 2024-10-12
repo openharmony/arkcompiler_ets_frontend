@@ -47,7 +47,7 @@ label_0:
 label_2: 
 }
 
-slotNum = 0x7
+slotNum = 0x6
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 
@@ -64,10 +64,10 @@ label_2:
 	sta v0
 label_3: 
 	lda v1
-	callarg1 0x4, v0
+	callarg1 0x3, v0
 	ldhole
 	sta v0
-	callruntime.definesendableclass 0x6, .#~@0=#Person, _5, 0x0, v0
+	callruntime.definesendableclass 0x5, .#~@0=#Person, _5, 0x0, v0
 	ldundefined
 	returnundefined
 label_5: 

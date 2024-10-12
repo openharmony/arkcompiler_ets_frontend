@@ -1,6 +1,6 @@
 .language ECMAScript
 
-slotNum = 0x5
+slotNum = 0x4
 .function any .#*#testCatchPhiDataflow(any a0, any a1, any a2) {
 	nop
 label_9: 
@@ -27,8 +27,8 @@ label_11:
 label_12: 
 	mov v0, v1
 label_4: 
-	tryldglobalbyname 0x2, print
-	callarg1 0x3, v0
+	tryldglobalbyname 0x1, print
+	callarg1 0x2, v0
 	ldundefined
 	returnundefined
 label_10: 
