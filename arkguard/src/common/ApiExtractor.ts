@@ -396,8 +396,11 @@ export namespace ApiExtractor {
   function isModuleExports(leftExpression: ElementAccessExpression | PropertyAccessExpression): boolean {
     let leftExpressionText = leftExpression.expression.getText();
     if (isPropertyAccessExpression(leftExpression.expression)) {
-      // module.exports.a = A;
-      // module.exports['a'] = A;
+      /**
+       * For example:
+       * module.exports.a = A;
+       * module.exports['a'] = A;
+       */
       return leftExpressionText === 'module.exports';
     }
     if (isIdentifier(leftExpression.expression)) {
@@ -408,7 +411,10 @@ export namespace ApiExtractor {
         }
       }
 
-      // exports.a = A;
+      /**
+       * For example:
+       * exports.a = A;
+       */
       return leftExpressionText === 'exports';
     }
     return false;
