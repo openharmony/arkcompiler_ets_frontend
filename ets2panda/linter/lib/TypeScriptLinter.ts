@@ -30,13 +30,8 @@ import type { Autofix } from './autofixes/Autofixer';
 import { Autofixer } from './autofixes/Autofixer';
 import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
-import { ALLOWED_STD_SYMBOL_API } from './utils/consts/AllowedStdSymbolAPI';
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
-import { LIMITED_STD_GLOBAL_FUNC } from './utils/consts/LimitedStdGlobalFunc';
-import { LIMITED_STD_OBJECT_API } from './utils/consts/LimitedStdObjectAPI';
-import { LIMITED_STD_PROXYHANDLER_API } from './utils/consts/LimitedStdProxyHandlerAPI';
-import { LIMITED_STD_REFLECT_API } from './utils/consts/LimitedStdReflectAPI';
 import {
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
@@ -64,6 +59,14 @@ import {
   OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE,
   TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE
 } from './utils/functions/LibraryTypeCallDiagnosticChecker';
+import {
+  ALLOWED_STD_SYMBOL_API,
+  LIMITED_STD_API,
+  LIMITED_STD_GLOBAL_API,
+  LIMITED_STD_OBJECT_API,
+  LIMITED_STD_PROXYHANDLER_API,
+  LIMITED_STD_REFLECT_API
+} from './utils/consts/LimitedStdAPI';
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
@@ -739,7 +742,12 @@ export class TypeScriptLinter {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
 
-    if (!!exprSym && this.tsUtils.isSymbolAPI(exprSym) && !ALLOWED_STD_SYMBOL_API.includes(exprSym.getName())) {
+    if (
+      !this.arkts2 &&
+      !!exprSym &&
+      this.tsUtils.isStdSymbolAPI(exprSym) &&
+      !ALLOWED_STD_SYMBOL_API.includes(exprSym.getName())
+    ) {
       this.incrementCounters(propertyAccessNode, FaultID.SymbolType);
     }
     if (TypeScriptLinter.advancedClassChecks && this.tsUtils.isClassObjectExpression(propertyAccessNode.expression)) {
@@ -1691,6 +1699,9 @@ export class TypeScriptLinter {
       const faultId = this.arkts2 ? FaultID.GlobalThisError : FaultID.GlobalThis;
       this.incrementCounters(node, faultId);
     } else {
+      if (this.arkts2) {
+        this.checkLimitedStdlibApi(tsIdentifier, tsIdentSym);
+      }
       this.handleRestrictedValues(tsIdentifier, tsIdentSym);
     }
   }
@@ -1808,8 +1819,8 @@ export class TypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
-      this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) ||
-      TsUtils.isIntrinsicObjectType(type) ||
+      !this.arkts2 &&
+        (this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) || TsUtils.isIntrinsicObjectType(type)) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)
@@ -1916,11 +1927,17 @@ export class TypeScriptLinter {
     this.handleImportCall(tsCallExpr);
     this.handleRequireCall(tsCallExpr);
     if (calleeSym !== undefined) {
-      this.handleStdlibAPICall(tsCallExpr, calleeSym);
-      this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
+      if (!this.arkts2) {
+        this.handleStdlibAPICall(tsCallExpr, calleeSym);
+        this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
+      }
       if (TsUtils.symbolHasEsObjectType(calleeSym)) {
         const faultId = this.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
         this.incrementCounters(tsCallExpr, faultId);
+      }
+      // Need to process Symbol call separately in order to not report two times when using Symbol API
+      if (this.arkts2 && this.tsUtils.isStdSymbol(calleeSym)) {
+        this.incrementCounters(tsCallExpr, FaultID.SymbolType);
       }
     }
     if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(calleeSym)) {
@@ -2076,7 +2093,7 @@ export class TypeScriptLinter {
   }
 
   private static readonly LimitedApis = new Map<string, { arr: Array<string> | null; fault: FaultID }>([
-    ['global', { arr: LIMITED_STD_GLOBAL_FUNC, fault: FaultID.LimitedStdLibApi }],
+    ['global', { arr: LIMITED_STD_GLOBAL_API, fault: FaultID.LimitedStdLibApi }],
     ['Object', { arr: LIMITED_STD_OBJECT_API, fault: FaultID.LimitedStdLibApi }],
     ['ObjectConstructor', { arr: LIMITED_STD_OBJECT_API, fault: FaultID.LimitedStdLibApi }],
     ['Reflect', { arr: LIMITED_STD_REFLECT_API, fault: FaultID.LimitedStdLibApi }],
@@ -2089,7 +2106,7 @@ export class TypeScriptLinter {
     const name = calleeSym.getName();
     const parName = this.tsUtils.getParentSymbolName(calleeSym);
     if (parName === undefined) {
-      if (LIMITED_STD_GLOBAL_FUNC.includes(name)) {
+      if (LIMITED_STD_GLOBAL_API.includes(name)) {
         this.incrementCounters(callExpr, FaultID.LimitedStdLibApi);
         return;
       }
@@ -2107,6 +2124,23 @@ export class TypeScriptLinter {
         !this.supportedStdCallApiChecker.isSupportedStdCallAPI(callExpr, parName, name))
     ) {
       this.incrementCounters(callExpr, lookup.fault);
+    }
+  }
+
+  private checkLimitedStdlibApi(node: ts.Identifier, symbol: ts.Symbol): void {
+    const parName = this.tsUtils.getParentSymbolName(symbol);
+    const entries = LIMITED_STD_API.get(parName);
+    if (!entries) {
+      return;
+    }
+    for (const entry of entries) {
+      if (
+        entry.api.includes(symbol.name) &&
+        !this.supportedStdCallApiChecker.isSupportedStdCallAPI(node, parName, symbol.name)
+      ) {
+        this.incrementCounters(node, entry.faultId);
+        return;
+      }
     }
   }
 

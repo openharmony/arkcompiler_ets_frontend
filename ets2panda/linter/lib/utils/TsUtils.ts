@@ -1181,7 +1181,12 @@ export class TsUtils {
     return !parentName || parentName === 'global';
   }
 
-  isSymbolAPI(symbol: ts.Symbol): boolean {
+  isStdSymbol(symbol: ts.Symbol): boolean {
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
+    return name === SYMBOL || name === SYMBOL_CONSTRUCTOR;
+  }
+
+  isStdSymbolAPI(symbol: ts.Symbol): boolean {
     const parentName = this.getParentSymbolName(symbol);
     if (this.useSdkLogic) {
       const name = parentName ? parentName : symbol.escapedName;
@@ -1196,7 +1201,7 @@ export class TsUtils {
       const parName = this.getParentSymbolName(symbol);
       return (parName === SYMBOL || parName === SYMBOL_CONSTRUCTOR) && name === ITERATOR;
     }
-    return this.isSymbolAPI(symbol) && symbol.name === ITERATOR;
+    return this.isStdSymbolAPI(symbol) && symbol.name === ITERATOR;
   }
 
   isSymbolIteratorExpression(expr: ts.Expression): boolean {

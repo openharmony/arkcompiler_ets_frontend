@@ -13,4 +13,31 @@
  * limitations under the License.
  */
 
-export const LIMITED_STD_GLOBAL_FUNC = ['eval'];
+@Component
+struct XXX {
+  getA(a: string) {
+    console.log(a);
+    testA(null);
+    testA(undefined);
+  }
+
+  cb = () => {
+    testA(null);
+    testA(undefined);
+  }
+
+  build() {
+    Column() {
+      Button('')
+        .onClick(this.cb)
+        .onClick(() => {
+          testA(null);  // should report StrictModeError
+          testA(undefined);  // should report StrictModeError
+        })
+    }
+  }
+}
+
+function testA(a: string) {
+  console.log(a);
+}
