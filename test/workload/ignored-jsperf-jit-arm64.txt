@@ -25,3 +25,4 @@ Function_applyFunction
 DisplayNames_constructor
 DisplayNames_of
 DisplayNames_resolvedOptions
+DisplayNames_supportedLocalesOf

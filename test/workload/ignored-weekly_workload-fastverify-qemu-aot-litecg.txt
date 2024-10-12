@@ -11,6 +11,9 @@ json-parse-inspector
 #18745
 json-stringify-inspector
 
+#19246
+mandreel
+
 #19703
 crypto-aes
 stanford-crypto-pbkdf2
@@ -22,6 +25,18 @@ OfflineAssembler
 box2d
 
 ##18489
+wsl
+
+##18485
+raytrace
+
+##18486
+pdfjs
+
+##18483
+typescript-compiler
+
+##19216
 wsl
 
 ##18647
