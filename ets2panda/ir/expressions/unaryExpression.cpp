@@ -43,7 +43,13 @@ void UnaryExpression::Dump(ir::AstDumper *dumper) const
 void UnaryExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add(TokenToString(operator_));
-    argument_->Dump(dumper);
+    if (!argument_->IsIdentifier()) {
+        dumper->Add("(");
+        argument_->Dump(dumper);
+        dumper->Add(")");
+    } else {
+        argument_->Dump(dumper);
+    }
 }
 
 void UnaryExpression::Compile(compiler::PandaGen *pg) const

@@ -36,25 +36,28 @@ void NumberLiteral::Dump(ir::AstDumper *dumper) const
 
 void NumberLiteral::Dump(ir::SrcDumper *dumper) const
 {
-    if (number_.IsInt()) {
-        dumper->Add(number_.GetInt());
-        return;
-    }
+    if (std::string(number_.Str()).empty() || (parent_ != nullptr && parent_->IsTSEnumMember())) {
+        if (number_.IsInt()) {
+            dumper->Add(number_.GetInt());
+            return;
+        }
 
-    if (number_.IsLong()) {
-        dumper->Add(number_.GetLong());
-        return;
-    }
+        if (number_.IsLong()) {
+            dumper->Add(number_.GetLong());
+            return;
+        }
 
-    if (number_.IsFloat()) {
-        dumper->Add(number_.GetFloat());
-        return;
-    }
+        if (number_.IsFloat()) {
+            dumper->Add(number_.GetFloat());
+            return;
+        }
 
-    if (number_.IsDouble()) {
-        dumper->Add(number_.GetDouble());
-        return;
+        if (number_.IsDouble()) {
+            dumper->Add(number_.GetDouble());
+            return;
+        }
     }
+    dumper->Add(std::string(number_.Str()));
 }
 
 void NumberLiteral::Compile(compiler::PandaGen *pg) const

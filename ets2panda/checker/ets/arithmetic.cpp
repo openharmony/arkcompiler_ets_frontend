@@ -467,8 +467,11 @@ bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, che
 
     // NOTE (mxlgv): Skip for unions. Required implementation of the specification section:
     // 7.25.6 Reference Equality Based on Actual Type (Union Equality Operators)
-    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        return true;
+    if (leftType->IsETSUnionType()) {
+        return leftType->AsETSUnionType()->IsOverlapWith(Relation(), rightType);
+    }
+    if (rightType->IsETSUnionType()) {
+        return rightType->AsETSUnionType()->IsOverlapWith(Relation(), leftType);
     }
 
     // NOTE (mxlgv): Skip for generic. Required implementation of the specification section:
@@ -480,7 +483,10 @@ bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, che
     // Equality expression can only be applied to String and String, and BigInt and BigInt
     if (leftType->IsETSStringType() || rightType->IsETSStringType() || leftType->IsETSBigIntType() ||
         rightType->IsETSBigIntType()) {
-        if (!Relation()->IsIdenticalTo(leftType, rightType) && !Relation()->IsIdenticalTo(rightType, leftType)) {
+        auto *const nonConstLhs = GetNonConstantType(leftType);
+        auto *const nonConstRhs = GetNonConstantType(rightType);
+        if (!Relation()->IsIdenticalTo(nonConstLhs, nonConstRhs) &&
+            !Relation()->IsIdenticalTo(nonConstRhs, nonConstLhs)) {
             return false;
         }
     }
@@ -1010,11 +1016,38 @@ void CheckNeedToGenerateGetValueForBinaryExpression(ir::Expression *expression)
 }
 }  // namespace
 
+std::tuple<Type *, Type *> ETSChecker::CheckArithmeticOperations(
+    ir::Expression *expr, std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op,
+    bool isEqualOp, std::tuple<checker::Type *, checker::Type *, Type *, Type *> types)
+{
+    auto [left, right, operationType, pos] = op;
+    auto [leftType, rightType, unboxedL, unboxedR] = types;
+
+    if (leftType->IsETSUnionType()) {
+        leftType = GetNonConstantType(leftType);
+    }
+
+    if (rightType->IsETSUnionType()) {
+        rightType = GetNonConstantType(rightType);
+    }
+
+    auto checkMap = GetCheckMap();
+    if (checkMap.find(operationType) != checkMap.end()) {
+        auto check = checkMap[operationType];
+        auto tsType = check(this, std::make_tuple(left, right, operationType, pos), isEqualOp,
+                            std::make_tuple(leftType, rightType, unboxedL, unboxedR));
+        return {tsType, tsType};
+    }
+
+    return CheckBinaryOperatorHelper(this, {left, right, expr, operationType, pos, isEqualOp},
+                                     {leftType, rightType, unboxedL, unboxedR});
+}
+
 std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left, ir::Expression *right,
                                                            ir::Expression *expr, lexer::TokenType operationType,
                                                            lexer::SourcePosition pos, bool forcePromotion)
 {
-    checker::Type *const leftType = left->Check(this);
+    checker::Type *leftType = left->Check(this);
 
     if (leftType == nullptr) {
         LogTypeError("Unexpected type error in binary expression", left->Start());
@@ -1063,16 +1096,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
         }
     }
 
-    auto checkMap = GetCheckMap();
-    if (checkMap.find(operationType) != checkMap.end()) {
-        auto check = checkMap[operationType];
-        auto tsType = check(this, std::make_tuple(left, right, operationType, pos), isEqualOp,
-                            std::make_tuple(leftType, rightType, unboxedL, unboxedR));
-        return {tsType, tsType};
-    }
-
-    return CheckBinaryOperatorHelper(this, {left, right, expr, operationType, pos, isEqualOp},
-                                     {leftType, rightType, unboxedL, unboxedR});
+    return CheckArithmeticOperations(expr, std::make_tuple(left, right, operationType, pos), isEqualOp,
+                                     std::make_tuple(leftType, rightType, unboxedL, unboxedR));
 }
 
 Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)

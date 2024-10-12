@@ -1115,6 +1115,19 @@ RegExpFlags Lexer::ScanRegExpFlags()
     return resultFlags;
 }
 
+void Lexer::CheckOctal()
+{
+    switch (Iterator().Peek()) {
+        case LEX_CHAR_8:
+        case LEX_CHAR_9: {
+            ThrowError("Invalid octal digit");
+        }
+        default: {
+            break;
+        }
+    }
+}
+
 RegExp Lexer::ScanRegExp()
 {
     // for proper handling such regexps as /=/

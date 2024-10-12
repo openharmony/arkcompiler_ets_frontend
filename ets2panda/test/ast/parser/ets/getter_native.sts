@@ -20,4 +20,4 @@ class Door {
     }
 }
 
-/* @@? 18:21 Error TypeError: 'Native' modifier is invalid for Accessors  */
+/* @@? 18:12 Error SyntaxError: Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override'). */

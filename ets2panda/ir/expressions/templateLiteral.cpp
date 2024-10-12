@@ -85,7 +85,20 @@ void TemplateLiteral::Dump(ir::AstDumper *dumper) const
 
 void TemplateLiteral::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("TemplateLiteral");
+    dumper->Add("`");
+    auto const num = std::max(expressions_.size(), quasis_.size());
+
+    for (std::size_t i = 0U; i < num; i++) {
+        if (i < quasis_.size()) {
+            quasis_[i]->Dump(dumper);
+        }
+        if (i < expressions_.size()) {
+            dumper->Add("${");
+            expressions_[i]->Dump(dumper);
+            dumper->Add("}");
+        }
+    }
+    dumper->Add("`");
 }
 
 void TemplateLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const

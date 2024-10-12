@@ -21,4 +21,3 @@ function main(): void {
 }
 
 /* @@? 20:19 Error TypeError: Type alias declaration is not generic, but type parameters were provided  */
-/* @@? 0:0 Error TypeError:   */

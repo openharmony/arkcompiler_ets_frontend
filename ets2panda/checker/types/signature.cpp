@@ -15,12 +15,7 @@
 
 #include "signature.h"
 
-#include "typeFlag.h"
-#include "varbinder/scope.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/ts/tsTypeParameter.h"
 #include "checker/ETSchecker.h"
-#include "public/public.h"
 
 namespace ark::es2panda::checker {
 
@@ -234,6 +229,7 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
 {
     relation->Result(false);
     bool isEts = relation->GetChecker()->IsETSChecker();
+
     auto const thisToCheckParametersNumber = GetToCheckParamCount(this, isEts);
     auto const otherToCheckParametersNumber = GetToCheckParamCount(other, isEts);
     if ((thisToCheckParametersNumber != otherToCheckParametersNumber || this->MinArgCount() != other->MinArgCount()) &&
@@ -297,6 +293,7 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
     if (i == toCheckParametersNumber) {
         return;
     }
+
     bool isOtherMandatoryParamsMatched = i < thisToCheckParametersNumber;
     ArenaVector<varbinder::LocalVariable *> const &parameters =
         isOtherMandatoryParamsMatched ? this->Params() : other->Params();
@@ -305,6 +302,7 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
         relation->Result(false);
         return;
     }
+
     auto *const restParameterType = restParameter->TsType()->AsETSArrayType()->ElementType();
     for (; i < toCheckParametersNumber; ++i) {
         if (!CheckParameter(relation, parameters[i]->TsType(), restParameterType)) {

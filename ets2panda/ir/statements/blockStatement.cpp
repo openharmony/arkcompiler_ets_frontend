@@ -65,11 +65,25 @@ void BlockStatement::Dump(ir::AstDumper *dumper) const
 void BlockStatement::Dump(ir::SrcDumper *dumper) const
 {
     // NOTE(nsizov): trailing blocks
+    if (Parent() != nullptr && (Parent()->IsBlockStatement() || Parent()->IsCallExpression())) {
+        dumper->Add("{");
+        if (!statements_.empty()) {
+            dumper->IncrIndent();
+            dumper->Endl();
+        }
+    }
     for (auto statement : statements_) {
         statement->Dump(dumper);
         if (statement != statements_.back()) {
             dumper->Endl();
         }
+    }
+    if (Parent() != nullptr && (Parent()->IsBlockStatement() || Parent()->IsCallExpression())) {
+        if (!statements_.empty()) {
+            dumper->DecrIndent();
+            dumper->Endl();
+        }
+        dumper->Add("}");
     }
 }
 

@@ -25,4 +25,4 @@ class A {
   }
 }
 
-/* @@? 24:13 Error TypeError: This expression is not callable.  */
+/* @@? 24:13 Error TypeError: Type 'int' has no call signatures.  */

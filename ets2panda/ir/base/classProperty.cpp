@@ -88,14 +88,16 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
 
 void ClassProperty::Dump(ir::SrcDumper *dumper) const
 {
-    if (IsPrivate()) {
-        dumper->Add("private ");
-    } else if (IsProtected()) {
-        dumper->Add("protected ");
-    } else if (IsInternal()) {
-        dumper->Add("internal ");
-    } else {
-        dumper->Add("public ");
+    if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal()) {
+        if (IsPrivate()) {
+            dumper->Add("private ");
+        } else if (IsProtected()) {
+            dumper->Add("protected ");
+        } else if (IsInternal()) {
+            dumper->Add("internal ");
+        } else {
+            dumper->Add("public ");
+        }
     }
 
     if (IsStatic()) {

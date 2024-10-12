@@ -34,4 +34,5 @@ function main(): void {
     assert instance.getX() == true;
 }
 
-/* @@? 28:15 Error TypeError: This expression is not callable.  */
+/* @@? 28:15 Error TypeError: Type 'boolean' has no call signatures.  */
+/* @@? 25:17 Error TypeError: Cannot inherit from class C, because field x is inherited with a different declaration type  */

@@ -17,4 +17,7 @@ class A{
     (a:number):number
 }
 
-/* @@? 17:5 Error SyntaxError: Identifier expected.  */
+/* @@? 17:5 Error SyntaxError: Identifier expected, got '('. */
+/* @@? 17:14 Error SyntaxError: Identifier expected, got ')'. */
+/* @@? 17:15 Error SyntaxError: Identifier expected, got ':'. */
+/* @@? 18:1 Error SyntaxError: Field type annotation expected */

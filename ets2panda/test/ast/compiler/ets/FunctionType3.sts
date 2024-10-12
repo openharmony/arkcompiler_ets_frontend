@@ -23,4 +23,5 @@ function main(): void {
     func2()(1, "foo");
 }
 
-/* @@? 23:16 Error TypeError: Type 'string' is not compatible with type 'Int' at index 2  */
+/* @@? 23:16 Error TypeError: Type '"foo"' is not compatible with type 'Int' at index 2  */
+/* @@? 23:5 Error TypeError: No matching call signature for invoke0(int, "foo")  */

@@ -17,4 +17,5 @@ interface Test {
     set color(s: string)()
 }
 
-/* @@? 17:25 Error SyntaxError: Unexpected token  */
+/* @@? 17:25 Error SyntaxError: Unexpected token '('. */
+/* @@? 17:25 Error SyntaxError: ',' expected */

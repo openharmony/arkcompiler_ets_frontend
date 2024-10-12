@@ -25,6 +25,7 @@ public:
     std::string_view Name() const override;
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool ExternalSourcesPostcondition(public_lib::Context *ctx, const parser::Program *program);
 };
 
 }  // namespace ark::es2panda::compiler

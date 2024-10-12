@@ -52,10 +52,16 @@ public:
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
+    void IsSupertypeOf(TypeRelation *relation, Type *source) override;
+    void IsSubtypeOf(TypeRelation *relation, Type *source) override;
 
     void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override
     {
-        ss << lexer::TokenToString(lexer::TokenType::KEYW_STRING);
+        if (IsConstantType()) {
+            ss << "\"" << value_ << "\"";
+        } else {
+            ss << lexer::TokenToString(lexer::TokenType::KEYW_STRING);
+        }
     }
 
     void ToAssemblerType(std::stringstream &ss) const override

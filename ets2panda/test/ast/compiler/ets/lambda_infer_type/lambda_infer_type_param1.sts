@@ -17,4 +17,4 @@ function main() {
     let x: (value: float) => float = value => 3 as float  // CTE
 }
 
-/* @@? 17:38 Error SyntaxError: Unexpected token ''.  */
+/* @@? 17:38 Error SyntaxError: Unexpected token 'identification literal'.  */

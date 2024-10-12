@@ -816,7 +816,13 @@ private:
 
 class LoopScope : public VariableScope {
 public:
-    explicit LoopScope(ArenaAllocator *allocator, Scope *parent) : VariableScope(allocator, parent) {}
+    explicit LoopScope(ArenaAllocator *allocator, Scope *parent) : VariableScope(allocator, parent)
+    {
+        // NOTE(kkonkuznetsov): currently LoopScope type has ScopeType::LOCAL
+        // therefore it does not respond to IsLoopScope() because it checks for type.
+        // This LOOP_SCOPE flag can be used to check that scope is actually a loop scope.
+        AddFlag(ScopeFlags::LOOP_SCOPE);
+    }
 
     LoopDeclarationScope *DeclScope()
     {

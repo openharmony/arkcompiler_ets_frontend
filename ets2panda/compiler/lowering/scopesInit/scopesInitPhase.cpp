@@ -49,6 +49,17 @@ bool ScopesInitPhase::Perform(PhaseContext *ctx, parser::Program *program)
 
 void ScopesInitPhase::VisitScriptFunction(ir::ScriptFunction *scriptFunction)
 {
+    if (auto *const id = scriptFunction->Id(); id != nullptr && id->Variable() == nullptr) {
+        auto const *const curScope = VarBinder()->GetScope();
+        auto const &functionName = id->Name();
+        auto const res =
+            curScope->Find(functionName, scriptFunction->IsStatic() ? varbinder::ResolveBindingOptions::ALL_STATIC
+                                                                    : varbinder::ResolveBindingOptions::ALL_NON_STATIC);
+        if (res.variable != nullptr && res.variable->Declaration()->IsFunctionDecl()) {
+            id->SetVariable(res.variable);
+        }
+    }
+
     HandleFunction(scriptFunction);
 }
 
@@ -195,7 +206,9 @@ void ScopesInitPhase::VisitCatchClause(ir::CatchClause *catchClause)
             param->AsIdentifier()->SetVariable(var);
         }
     }
-    catchParamScope->BindNode(param);
+
+    // Catch Clause is scope bearer
+    catchParamScope->BindNode(catchClause);
 
     auto catchCtx = LexicalScopeCreateOrEnter<varbinder::CatchScope>(VarBinder(), catchClause);
     auto *catchScope = catchCtx.GetScope();

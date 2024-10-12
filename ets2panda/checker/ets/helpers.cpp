@@ -365,7 +365,7 @@ checker::Type *ETSChecker::ApplyConditionalOperatorPromotion(checker::ETSChecker
             case checker::TypeFlag::CHAR: {
                 if (value <= static_cast<int>(std::numeric_limits<char>::max()) &&
                     value >= static_cast<int>(std::numeric_limits<char>::min())) {
-                    return checker->GetNonConstantTypeFromPrimitiveType(otherType);
+                    return checker->GetNonConstantType(otherType);
                 }
                 break;
             }
@@ -565,7 +565,7 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 {
     ArenaVector<checker::Type *> elementTypes(Allocator()->Adapter());
     for (auto e : init->AsArrayExpression()->Elements()) {
-        elementTypes.push_back(e->Check(this));
+        elementTypes.push_back(GetNonConstantType(e->Check(this)));
     }
 
     if (elementTypes.empty()) {
@@ -708,6 +708,16 @@ void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, co
     }
 }
 
+static bool NeedWideningBasedOnInitializerHeuristics(ir::Expression *e)
+{
+    // NOTE: need to be done by smart casts. Return true if we need to infer wider type.
+    if (e->IsUnaryExpression()) {
+        return NeedWideningBasedOnInitializerHeuristics(e->AsUnaryExpression()->Argument());
+    }
+    const bool isConstInit = e->IsIdentifier() && e->Variable()->Declaration()->IsConstDecl();
+    return e->IsConditionalExpression() || e->IsLiteral() || isConstInit;
+}
+
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
 {
@@ -719,6 +729,9 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
     const bool isReadonly = (flags & ir::ModifierFlags::READONLY) != 0;
     const bool isStatic = (flags & ir::ModifierFlags::STATIC) != 0;
+    // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
+    // are assigned with CONSTANT, which would not be correct. (After feature supported)
+    const bool omitInitConstness = isConst || (isReadonly && isStatic);
 
     if (typeAnnotation != nullptr) {
         annotationType = typeAnnotation->GetType(this);
@@ -755,9 +768,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     if (annotationType != nullptr) {
         CheckAnnotationTypeForVariableDeclaration(annotationType, annotationType->IsETSUnionType(), init, initType);
 
-        // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
-        // are assigned with CONSTANT, which would not be correct. (After feature supported)
-        if ((isConst || (isReadonly && isStatic)) &&
+        if (omitInitConstness &&
             ((initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) ||
              (initType->IsETSStringType() && annotationType->IsETSStringType()))) {
             bindingVar->SetTsType(init->TsType());
@@ -767,8 +778,10 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
 
     CheckEnumType(init, initType, varName);
 
-    (isConst || (isReadonly && isStatic)) ? bindingVar->SetTsType(initType)
-                                          : bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));
+    // NOTE: need to be done by smart casts
+    const bool needWidening =
+        !omitInitConstness && typeAnnotation == nullptr && NeedWideningBasedOnInitializerHeuristics(init);
+    bindingVar->SetTsType(needWidening ? GetNonConstantType(initType) : initType);
 
     return FixOptionalVariableType(bindingVar, flags, init);
 }
@@ -833,11 +846,8 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
     }
 
     // Nothing to do with identical types:
-    auto *nonConstSourceType = !sourceType->IsConstantType() ? sourceType : sourceType->Clone(this);
-    nonConstSourceType->RemoveTypeFlag(TypeFlag::CONSTANT);
-
-    auto *nonConstTargetType = !targetType->IsConstantType() ? targetType : targetType->Clone(this);
-    nonConstTargetType->RemoveTypeFlag(TypeFlag::CONSTANT);
+    auto *nonConstSourceType = GetNonConstantType(sourceType);
+    auto *nonConstTargetType = GetNonConstantType(targetType);
 
     if (Relation()->IsIdenticalTo(nonConstSourceType, nonConstTargetType) ||
         Relation()->IsIdenticalTo(GlobalBuiltinJSValueType(), nonConstTargetType)) {
@@ -1673,9 +1683,7 @@ varbinder::VariableFlags ETSChecker::GetAccessFlagFromNode(const ir::AstNode *no
 Type *ETSChecker::CheckSwitchDiscriminant(ir::Expression *discriminant)
 {
     discriminant->Check(this);
-    auto discriminantType = MaybeUnboxExpression(discriminant);
-    ASSERT(discriminantType != nullptr);
-
+    auto *discriminantType = GetNonConstantType(MaybeUnboxExpression(discriminant));
     if (!discriminantType->HasTypeFlag(TypeFlag::VALID_SWITCH_TYPE)) {
         if (!(discriminantType->IsETSObjectType() &&
               discriminantType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_STRING |
@@ -2231,19 +2239,28 @@ bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunc
     return false;
 }
 
-void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType)
+void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType,
+                                     Signature *maybeSubstitutedFunctionSig)
 {
     for (size_t i = 0; i < calleeType->Params().size(); ++i) {
         const auto *const calleeParam = calleeType->Params()[i]->AsETSParameterExpression()->Ident();
         auto *const lambdaParam = lambda->Params()[i]->AsETSParameterExpression()->Ident();
         if (lambdaParam->TypeAnnotation() == nullptr) {
             auto *const typeAnnotation = calleeParam->TypeAnnotation()->Clone(Allocator(), lambdaParam);
+            if (maybeSubstitutedFunctionSig != nullptr) {
+                ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
+                typeAnnotation->SetTsType(maybeSubstitutedFunctionSig->Params()[i]->TsType());
+            }
             lambdaParam->SetTsTypeAnnotation(typeAnnotation);
             typeAnnotation->SetParent(lambdaParam);
         }
     }
     if (lambda->ReturnTypeAnnotation() == nullptr) {
-        lambda->SetReturnTypeAnnotation(calleeType->ReturnType()->Clone(Allocator(), lambda));
+        auto *const returnTypeAnnotation = calleeType->ReturnType()->Clone(Allocator(), lambda);
+        if (maybeSubstitutedFunctionSig != nullptr) {
+            returnTypeAnnotation->SetTsType(maybeSubstitutedFunctionSig->ReturnType());
+        }
+        lambda->SetReturnTypeAnnotation(returnTypeAnnotation);
     }
 }
 

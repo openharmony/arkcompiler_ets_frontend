@@ -18,4 +18,5 @@ interface Test {
     proc()()  // throws SyntaxError
 }
 
-/* @@? 18:11 Error SyntaxError: Unexpected token  */
+/* @@? 18:11 Error SyntaxError: Unexpected token '('. */
+/* @@? 18:11 Error SyntaxError: ',' expected */

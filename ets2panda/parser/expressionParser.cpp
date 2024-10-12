@@ -691,9 +691,6 @@ ir::Expression *ParserImpl::ParseAssignmentEqualExpression(const lexer::TokenTyp
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL:
         case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL: {
             ValidateLvalueAssignmentTarget(lhsExpression);
 
@@ -705,6 +702,11 @@ ir::Expression *ParserImpl::ParseAssignmentEqualExpression(const lexer::TokenTyp
 
             binaryAssignmentExpression->SetRange({lhsExpression->Start(), assignmentExpression->End()});
             return binaryAssignmentExpression;
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL: {
+            ThrowUnexpectedToken(tokenType);
         }
         default:
             break;
@@ -950,13 +952,9 @@ ir::RegExpLiteral *ParserImpl::ParseRegularExpression()
     lexer_->ResetTokenEnd();
     auto regexp = lexer_->ScanRegExp();
 
-    lexer::RegExpParser reParser(regexp, Allocator());
+    lexer::RegExpParser reParser(regexp, Allocator(), *this);
 
-    try {
-        reParser.ParsePattern();
-    } catch (lexer::RegExpError &e) {
-        ThrowSyntaxError(e.message.c_str());
-    }
+    reParser.ParsePattern();
 
     auto *regexpNode = AllocNode<ir::RegExpLiteral>(regexp.patternStr, regexp.flags, regexp.flagsStr);
     regexpNode->SetRange(lexer_->GetToken().Loc());
@@ -1594,6 +1592,9 @@ ir::MemberExpression *ParserImpl::ParsePrivatePropertyAccess(ir::Expression *pri
 ir::MemberExpression *ParserImpl::ParsePropertyAccess(ir::Expression *primaryExpr, bool isOptional)
 {
     ir::Identifier *ident = ExpectIdentifier(true);
+    if (ident == nullptr) {  // Error processing.
+        return nullptr;
+    }
 
     auto *memberExpr = AllocNode<ir::MemberExpression>(primaryExpr, ident, ir::MemberExpressionKind::PROPERTY_ACCESS,
                                                        false, isOptional);

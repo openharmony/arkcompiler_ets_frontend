@@ -50,8 +50,10 @@ private:
                                          bool isFunctionalInterface, bool isUnionTypeWithFunctionalInterface) const;
     checker::Type *GetReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
     checker::Type *GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const;
-    checker::Type *SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr, ETSObjectType *objectType) const;
+    checker::Type *GetCallExpressionReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
     checker::Type *UnwrapPromiseType(checker::Type *type) const;
+    checker::Type *GetSmartType(ir::AssignmentExpression *expr, checker::Type *leftType,
+                                checker::Type *rightType) const;
     bool CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
                                          checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                          ETSChecker *checker) const;
@@ -59,12 +61,14 @@ private:
     checker::Type *GetCalleeType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr) const
     {
         checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
-        if (calleeType == nullptr) {
-            return nullptr;
+        if (calleeType->IsTypeError()) {
+            expr->GetTypeRef()->SetTsType(checker->GlobalTypeError());
+            return checker->GlobalTypeError();
         }
 
         if (!calleeType->IsETSObjectType()) {
             checker->LogTypeError("This expression is not constructible.", expr->Start());
+            expr->GetTypeRef()->SetTsType(checker->GlobalTypeError());
             return checker->GlobalTypeError();
         }
 
@@ -87,7 +91,7 @@ private:
         bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement() ||
                           parent->IsETSLaunchExpression() || parent->IsCallExpression();
         if (!acceptVoid) {
-            checker->ThrowTypeError({"Cannot use type 'void' as value. "}, expr->Start());
+            checker->LogTypeError({"Cannot use type 'void' as value. "}, expr->Start());
         }
     }
 };

@@ -20,6 +20,7 @@
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/blockExpression.h"
 #include "ir/ets/etsUnionType.h"
+#include "ir/ets/etsStringLiteralType.h"
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsNullishTypes.h"
 #include "ir/statements/functionDeclaration.h"

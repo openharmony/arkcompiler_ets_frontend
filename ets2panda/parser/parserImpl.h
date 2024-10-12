@@ -28,6 +28,9 @@
 #include "util/errorLogger.h"
 #include "util/helpers.h"
 
+namespace ark::es2panda::lexer {
+class RegExpParser;
+}  // namespace ark::es2panda::lexer
 namespace ark::es2panda::parser {
 using ENUMBITOPS_OPERATORS;
 
@@ -37,7 +40,7 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     ALLOW_CONST = 1U << 1U,
     IN_INTERSECTION = 1U << 2U,
     RESTRICT_EXTENDS = 1U << 3U,
-    THROW_ERROR = 1U << 4U,
+    REPORT_ERROR = 1U << 4U,
     CAN_BE_TS_TYPE_PREDICATE = 1U << 5U,
     BREAK_AT_NEW_LINE = 1U << 6U,
     RETURN_TYPE = 1U << 7U,
@@ -160,6 +163,7 @@ protected:
     friend class SavedClassPrivateContext;
     friend class ArrowFunctionContext;
     friend class ETSNolintParser;
+    friend class lexer::RegExpParser;
 
     [[noreturn]] void ThrowParameterModifierError(ir::ModifierFlags status) const;
     [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;

@@ -73,6 +73,9 @@ void MemberExpression::Dump(ir::SrcDumper *dumper) const
     object_->Dump(dumper);
     if (IsOptional()) {
         dumper->Add("?");
+        if ((MemberExpressionKind::ELEMENT_ACCESS & kind_) != 0U) {
+            dumper->Add(".");
+        }
     }
     if ((MemberExpressionKind::ELEMENT_ACCESS & kind_) != 0U) {
         dumper->Add("[");
@@ -162,6 +165,9 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
     }
 
     auto *const literalType = enumInterface->LookupConstant(checker, object_, property_->AsIdentifier());
+    if (literalType == nullptr) {
+        return {nullptr, nullptr};
+    }
     return {literalType, literalType->GetMemberVar()};
 }
 
@@ -205,9 +211,10 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
 {
     auto const addPropType = [this, checker, &commonPropType](checker::Type *memberType) {
         if (commonPropType != nullptr && commonPropType != memberType) {
-            checker->ThrowTypeError("Member type must be the same for all union objects.", Start());
+            checker->LogTypeError("Member type must be the same for all union objects.", Start());
+        } else {
+            commonPropType = memberType;
         }
-        commonPropType = memberType;
     };
     for (auto *const type : unionType->ConstituentTypes()) {
         auto *const apparent = checker->GetApparentType(type);
@@ -217,7 +224,7 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
         } else if (apparent->IsETSEnumType()) {
             addPropType(ResolveEnumMember(checker, apparent).first);
         } else {
-            checker->ThrowTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
+            checker->LogTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
         }
     }
     return commonPropType;
@@ -239,8 +246,20 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
     } else if (IsComputed() && objType->IsETSArrayType()) {  // access erased array or tuple type
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
     }
-    SetTsType(type);
+    SetTsType(type == nullptr ? checker->GlobalTypeError() : type);
     return TsTypeOrError();
+}
+
+checker::Type *MemberExpression::SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType)
+{
+    SetObjectType(objectType);
+    auto [resType, resVar] = ResolveObjectMember(checker);
+    if (resType == nullptr) {
+        SetTsType(checker->GlobalTypeError());
+        return checker->GlobalTypeError();
+    }
+    SetPropVar(resVar);
+    return AdjustType(checker, resType);
 }
 
 bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
@@ -293,7 +312,8 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
 
     auto *const method = objType_->GetProperty(methodName, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->ThrowTypeError("Object type doesn't have proper index access method.", Start());
+        checker->LogTypeError("Object type doesn't have proper index access method.", Start());
+        return nullptr;
     }
 
     ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
@@ -311,7 +331,8 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, Start(), "indexing",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
-        checker->ThrowTypeError("Cannot find index access method with the required signature.", Property()->Start());
+        checker->LogTypeError("Cannot find index access method with the required signature.", Property()->Start());
+        return nullptr;
     }
     checker->ValidateSignatureAccessibility(objType_, nullptr, signature, Start(),
                                             "Index access method is not visible here.");
@@ -399,7 +420,8 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
             return checker->GlobalBuiltinETSStringType();
         }
     }
-    checker->ThrowTypeError("Indexed access is not supported for such expression type.", Object()->Start());
+    checker->LogTypeError("Indexed access is not supported for such expression type.", Object()->Start());
+    return nullptr;
 }
 
 checker::Type *MemberExpression::Check(checker::ETSChecker *checker)

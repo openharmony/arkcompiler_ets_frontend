@@ -17,4 +17,4 @@ async function foo(): Promise<int> {
     return "abc";
 }
 
-/* @@? 17:12 Error TypeError: Type 'string' is not compatible with the enclosing method's return type 'Promise<Int> | Int'  */
+/* @@? 17:12 Error TypeError: Type '"abc"' is not compatible with the enclosing method's return type 'Promise<Int> | Int'  */

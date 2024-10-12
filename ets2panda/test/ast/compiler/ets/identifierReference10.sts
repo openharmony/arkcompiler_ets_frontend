@@ -25,4 +25,4 @@ class A {
   }
 }
 
-/* @@? 24:16 Error TypeError: Type 'string' cannot be assigned to type 'int'  */
+/* @@? 24:16 Error TypeError: Type '"foo"' cannot be assigned to type 'int'  */

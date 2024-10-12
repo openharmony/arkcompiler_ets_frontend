@@ -444,6 +444,10 @@ ArenaVector<ObjectType *> TSChecker::GetBaseTypes(InterfaceType *type)
 
     TypeStackElement tse(this, type, {"Type ", type->Name(), " recursively references itself as a base type."},
                          decl->Node()->AsTSInterfaceDeclaration()->Id()->Start());
+    if (tse.HasTypeError()) {
+        type->Bases().clear();
+        return type->Bases();
+    }
 
     for (const auto *declaration : decl->Decls()) {
         if (declaration->Extends().empty()) {

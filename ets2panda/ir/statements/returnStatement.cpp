@@ -86,7 +86,8 @@ void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type 
 
             argumentType = checker->PrimitiveTypeAsETSBuiltinType(argumentType);
             if (argumentType == nullptr) {
-                checker->ThrowTypeError("Invalid return statement expression", argument_->Start());
+                checker->LogTypeError("Invalid return statement expression", argument_->Start());
+                return;
             }
             argument_->AddBoxingUnboxingFlags(checker->GetBoxingFlag(argumentType));
 

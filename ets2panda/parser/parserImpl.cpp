@@ -791,13 +791,18 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
             ThrowSyntaxError("Expected a '}'");
         }
     } else {
-        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
+               lexer_->GetToken().Type() != lexer::TokenType::EOS) {
             if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
                 lexer_->NextToken();
                 continue;
             }
 
             ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
+            if (property == nullptr) {  // Error processing.
+                lexer_->NextToken();
+                continue;
+            }
 
             if (CheckClassElement(property, ctor, properties)) {
                 continue;
@@ -853,8 +858,11 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
     } else {
         while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
             ir::Expression *parameter = ParseFunctionParameter();
-            ValidateRestParameter(parameter);
+            if (parameter == nullptr) {  // Error processing.
+                continue;
+            }
 
+            ValidateRestParameter(parameter);
             params.push_back(parameter);
 
             if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -1184,7 +1192,8 @@ ir::Identifier *ParserImpl::ExpectIdentifier(bool isReference, bool isUserDefine
     }
 
     if (tokenName.Empty()) {
-        ThrowSyntaxError("Identifier expected.", tokenStart);
+        LogSyntaxError({"Identifier expected, got '", TokenToString(tokenType), "'."}, tokenStart);
+        return nullptr;  // Error processing.
     }
 
     auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());

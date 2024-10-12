@@ -30,4 +30,5 @@ function main(): void {
     let instance: B = new B();
     assert instance.getX() == true;
 }
-/* @@? 25:15 Error TypeError: This expression is not callable.  */
+/* @@? 25:15 Error TypeError: Type 'boolean' has no call signatures.  */
+/* @@? 16:1 Error TypeError: Cannot inherit from interface A because field x is inherited with a different declaration type  */

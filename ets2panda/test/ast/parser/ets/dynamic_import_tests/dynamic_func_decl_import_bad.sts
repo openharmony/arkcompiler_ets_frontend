@@ -22,4 +22,4 @@ import { foo } from "dynamic_import_tests/modules/module"
 function main(): void {
     foo("abc")
 }
-/* @@? 23:9 Error TypeError: Type 'string' is not compatible with type 'A' at index 1  */
+/* @@? 23:9 Error TypeError: Type '"abc"' is not compatible with type 'A' at index 1  */

@@ -42,6 +42,7 @@ void ImportNamespaceSpecifier::Dump(ir::AstDumper *dumper) const
 
 void ImportNamespaceSpecifier::Dump(ir::SrcDumper *dumper) const
 {
+    dumper->Add("* as ");
     local_->Dump(dumper);
 }
 

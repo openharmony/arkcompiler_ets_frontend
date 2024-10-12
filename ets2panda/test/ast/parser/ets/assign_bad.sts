@@ -20,4 +20,5 @@ function main(): void {
   a := b;
 }
 
-/* @@? 16:5 Error SyntaxError: Unexpected token  */
+/* @@? 16:5 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 20:6 Error SyntaxError: Label must be followed by a loop statement */

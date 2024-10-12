@@ -22,4 +22,3 @@ function main(){
 }
 
 /* @@? 21:27 Error TypeError: Invalid type reference.   */
-/* @@? 21:13 Error TypeError: This expression is not constructible.  */

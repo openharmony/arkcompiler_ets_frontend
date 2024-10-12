@@ -10,7 +10,7 @@ class GoodGreeter {
   }
   
   public constructor() {
-    this.name = "hello";
+    (this).name = "hello";
   }
   
 }
@@ -19,7 +19,7 @@ let a = GoodGreeter()
 function main() {
   let m: int = 1;
   let n: int = 2;
-  console.log((m + n));
+  console.log(((m) + (n)));
 }
 
 ---
@@ -31,7 +31,7 @@ class GoodGreeter {
   }
   
   public constructor() {
-    this.name = "hello";
+    (this).name = "hello";
   }
   
 }
@@ -45,7 +45,7 @@ class GoodGreeter {
   }
   
   public constructor() {
-    this.name = "hello";
+    (this).name = "hello";
   }
   
 }
@@ -92,33 +92,33 @@ return 5;
 5
 ---
 public constructor() {
-  this.name = "hello";
+  (this).name = "hello";
 }
 
 ---
 constructor
 ---
 () {
-  this.name = "hello";
+  (this).name = "hello";
 }
 
 ---
 () {
-  this.name = "hello";
+  (this).name = "hello";
 }
 
 ---
 constructor
 ---
-this.name = "hello";
+(this).name = "hello";
 ---
-this.name = "hello";
+(this).name = "hello";
 ---
-this.name = "hello"
+(this).name = "hello"
 ---
-this.name
+(this).name
 ---
-this
+(this)
 ---
 name
 ---
@@ -137,14 +137,14 @@ GoodGreeter
 function main() {
   let m: int = 1;
   let n: int = 2;
-  console.log((m + n));
+  console.log(((m) + (n)));
 }
 
 ---
 () {
   let m: int = 1;
   let n: int = 2;
-  console.log((m + n));
+  console.log(((m) + (n)));
 }
 
 ---
@@ -152,7 +152,7 @@ main
 ---
 let m: int = 1;
 let n: int = 2;
-console.log((m + n));
+console.log(((m) + (n)));
 ---
 let m: int = 1;
 ---
@@ -174,9 +174,9 @@ int
 ---
 2
 ---
-console.log((m + n));
+console.log(((m) + (n)));
 ---
-console.log((m + n))
+console.log(((m) + (n)))
 ---
 console.log
 ---
@@ -184,7 +184,7 @@ console
 ---
 log
 ---
-(m + n)
+((m) + (n))
 ---
 m
 ---

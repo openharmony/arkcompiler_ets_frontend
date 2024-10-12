@@ -49,7 +49,12 @@ void ArrowFunctionExpression::Dump(ir::AstDumper *dumper) const
 
 void ArrowFunctionExpression::Dump(ir::SrcDumper *dumper) const
 {
+    dumper->Add("(");
+    if (func_->IsScriptFunction() && func_->AsScriptFunction()->IsAsyncFunc()) {
+        dumper->Add("async ");
+    }
     func_->Dump(dumper);
+    dumper->Add(")");
 }
 
 void ArrowFunctionExpression::Compile(compiler::PandaGen *pg) const

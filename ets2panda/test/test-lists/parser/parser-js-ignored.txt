@@ -1,0 +1,15 @@
+# Need to fix error message after dev-branch will be merged in master (panda#19412 panda#18494)
+ark_tests/parser/js/expressions/array/test-array-expression-3.js
+ark_tests/parser/js/expressions/member/test-member-expression-1.js
+ark_tests/parser/js/expressions/new/test-new-expression-invalid.js
+ark_tests/parser/js/expressions/this/test-this-expression-1.js
+ark_tests/parser/js/expressions/unary/test-expression-after-unary-expression.js
+ark_tests/parser/js/expressions/update/test-multiple-update-expression.js
+ark_tests/parser/js/functions/async-await/test-function-async-1.js
+ark_tests/parser/js/functions/async-await/test-function-await-1.js
+ark_tests/parser/js/functions/async-await/test-function-await-2.js
+ark_tests/parser/js/identifiers/test-identifier-2.js
+ark_tests/parser/js/identifiers/test-identifier-keyword-await-2.js
+ark_tests/parser/js/statements/debugger/test-debugger-statement-1.js
+ark_tests/parser/js/statements/loops/do-while/test-do-while-1.js
+ark_tests/parser/js/statements/switch/test-switch-6.js

@@ -52,7 +52,11 @@ void ImportSpecifier::Dump(ir::AstDumper *dumper) const
 
 void ImportSpecifier::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("ImportSpecifier");
+    imported_->Dump(dumper);
+    if (local_ != nullptr) {
+        dumper->Add(" as ");
+        local_->Dump(dumper);
+    }
 }
 
 void ImportSpecifier::Compile(compiler::PandaGen *pg) const

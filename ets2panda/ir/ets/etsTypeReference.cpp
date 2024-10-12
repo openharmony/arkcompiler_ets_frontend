@@ -93,7 +93,7 @@ checker::Type *ETSTypeReference::Check(checker::ETSChecker *checker)
 
 checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
+    if (TsTypeOrError() == nullptr) {
         SetTsType(part_->GetType(checker));
     }
     return TsTypeOrError();

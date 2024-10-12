@@ -19,3 +19,4 @@ function main() : void {
 
 /* @@? 17:9 Error TypeError: Class composite must be constructed separately before referring their members.  */
 /* @@? 17:23 Error TypeError: need to specify target type for class composite  */
+/* @@? 17:23 Error TypeError: Property 'y' does not exist on type '*TYPE_ERROR*'  */

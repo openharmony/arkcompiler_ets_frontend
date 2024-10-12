@@ -35,4 +35,5 @@ function main(): void {
     a.foo(1)(1, "foo");
 }
 
-/* @@? 35:17 Error TypeError: Type 'string' is not compatible with type 'Int' at index 2  */
+/* @@? 35:17 Error TypeError: Type '"foo"' is not compatible with type 'Int' at index 2  */
+/* @@? 35:5 Error TypeError: No matching call signature for invoke0(int, "foo")  */

@@ -26,7 +26,7 @@ ir::TypeNode *ETSChecker::GetUtilityTypeTypeParamNode(const ir::TSTypeParameterI
                                                       const std::string_view &utilityTypeName)
 {
     if (typeParams->Params().size() != 1) {
-        ThrowTypeError({"Invalid number of type parameters for ", utilityTypeName, " type"}, typeParams->Start());
+        LogTypeError({"Invalid number of type parameters for ", utilityTypeName, " type"}, typeParams->Start());
     }
 
     return typeParams->Params().front();
@@ -35,6 +35,10 @@ ir::TypeNode *ETSChecker::GetUtilityTypeTypeParamNode(const ir::TSTypeParameterI
 Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstantiation *const typeParams,
                                                  const std::string_view &utilityType)
 {
+    if (typeParams == nullptr) {
+        return GlobalTypeError();
+    }
+
     auto *const bareType = GetUtilityTypeTypeParamNode(typeParams, utilityType)->Check(this);
 
     if (utilityType == compiler::Signatures::PARTIAL_TYPE_NAME) {
@@ -49,7 +53,8 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
         return HandleRequiredType(bareType);
     }
 
-    ThrowTypeError("This utility type is not yet implemented.", typeParams->Start());
+    LogTypeError("This utility type is not yet implemented.", typeParams->Start());
+    return bareType;
 }
 
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -278,7 +283,9 @@ ir::ClassDefinition *ETSChecker::CreateClassPrototype(util::StringView name, par
     // Create class declaration node
     auto *const classDecl = AllocNode<ir::ClassDeclaration>(classDef, Allocator());
     classDecl->SetParent(classDeclProgram->Ast());
-    classDef->Scope()->BindNode(classDecl);
+
+    // Class definition is scope bearer, not class declaration
+    classDef->Scope()->BindNode(classDecl->Definition());
     decl->BindNode(classDef);
 
     // Put class declaration in global scope, and in program AST
@@ -438,6 +445,10 @@ ir::MethodDefinition *ETSChecker::CreateNonStaticClassInitializer(varbinder::Cla
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 Type *ETSChecker::HandleReadonlyType(const ir::TSTypeParameterInstantiation *const typeParams)
 {
+    if (typeParams == nullptr) {
+        return GlobalTypeError();
+    }
+
     auto *const typeParamNode = GetUtilityTypeTypeParamNode(typeParams, compiler::Signatures::READONLY_TYPE_NAME);
     auto *typeToBeReadonly = typeParamNode->Check(this);
 
@@ -606,8 +617,8 @@ void ETSChecker::ValidateObjectLiteralForRequiredType(const ETSObjectType *const
         }
 
         if (!missingProp.empty()) {
-            ThrowTypeError({"Class property '", missingProp, "' needs to be initialized for required type."},
-                           initObjExpr->Start());
+            LogTypeError({"Class property '", missingProp, "' needs to be initialized for required type."},
+                         initObjExpr->Start());
         }
     }
 }

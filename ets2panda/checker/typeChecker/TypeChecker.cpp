@@ -21,9 +21,9 @@ void ETSTypeChecker::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *n
 {
     Iterate(node);
     if (!node->TsType()->IsETSObjectType()) {
-        ThrowTypeError({"Cannot infer arrow function type from context for type: '", node->TsType(),
-                        "', consider adding type explicitly"},
-                       node->Start());
+        LogTypeError({"Cannot infer arrow function type from context for type: '", node->TsType(),
+                      "', consider adding type explicitly"},
+                     node->Start());
     }
 }
 

@@ -224,7 +224,6 @@ private:
 
     ir::Statement *CreateStatement(std::string_view sourceCode);
 
-    ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode);
     ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode);
 
     ir::ClassDeclaration *CreateClassDeclaration(std::string_view sourceCode, bool allowStatic = false);
@@ -308,6 +307,7 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
+    bool ParseTriplePeriod(bool spreadTypePresent);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
     std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const;
@@ -385,11 +385,15 @@ private:
                                                   const lexer::SourcePosition &startLoc);
     ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                 ir::ModifierFlags memberModifiers, const lexer::SourcePosition &startLoc);
+    void CheckAccessorDeclaration(ir::ModifierFlags memberModifiers);
+
     ir::AstNode *ParseAmbientSignature();
 
     ir::ClassDefinition *CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
                                                                ir::TypeNode *typeReference,
                                                                ir::TypeNode *baseTypeReference);
+    ir::Identifier *CreateInvokeIdentifier();
+
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();

@@ -757,10 +757,35 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
-void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, Label *ifTrue, Label *ifFalse,
+void ETSGen::TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target)
+{
+    if (!target->IsConstantType()) {
+        return;
+    }
+    RegScope rs(this);
+    VReg rhs = AllocReg();
+    auto ifNotEquals = AllocLabel();
+
+    LoadAccumulator(node, srcReg);
+    LoadConstantObject(node->AsExpression(), target);
+    StoreAccumulator(node, rhs);
+    EmitEtsEquals(node, srcReg, rhs);
+    BranchIfFalse(node, ifNotEquals);
+    BranchIfTrue(node, ifTrue);
+    SetLabel(node, ifNotEquals);
+    SetAccumulatorType(nullptr);
+}
+
+void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label, VReg srcReg,
                                        checker::Type const *target, bool acceptUndefined)
 {
     ASSERT(!target->IsETSDynamicType());
+    auto [ifTrue, ifFalse] = label;
+
+    if (target->IsConstantType()) {
+        TestIsInstanceConstant(node, ifTrue, srcReg, target);
+        return;
+    }
 
     switch (checker::ETSChecker::ETSType(target)) {
         case checker::TypeFlag::ETS_NULL: {
@@ -811,7 +836,7 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
     auto const checkType = [this, srcReg, ifTrue, ifFalse, allowUndefined](const ir::AstNode *const n,
                                                                            checker::Type const *t) {
         LoadAccumulator(n, srcReg);
-        TestIsInstanceConstituent(n, ifTrue, ifFalse, t, allowUndefined);
+        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, allowUndefined);
     };
 
     if (!target->IsETSUnionType()) {
@@ -931,7 +956,7 @@ void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::T
         SetAccumulatorType(target);
         return;
     }
-    if (target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+    if (target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) && !target->IsConstantType()) {
         CheckedReferenceNarrowingObject(node, target);
         return;
     }
@@ -994,7 +1019,7 @@ bool ETSGen::TryLoadConstantExpression(const ir::Expression *node)
 {
     const auto *type = node->TsType();
 
-    if (!type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
+    if (!type->HasTypeFlag(checker::TypeFlag::CONSTANT) || type->IsETSObjectType()) {
         return false;
     }
     // bug: this should be forbidden for most expression types!
@@ -1032,10 +1057,6 @@ bool ETSGen::TryLoadConstantExpression(const ir::Expression *node)
         }
         case checker::TypeFlag::DOUBLE: {
             LoadAccumulatorDouble(node, type->AsDoubleType()->GetValue());
-            break;
-        }
-        case checker::TypeFlag::ETS_OBJECT: {
-            LoadConstantObject(node, type);
             break;
         }
         default: {
@@ -2185,13 +2206,14 @@ static std::optional<std::pair<checker::Type const *, util::StringView>> SelectL
     // NOTE(vpukhov): emit faster code
     auto methodSig =
         util::UString(std::string(obj->AssemblerName()) + ".equals:std.core.Object;u1;", checker->Allocator()).View();
-    return std::make_pair(checker->GetNonConstantTypeFromPrimitiveType(obj), methodSig);
+    return std::make_pair(checker->GetNonConstantType(obj), methodSig);
 }
 
 void ETSGen::RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse)
 {
-    auto ltype = GetVRegType(lhs);
-    auto rtype = GetVRegType(rhs);
+    auto *checker = const_cast<checker::ETSChecker *>(Checker());
+    auto ltype = checker->GetNonConstantType(const_cast<checker::Type *>(GetVRegType(lhs)));
+    auto rtype = checker->GetNonConstantType(const_cast<checker::Type *>(GetVRegType(rhs)));
     if (ltype->IsETSDynamicType() || rtype->IsETSDynamicType()) {
         RefEqualityLooseDynamic(node, lhs, rhs, ifFalse);
         return;

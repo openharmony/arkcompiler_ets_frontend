@@ -15,4 +15,6 @@
 
 
 var ctor1: abstract (a: number, b: string) => number;
-/* @@? 17:21 Error SyntaxError: Unexpected token  */
+/* @@? 17:21 Error SyntaxError: Unexpected token '('. */
+/* @@? 17:42 Error SyntaxError: Unexpected token ')'. */
+/* @@? 17:44 Error SyntaxError: Unexpected token '=>'. */

@@ -82,6 +82,7 @@
     _(STRING_LITERAL, StringLiteral)                                                      \
     _(ETS_NULL_TYPE, ETSNullType)                                                         \
     _(ETS_UNDEFINED_TYPE, ETSUndefinedType)                                               \
+    _(ETS_STRING_LITERAL_TYPE, ETSStringLiteralType)                                      \
     _(ETS_FUNCTION_TYPE, ETSFunctionType)                                                 \
     _(ETS_WILDCARD_TYPE, ETSWildcardType)                                                 \
     _(ETS_PRIMITIVE_TYPE, ETSPrimitiveType)                                               \

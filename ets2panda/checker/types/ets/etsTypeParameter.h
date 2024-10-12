@@ -28,34 +28,35 @@ public:
     {
     }
 
-    void SetDeclNode(ir::TSTypeParameter *decl)
+    void SetDeclNode(ir::TSTypeParameter *decl) noexcept
     {
         declNode_ = decl;
     }
 
-    ir::TSTypeParameter *GetDeclNode() const
+    [[nodiscard]] ir::TSTypeParameter *GetDeclNode() const noexcept
     {
         return declNode_;
     }
 
-    ETSTypeParameter *GetOriginal() const;
+    [[nodiscard]] ETSTypeParameter *GetOriginal() const noexcept;
+    [[nodiscard]] util::StringView const &Name() const noexcept;
 
-    void SetDefaultType(Type *type)
+    void SetDefaultType(Type *type) noexcept
     {
         default_ = type;
     }
 
-    Type *GetDefaultType() const
+    [[nodiscard]] Type *GetDefaultType() const noexcept
     {
         return default_;
     }
 
-    void SetConstraintType(Type *type)
+    void SetConstraintType(Type *type) noexcept
     {
         constraint_ = type;
     }
 
-    Type *GetConstraintType() const
+    [[nodiscard]] Type *GetConstraintType() const
     {
         ASSERT(constraint_ != nullptr);
         return constraint_;

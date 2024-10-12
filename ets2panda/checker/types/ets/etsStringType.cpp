@@ -15,12 +15,25 @@
 
 #include "etsStringType.h"
 
+#include "checker/ETSchecker.h"
 #include "varbinder/ETSBinder.h"
 
 namespace ark::es2panda::checker {
+bool AreStringTypesAssignable(Type *source, Type *target)
+{
+    if (target->IsConstantType()) {
+        return source->IsConstantType() &&
+               source->AsETSStringType()->GetValue() == target->AsETSStringType()->GetValue();
+    }
+    return true;
+}
+
 void ETSStringType::Identical(TypeRelation *relation, Type *other)
 {
-    if (other->IsETSStringType()) {
+    if (!other->IsETSStringType() || (IsConstantType() != other->IsConstantType())) {
+        return;
+    }
+    if (!IsConstantType() || (IsConstantType() && value_ == other->AsETSStringType()->value_)) {
         relation->Result(true);
     }
 }
@@ -32,23 +45,41 @@ bool ETSStringType::AssignmentSource(TypeRelation *relation, Type *target)
         node->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_CHAR);
         relation->Result(true);
     } else {
-        relation->Result(target->IsETSStringType());
+        relation->Result(target->IsETSStringType() && AreStringTypesAssignable(this, target));
     }
 
     return relation->IsTrue();
 }
 
-void ETSStringType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
+void ETSStringType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, Type *source)
 {
-    if (source->IsETSStringType()) {
-        relation->Result(true);
-    }
+    relation->Result(source->IsETSStringType() && AreStringTypesAssignable(source, this));
 }
 
 Type *ETSStringType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                  [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return this;
+}
+
+void ETSStringType::IsSupertypeOf(TypeRelation *relation, Type *source)
+{
+    if (IsConstantType()) {
+        Identical(relation, source);
+        return;
+    }
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    relation->IsSupertypeOf(checker->GlobalBuiltinETSStringType(), source);
+}
+
+void ETSStringType::IsSubtypeOf(TypeRelation *relation, Type *source)
+{
+    if (source->IsConstantType()) {
+        Identical(relation, source);
+        return;
+    }
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    relation->IsSupertypeOf(source, checker->GlobalBuiltinETSStringType());
 }
 
 bool ETSStringType::IsConvertibleTo(Type const *to) const

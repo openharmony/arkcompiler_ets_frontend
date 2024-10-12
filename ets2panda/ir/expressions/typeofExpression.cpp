@@ -43,7 +43,9 @@ void TypeofExpression::Dump(ir::AstDumper *dumper) const
 
 void TypeofExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("TypeofExpression");
+    dumper->Add("(typeof ");
+    argument_->Dump(dumper);
+    dumper->Add(")");
 }
 
 void TypeofExpression::Compile(compiler::PandaGen *pg) const

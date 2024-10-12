@@ -34,41 +34,9 @@ void StringLiteral::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "StringLiteral"}, {"value", str_}});
 }
 
-static unsigned int constexpr CHAR_UPPER_HALF = 128U;
-
 void StringLiteral::Dump(ir::SrcDumper *dumper) const
 {
-    std::string str(str_);
-    std::string escapedStr;
-    escapedStr.push_back('\"');
-    for (size_t i = 0, j = str_.Length(); i < j; ++i) {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        const char c = str_.Bytes()[i];
-        // check if a given character is printable
-        // the cast is necessary to avoid undefined behaviour
-        if (std::isprint(static_cast<unsigned char>(c)) != 0U || static_cast<unsigned char>(c) >= CHAR_UPPER_HALF) {
-            escapedStr.push_back(c);
-        } else {
-            escapedStr.push_back('\\');
-            if (c == '\n') {
-                escapedStr.push_back('n');
-            } else if (c == '\t') {
-                escapedStr.push_back('t');
-            } else if (c == '\v') {
-                escapedStr.push_back('v');
-            } else if (c == '\f') {
-                escapedStr.push_back('f');
-            } else if (c == '\r') {
-                escapedStr.push_back('r');
-            } else if (c == '\0') {
-                escapedStr.push_back('0');
-            } else {
-                UNREACHABLE();
-            }
-        }
-    }
-    escapedStr.push_back('\"');
-    dumper->Add(escapedStr);
+    dumper->Add("\"" + util::Helpers::CreateEscapedString(std::string(str_)) + "\"");
 }
 
 void StringLiteral::Compile(compiler::PandaGen *pg) const

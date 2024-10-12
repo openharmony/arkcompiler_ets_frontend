@@ -25,13 +25,18 @@ public:
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
+    using KeyType = std::variant<int32_t, int64_t, float, double, util::StringView>;
+    using KeySetType = std::unordered_set<KeyType>;
+
     ir::Expression *UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx);
 
     // Helpers
     ir::Expression *CreateBlockExpression(ir::ObjectExpression *expr, checker::Type *keyType, checker::Type *valueType,
                                           public_lib::Context *ctx);
     std::string TypeToString(checker::Type *type) const;
-    void CheckDuplicateKey(ir::ObjectExpression *expr, public_lib::Context *ctx);
+    KeyType TypeToKey(checker::Type *type) const;
+    void CheckDuplicateKey(KeySetType &keySet, ir::ObjectExpression *expr, public_lib::Context *ctx);
+    void CheckLiteralsCompleteness(KeySetType &keySet, ir::ObjectExpression *expr, public_lib::Context *ctx);
     ir::Statement *CreateStatement(const std::string &src, ir::Expression *ident, ir::Expression *key,
                                    ir::Expression *value, public_lib::Context *ctx);
 };

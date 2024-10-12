@@ -21,4 +21,4 @@ function main(): void {
     new A().x();
 }
 
-/* @@? 21:5 Error TypeError: This expression is not callable.  */
+/* @@? 21:5 Error TypeError: Type 'int' has no call signatures.  */

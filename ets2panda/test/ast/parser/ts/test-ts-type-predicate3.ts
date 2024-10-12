@@ -16,4 +16,5 @@
 
 function function1(is: number | string): asserts is is number { return };
 
-/* @@? 17:63 Error SyntaxError: Unexpected token  */
+/* @@? 17:63 Error SyntaxError: Unexpected token '{'. */
+/* @@? 17:65 Error SyntaxError: return keyword should be used in function body */

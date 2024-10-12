@@ -150,21 +150,18 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
                  {"decorators", decorators_}});
 }
 
-void MethodDefinition::Dump(ir::SrcDumper *dumper) const
+void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
 {
-    for (auto method : overloads_) {
-        method->Dump(dumper);
-        dumper->Endl();
-    }
-
-    if (IsPrivate()) {
-        dumper->Add("private ");
-    } else if (IsProtected()) {
-        dumper->Add("protected ");
-    } else if (IsInternal()) {
-        dumper->Add("internal ");
-    } else {
-        dumper->Add("public ");
+    if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal()) {
+        if (IsPrivate()) {
+            dumper->Add("private ");
+        } else if (IsProtected()) {
+            dumper->Add("protected ");
+        } else if (IsInternal()) {
+            dumper->Add("internal ");
+        } else {
+            dumper->Add("public ");
+        }
     }
 
     if (IsStatic()) {
@@ -190,6 +187,29 @@ void MethodDefinition::Dump(ir::SrcDumper *dumper) const
     if (IsOverride()) {
         dumper->Add("override ");
     }
+
+    if (kind_ == MethodDefinitionKind::GET) {
+        dumper->Add("get ");
+    } else if (kind_ == MethodDefinitionKind::SET) {
+        dumper->Add("set ");
+    }
+}
+
+void MethodDefinition::Dump(ir::SrcDumper *dumper) const
+{
+    for (auto method : overloads_) {
+        method->Dump(dumper);
+        dumper->Endl();
+    }
+
+    // Do not dump default constructor
+    if (Parent() != nullptr && Parent()->IsClassDefinition() && value_->IsFunctionExpression() &&
+        value_->AsFunctionExpression()->Function() != nullptr &&
+        value_->AsFunctionExpression()->Function()->IsImplicitSuperCallNeeded()) {
+        return;
+    }
+
+    DumpPrefix(dumper);
 
     if (key_ != nullptr) {
         key_->Dump(dumper);

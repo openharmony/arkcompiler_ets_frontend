@@ -51,8 +51,20 @@
 namespace ark::es2panda::checker {
 ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
 {
+    ComputeSuperType(type);
+    if (type == GlobalETSObjectType()) {
+        return GlobalETSObjectType();
+    }
+    if (type->SuperType() == nullptr) {
+        return nullptr;
+    }
+    return type->SuperType();
+}
+
+bool ETSChecker::ComputeSuperType(ETSObjectType *type)
+{
     if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_SUPER)) {
-        return type->SuperType();
+        return true;
     }
 
     ASSERT(type->Variable() && type->GetDeclNode()->IsClassDefinition());
@@ -63,19 +75,24 @@ ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
         if (type != GlobalETSObjectType()) {
             type->SetSuperType(GlobalETSObjectType());
         }
-        return GlobalETSObjectType();
+        return true;
     }
 
     TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, classDef->Ident()->Start());
+    if (tse.HasTypeError()) {
+        type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
+        return false;
+    }
 
     Type *superType = classDef->Super()->AsTypeNode()->GetType(this);
     if (superType == nullptr) {
-        return nullptr;
+        return true;
     }
     if (!superType->IsETSObjectType() || !superType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS)) {
         LogTypeError({"The super type of '", classDef->Ident()->Name(), "' class is not extensible."},
                      classDef->Super()->Start());
-        return nullptr;
+        type->SetSuperType(GlobalETSObjectType());
+        return true;
     }
 
     ETSObjectType *superObj = superType->AsETSObjectType();
@@ -89,11 +106,12 @@ ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
         LogTypeError("Cannot inherit with 'final' modifier.", classDef->Super()->Start());
         /* It still makes sense to treat superObj as the supertype in future checking */
     }
-
+    if (GetSuperType(superObj) == nullptr) {
+        superObj = GlobalETSObjectType();
+    }
     type->SetSuperType(superObj);
-    GetSuperType(superObj);
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
-    return type->SuperType();
+    return true;
 }
 
 void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interface,
@@ -109,13 +127,13 @@ void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interfa
     }
 
     type->AddInterface(interface->AsETSObjectType());
-    GetInterfacesOfInterface(interface->AsETSObjectType());
+    GetInterfaces(interface->AsETSObjectType());
 }
 
-ArenaVector<ETSObjectType *> ETSChecker::GetInterfacesOfClass(ETSObjectType *type)
+void ETSChecker::GetInterfacesOfClass(ETSObjectType *type)
 {
     if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES)) {
-        return type->Interfaces();
+        return;
     }
 
     const auto *declNode = type->GetDeclNode()->AsClassDefinition();
@@ -125,25 +143,27 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfacesOfClass(ETSObjectType *typ
         ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extendsSet, it->Start());
     }
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
-    return type->Interfaces();
 }
 
-ArenaVector<ETSObjectType *> ETSChecker::GetInterfacesOfInterface(ETSObjectType *type)
+void ETSChecker::GetInterfacesOfInterface(ETSObjectType *type)
 {
     if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES)) {
-        return type->Interfaces();
+        return;
     }
 
     const auto *declNode = type->GetDeclNode()->AsTSInterfaceDeclaration();
 
     TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, declNode->Id()->Start());
+    if (tse.HasTypeError()) {
+        type->Interfaces().clear();
+        return;
+    }
 
     std::unordered_set<Type *> extendsSet;
     for (auto *it : declNode->Extends()) {
         ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extendsSet, it->Start());
     }
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
-    return type->Interfaces();
 }
 
 ArenaVector<ETSObjectType *> ETSChecker::GetInterfaces(ETSObjectType *type)
@@ -338,7 +358,7 @@ ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclarat
         CreateTypeForClassOrInterfaceTypeParameters(interfaceType);
     }
 
-    GetInterfacesOfInterface(interfaceType);
+    GetInterfaces(interfaceType);
     interfaceType->SetSuperType(GlobalETSObjectType());
     ctScope.TryCheckConstraints();
     return interfaceType;
@@ -388,7 +408,7 @@ ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classD
 
     if (!classType->HasObjectFlag(ETSObjectFlags::RESOLVED_SUPER)) {
         GetSuperType(classType);
-        GetInterfacesOfClass(classType);
+        GetInterfaces(classType);
     }
     ctScope.TryCheckConstraints();
     return classType;
@@ -430,11 +450,6 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
         auto *method = it->Declaration()->Node()->AsMethodDefinition();
         auto *function = method->Function();
 
-        function->Id()->SetVariable(method->Id()->Variable());
-        for (ir::MethodDefinition *const overload : method->Overloads()) {
-            overload->Function()->Id()->SetVariable(overload->Id()->Variable());
-        }
-
         if (function->IsProxy()) {
             continue;
         }
@@ -455,11 +470,6 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
 
         auto *method = it->Declaration()->Node()->AsMethodDefinition();
         auto *function = method->Function();
-
-        function->Id()->SetVariable(method->Id()->Variable());
-        for (ir::MethodDefinition *const overload : method->Overloads()) {
-            overload->Function()->Id()->SetVariable(overload->Id()->Variable());
-        }
 
         if (function->IsProxy()) {
             continue;
@@ -1009,7 +1019,7 @@ void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &c
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
     classDef->SetClassDefinitionChecked();
-    auto *classType = classDef->TsType()->AsETSObjectType();
+    auto *classType = classDef->TsTypeOrError()->AsETSObjectType();
     if (classType->SuperType() != nullptr) {
         classType->SuperType()->GetDeclNode()->Check(this);
     }
@@ -1501,6 +1511,9 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
     auto *funcBody = signature->Function()->Body()->AsBlockStatement();
 
     TypeStackElement tse(this, signature, "Recursive constructor invocation", signature->Function()->Start());
+    if (tse.HasTypeError()) {
+        return;
+    }
 
     if (!funcBody->Statements().empty() && funcBody->Statements()[0]->IsExpressionStatement() &&
         funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
@@ -1634,7 +1647,7 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
                 return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS | SETTER_FLAGS;
             }
 
-            auto const *targetType = assignmentExpr->Left()->TsType();
+            auto const *targetType = assignmentExpr->Left()->TsTypeOrError();
             if (targetType->IsETSObjectType() &&
                 targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
                 return FUNCTIONAL_FLAGS;
@@ -1928,7 +1941,7 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
             CheckProperties(classType, classDef, it, foundInSuper, interfaceFound);
         }
 
-        auto interfaceList = GetInterfacesOfClass(classType);
+        auto interfaceList = GetInterfaces(classType);
         varbinder::LocalVariable *foundInInterface = nullptr;
         for (auto *interface : interfaceList) {
             auto *propertyFound = interface->GetProperty(it->Name(), searchFlag);

@@ -15,4 +15,5 @@
 
 let $$aaa = 5
 
-/* @@? 16:5 Error SyntaxError: Identifier expected.  */
+/* @@? 16:5 Error SyntaxError: Identifier expected, got '$$'. */
+/* @@? 16:5 Error SyntaxError: Variable must be initialized or it's type must be declared */

@@ -430,31 +430,6 @@ ir::ClassDeclaration *ETSParser::CreateClassDeclaration(std::string_view sourceC
     }
 }
 
-ir::MethodDefinition *ETSParser::CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view const sourceCode)
-{
-    util::UString source {sourceCode, Allocator()};
-    auto const isp = InnerSourceParser(this);
-    auto const lexer = InitLexer({GetContext().FormattingFileName(), source.View().Utf8()});
-
-    auto const startLoc = Lexer()->GetToken().Start();
-    Lexer()->NextToken();
-
-    if (IsClassMethodModifier(Lexer()->GetToken().Type())) {
-        modifiers |= ParseClassMethodModifiers(false);
-    }
-
-    ir::MethodDefinition *methodDefinition = nullptr;
-    auto *methodName = ExpectIdentifier();
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
-        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        methodDefinition = ParseClassMethodDefinition(methodName, modifiers);
-        methodDefinition->SetStart(startLoc);
-    }
-
-    return methodDefinition;
-}
-
 ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags modifiers,
                                                              std::string_view const sourceCode)
 {

@@ -15,4 +15,5 @@
 
 
 a.(b)
-/* @@? 17:3 Error SyntaxError: Identifier expected.  */
+/* @@? 17:3 Error SyntaxError: Identifier expected, got '('. */
+/* @@? 17:3 Error SyntaxError: Unexpected token '('. */

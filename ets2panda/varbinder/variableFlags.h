@@ -179,6 +179,7 @@ enum class ScopeFlags : uint32_t {
     METHOD_SCOPE = 1U << 8U,
     STATIC = 1U << 9U,
     TYPE_ALIAS = 1U << 10U,
+    LOOP_SCOPE = 1U << 11U,
 
     STATIC_DECL_SCOPE = DECL_SCOPE | STATIC,
     STATIC_FIELD_SCOPE = FIELD_SCOPE | STATIC,

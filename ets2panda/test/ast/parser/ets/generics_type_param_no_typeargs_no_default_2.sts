@@ -41,5 +41,4 @@ function doSomethingUseful() {
 
 
 /* @@? 36:20 Error TypeError: Type 'Boxx<T>' is generic but type argument were not provided.  */
-/* @@? 36:16 Error TypeError: This expression is not constructible.  */
 /* @@? 0:0 Error TypeError:   */

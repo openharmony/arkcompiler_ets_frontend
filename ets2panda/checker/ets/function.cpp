@@ -1014,13 +1014,16 @@ checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition 
 
     bool isConstructSig = method->IsConstructor();
 
+    method->Function()->Id()->SetVariable(method->Id()->Variable());
     BuildFunctionSignature(method->Function(), isConstructSig);
     if (method->Function()->Signature() == nullptr) {
         return nullptr;
     }
     auto *funcType = BuildNamedFunctionType(method->Function());
     std::vector<checker::ETSFunctionType *> overloads;
+
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
+        currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
         BuildFunctionSignature(currentFunc->Function(), isConstructSig);
         if (currentFunc->Function()->Signature() == nullptr) {
             return nullptr;
@@ -1055,7 +1058,7 @@ void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType 
         LogTypeError("Function " + func->Name().Mutf8() + " is already declared.", currentFunc->Start());
         return;
     }
-    if (HasSameAssemblySignature(func, overload)) {
+    if (HasSameAssemblySignatures(func, overload)) {
         LogTypeError("Function " + func->Name().Mutf8() + " with this assembly signature already declared.",
                      currentFunc->Start());
     }
@@ -1469,8 +1472,16 @@ OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *oth
         return OverrideErrorCode::OVERRIDDEN_FINAL;
     }
 
-    if (!IsReturnTypeSubstitutable(signature, other)) {
-        return OverrideErrorCode::INCOMPATIBLE_RETURN;
+    if (!other->ReturnType()->IsETSTypeParameter()) {
+        if (!IsReturnTypeSubstitutable(signature, other)) {
+            return OverrideErrorCode::INCOMPATIBLE_RETURN;
+        }
+    } else {
+        // We need to have this branch to allow generic overriding of the form:
+        // foo<T>(x: T): T -> foo<someClass>(x: someClass): someClass
+        if (!signature->ReturnType()->IsETSReferenceType()) {
+            return OverrideErrorCode::INCOMPATIBLE_RETURN;
+        }
     }
 
     if (signature->ProtectionFlag() > other->ProtectionFlag()) {
@@ -1612,8 +1623,10 @@ void ETSChecker::CheckOverride(Signature *signature)
 
 Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef)
 {
+    if (methodDef->TsTypeOrError()->IsTypeError()) {
+        return nullptr;
+    }
     ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
-
     for (auto *it : methodDef->TsType()->AsETSFunctionType()->CallSignatures()) {
         if (it->Function() == methodDef->Function()) {
             return it;
@@ -2132,4 +2145,55 @@ size_t &ETSChecker::ConstraintCheckScopesCount()
     return constraintCheckScopesCount_;
 }
 
+bool ETSChecker::CmpAssemblerTypesWithRank(Signature const *const sig1, Signature const *const sig2) noexcept
+{
+    for (size_t ix = 0; ix < sig1->MinArgCount(); ix++) {
+        std::stringstream s1;
+        std::stringstream s2;
+        sig1->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s1);
+        sig2->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s2);
+        if (s1.str() != s2.str()) {
+            return false;
+            break;
+        }
+    }
+    return true;
+}
+
+bool ETSChecker::HasSameAssemblySignature(Signature const *const sig1, Signature const *const sig2) noexcept
+{
+    if (sig1->MinArgCount() != sig2->MinArgCount()) {
+        return false;
+    }
+
+    if (!CmpAssemblerTypesWithRank(sig1, sig2)) {
+        return false;
+    }
+    auto *rv1 = sig1->RestVar();
+    auto *rv2 = sig2->RestVar();
+    if (rv1 == nullptr && rv2 == nullptr) {
+        return true;
+    }
+    if (rv1 == nullptr || rv2 == nullptr) {  // exactly one of them is null
+        return false;
+    }
+    std::stringstream s1;
+    std::stringstream s2;
+    rv1->TsType()->ToAssemblerTypeWithRank(s1);
+    rv2->TsType()->ToAssemblerTypeWithRank(s2);
+    return s1.str() == s2.str();
+}
+
+bool ETSChecker::HasSameAssemblySignatures(ETSFunctionType const *const func1,
+                                           ETSFunctionType const *const func2) noexcept
+{
+    for (auto const *sig1 : func1->CallSignatures()) {
+        for (auto const *sig2 : func2->CallSignatures()) {
+            if (HasSameAssemblySignature(sig1, sig2)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 }  // namespace ark::es2panda::checker

@@ -55,15 +55,20 @@ void ImportDeclaration::Dump(ir::AstDumper *dumper) const
 void ImportDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("import ");
-    for (auto specifier : specifiers_) {
-        specifier->Dump(dumper);
-        if (specifier != specifiers_.back()) {
-            dumper->Add(", ");
-        } else {
-            dumper->Add(" ");
+    if (specifiers_.size() == 1 && specifiers_[0]->IsImportNamespaceSpecifier()) {
+        specifiers_[0]->Dump(dumper);
+    } else {
+        dumper->Add("{ ");
+        for (auto specifier : specifiers_) {
+            specifier->Dump(dumper);
+            if (specifier != specifiers_.back()) {
+                dumper->Add(", ");
+            }
         }
+        dumper->Add(" }");
     }
-    dumper->Add("from ");
+
+    dumper->Add(" from ");
     source_->Dump(dumper);
     dumper->Add(";");
     dumper->Endl();
