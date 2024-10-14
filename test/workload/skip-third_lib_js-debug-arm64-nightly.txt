@@ -1,1 +1,7 @@
 memory-cache_test
+jBox2d_test
+jsDiff_test
+crypto-js_test
+Matrix_test
+mathjs_test
+validator_test
