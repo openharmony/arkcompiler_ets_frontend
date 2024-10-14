@@ -565,7 +565,11 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 {
     ArenaVector<checker::Type *> elementTypes(Allocator()->Adapter());
     for (auto e : init->AsArrayExpression()->Elements()) {
-        elementTypes.push_back(GetNonConstantType(e->Check(this)));
+        Type *eType = e->Check(this);
+        if (eType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+            return eType;
+        }
+        elementTypes.push_back(GetNonConstantType(eType));
     }
 
     if (elementTypes.empty()) {
@@ -676,6 +680,10 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
                      ident->Start());
     }
 
+    if (annotationType != nullptr && annotationType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+        return false;
+    }
+
     if ((init->IsMemberExpression()) && (annotationType != nullptr)) {
         SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
     }
@@ -690,13 +698,14 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
         init->AsArrayExpression()->SetPreferredType(annotationType);
     }
 
-    if (init->IsObjectExpression()) {
+    if (init->IsObjectExpression() && annotationType != nullptr) {
         init->AsObjectExpression()->SetPreferredType(PreferredObjectTypeFromAnnotation(annotationType));
     }
 
     if (typeAnnotation != nullptr && init->IsArrowFunctionExpression()) {
         InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
     }
+
     return true;
 }
 void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName)

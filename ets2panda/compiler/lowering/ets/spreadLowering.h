@@ -32,7 +32,8 @@ public:
 
 protected:
     std::string CreateETSCode(ir::ArrayExpression *array, std::vector<ir::AstNode *> &node, public_lib::Context *ctx);
-    std::string CreateLengthString(ir::ArrayExpression *array);
+    std::string CreateLengthString(ir::ArrayExpression *array, const std::string_view spreadArrayName,
+                                   const std::string_view lengthOfNewArray);
 };
 
 }  // namespace ark::es2panda::compiler

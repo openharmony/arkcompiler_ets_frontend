@@ -270,8 +270,15 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::SpreadElement *expr) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker::Type *elementType =
-        expr->AsSpreadElement()->Argument()->AsIdentifier()->Check(checker)->AsETSArrayType()->ElementType();
+    Type *exprType = expr->AsSpreadElement()->Argument()->Check(checker);
+    if (!exprType->IsETSArrayType()) {
+        checker->LogTypeError(
+            {"Spread expression can be applied only to array or tuple type, but '", exprType, "' is provided"},
+            expr->Start());
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsTypeOrError();
+    }
+    checker::Type *elementType = exprType->AsETSArrayType()->ElementType();
     expr->SetTsType(elementType);
     return expr->TsType();
 }

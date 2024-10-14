@@ -29,6 +29,16 @@ function compArray<T>(array1: T[], array2: T[]) {
     }
 }
 
+class A {
+    t : int = 10
+    private constructor() {}
+    static createInstance(x : int) : A {
+        let a : A = new A();
+        a.t = x
+        return a
+    }
+}
+
 function main() {
     let intArray : int[] = [77, 88, 99]
 
@@ -61,4 +71,23 @@ function main() {
     let expectedObject : Object[] = [obj, obj, obj]
     let arrayObject : Object[] = [obj, ...objectArray]
     compArray<Object>(arrayObject, expectedObject)
+    
+    //tuple
+    type tupleType = [string, int, boolean]
+    let tuple : tupleType = ["first", 2, true]
+    let expectedTuple = ["first", 2, true, 100, 200, "first", 2, true]
+    let tuple2 = [...tuple, 100, 200, ...tuple]
+    assert(tuple2.length == 8)
+    assert(tuple2[0] == "first")
+    assert(tuple2[1] == 2)
+    assert(tuple2[2] == true)
+    assert(tuple2[5] == "first")
+    assert(tuple2[6] == 2)
+    assert(tuple2[7] == true)
+
+    let a : A[] = [A.createInstance(10), A.createInstance(11)]
+    let b = [...a]
+    assert(b.length == 2)
+    b[0].t = 10
+    b[1].t = 11
 }

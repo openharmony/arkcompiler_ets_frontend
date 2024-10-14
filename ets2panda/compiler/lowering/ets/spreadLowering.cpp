@@ -23,55 +23,96 @@ namespace ark::es2panda::compiler {
 
 using AstNodePtr = ir::AstNode *;
 
-std::string SpreadConstructionPhase::CreateLengthString(ir::ArrayExpression *array)
+std::string SpreadConstructionPhase::CreateLengthString(ir::ArrayExpression *array,
+                                                        const std::string_view spreadArrayName,
+                                                        const std::string_view lengthOfNewArray)
 {
     int spreadElementCount = 0;
     std::stringstream lengthCalculationString;
 
-    for (const auto *element : array->Elements()) {
-        if (element->Type() == ir::AstNodeType::SPREAD_ELEMENT) {
+    for (std::size_t i = 0; i < array->Elements().size(); ++i) {
+        if (array->Elements()[i]->Type() == ir::AstNodeType::SPREAD_ELEMENT) {
             spreadElementCount++;
-            lengthCalculationString << element->AsSpreadElement()->Argument()->AsIdentifier()->Name() << ".length + ";
+            lengthCalculationString << spreadArrayName << "_" << i << ".length + ";
         }
     }
 
     lengthCalculationString << "0";
     int newArrayLength = array->Elements().size() - spreadElementCount;
     std::stringstream lengthString;
-    lengthString << "let length : int = " << newArrayLength << " + " << lengthCalculationString.str();
+    lengthString << "let " << lengthOfNewArray << " : int = " << newArrayLength << " + "
+                 << lengthCalculationString.str() << std::endl;
 
     return lengthString.str();
 }
 
+/*
+ * NOTE: Create sourceCode to expand the SpreadExpression, which is as follows :
+ * let spreadArrayName_0 = (@@E1)
+ * let length : int = 0 + spreadArrayName_0.length + 0
+ * type typeOfNewArray = arrayType
+ * let tempArrayVar: typeOfNewArray[] = new typeOfNewArray[length]
+ * let newArrayIndex = 0
+ * let elementOfSpread_0: arrayType
+ * for (elementOfSpread_0 of spreadArrayName_0) {
+ *     tempArrayVar[newArrayIndex] = elementOfSpread_0
+ *     newArrayIndex++
+ * }
+ * tempArrayVar[newArrayIndex] = (@@E2)
+ * newArrayIndex++
+ * ...
+ * tempArrayVar;
+ */
 std::string SpreadConstructionPhase::CreateETSCode(ir::ArrayExpression *array, std::vector<ir::AstNode *> &node,
                                                    public_lib::Context *ctx)
 {
-    std::stringstream src;
-    std::string lengthString = CreateLengthString(array);
+    const util::StringView &spreadArrayName = GenName(ctx->checker->Allocator()).View();
+    const util::StringView &newArrayName = GenName(ctx->checker->Allocator()).View();
+    const util::StringView &newArrayIndex = GenName(ctx->checker->Allocator()).View();
+    const util::StringView &typeOfNewArray = GenName(ctx->checker->Allocator()).View();
+    const util::StringView &elementOfSpread = GenName(ctx->checker->Allocator()).View();
+    const util::StringView &lengthOfNewArray = GenName(ctx->checker->Allocator()).View();
+
+    std::string lengthString = CreateLengthString(array, spreadArrayName.Utf8(), lengthOfNewArray.Utf8());
     std::string arrayType = array->TsType()->AsETSArrayType()->ElementType()->ToString();
 
+    std::stringstream src;
     src.clear();
-    std::string newArrayName = "tempArrayVar";
-    src << lengthString << std::endl;
-    src << "type typeOfTempArray = " << arrayType << std::endl;
-    src << "let " << newArrayName << ": typeOfTempArray[] = new typeOfTempArray[length]" << std::endl;
-    src << "let newArrayIndex = 0" << std::endl;
     size_t argumentCount = 1;
 
-    for (std::uint32_t i = 0; i < array->Elements().size(); ++i) {
+    for (std::size_t i = 0; i < array->Elements().size(); ++i) {
+        if (array->Elements()[i]->Type() != ir::AstNodeType::SPREAD_ELEMENT) {
+            continue;
+        }
+        src << "let " << spreadArrayName << "_" << i << " = (@@E" << argumentCount << ")" << std::endl;
+        argumentCount++;
+        node.emplace_back(array->Elements()[i]->AsSpreadElement()->Argument()->Clone(ctx->allocator, nullptr));
+    }
+
+    src << lengthString << std::endl;
+
+    // NOTE: For ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we canot use "new Type[]" to
+    //       declare an array, so we add "|null" to solve it temporarily.
+    //       We might need to use cast Expression in the end of the generated source code to remove "|null", such as
+    //       "newArrayName as arrayType[]".
+    //       But now cast Expression doesn't support built-in array (cast fatherType[] to sonType[]), so "newArrayName
+    //       as arrayType" should be added after cast Expression is implemented completely.
+    src << "type " << typeOfNewArray << " = " << arrayType << "|null" << std::endl;
+    src << "let " << newArrayName << ": " << typeOfNewArray << "[] = "
+        << "new " << typeOfNewArray << "[" << lengthOfNewArray << "]" << std::endl;
+    src << "let " << newArrayIndex << " = 0" << std::endl;
+
+    for (std::size_t i = 0; i < array->Elements().size(); ++i) {
         if (array->Elements()[i]->Type() == ir::AstNodeType::SPREAD_ELEMENT) {
-            std::string spreadArrayName =
-                array->Elements()[i]->AsSpreadElement()->Argument()->AsIdentifier()->Name().Mutf8();
-            src << "let elementOfSpread" << i << ": " << array->Elements()[i]->TsType()->ToString() << std::endl;
-            src << "for (elementOfSpread" << i << " of " << spreadArrayName << ") {" << std::endl;
-            src << newArrayName << "[newArrayIndex] = "
-                << "elementOfSpread" << i << std::endl;
-            src << "newArrayIndex++" << std::endl;
+            src << "let " << elementOfSpread << "_" << i << ": " << arrayType << std::endl;
+            src << "for (" << elementOfSpread << "_" << i << " of " << spreadArrayName << "_" << i << ") {"
+                << std::endl;
+            src << newArrayName << "[" << newArrayIndex << "] = " << elementOfSpread << "_" << i << std::endl;
+            src << newArrayIndex << "++" << std::endl;
             src << "}" << std::endl;
         } else {
-            src << newArrayName << "[newArrayIndex] = "
-                << "(@@E" << argumentCount << ")" << std::endl;
-            src << "newArrayIndex++" << std::endl;
+            src << newArrayName << "[" << newArrayIndex << "] = (@@E" << argumentCount << ")" << std::endl;
+            src << newArrayIndex << "++" << std::endl;
             argumentCount++;
             node.emplace_back(array->Elements()[i]->Clone(ctx->allocator, nullptr));
         }
