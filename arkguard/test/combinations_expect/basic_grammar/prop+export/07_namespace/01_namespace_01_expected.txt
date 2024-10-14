@@ -13,45 +13,61 @@
  * limitations under the License.
  */
 import assert from 'assert';
+// Only use for testing importEqualsDeclaration in toplevel
+import temp1 = require('fs');
+export import temp2 = require('fs');
 module X {
-    export module k {
-        export interface l {
+    export module p {
+        export interface q {
             a: number;
         }
     }
-    export interface k {
+    export interface p {
         b: string;
     }
 }
-let a: X.k.l = { a: 1 };
+let a: X.p.q = { a: 1 };
 assert(a.a === 1);
-let b: X.k = { b: "1" };
+let b: X.p = { b: "1" };
 assert(b.b === "1");
 module A {
     export module B {
-        export class j {
+        export class o {
             c: boolean = true;
         }
     }
 }
-var c: A.B.j = new A.B.j();
+var c: A.B.o = new A.B.o();
 assert(c.c === true);
 module M {
-    export namespace g {
-        export module h {
-            export interface i {
+    export namespace k {
+        export module l {
+            export interface m {
                 d: number;
             }
         }
     }
 }
-let d: M.g.h.i = { d: 2 };
+let d: M.k.l.m = { d: 2 };
 assert(d.d === 2);
 type A = number;
 declare const Q1: number;
 declare namespace Q2 {
-    export { f };
+    export { j };
 }
 let e: Q2.A = 3;
 assert(e === 3);
+namespace ns1 {
+    namespace f {
+        export var i: string = "test-importEqualsDeclaration";
+    }
+    import g = f.i;
+    export import h = f.i;
+    assert(g === "test-importEqualsDeclaration");
+    assert(h === "test-importEqualsDeclaration");
+}
+namespace ns1 {
+    assert(h === "test-importEqualsDeclaration");
+}
+assert(ns1.h === "test-importEqualsDeclaration");
 export {};

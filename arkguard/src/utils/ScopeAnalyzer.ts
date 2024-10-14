@@ -46,6 +46,7 @@ import type {
   ForStatement,
   FunctionLikeDeclaration,
   Identifier,
+  ImportEqualsDeclaration,
   ImportSpecifier,
   InterfaceDeclaration,
   LabeledStatement,
@@ -65,7 +66,6 @@ import type {
 
 import {NodeUtils} from './NodeUtils';
 import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
-
 /**
  * kind of a scope
  */
@@ -152,7 +152,7 @@ namespace secharmony {
     constructor(name: string, node: Node, type: ScopeKind, lexicalScope: boolean = false, upper?: Scope) {
       this.name = name;
       this.kind = type;
-      this.block = node; 
+      this.block = node;
       this.parent = upper;
       this.children = [];
       this.defs = new Set<Symbol>();
@@ -446,6 +446,11 @@ namespace secharmony {
         case SyntaxKind.CatchClause:
           analyzeCatchClause(node as CatchClause);
           break;
+
+        case SyntaxKind.ImportEqualsDeclaration:
+          analyzeImportEqualsDeclaration(node as ImportEqualsDeclaration);
+          break;
+
         default:
           forEachChild(node, analyzeScope);
           break;
@@ -945,6 +950,27 @@ namespace secharmony {
       }
 
       return undefined;
+    }
+
+    function analyzeImportEqualsDeclaration(node: ImportEqualsDeclaration): void {
+      let hasExport: boolean = false;
+      if (node.modifiers) {
+        for (const modifier of node.modifiers) {
+          if (modifier.kind === SyntaxKind.ExportKeyword) {
+            hasExport = true;
+            break;
+          }
+        }
+      }
+      if (hasExport) {
+        current.exportNames.add(node.name.text);
+        root.fileExportNames.add(node.name.text);
+        let sym: Symbol | undefined = checker.getSymbolAtLocation(node.name);
+        if (sym) {
+          current.addDefinition(sym, true);
+        }
+      }
+      forEachChild(node, analyzeScope);
     }
 
     function tryAddNoSymbolIdentifiers(node: Identifier): void {

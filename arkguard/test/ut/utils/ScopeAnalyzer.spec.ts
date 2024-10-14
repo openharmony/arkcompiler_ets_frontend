@@ -22,26 +22,26 @@ import {TypeUtils} from '../../../src/utils/TypeUtils';
 import {
   Label,
   Scope,
-  ScopeKind, 
-  ScopeManager, 
-  createLabel, 
-  createScopeManager, 
-  isClassScope, 
-  isEnumScope, 
-  isFunctionScope, 
+  ScopeKind,
+  ScopeManager,
+  createLabel,
+  createScopeManager,
+  isClassScope,
+  isEnumScope,
+  isFunctionScope,
   isGlobalScope,
   isInterfaceScope,
   isObjectLiteralScope
 } from '../../../src/utils/ScopeAnalyzer';
 import { ScriptTarget, SourceFile, createSourceFile, isSourceFile, Symbol, __String, Declaration, JSDocTagInfo,
-   SymbolDisplayPart, SymbolFlags, TypeChecker, LabeledStatement, Identifier, SyntaxKind, 
+   SymbolDisplayPart, SymbolFlags, TypeChecker, LabeledStatement, Identifier, SyntaxKind,
    isIdentifier,
    factory,
    VariableStatement} from 'typescript';
 
 describe('ScopeAnalyzer ut', function () {
   let sourceFile: SourceFile;
-  
+
   before('init parameters', function () {
     const sourceFileContent = `
     //This is a comment
@@ -62,7 +62,7 @@ describe('ScopeAnalyzer ut', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
       assert.isTrue(isGlobalScope(curScope));
     });
-  
+
     it('is not Global Scope', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isGlobalScope(curScope));
@@ -74,7 +74,7 @@ describe('ScopeAnalyzer ut', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.FUNCTION);
       assert.isTrue(isFunctionScope(curScope));
     });
-  
+
     it('is not Function Scope', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isFunctionScope(curScope));
@@ -86,7 +86,7 @@ describe('ScopeAnalyzer ut', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.CLASS);
       assert.isTrue(isClassScope(curScope));
     });
-  
+
     it('is not Class Scope', function () {
     let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isClassScope(curScope));
@@ -98,7 +98,7 @@ describe('ScopeAnalyzer ut', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.INTERFACE);
       assert.isTrue(isInterfaceScope(curScope));
     });
-  
+
     it('is not Interface Scope', function () {
     let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isInterfaceScope(curScope));
@@ -110,7 +110,7 @@ describe('ScopeAnalyzer ut', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.ENUM);
       assert.isTrue(isEnumScope(curScope));
     });
-  
+
     it('is not Enum Scope', function () {
     let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isEnumScope(curScope));
@@ -122,7 +122,7 @@ describe('ScopeAnalyzer ut', function () {
       let curScope = new Scope('curScope', sourceFile, ScopeKind.OBJECT_LITERAL);
       assert.isTrue(isObjectLiteralScope(curScope));
     });
-  
+
     it('is not ObjectLiteral Scope', function () {
     let curScope = new Scope('curScope', sourceFile , ScopeKind.MODULE);
       assert.isFalse(isObjectLiteralScope(curScope));
@@ -163,11 +163,11 @@ describe('ScopeAnalyzer ut', function () {
         curScope.addDefinition(symbol, false);
         assert.isTrue(curScope.defs.has(symbol));
       });
-  
+
       it('should mark symbol as obfuscateAsProperty if required', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
         let symbol: Symbol = Object(Symbol('testSymbol'));
-  
+
         curScope.addDefinition(symbol, true);
         assert.isTrue(Reflect.get(symbol, 'obfuscateAsProperty'));
       });
@@ -177,7 +177,7 @@ describe('ScopeAnalyzer ut', function () {
       it('should add a label to the current scope', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
         let label: Label = {name: 'testLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope};
-  
+
         curScope.addLabel(label);
         assert.include(curScope.labels, label);
       });
@@ -218,7 +218,7 @@ describe('ScopeAnalyzer ut', function () {
         curScope.addDefinition(symbol);
         assert.equal(curScope.getSymbolLocation(symbol), 'testSymbol');
       });
-  
+
       it('should return an empty string if symbol does not exist', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
         let symbol: Symbol = Object(Symbol('nonExistentSymbol'));
@@ -231,15 +231,15 @@ describe('ScopeAnalyzer ut', function () {
       it('should return the correct location if label exists', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
         let label: Label = {name: 'testLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope};
-  
+
         curScope.addLabel(label);
         assert.equal(curScope.getLabelLocation(label), 'testLabel');
       });
-  
+
       it('should return an empty string if label does not exist', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
         let label: Label = {name: 'nonExistentLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope};
-  
+
         assert.equal(curScope.getLabelLocation(label), '');
       });
     });
@@ -252,10 +252,10 @@ describe('ScopeAnalyzer ut', function () {
     sourceFile = createSourceFile('test.ts', sourceFileContent, ScriptTarget.ES2015, true);
     let labeledStatement: LabeledStatement = sourceFile.statements[0] as LabeledStatement;
     let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
-  
+
     it('should create a label and add it to the scope', function () {
       const label = createLabel(labeledStatement, curScope);
-  
+
       assert.equal(label.name, labeledStatement.label.text);
       assert.equal(label.locInfo, `$0_${labeledStatement.label.text}`);
       assert.deepEqual(label.refs, [labeledStatement.label]);
@@ -264,7 +264,7 @@ describe('ScopeAnalyzer ut', function () {
       assert.equal(label.scope, curScope);
       assert.include(curScope.labels, label);
     });
-  
+
     it('should create a label with a parent and add it to the parent\'s children', function () {
       const parentLabel: Label = {
         name: 'parentLabel',
@@ -275,7 +275,7 @@ describe('ScopeAnalyzer ut', function () {
         scope: curScope
       };
       const label = createLabel(labeledStatement, curScope, parentLabel);
-  
+
       assert.equal(label.name, labeledStatement.label.text);
       assert.equal(label.locInfo, `$1_${labeledStatement.label.text}`);
       assert.deepEqual(label.refs, [labeledStatement.label]);
@@ -299,7 +299,7 @@ describe('ScopeAnalyzer ut', function () {
       scopeManager = createScopeManager();
       scopeManager.analyze(sourceFile, checker, false);
     }
-  
+
     describe('analyze', function () {
       describe('analyzeModule', function () {
         let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeModule.ts';
@@ -318,13 +318,13 @@ describe('ScopeAnalyzer ut', function () {
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope, undefined);
           });
-    
+
           it('node with no symbol', function () {
             const node: Identifier = factory.createIdentifier('noSymbolIdentifier');
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope, undefined);
           });
-    
+
           it('get the scope of node', function () {
             const classDeclaration = sourceFile.statements.find(node => node && node.kind === SyntaxKind.ClassDeclaration);
             if (!classDeclaration) throw new Error('ClassDeclaration not found');
@@ -332,7 +332,7 @@ describe('ScopeAnalyzer ut', function () {
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope?.name, '');
           });
-    
+
           it('get no scope of node', function () {
             const anotherSourceFile = createSourceFile('another.ts', 'let y = 2;', ScriptTarget.ES2015, true);
             const node = (anotherSourceFile.statements[0] as VariableStatement).declarationList.declarations[0].name;
@@ -359,13 +359,13 @@ describe('ScopeAnalyzer ut', function () {
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope, undefined);
           });
-    
+
           it('node with no symbol', function () {
             const node: Identifier = factory.createIdentifier('noSymbolIdentifier');
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope, undefined);
           });
-    
+
           it('get the scope of node', function () {
             const functionDeclaration = sourceFile.statements.find(node => node && node.kind === SyntaxKind.FunctionDeclaration);
             if (!functionDeclaration) throw new Error('FunctionDeclaration not found');
@@ -373,7 +373,7 @@ describe('ScopeAnalyzer ut', function () {
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope?.name, '');
           });
-    
+
           it('get no scope of node', function () {
             const anotherSourceFile = createSourceFile('another.ts', 'let y = 2;', ScriptTarget.ES2015, true);
             const node = (anotherSourceFile.statements[0] as VariableStatement).declarationList.declarations[0].name;
@@ -400,7 +400,7 @@ describe('ScopeAnalyzer ut', function () {
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope, undefined);
           });
-    
+
           it('node with no symbol', function () {
             const node: Identifier = factory.createIdentifier('noSymbolIdentifier');
             const scope = scopeManager.getScopeOfNode(node);
@@ -410,16 +410,68 @@ describe('ScopeAnalyzer ut', function () {
           it('get the scope of node', function () {
             const exportDeclaration = sourceFile.statements.find(node => node && node.kind === SyntaxKind.ExportDeclaration);
             if (!exportDeclaration) throw new Error('ExportDeclaration not found');
-        
+
             const exportClause = (exportDeclaration as any).exportClause;
             if (!exportClause || !exportClause.elements) throw new Error('ExportSpecifier not found');
-        
+
             const exportSpecifier = exportClause.elements[0];
             const node: Identifier = exportSpecifier.name;
-        
+
             const scope = scopeManager.getScopeOfNode(node);
             assert.strictEqual(scope?.name, '');
           });
+
+          it('get no scope of node', function () {
+            const anotherSourceFile = createSourceFile('another.ts', 'let y = 2;', ScriptTarget.ES2015, true);
+            const node = (anotherSourceFile.statements[0] as VariableStatement).declarationList.declarations[0].name;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+        });
+      });
+
+      describe('analyzeImportEqualsDeclaration', function () {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeImportEqualsDeclaration.ts';
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
+        let checker = TypeUtils.createChecker(sourceFile);
+        let scopeManager = createScopeManager();
+        scopeManager.analyze(sourceFile, checker, false);
+        it('getReservedNames', function () {
+          const reservedNames = scopeManager.getReservedNames();
+          assert.strictEqual(reservedNames.size === 0, true);
+        });
+        it('getRootScope', function () {
+          const rootScope = scopeManager.getRootScope();
+          assert.strictEqual(rootScope.fileExportNames?.size === 2, true);
+          assert.strictEqual(rootScope.fileExportNames?.has("a"), true);
+          assert.strictEqual(rootScope.fileExportNames?.has("b"), true);
+        });
+        describe('getScopeOfNode', function () {
+          it('node is not identifier', function () {
+            const node: SourceFile = sourceFile;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+
+          it('node with no symbol', function () {
+            const node: Identifier = factory.createIdentifier('noSymbolIdentifier');
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+
+          it('get the scope of node', function () {
+            const moduleDeclaration = sourceFile.statements.find(node => node && node.kind === SyntaxKind.ModuleDeclaration);
+            if (!moduleDeclaration) throw new Error('ModuleDeclaration not found');
+            const moduleBlock = (moduleDeclaration as any).body;
+            if (!moduleBlock) throw new Error('ModuleBlock not found');
+            const importEqualsDeclaration = moduleBlock.statements.find(node => node && node.kind === SyntaxKind.ImportEqualsDeclaration);
+            if (!importEqualsDeclaration) throw new Error('ImportEqualsDeclaration not found');
+            const node: Identifier = (importEqualsDeclaration as any)?.name;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope?.name, 'ns111');
+          });
+
           it('get no scope of node', function () {
             const anotherSourceFile = createSourceFile('another.ts', 'let y = 2;', ScriptTarget.ES2015, true);
             const node = (anotherSourceFile.statements[0] as VariableStatement).declarationList.declarations[0].name;

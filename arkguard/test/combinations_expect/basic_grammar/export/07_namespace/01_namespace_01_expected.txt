@@ -13,13 +13,16 @@
  * limitations under the License.
  */
 import assert from 'assert';
+// Only use for testing importEqualsDeclaration in toplevel
+import temp1 = require('fs');
+export import temp2 = require('fs');
 module X {
-    export module i {
-        export interface j {
+    export module Y {
+        export interface Z {
             a: number;
         }
     }
-    export interface i {
+    export interface Y {
         b: string;
     }
 }
@@ -38,8 +41,8 @@ var c: A.B.C = new A.B.C();
 assert(c.c === true);
 module M {
     export namespace N {
-        export module g {
-            export interface h {
+        export module M2 {
+            export interface I {
                 d: number;
             }
         }
@@ -50,8 +53,21 @@ assert(d.d === 2);
 type A = number;
 declare const Q1: number;
 declare namespace Q2 {
-    export { f };
+    export { h };
 }
 let e: Q2.A = 3;
 assert(e === 3);
+namespace ns1 {
+    namespace f {
+        export var temp3: string = "test-importEqualsDeclaration";
+    }
+    import g = f.temp3;
+    export import temp5 = f.temp3;
+    assert(g === "test-importEqualsDeclaration");
+    assert(temp5 === "test-importEqualsDeclaration");
+}
+namespace ns1 {
+    assert(temp5 === "test-importEqualsDeclaration");
+}
+assert(ns1.temp5 === "test-importEqualsDeclaration");
 export {};
