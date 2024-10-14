@@ -16,11 +16,10 @@
 
 
 import os
-
 import yaml
 
 
-def print_to_yaml(yaml_path: str, data_yaml: dict, write_mode: str = "w") -> None:
+def print_to_yaml(yaml_path: str, data_yaml: dict) -> None:
 
-    with os.fdopen(os.open(yaml_path, os.O_RDWR | os.O_CREAT, mode=511), write_mode, encoding="utf-8") as file:
+    with os.fdopen(os.open(yaml_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode=511), 'w', encoding="utf-8") as file:
         yaml.dump(data_yaml, file)

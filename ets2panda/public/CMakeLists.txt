@@ -532,17 +532,38 @@ panda_gen(
     API ${RB_LIST}
     DESTINATION ${LIBGEN_DIR}
     SOURCE ${CMAKE_CURRENT_SOURCE_DIR}
-    EXTRA_DEPENDENCIES gen_yamls ${ES2PANDA_API_GENERATED}
+    EXTRA_DEPENDENCIES gen_yamls
+)
+
+set(HEADERS_PARSER_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/cpp_keywords.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/cpp_parser.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/file_tools.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/line_iterator.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/log_tools.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/main.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_arguments.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_class.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_define.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_enum.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_method.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_namespace.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_struct.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/parse_using.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/prepare_header.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/runtime_collections.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/supported_types.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/text_tools.py
 )
 
 add_custom_command(
     OUTPUT ${ES2PANDA_API_GENERATED}
     COMMAND python3 -B ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/main.py
         "${ES2PANDA_ROOT}" "${LIBGEN_DIR}" ${HEADERS_TO_BE_PARSED}
-    DEPENDS ${HEADERS_TO_BE_PARSED}
+    DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES}
 )
 
-add_custom_target(gen_yamls DEPENDS ${ES2PANDA_API_GENERATED})
+add_custom_target(gen_yamls DEPENDS ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
 
 
 set(ES2PANDA_PUBLIC_SOURCES
