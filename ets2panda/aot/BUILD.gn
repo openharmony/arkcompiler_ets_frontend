@@ -14,7 +14,7 @@
 import("//arkcompiler/runtime_core/static_core/ark_config.gni")
 import("//build/ohos.gni")
 
-ohos_executable("es2panda") {
+ohos_executable("ets2panda") {
   sources = [ "main.cpp" ]
 
   include_dirs = [
@@ -61,6 +61,7 @@ ohos_executable("es2panda") {
     libs += [ "stdc++fs" ]
   }
 
+  output_name = "es2panda"
   install_enable = true
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"

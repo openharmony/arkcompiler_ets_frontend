@@ -44,7 +44,7 @@ public:
     {
         int argc = 1;
         const char *argv = "../../../../bin/es2panda";  // NOLINT(modernize-avoid-c-arrays)
-        static constexpr std::string_view FILE_NAME = "dummy.ets";
+        static constexpr std::string_view FILE_NAME = "dummy.sts";
 
         program_ = GetProgram(argc, &argv, FILE_NAME, src);
         ASSERT_NE(program_.get(), nullptr);

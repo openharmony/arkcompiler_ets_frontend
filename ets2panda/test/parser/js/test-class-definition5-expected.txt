@@ -1,1 +1,0 @@
-SyntaxError: Constructor can not be special method [test-class-definition5.js:18:7]

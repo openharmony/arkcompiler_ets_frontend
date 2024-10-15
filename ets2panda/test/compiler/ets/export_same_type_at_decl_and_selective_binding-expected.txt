@@ -1,1 +1,0 @@
-SyntaxError: Cannot export the same 'A' type twice. [export_same_type_at_decl_and_selective_binding.ets:17:14]

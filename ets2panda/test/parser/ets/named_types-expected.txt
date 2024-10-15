@@ -1,1 +1,0 @@
-SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [named_types.ets:22:19]

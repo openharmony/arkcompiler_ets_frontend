@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token, expected ',' or ']' [test-array-expression-1.js:17:8]

@@ -265,7 +265,12 @@ public:
 
 private:
     void LoadEvalBindings(const ir::AstNode *node);
-
+    void Call0Args(const ir::AstNode *n, VReg c, VReg thisR, bool hasThis);
+    void Call1Arg(const ir::AstNode *n, VReg c, VReg thisR, const ArenaVector<ir::Expression *> &args, bool hasThis);
+    void Call2Args(const ir::AstNode *n, VReg c, VReg thisR, const ArenaVector<ir::Expression *> &args, bool hasThis);
+    void Call3Args(const ir::AstNode *n, VReg c, VReg thisR, const ArenaVector<ir::Expression *> &args, bool hasThis);
+    bool CallArgsTagged(const ir::AstNode *node, VReg callee, VReg thisReg,
+                        const ArenaVector<ir::Expression *> &arguments, bool hasThis);
     FunctionBuilder *builder_ {};
     EnvScope *envScope_ {};
     OptionalChain *optionalChain_ {};

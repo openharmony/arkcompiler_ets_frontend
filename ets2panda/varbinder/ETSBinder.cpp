@@ -55,6 +55,7 @@
 #include "ir/module/importDeclaration.h"
 #include "ir/module/importSpecifier.h"
 #include "ir/expressions/literals/stringLiteral.h"
+#include "mem/arena_allocator.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
 #include "checker/types/type.h"
@@ -458,21 +459,24 @@ static const util::StringView &GetPackageName(varbinder::Variable *var)
     return scope->Node()->AsETSScript()->Program()->ModuleName();
 }
 
-void AddOverloadFlag(bool isStdLib, varbinder::Variable *var, varbinder::Variable *variable)
+void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variable *importedVar,
+                     varbinder::Variable *variable)
 {
     auto *const currentNode = variable->Declaration()->Node()->AsMethodDefinition();
-    auto *const method = var->Declaration()->Node()->AsMethodDefinition();
+    auto *const method = importedVar->Declaration()->Node()->AsMethodDefinition();
 
     // Necessary because stdlib and escompat handled as same package, it can be removed after fixing package handling
-    if (isStdLib && (GetPackageName(var) != GetPackageName(variable))) {
+    if (isStdLib && (GetPackageName(importedVar) != GetPackageName(variable))) {
         return;
     }
 
     if (!method->Overloads().empty() && !method->HasOverload(currentNode)) {
         method->AddOverload(currentNode);
-        currentNode->Function()->Id()->SetVariable(var);
+        currentNode->Function()->Id()->SetVariable(importedVar);
         currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
         currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
+        util::UString newInternalName(currentNode->Function()->Scope()->Name(), allocator);
+        currentNode->Function()->Scope()->BindInternalName(newInternalName.View());
         return;
     }
 
@@ -481,6 +485,8 @@ void AddOverloadFlag(bool isStdLib, varbinder::Variable *var, varbinder::Variabl
         method->Function()->Id()->SetVariable(variable);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
+        util::UString newInternalName(method->Function()->Scope()->Name(), allocator);
+        method->Function()->Scope()->BindInternalName(newInternalName.View());
     }
 }
 
@@ -504,7 +510,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             if (variable != nullptr && var != variable && variable->Declaration()->IsFunctionDecl() &&
                 var->Declaration()->IsFunctionDecl()) {
                 bool isStdLib = util::Helpers::IsStdLib(Program());
-                AddOverloadFlag(isStdLib, var, variable);
+                AddOverloadFlag(Allocator(), isStdLib, var, variable);
                 continue;
             }
             if (variable != nullptr && var != variable) {
@@ -569,71 +575,33 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
     return true;
 }
 
-void ETSBinder::AddExportSelectiveAlias(const util::StringView &path, const util::StringView &key,
-                                        const util::StringView &value)
-{
-    auto it = selectiveExportsWithAlias_.find(path);
-    if (it == selectiveExportsWithAlias_.end()) {
-        AliasesByExportedNames aliasesByExportedNames(Allocator()->Adapter());
-        aliasesByExportedNames.insert({key, value});
-        selectiveExportsWithAlias_.insert({path, aliasesByExportedNames});
-        return;
-    }
-    it->second.insert({key, value});
-}
-
-util::StringView ETSBinder::GetExportSelectiveAliasValue(util::StringView const &path,
-                                                         util::StringView const &key) const
-{
-    if (auto alias = selectiveExportsWithAlias_.find(path); selectiveExportsWithAlias_.end() != alias) {
-        auto ret = alias->second.find(key);
-        if (alias->second.end() != ret) {
-            return ret->second;
-        }
-    }
-    return key;
-}
-
 Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &imported,
                                                   const varbinder::Scope::VariableMap &globalBindings,
                                                   const ArenaVector<parser::Program *> &recordRes)
 {
-    auto const checkVar = [this, &imported](const util::StringView &searchImported,
-                                            varbinder::Variable *foundVariable) {
-        if (imported.Is(searchImported.Mutf8()) && foundVariable->Declaration()->Node()->HasAliasExport()) {
-            ThrowError(foundVariable->Declaration()->Node()->Start(),
-                       "Cannot find imported element '" + imported.Mutf8() + "' exported with alias");
-        }
-
-        return foundVariable;
-    };
-
-    util::StringView searchImported = GetExportSelectiveAliasValue(recordRes.front()->SourceFilePath(), imported);
-    auto foundVar = globalBindings.find(searchImported);
+    auto foundVar = globalBindings.find(imported);
     if (foundVar == globalBindings.end()) {
         const auto &staticMethodBindings = recordRes.front()->GlobalClassScope()->StaticMethodScope()->Bindings();
-        foundVar = staticMethodBindings.find(searchImported);
+        foundVar = staticMethodBindings.find(imported);
         if (foundVar != staticMethodBindings.end()) {
-            return checkVar(searchImported, foundVar->second);
+            return foundVar->second;
         }
         bool found = false;
         for (auto res : recordRes) {
-            searchImported = GetExportSelectiveAliasValue(res->SourceFilePath(), imported);
             const auto &staticFieldBindings = res->GlobalClassScope()->StaticFieldScope()->Bindings();
-            foundVar = staticFieldBindings.find(searchImported);
+            foundVar = staticFieldBindings.find(imported);
             if (foundVar != staticFieldBindings.end()) {
                 found = true;
                 foundVar->second->AsLocalVariable()->AddFlag(VariableFlags::INITIALIZED);
                 break;
             }
         }
-
         if (!found) {
             return nullptr;
         }
     }
 
-    return checkVar(searchImported, foundVar->second);
+    return foundVar->second;
 }
 
 ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
@@ -709,6 +677,21 @@ static util::StringView ImportLocalName(const ir::ImportSpecifier *importSpecifi
     return imported;
 }
 
+bool ETSBinder::DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
+                                   const ir::StringLiteral *const importPath, bool overloadAllowed)
+{
+    if (otherVar == nullptr || var == otherVar) {
+        return false;
+    }
+
+    if (overloadAllowed && var->Declaration()->IsFunctionDecl() && otherVar->Declaration()->IsFunctionDecl()) {
+        AddOverloadFlag(Allocator(), util::Helpers::IsStdLib(Program()), var, otherVar);
+        return true;
+    }
+
+    ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, otherVar, localName));
+}
+
 bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                  const varbinder::Scope::VariableMap &globalBindings,
                                                  const ir::ETSImportDeclaration *const import,
@@ -734,7 +717,12 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         }
     }
 
-    auto *const var = FindImportSpecifiersVariable(imported, globalBindings, recordRes);
+    util::StringView nameToSearchFor = FindNameInAliasMap(import->ResolvedSource()->Str(), imported);
+    if (nameToSearchFor.Empty()) {
+        nameToSearchFor = imported;
+    }
+
+    auto *const var = FindImportSpecifiersVariable(nameToSearchFor, globalBindings, recordRes);
     importSpecifier->Imported()->SetVariable(var);
     importSpecifier->Local()->SetVariable(var);
 
@@ -747,19 +735,22 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
             return true;
         }
 
-        ThrowError(importPath->Start(), "Cannot find imported element " + imported.Mutf8());
+        ThrowError(importPath->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
     }
 
     ValidateImportVariable(var, import, imported, importPath);
 
-    auto variable = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
-    if (variable != nullptr && var != variable) {
-        if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-            bool isStdLib = util::Helpers::IsStdLib(Program());
-            AddOverloadFlag(isStdLib, var, variable);
-            return true;
-        }
-        ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, variable, localName));
+    auto varInGlobalClassScope = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
+    auto previouslyImportedVariable = TopScope()->FindLocal(localName, ResolveBindingOptions::ALL);
+    if (DetectNameConflict(localName, var, varInGlobalClassScope, importPath, true) ||
+        DetectNameConflict(localName, var, previouslyImportedVariable, importPath, false)) {
+        return true;
+    }
+
+    // The first part of the condition will be true, if something was given an alias when exported, but we try
+    // to import it using its original name.
+    if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias()) {
+        ThrowError(specifier->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
     }
 
     InsertForeignBinding(specifier, import, localName, var);
@@ -797,7 +788,7 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
         // NOTE(rsipka): it is not clear that an error should be thrown in these cases
         if (ark::os::file::File::IsDirectory(sourceName.Mutf8())) {
             ThrowError(importPath->Start(),
-                       "Cannot find index.[ets|ts] or package module in folder: " + importPath->Str().Mutf8());
+                       "Cannot find index.[sts|ts] or package module in folder: " + importPath->Str().Mutf8());
         }
 
         ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());
@@ -958,7 +949,8 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 
     std::stringstream ss;
     ASSERT(func->IsArrow() || !funcScope->Name().Empty());
-    ss << funcScope->Name() << compiler::Signatures::METHOD_SEPARATOR;
+    ss << (func->IsExternalOverload() ? funcScope->InternalName() : funcScope->Name())
+       << compiler::Signatures::METHOD_SEPARATOR;
 
     const auto *signature = func->Signature();
 
@@ -1080,7 +1072,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
     bool isStdLib = util::Helpers::IsStdLib(Program());
     if (variable != nullptr && var != variable) {
         if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-            AddOverloadFlag(isStdLib, var, variable);
+            AddOverloadFlag(Allocator(), isStdLib, var, variable);
             return true;
         }
 
@@ -1092,7 +1084,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
         return true;
     }
     if (insRes.first->second->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-        AddOverloadFlag(isStdLib, var, insRes.first->second);
+        AddOverloadFlag(Allocator(), isStdLib, var, insRes.first->second);
         return true;
     }
 

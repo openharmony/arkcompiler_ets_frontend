@@ -167,4 +167,15 @@ std::uint32_t Type::GetPrecedence(Type const *type) noexcept
     }
     return 0U;
 }
+
+bool IsTypeError(Type const *tp)
+{
+    return tp != nullptr && tp->IsTypeError();
+}
+
+void ThrowEmptyError()
+{
+    throw Error(ErrorType::TYPE, "", "");
+}
+
 }  // namespace ark::es2panda::checker

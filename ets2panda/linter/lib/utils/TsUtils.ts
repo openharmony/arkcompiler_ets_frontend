@@ -35,7 +35,7 @@ import { getScriptKind } from './functions/GetScriptKind';
 import { isStdLibraryType } from './functions/IsStdLibrary';
 import { isStructDeclaration, isStructDeclarationKind } from './functions/IsStruct';
 import type { NameGenerator } from './functions/NameGenerator';
-import { pathContainsDirectory } from './functions/PathHelper';
+import { srcFilePathContainsDirectory } from './functions/PathHelper';
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 
@@ -220,6 +220,20 @@ export class TsUtils {
      * (f & ts.TypeFlags.String) != 0 || (f & ts.TypeFlags.StringLiteral) != 0
      */
     );
+  }
+
+  static isPrimitiveLiteralType(type: ts.Type): boolean {
+    return !!(
+      type.flags &
+      (ts.TypeFlags.BooleanLiteral |
+        ts.TypeFlags.NumberLiteral |
+        ts.TypeFlags.StringLiteral |
+        ts.TypeFlags.BigIntLiteral)
+    );
+  }
+
+  static isPurePrimitiveLiteralType(type: ts.Type): boolean {
+    return TsUtils.isPrimitiveLiteralType(type) && !(type.flags & ts.TypeFlags.EnumLiteral);
   }
 
   static isTypeSymbol(symbol: ts.Symbol | undefined): boolean {
@@ -1065,10 +1079,19 @@ export class TsUtils {
     return false;
   }
 
+  parentSymbolCache = new Map<ts.Symbol, string | undefined>();
+
   getParentSymbolName(symbol: ts.Symbol): string | undefined {
+    const cached = this.parentSymbolCache.get(symbol);
+    if (cached) {
+      return cached;
+    }
+
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     const dotPosition = name.lastIndexOf('.');
-    return dotPosition === -1 ? undefined : name.substring(0, dotPosition);
+    const result = dotPosition === -1 ? undefined : name.substring(0, dotPosition);
+    this.parentSymbolCache.set(symbol, result);
+    return result;
   }
 
   isGlobalSymbol(symbol: ts.Symbol): boolean {
@@ -1262,9 +1285,10 @@ export class TsUtils {
   }
 
   static getParameterPropertiesHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
-    const params = (nodeOrComment as ts.ConstructorDeclaration).parameters;
-    if (params.length) {
-      return [params[0].getStart(), params[params.length - 1].getEnd()];
+    const param = nodeOrComment as ts.ParameterDeclaration;
+    const modifier = TsUtils.getAccessModifier(ts.getModifiers(param));
+    if (modifier !== undefined) {
+      return [modifier.getStart(), modifier.getEnd()];
     }
     return undefined;
   }
@@ -1358,7 +1382,7 @@ export class TsUtils {
       const ext = path.extname(fileName).toLowerCase();
       const isThirdPartyCode =
         ARKTS_IGNORE_DIRS.some((ignore) => {
-          return pathContainsDirectory(path.normalize(fileName), ignore);
+          return srcFilePathContainsDirectory(srcFile, ignore);
         }) ||
         ARKTS_IGNORE_FILES.some((ignore) => {
           return path.basename(fileName) === ignore;
@@ -1856,7 +1880,7 @@ export class TsUtils {
     return unwrappedTypeNode;
   }
 
-  isSendableTypeNode(typeNode: ts.TypeNode): boolean {
+  isSendableTypeNode(typeNode: ts.TypeNode, isShared: boolean = false): boolean {
 
     /*
      * In order to correctly identify the usage of the enum member or
@@ -1871,7 +1895,7 @@ export class TsUtils {
     // Only a sendable union type is supported
     if (ts.isUnionTypeNode(typeNode)) {
       return typeNode.types.every((elemType) => {
-        return this.isSendableTypeNode(elemType);
+        return this.isSendableTypeNode(elemType, isShared);
       });
     }
 
@@ -1880,7 +1904,16 @@ export class TsUtils {
     if (sym && sym.getFlags() & ts.SymbolFlags.TypeAlias) {
       const typeDecl = TsUtils.getDeclaration(sym);
       if (typeDecl && ts.isTypeAliasDeclaration(typeDecl)) {
-        return this.isSendableTypeNode(typeDecl.type);
+        const typeArgs = (typeNode as ts.TypeReferenceNode).typeArguments;
+        if (
+          typeArgs &&
+          !typeArgs.every((typeArg) => {
+            return this.isSendableTypeNode(typeArg);
+          })
+        ) {
+          return false;
+        }
+        return this.isSendableTypeNode(typeDecl.type, isShared);
       }
     }
 
@@ -1888,8 +1921,14 @@ export class TsUtils {
     if (TsUtils.isConstEnum(sym)) {
       return true;
     }
+    const type: ts.Type = this.tsTypeChecker.getTypeFromTypeNode(typeNode);
 
-    return this.isSendableType(this.tsTypeChecker.getTypeFromTypeNode(typeNode));
+    // In shared module, literal forms of primitive data types can be exported
+    if (isShared && TsUtils.isPurePrimitiveLiteralType(type)) {
+      return true;
+    }
+
+    return this.isSendableType(type);
   }
 
   isSendableType(type: ts.Type): boolean {
@@ -1926,6 +1965,10 @@ export class TsUtils {
       return tsType.types.every((elemType) => {
         return this.isShareableType(elemType);
       });
+    }
+
+    if (TsUtils.isPurePrimitiveLiteralType(tsType)) {
+      return true;
     }
 
     return this.isSendableType(tsType);
@@ -2463,7 +2506,7 @@ export class TsUtils {
     const decl = this.getDeclarationNode(node);
     const typeNode = (decl as any)?.type;
     return typeNode && !TsUtils.isFunctionLikeDeclaration(decl!) ?
-      this.isSendableTypeNode(typeNode) :
+      this.isSendableTypeNode(typeNode, true) :
       this.isShareableType(this.tsTypeChecker.getTypeAtLocation(decl ? decl : node));
   }
 

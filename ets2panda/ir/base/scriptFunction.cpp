@@ -120,7 +120,9 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
 void ScriptFunction::SetReturnTypeAnnotation(TypeNode *node) noexcept
 {
     irSignature_.SetReturnType(node);
-    node->SetParent(this);
+    if (node != nullptr) {
+        node->SetParent(this);
+    }
 }
 
 void ScriptFunction::Dump(ir::AstDumper *dumper) const

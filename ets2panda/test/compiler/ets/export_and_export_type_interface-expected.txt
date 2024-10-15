@@ -1,1 +1,0 @@
-SyntaxError: Name 'I' cannot be exported and type exported at the same time. [export_and_export_type_interface.ets:17:14]

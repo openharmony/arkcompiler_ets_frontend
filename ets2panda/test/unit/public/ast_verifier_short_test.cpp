@@ -280,7 +280,7 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSameNegative)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
 
     auto *ast = reinterpret_cast<ark::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
@@ -334,7 +334,7 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSame)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
 
     auto *ast = reinterpret_cast<ark::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));

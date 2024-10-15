@@ -1,12 +1,11 @@
 # panda#11106
-LongLiteralLimits.ets
+LongLiteralLimits.sts
 
 # panda#11502
-nullCoalesc.ets
+nullCoalesc.sts
 
 # panda#11330
-ArrayLiteral.ets
+ArrayLiteral.sts
 
 # test only for x64
-unboxing2_x64.ets
-
+unboxing2_x64.sts

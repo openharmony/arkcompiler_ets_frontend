@@ -193,8 +193,6 @@ private:
     bool ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                                const lexer::SourcePosition &pos);
 
-    bool ValidateTypeArg(Type *constraintType, Type *typeArg);
-
     void InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs);
 
     void InstantiateType(ETSObjectType *type, ArenaVector<Type *> &&typeArgTypes, const lexer::SourcePosition &pos);

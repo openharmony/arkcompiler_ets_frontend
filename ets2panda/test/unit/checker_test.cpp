@@ -53,10 +53,10 @@ class A {
     m2() { this.m ? "a": "b" }
 }
 )XXX";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     ctx = impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(std::string(impl_->ContextErrorMessage(ctx)),
-              "TypeError: Condition must be of possible condition type[dummy.ets:4,12]");
+              "TypeError: Condition must be of possible condition type[dummy.sts:4,12]");
 
     impl_->DestroyContext(ctx);
 }

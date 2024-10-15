@@ -14,11 +14,21 @@
  */
 
 import * as fs from 'node:fs'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
-import { exit } from 'node:process'
 import os from 'node:os'
+import { exit } from 'node:process'
+import { dirname } from 'path'
 import shell from 'shelljs'
+import { fileURLToPath } from 'url'
+
+// waitTime in ms
+function sleep(waitTime) {
+    const start = new Date().getTime();
+    const end = start + waitTime;
+    while (new Date().getTime() < end) {
+        // wait
+    }
+    return;
+}
 
 function detectOS() {
     let windowsPlatforms = ['win32', 'win64', 'windows', 'wince']
@@ -50,15 +60,21 @@ function getTypescript(detectedOS) {
     let branch = process.env.TYPESCRIPT_BRANCH ?? 'master'
 
     if (detectedOS === 'Linux') {
+        let timeToWait = 5000
+        const iterations = 4
         if (!fs.existsSync(typescript_dir)) {
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i <= iterations; i++) {
                 shell.exec(`git clone --depth=1 https://gitee.com/openharmony/third_party_typescript.git ${typescript_dir}`, { stdio: 'ignore', fatal: true } )
-                if (fs.existsSync(typescript_dir)) {
+                if (fs.existsSync(typescript_dir) || i === iterations) {
                     break;
                 }
+                console.log(`Typescript download failed wait ${timeToWait}ms to restart`)
+                sleep(timeToWait)
+                timeToWait *= 2
             }
         }
         if (!fs.existsSync(typescript_dir)) {
+            console.log(`Failed to download Typescript`)
             exit(1)
         }
 

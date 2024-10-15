@@ -1,1 +1,0 @@
-SyntaxError: Variable 'foo' has already been declared. [class-instance-field-redeclaration.ets:18:5]

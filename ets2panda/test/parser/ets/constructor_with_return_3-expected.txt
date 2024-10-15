@@ -1,1 +1,0 @@
-SyntaxError: Type annotation isn't allowed for constructor. [constructor_with_return_3.ets:19:24]

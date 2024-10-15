@@ -38,7 +38,7 @@ public:
 #undef DECLARE_ETSANALYZER_CHECK_METHOD
     checker::Type *PreferredType(ir::ObjectExpression *expr) const;
     checker::Type *GetPreferredType(ir::ArrayExpression *expr) const;
-    void CheckObjectExprProps(const ir::ObjectExpression *expr) const;
+    void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const;
     std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
                                                                          Type *leftType) const;
 

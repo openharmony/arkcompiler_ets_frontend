@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token in catch parameter, expected an identifier [tryCatchMissingParam.ets:19:14]

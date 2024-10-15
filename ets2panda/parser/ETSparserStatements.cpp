@@ -138,6 +138,19 @@ ArenaVector<ir::Statement *> ETSParser::ParseTopLevelStatements()
     return statements;
 }
 
+static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Statement *stmt,
+                                                  ark::es2panda::ir::ModifierFlags memberModifiers)
+{
+    if (stmt != nullptr) {
+        if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
+            !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
+            parser->ThrowSyntaxError("Can only type export class or interface!", stmt->Start());
+        }
+        stmt->AddModifier(memberModifiers);
+    }
+    return stmt;
+}
+
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
@@ -175,20 +188,16 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         }
         case lexer::TokenType::LITERAL_IDENT: {
             result = ParseIdentKeyword();
+            if (result == nullptr && (memberModifiers & (ir::ModifierFlags::EXPORTED)) != 0U) {
+                return ParseExport(startLoc, memberModifiers);
+            }
             break;
         }
         default: {
         }
     }
-    if (result != nullptr) {
-        if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
-            !(result->IsClassDeclaration() || result->IsTSInterfaceDeclaration() ||
-              result->IsTSTypeAliasDeclaration())) {
-            ThrowSyntaxError("Can only type export class or interface!");
-        }
-        result->AddModifier(memberModifiers);
-    }
-    return result;
+
+    return ValidateExportableStatement(this, result, memberModifiers);
 }
 
 ir::Statement *ETSParser::ParseTopLevelStatement()

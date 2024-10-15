@@ -11,6 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ets2panda_add_gtest(ast_builder_test
+    CPP_SOURCES ast_builder_test.cpp
+)
+
 ets2panda_add_gtest(es2panda_public_test
     CPP_SOURCES es2panda_public_test.cpp
 )
@@ -59,6 +63,14 @@ ets2panda_add_gtest(ast_verifier_variable_has_scope_test
     CPP_SOURCES ast_verifier_variable_has_scope_test.cpp
 )
 
+ets2panda_add_gtest(ast_verifier_every_child_has_valid_parent_test
+    CPP_SOURCES ast_verifier_every_child_has_valid_parent_test.cpp
+)
+
+ets2panda_add_gtest(ast_verifier_check_infinite_loop_test
+    CPP_SOURCES ast_verifier_check_infinite_loop_test.cpp
+)
+
 panda_add_library(e2p_test_plugin SHARED e2p_test_plugin.c)
 panda_target_include_directories(e2p_test_plugin PRIVATE  "${ES2PANDA_PATH}")
 panda_target_link_libraries(e2p_test_plugin es2panda-public)
@@ -67,7 +79,7 @@ add_custom_target(es2panda-plugin-test
   COMMENT "Test es2panda plugin functionality"
   COMMAND ${CMAKE_COMMAND} -E env
     LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin
-    "${CMAKE_CURRENT_SOURCE_DIR}/t.ets" > "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out"
+    --extension=sts "${CMAKE_CURRENT_SOURCE_DIR}/t.sts" > "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out"
   COMMAND ${CMAKE_COMMAND} -E compare_files
     "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out" "${CMAKE_CURRENT_SOURCE_DIR}/plugin_test.expected.txt"
 )

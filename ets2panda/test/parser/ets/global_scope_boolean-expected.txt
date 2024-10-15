@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token: ''. [global_scope_boolean.ets:16:1]

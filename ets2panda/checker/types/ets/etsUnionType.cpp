@@ -170,8 +170,25 @@ bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
             relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybePrimitiveBuiltinType(target)));
     }
 
-    return relation->Result(std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
-                                        [relation, target](auto *t) { return relation->IsAssignableTo(t, target); }));
+    bool isAssignable = false;
+
+    if (!(target->IsETSObjectType() && target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+        isAssignable = std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
+                                   [relation, target](auto *t) { return relation->IsAssignableTo(t, target); });
+    } else {
+        for (auto it : constituentTypes_) {
+            if (!it->IsETSObjectType() || !it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+                isAssignable = false;
+                break;
+            }
+
+            if (relation->IsAssignableTo(it, target)) {
+                isAssignable = true;
+            }
+        }
+    }
+
+    return relation->Result(isAssignable);
 }
 
 void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)
@@ -274,9 +291,14 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
     }
     types.resize(insPos);
 
-    // Promote primitives and literal types
+    // Promote primitives, enums and literal types
     for (auto &ct : types) {
-        ct = checker->MaybePromotedBuiltinType(checker->GetNonConstantTypeFromPrimitiveType(ct));
+        if (ct->IsETSEnumType()) {
+            ct->AsETSEnumType()->GetDecl()->BoxedClass()->Check(checker);
+            ct = ct->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
+        } else {
+            ct = checker->MaybePromotedBuiltinType(checker->GetNonConstantTypeFromPrimitiveType(ct));
+        }
     }
     // Reduce subtypes
     for (auto cmpIt = types.begin(); cmpIt != types.end(); ++cmpIt) {
@@ -353,6 +375,11 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
 
     if (sourceType->IsETSUnionType() || sourceType->IsETSArrayType() || sourceType->IsETSFunctionType()) {
         return sourceType;
+    }
+
+    if (sourceType->IsETSEnumType()) {
+        sourceType->AsETSEnumType()->GetDecl()->BoxedClass()->Check(checker);
+        return sourceType->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
     }
 
     auto *objectType = sourceType->IsETSObjectType() ? sourceType->AsETSObjectType() : nullptr;
@@ -649,8 +676,9 @@ Type *ETSUnionType::FindUnboxableType() const
 
 bool ETSUnionType::HasObjectType(ETSObjectFlags flag) const
 {
-    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(),
-                           [flag](Type *t) { return t->AsETSObjectType()->HasObjectFlag(flag); });
+    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [flag](Type *t) {
+        return t->IsETSObjectType() && t->AsETSObjectType()->HasObjectFlag(flag);
+    });
     return it != constituentTypes_.end();
 }
 

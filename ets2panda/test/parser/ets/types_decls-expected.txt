@@ -1,1 +1,0 @@
-SyntaxError: Variable 'prim_b' has already been declared. [types_decls.ets:45:5]

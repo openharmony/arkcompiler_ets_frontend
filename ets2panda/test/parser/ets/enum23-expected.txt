@@ -1,1 +1,0 @@
-SyntaxError: Variable 'Red' has already been declared. [enum23.ets:18:5]

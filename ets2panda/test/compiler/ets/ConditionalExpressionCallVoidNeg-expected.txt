@@ -542,4 +542,4 @@
     }
   }
 }
-TypeError: Cannot use type 'void' as value.  [ConditionalExpressionCallVoidNeg.ets:20:17]
+TypeError: Cannot use type 'void' as value.  [ConditionalExpressionCallVoidNeg.sts:20:17]

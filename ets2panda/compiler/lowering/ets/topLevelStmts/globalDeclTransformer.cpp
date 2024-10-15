@@ -53,6 +53,11 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
         allocator_, methodKind, funcDecl->Function()->Id()->Clone(allocator_, nullptr), funcExpr,
         funcDecl->Function()->Modifiers(), allocator_, false);
     method->SetRange(funcDecl->Range());
+
+    if (funcDecl->Function()->IsExported() && funcDecl->Function()->HasExportAlias()) {
+        method->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+    }
+
     result_.classProperties.emplace_back(method);
 }
 
@@ -66,6 +71,11 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
                                                                              declarator->Init(), typeAnn,
                                                                              varDecl->Modifiers(), allocator_, false);
         field->SetRange(declarator->Range());
+
+        if (varDecl->IsExported() && varDecl->HasExportAlias()) {
+            field->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
+        }
+
         result_.classProperties.emplace_back(field);
         if (auto stmt = InitTopLevelProperty(field); stmt != nullptr) {
             result_.initStatements.emplace_back(stmt);

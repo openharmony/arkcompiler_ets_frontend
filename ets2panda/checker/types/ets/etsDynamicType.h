@@ -20,14 +20,21 @@
 
 namespace ark::es2panda::checker {
 class ETSDynamicType : public ETSObjectType {
+    static constexpr auto NAME = 0;
+    static constexpr auto ASSEMBLER_NAME = 1;
+    static constexpr auto LANGUAGE = 2;
+    static constexpr auto DECL_NODE = 0;
+    static constexpr auto FLAGS = 1;
+    static constexpr auto RELATION = 2;
+
 public:
-    explicit ETSDynamicType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
-                            ir::AstNode *declNode, ETSObjectFlags flags, TypeRelation *relation, Language lang,
-                            bool hasDecl)
-        : ETSObjectType(allocator, name, assemblerName,
-                        std::make_tuple(declNode, flags | ETSObjectFlags::DYNAMIC, relation)),
+    explicit ETSDynamicType(ArenaAllocator *allocator, std::tuple<util::StringView, util::StringView, Language> label,
+                            std::tuple<ir::AstNode *, ETSObjectFlags, TypeRelation *> info, bool hasDecl)
+        : ETSObjectType(allocator, std::get<NAME>(label), std::get<ASSEMBLER_NAME>(label),
+                        std::make_tuple(std::get<DECL_NODE>(info), std::get<FLAGS>(info) | ETSObjectFlags::DYNAMIC,
+                                        std::get<RELATION>(info))),
           propertiesCache_ {allocator->Adapter()},
-          lang_(lang),
+          lang_(std::get<LANGUAGE>(label)),
           hasDecl_(hasDecl)
     {
         AddTypeFlag(TypeFlag::ETS_DYNAMIC_TYPE);

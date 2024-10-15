@@ -1,1 +1,0 @@
-SyntaxError: Unexpected token, expected 'as' but found 'from' [invalid_namespace_import.ets:16:10]

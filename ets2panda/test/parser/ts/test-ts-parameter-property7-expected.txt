@@ -1,1 +1,0 @@
-SyntaxError: Variable 'readonly' has already been declared. [test-ts-parameter-property7.ts:18:44]

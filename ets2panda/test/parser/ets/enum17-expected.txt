@@ -1,1 +1,0 @@
-SyntaxError: Invalid enum initialization value [enum17.ets:18:22]

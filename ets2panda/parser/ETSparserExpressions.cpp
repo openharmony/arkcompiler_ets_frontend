@@ -153,6 +153,10 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         auto const lexerPos = Lexer()->Save().Iterator();
         Lexer()->NextToken();  // eat '='
 
+        if ((GetContext().Status() & ParserStatus::ALLOW_DEFAULT_VALUE) != 0) {
+            ThrowSyntaxError("Default value is allowed only for optional parameters");
+        }
+
         if (defaultUndef != nullptr) {
             ThrowSyntaxError("Not enable default value with default undefined");
         }
@@ -486,6 +490,62 @@ ir::Expression *ETSParser::ParseCoverParenthesizedExpressionAndArrowParameterLis
     return expr;
 }
 
+std::optional<ir::Expression *> ETSParser::GetPostPrimaryExpression(ir::Expression *returnExpression,
+                                                                    lexer::SourcePosition startLoc,
+                                                                    bool ignoreCallExpression,
+                                                                    [[maybe_unused]] bool *isChainExpression)
+{
+    switch (Lexer()->GetToken().Type()) {
+        case lexer::TokenType::PUNCTUATOR_QUESTION_DOT:
+            if (*isChainExpression) {
+                return std::nullopt;  // terminate current chain
+            }
+            *isChainExpression = true;
+            Lexer()->NextToken();  // eat ?.
+
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+                return ParseElementAccess(returnExpression, true);
+            }
+
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+                return ParseCallExpression(returnExpression, true, false);
+            }
+
+            return ParsePropertyAccess(returnExpression, true);
+        case lexer::TokenType::PUNCTUATOR_PERIOD:
+            Lexer()->NextToken();  // eat period
+
+            return ParsePropertyAccess(returnExpression);
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
+            return ParseElementAccess(returnExpression);
+        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+            if (ParsePotentialGenericFunctionCall(returnExpression, &returnExpression, startLoc,
+                                                  ignoreCallExpression)) {
+                return std::nullopt;
+            }
+
+            return returnExpression;
+        case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
+            if (ignoreCallExpression) {
+                return std::nullopt;
+            }
+            return ParseCallExpression(returnExpression, false, false);
+        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
+            const bool shouldBreak = ParsePotentialNonNullExpression(&returnExpression, startLoc);
+            if (shouldBreak) {
+                return std::nullopt;
+            }
+
+            return returnExpression;
+        }
+        case lexer::TokenType::PUNCTUATOR_FORMAT:
+            ThrowUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+        default:
+            return std::nullopt;
+    }
+}
+
 ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExpr, lexer::SourcePosition startLoc,
                                                       bool ignoreCallExpression,
                                                       [[maybe_unused]] bool *isChainExpression)
@@ -493,67 +553,10 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
     ir::Expression *returnExpression = primaryExpr;
 
     while (true) {
-        switch (Lexer()->GetToken().Type()) {
-            case lexer::TokenType::PUNCTUATOR_QUESTION_DOT: {
-                if (*isChainExpression) {
-                    break;  // terminate current chain
-                }
-                *isChainExpression = true;
-                Lexer()->NextToken();  // eat ?.
-
-                if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-                    returnExpression = ParseElementAccess(returnExpression, true);
-                    continue;
-                }
-
-                if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-                    returnExpression = ParseCallExpression(returnExpression, true, false);
-                    continue;
-                }
-
-                returnExpression = ParsePropertyAccess(returnExpression, true);
-                continue;
-            }
-            case lexer::TokenType::PUNCTUATOR_PERIOD: {
-                Lexer()->NextToken();  // eat period
-
-                returnExpression = ParsePropertyAccess(returnExpression);
-                continue;
-            }
-            case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-                returnExpression = ParseElementAccess(returnExpression);
-                continue;
-            }
-            case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
-            case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
-                if (ParsePotentialGenericFunctionCall(returnExpression, &returnExpression, startLoc,
-                                                      ignoreCallExpression)) {
-                    break;
-                }
-
-                continue;
-            }
-            case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
-                if (ignoreCallExpression) {
-                    break;
-                }
-                returnExpression = ParseCallExpression(returnExpression, false, false);
-                continue;
-            }
-            case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-                const bool shouldBreak = ParsePotentialNonNullExpression(&returnExpression, startLoc);
-                if (shouldBreak) {
-                    break;
-                }
-
-                continue;
-            }
-            case lexer::TokenType::PUNCTUATOR_FORMAT: {
-                ThrowUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
-            }
-            default: {
-                break;
-            }
+        auto expr = GetPostPrimaryExpression(returnExpression, startLoc, ignoreCallExpression, isChainExpression);
+        if (expr.has_value()) {
+            returnExpression = expr.value();
+            continue;
         }
 
         break;
