@@ -424,6 +424,7 @@ public:
         const ir::ArrayExpression *param);
     std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionObjectPatternParameter(
         const ir::ObjectExpression *param);
+    void InferFunctionDeclarationSignatures(const binder::FunctionDecl *decl, ObjectDescriptor *descWithOverload);
     void InferFunctionDeclarationType(const binder::FunctionDecl *decl, binder::Variable *funcVar);
     void CollectTypesFromReturnStatements(const ir::AstNode *parent, ArenaVector<Type *> *returnTypes);
     void CheckAllCodePathsInNonVoidFunctionReturnOrThrow(const ir::ScriptFunction *func, lexer::SourcePosition lineInfo,
