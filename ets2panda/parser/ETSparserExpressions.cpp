@@ -670,6 +670,10 @@ ir::Expression *ETSParser::ParseNewExpression()
         Lexer()->NextToken();  // eat '{'
     }
 
+    if (typeReference == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
         Lexer()->NextToken();
         ir::Expression *dimension = ParseExpression();

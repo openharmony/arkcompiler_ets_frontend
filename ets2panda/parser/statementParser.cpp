@@ -201,6 +201,10 @@ ir::Statement *ParserImpl::ParseLetStatement(StatementParsingFlags flags)
     }
 
     auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::LET);
+    if (variableDecl == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     ConsumeSemicolon(variableDecl);
     return variableDecl;
 }

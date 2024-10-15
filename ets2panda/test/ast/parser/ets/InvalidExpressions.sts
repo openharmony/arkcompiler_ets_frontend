@@ -74,9 +74,11 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 35:10 Error SyntaxError: Unexpected token ':'. */
 /* @@? 35:10 Error SyntaxError: Unexpected token, expected ')' */
 /* @@? 35:10 Error SyntaxError: Unexpected token ':'. */
+/* @@? 35:10 Error SyntaxError: Unexpected token ':'. */
 /* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? 35:16 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 35:21 Error SyntaxError: return keyword should be used in function body */
+/* @@? 37:15 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 37:15 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 38:13 Error SyntaxError: Can not use 'new' on primitive types. */
 /* @@? 39:16 Error SyntaxError: Invalid { after base types. */

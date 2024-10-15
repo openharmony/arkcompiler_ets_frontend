@@ -18,3 +18,4 @@ class A {
 }
 
 /* @@? 17:6 Error SyntaxError: Unexpected token in private field  */
+/* @@? 17:6 Error SyntaxError: Private identifier name can not be string */

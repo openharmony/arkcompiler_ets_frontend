@@ -569,13 +569,15 @@ void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNod
     }
 }
 
-void TSParser::ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement)
+bool TSParser::ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement)
 {
     ParseOptionalFunctionParameter(restElement, true);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("')' expected");
     }
+
+    return true;
 }
 
 ir::Expression *TSParser::ParseArrowFunctionRestParameter(lexer::SourcePosition start)

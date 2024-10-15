@@ -528,15 +528,18 @@ void ParserImpl::CheckClassGeneratorMethod(ClassElementDescriptor *desc, char32_
     *nextCp = lexer_->Lookahead();
 }
 
-void ParserImpl::ValidatePrivateIdentifier()
+bool ParserImpl::ValidatePrivateIdentifier()
 {
     size_t iterIdx = lexer_->GetToken().Start().index;
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT ||
         (lexer_->GetToken().Start().index - iterIdx > 1)) {
-        ThrowSyntaxError("Unexpected token in private field");
+        LogSyntaxError("Unexpected token in private field");
+        return false;
     }
+
+    return true;
 }
 
 void ParserImpl::ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *nextCp)
@@ -904,8 +907,10 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
         }
     }
 
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-    lexer_->NextToken();
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {  // Error processing.
+        lexer_->NextToken();
+    }
+
     return params;
 }
 

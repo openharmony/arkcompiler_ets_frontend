@@ -17,4 +17,5 @@ class A {
     ##a;
 }
 
-/* @@? 17:6 Error SyntaxError: Unexpected token in private field  */
+/* @@? 17:6 Error SyntaxError: Unexpected token in private field */
+/* @@? 17:6 Error SyntaxError: Unexpected token in class property */

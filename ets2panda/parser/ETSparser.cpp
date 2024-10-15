@@ -1763,7 +1763,7 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclarator(ir::Expression *init,
     }
 
     if (init->AsIdentifier()->TypeAnnotation() == nullptr && (flags & VariableParsingFlags::FOR_OF) == 0U) {
-        ThrowSyntaxError("Variable must be initialized or it's type must be declared");
+        LogSyntaxError("Variable must be initialized or it's type must be declared");
     }
 
     lexer::SourcePosition endLoc = init->End();
