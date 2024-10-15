@@ -24,7 +24,6 @@
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
-#include "types/ts/undefinedType.h"
 #include "ir/statements/namespaceDeclaration.h"
 
 namespace ark::es2panda::checker {
@@ -68,7 +67,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDefinition *node) const
         checker->CheckClassDefinition(node);
     }
 
-    return nullptr;
+    return node->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
@@ -942,6 +941,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     }
 
     ETSChecker *checker = GetETSChecker();
+
     auto *const leftType = expr->Left()->Check(checker);
 
     if (IsInvalidArrayMemberAssignment(expr, checker)) {
@@ -2815,28 +2815,24 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
 {
-    ETSChecker *checker = GetETSChecker();
+    if (st->TsType() == nullptr) {
+        ETSChecker *checker = GetETSChecker();
 
-    checker::ETSObjectType *interfaceType {};
+        checker::ETSObjectType *interfaceType = checker->BuildBasicInterfaceProperties(st);
+        ASSERT(interfaceType != nullptr);
 
-    if (st->TsType() != nullptr) {
-        return st->TsType();
+        interfaceType->SetSuperType(checker->GlobalETSObjectType());
+        checker->CheckInvokeMethodsLegitimacy(interfaceType);
+        st->SetTsType(interfaceType);
+
+        checker::ScopeContext scopeCtx(checker, st->Scope());
+        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, interfaceType);
+
+        for (auto *it : st->Body()->Body()) {
+            it->Check(checker);
+        }
     }
-
-    interfaceType = checker->BuildBasicInterfaceProperties(st);
-    ASSERT(interfaceType != nullptr);
-    interfaceType->SetSuperType(checker->GlobalETSObjectType());
-    checker->CheckInvokeMethodsLegitimacy(interfaceType);
-    st->SetTsType(interfaceType);
-
-    checker::ScopeContext scopeCtx(checker, st->Scope());
-    auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, interfaceType);
-
-    for (auto *it : st->Body()->Body()) {
-        it->Check(checker);
-    }
-
-    return nullptr;
+    return st->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const

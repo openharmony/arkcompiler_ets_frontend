@@ -77,17 +77,20 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
     expr->Compile(this);
 
     auto const *const accType = GetAccumulatorType();
-    if (accType == expr->TsType() || expr->TsType()->IsETSTypeParameter()) {
+    auto const *const exprType = expr->TsType();
+
+    if (Checker()->Relation()->IsIdenticalTo(accType, exprType) || exprType->IsETSTypeParameter() ||
+        exprType->IsETSPartialTypeParameter() || exprType->IsETSNonNullishType()) {
         return;
     }
 
     if (accType->IsETSPrimitiveType() &&
-        ((accType->TypeFlags() ^ expr->TsType()->TypeFlags()) & ~checker::TypeFlag::CONSTANT) == 0) {
+        ((accType->TypeFlags() ^ exprType->TypeFlags()) & ~checker::TypeFlag::CONSTANT) == 0) {
         return;
     }
 
     ASSERT_PRINT(false, std::string("Type mismatch after Expression::Compile: ") + accType->ToString() +
-                            " instead of " + expr->TsType()->ToString());
+                            " instead of " + exprType->ToString());
 }
 
 const checker::ETSChecker *ETSGen::Checker() const noexcept
@@ -642,7 +645,7 @@ const checker::Type *ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode
     if (type->IsUndefinedType() || type->IsETSUndefinedType() || type->IsETSVoidType()) {
         LoadAccumulatorUndefined(node);
     } else if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter() ||
-               type->IsETSNullType() || type->IsETSNeverType()) {
+               type->IsETSNullType() || type->IsETSPartialTypeParameter() || type->IsETSNeverType()) {
         // NOTE: need rework about ETSNeverType #20340
         LoadAccumulatorNull(node, type);
     } else if (type->IsETSBooleanType()) {
@@ -1748,7 +1751,8 @@ void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *c
         return;
     }
 
-    ASSERT(!targetType->IsETSTypeParameter() && !targetType->IsETSNonNullishType());
+    ASSERT(!targetType->IsETSTypeParameter() && !targetType->IsETSNonNullishType() &&
+           !targetType->IsETSPartialTypeParameter());
     CheckedReferenceNarrowing(node, targetType);
     SetAccumulatorType(targetType);
 }
@@ -1842,6 +1846,7 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NONNULLISH:
+        case checker::TypeFlag::ETS_PARTIAL_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_UNION: {  // NOTE(vpukhov): refine dynamic type cast rules
             if (GetAccumulatorType()->IsETSStringType()) {
                 methodName = compiler::Signatures::Dynamic::NewStringBuiltin(type->Language());

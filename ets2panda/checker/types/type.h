@@ -60,7 +60,7 @@ public:
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TYPE_IS_CHECKS(typeFlag, typeName)                                                  \
-    bool Is##typeName() const                                                               \
+    bool Is##typeName() const noexcept                                                      \
     {                                                                                       \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return HasTypeFlag(typeFlag);                                                       \

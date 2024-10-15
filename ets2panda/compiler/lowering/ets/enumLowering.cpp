@@ -447,7 +447,7 @@ ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDec
                         newExprArgs.push_back(asExpression);
 
                         auto boxedTypeRef = MakeTypeReference(checker_, boxedClassName);
-                        
+
                         auto *const newExpression = checker_->AllocNode<ir::ETSNewClassInstanceExpression>(
                             boxedTypeRef, std::move(newExprArgs), nullptr);
                         return newExpression;
@@ -545,9 +545,9 @@ void EnumLoweringPhase::CreateEnumFromIntMethod(const ir::TSEnumDeclaration *con
         CreateReturnEnumStatement(checker_, enumClass->Ident(), arrayIdent, inputOrdinalParameter);
     auto *const ifOrdinalExistsStmt = checker_->AllocNode<ir::IfStatement>(inArraySizeExpr, returnEnumStmt, nullptr);
 
-    util::UString messageString(util::StringView("No enum constant in "), Allocator());
-    messageString.Append(enumDecl->Key()->Name());
-    messageString.Append(" with ordinal value ");
+    auto const messageString = util::UString(std::string_view("No enum constant in "), Allocator())
+                                   .Append(enumDecl->Key()->Name())
+                                   .Append(" with ordinal value ");
 
     auto *const throwNoEnumStmt = CreateThrowStatement(checker_, inputOrdinalParameter, messageString);
 

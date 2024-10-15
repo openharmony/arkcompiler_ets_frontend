@@ -7789,3 +7789,4 @@
     }
   }
 }
+TypeError: Type 'S' cannot be assigned to type 'T' [partialType_4.sts:77:32]

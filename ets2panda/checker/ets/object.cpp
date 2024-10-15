@@ -19,6 +19,7 @@
 #include "checker/types/ets/etsDynamicType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
+#include "checker/types/ets/etsPartialTypeParameter.h"
 #include "ir/astNode.h"
 #include "ir/typeNode.h"
 #include "ir/base/classDefinition.h"
@@ -708,8 +709,7 @@ static void GetInterfacesOfClass(ETSObjectType *type, ArenaVector<ETSObjectType 
     }
 }
 
-void ETSChecker::CheckIfOverrideIsValidInInterface(const ETSObjectType *classType, Signature *sig,
-                                                   ir::ScriptFunction *func)
+void ETSChecker::CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func)
 {
     if (AreOverrideEquivalent(func->Signature(), sig) && func->IsStatic() == sig->Function()->IsStatic()) {
         if (CheckIfInterfaceCanBeFoundOnDifferentPaths(classType, func->Signature()->Owner()) &&
@@ -724,7 +724,7 @@ void ETSChecker::CheckIfOverrideIsValidInInterface(const ETSObjectType *classTyp
     }
 }
 
-void ETSChecker::CheckFunctionRedeclarationInInterface(const ETSObjectType *classType,
+void ETSChecker::CheckFunctionRedeclarationInInterface(ETSObjectType *classType,
                                                        ArenaVector<Signature *> &similarSignatures,
                                                        ir::ScriptFunction *func)
 {
@@ -750,8 +750,9 @@ void ETSChecker::CheckInterfaceFunctions(ETSObjectType *classType)
 
     for (auto *const &interface : interfaces) {
         for (auto *const &prop : interface->Methods()) {
-            if (auto *const func = prop->Declaration()->Node()->AsMethodDefinition()->Function();
-                func->Body() != nullptr) {
+            ir::AstNode *node = prop->Declaration()->Node();
+            ir::ScriptFunction *func = node->AsMethodDefinition()->Function();
+            if (func->Body() != nullptr) {
                 CheckFunctionRedeclarationInInterface(classType, similarSignatures, func);
             }
         }
@@ -2133,6 +2134,10 @@ Type *ETSChecker::GetApparentType(Type *type)
         return cached(
             GetNonNullishType(GetApparentType(type->AsETSNonNullishType()->GetUnderlying()->GetConstraintType())));
     }
+    if (type->IsETSPartialTypeParameter()) {
+        return cached(CreatePartialType(
+            GetApparentType(type->AsETSPartialTypeParameter()->GetUnderlying()->GetConstraintType())));
+    }
     if (type->IsETSArrayType()) {
         return cached(type);
     }
@@ -2160,7 +2165,7 @@ Type const *ETSChecker::GetApparentType(Type const *type) const
     if (type->IsETSArrayType()) {
         return type;
     }
-    if (type->IsETSUnionType() || type->IsETSNonNullishType()) {
+    if (type->IsETSUnionType() || type->IsETSNonNullishType() || type->IsETSPartialTypeParameter()) {
         ASSERT_PRINT(false, std::string("Type ") + type->ToString() + " was not found in apparent_types_");
     }
     return type;

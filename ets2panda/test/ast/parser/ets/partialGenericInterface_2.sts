@@ -35,5 +35,5 @@ function foa(b: Partial<B<gamma>>): void {
 	foo(b);
 }
 
-/* @@? 35:6 Error TypeError: Type 'B$partial<gamma>' is not compatible with type 'A$partial<beta>' at index 1 */
-/* @@? 35:2 Error TypeError: No matching call signature for foo(B$partial<gamma>) */
+/* @@? 35:6 Error TypeError: Type 'Partial<B<gamma>>' is not compatible with type 'Partial<A<beta>>' at index 1 */
+/* @@? 35:2 Error TypeError: No matching call signature for foo(Partial<B<gamma>>) */

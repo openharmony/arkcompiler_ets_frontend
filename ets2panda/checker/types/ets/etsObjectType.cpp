@@ -321,6 +321,13 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
         return;
     }
 
+    if (IsPartial()) {
+        ss << "Partial" << compiler::Signatures::GENERIC_BEGIN;
+        baseType_->ToString(ss, precise);
+        ss << compiler::Signatures::GENERIC_END;
+        return;
+    }
+
     const bool isReadonlyType = HasTypeFlag(TypeFlag::READONLY);
     if (isReadonlyType) {
         ss << "Readonly" << compiler::Signatures::GENERIC_BEGIN;
@@ -356,10 +363,44 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
     }
 }
 
+void ETSObjectType::SubstitutePartialTypes(TypeRelation *relation, Type *other)
+{
+    ASSERT(IsPartial());
+
+    if ((baseType_->IsGeneric() || baseType_->IsETSTypeParameter()) && effectiveSubstitution_ != nullptr) {
+        if (auto *newBaseType = baseType_->Substitute(relation, effectiveSubstitution_);
+            newBaseType->IsETSObjectType() && !relation->IsIdenticalTo(newBaseType, baseType_)) {
+            baseType_ = newBaseType->AsETSObjectType();
+        }
+    }
+
+    if (other->IsETSObjectType() && other->AsETSObjectType()->IsPartial()) {
+        auto *otherPartial = other->AsETSObjectType();
+        if ((otherPartial->baseType_->IsGeneric() || otherPartial->baseType_->IsETSTypeParameter()) &&
+            otherPartial->effectiveSubstitution_ != nullptr) {
+            if (auto *newBaseType = otherPartial->baseType_->Substitute(relation, otherPartial->effectiveSubstitution_);
+                newBaseType->IsETSObjectType() && !relation->IsIdenticalTo(newBaseType, otherPartial->baseType_)) {
+                otherPartial->baseType_ = newBaseType->AsETSObjectType();
+            }
+        }
+    }
+}
+
 void ETSObjectType::IdenticalUptoTypeArguments(TypeRelation *relation, Type *other)
 {
     relation->Result(false);
+
+    if (IsPartial()) {
+        SubstitutePartialTypes(relation, other);
+    }
+
     if (!other->IsETSObjectType() || !CheckIdenticalFlags(other->AsETSObjectType())) {
+        return;
+    }
+
+    // NOTE: (DZ) only both Partial types can be compatible.
+    if (static_cast<bool>(static_cast<std::byte>(IsPartial()) ^
+                          static_cast<std::byte>(other->AsETSObjectType()->IsPartial()))) {
         return;
     }
 
@@ -386,7 +427,7 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
 {
     IdenticalUptoTypeArguments(relation, other);
 
-    if (!relation->IsTrue() || !HasTypeFlag(TypeFlag::GENERIC)) {
+    if (!relation->IsTrue() || !HasTypeFlag(TypeFlag::GENERIC) || !other->IsETSObjectType()) {
         return;
     }
 
@@ -657,6 +698,14 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
     auto *const etsChecker = relation->GetChecker()->AsETSChecker();
+
+    if (IsPartial()) {
+        if (!source->IsETSObjectType() || !source->AsETSObjectType()->IsPartial()) {
+            return;
+        }
+        relation->IsSupertypeOf(GetBaseType(), source->AsETSObjectType()->GetBaseType());
+        return;
+    }
 
     if (DefaultObjectTypeChecks(etsChecker, relation, source)) {
         return;

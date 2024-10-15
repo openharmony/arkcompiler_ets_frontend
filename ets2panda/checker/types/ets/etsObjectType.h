@@ -27,6 +27,9 @@
 
 namespace ark::es2panda::checker {
 using PropertyProcesser = std::function<varbinder::LocalVariable *(varbinder::LocalVariable *, Type *)>;
+
+inline constexpr auto *PARTIAL_CLASS_SUFFIX = "$partial";
+
 class ETSObjectType : public Type {
 public:
     using PropertyMap = ArenaUnorderedMap<util::StringView, varbinder::LocalVariable *>;
@@ -374,6 +377,11 @@ public:
         return !typeArguments_.empty();
     }
 
+    [[nodiscard]] bool IsPartial() const noexcept
+    {
+        return name_.EndsWith(PARTIAL_CLASS_SUFFIX);
+    }
+
     std::vector<const varbinder::LocalVariable *> ForeignProperties() const;
     varbinder::LocalVariable *GetProperty(const util::StringView &name, PropertySearchFlags flags) const;
     std::vector<varbinder::LocalVariable *> GetAllProperties() const;
@@ -470,6 +478,7 @@ private:
     bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
                                TypeFlag narrowingFlags);
     void IdenticalUptoTypeArguments(TypeRelation *relation, Type *other);
+    void SubstitutePartialTypes(TypeRelation *relation, Type *other);
     void IsGenericSupertypeOf(TypeRelation *relation, Type *source);
     void UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop, PropertyType fieldType,
                             PropertyProcesser const &func);

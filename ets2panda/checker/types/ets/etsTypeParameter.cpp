@@ -75,12 +75,12 @@ void ETSTypeParameter::CastTarget(TypeRelation *relation, Type *source)
     relation->Result(relation->InCastingContext());
 }
 
-void ETSTypeParameter::IsSupertypeOf([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
+void ETSTypeParameter::IsSupertypeOf(TypeRelation *relation, [[maybe_unused]] Type *source)
 {
     relation->Result(false);
 }
 
-void ETSTypeParameter::IsSubtypeOf([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
+void ETSTypeParameter::IsSubtypeOf(TypeRelation *relation, Type *target)
 {
     if (relation->IsSupertypeOf(target, GetConstraintType())) {
         return;

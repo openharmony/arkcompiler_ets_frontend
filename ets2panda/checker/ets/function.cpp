@@ -1754,9 +1754,12 @@ bool ETSChecker::AreOverrideEquivalent(Signature *const s1, Signature *const s2)
     // their names and type parameters (if any) are the same, and their formal parameter
     // types are also the same (after the formal parameter types of N are adapted to the type parameters of M).
     // Signatures s1 and s2 are override-equivalent only if s1 and s2 are the same.
+    if (s1->Function()->Id()->Name() != s2->Function()->Id()->Name()) {
+        return false;
+    }
 
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::OVERRIDING_CONTEXT);
-    return s1->Function()->Id()->Name() == s2->Function()->Id()->Name() && Relation()->IsCompatibleTo(s1, s2);
+    return Relation()->IsCompatibleTo(s1, s2);
 }
 
 bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const s2)
