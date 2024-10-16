@@ -16,10 +16,11 @@
 function assert_ccexc(f: () => void) {
     try {
         f();
-        assert false : "exception expected";
     } catch (e) {
         assert(e instanceof ClassCastError);
+        return;
     }
+    assert false : "exception expected";
 }
 
 class A { }
