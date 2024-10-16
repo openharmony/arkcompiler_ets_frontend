@@ -852,7 +852,7 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
 static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda)
 {
     auto *allocator = ctx->allocator;
-
+    auto *checker = ctx->checker->AsETSChecker();
     auto firstDefaultIndex = lambda->Function()->DefaultParamIndex();
 
     LambdaInfo info;
@@ -862,6 +862,9 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     info.capturedVars = &capturedVars;
     info.callReceiver = CheckIfNeedThis(lambda) ? allocator->New<ir::ThisExpression>() : nullptr;
 
+    if (lambda->Function()->Signature() == nullptr) {
+        lambda->Check(checker);
+    }
     auto *callee = CreateCalleeDefault(ctx, lambda, &info);
 
     if (firstDefaultIndex < lambda->Function()->Params().size()) {

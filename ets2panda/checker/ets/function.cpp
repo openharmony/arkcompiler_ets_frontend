@@ -1094,7 +1094,7 @@ Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo 
         signature->AddSignatureFlag(SignatureFlags::CONSTRUCTOR);
     }
 
-    if (signature->Owner()->GetDeclNode()->IsFinal() || func->IsFinal()) {
+    if ((signature->Owner() != nullptr && signature->Owner()->GetDeclNode()->IsFinal()) || func->IsFinal()) {
         signature->AddSignatureFlag(SignatureFlags::FINAL);
     }
 
@@ -1305,7 +1305,8 @@ static void AddSignatureFlags(const ir::ScriptFunction *const func, Signature *c
         signature->AddSignatureFlag(SignatureFlags::CONSTRUCTOR);
     }
 
-    if (func->Signature()->Owner()->GetDeclNode()->IsFinal() || func->IsFinal()) {
+    if ((func->Signature()->Owner() != nullptr && func->Signature()->Owner()->GetDeclNode()->IsFinal()) ||
+        func->IsFinal()) {
         signature->AddSignatureFlag(SignatureFlags::FINAL);
     }
 
