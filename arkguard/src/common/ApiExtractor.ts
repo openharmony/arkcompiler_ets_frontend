@@ -15,14 +15,13 @@
 
 import type {
   ElementAccessExpression,
-  EnumDeclaration,
   ExportDeclaration,
   ModifiersArray,
-  ModuleDeclaration,
   Node,
   ParameterDeclaration,
   PropertyAccessExpression,
-  SourceFile
+  SourceFile,
+  EnumDeclaration
 } from 'typescript';
 
 import {
@@ -57,13 +56,10 @@ import {
   isPropertySignature,
   isMethodDeclaration,
   isMethodSignature,
-  isObjectLiteralElementLike,
-  isModuleDeclaration,
   isPropertyAssignment,
-  isModuleBlock,
-  isFunctionDeclaration,
   isEnumMember,
-  isIndexedAccessTypeNode
+  isIndexedAccessTypeNode,
+  Extension
 } from 'typescript';
 
 import fs from 'fs';
@@ -83,8 +79,7 @@ import {
   isParameterPropertyModifier,
 } from '../utils/OhsUtil';
 import { scanProjectConfig } from './ApiReader';
-import { stringPropsSet, enumPropsSet } from '../utils/OhsUtil';
-import type { IOptions } from '../configs/IOptions';
+import { enumPropsSet } from '../utils/OhsUtil';
 import { FileUtils } from '../utils/FileUtils';
 import { supportedParsingExtension } from './type';
 
@@ -95,12 +90,11 @@ export namespace ApiExtractor {
   }
 
   export enum ApiType {
-    API = 1,
-    COMPONENT = 2,
-    PROJECT_DEPENDS = 3,
-    PROJECT = 4,
-    CONSTRUCTOR_PROPERTY = 5,
-    KEEP_DTS = 6
+    API,
+    COMPONENT,
+    PROJECT,
+    CONSTRUCTOR_PROPERTY,
+    KEEP_DTS
   }
 
   let mCurrentExportedPropertySet: Set<string> = new Set<string>();
@@ -108,6 +102,7 @@ export namespace ApiExtractor {
   export let mPropertySet: Set<string> = new Set<string>();
   export let mExportNames: Set<string> = new Set<string>();
   export let mConstructorPropertySet: Set<string> = undefined;
+  export let mEnumMemberSet: Set<string> = new Set<string>();
   export let mSystemExportSet: Set<string> = new Set<string>();
   /**
    * filter classes or interfaces with export, default, etc
@@ -253,7 +248,7 @@ export namespace ApiExtractor {
       return;
     }
 
-    if (isConstructorDeclaration) {
+    if (isConstructorDeclaration(astNode)) {
       const visitParam = (param: ParameterDeclaration): void => {
         const modifiers = getModifiers(param);
         if (!modifiers || modifiers.length <= 0) {
@@ -646,7 +641,6 @@ export namespace ApiExtractor {
         forEachChild(sourceFile, visitPropertyAndName);
         mCurrentExportNameSet.clear();
         break;
-      case ApiType.PROJECT_DEPENDS:
       case ApiType.PROJECT:
         mCurrentExportNameSet.clear();
         if (fileName.endsWith('.d.ts') || fileName.endsWith('.d.ets')) {
@@ -656,11 +650,13 @@ export namespace ApiExtractor {
         let isRemoteHarFile = isRemoteHar(fileName);
         forEachChild(sourceFile, node => visitProjectExport(node, isRemoteHarFile));
         forEachChild(sourceFile, visitProjectNode);
+        collectEnumMembersOfFile(sourceFile);
         mCurrentExportedPropertySet = handleWhiteListWhenExportObfs(fileName, mCurrentExportedPropertySet);
         mCurrentExportNameSet = handleWhiteListWhenExportObfs(fileName, mCurrentExportNameSet);
         break;
       case ApiType.CONSTRUCTOR_PROPERTY:
         forEachChild(sourceFile, visitNodeForConstructorProperty);
+        collectEnumMembersOfFile(sourceFile);
         break;
       default:
         break;
@@ -918,5 +914,67 @@ export namespace ApiExtractor {
   function collectNodeName(name: string): void {
     mCurrentExportNameSet.add(name);
     mCurrentExportedPropertySet.add(name);
+  }
+
+  function containsIdentifier(node: Node, found: { value: boolean }): void {
+    if (found.value) {
+      return;
+    }
+    if (isIdentifier(node)) {
+      found.value = true;
+      return;
+    }
+    forEachChild(node, childNode => {
+      containsIdentifier(childNode, found);
+    });
+  }
+
+  function shouldCollectEnum(node: EnumDeclaration): boolean {
+    const members = node.members;
+    for (const member of members) {
+      if (isEnumMember(member) && member.initializer) {
+        const initializer = member.initializer;
+        const found = { value: false };
+        containsIdentifier(initializer, found);
+        if (found.value) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function collectEnumMember(node: Node): void {
+    if (isEnumMember(node) && isIdentifier(node.name)) {
+      mEnumMemberSet.add(node.name.text);
+    }
+  }
+
+  /**
+   * Visit and collect enum members
+   * @param node The current AST node.
+   */
+  function visitEnumMembers(node: Node): void {
+    if (isEnumDeclaration(node)) {
+      if (!shouldCollectEnum(node)) {
+        return;
+      }
+      for (const member of node.members) {
+        collectEnumMember(member);
+      }
+      return;
+    }
+    forEachChild(node, visitEnumMembers);
+  }
+
+  /**
+   * Visit and collect enum members of non-js file
+   * @param sourceFile The sourceFile to collect.
+   */
+  function collectEnumMembersOfFile(sourceFile: SourceFile): void {
+    if (sourceFile.fileName.endsWith(Extension.Js)) {
+      return;
+    }
+    forEachChild(sourceFile, visitEnumMembers);
   }
 }

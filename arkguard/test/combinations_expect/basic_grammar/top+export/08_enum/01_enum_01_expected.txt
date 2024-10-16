@@ -12,83 +12,83 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import b from 'assert';
+import d from 'assert';
 enum A1 {
     prop1 = 1,
     prop2 = 2
 }
-b(A1.prop1 === 1);
-b(A1.prop2 === 2);
-enum c {
+d(A1.prop1 === 1);
+d(A1.prop2 === 2);
+enum e {
     up = 1,
     down,
     left,
     right
 }
-const d: c = c.up;
-b(d === 1);
-b(c.up === 1);
-b(c.down === 2);
-b(c.left === 3);
-b(c.right === 4);
-b(c[1] === 'up');
-b(c[3] === 'left');
-b(c[4] === 'right');
-var e;
-(function (n) {
-    n[n["prop1"] = 1] = "prop1";
-    n[n["prop2"] = 2] = "prop2";
-})(e || (e = {}));
-b(e.prop1 === 1);
-b(e.prop2 === 2);
-b(e[1] === 'prop1');
-b(e[2] === 'prop2');
-let f = 1;
-enum g {
+const f: e = e.up;
+d(f === 1);
+d(e.up === 1);
+d(e.down === 2);
+d(e.left === 3);
+d(e.right === 4);
+d(e[1] === 'up');
+d(e[3] === 'left');
+d(e[4] === 'right');
+var g;
+(function (p) {
+    p[p["prop1"] = 1] = "prop1";
+    p[p["prop2"] = 2] = "prop2";
+})(g || (g = {}));
+d(g.prop1 === 1);
+d(g.prop2 === 2);
+d(g[1] === 'prop1');
+d(g[2] === 'prop2');
+let h = 1;
+enum i {
     prop1 = 1,
-    prop2 = prop1 + f + 1
+    prop2 = prop1 + h + 1
 }
-b(g.prop1 === 1);
-b(g.prop2 === 3);
-b(g[1] === 'prop1');
-enum h {
+d(i.prop1 === 1);
+d(i.prop2 === 3);
+d(i[1] === 'prop1');
+enum j {
     a = 2,
     b = 3
 }
-b(h.a === 2);
-b(h.b === 3);
-b(h[2] === 'a');
-b(h[3] === 'b');
-enum i {
+d(j.a === 2);
+d(j.b === 3);
+d(j[2] === 'a');
+d(j[3] === 'b');
+enum k {
     a = (1).valueOf(),
-    b = h.a,
-    c = h.b.valueOf()
+    b = j.a,
+    c = j.b.valueOf()
 }
-b(i.a === 1);
-b(i.b === 2);
-b(i.c === 3);
-b(i[1] === 'a');
-b(i[2] === 'b');
-b(i[3] === 'c');
-module j {
+d(k.a === 1);
+d(k.b === 2);
+d(k.c === 3);
+d(k[1] === 'a');
+d(k[2] === 'b');
+d(k[3] === 'c');
+module l {
     export namespace N {
         export enum E1 {
             a = 1
         }
     }
 }
-b(j.N.E1.a === 1);
-b(j.N.E1[1] === 'a');
-module j {
+d(l.N.E1.a === 1);
+d(l.N.E1[1] === 'a');
+module l {
     export namespace N {
         export enum E1 {
-            b = j.N.E1.a + 1
+            b = l.N.E1.a + 1
         }
     }
 }
-b(j.N.E1.b === 2);
-b(j.N.E1[2] === 'b');
-export enum k {
+d(l.N.E1.b === 2);
+d(l.N.E1[2] === 'b');
+export enum m {
     LEFT_BUTTON = 1,
     RIGHT_BUTTON = 2,
     MIDDLE_BUTTON = 4,
@@ -96,25 +96,25 @@ export enum k {
     XBUTTON2_BUTTON = 6,
     NO_BUTTON = 0
 }
-export const l = {
-    '-1': k.NO_BUTTON,
-    '0': k.LEFT_BUTTON,
-    '1': k.MIDDLE_BUTTON,
-    '2': k.RIGHT_BUTTON,
-    '3': k.XBUTTON1_BUTTON,
-    '4': k.XBUTTON2_BUTTON,
+export const n = {
+    '-1': m.NO_BUTTON,
+    '0': m.LEFT_BUTTON,
+    '1': m.MIDDLE_BUTTON,
+    '2': m.RIGHT_BUTTON,
+    '3': m.XBUTTON1_BUTTON,
+    '4': m.XBUTTON2_BUTTON,
 };
-b(l['-1'] === 0);
-b(l['0'] === 1);
-b(l['1'] === 4);
-b(l['2'] === 2);
-b(l['3'] === 5);
-b(l['4'] === 6);
-export enum m {
+d(n['-1'] === 0);
+d(n['0'] === 1);
+d(n['1'] === 4);
+d(n['2'] === 2);
+d(n['3'] === 5);
+d(n['4'] === 6);
+export enum o {
     A = 1 << 1,
     B = 1 << 2
 }
-b(m.A === 2);
-b(m.B === 4);
-b(m[2] === 'A');
-b(m[4] === 'B');
+d(o.A === 2);
+d(o.B === 4);
+d(o[2] === 'A');
+d(o[4] === 'B');
