@@ -143,7 +143,8 @@ public:
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
-    static void ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex, bool enableSendableFunc);
+    static void ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex, bool enableSendableClass,
+                               bool enableSendableFunc);
     static std::string GetHashString(const std::string &str);
     static std::wstring Utf8ToUtf16(const std::string &utf8);
     template <typename T, typename... Args>
@@ -187,6 +188,7 @@ public:
     static constexpr std::string_view BACKSLASH = "\\";
     static const uint64_t FNV_PRIME = 1099511628211U;
     static const uint64_t FNV_OFFSET = 14695981039346656037U;
+    static const uint8_t SENDABLE_CLASS_MIN_SUPPORTED_API_VERSION = 11;
     static const int32_t DEFAULT_TARGET_API_VERSION = 12;
     static const int32_t ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION = 12;
     static constexpr std::array<uint8_t, panda_file::File::VERSION_SIZE>
@@ -200,7 +202,8 @@ public:
 
 private:
     static bool SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
-                                          const lexer::LineIndex &lineIndex, bool enableSendableFunc);
+                                          const lexer::LineIndex &lineIndex, bool enableSendableClass,
+                                          bool enableSendableFunc);
 };
 
 template <typename T>
