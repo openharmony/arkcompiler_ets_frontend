@@ -865,6 +865,7 @@ export function handleUniversalPathInObf(mergedObConfig: MergedConfig, allSource
 export function getArkguardNameCache(
   enablePropertyObfuscation: boolean,
   enableFileNameObfuscation: boolean,
+  enableExportObfuscation: boolean,
   sdkVersion: string,
   entryPackageInfo: string,
 ): string {
@@ -878,7 +879,7 @@ export function getArkguardNameCache(
   nameCacheCollection.compileSdkVersion = sdkVersion;
   nameCacheCollection.entryPackageInfo = entryPackageInfo;
 
-  if (enablePropertyObfuscation) {
+  if (enablePropertyObfuscation || enableExportObfuscation) {
     const mergedPropertyNameCache: Map<string, string> = new Map();
     fillNameCache(PropCollections.historyMangledTable, mergedPropertyNameCache);
     fillNameCache(PropCollections.globalMangledTable, mergedPropertyNameCache);
@@ -919,6 +920,7 @@ export function writeObfuscationNameCache(
   let writeContent = getArkguardNameCache(
     options.enablePropertyObfuscation,
     options.enableFileNameObfuscation,
+    options.enableExportObfuscation,
     projectConfig.etsLoaderVersion,
     entryPackageInfo,
   );

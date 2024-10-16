@@ -1062,7 +1062,7 @@ describe('test for ConfigResolve', function() {
       const sdkVersion = '1.0.0';
       const entryPackageInfo = 'packageInfo';
   
-      const result = getArkguardNameCache(enablePropertyObfuscation, enableFileNameObfuscation, sdkVersion, entryPackageInfo);
+      const result = getArkguardNameCache(enablePropertyObfuscation, enableFileNameObfuscation, false, sdkVersion, entryPackageInfo);
   
       try {
         JSON.parse(result);
@@ -1079,11 +1079,33 @@ describe('test for ConfigResolve', function() {
       const sdkVersion = '2.0.0';
       const entryPackageInfo = 'anotherPackageInfo';
   
-      const result = getArkguardNameCache(enablePropertyObfuscation, enableFileNameObfuscation, sdkVersion, entryPackageInfo);
+      const result = getArkguardNameCache(enablePropertyObfuscation, enableFileNameObfuscation, false, sdkVersion, entryPackageInfo);
       const parsedResult = JSON.parse(result);
   
       expect(parsedResult.compileSdkVersion).to.equal(sdkVersion);
       expect(parsedResult.entryPackageInfo).to.equal(entryPackageInfo);
+    });
+
+    it('PropertyCache exists when enable export obfuscation', () => {
+      const enablePropertyObfuscation = false;
+      const enableFileNameObfuscation = false;
+      const enableExportObfuscation = true;
+      const sdkVersion = '2.0.0';
+      const entryPackageInfo = 'anotherPackageInfo';
+  
+      PropCollections.historyMangledTable.set("key1", "value1");
+      PropCollections.historyMangledTable.set("key2", "value2");
+      PropCollections.globalMangledTable.set("key3", "value3");
+      PropCollections.globalMangledTable.set("key4", "value4");
+      const result = getArkguardNameCache(enablePropertyObfuscation, enableFileNameObfuscation, enableExportObfuscation, sdkVersion, entryPackageInfo);
+      const parsedResult = JSON.parse(result);
+      PropCollections.historyMangledTable.clear();
+      PropCollections.globalMangledTable.clear();
+      expect('PropertyCache' in parsedResult).to.be.true;
+      expect(parsedResult.PropertyCache.key1 === "value1").to.be.true;
+      expect(parsedResult.PropertyCache.key2 === "value2").to.be.true;
+      expect(parsedResult.PropertyCache.key3 === "value3").to.be.true;
+      expect(parsedResult.PropertyCache.key4 === "value4").to.be.true;
     });
   });
   
@@ -1156,6 +1178,7 @@ describe('test for ConfigResolve', function() {
           options: {
             enablePropertyObfuscation: true,
             enableFileNameObfuscation: true,
+            enableExportObfusaction: true
           },
         },
         etsLoaderVersion: '1.0.0',

@@ -233,7 +233,6 @@ describe('test for ApiExtractor', function () {
         }, true);
       let reservedProperties = projectAndLibs.exportNameAndPropSet == undefined? new Set<string> : projectAndLibs.exportNameAndPropSet;
       let reservedExportNames = projectAndLibs.exportNameSet == undefined? new Set<string> : projectAndLibs.exportNameSet;
-      console.log(reservedProperties)
       assert.strictEqual(reservedProperties.has('projectPropertyAssignment1'), true);
       assert.strictEqual(reservedProperties.has('projectPropertyAssignment2'), true);
       assert.strictEqual(reservedProperties.has('projectPropertyAssignment3'), true);
