@@ -14,7 +14,6 @@
  */
 
 #include "ETSAnalyzer.h"
-#include <unordered_map>
 #include "types/signature.h"
 #include "util/helpers.h"
 #include "checker/ETSchecker.h"
@@ -150,9 +149,7 @@ void ETSAnalyzer::CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *sc
 {
     if (checker->CheckDuplicateAnnotations(scriptFunc->Annotations())) {
         for (auto *it : scriptFunc->Annotations()) {
-            if (!it->IsClassProperty()) {
-                it->Check(checker);
-            }
+            it->Check(checker);
         }
     }
 }
@@ -2188,7 +2185,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 
     auto *annoDecl = st->Ident()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     annoDecl->Check(checker);
-    std::unordered_map<util::StringView, ir::ClassProperty *> fieldMap;
+    ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->Allocator()->Adapter()};
 
     for (auto *it : annoDecl->Properties()) {
         auto *field = it->AsClassProperty();
@@ -2222,7 +2219,12 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     }
 
     for (auto *it : st->Properties()) {
-        checker->CheckAnnotationPropertyType(it->AsClassProperty());
+        auto property = it->AsClassProperty();
+        if (property->Value() != nullptr && property->Value()->IsMemberExpression() &&
+            !property->TsType()->IsETSEnumType()) {
+            checker->LogTypeError("Invalid value for annotation field, expected a constant literal.",
+                                  property->Value()->Start());
+        }
     }
     return nullptr;
 }

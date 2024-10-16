@@ -19,7 +19,7 @@
    authorAge: number = 35
    testBool: boolean = false
    reviewers: string[] = ["Bob", "Jim", "Tom"]
-   reviewersAge: number[] = [18, 21, 32]
+   reviewersAge: number[] = [18, 21, -32]
    testBools: boolean[] = [false, true, false]
 }
 

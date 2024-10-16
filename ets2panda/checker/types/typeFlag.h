@@ -121,7 +121,7 @@ enum class TypeFlag : uint64_t {
     UNIT = LITERAL | UNDEFINED | NULL_TYPE,
     GETTER_SETTER = GETTER | SETTER,
     CONDITION_EXPRESSION_TYPE = ETS_NULL | ETS_UNDEFINED | ETS_OBJECT | ETS_ARRAY | ETS_UNION | CONSTANT | BYTE | CHAR |
-                                SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_INT_ENUM | ETS_STRING_ENUM
+                                SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_INT_ENUM | ETS_STRING_ENUM,
 };
 
 }  // namespace ark::es2panda::checker

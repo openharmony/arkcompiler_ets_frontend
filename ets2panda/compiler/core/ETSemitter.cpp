@@ -43,6 +43,10 @@
 
 #include "assembly-program.h"
 
+namespace {
+uint32_t g_litArrayValueCount = 0;
+}  // namespace
+
 namespace ark::es2panda::compiler {
 
 #ifdef PANDA_WITH_ETS
@@ -89,7 +93,7 @@ static uint32_t TranslateModifierFlags(ir::ModifierFlags modifierFlags)
     return accessFlags;
 }
 
-static pandasm::Type PandasmTypeWithRank(checker::Type const *type)
+static pandasm::Type PandasmTypeWithRank(checker::Type const *type, uint32_t rank = 0)
 {
     if (type->IsETSTypeParameter()) {
         return PandasmTypeWithRank(type->AsETSTypeParameter()->GetConstraintType());
@@ -103,7 +107,7 @@ static pandasm::Type PandasmTypeWithRank(checker::Type const *type)
 
     std::stringstream ss;
     type->ToAssemblerType(ss);
-    return pandasm::Type(ss.str(), type->Rank());
+    return pandasm::Type(ss.str(), rank == 0 ? type->Rank() : rank);
 }
 
 static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc)
@@ -139,7 +143,14 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc)
 
 pandasm::Function *ETSFunctionEmitter::GenFunctionSignature()
 {
-    auto func = GenScriptFunction(Cg()->RootNode()->AsScriptFunction());
+    auto *scriptFunc = Cg()->RootNode()->AsScriptFunction();
+    auto func = GenScriptFunction(scriptFunc);
+
+    if (!scriptFunc->Annotations().empty()) {
+        auto baseName = scriptFunc->Id()->Name().Mutf8();
+        auto *emitter = static_cast<ETSEmitter *>(Cg()->Context()->emitter);
+        func.metadata->SetAnnotations(emitter->GenCustomAnnotations(scriptFunc->Annotations(), baseName));
+    }
 
     if (Cg()->RootNode()->AsScriptFunction()->IsExternal()) {
         func.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -201,12 +212,22 @@ static pandasm::Function GenExternalFunction(checker::Signature *signature, bool
     return func;
 }
 
+static std::string GenerateMangledName(const std::string &baseName, const std::string &propName)
+{
+    return baseName + "$" + propName;
+}
+
 void ETSEmitter::GenAnnotation()
 {
     Program()->lang = EXTENSION;
     const auto *varbinder = static_cast<varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
 
     auto *globalRecordTable = varbinder->GetGlobalRecordTable();
+    auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
+    for (auto *annoDecl : globalRecordTable->AnnotationDeclarations()) {
+        auto newBaseName = GenerateMangledName(baseName, annoDecl->Ident()->Name().Mutf8());
+        GenCustomAnnotationRecord(annoDecl, newBaseName, false);
+    }
 
     for (auto *classDecl : globalRecordTable->ClassDefinitions()) {
         GenClassRecord(classDecl, false);
@@ -230,6 +251,9 @@ void ETSEmitter::GenAnnotation()
 
     for (auto [extProg, recordTable] : varbinder->GetExternalRecordTable()) {
         (void)extProg;
+        if (recordTable == varbinder->GetRecordTable()) {
+            continue;
+        }
         GenExternalRecord(recordTable);
     }
 
@@ -243,6 +267,13 @@ void ETSEmitter::GenAnnotation()
 void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
 {
     bool isGenStdLib = recordTable->Program()->VarBinder()->IsGenStdLib();
+    const auto *varbinder = static_cast<const varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
+    auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
+    for (auto *annoDecl : recordTable->AnnotationDeclarations()) {
+        auto newBaseName = GenerateMangledName(baseName, annoDecl->Ident()->Name().Mutf8());
+        GenCustomAnnotationRecord(annoDecl, newBaseName, !isGenStdLib);
+    }
+
     for (auto *classDecl : recordTable->ClassDefinitions()) {
         GenClassRecord(classDecl, !isGenStdLib);
     }
@@ -335,26 +366,22 @@ void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *method
     Program()->functionTable.emplace(func.name, std::move(func));
 }
 
-void ETSEmitter::GenClassField(const ir::ClassProperty *field, pandasm::Record &classRecord, bool external)
-{
-    GenField({field->TsType(), field->Id()->Name(), field->Value(), TranslateModifierFlags(field->Modifiers()),
-              classRecord, external || field->IsDeclare()});
-}
-
-void ETSEmitter::GenField(const GenFieldArguments &data)
+void ETSEmitter::GenClassField(const ir::ClassProperty *prop, pandasm::Record &classRecord, bool external)
 {
     auto field = pandasm::Field(Program()->lang);
-    field.name = data.name.Mutf8();
-    field.type = PandasmTypeWithRank(data.tsType);
-    field.metadata->SetAccessFlags(data.accesFlags);
+    field.name = prop->Id()->Name().Mutf8();
+    field.type = PandasmTypeWithRank(prop->TsType());
+    field.metadata->SetAccessFlags(TranslateModifierFlags(prop->Modifiers()));
 
-    if (data.external) {
+    if (external || prop->IsDeclare()) {
         field.metadata->SetAttribute(Signatures::EXTERNAL);
-    } else if (data.tsType->IsETSPrimitiveType() || data.tsType->IsETSStringType()) {
-        EmitDefaultFieldValue(field, data.value);
+    } else if (prop->TsType()->IsETSPrimitiveType() || prop->TsType()->IsETSStringType()) {
+        EmitDefaultFieldValue(field, prop->Value());
+    } else if (prop->TsType()->IsETSEnumType()) {
+        CreateEnumProp(prop, field);
     }
 
-    data.record.fieldList.emplace_back(std::move(field));
+    classRecord.fieldList.emplace_back(std::move(field));
 }
 
 void ETSEmitter::GenClassInheritedFields(const checker::ETSObjectType *baseType, pandasm::Record &classRecord)
@@ -477,8 +504,13 @@ static uint32_t GetAccessFlags(const ir::ClassDefinition *classDef)
 void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool external)
 {
     auto classRecord = pandasm::Record(classDef->InternalName().Mutf8(), Program()->lang);
+    auto baseName = classDef->Ident()->Name().Mutf8();
     if (external) {
         classRecord.metadata->SetAttribute(Signatures::EXTERNAL);
+    }
+
+    if (!classDef->Annotations().empty()) {
+        classRecord.metadata->SetAnnotations(GenCustomAnnotations(classDef->Annotations(), baseName));
     }
 
     uint32_t accessFlags = GetAccessFlags(classDef);
@@ -527,6 +559,333 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
     }
 
     Program()->recordTable.emplace(classRecord.name, std::move(classRecord));
+}
+
+// Helper function to check if the unary expression is a numeric literal with negation.
+// This expression should be handled during lowering with the associated issue number.
+static bool IsNegativeLiteralNode(const ir::UnaryExpression *expr)
+{
+    return expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS && expr->Argument()->IsNumberLiteral();
+}
+
+void ETSEmitter::CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &field)
+{
+    if (prop->Value() == nullptr) {
+        return;
+    }
+    auto *init = prop->Value()->AsMemberExpression()->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
+    field.metadata->SetFieldType(field.type);
+    if (init->IsNumberLiteral()) {
+        auto value = init->AsNumberLiteral()->Number().GetInt();
+        field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(value));
+    } else if (init->IsStringLiteral()) {
+        auto value = init->AsStringLiteral()->Str().Mutf8();
+        field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(value));
+    } else if (init->IsUnaryExpression() && IsNegativeLiteralNode(init->AsUnaryExpression())) {
+        double doubleValue = (-1) * init->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number().GetDouble();
+        field.metadata->SetValue(pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(doubleValue));
+    } else {
+        UNREACHABLE();
+    }
+}
+
+void ETSEmitter::ProcessArrayExpression(
+    std::string &baseName, std::vector<std::pair<std::string, std::vector<pandasm::LiteralArray::Literal>>> &result,
+    std::vector<pandasm::LiteralArray::Literal> &literals, const ir::Expression *elem)
+{
+    auto litArrays = CreateLiteralArray(baseName, elem);
+    auto emplaceLiteral = [&literals](panda_file::LiteralTag tag, const auto &value) {
+        literals.emplace_back(pandasm::LiteralArray::Literal {tag, value});
+    };
+
+    emplaceLiteral(panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::LITERALARRAY));
+    emplaceLiteral(panda_file::LiteralTag::LITERALARRAY, litArrays.back().first);
+    for (const auto &item : litArrays) {
+        result.push_back(item);
+    }
+}
+
+static void ProcessEnumExpression(std::vector<pandasm::LiteralArray::Literal> &literals, const ir::Expression *elem)
+{
+    auto *memberExpr = elem->IsCallExpression() ? elem->AsCallExpression()->Arguments()[0]->AsMemberExpression()
+                                                : elem->AsMemberExpression();
+    auto *init = memberExpr->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
+    if (init->IsNumberLiteral()) {
+        auto enumValue = static_cast<uint32_t>(init->AsNumberLiteral()->Number().GetInt());
+        literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
+                                                              static_cast<uint8_t>(panda_file::LiteralTag::INTEGER)});
+        literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::INTEGER, enumValue});
+    } else {
+        auto enumValue = init->AsStringLiteral()->Str().Mutf8();
+        literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
+                                                              static_cast<uint8_t>(panda_file::LiteralTag::STRING)});
+        literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::STRING, enumValue});
+    }
+}
+
+void ETSEmitter::ProcessArrayElement(const ir::Expression *elem, std::vector<pandasm::LiteralArray::Literal> &literals,
+                                     std::string &baseName, LiteralArrayVector &result)
+{
+    switch (elem->Type()) {
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            auto doubleValue = elem->AsNumberLiteral()->Number().GetDouble();
+            literals.emplace_back(pandasm::LiteralArray::Literal {
+                panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::DOUBLE)});
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::DOUBLE, doubleValue});
+            break;
+        }
+        case ir::AstNodeType::BOOLEAN_LITERAL: {
+            bool boolValue = elem->AsBooleanLiteral()->Value();
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::TAGVALUE,
+                                                                  static_cast<uint8_t>(panda_file::LiteralTag::BOOL)});
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::BOOL, boolValue});
+            break;
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            std::string stringValue {elem->AsStringLiteral()->Str().Utf8()};
+            literals.emplace_back(pandasm::LiteralArray::Literal {
+                panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::STRING)});
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::STRING, stringValue});
+            break;
+        }
+        case ir::AstNodeType::ARRAY_EXPRESSION: {
+            ProcessArrayExpression(baseName, result, literals, elem);
+            break;
+        }
+        case ir::AstNodeType::MEMBER_EXPRESSION:
+        case ir::AstNodeType::CALL_EXPRESSION: {
+            ProcessEnumExpression(literals, elem);
+            break;
+        }
+        case ir::AstNodeType::UNARY_EXPRESSION: {
+            double doubleValue = (-1) * elem->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number().GetDouble();
+            literals.emplace_back(pandasm::LiteralArray::Literal {
+                panda_file::LiteralTag::TAGVALUE, static_cast<uint8_t>(panda_file::LiteralTag::DOUBLE)});
+            literals.emplace_back(pandasm::LiteralArray::Literal {panda_file::LiteralTag::DOUBLE, doubleValue});
+            break;
+        }
+        default:
+            UNREACHABLE();
+            break;
+    }
+}
+
+LiteralArrayVector ETSEmitter::CreateLiteralArray(std::string &baseName, const ir::Expression *array)
+{
+    LiteralArrayVector result;
+    std::vector<pandasm::LiteralArray::Literal> literals;
+    ArenaVector<ir::Expression *> elements {array->AsArrayExpression()->Elements()};
+
+    for (const auto *elem : elements) {
+        ProcessArrayElement(elem, literals, baseName, result);
+    }
+
+    std::string litArrayName = GenerateMangledName(baseName, std::to_string(g_litArrayValueCount));
+    ++g_litArrayValueCount;
+    result.emplace_back(litArrayName, literals);
+    return result;
+}
+
+void ETSEmitter::CreateLiteralArrayProp(const ir::ClassProperty *prop, std::string &baseName, pandasm::Field &field)
+{
+    uint8_t rank = 1;
+    auto *elemType = prop->TsType()->AsETSArrayType()->ElementType();
+    while (elemType->IsETSArrayType()) {
+        ++rank;
+        elemType = elemType->AsETSArrayType()->ElementType();
+    }
+    if (elemType->IsETSEnumType()) {
+        field.type = PandasmTypeWithRank(elemType, rank);
+    } else {
+        std::stringstream ss;
+        elemType->ToAssemblerType(ss);
+        field.type = pandasm::Type(ss.str(), rank);
+    }
+
+    auto value = prop->Value();
+    if (value != nullptr) {
+        std::string newBaseName = GenerateMangledName(baseName, field.name);
+        auto litArray = CreateLiteralArray(newBaseName, value);
+        for (const auto &item : litArray) {
+            Program()->literalarrayTable.emplace(item.first, item.second);
+        }
+        field.metadata->SetValue(
+            pandasm::ScalarValue::Create<pandasm::Value::Type::LITERALARRAY>(std::string_view {litArray.back().first}));
+    }
+}
+
+void ETSEmitter::GenCustomAnnotationProp(const ir::ClassProperty *prop, std::string &baseName, pandasm::Record &record,
+                                         bool external)
+{
+    auto field = pandasm::Field(Program()->lang);
+    auto *type = prop->TsType();
+    field.name = prop->Id()->Name().Mutf8();
+    field.type = PandasmTypeWithRank(type);
+    field.metadata->SetAccessFlags(TranslateModifierFlags(prop->Modifiers()));
+
+    if (external) {
+        field.metadata->SetAttribute(Signatures::EXTERNAL);
+    }
+
+    if (type->IsETSPrimitiveType() || type->IsETSStringType()) {
+        EmitDefaultFieldValue(field, prop->Value());
+    } else if (type->IsETSArrayType()) {
+        CreateLiteralArrayProp(prop, baseName, field);
+    } else if (type->IsETSEnumType()) {
+        CreateEnumProp(prop, field);
+    } else {
+        UNREACHABLE();
+    }
+    record.fieldList.emplace_back(std::move(field));
+}
+
+void ETSEmitter::GenCustomAnnotationRecord(const ir::AnnotationDeclaration *annoDecl, std::string &baseName,
+                                           bool external)
+{
+    auto annoRecord = pandasm::Record(annoDecl->InternalName().Mutf8(), Program()->lang);
+    if (Program()->recordTable.find(annoRecord.name) != Program()->recordTable.end()) {
+        return;
+    }
+
+    if (external) {
+        annoRecord.metadata->SetAttribute(Signatures::EXTERNAL);
+    }
+
+    uint32_t accessFlags = ACC_PUBLIC | ACC_ABSTRACT | ACC_ANNOTATION;
+    annoRecord.metadata->SetAccessFlags(accessFlags);
+    annoRecord.sourceFile = Context()->parserProgram->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
+    for (auto *it : annoDecl->Properties()) {
+        GenCustomAnnotationProp(it->AsClassProperty(), baseName, annoRecord, external);
+    }
+
+    Program()->recordTable.emplace(annoRecord.name, std::move(annoRecord));
+}
+
+static pandasm::ScalarValue CreateAnnotationScalarValue(checker::TypeFlag typeKind, const ir::Literal *init)
+{
+    switch (typeKind) {
+        case checker::TypeFlag::ETS_BOOLEAN: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::U1>(
+                static_cast<uint8_t>(init->AsBooleanLiteral()->Value()));
+        }
+        case checker::TypeFlag::BYTE: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I8>(init->AsNumberLiteral()->Number().GetInt());
+        }
+        case checker::TypeFlag::SHORT: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I16>(init->AsNumberLiteral()->Number().GetInt());
+        }
+        case checker::TypeFlag::INT: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(init->AsNumberLiteral()->Number().GetInt());
+        }
+        case checker::TypeFlag::LONG: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::I64>(init->AsNumberLiteral()->Number().GetLong());
+        }
+        case checker::TypeFlag::FLOAT: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::F32>(
+                init->AsNumberLiteral()->Number().GetFloat());
+        }
+        case checker::TypeFlag::DOUBLE: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(
+                init->AsNumberLiteral()->Number().GetDouble());
+        }
+        case checker::TypeFlag::ETS_OBJECT: {
+            return pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(init->AsStringLiteral()->Str().Mutf8());
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
+pandasm::AnnotationElement ETSEmitter::ProcessArrayType(const ir::ClassProperty *prop, std::string &baseName,
+                                                        const ir::Expression *init)
+{
+    auto propName = prop->Id()->Name().Mutf8();
+    std::string newBaseName = GenerateMangledName(baseName, propName);
+    auto litArrays = CreateLiteralArray(newBaseName, init);
+
+    for (const auto &item : litArrays) {
+        Program()->literalarrayTable.emplace(item.first, item.second);
+    }
+
+    return pandasm::AnnotationElement {
+        propName, std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(
+                      std::string_view {litArrays.back().first}))};
+}
+
+pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::ClassProperty *prop, std::string &baseName)
+{
+    const auto *init = prop->Value();
+    const auto *type = init->TsType();
+    auto typeKind = checker::ETSChecker::TypeKind(type);
+    auto propName = prop->Id()->Name().Mutf8();
+    if (type->IsETSArrayType()) {
+        return ProcessArrayType(prop, baseName, init);
+    }
+    switch (checker::ETSChecker::TypeKind(
+        Context()->checker->AsETSChecker()->MaybeUnboxType(const_cast<checker::Type *>(type)))) {
+        case checker::TypeFlag::BYTE:
+        case checker::TypeFlag::SHORT:
+        case checker::TypeFlag::INT:
+        case checker::TypeFlag::LONG:
+        case checker::TypeFlag::FLOAT:
+        case checker::TypeFlag::DOUBLE:
+        case checker::TypeFlag::ETS_BOOLEAN:
+        case checker::TypeFlag::ETS_OBJECT: {
+            if (init->IsUnaryExpression() && IsNegativeLiteralNode(init->AsUnaryExpression())) {
+                double negNumberValue =
+                    (-1) * init->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number().GetDouble();
+                return pandasm::AnnotationElement {
+                    propName, std::make_unique<pandasm::ScalarValue>(
+                                  pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(negNumberValue))};
+            }
+            return pandasm::AnnotationElement {propName, std::make_unique<pandasm::ScalarValue>(
+                                                             CreateAnnotationScalarValue(typeKind, init->AsLiteral()))};
+        }
+        case checker::TypeFlag::ETS_INT_ENUM: {
+            auto *initValue = init->AsMemberExpression()->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
+            auto enumValue = static_cast<uint32_t>(initValue->AsNumberLiteral()->Number().GetInt());
+            auto intEnumValue = pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(enumValue);
+            return pandasm::AnnotationElement {propName, std::make_unique<pandasm::ScalarValue>(intEnumValue)};
+        }
+        case checker::TypeFlag::ETS_STRING_ENUM: {
+            auto *initValue = init->AsMemberExpression()->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();
+            auto enumValue = initValue->AsStringLiteral()->Str().Mutf8();
+            auto stringValue = pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(enumValue);
+            return pandasm::AnnotationElement {propName, std::make_unique<pandasm::ScalarValue>(stringValue)};
+        }
+        default:
+            UNREACHABLE();
+    }
+}
+
+pandasm::AnnotationData ETSEmitter::GenCustomAnnotation(ir::AnnotationUsage *anno, std::string &baseName)
+{
+    auto *annoDecl = anno->Ident()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    pandasm::AnnotationData annotation(annoDecl->InternalName().Mutf8());
+    if (annoDecl->IsImportDeclaration()) {
+        auto annoRecord = pandasm::Record(annoDecl->InternalName().Mutf8(), Program()->lang);
+        annoRecord.metadata->SetAttribute(Signatures::EXTERNAL);
+        uint32_t accessFlags = ACC_PUBLIC | ACC_ABSTRACT | ACC_ANNOTATION;
+        annoRecord.metadata->SetAccessFlags(accessFlags);
+        Program()->recordTable.emplace(annoRecord.name, std::move(annoRecord));
+    }
+
+    for (auto *prop : anno->Properties()) {
+        annotation.AddElement(GenCustomAnnotationElement(prop->AsClassProperty(), baseName));
+    }
+    return annotation;
+}
+
+std::vector<pandasm::AnnotationData> ETSEmitter::GenCustomAnnotations(
+    const ArenaVector<ir::AnnotationUsage *> &annotationUsages, std::string &baseName)
+{
+    std::vector<pandasm::AnnotationData> annotations;
+    for (auto *anno : annotationUsages) {
+        auto newBaseName = GenerateMangledName(baseName, anno->Ident()->Name().Mutf8());
+        annotations.emplace_back(GenCustomAnnotation(anno, newBaseName));
+    }
+    return annotations;
 }
 
 pandasm::AnnotationData ETSEmitter::GenAnnotationSignature(const ir::ClassDefinition *classDef)

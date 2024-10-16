@@ -16,6 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CORE_ETS_EMITTER_H
 #define ES2PANDA_COMPILER_CORE_ETS_EMITTER_H
 
+#include "annotation.h"
+#include "assembly-literals.h"
 #include "emitter.h"
 
 namespace ark::es2panda::parser {
@@ -45,6 +47,9 @@ class AnnotationData;
 
 namespace ark::es2panda::compiler {
 
+using LiteralArrayPair = std::pair<std::string, std::vector<pandasm::LiteralArray::Literal>>;
+using LiteralArrayVector = std::vector<LiteralArrayPair>;
+
 class ETSFunctionEmitter : public FunctionEmitter {
 public:
     ETSFunctionEmitter(const CodeGen *cg, ProgramElement *programElement) : FunctionEmitter(cg, programElement) {}
@@ -73,6 +78,8 @@ public:
     NO_MOVE_SEMANTIC(ETSEmitter);
 
     void GenAnnotation() override;
+    std::vector<pandasm::AnnotationData> GenCustomAnnotations(
+        const ArenaVector<ir::AnnotationUsage *> &annotationUsages, std::string &baseName);
 
 private:
     using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
@@ -81,23 +88,23 @@ private:
     void GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature);
     std::vector<pandasm::AnnotationData> GenAnnotations(const ir::ClassDefinition *classDef);
     void GenClassRecord(const ir::ClassDefinition *classDef, bool external);
+    pandasm::AnnotationElement ProcessArrayType(const ir::ClassProperty *prop, std::string &baseName,
+                                                const ir::Expression *init);
+    pandasm::AnnotationElement GenCustomAnnotationElement(const ir::ClassProperty *prop, std::string &baseName);
+    pandasm::AnnotationData GenCustomAnnotation(ir::AnnotationUsage *anno, std::string &baseName);
+    void CreateEnumProp(const ir::ClassProperty *prop, pandasm::Field &field);
+    void ProcessArrayElement(const ir::Expression *elem, std::vector<pandasm::LiteralArray::Literal> &literals,
+                             std::string &baseName, LiteralArrayVector &result);
+    LiteralArrayVector CreateLiteralArray(std::string &baseName, const ir::Expression *array);
+    void CreateLiteralArrayProp(const ir::ClassProperty *prop, std::string &baseName, pandasm::Field &field);
+    void GenCustomAnnotationProp(const ir::ClassProperty *prop, std::string &baseName, pandasm::Record &record,
+                                 bool external);
+    void GenCustomAnnotationRecord(const ir::AnnotationDeclaration *annoDecl, std::string &baseName, bool external);
     void GenEnumRecord(const ir::TSEnumDeclaration *enumDecl, bool external);
     void GenAnnotationRecord(std::string_view recordNameView, bool isRuntime = false, bool isType = false);
     void GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceDecl, bool external);
     void EmitDefaultFieldValue(pandasm::Field &classField, const ir::Expression *init);
-    void GenClassField(const ir::ClassProperty *field, pandasm::Record &classRecord, bool external);
-
-    // Struct to reduce number of arguments to pass code checker
-    struct GenFieldArguments {
-        const checker::Type *tsType;
-        const util::StringView &name;
-        const ir::Expression *value;
-        uint32_t accesFlags;
-        pandasm::Record &record;
-        bool external;
-    };
-
-    void GenField(const GenFieldArguments &data);
+    void GenClassField(const ir::ClassProperty *prop, pandasm::Record &classRecord, bool external);
 
     void GenInterfaceMethodDefinition(const ir::MethodDefinition *methodDef, bool external);
     void GenClassInheritedFields(const checker::ETSObjectType *baseType, pandasm::Record &classRecord);
@@ -108,6 +115,8 @@ private:
     pandasm::AnnotationData GenAnnotationAsync(ir::ScriptFunction *scriptFunc);
     pandasm::AnnotationData GenAnnotationDynamicCall(DynamicCallNamesMap &callNames);
     ir::MethodDefinition *FindAsyncImpl(ir::ScriptFunction *asyncFunc);
+    void ProcessArrayExpression(std::string &baseName, LiteralArrayVector &result,
+                                std::vector<pandasm::LiteralArray::Literal> &literals, const ir::Expression *elem);
 };
 }  // namespace ark::es2panda::compiler
 

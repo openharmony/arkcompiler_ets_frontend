@@ -195,6 +195,7 @@ void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
 
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
+    DumpItems(dumper, "", annotations_);
     ASSERT(ident_ != nullptr);
 
     if (IsExtern()) {
@@ -232,7 +233,6 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
     }
 
     DumpItems(dumper, " implements ", implements_);
-    DumpItems(dumper, " annotations ", annotations_);
 
     if (!IsDeclare() || !body_.empty()) {
         DumpBody(dumper);
