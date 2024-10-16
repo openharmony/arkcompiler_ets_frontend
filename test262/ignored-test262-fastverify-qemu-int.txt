@@ -130,3 +130,7 @@ test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-
 test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-function-import-catch-eval-rqstd-abrupt-urierror.js
 test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-arrow-import-catch-eval-rqstd-abrupt-urierror.js
 test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-if-import-catch-eval-rqstd-abrupt-urierror.js
+
+#20113
+test262/data/test_es2021/intl402/DateTimeFormat/required-date-time-formats.js
+test262/data/test_es2021/intl402/DisplayNames/options-style-invalid-throws.js
