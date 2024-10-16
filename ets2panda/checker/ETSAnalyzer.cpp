@@ -408,6 +408,10 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
                 return expr->TsTypeOrError();
             }
         }
+
+        if (elementType->IsETSNeverType()) {
+            checker->LogTypeError("Cannot use array creation expression with never type.", expr->Start());
+        }
     }
     expr->SetTsType(checker->CreateETSArrayType(elementType));
     checker->CreateBuiltinArraySignature(expr->TsType()->AsETSArrayType(), 1);
@@ -576,6 +580,11 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSNullType *node) const
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSUndefinedType *node) const
+{
+    return nullptr;
+}
+
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSNeverType *node) const
 {
     return nullptr;
 }
@@ -2726,7 +2735,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
         checker->CreateBuiltinArraySignature(targetArrayType, targetArrayType->Rank());
     }
 
-    if (targetType == checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType()) {
+    if (targetType == checker->GetGlobalTypesHolder()->GlobalETSNeverType()) {
         checker->LogTypeError("Cast to 'never' is prohibited", expr->Start());
         expr->SetTsType(checker->GlobalTypeError());
         return expr->TsTypeOrError();

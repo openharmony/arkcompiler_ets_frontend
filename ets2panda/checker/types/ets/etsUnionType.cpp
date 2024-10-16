@@ -254,7 +254,7 @@ static Type *LargestNumeric(Type *t1, Type *t2)
 static std::optional<Type *> TryMergeTypes(TypeRelation *relation, Type *const t1, Type *const t2)
 {
     auto checker = relation->GetChecker()->AsETSChecker();
-    auto never = checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+    auto never = checker->GetGlobalTypesHolder()->GlobalETSNeverType();
     if (relation->IsSupertypeOf(t1, t2) || t2 == never) {
         return t1;
     }

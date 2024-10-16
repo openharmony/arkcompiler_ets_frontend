@@ -301,7 +301,7 @@ TEST_F(UnionNormalizationTest, DISABLED_UnionWithNever)
 
     ArenaVector<checker::Type *> unionConstituents(checker->Allocator()->Adapter());
     unionConstituents.emplace_back(checker->GlobalIntType());
-    unionConstituents.emplace_back(checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType());
+    unionConstituents.emplace_back(checker->GetGlobalTypesHolder()->GlobalETSNeverType());
     unionConstituents.emplace_back(checker->GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 
     // Create union type, which will be normalized inside creation function

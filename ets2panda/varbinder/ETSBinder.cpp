@@ -41,6 +41,7 @@
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsFunctionType.h"
+#include "ir/ets/etsNeverType.h"
 #include "ir/ets/etsScript.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"

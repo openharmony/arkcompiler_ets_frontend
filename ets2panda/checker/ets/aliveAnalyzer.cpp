@@ -374,7 +374,7 @@ void AliveAnalyzer::AnalyzeCall(const ir::CallExpression *callExpr)
     for (const auto *it : callExpr->Arguments()) {
         AnalyzeNode(it);
     }
-    if (callExpr->Signature()->ReturnType() == checker_->GetGlobalTypesHolder()->GlobalBuiltinNeverType()) {
+    if (callExpr->Signature()->ReturnType() == checker_->GetGlobalTypesHolder()->GlobalETSNeverType()) {
         MarkDead();
     }
 }

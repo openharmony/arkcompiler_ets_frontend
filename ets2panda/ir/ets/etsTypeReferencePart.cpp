@@ -110,6 +110,10 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
         return checker->GlobalETSNullType();
     }
 
+    if (ident->Name() == compiler::Signatures::NEVER_TYPE_NAME) {
+        return checker->GlobalETSNeverType();
+    }
+
     if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
         ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
         return checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
