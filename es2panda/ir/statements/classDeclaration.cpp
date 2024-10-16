@@ -52,7 +52,12 @@ void ClassDeclaration::Compile(compiler::PandaGen *pg) const
         return;
     }
     if (isAnnotationDecl_) {
-        pg->Context()->GetEmitter()->AddAnnotationRecord(std::string(def_->GetName()), this);
+        std::string annoName = std::string(def_->GetName());
+        if (pg->Context()->IsMergeAbc()) {
+            std::string prefix = std::string(pg->Context()->RecordName()) + ".";
+            annoName.insert(0, prefix);
+        }
+        pg->Context()->GetEmitter()->AddAnnotationRecord(annoName, this);
         return;
     }
     const auto *node = def_->Ident() ? def_->Ident() : this->Parent();

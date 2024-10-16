@@ -2322,7 +2322,7 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/cases", "ts", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module", "--merge-abc"]))
-    compiler_test_infos.append(CompilerTestInfo("compiler/annotations-projects", "ts", ["--module", "--enable-annotations"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/annotations-projects", "ts", ["--module", "--enable-annotations", "--merge-abc"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/dts", "d.ts", ["--module", "--opt-level=0"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/commonjs", "js", ["--commonjs"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))

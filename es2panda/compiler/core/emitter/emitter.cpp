@@ -386,10 +386,15 @@ static pandasm::Record CreateExternalAnnotationRecord(const std::string &name)
 
 pandasm::AnnotationData FunctionEmitter::CreateAnnotation(const ir::Annotation *anno)
 {
-    pandasm::AnnotationData annotation(anno->Name().Utf8());
+    std::string annoName = std::string(anno->Name());
+    if (pg_->Context()->IsMergeAbc()) {
+        std::string prefix = std::string(pg_->Context()->RecordName()) + ".";
+        annoName.insert(0, prefix);
+    }
+    pandasm::AnnotationData annotation(annoName);
 
     if (anno->IsImported()) {
-        externalAnnotationRecords_.push_back(CreateExternalAnnotationRecord(std::string(anno->Name())));
+        externalAnnotationRecords_.push_back(CreateExternalAnnotationRecord(annoName));
     }
 
     if (!anno->Expr()->IsCallExpression()) {
