@@ -136,6 +136,7 @@ ir::TSAsExpression *ParserImpl::ParseTsAsExpression(ir::Expression *expr, [[mayb
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::ALLOW_CONST;
     ir::Expression *typeAnnotation = ParseTsTypeAnnotation(&options);
+    CHECK_NOT_NULL(typeAnnotation);
 
     bool isConst = false;
     if (typeAnnotation->IsTSTypeReference() && typeAnnotation->AsTSTypeReference()->TypeName()->IsIdentifier()) {

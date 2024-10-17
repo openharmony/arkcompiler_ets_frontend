@@ -279,6 +279,7 @@ std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> Checker::Chec
     }
 
     Type *restType = allocator_->New<ArrayType>(GlobalAnyType());
+    CHECK_NOT_NULL(restType);
 
     if (typeAnnotation) {
         typeAnnotation->Check(this);
