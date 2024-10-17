@@ -43,7 +43,7 @@ let p: number & (string | number) = 1;
 assert(p === 1);
 type q = number;
 type t = string;
-function g<h1>(i1: h1 extends q ? q : t) { return i1; }
+function g<p1>(q1: p1 extends q ? q : t) { return q1; }
 assert(g<number>(1) === 1);
 type u<T> = T extends {
     a: infer U;
@@ -59,7 +59,7 @@ assert(v[0] === 1);
 assert(v[1] === 2);
 interface a1 {
     name: string;
-    h1: number;
+    m1: number;
 }
 type b1 = keyof a1;
 let b: b1 = "name";
@@ -82,3 +82,19 @@ let g1: [
 ] = ["1", 2];
 assert(g1[0] === "1");
 assert(g1[1] === 2);
+type h1 = {
+    description: string;
+    n1(para1: number): boolean;
+    (para2: number): number;
+};
+const i1: h1 = (o1: number) => o1;
+i1.description = "test";
+i1.n1 = (n1: number) => {
+    return n1 > 0 ? true : false;
+};
+assert(i1(100) === 100);
+assert(i1.description === "test");
+assert(i1.n1(-100) === false);
+type j1 = (para5: number) => number;
+const l1: j1 = (m1: number) => m1;
+assert(l1(200) === 200);
