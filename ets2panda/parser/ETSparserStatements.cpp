@@ -193,8 +193,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
     auto token = Lexer()->GetToken();
     switch (token.Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
-            result = ParseFunctionDeclaration(false, memberModifiers);
-            if (result != nullptr) {  // Error processing.
+            if (result = ParseFunctionDeclaration(false, memberModifiers); result != nullptr) {  // Error processing.
                 result->SetStart(startLoc);
             }
             break;
