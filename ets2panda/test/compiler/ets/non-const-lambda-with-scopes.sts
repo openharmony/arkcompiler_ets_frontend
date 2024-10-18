@@ -22,7 +22,7 @@ function main() {
         if (true) {
             v = 3
         }
-        for (let x: int in [0])
+        for (let x: int of [0])
             v = 4
 
 /* TODO(gogabr): embedding of lambdas is not supported yet.

@@ -2136,34 +2136,34 @@ void TSParser::ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpre
     }
 }
 
-void TSParser::ThrowPossibleOutOfBoundaryJumpError(bool allowBreak)
+void TSParser::ReportPossibleOutOfBoundaryJumpError(bool allowBreak)
 {
     if (((GetContext().Status() & ParserStatus::FUNCTION) != 0) && !allowBreak) {
         ThrowSyntaxError("Jump target cannot cross function boundary");
     }
 }
 
-void TSParser::ThrowIllegalBreakError()
+void TSParser::ReportIllegalBreakError(const lexer::SourcePosition &pos)
 {
-    ThrowSyntaxError("A 'break' statement can only be used within an enclosing iteration or switch statement");
+    ThrowSyntaxError("A 'break' statement can only be used within an enclosing iteration or switch statement", pos);
 }
 
-void TSParser::ThrowIllegalContinueError()
+void TSParser::ReportIllegalContinueError()
 {
     ThrowSyntaxError("A 'continue' statement can only be used within an enclosing iteration statement");
 }
 
-void TSParser::ThrowMultipleDefaultError()
+void TSParser::ReportMultipleDefaultError()
 {
     ThrowSyntaxError("A 'default' clause cannot appear more than once in a 'switch' statement");
 }
 
-void TSParser::LogIllegalNewLineErrorAfterThrow()
+void TSParser::ReportIllegalNewLineErrorAfterThrow()
 {
-    LogSyntaxError("Line break not permitted here");
+    ThrowSyntaxError("Line break not permitted here");
 }
 
-void TSParser::ThrowIfBodyEmptyError(ir::Statement *consequent)
+void TSParser::ReportIfBodyEmptyError(ir::Statement *consequent)
 {
     if (consequent->IsEmptyStatement()) {
         ThrowSyntaxError("The body of an if statement cannot be the empty statement");

@@ -5,13 +5,6 @@ ast/parser/ets/iterator_override_next.sts
 ast/parser/ets/switch_readonly_member_different_enum_2.sts
 ast/parser/ets/extension_function_tests/extension_function_not_for_class_type.sts
 
-# Issue: #19396
-ast/parser/ets/unexpected_token_29.sts
-ast/parser/ets/unexpected_token_30.sts
-ast/parser/ets/unexpected_token_54.sts
-ast/parser/ets/arrow_1.sts
-ast/parser/ets/unexpected_token_3.sts
-
 # Issue: #20326
 ast/compiler/ets/readonlyType_6.sts
 ast/parser/ets/class_interface_enum_only_top_level_5.sts

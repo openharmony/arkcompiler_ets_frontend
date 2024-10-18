@@ -760,6 +760,10 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     }
 
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);
+    if (unaryExpressionNode == nullptr) {
+        return nullptr;
+    }
+
     if ((flags & ExpressionParseFlags::INSTANCEOF) != 0) {
         ValidateInstanceOfExpression(unaryExpressionNode);
     }

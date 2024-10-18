@@ -18,7 +18,7 @@ try {} catch e: number) {} finally {}
 /* @@? 16:14 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 16:15 Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */
 /* @@? 16:17 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 16:23 Error SyntaxError: Unexpected token ')', expected '{'  */
+/* @@? 16:23 Error SyntaxError: Unexpected token ')', expected '{'.  */
 /* @@? 16:23 Error SyntaxError: Expected a '{', got ')'.  */
 /* @@? 16:23 Error SyntaxError: Unexpected token ')'.  */
 /* @@? 16:36 Error SyntaxError: Unexpected token '{'.  */

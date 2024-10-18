@@ -14,9 +14,6 @@
  */
 
 
-try {} catch (e: Error {} finally {}
+try {} catch (e: Error /* @@ label */{} finally {}
 
-/* @@? 17:24 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 17:24 Error SyntaxError: Unexpected token ')', expected '{'  */
-/* @@? 17:24 Error SyntaxError: Expected a '{', got ')'.  */
-/* @@? 17:24 Error SyntaxError: Unexpected token ')'.  */
+/* @@@ label Error SyntaxError: Unexpected token '{', expected: ')'. */

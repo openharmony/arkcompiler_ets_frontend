@@ -114,3 +114,29 @@ async (x = await 7) => expression;
 /* @@? 56:10 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 56:13 Error SyntaxError: Unexpected token, expected ',' or '}'  */
 /* @@? 57:1 Error SyntaxError: Missing initializer in destructuring declaration  */
+/* @@? 57:7 Error SyntaxError: Object pattern can't contain methods */
+/* @@? 57:5 Error SyntaxError: Invalid left-hand side in array destructuring pattern */
+/* @@? 58:6 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 60:23 Error SyntaxError: Invalid left-hand side in array destructuring pattern */
+/* @@? 62:33 Error SyntaxError: Invalid destructuring assignment target */
+/* @@? 62:33 Error SyntaxError: Unexpected ArrowParameter element */
+/* @@? 63:20 Error SyntaxError: Invalid destructuring assignment target */
+/* @@? 63:20 Error SyntaxError: Unexpected ArrowParameter element */
+/* @@? 64:16 Error SyntaxError: Unexpected token, expected ',' or ']' */
+/* @@? 65:13 Error SyntaxError: Invalid destructuring assignment target */
+/* @@? 65:13 Error SyntaxError: Unexpected ArrowParameter element */
+/* @@? 66:7 Error SyntaxError: Unexpected token, expected: ')'. */
+/* @@? 66:10 Error SyntaxError: Rest parameter must be the last formal parameter. */
+/* @@? 66:10 Error SyntaxError: Unexpected token, expected: '=>'. */
+/* @@? 66:21 Error SyntaxError: Unexpected token ')'. */
+/* @@? 66:21 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 66:23 Error SyntaxError: Unexpected token: '=>'. */
+/* @@? 67:10 Error SyntaxError: Unexpected token, expected: '=>'. */
+/* @@? 67:23 Error SyntaxError: Unexpected token, arrow (=>) */
+/* @@? 68:27 Error SyntaxError: Invalid rest element. */
+/* @@? 68:27 Error SyntaxError: Unexpected ArrowParameter element */
+/* @@? 69:21 Error SyntaxError: await is not allowed in arrow function parameters */
+/* @@? 69:21 Error SyntaxError: Unexpected ArrowParameter element */
+/* @@? 70:15 Error SyntaxError: Unexpected token ']'. */
+/* @@? 70:15 Error SyntaxError: Unexpected token: ']'. */
+/* @@? 143:1 Error SyntaxError: Unexpected token, expected: '}'. */

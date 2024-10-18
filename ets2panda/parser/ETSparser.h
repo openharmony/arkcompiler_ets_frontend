@@ -319,7 +319,7 @@ private:
     bool IsArrowFunctionExpressionStart();
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
 
-    void ThrowIfVarDeclaration(VariableParsingFlags flags) override;
+    void ReportIfVarDeclaration(VariableParsingFlags flags) override;
     std::optional<lexer::SourcePosition> GetDefaultParamPosition(ArenaVector<ir::Expression *> params);
 
     ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options, lexer::SourcePosition startLoc);

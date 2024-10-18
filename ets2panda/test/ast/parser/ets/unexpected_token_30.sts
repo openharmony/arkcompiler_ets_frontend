@@ -23,4 +23,4 @@ function main(): void {
 /* @@? 18:16 Error SyntaxError: Unexpected token, expected: ':'.  */
 /* @@? 20:1 Error SyntaxError: Missing right parenthesis in 'for' statement.  */
 /* @@? 27:1 Error SyntaxError: Unexpected token 'eos'.  */
-/* @@? 27:1 Error SyntaxError: Invalid left-hand side in prefix operation  */
+/* @@? 27:1 Error SyntaxError: Expected a '}' got 'eos'.  */

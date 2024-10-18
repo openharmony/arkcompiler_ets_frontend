@@ -135,12 +135,12 @@ private:
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
     void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
-    void ThrowPossibleOutOfBoundaryJumpError(bool allowBreak) override;
-    void ThrowIllegalBreakError() override;
-    void ThrowIllegalContinueError() override;
-    void ThrowIfBodyEmptyError(ir::Statement *consequent) override;
-    void ThrowMultipleDefaultError() override;
-    void LogIllegalNewLineErrorAfterThrow() override;
+    void ReportPossibleOutOfBoundaryJumpError(bool allowBreak) override;
+    void ReportIllegalBreakError(const lexer::SourcePosition &pos) override;
+    void ReportIllegalContinueError() override;
+    void ReportIfBodyEmptyError(ir::Statement *consequent) override;
+    void ReportMultipleDefaultError() override;
+    void ReportIllegalNewLineErrorAfterThrow() override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                 bool isExportEquals = false) override;

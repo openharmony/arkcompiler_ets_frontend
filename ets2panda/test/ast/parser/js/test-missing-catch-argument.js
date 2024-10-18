@@ -18,7 +18,7 @@ try
 {
 
 }
-catch()
+catch(/* @@ label */)
 {
 
 }
@@ -27,4 +27,4 @@ finally
 
 }
 
-/* @@? 21:7 Error SyntaxError: Unexpected token ')' in catch parameter  */
+/* @@@ label Error SyntaxError: Unexpected token ')' in catch parameter. */

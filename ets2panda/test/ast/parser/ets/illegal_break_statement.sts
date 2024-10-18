@@ -13,22 +13,19 @@
  * limitations under the License.
  */
 
-//import ets.util.List;
-//import ets.lang.annotation.*;
-class named_types  {
-    text : ets.lang.String ;
-    public static /* @@ label */class inner<T> {
-        public /*@@ label1 */class innertoo  {
-        }
-
-    }
-
+let a1: number = 10;
+function foo() {
+    /* @@ label1 */break
+    let a: number = 10
+    console.log(a + 5)
 }
 
-class auxilliary  {
-    public  foo(): named_types.inner {
-    }
+let a2: number = 10;
+function foo2() {
+    /* @@ label2 */break;
+    let a2: number = 10
+    console.log(a + 5)
 }
 
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label1 Error SyntaxError: Illegal break statement */
+/* @@@ label2 Error SyntaxError: Illegal break statement */
