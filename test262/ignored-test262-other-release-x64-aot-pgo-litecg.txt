@@ -1,65 +1,17 @@
 # Known failures list for test262-other - release-x64-aot-pgo-litecg
 
 #18438
-test262/data/other_tests/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-factory.js
-test262/data/other_tests/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-factory.js
-test262/data/other_tests/language/expressions/class/private-static-field-multiple-evaluations-of-class-factory.js
-test262/data/other_tests/language/expressions/class/elements/private-fields-proxy-default-handler-throws.js
-test262/data/other_tests/language/expressions/class/elements/private-setter-shadowed-by-field-on-nested-class.js
-test262/data/other_tests/language/expressions/class/elements/static-private-fields-proxy-default-handler-throws.js
-test262/data/other_tests/language/statements/class/elements/private-field-with-initialized-id-is-visible-in-computed-properties.js
-test262/data/other_tests/language/statements/class/elements/private-field-is-visible-in-computed-properties.js
-test262/data/other_tests/language/statements/class/elements/private-getter-brand-check-multiple-evaluations-of-class.js
-test262/data/other_tests/language/statements/class/elements/private-method-brand-check-multiple-evaluations-of-class.js
 test262/data/other_tests/language/statements/class/elements/privatefield-on-proxy.js
-test262/data/other_tests/language/statements/class/elements/privatefieldget-success-2.js
-test262/data/other_tests/language/statements/class/elements/privategetter-on-proxy.js
-test262/data/other_tests/language/statements/class/elements/privatemethods-on-proxy.js
-test262/data/other_tests/language/statements/class/elements/static-private-fields-proxy-default-handler-throws.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-sub.js
-test262/data/other_tests/language/statements/class/elements/private-accessor-is-visible-in-computed-properties.js
-test262/data/other_tests/language/statements/class/elements/private-method-is-visible-in-computed-properties.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-bitand.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-bitxor.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-mod.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-lshift.js
-
-#18519
-test262/data/other_tests/built-ins/parseFloat/S15.1.2.3_A1_T2.js
 
 #18520
-test262/data/other_tests/built-ins/Math/pow/applying-the-exp-operator_A8.js
-test262/data/other_tests/built-ins/Math/pow/applying-the-exp-operator_A7.js
-test262/data/other_tests/built-ins/Number/isInteger/arg-is-not-number.js
-test262/data/other_tests/built-ins/Number/isSafeInteger/arg-is-not-number.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-add.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-div.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-mult.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-rshift.js
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-srshift.js
 test262/data/other_tests/language/statements/class/elements/privatefieldget-success-2.js
-test262/data/other_tests/language/statements/class/elements/privatefield-on-proxy.js
 test262/data/other_tests/language/statements/class/elements/privategetter-on-proxy.js
 
-#18548
-test262/data/other_tests/language/statements/class/elements/privatemethods-on-proxy.js
 
 #18521
-test262/data/other_tests/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-factory.js
-test262/data/other_tests/language/expressions/class/private-static-field-multiple-evaluations-of-class-factory.js
-test262/data/other_tests/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-factory.js
-test262/data/other_tests/language/expressions/class/elements/private-fields-proxy-default-handler-throws.js
-test262/data/other_tests/language/expressions/class/elements/private-setter-shadowed-by-field-on-nested-class.js
-test262/data/other_tests/language/expressions/class/elements/static-private-fields-proxy-default-handler-throws.js
 test262/data/other_tests/language/statements/class/elements/private-field-with-initialized-id-is-visible-in-computed-properties.js
 test262/data/other_tests/language/statements/class/elements/private-field-is-visible-in-computed-properties.js
 test262/data/other_tests/language/statements/class/elements/private-getter-brand-check-multiple-evaluations-of-class.js
 test262/data/other_tests/language/statements/class/elements/private-method-brand-check-multiple-evaluations-of-class.js
 test262/data/other_tests/language/statements/class/elements/private-setter-shadowed-by-field-on-nested-class.js
-test262/data/other_tests/language/statements/class/elements/privatefieldset-typeerror-1.js
-test262/data/other_tests/language/statements/class/elements/privatefieldset-typeerror-2.js
-test262/data/other_tests/language/statements/class/elements/privatefieldset-typeerror-5.js
-test262/data/other_tests/language/statements/class/elements/static-private-fields-proxy-default-handler-throws.js
 
-#18522
-test262/data/other_tests/language/expressions/compound-assignment/left-hand-side-private-reference-accessor-property-bitor.js

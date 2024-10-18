@@ -1,4 +1,4 @@
-#17827
+#20113
 test262/data/test_es2021/intl402/Collator/ignore-invalid-unicode-ext-values.js
 test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
 test262/data/test_es2021/intl402/DateTimeFormat/date-time-options.js
@@ -163,31 +163,11 @@ test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPerio
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-narrow-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-short-en.js
 
-
 #19278
 test262/data/test_es2021/intl402/NumberFormat/constructor-order.js
 
-#19277
-test262/data/test_es2021/language/expressions/dynamic-import/assignment-expression/yield-star.js
-
-#19276
-test262/data/test_es2021/language/expressions/dynamic-import/assignment-expression/new-target.js
-
-#19275
-test262/data/test_es2021/language/expressions/logical-assignment/lgcl-and-assignment-operator-unresolved-rhs-put.js
-
 #19265
 test262/data/test_es2021/built-ins/DataView/prototype/setFloat64/toindex-byteoffset.js
-
-#19258
-test262/data/test_es2021/built-ins/Object/defineProperty/15.2.3.6-4-218.js
-
-#19255
-test262/data/test_es2021/built-ins/TypedArray/prototype/set/BigInt/typedarray-arg-set-values-diff-buffer-other-type-sab.js
-
-#19352
-test262/data/test_es2021/built-ins/TypedArray/prototype/set/array-arg-negative-integer-offset-throws.js
-test262/data/test_es2021/built-ins/TypedArray/prototype/set/typedarray-arg-negative-integer-offset-throws.js
 
 #18626
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-long-en.js

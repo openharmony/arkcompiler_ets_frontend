@@ -1,12 +1,7 @@
 # Known failures list for test262 - release-qemu-aot-pgo-litecg
-#17827
+#20113
 test262/data/test_es2021/intl402/supportedLocalesOf-consistent-with-resolvedOptions.js
 test262/data/test_es2021/intl402/supportedLocalesOf-unicode-extensions-ignored.js
-test262/data/test_es2021/built-ins/TypedArrayConstructors/internals/Set/conversion-operation.js
-
-#19351
-test262/data/test_es2021/built-ins/Array/prototype/find/predicate-is-not-callable-throws.js
-test262/data/test_es2021/built-ins/Array/prototype/findIndex/predicate-is-not-callable-throws.js
 
 #18857
 test262/data/test_es2021/language/expressions/dynamic-import/catch/nested-async-arrow-function-return-await-eval-rqstd-abrupt-typeerror.js

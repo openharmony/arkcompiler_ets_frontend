@@ -1,4 +1,14 @@
 ## Issue 18417
+##18485
+raytrace
+
+##18483
+typescript-compiler
+
+##18486
+pdfjs
+
+##18417
 box2d
 
 ##18488

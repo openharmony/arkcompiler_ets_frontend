@@ -1,14 +1,7 @@
 # Known failures list for test262-other-fastverify-x64-int
 
-#19351
+#20112
 test262/data/other_tests/language/statements/generators/dstr/dflt-ary-ptrn-elem-id-init-fn-name-arrow.js
-test262/data/other_tests/language/expressions/object/dstr/gen-meth-ary-ptrn-elem-id-init-exhausted.js
-
-#19351
-test262/data/other_tests/language/statements/generators/dstr/dflt-ary-ptrn-elem-id-init-fn-name-arrow.js
-
-#18438
-test262/data/other_tests/language/expressions/class/async-gen-method/yield-star-sync-return.js
 
 #18547
 test262/data/test_es2021/built-ins/Atomics/sub/bad-range.js

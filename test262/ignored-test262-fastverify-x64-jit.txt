@@ -11,7 +11,7 @@ test262/data/test_es2021/language/expressions/optional-chaining/short-circuiting
 #18961
 test262/data/test_es2021/built-ins/RegExp/S15.10.2.15_A1_T41.js
 
-#17827
+#20113
 test262/data/test_es2021/built-ins/RegExp/unicode_restricted_identity_escape_alpha.js
 test262/data/test_es2021/intl402/Locale/likely-subtags.js
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-timezone.js
@@ -71,7 +71,7 @@ test262/data/test_es2021/built-ins/RegExp/S15.10.2.8_A3_T15.js
 test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/constructor/locales-invalid.js
 test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-valid.js
 test262/data/test_es2021/intl402/ListFormat/constructor/constructor/locales-invalid.js
-# --- end of Issue #17827
+# --- end of Issue #20113
 
 #18438
 test262/data/test_es2021/intl402/DateTimeFormat/constructor-options-fractionalSecondDigits-invalid.js

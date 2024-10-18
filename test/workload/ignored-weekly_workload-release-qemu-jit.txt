@@ -1,9 +1,6 @@
 #19318
 code-load
 
-#18745
-json-stringify-inspector
-
 #18841
 json-stringify-inspector
 
@@ -25,8 +22,6 @@ raytrace
 #18863
 json-parse-inspector
 
-#19243
-hash-map
+#19006
+typescript-compiler
 
-#19703
-regex-dna

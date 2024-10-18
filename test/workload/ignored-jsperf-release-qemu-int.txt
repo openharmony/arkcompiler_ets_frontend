@@ -23,9 +23,9 @@ TestCaseError_Intl.PluralRules_Error_selectRange
 TestCaseError_Intl.NumberFormat_Error_formatRangeToParts
 # --- end of Issue #18792
 
-#19703
+#20145
 String_toLocaleLowerCase
 String_toLocaleUpperCase
-# --- end of Issue #19703
+# --- end of Issue #20145
 
 

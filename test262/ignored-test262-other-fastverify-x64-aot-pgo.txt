@@ -208,7 +208,7 @@ test262/data/test/language/statements/class/elements/private-method-brand-check-
 test262/data/test/language/statements/class/elements/private-setter-shadowed-by-field-on-nested-class.js
 test262/data/test/language/statements/class/elements/static-private-fields-proxy-default-handler-throws.js
 
-#17827
+#20113
 test262/data/test/built-ins/decodeURIComponent/S15.1.3.2_A2.1_T1.js
 test262/data/test/built-ins/decodeURIComponent/S15.1.3.2_A2.4_T1.js
 test262/data/test/built-ins/encodeURIComponent/S15.1.3.4_A1.3_T1.js
@@ -319,7 +319,7 @@ test262/data/test/language/module-code/top-level-await/syntax/for-await-expr-ide
 test262/data/test/language/module-code/top-level-await/syntax/for-in-await-expr-literal-string.js
 
 
-#17827 These tests are timeouted and included in skip_tests.json file
+#20113 These tests are timeouted and included in skip_tests.json file
 test262/data/test/built-ins/RegExp/character-class-escape-non-whitespace.js
 test262/data/test/built-ins/decodeURIComponent/S15.1.3.2_A1.10_T1.js
 test262/data/test/built-ins/decodeURIComponent/S15.1.3.2_A1.11_T1.js

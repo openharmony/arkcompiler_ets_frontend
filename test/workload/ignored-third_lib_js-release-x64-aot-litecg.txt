@@ -3,29 +3,8 @@
 #18546
 jBox2d_test
 
-#18629
-jsDiff_test
-
-#18444
-jmespath_test
-
-#18350
-jsbn_test
-
-#19284
-mathjs_test
-
-#18383
-memory-cache_test
-
 #19072
 OfflineAssembler
 
-#19251
-pdfview_test
-
 #19623
 rebound_test
-
-#19478
-htmlParser2_test

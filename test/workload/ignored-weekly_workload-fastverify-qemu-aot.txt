@@ -1,4 +1,4 @@
-##19703
+##20145
 air
 
 ##19246
@@ -10,7 +10,12 @@ box2d
 ##18672
 json-parse-inspector
 
-#19703
+##19246
+json-stringify-inspector
+mandreel
+OfflineAssembler
+
+#20145
 float-mm
 stanford-crypto-pbkdf2
 
@@ -22,14 +27,3 @@ pdfjs
 ##19216
 wsl
 
-##18897
-splay-latency
-
-#19072
-OfflineAssembler
-
-#19233
-regexp
-
-##18490
-mandreel

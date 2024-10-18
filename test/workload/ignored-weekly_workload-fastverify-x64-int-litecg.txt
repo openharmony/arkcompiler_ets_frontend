@@ -15,3 +15,6 @@ wsl
 
 ##18488
 splay-latancy
+
+##19006
+typescript-compiler

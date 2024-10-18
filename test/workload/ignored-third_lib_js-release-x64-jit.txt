@@ -1,27 +1,3 @@
 # Known failures list for third_lib_js - release-x64-jit
 
-#19478
-htmlParser2_test
-
-#18383
-memory-cache_test
-
-#19231
-jBox2d_test
-
-#19501
-lodash_test
-
-#19248
-pinyin4js_test
-
-#19251
-pdfview_test
-
-#19426
-validator_test
-
-#19106
-memory-cache_test
-
 
