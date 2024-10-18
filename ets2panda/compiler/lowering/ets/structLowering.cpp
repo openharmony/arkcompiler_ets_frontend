@@ -78,15 +78,8 @@ ir::ETSTypeReference *CreateStructTypeReference(checker::ETSChecker *checker,
 
 using AstNodePtr = ir::AstNode *;
 
-bool StructLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool StructLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(

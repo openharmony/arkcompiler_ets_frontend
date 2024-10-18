@@ -30,17 +30,8 @@ static void GeneratePartialDeclForExported(const public_lib::Context *const ctx,
     }
 }
 
-bool PartialExportClassGen::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool PartialExportClassGen::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    if (ctx->checker->VarBinder()->IsGenStdLib()) {
-        for (const auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *const extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     program->Ast()->TransformChildrenRecursively(
         [ctx, &program](ir::AstNode *const ast) {
             if ((ast->IsClassDeclaration() || ast->IsTSInterfaceDeclaration()) && ast->IsExported()) {

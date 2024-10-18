@@ -19,10 +19,10 @@
 #include "compiler/lowering/phase.h"
 
 namespace ark::es2panda::compiler {
-class RecordLowering : public Phase {
+class RecordLowering : public PhaseForBodies {
 public:
     std::string_view Name() const override;
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
     using KeyType = std::variant<int32_t, int64_t, float, double, util::StringView>;

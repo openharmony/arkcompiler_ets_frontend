@@ -131,7 +131,7 @@ using AstNodePtr = ir::AstNode *;
  * async function f(): Promise<void> { return Void; }
  * */
 
-bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool PromiseVoidInferencePhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker->AsETSChecker();
 
@@ -190,7 +190,7 @@ bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Progra
     return true;
 }
 
-bool PromiseVoidInferencePhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool PromiseVoidInferencePhase::PostconditionForModule(public_lib::Context *ctx, const parser::Program *program)
 {
     (void)ctx;
 

@@ -353,17 +353,8 @@ static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression 
     return loweringResult;
 }
 
-bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool OpAssignmentLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : ext_programs) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     program->Ast()->TransformChildrenRecursively(
         [ctx](ir::AstNode *ast) {
             if (ast->IsAssignmentExpression() &&
@@ -381,26 +372,9 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
     return true;
 }
 
-bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool OpAssignmentLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                                  const parser::Program *program)
 {
-    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
-        for (auto *p : programs) {
-            if (!Postcondition(ctx, p)) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            if (!checkExternalPrograms(extPrograms)) {
-                return false;
-            };
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
         return (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->TsType() != nullptr &&
                 ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) ||

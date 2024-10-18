@@ -363,18 +363,11 @@ void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDecla
     }
 }
 
-bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     bool isPerformedSuccess = true;
     if (program->Extension() != ScriptExtension::STS) {
         return isPerformedSuccess;
-    }
-
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            isPerformedSuccess &= Perform(ctx, extProg);
-        }
     }
 
     context_ = ctx;

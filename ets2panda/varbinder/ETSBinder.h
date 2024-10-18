@@ -312,7 +312,9 @@ public:
     RecordTableContext(ETSBinder *varBinder, parser::Program *extProgram)
         : varBinder_(varBinder), savedRecordTable_(varBinder->recordTable_)
     {
-        varBinder->recordTable_ = varBinder->externalRecordTable_[extProgram];
+        if (extProgram != nullptr) {
+            varBinder->recordTable_ = varBinder->externalRecordTable_[extProgram];
+        }
     }
 
     NO_COPY_SEMANTIC(RecordTableContext);

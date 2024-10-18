@@ -199,17 +199,8 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     return loweringResult;
 }
 
-bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *ast) -> ir::AstNode * {
@@ -226,26 +217,9 @@ bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *p
     return true;
 }
 
-bool ObjectLiteralLowering::ExternalSourcesPostcondition(public_lib::Context *ctx, const parser::Program *program)
+bool ObjectLiteralLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                                   const parser::Program *program)
 {
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-bool ObjectLiteralLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
-{
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB &&
-        !ExternalSourcesPostcondition(ctx, program)) {
-        return false;
-    }
-
     // In all object literal contexts (except dynamic) a substitution should take place
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
         return ast->IsObjectExpression() &&

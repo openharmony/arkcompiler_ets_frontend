@@ -26,30 +26,14 @@ std::string_view AmbientLowering::Name() const
     return NAME;
 }
 
-bool AmbientLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool AmbientLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx, const parser::Program *program)
 {
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild(
         [](const ir::AstNode *node) -> bool { return node->IsDummyNode() && node->AsDummyNode()->IsDeclareIndexer(); });
 }
 
-bool AmbientLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool AmbientLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            Perform(ctx, extProg);
-        }
-    }
-
     // Generate $_get and $_set for ambient Indexer
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style

@@ -150,7 +150,7 @@ ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
     return blockExpression;
 }
 
-bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ExpandBracketsPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto *const parser = ctx->parser->AsETSParser();
     ASSERT(parser != nullptr);
