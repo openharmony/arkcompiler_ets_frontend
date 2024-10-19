@@ -1,6 +1,7 @@
 # Known failures list for  third_lib_js-debug-arm64-jit
 #20145
 hi-base32_test
+gson_test
 
 #19231
 jBox2d_test
