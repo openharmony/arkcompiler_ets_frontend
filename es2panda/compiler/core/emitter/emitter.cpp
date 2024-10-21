@@ -38,6 +38,7 @@
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/newExpression.h>
+#include <ir/expressions/unaryExpression.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/classDeclaration.h>
@@ -317,6 +318,16 @@ static std::vector<panda::pandasm::LiteralArray::Literal> ProcessArrayExpression
                                                 static_cast<uint8_t>(panda::panda_file::LiteralTag::STRING)});
             literals.emplace_back(
                 pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::STRING, stringValue});
+        } else if (elem->IsUnaryExpression()) {
+            ASSERT(elem->AsUnaryExpression()->IsNegativeNumber());
+            // In annotations other unary operators (+, !, ~) are evaluated in tsc.
+            // Only unary minus may be present in intermediate .ts
+            double doubleValue = (-1) * elem->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number();
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::TAGVALUE,
+                                                static_cast<uint8_t>(panda::panda_file::LiteralTag::DOUBLE)});
+            literals.emplace_back(
+                pandasm::LiteralArray::Literal {panda::panda_file::LiteralTag::DOUBLE, doubleValue});
         } else {
             UNREACHABLE();
         }
@@ -371,6 +382,14 @@ pandasm::AnnotationElement FunctionEmitter::CreateAnnotationElement(const std::s
         return pandasm::AnnotationElement {
             propName, std::make_unique<pandasm::ScalarValue>(
                           pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(stringValue))};
+    } else if (initValue->IsUnaryExpression()) {
+        ASSERT(initValue->AsUnaryExpression()->IsNegativeNumber());
+        // In annotations other unary operators (+, !, ~) are evaluated in tsc.
+        // Only unary minus may be present in intermediate .ts
+        double negNumberValue = (-1) * initValue->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number();
+        return pandasm::AnnotationElement {
+            propName, std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(
+                          negNumberValue))};
     } else {
         UNREACHABLE();
     }
@@ -837,6 +856,14 @@ void Emitter::CreateEnumProp(const ir::ClassProperty *prop, const std::string &a
         double doubleValue = value->AsNumberLiteral()->Number();
         annoRecordField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::F64>(doubleValue));
+    } else if (value->IsUnaryExpression()) {
+        ASSERT(value->AsUnaryExpression()->IsNegativeNumber());
+        // In annotations other unary operators (+, !, ~) are evaluated in tsc.
+        // Only unary minus may be present in intermediate .ts
+        annoRecordField.type = panda::pandasm::Type("f64", 0);
+        double doubleValue = (-1) * value->AsUnaryExpression()->Argument()->AsNumberLiteral()->Number();
+        annoRecordField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::F64>(doubleValue));
     } else {
         UNREACHABLE();
     }
@@ -852,7 +879,16 @@ panda::pandasm::Field Emitter::CreateAnnotationProp(const ir::ClassProperty *pro
     if (propType == ir::AstNodeType::TS_NUMBER_KEYWORD) {
         annoRecordField.type = panda::pandasm::Type("f64", 0);
         if (value != nullptr) {
-            double doubleValue = value->AsNumberLiteral()->Number();
+            double doubleValue = 0.0;
+            if (value->IsUnaryExpression()) {
+                ASSERT(value->AsUnaryExpression()->IsNegativeNumber());
+                // In annotations other unary operators (+, !, ~) are evaluated in tsc.
+                // Only unary minus may be present in intermediate .ts
+                value = value->AsUnaryExpression()->Argument();
+                doubleValue = (-1) * value->AsNumberLiteral()->Number();
+            } else {
+                doubleValue = value->AsNumberLiteral()->Number();
+            }
             annoRecordField.metadata->SetValue(
                 panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::F64>(doubleValue));
         }
