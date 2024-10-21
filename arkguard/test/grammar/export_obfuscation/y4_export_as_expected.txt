@@ -12,5 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { default as h6 } from './y1_export_alias';
+export { default as f6 } from './y1_export_alias';
 export * as default from './y3_export_list_default';

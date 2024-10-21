@@ -15,20 +15,15 @@
 
 import {
   factory,
-  forEachChild,
   isComputedPropertyName,
   isConstructorDeclaration,
   isElementAccessExpression,
-  isEnumMember,
   isIdentifier,
-  isClassDeclaration,
   isNumericLiteral,
   isPrivateIdentifier,
   isStringLiteralLike,
-  isTypeNode,
   setParentRecursive,
   visitEachChild,
-  isStringLiteral,
   isSourceFile
 } from 'typescript';
 
@@ -40,10 +35,6 @@ import type {
   TransformationContext,
   Transformer,
   TransformerFactory,
-  ClassDeclaration,
-  ClassExpression,
-  StructDeclaration,
-  PropertyName
 } from 'typescript';
 
 import type {IOptions} from '../../configs/IOptions';
@@ -53,7 +44,6 @@ import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
-import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
 import {
@@ -94,8 +84,6 @@ namespace secharmony {
         if (isSourceFile(node) && ArkObfuscator.isKeptCurrentFile) {
           return node;
         }
-
-        collectReservedNames(node);
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = renameProperties(node);
@@ -223,56 +211,6 @@ namespace secharmony {
         PropCollections.globalMangledTable.set(original, mangledName);
         PropCollections.newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
-      }
-
-      function visitEnumInitializer(childNode: Node): void {
-        if (!isIdentifier(childNode)) {
-          forEachChild(childNode, visitEnumInitializer);
-          return;
-        }
-
-        if (NodeUtils.isPropertyNode(childNode)) {
-          return;
-        }
-
-        if (isTypeNode(childNode)) {
-          return;
-        }
-
-        UnobfuscationCollections.reservedEnum.add(childNode.text);
-      }
-
-      // enum syntax has special scenarios
-      function collectReservedNames(node: Node): void {
-        // collect ViewPU class properties
-        if (isClassDeclaration(node) && isViewPUBasedClass(node)) {
-          getViewPUClassProperties(node, UnobfuscationCollections.reservedStruct);
-          return;
-        }
-
-        // collect reserved name of enum
-        // example: enum H {A, B = A + 1}, enum H = {A, B= 1 + (A + 1)}; A is reserved
-        if (isEnumMember(node) && node.initializer) {
-          // collect enum properties
-          node.initializer.forEachChild(visitEnumInitializer);
-          return;
-        }
-
-        forEachChild(node, collectReservedNames);
-      }
-
-      function getViewPUClassProperties(classNode: ClassDeclaration | ClassExpression | StructDeclaration, propertySet: Set<string>): void {
-        if (!classNode || !classNode.members) {
-          return;
-        }
-
-        classNode.members.forEach((member) => {
-          const memberName: PropertyName = member.name;
-          if (!member || !memberName) {
-            return;
-          }
-          collectPropertyNamesAndStrings(memberName, propertySet);
-        });
       }
     }
   };

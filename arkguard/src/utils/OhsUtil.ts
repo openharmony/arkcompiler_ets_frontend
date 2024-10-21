@@ -14,6 +14,7 @@
  */
 
 import {
+  forEachChild,
   isBinaryExpression,
   isCallExpression,
   isClassDeclaration,
@@ -41,6 +42,7 @@ import {
   isMethodDeclaration,
   isGetAccessorDeclaration,
   isAccessor,
+  isTypeNode
 } from 'typescript';
 
 import type {
@@ -55,6 +57,7 @@ import type {
   InterfaceDeclaration,
   MethodDeclaration,
   Modifier,
+  Node,
   NodeArray,
   ObjectLiteralExpression,
   PropertyAssignment,
@@ -63,11 +66,12 @@ import type {
   ShorthandPropertyAssignment,
   Statement,
   StructDeclaration,
-  TypeAliasDeclaration,
+  TypeAliasDeclaration
 } from 'typescript';
 
 import { ApiExtractor } from '../common/ApiExtractor';
 import { UnobfuscationCollections } from './CommonCollections';
+import { NodeUtils } from './NodeUtils';
 
 export const stringPropsSet: Set<string> = new Set();
 /**
@@ -415,4 +419,47 @@ export function addExportPropertyName(propertyElement: PropertyAssignment | Meth
     if (isComputedPropertyName(nameNode) && isStringLiteral(nameNode.expression)) {
       exportNames.add(nameNode.expression.text);
     }
+}
+
+/**
+ * Collect reserved names in enum
+ * e.g.
+ * enum H {
+ *   A,
+ *   B = A + 1
+ * }
+ * A is reserved
+ */
+export function visitEnumInitializer(childNode: Node): void {
+  if (NodeUtils.isPropertyNode(childNode)) {
+    return;
+  }
+
+  if (isTypeNode(childNode)) {
+    return;
+  }
+
+  if (!isIdentifier(childNode)) {
+    forEachChild(childNode, visitEnumInitializer);
+    return;
+  }
+
+  UnobfuscationCollections.reservedEnum.add(childNode.text);
+}
+
+/**
+ * collect properties of ViewPU class as reserved names
+ */
+export function getViewPUClassProperties(classNode: ClassDeclaration | ClassExpression): void {
+  if (!classNode || !classNode.members) {
+    return;
+  }
+
+  classNode.members.forEach((member) => {
+    const memberName: PropertyName = member.name;
+    if (!memberName) {
+      return;
+    }
+    collectPropertyNamesAndStrings(memberName, UnobfuscationCollections.reservedStruct);
+  });
 }

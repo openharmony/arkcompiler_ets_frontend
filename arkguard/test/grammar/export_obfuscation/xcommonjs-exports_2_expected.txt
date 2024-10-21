@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 module.exports = {
-    v4: 20,
-    f5: function () {
+    t4: 20,
+    d5: function () {
         return 'Hello, world2!';
     },
-    g5: { p2: 22 }
+    e5: { p2: 22 }
 };
