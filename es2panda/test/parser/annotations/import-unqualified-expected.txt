@@ -205,15 +205,15 @@
               "type": "Annotation",
               "expression": {
                 "type": "Identifier",
-                "name": "Anno1",
+                "name": "__$$ETS_ANNOTATION$$__Anno1",
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 18,
-                    "column": 8
+                    "column": 29
                   }
                 }
               },
@@ -226,7 +226,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 8
+                  "column": 29
                 }
               }
             }
@@ -361,15 +361,15 @@
                 "type": "CallExpression",
                 "callee": {
                   "type": "Identifier",
-                  "name": "Anno1",
+                  "name": "__$$ETS_ANNOTATION$$__Anno1",
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 21,
-                      "column": 8
+                      "column": 29
                     }
                   }
                 },
@@ -378,11 +378,11 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 21,
-                    "column": 10
+                    "column": 31
                   }
                 }
               },
@@ -395,7 +395,7 @@
                 },
                 "end": {
                   "line": 21,
-                  "column": 10
+                  "column": 31
                 }
               }
             }
@@ -530,15 +530,15 @@
                 "type": "CallExpression",
                 "callee": {
                   "type": "Identifier",
-                  "name": "Anno1",
+                  "name": "__$$ETS_ANNOTATION$$__Anno1",
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 24,
-                      "column": 8
+                      "column": 29
                     }
                   }
                 },
@@ -549,11 +549,11 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 9
+                        "column": 30
                       },
                       "end": {
                         "line": 24,
-                        "column": 11
+                        "column": 32
                       }
                     }
                   }
@@ -562,11 +562,11 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 24,
-                    "column": 12
+                    "column": 33
                   }
                 }
               },
@@ -579,7 +579,7 @@
                 },
                 "end": {
                   "line": 24,
-                  "column": 12
+                  "column": 33
                 }
               }
             }
@@ -714,15 +714,15 @@
                 "type": "CallExpression",
                 "callee": {
                   "type": "Identifier",
-                  "name": "Anno2",
+                  "name": "__$$ETS_ANNOTATION$$__Anno2",
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 27,
-                      "column": 8
+                      "column": 29
                     }
                   }
                 },
@@ -741,11 +741,11 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 10
+                              "column": 31
                             },
                             "end": {
                               "line": 27,
-                              "column": 11
+                              "column": 32
                             }
                           }
                         },
@@ -755,11 +755,11 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 13
+                              "column": 34
                             },
                             "end": {
                               "line": 27,
-                              "column": 14
+                              "column": 35
                             }
                           }
                         },
@@ -767,11 +767,11 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 10
+                            "column": 31
                           },
                           "end": {
                             "line": 27,
-                            "column": 14
+                            "column": 35
                           }
                         }
                       },
@@ -786,11 +786,11 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 16
+                              "column": 37
                             },
                             "end": {
                               "line": 27,
-                              "column": 17
+                              "column": 38
                             }
                           }
                         },
@@ -800,11 +800,11 @@
                           "loc": {
                             "start": {
                               "line": 27,
-                              "column": 19
+                              "column": 40
                             },
                             "end": {
                               "line": 27,
-                              "column": 27
+                              "column": 48
                             }
                           }
                         },
@@ -812,11 +812,11 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 16
+                            "column": 37
                           },
                           "end": {
                             "line": 27,
-                            "column": 27
+                            "column": 48
                           }
                         }
                       }
@@ -824,11 +824,11 @@
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 9
+                        "column": 30
                       },
                       "end": {
                         "line": 27,
-                        "column": 28
+                        "column": 49
                       }
                     }
                   }
@@ -837,11 +837,11 @@
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 27,
-                    "column": 29
+                    "column": 50
                   }
                 }
               },
@@ -854,7 +854,7 @@
                 },
                 "end": {
                   "line": 27,
-                  "column": 29
+                  "column": 50
                 }
               }
             }
