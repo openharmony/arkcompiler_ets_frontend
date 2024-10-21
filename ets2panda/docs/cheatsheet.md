@@ -203,3 +203,29 @@ todo
 ### What are the limits of the internal keyword? One .abc? One module?
 
 todo
+
+### How to run multi-module programm?
+
+```typescript
+//x.sts
+import { foo } from "./y.sts"
+
+function main () {
+    console.log(foo())
+}
+```
+```typescript
+//y.sts
+export function foo(): int {return 54}
+```
+
+```bash
+# compilation of separate module 
+./bin/es2panda --extension=sts --output=b.abc --opt-level=2  --ets-module y.sts 
+./bin/es2panda --extension=sts --output=a.abc --opt-level=2  x.sts 
+# linkage of binary files
+./bin/ark_link --output out.abc -- a.abc b.abc       
+
+# execution command                                                
+./bin/ark --boot-panda-files=etsstdlib.abc --load-runtimes=ets  out.abc ETSGLOBAL::main 
+```
