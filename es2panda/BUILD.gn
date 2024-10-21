@@ -500,7 +500,7 @@ ohos_executable("es2panda") {
   subsystem_name = "arkcompiler"
 }
 
-if (is_linux) {
+if (is_linux || (is_build_sdk && is_ohos)) {
   ohos_copy("es2abc_build") {
     deps = [ ":es2panda" ]
     sources = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
@@ -614,6 +614,10 @@ group("es2panda_build") {
 
   if (host_os == "mac") {
     deps = [ ":es2panda(${toolchain_mac})" ]
+  }
+
+  if (host_os == "ohos") {
+    deps = [ ":es2panda(${toolchain_ohos})" ]
   }
 }
 
