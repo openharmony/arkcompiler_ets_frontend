@@ -19,6 +19,7 @@
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/ets/stringConstantsLowering.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
@@ -85,6 +86,7 @@ static DefaultParameterLowering g_defaultParameterLowering;
 static TopLevelStatements g_topLevelStatements;
 static LocalClassConstructionPhase g_localClassLowering;
 static StringComparisonLowering g_stringComparisonLowering;
+static StringConstantsLowering g_stringConstantsLowering;
 static PartialExportClassGen g_partialExportClassGen;
 static PackageImplicitImport g_packageImplicitImport;
 static GenericBridgesPhase g_genericBridgesLowering;
@@ -114,6 +116,7 @@ std::vector<Phase *> GetETSPhaseList()
     // clang-format off
     return {
         &g_pluginsAfterParse,
+        &g_stringConstantsLowering,
         &g_packageImplicitImport,
         &g_topLevelStatements,
         &g_defaultParameterLowering,

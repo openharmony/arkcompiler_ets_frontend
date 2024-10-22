@@ -40,36 +40,8 @@
               }
             },
             "value": {
-              "type": "BinaryExpression",
-              "operator": "+",
-              "left": {
-                "type": "StringLiteral",
-                "value": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 48
-                  },
-                  "end": {
-                    "line": 17,
-                    "column": 76
-                  }
-                }
-              },
-              "right": {
-                "type": "StringLiteral",
-                "value": "abcdefghijklmnopqrstuvwxyz0123456789+/",
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 79
-                  },
-                  "end": {
-                    "line": 17,
-                    "column": 119
-                  }
-                }
-              },
+              "type": "StringLiteral",
+              "value": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
               "loc": {
                 "start": {
                   "line": 17,
