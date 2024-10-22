@@ -17,6 +17,7 @@ js-sha256_test
 
 #19246
 jsDiff_test
+crypto-js_test
 
 #19623
 rebound_test

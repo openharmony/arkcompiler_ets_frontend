@@ -11,3 +11,6 @@ Matrix_test
 #20145
 validator_test
 
+#19246
+asn-one_test
+
