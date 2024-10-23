@@ -47,3 +47,6 @@ test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-short
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-long-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-narrow-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-short-en.js
+
+#20113
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-valid.js
