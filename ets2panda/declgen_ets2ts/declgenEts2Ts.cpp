@@ -443,11 +443,9 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
 
         const auto local = specifier->AsImportSpecifier()->Local()->Name();
         const auto imported = specifier->AsImportSpecifier()->Imported()->Name();
-        if (local.Mutf8().find("_$trigger_cctor") == std::string::npos) {
-            Out(local);
-            if (local != imported) {
-                ThrowError("Imports with local bindings are not supported", importDeclaration->Start());
-            }
+        Out(local);
+        if (local != imported) {
+            ThrowError("Imports with local bindings are not supported", importDeclaration->Start());
         }
     });
 

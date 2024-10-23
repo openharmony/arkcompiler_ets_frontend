@@ -170,13 +170,6 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseDefaultSources(std::stri
     return statements;
 }
 
-ir::ImportSpecifier *ETSParser::GetTriggeringCCTORSpecifier(util::StringView localName, util::StringView importedName)
-{
-    auto *local = AllocNode<ir::Identifier>(localName, Allocator());
-    auto *imported = AllocNode<ir::Identifier>(importedName, Allocator());
-    return AllocNode<ir::ImportSpecifier>(imported, local);
-}
-
 void ETSParser::AddDirectImportsToDirectExternalSources(
     const ArenaVector<util::StringView> &directImportsFromMainSource, parser::Program *const newProg) const
 {

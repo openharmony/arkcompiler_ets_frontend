@@ -33,88 +33,51 @@ void ImportExportDecls::ParseDefaultSources()
 
 /**
  * @brief checks if `prog` matches with the path in `stmt` (an ImportDeclaration statement)
-
- * If match is found, `prog` is inserted into a container (`triggeringCCtorMethodsAndPrograms`) that will be used when
- * calling the  triggeringCCtorMethod inside the entrypoint's `_$init$_`.
  *
- * The structure of `triggeringCCtorMethodsAndPrograms` is delineated in the `CollectImportedProgramsFromStmts` method.
-
  * @return true if `prog` is part of a package
  * @return false otherwise
  */
-void ImportExportDecls::MatchImportDeclarationPathWithProgram(
-    ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *prog, const util::StringView moduleName,
-    const GlobalClassHandler *globalClass,
-    GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms)
+bool ImportExportDecls::MatchResolvedPathWithProgram(std::string_view resolvedPath, parser::Program *prog)
 {
     if (util::Helpers::IsStdLib(prog)) {
-        return;
+        return false;
     }
-    auto resolvedImportPath = stmt->ResolvedSource()->Str().Utf8();
-    if (!((prog->IsPackageModule() && prog->SourceFileFolder().Is(resolvedImportPath)) ||
-          prog->AbsoluteName().Is(resolvedImportPath)) ||
-        prog->IsDeclarationModule()) {
-        return;
+    if (prog->IsDeclarationModule()) {
+        return false;
     }
-
-    if (triggeringCCtorMethodsAndPrograms->count(moduleName) == 0) {
-        triggeringCCtorMethodsAndPrograms->emplace(moduleName, prog->Allocator()->Adapter());
+    if (prog->AbsoluteName().Is(resolvedPath)) {
+        return true;
     }
-    auto triggeringCCtorMethodName =
-        globalClass->FormTriggeringCCtorMethodName(stmt->AsETSImportDeclaration()->Source()->Str());
-    triggeringCCtorMethodsAndPrograms->at(moduleName).emplace_back(std::pair(triggeringCCtorMethodName, prog));
-    AddImportSpecifierForTriggeringCCtorMethod(stmt, globalClass, triggeringCCtorMethodName);
+    if (prog->IsPackageModule() && prog->SourceFileFolder().Is(resolvedPath)) {
+        return true;
+    }
+    return false;
 }
 
 /**
- * @brief Collects imported programs and local names for the functions that are to trigger the owner classes of the
- * imported programs
+ * @brief Collects imported programs to initialize from the owner classes of the imported programs
  *
- * The function to trigger the CCtor in the imported program is named `_$trigger_cctor$_`. A local
- * alias is assigned to this function. The `_$init$_` of the entrypoint program's owner class will use this alias
- * when calling the special function.
- *
- * The alias for the special function and the program is stored in std::pairs. The pairs that belong to the same
- * package form a vector. The vectors are stored in an unordered map, the key being the name of the package name.
+ * If match is found, `prog` is inserted into a container (`moduleDependencies`) that will be used when
+ * calling the initializers inside the entrypoint's `_$init$_`.
  */
-void ImportExportDecls::CollectImportedProgramsFromStmts(
-    ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *program, const GlobalClassHandler *globalClass,
-    GlobalClassHandler::TriggeringCCtorMethodsAndPrograms *triggeringCCtorMethodsAndPrograms)
+void ImportExportDecls::CollectImportedProgramsFromStmts(ark::es2panda::ir::ETSImportDeclaration *stmt,
+                                                         parser::Program *program,
+                                                         GlobalClassHandler::ModuleDependencies *moduleDependencies)
 {
-    for (auto const &directExtSource : program->DirectExternalSources()) {
-        for (auto prog : directExtSource.second) {
-            MatchImportDeclarationPathWithProgram(stmt, prog, directExtSource.first, globalClass,
-                                                  triggeringCCtorMethodsAndPrograms);
-            if (prog->IsPackageModule()) {
-                break;
-            }
+    for (auto const &[_, programs] : program->DirectExternalSources()) {
+        (void)_;
+        parser::Program *first = programs.front();
+        if (MatchResolvedPathWithProgram(stmt->ResolvedSource()->Str().Utf8(), first)) {
+            moduleDependencies->insert(first);
         }
     }
 }
 
-/**
- * @brief  Adds specifier of the TriggeringCCtorMethod to the import declaration `stmt`.
- *
- * Adds specifier of the TriggeringCCtorMethod to the import declaration (`stmt`). The specifier have a different
- * local name, to avoid collision with the `_$trigger_cctor$_` in different modules.
- */
-void ImportExportDecls::AddImportSpecifierForTriggeringCCtorMethod(ark::es2panda::ir::ETSImportDeclaration *stmt,
-                                                                   const GlobalClassHandler *globalClass,
-                                                                   util::StringView triggeringCCtorMethodName)
-{
-    ir::ImportSpecifier *specifier =
-        parser_->AsETSParser()->GetTriggeringCCTORSpecifier(triggeringCCtorMethodName, globalClass->TRIGGER_CCTOR);
-    stmt->Specifiers().push_back(specifier);
-    specifier->SetParent(stmt);
-}
-
-GlobalClassHandler::TriggeringCCtorMethodsAndPrograms ImportExportDecls::HandleGlobalStmts(
-    ArenaVector<parser::Program *> &programs, GlobalClassHandler *globalClass)
+GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(ArenaVector<parser::Program *> &programs)
 {
     VerifySingleExportDefault(programs);
     VerifyTypeExports(programs);
-    GlobalClassHandler::TriggeringCCtorMethodsAndPrograms triggeringCCtorMethodsAndPrograms {
-        programs.front()->Allocator()->Adapter()};
+    GlobalClassHandler::ModuleDependencies moduleDependencies {programs.front()->Allocator()->Adapter()};
     if (!programs.empty()) {
         std::sort(programs.begin(), programs.end(), ProgramFileNameLessThan);
     }
@@ -127,8 +90,7 @@ GlobalClassHandler::TriggeringCCtorMethodsAndPrograms ImportExportDecls::HandleG
             // not support type imports and re-exports.
             if (stmt->IsETSImportDeclaration() && !stmt->AsETSImportDeclaration()->IsTypeKind() &&
                 !util::Helpers::IsStdLib(program) && !program->IsDeclarationModule()) {
-                CollectImportedProgramsFromStmts(stmt->AsETSImportDeclaration(), program, globalClass,
-                                                 &triggeringCCtorMethodsAndPrograms);
+                CollectImportedProgramsFromStmts(stmt->AsETSImportDeclaration(), program, &moduleDependencies);
             }
             stmt->Accept(this);
             if (stmt->IsExportNamedDeclaration()) {
@@ -151,7 +113,7 @@ GlobalClassHandler::TriggeringCCtorMethodsAndPrograms ImportExportDecls::HandleG
             }
         }
     }
-    return triggeringCCtorMethodsAndPrograms;
+    return moduleDependencies;
 }
 
 void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path)

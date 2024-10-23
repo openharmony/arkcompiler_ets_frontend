@@ -45,49 +45,6 @@
               "column": 16
             }
           }
-        },
-        {
-          "type": "ImportSpecifier",
-          "local": {
-            "type": "Identifier",
-            "name": "_$trigger_cctor$_for_import_tests$SLASH$packages$SLASH$aliasWithoutAlias$SLASH$import1$_",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          "imported": {
-            "type": "Identifier",
-            "name": "_$trigger_cctor$_",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 1
-            },
-            "end": {
-              "line": 1,
-              "column": 1
-            }
-          }
         }
       ],
       "loc": {
@@ -160,49 +117,6 @@
               "column": 24
             }
           }
-        },
-        {
-          "type": "ImportSpecifier",
-          "local": {
-            "type": "Identifier",
-            "name": "_$trigger_cctor$_for_import_tests$SLASH$packages$SLASH$aliasWithoutAlias$SLASH$import1$_",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          "imported": {
-            "type": "Identifier",
-            "name": "_$trigger_cctor$_",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 1
-            },
-            "end": {
-              "line": 1,
-              "column": 1
-            }
-          }
         }
       ],
       "loc": {
@@ -273,49 +187,6 @@
             "end": {
               "line": 17,
               "column": 12
-            }
-          }
-        },
-        {
-          "type": "ImportSpecifier",
-          "local": {
-            "type": "Identifier",
-            "name": "_$trigger_cctor$_for_import_tests$SLASH$packages$SLASH$aliasWithoutAlias$SLASH$import2$_",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          "imported": {
-            "type": "Identifier",
-            "name": "_$trigger_cctor$_",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 1
-            },
-            "end": {
-              "line": 1,
-              "column": 1
             }
           }
         }
@@ -401,37 +272,143 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "Identifier",
-                          "name": "_$trigger_cctor$_for_import_tests$SLASH$packages$SLASH$aliasWithoutAlias$SLASH$import2$_",
-                          "decorators": [],
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "__linker",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
+                          "init": {
+                            "type": "CallExpression",
+                            "callee": {
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "MemberExpression",
+                                  "object": {
+                                    "type": "Identifier",
+                                    "name": "Class",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3
+                                      }
+                                    }
+                                  },
+                                  "property": {
+                                    "type": "Identifier",
+                                    "name": "ofCaller",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 3
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 3
+                                      }
+                                    }
+                                  },
+                                  "computed": false,
+                                  "optional": false,
+                                  "loc": {
+                                    "start": {
+                                      "line": 1,
+                                      "column": 3
+                                    },
+                                    "end": {
+                                      "line": 1,
+                                      "column": 3
+                                    }
+                                  }
+                                },
+                                "arguments": [],
+                                "optional": false,
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "getLinker",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 1,
+                                    "column": 3
+                                  },
+                                  "end": {
+                                    "line": 1,
+                                    "column": 3
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
+                              "loc": {
+                                "start": {
+                                  "line": 1,
+                                  "column": 3
+                                },
+                                "end": {
+                                  "line": 1,
+                                  "column": 3
+                                }
+                              }
+                            },
+                            "arguments": [],
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
                           "loc": {
                             "start": {
                               "line": 1,
-                              "column": 1
+                              "column": 3
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 3
                             }
                           }
-                        },
-                        "arguments": [],
-                        "optional": false,
-                        "loc": {
-                          "start": {
-                            "line": 1,
-                            "column": 1
-                          },
-                          "end": {
-                            "line": 1,
-                            "column": 1
-                          }
                         }
-                      },
+                      ],
+                      "kind": "const",
                       "loc": {
                         "start": {
                           "line": 1,
@@ -439,7 +416,7 @@
                         },
                         "end": {
                           "line": 1,
-                          "column": 1
+                          "column": 3
                         }
                       }
                     },
@@ -448,9 +425,39 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "_$trigger_cctor$_for_import_tests$SLASH$packages$SLASH$aliasWithoutAlias$SLASH$import1$_",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "__linker",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "loadClass",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 1,
@@ -458,11 +465,40 @@
                             },
                             "end": {
                               "line": 1,
-                              "column": 1
+                              "column": 3
                             }
                           }
                         },
-                        "arguments": [],
+                        "arguments": [
+                          {
+                            "type": "StringLiteral",
+                            "value": "import_tests.packages.aliasWithoutAlias.import2.ETSGLOBAL",
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
+                          {
+                            "type": "BooleanLiteral",
+                            "value": true,
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          }
+                        ],
                         "optional": false,
                         "loc": {
                           "start": {
@@ -471,7 +507,7 @@
                           },
                           "end": {
                             "line": 1,
-                            "column": 1
+                            "column": 3
                           }
                         }
                       },
@@ -482,7 +518,109 @@
                         },
                         "end": {
                           "line": 1,
+                          "column": 3
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "__linker",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 1
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "loadClass",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
+                          "loc": {
+                            "start": {
+                              "line": 1,
+                              "column": 1
+                            },
+                            "end": {
+                              "line": 1,
+                              "column": 3
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "StringLiteral",
+                            "value": "import_tests.packages.aliasWithoutAlias.import1.ETSGLOBAL",
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          },
+                          {
+                            "type": "BooleanLiteral",
+                            "value": true,
+                            "loc": {
+                              "start": {
+                                "line": 1,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 1,
+                                "column": 3
+                              }
+                            }
+                          }
+                        ],
+                        "optional": false,
+                        "loc": {
+                          "start": {
+                            "line": 1,
+                            "column": 1
+                          },
+                          "end": {
+                            "line": 1,
+                            "column": 3
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 1,
                           "column": 1
+                        },
+                        "end": {
+                          "line": 1,
+                          "column": 3
                         }
                       }
                     }
@@ -884,100 +1022,6 @@
               "end": {
                 "line": 24,
                 "column": 2
-              }
-            }
-          },
-          {
-            "type": "MethodDefinition",
-            "key": {
-              "type": "Identifier",
-              "name": "_$trigger_cctor$_",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "kind": "method",
-            "accessibility": "public",
-            "static": true,
-            "optional": false,
-            "computed": false,
-            "value": {
-              "type": "FunctionExpression",
-              "function": {
-                "type": "ScriptFunction",
-                "id": {
-                  "type": "Identifier",
-                  "name": "_$trigger_cctor$_",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "generator": false,
-                "async": false,
-                "expression": false,
-                "params": [],
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 1,
-                    "column": 1
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "overloads": [],
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
               }
             }
           }

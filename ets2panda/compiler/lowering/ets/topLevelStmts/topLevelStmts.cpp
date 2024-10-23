@@ -19,21 +19,53 @@
 
 namespace ark::es2panda::compiler {
 
+static bool CheckSourceConsistency(util::StringView name, ArenaVector<parser::Program *> const &programs)
+{
+    if (programs.size() == 1) {
+        return true;
+    }
+    if (std::all_of(programs.begin(), programs.end(), [](auto p) { return p->IsPackageModule(); })) {
+        return true;
+    }
+    std::stringstream ss;
+    ss << "Module name \"" << name << "\" is assigned to multiple compilation units:";
+    std::for_each(programs.begin(), programs.end(), [&ss](parser::Program *p) {
+        ss << std::endl << "  at " << p->SourceFilePath().Mutf8();
+    });
+    std::cerr << ss.str() << std::endl;
+    return false;
+}
+
+static bool CheckProgramSourcesConsistency(parser::Program *program)
+{
+    bool success = true;
+    for (auto const &[name, programs] : program->ExternalSources()) {
+        success &= CheckSourceConsistency(name, programs);
+    }
+    for (auto const &[name, programs] : program->DirectExternalSources()) {
+        success &= CheckSourceConsistency(name, programs);
+    }
+    return success;
+}
+
 bool TopLevelStatements::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    GlobalClassHandler globalClass(program->Allocator());
     auto imports = ImportExportDecls(program->VarBinder()->AsETSBinder(), ctx->parser->AsETSParser());
     imports.ParseDefaultSources();
-    auto extSrcs = program->ExternalSources();
-    for (auto &[package, extPrograms] : extSrcs) {
-        auto triggeringCCtorMethodsAndPrograms = imports.HandleGlobalStmts(extPrograms, &globalClass);
-        globalClass.InitGlobalClass(extPrograms, &triggeringCCtorMethodsAndPrograms);
+    if (!CheckProgramSourcesConsistency(program)) {
+        // NOTE(vpukhov): enforce compilation failure
+    }
+
+    GlobalClassHandler globalClass(ctx->parser->AsETSParser(), program->Allocator());
+    for (auto &[package, extPrograms] : program->ExternalSources()) {
+        auto moduleDependencies = imports.HandleGlobalStmts(extPrograms);
+        globalClass.SetupGlobalClass(extPrograms, &moduleDependencies);
     }
 
     ArenaVector<parser::Program *> mainModule(program->Allocator()->Adapter());
     mainModule.emplace_back(program);
-    auto triggeringCCtorMethodsAndPrograms = imports.HandleGlobalStmts(mainModule, &globalClass);
-    globalClass.InitGlobalClass(mainModule, &triggeringCCtorMethodsAndPrograms);
+    auto moduleDependencies = imports.HandleGlobalStmts(mainModule);
+    globalClass.SetupGlobalClass(mainModule, &moduleDependencies);
     return true;
 }
 
