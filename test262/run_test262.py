@@ -37,7 +37,7 @@ from config import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir', metavar='DIR',
-                        help='Directory to test ')
+                        help='Directory to test. And support multiple directories and files separated by ":"')
     parser.add_argument('--file', metavar='FILE',
                         help='File to test')
     parser.add_argument('--mode',
@@ -623,7 +623,13 @@ class TestPrepare():
             mkdstdir(self.args.file, src_dir, self.out_dir)
             return
 
-        files = collect_files(self.args.dir)
+        files = []
+        if ':' in self.args.dir:
+            path = self.args.dir.split(':')
+            for p in path:
+                files.extend(collect_files(p))
+        else:
+            files = collect_files(self.args.dir)
         for file in files:
             mkdstdir(file, src_dir, self.out_dir)
 
@@ -653,13 +659,18 @@ def run_test262_mode(args):
     return modetype_to_string(DEFAULT_MODE)
 
 
-def get_execute_arg(args):
-    execute_args = ""
+def get_execute_arg(args) -> list[str]:
+    execute_args = []
 
     if args.file:
-        execute_args = args.file
+        execute_args.append(args.file)
     else:
-        execute_args = os.path.join(args.dir, "**", "*.js")
+        path = args.dir.split(':')
+        for p in path:
+            if not p.endswith('.js'):
+                execute_args.append(os.path.join(p, "**", "*.js"))
+            else:
+                execute_args.append(p)
     return execute_args
 
 
@@ -837,7 +848,7 @@ def run_test262_test(args):
         global DATA_DIR
         BASE_OUT_DIR = BASE_OUT_DIR.replace("/","\\")
         DATA_DIR = DATA_DIR.replace("/","\\")
-        execute_args = execute_args.replace("/","\\")
+        execute_args = [p.replace("/","\\") for p in execute_args]
     test_cmd.append(f"--tempDir={BASE_OUT_DIR}")
     test_cmd.append(f"--test262Dir={DATA_DIR}")
     if args.test_list:
@@ -846,7 +857,7 @@ def run_test262_test(args):
     if args.babel:
         test_cmd.append("--preprocessor='test262/babel-preprocessor.js'")
     test_cmd.append(DEFAULT_OTHER_ARGS)
-    test_cmd.append(execute_args)
+    test_cmd.extend(execute_args)
 
     run_check(test_cmd)
 
