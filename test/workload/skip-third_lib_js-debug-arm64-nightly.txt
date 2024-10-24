@@ -5,3 +5,4 @@ crypto-js_test
 Matrix_test
 mathjs_test
 validator_test
+lodash_test
