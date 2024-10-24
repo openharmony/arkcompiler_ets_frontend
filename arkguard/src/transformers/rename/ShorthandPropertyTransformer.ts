@@ -45,6 +45,7 @@ import type {IOptions} from '../../configs/IOptions';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ArkObfuscator, performancePrinter} from '../../ArkObfuscator';
 import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 
 namespace secharmony {
   const createShorthandPropertyTransformerFactory = function (option: IOptions): TransformerFactory<Node> {
@@ -63,10 +64,12 @@ namespace secharmony {
           return node;
         }
 
+        ArkObfuscator.recordStage(MemoryDottingDefine.SHORTHAND_OBFUSCATION);
         startSingleFileEvent(EventList.SHORT_HAND_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret = transformShortHandProperty(node);
         let parentNodes = setParentRecursive(ret, true);
         endSingleFileEvent(EventList.SHORT_HAND_OBFUSCATION, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(MemoryDottingDefine.SHORTHAND_OBFUSCATION);
         return parentNodes;
       }
 

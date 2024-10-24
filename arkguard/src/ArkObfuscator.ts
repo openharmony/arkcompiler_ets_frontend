@@ -86,6 +86,7 @@ import { TypeUtils } from './utils/TypeUtils';
 import { handleReservedConfig } from './utils/TransformUtil';
 import { UnobfuscationCollections } from './utils/CommonCollections';
 import { historyAllUnobfuscatedNamesMap } from './initialization/Initializer';
+import { MemoryDottingDefine } from './utils/MemoryDottingDefine';
 export { UnobfuscationCollections } from './utils/CommonCollections';
 export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
 export type { ReservedNameInfo } from './utils/TransformUtil';
@@ -161,6 +162,10 @@ export class ArkObfuscator {
 
   private mTransformers: TransformerFactory<Node>[];
 
+  private static memoryDottingCallback: (stage: string, parentStage?: string) => void;
+
+  private static memoryDottingStopCallback: (stage: string, parentStage?: string) => void;
+
   static mProjectInfo: ProjectInfo | undefined;
 
   // If isKeptCurrentFile is true, both identifier and property obfuscation are skipped.
@@ -235,6 +240,18 @@ export class ArkObfuscator {
     ArkObfuscator.mProjectInfo = projectInfo;
   }
 
+  public static recordStage(stage: string, parentStage?: string): void {
+    if (ArkObfuscator.memoryDottingCallback) {
+      ArkObfuscator.memoryDottingCallback(stage, parentStage);
+    }
+  }
+
+  public static stopRecordStage(stage: string, parentStage?: string): void {
+    if (ArkObfuscator.memoryDottingStopCallback) {
+      ArkObfuscator.memoryDottingStopCallback(stage, parentStage);
+    }
+  }
+
   private isCurrentFileInKeepPaths(customProfiles: IOptions, originalFilePath: string): boolean {
     const keepFileSourceCode = customProfiles.mKeepFileSourceCode;
     if (keepFileSourceCode === undefined || keepFileSourceCode.mKeepSourceOfPaths.size === 0) {
@@ -295,6 +312,20 @@ export class ArkObfuscator {
     }
 
     return true;
+  }
+  public static setMemoryDottingCallBack(memoryDottingCallback: (stage: string, parentStage?: string) => void,
+    memoryDottingStopCallback: (stage: string, parentStage?: string) => void): void {
+    if (memoryDottingCallback) {
+      ArkObfuscator.memoryDottingCallback = memoryDottingCallback;
+    }
+    if (memoryDottingStopCallback) {
+      ArkObfuscator.memoryDottingStopCallback = memoryDottingStopCallback;
+    }
+  }
+
+  public static clearMemoryDottingCallBack(): void {
+    ArkObfuscator.memoryDottingCallback = undefined;
+    ArkObfuscator.memoryDottingStopCallback = undefined;
   }
 
   /**
@@ -417,6 +448,7 @@ export class ArkObfuscator {
   }
 
   private createAst(content: SourceFile | string, sourceFilePath: string): SourceFile {
+    ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_AST);
     startSingleFileEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
     let ast: SourceFile;
     if (typeof content === 'string') {
@@ -425,14 +457,17 @@ export class ArkObfuscator {
       ast = content;
     }
     endSingleFileEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
+    ArkObfuscator.stopRecordStage(MemoryDottingDefine.CREATE_AST);
 
     return ast;
   }
 
   private obfuscateAst(ast: SourceFile): SourceFile {
+    ArkObfuscator.recordStage(MemoryDottingDefine.OBFUSCATE_AST);
     startSingleFileEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
     let transformedResult: TransformationResult<Node> = transform(ast, this.mTransformers, this.mCompilerOptions);
     endSingleFileEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
+    ArkObfuscator.stopRecordStage(MemoryDottingDefine.OBFUSCATE_AST);
     ast = transformedResult.transformed[0] as SourceFile;
     return ast;
   }
@@ -477,8 +512,10 @@ export class ArkObfuscator {
       TypeUtils.tsToJs(ast);
     }
     this.handleTsHarComments(ast, originalFilePath);
+    ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_PRINTER);
     this.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, this.mTextWriter, sourceMapGenerator);
     endSingleFileEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
+    ArkObfuscator.stopRecordStage(MemoryDottingDefine.CREATE_PRINTER);
 
     result.filePath = ast.fileName;
     result.content = this.mTextWriter.getText();

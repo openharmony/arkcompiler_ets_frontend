@@ -58,6 +58,7 @@ import { orignalFilePathForSearching, performancePrinter, ArkObfuscator } from '
 import type { PathAndExtension, ProjectInfo } from '../../common/type';
 import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import { needToBeReserved } from '../../utils/TransformUtil';
+import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 namespace secharmony {
 
   // global mangled file name table used by all files in a project
@@ -127,6 +128,7 @@ namespace secharmony {
           globalFileNameMangledTable = new Map<string, string>();
         }
 
+        ArkObfuscator.recordStage(MemoryDottingDefine.FILENAME_OBFUSCATION);
         startSingleFileEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = updateNodeInfo(node);
         if (!isInOhModules(projectInfo, orignalFilePathForSearching) && isSourceFile(ret)) {
@@ -136,6 +138,7 @@ namespace secharmony {
         }
         let parentNodes = setParentRecursive(ret, true);
         endSingleFileEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(MemoryDottingDefine.FILENAME_OBFUSCATION);
         return parentNodes;
       }
 
