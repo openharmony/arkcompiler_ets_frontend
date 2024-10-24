@@ -16,7 +16,6 @@
 #include "identifierHasVariable.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/ts/tsEnumDeclaration.h"
-#include "ir/typeNode.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
@@ -81,10 +80,8 @@ bool IdentifierHasVariable::CheckMoreAstExceptions(const ir::Identifier *ast) co
 
 bool IdentifierHasVariable::CheckAstExceptions(const ir::Identifier *ast) const
 {
-    // NOTE(kkonkuznetsov): skip enums
-    if (ast->Parent()->IsMemberExpression() &&
-        (ast->Parent()->AsMemberExpression()->Object()->TsType() == nullptr ||
-         ast->Parent()->AsMemberExpression()->Object()->TsType()->IsETSEnumType())) {
+    // NOTE(kkonkuznetsov): warnings in lambdas
+    if (ast->Name().Utf8().find("lambda$invoke$") == 0) {
         return true;
     }
 
@@ -94,7 +91,7 @@ bool IdentifierHasVariable::CheckAstExceptions(const ir::Identifier *ast) const
     }
 
     // NOTE(kkonkuznetsov): skip package declarations
-    auto parent = ast->Parent();
+    const auto *parent = ast->Parent();
     while (parent != nullptr) {
         if (parent->IsETSPackageDeclaration()) {
             return true;

@@ -1139,6 +1139,18 @@ static bool IsInCalleePosition(ir::Expression *expr)
     return expr->Parent()->IsCallExpression() && expr->Parent()->AsCallExpression()->Callee() == expr;
 }
 
+static bool IsEnumFunctionCall(const ir::Identifier *const id)
+{
+    if (id->Parent() != nullptr && id->Parent()->IsMemberExpression()) {
+        const auto *const expr = id->Parent()->AsMemberExpression();
+        if (expr->Object()->TsType()->IsETSEnumType()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::AstNode *node)
 {
     if (node->IsArrowFunctionExpression()) {
@@ -1152,7 +1164,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         // so it is correct to pass ETS extension here to isReference()
         if (id->IsReference(ScriptExtension::ETS) && id->TsTypeOrError() != nullptr &&
             id->TsTypeOrError()->IsETSFunctionType() && var != nullptr && var->Declaration()->IsFunctionDecl() &&
-            !IsInCalleePosition(id)) {
+            !IsInCalleePosition(id) && !IsEnumFunctionCall(id)) {
             return ConvertFunctionReference(ctx, id);
         }
     }

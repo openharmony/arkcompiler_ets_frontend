@@ -150,6 +150,28 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
+static varbinder::LocalVariable *GetEnumMethodVariable(checker::ETSEnumType const *const enumInterface,
+                                                       const util::StringView propName)
+{
+    varbinder::LocalVariable *methodVar = nullptr;
+
+    const auto *const boxedClass = enumInterface->GetDecl()->BoxedClass();
+    ASSERT(boxedClass->TsType()->IsETSObjectType());
+    const auto *const obj = boxedClass->TsType()->AsETSObjectType();
+
+    std::string_view methodName = propName.Utf8();
+    if (enumInterface->IsETSStringEnumType() && (propName == checker::ETSEnumType::VALUE_OF_METHOD_NAME)) {
+        // For string enums valueOf method calls toString method
+        methodName = checker::ETSEnumType::TO_STRING_METHOD_NAME;
+    }
+
+    const auto searchFlags =
+        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
+    methodVar = obj->GetProperty(methodName, searchFlags);
+
+    return methodVar;
+}
+
 std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(checker::ETSChecker *checker,
                                                                                            checker::Type *type) const
 {
@@ -161,7 +183,10 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
     }();
 
     if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
-        return {enumInterface->LookupMethod(checker, object_, property_->AsIdentifier()), nullptr};
+        auto *const memberType = enumInterface->LookupMethod(checker, object_, property_->AsIdentifier());
+        varbinder::LocalVariable *const memberVar =
+            GetEnumMethodVariable(enumInterface, property_->AsIdentifier()->Name());
+        return {memberType, memberVar};
     }
 
     auto *const literalType = enumInterface->LookupConstant(checker, object_, property_->AsIdentifier());

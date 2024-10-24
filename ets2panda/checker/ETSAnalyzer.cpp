@@ -1407,6 +1407,23 @@ static void TypeErrorOnMissingProperty(ir::MemberExpression *expr, checker::Type
                                      expr->Object()->Start());
 }
 
+checker::Type *ETSAnalyzer::CheckEnumMemberExpression(Type *const baseType, ir::MemberExpression *const expr) const
+{
+    ASSERT(baseType->IsETSEnumType());
+
+    ETSChecker *checker = GetETSChecker();
+    auto *const boxedClass = baseType->AsETSEnumType()->GetDecl()->BoxedClass();
+    if (!boxedClass->IsClassDefinitionChecked()) {
+        // Check enum class first to set types and build signatures
+        checker->CheckClassDefinition(boxedClass);
+    }
+
+    auto [memberType, memberVar] = expr->ResolveEnumMember(checker, baseType);
+    expr->SetPropVar(memberVar);
+    expr->Property()->SetTsType(memberType == nullptr ? checker->GlobalTypeError() : memberType);
+    return expr->AdjustType(checker, expr->Property()->TsTypeOrError());
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     if (expr->TsTypeOrError() != nullptr) {
@@ -1455,10 +1472,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     }
 
     if (baseType->IsETSEnumType()) {
-        auto [memberType, memberVar] = expr->ResolveEnumMember(checker, baseType);
-        expr->SetPropVar(memberVar);
-        expr->Property()->SetTsType(memberType == nullptr ? checker->GlobalTypeError() : memberType);
-        return expr->AdjustType(checker, expr->Property()->TsTypeOrError());
+        return CheckEnumMemberExpression(baseType, expr);
     }
 
     if (baseType->IsETSUnionType()) {
