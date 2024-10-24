@@ -67,6 +67,7 @@ import {
 } from './RenameIdentifierTransformer';
 import { UpdateMemberMethodName } from '../../utils/NameCacheUtil';
 import { PropCollections, UnobfuscationCollections } from '../../utils/CommonCollections';
+import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 
 namespace secharmony {
   /**
@@ -94,11 +95,13 @@ namespace secharmony {
           return node;
         }
 
+        const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.PROPERTY_OBFUSCATION);
         startSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = renameProperties(node);
         UpdateMemberMethodName(nameCache, PropCollections.globalMangledTable, classInfoInMemberMethodCache);
         let parentNodes = setParentRecursive(ret, true);
         endSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(recordInfo);
         return parentNodes;
       }
 
