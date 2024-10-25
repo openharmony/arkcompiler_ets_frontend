@@ -1982,7 +1982,7 @@ void TSParser::CheckIfTypeParameterNameIsReserved()
     }
 }
 
-void TSParser::ThrowErrorIfStaticConstructor(ir::ModifierFlags flags)
+void TSParser::CheckIfStaticConstructor(ir::ModifierFlags flags)
 {
     if ((flags & ir::ModifierFlags::STATIC) != 0) {
         ThrowSyntaxError("Static modifier can not appear on a constructor");

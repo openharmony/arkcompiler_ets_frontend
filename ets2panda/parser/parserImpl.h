@@ -98,7 +98,7 @@ protected:
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
     static ExpressionParseFlags CarryPatternFlags(ExpressionParseFlags flags);
 
-    void ThrowIfPrivateIdent(ClassElementDescriptor *desc, const char *msg);
+    void LogIfPrivateIdent(ClassElementDescriptor *desc, const char *msg);
     void ValidateClassKey(ClassElementDescriptor *desc);
     bool ValidatePrivateIdentifier();
 
@@ -309,8 +309,8 @@ protected:
     ir::ExportNamedDeclaration *ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc);
     ir::Statement *ParseVariableDeclaration(VariableParsingFlags flags = VariableParsingFlags::NO_OPTS);
     void ValidateDeclaratorId();
-    void CheckRestrictedBinding() const;
-    void CheckRestrictedBinding(lexer::TokenType keywordType) const;
+    void CheckRestrictedBinding();
+    void CheckRestrictedBinding(lexer::TokenType keywordType);
     void CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos);
 
     ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags);
@@ -380,7 +380,7 @@ protected:
     virtual ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc,
                                                    const ArenaVector<ir::AstNode *> &properties,
                                                    ir::Expression *propName, lexer::SourcePosition *propEnd);
-    void ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number) const;
+    void ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number);
     virtual void ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                      ir::Expression *propName, ir::ScriptFunction *func);
     virtual void ValidateClassGetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
@@ -406,7 +406,7 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
-    virtual void ThrowErrorIfStaticConstructor(ir::ModifierFlags flags);
+    virtual void CheckIfStaticConstructor(ir::ModifierFlags flags);
     virtual std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **propName);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Expression *ParseUnaryOrPrefixUpdateExpression(

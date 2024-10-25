@@ -328,6 +328,9 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(ir::ClassDefinitionModif
     }
 
     ir::ClassDefinition *classDefinition = ParseClassDefinition(modifiers, flags);
+    if (classDefinition == nullptr) {  // Error processing.
+        return nullptr;
+    }
 
     lexer::SourcePosition endLoc = classDefinition->End();
     auto *classDecl = AllocNode<ir::ClassDeclaration>(classDefinition, Allocator());

@@ -13,12 +13,21 @@
  * limitations under the License.
  */
 
-interface /* @@ label1 */type {
-  type: number /* @@ label2 */= /* @@ label3 */0
-/* @@ label4 */}
+class A {
+    x: number;
 
-/* @@@ label1 Error SyntaxError: Cannot be used as user-defined type.  */
-/* @@@ label2 Error SyntaxError: Interface member initialization is prohibited */
-/* @@@ label3 Error SyntaxError: Unexpected token, expected: ','. */
-/* @@? 17:48 Error SyntaxError: Unexpected token, expected 'private' or identifier */
-/* @@@ label4 Error SyntaxError: Identifier expected */
+    private get latest(): number {
+        return 0;
+    }
+
+    protected set latest(a: number) {
+        this.x = a;
+    }
+}
+
+declare class A {
+    x: number = 3;
+}
+
+/* @@? 19:17 Error SyntaxError: A get accessor must be at least as accessible as the setter */
+/* @@? 29:17 Error SyntaxError: Initializers are not allowed in ambient contexts. */
