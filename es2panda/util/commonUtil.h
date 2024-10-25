@@ -38,6 +38,7 @@ const std::string NPM_ENTRIES = "npmEntries.txt";
 const std::string IS_COMMONJS = "isCommonjs";
 // The format of ohmurl for non-SO files are start with '@normalized:N'.
 const std::string NORMALIZED_OHMURL_NOT_SO = "@normalized:N";
+const std::string NORMALIZED = "@normalized:";
 const std::string MODULE_RECORD_IDX = "moduleRecordIdx";
 const std::string GLOBAL_TYPE_NAME = "_GLOBAL";
 
@@ -46,17 +47,21 @@ constexpr char NORMALIZED_OHMURL_PREFIX = '@';
 constexpr char SLASH_TAG = '/';
 constexpr char CHAR_VERTICAL_LINE = '|';
 
+constexpr size_t MODULE_NAME_POS = 1U;
 constexpr size_t BUNDLE_NAME_POS = 2U;
 constexpr size_t NORMALIZED_IMPORT_POS = 3U;
 constexpr size_t VERSION_POS = 4U;
 
 std::vector<std::string> Split(const std::string &str, const char delimiter);
+std::string GetStringByVectorElementsWithDelimiter(const std::vector<std::string> &vec, const char delimiter);
 bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &externalPkgNames);
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedImport(const std::string &normalizedImport);
 std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl,
                                          const std::unordered_map<std::string, PkgInfo> &pkgContextInfo);
+std::string UpdateBundleNameIfNeeded(std::string &ohmurl, const std::string &bundleName,
+                                     const std::set<std::string> &externalPkgNames);
 bool RecordNotGeneratedFromBytecode(std::string recordName);
 
 template<bool isConst, typename T>

@@ -304,6 +304,14 @@ void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
         std::cerr << "The input json file '" << compileContextInfoPath << "' content type is incorrect" << std::endl;
         return;
     }
+    if (compileContextInfoJson.contains("needModifyRecord") &&
+        compileContextInfoJson["needModifyRecord"].is_boolean()) {
+        compilerOptions_.compileContextInfo.needModifyRecord = compileContextInfoJson["needModifyRecord"];
+    }
+    if (compileContextInfoJson.contains("bundleName") &&
+        compileContextInfoJson["bundleName"].is_string()) {
+        compilerOptions_.compileContextInfo.bundleName = compileContextInfoJson["bundleName"];
+    }
     std::set<std::string> externalPkgNames;
     for (const auto& elem : compileContextInfoJson["hspPkgNames"]) {
         if (elem.is_string()) {

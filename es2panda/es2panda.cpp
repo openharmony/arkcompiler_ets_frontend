@@ -108,6 +108,9 @@ void Compiler::CompileAbcFileInParallel(SourceFile *src, const CompilerOptions &
         std::cerr << " [" << src->fileName << "]" << std::endl;
         throw;
     }
+    if (options.compileContextInfo.needModifyRecord) {
+        abcToAsmCompiler_->SetBundleName(options.compileContextInfo.bundleName);
+    }
 
     auto *compileAbcClassQueue = new compiler::CompileAbcClassQueue(options.abcClassThreadCount,
                                                                     options,
