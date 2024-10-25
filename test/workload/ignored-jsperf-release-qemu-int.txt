@@ -26,6 +26,7 @@ TestCaseError_Intl.NumberFormat_Error_formatRangeToParts
 #20145
 String_toLocaleLowerCase
 String_toLocaleUpperCase
+Math_abs
 # --- end of Issue #20145
 
 
