@@ -24,6 +24,9 @@ class ReferenceTypeAnnotationIsNull {
 public:
     explicit ReferenceTypeAnnotationIsNull([[maybe_unused]] ArenaAllocator &allocator) {}
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
+
+private:
+    bool CheckExceptions(ir::Identifier const *const id) const;
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

@@ -127,8 +127,9 @@ ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
     Lexer()->NextToken();  // eat launch
 
     ir::Expression *expr = ParseLeftHandSideExpression(flags);
-    if (!expr->IsCallExpression()) {
-        ThrowSyntaxError("Only call expressions are allowed after 'launch'", expr->Start());
+    if (expr == nullptr || !expr->IsCallExpression()) {
+        LogSyntaxError("Only call expressions are allowed after 'launch'", Lexer()->GetToken().Start());
+        return nullptr;
     }
     auto call = expr->AsCallExpression();
     auto *launchExpression = AllocNode<ir::ETSLaunchExpression>(call);
@@ -307,7 +308,7 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
         return ParsePrimaryExpressionIdent(flags);
     }
 
-    ThrowSyntaxError({"Unexpected token '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
+    LogSyntaxError({"Unexpected token '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
     return nullptr;
 }
 

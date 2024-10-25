@@ -135,8 +135,7 @@
                         "arguments": [
                           {
                             "type": "StringLiteral",
-                            "value": "test_method
-",
+                            "value": "test_method\n",
                             "loc": {
                               "start": {
                                 "line": 24,

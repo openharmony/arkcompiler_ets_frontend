@@ -62,6 +62,7 @@ module Enums
 
     node_type_enum_flags = []
     scope_type_enum_flags = []
+    decl_type_enum_flags = ['NONE']
     data.macros&.each do |macros|
       case macros.name
       when 'AST_NODE_MAPPING'
@@ -76,18 +77,25 @@ module Enums
       case macros.name
       when 'SCOPE_TYPES'
         scope_type_enum_flags.concat(macros.values&.map { |x| x[0] })
+      when 'DECLARATION_KINDS'
+        decl_type_enum_flags.concat(macros.values&.map { |x| x[0] })
       end
     end
 
-    return if node_type_enum_flags.empty?
+    unless node_type_enum_flags.empty?
+      @enums['AstNodeType'] = EnumData.new(OpenStruct.new({ 'kind' => 'simple', 'flags' => node_type_enum_flags,
+                                                            'namespace' => 'ir', 'name' => 'AstNodeType' }))
+    end
 
-    @enums['AstNodeType'] = EnumData.new(OpenStruct.new({ 'kind' => 'simple', 'flags' => node_type_enum_flags,
-                                                          'namespace' => 'ir', 'name' => 'AstNodeType' }))
+    unless scope_type_enum_flags.empty?
+      @enums['ScopeType'] = EnumData.new(OpenStruct.new({ 'kind' => 'simple', 'flags' => scope_type_enum_flags,
+                                                          'namespace' => 'varbinder', 'name' => 'ScopeType' }))
+    end
 
-    return if scope_type_enum_flags.empty?
+    return if decl_type_enum_flags.empty? || decl_type_enum_flags == ['NONE']
 
-    @enums['ScopeType'] = EnumData.new(OpenStruct.new({ 'kind' => 'simple', 'flags' => scope_type_enum_flags,
-                                                        'namespace' => 'varbinder', 'name' => 'ScopeType' }))
+    @enums['DeclType'] = EnumData.new(OpenStruct.new({ 'kind' => 'simple', 'flags' => decl_type_enum_flags,
+                                                       'namespace' => 'varbinder', 'name' => 'DeclType' }))
   end
 
   module_function :wrap_data, :enums

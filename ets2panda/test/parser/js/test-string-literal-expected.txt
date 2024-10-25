@@ -5,7 +5,7 @@
       "type": "ExpressionStatement",
       "expression": {
         "type": "StringLiteral",
-        "value": "",
+        "value": "\u0012",
         "loc": {
           "start": {
             "line": 17,

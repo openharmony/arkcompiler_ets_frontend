@@ -43,6 +43,7 @@
 #include "lexer/lexer.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/sourceLocation.h"
+#include "parser/ETSparser.h"
 
 using namespace std::literals::string_literals;
 
@@ -741,7 +742,7 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParserImpl::Par
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
-    lexer_->NextToken();
+    ExpectToken(lexer::TokenType::KEYW_CLASS);
 
     ir::Identifier *identNode = ParseClassIdent(modifiers);
 
@@ -1169,7 +1170,7 @@ util::StringView ParserImpl::ParseSymbolIteratorIdentifier() const noexcept
     return util::StringView {compiler::Signatures::ITERATOR_METHOD};
 }
 
-ir::Identifier *ParserImpl::ExpectIdentifier(bool isReference, bool isUserDefinedType)
+ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, bool isUserDefinedType)
 {
     auto const &token = lexer_->GetToken();
     auto const tokenType = token.Type();
@@ -1197,7 +1198,6 @@ ir::Identifier *ParserImpl::ExpectIdentifier(bool isReference, bool isUserDefine
     }
 
     auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());
-    ident->SetReference(isReference);
     //  NOTE: here actual token can be changed!
     ident->SetRange({tokenStart, lexer_->GetToken().End()});
 

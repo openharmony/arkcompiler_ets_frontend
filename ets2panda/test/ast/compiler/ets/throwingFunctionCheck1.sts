@@ -18,3 +18,6 @@ function TestFunction(): void throws {}
 let notOK = TestFunction();
 
 /* @@? 18:13 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@? 18:13 Error TypeError: Cannot use type 'void' as value.  */
+/* @@? 18:13 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@? 18:13 Error TypeError: Cannot use type 'void' as value.  */

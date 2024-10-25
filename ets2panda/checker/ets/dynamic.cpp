@@ -324,7 +324,6 @@ ir::ClassStaticBlock *ETSChecker::CreateDynamicCallClassInitializer(Language lan
         auto *classId = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *methodId = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
-        methodId->SetReference();
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *callee =
             AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
@@ -404,7 +403,6 @@ void ETSChecker::ClassInitializerFromImport(ir::ETSImportDeclaration *import, Ar
     auto *classId = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *methodId = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
-    methodId->SetReference();
     auto *callee =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
@@ -423,7 +421,6 @@ void ETSChecker::ClassInitializerFromImport(ir::ETSImportDeclaration *import, Ar
     auto *moduleClassId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, Allocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *fieldId = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
-    fieldId->SetReference();
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *property = AllocNode<ir::MemberExpression>(moduleClassId, fieldId, ir::MemberExpressionKind::PROPERTY_ACCESS,
                                                      false, false);
@@ -543,7 +540,6 @@ void ETSChecker::EmitDynamicModuleClassInitCall()
     auto *classId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, Allocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *methodId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS_INIT, Allocator());
-    methodId->SetReference();
     auto *callee =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);

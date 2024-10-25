@@ -1111,9 +1111,9 @@ void ETSGen::ApplyBoxingConversion(const ir::AstNode *node)
         static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~(ir::BoxingUnboxingFlags::BOXING_FLAG)));
 }
 
-void ETSGen::ApplyUnboxingConversion(const ir::AstNode *node)
+void ETSGen::ApplyUnboxingConversion(const ir::AstNode *node, const checker::Type *targetType)
 {
-    EmitUnboxingConversion(node);
+    EmitUnboxingConversion(node, targetType);
     node->SetBoxingUnboxingFlags(static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() &
                                                                       ~(ir::BoxingUnboxingFlags::UNBOXING_FLAG)));
 }
@@ -1134,7 +1134,7 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
     }
 
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-        ApplyUnboxingConversion(node);
+        ApplyUnboxingConversion(node, targetType);
     }
 
     if (targetType == nullptr) {
@@ -1227,8 +1227,7 @@ void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signature
 void ETSGen::EmitUnboxEnum(const ir::AstNode *node, const checker::Type *enumType)
 {
     RegScope rs(this);
-    if (enumType == nullptr) {
-        ASSERT(node->Parent()->IsTSAsExpression());
+    if (node->Parent()->IsTSAsExpression()) {
         const auto *const asExpression = node->Parent()->AsTSAsExpression();
         enumType = asExpression->TsType();
     }
@@ -1241,7 +1240,7 @@ void ETSGen::EmitUnboxEnum(const ir::AstNode *node, const checker::Type *enumTyp
     SetAccumulatorType(enumType);
 }
 
-void ETSGen::EmitUnboxingConversion(const ir::AstNode *node)
+void ETSGen::EmitUnboxingConversion(const ir::AstNode *node, const checker::Type *targetType)
 {
     switch (ir::BoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG & node->GetBoxingUnboxingFlags())) {
         case ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN: {
@@ -1285,7 +1284,7 @@ void ETSGen::EmitUnboxingConversion(const ir::AstNode *node)
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_ENUM: {
-            EmitUnboxEnum(node, nullptr);
+            EmitUnboxEnum(node, targetType);
             break;
         }
         default:

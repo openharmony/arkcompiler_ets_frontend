@@ -1444,6 +1444,11 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
             tsType = GetTypeFromTypeAliasReference(refVar);
             break;
         }
+        case ir::AstNodeType::ANNOTATION_DECLARATION: {
+            LogTypeError("Annotations are only implemented at the parse stage.", name->Start());
+            tsType = GlobalTypeError();
+            break;
+        }
         default: {
             UNREACHABLE();
         }
@@ -2260,6 +2265,10 @@ void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunction
         if (maybeSubstitutedFunctionSig != nullptr) {
             returnTypeAnnotation->SetTsType(maybeSubstitutedFunctionSig->ReturnType());
         }
+
+        // Return type can be ETSFunctionType
+        // Run varbinder to set scopes for cloned node
+        compiler::InitScopesPhaseETS::RunExternalNode(returnTypeAnnotation, VarBinder());
         lambda->SetReturnTypeAnnotation(returnTypeAnnotation);
     }
 }

@@ -71,7 +71,6 @@ ir::TypeNode *PromiseVoidInferencePhase::CreatePromiseVoidType(checker::ETSCheck
     auto *voidParam = [checker]() {
         auto paramsVector = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
         auto *voidId = checker->AllocNode<ir::Identifier>(compiler::Signatures::UNDEFINED, checker->Allocator());
-        voidId->SetReference();
         auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(voidId);
         paramsVector.push_back(checker->AllocNode<ir::ETSTypeReference>(part));
         auto *params = checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(paramsVector));
@@ -81,7 +80,6 @@ ir::TypeNode *PromiseVoidInferencePhase::CreatePromiseVoidType(checker::ETSCheck
     auto *promiseVoidType = [checker, voidParam]() {
         auto *promiseId =
             checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_PROMISE_CLASS, checker->Allocator());
-        promiseId->SetReference();
         auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(promiseId, voidParam, nullptr);
         auto *type = checker->AllocNode<ir::ETSTypeReference>(part);
         return type;

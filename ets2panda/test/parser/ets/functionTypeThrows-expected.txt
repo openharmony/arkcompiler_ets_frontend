@@ -237,7 +237,7 @@
                     "column": 32
                   }
                 }
-              }
+              },
               "throwMarker": "throws",
               "loc": {
                 "start": {

@@ -284,7 +284,7 @@
                                   "column": 66
                                 }
                               }
-                            }
+                            },
                             "throwMarker": "throws",
                             "loc": {
                               "start": {
@@ -578,7 +578,7 @@
                                   "column": 64
                                 }
                               }
-                            }
+                            },
                             "throwMarker": "throws",
                             "loc": {
                               "start": {
@@ -1207,7 +1207,7 @@
                                       "column": 1
                                     }
                                   }
-                                }
+                                },
                                 "throwMarker": "throws",
                                 "loc": {
                                   "start": {
@@ -2490,7 +2490,7 @@
                                   "column": 66
                                 }
                               }
-                            }
+                            },
                             "throwMarker": "throws",
                             "loc": {
                               "start": {
@@ -2784,7 +2784,7 @@
                                   "column": 64
                                 }
                               }
-                            }
+                            },
                             "throwMarker": "throws",
                             "loc": {
                               "start": {
@@ -3607,7 +3607,7 @@
                                       "column": 1
                                     }
                                   }
-                                }
+                                },
                                 "throwMarker": "throws",
                                 "loc": {
                                   "start": {
@@ -4216,7 +4216,7 @@
                                             "column": 1
                                           }
                                         }
-                                      }
+                                      },
                                       "throwMarker": "throws",
                                       "loc": {
                                         "start": {
@@ -4268,7 +4268,7 @@
                               },
                               {
                                 "type": "UndefinedLiteral",
-                                "value": undefined,
+                                "value": "undefined",
                                 "loc": {
                                   "start": {
                                     "line": 1,
@@ -4811,7 +4811,7 @@
                             "arguments": [
                               {
                                 "type": "UndefinedLiteral",
-                                "value": undefined,
+                                "value": "undefined",
                                 "loc": {
                                   "start": {
                                     "line": 1,
@@ -4825,7 +4825,7 @@
                               },
                               {
                                 "type": "UndefinedLiteral",
-                                "value": undefined,
+                                "value": "undefined",
                                 "loc": {
                                   "start": {
                                     "line": 1,

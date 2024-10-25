@@ -143,7 +143,8 @@ public:
     void InitializeBuiltin(varbinder::Variable *var, const util::StringView &name);
     bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
     Type *CheckTypeCached(ir::Expression *expr) override;
-    void ResolveStructuredTypeMembers([[maybe_unused]] Type *type) override {}
+    void ResolveStructuredTypeMembers([[maybe_unused]] Type *type) override {};
+    Type *GetTypeFromVariableDeclaration(varbinder::Variable *const var);
     Type *GetTypeOfVariable([[maybe_unused]] varbinder::Variable *var) override;
     Type *GuaranteedTypeForUncheckedCast(Type *base, Type *substituted);
     Type *GuaranteedTypeForUncheckedCallReturn(Signature *sig);

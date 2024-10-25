@@ -45,7 +45,6 @@ ir::ETSTypeReference *CreateStructTypeReference(checker::ETSChecker *checker,
 
         for (const auto &param : etsStrucDeclaration->Definition()->TypeParams()->Params()) {
             auto *identRef = checker->AllocNode<ir::Identifier>(param->AsTSTypeParameter()->Name()->Name(), allocator);
-            identRef->AsIdentifier()->SetReference();
 
             referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef, nullptr, nullptr);
 
@@ -59,7 +58,6 @@ ir::ETSTypeReference *CreateStructTypeReference(checker::ETSChecker *checker,
 
     auto *identSelfRef =
         checker->AllocNode<ir::Identifier>(etsStrucDeclaration->Definition()->Ident()->Name(), allocator);
-    identSelfRef->AsIdentifier()->SetReference();
 
     auto *referenceSelfPart = checker->AllocNode<ir::ETSTypeReferencePart>(identSelfRef, typeParamSelfInst, nullptr);
 
@@ -70,7 +68,7 @@ ir::ETSTypeReference *CreateStructTypeReference(checker::ETSChecker *checker,
     auto *typeParamInst = checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(params));
 
     auto *identRef = checker->AllocNode<ir::Identifier>(util::StringView(STRUCT_CLASS_NAME), allocator);
-    identRef->AsIdentifier()->SetReference();
+
     auto *referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef, typeParamInst, nullptr);
 
     auto *typeReference = checker->AllocNode<ir::ETSTypeReference>(referencePart);

@@ -107,6 +107,8 @@ public:
 
     void IdentifierAnalysis() override;
     void BuildClassDefinition(ir::ClassDefinition *classDef) override;
+    void BuildObjectExpression(ir::ObjectExpression *obj);
+    void BuildETSTypeReference(ir::ETSTypeReference *typeRef);
     void BuildClassProperty(const ir::ClassProperty *prop) override;
     void LookupIdentReference(ir::Identifier *ident) override;
     bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;
@@ -117,6 +119,7 @@ public:
     void BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
     void BuildMemberExpression(ir::MemberExpression *memberExpr);
     void BuildMethodDefinition(ir::MethodDefinition *methodDef);
+    void BuildAnnotationUsage(ir::AnnotationUsage *annoUsage);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
     bool DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,

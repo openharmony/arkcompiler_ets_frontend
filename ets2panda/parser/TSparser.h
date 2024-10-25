@@ -140,7 +140,7 @@ private:
     void ThrowIllegalContinueError() override;
     void ThrowIfBodyEmptyError(ir::Statement *consequent) override;
     void ThrowMultipleDefaultError() override;
-    void ThrowIllegalNewLineErrorAfterThrow() override;
+    void LogIllegalNewLineErrorAfterThrow() override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                 bool isExportEquals = false) override;

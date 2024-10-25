@@ -21,7 +21,7 @@ from parse_namespace import parse_namespace
 from parse_enum import parse_enum_class
 from parse_struct import parse_struct
 from parse_using import parse_using
-from parse_define import parse_define_macros
+from parse_define import parse_define_macros, is_known_macros
 from parse_class import parse_class, parse_friend_class, parse_template_prefix
 from parse_method import parse_method_or_constructor
 from parse_arguments import parse_argument
@@ -56,63 +56,51 @@ class CppParser:
             elif self.it.is_template():
                 self.it.end, self.template = parse_template_prefix(self.it.data, self.it.start)
 
-            # Namespaces
             elif self.it.is_namespace():
                 self.it.end, self.parsed = parse_namespace(self.it.data, self.it.start)
                 self.res_update()
 
-            # Enum class
             elif self.it.is_enum():
                 self.it.end, self.parsed = parse_enum_class(self.it.data, self.it.start)
                 self.res_append_namespace()
 
-            # Struct
             elif self.it.is_struct():
                 self.it.end, self.parsed = parse_struct(self.it.data, self.it.start)
                 self.res_append("structs")
 
-            # Using
             elif self.it.is_using():
                 self.it.end, self.parsed = parse_using(self.it.data, self.it.start)
                 self.res_append_in_modifier("usings")
 
-            # define macros (from class parser)
             elif self.it.is_define_macro():
                 self.it.end, self.parsed = parse_define_macros(self.it.data, self.it.start)
                 self.res_append("macros")
 
-            # Known macroses (from class parser)
-            elif self.it.is_known_macros():
+            elif is_known_macros(self.it.current_line):
                 self.parsed = self.it.current_line
                 self.res_append("known_macroses")
 
-            # Private, public, protected modifier (from class parser)
             elif self.it.is_access_modifier():
                 self.update_access_modifier()
 
-            # Friend class
             elif self.it.is_firend_class():
                 self.it.end, self.parsed = parse_friend_class(self.it.data, self.it.start)
                 self.res_append("friends")
 
-            # Class forward declaration
             elif self.it.is_class_forward_decl():
                 self.parsed = self.it.current_line.replace("class", "").strip(" ;")
                 self.res_append("class_forward_declaration")
 
-            # Class definition
             elif self.it.is_class_definition():
                 self.it.end, self.parsed = parse_class(
                     self.it.data, self.it.start, self.namespace, self.parent_class_name
                 )
                 self.res_append_class_definition()
 
-            # Function, method or constructor
             elif self.it.is_method_or_constructor():
                 self.it.end, self.parsed = parse_method_or_constructor(self.it.data, self.it.start)
                 self.res_append_method_or_constructor()
 
-            # Field
             elif self.it.is_field():
                 self.parsed = parse_argument(self.it.data[self.it.start : self.it.next_semicolon])
                 self.it.end = self.it.next_semicolon
@@ -205,4 +193,4 @@ class CppParser:
                 self.parsed["template"] = self.template
                 self.template = None
             else:
-                warning_log("Skipping template for '" + self.parsed + "'")
+                warning_log(f"Skipping template for '{self.parsed}'")

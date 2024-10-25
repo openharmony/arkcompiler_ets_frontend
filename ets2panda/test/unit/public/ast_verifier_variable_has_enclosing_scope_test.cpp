@@ -14,10 +14,7 @@
  */
 
 #include "ast_verifier_test.h"
-#include "checker/ETSchecker.h"
-#include "ir/expressions/identifier.h"
 #include "ir/astNode.h"
-#include "parser/ETSparser.h"
 
 #include <gtest/gtest.h>
 
@@ -98,6 +95,57 @@ TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("VariableHasEnclosingScopeForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, LambdaAsParameter)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        function foo(callback: (resolve: (val: int) => void) => void): void {}
+
+        function main(): void {
+            foo((resolve: (val: int) => void): void => {});
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("VariableHasEnclosingScopeForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, PartialClassDeclaration)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        export class IncrementalNode {
+            protected onChildInserted: ((node: IncrementalNode) => void) | undefined = undefined
+            private static readonly ESCAPED_CHARS: char[] = [c'\"', c'\\']
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 

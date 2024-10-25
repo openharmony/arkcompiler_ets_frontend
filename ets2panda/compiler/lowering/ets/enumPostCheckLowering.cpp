@@ -29,7 +29,6 @@ ir::CallExpression *EnumPostCheckLoweringPhase::CreateCall(
     auto *classId = checker->AllocNode<ir::Identifier>(classDef->Ident()->Name(), checker->Allocator());
     auto *methodId = checker->AllocNode<ir::Identifier>(
         (argument->TsType()->AsETSEnumType()->*getMethod)().memberProxyType->Name(), checker->Allocator());
-    methodId->SetReference();
     auto *callee = checker->AllocNode<ir::MemberExpression>(classId, methodId,
                                                             ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 

@@ -126,7 +126,7 @@ protected:
     ir::MetaProperty *ParsePotentialNewTarget();
     void CheckInvalidDestructuring(const ir::AstNode *object) const;
     void ValidateParenthesizedExpression(ir::Expression *lhsExpression);
-    void ValidateGroupedExpression(ir::Expression *lhsExpression);
+    bool ValidateGroupedExpression(ir::Expression *lhsExpression);
     ir::Expression *ParseImportExpression();
     ir::Expression *ParseOptionalChain(ir::Expression *leftSideExpr);
     ir::Expression *ParsePropertyKey(ExpressionParseFlags flags);
@@ -252,7 +252,7 @@ protected:
     // StatementParser
     ArenaVector<ir::Statement *> ParseStatementList(StatementParsingFlags flags = StatementParsingFlags::ALLOW_LEXICAL);
     virtual ir::Statement *ParseAssertStatement();
-    virtual void ValidateLabeledStatement(lexer::TokenType type);
+    virtual bool ValidateLabeledStatement(lexer::TokenType type);
     ir::BlockStatement *ParseBlockStatement();
     ir::EmptyStatement *ParseEmptyStatement();
     ir::Statement *ParseForStatement();
@@ -385,7 +385,7 @@ protected:
     virtual void ThrowIllegalContinueError();
     virtual void ThrowIfBodyEmptyError(ir::Statement *consequent);
     virtual void ThrowMultipleDefaultError();
-    virtual void ThrowIllegalNewLineErrorAfterThrow();
+    virtual void LogIllegalNewLineErrorAfterThrow();
     virtual void ThrowIfVarDeclaration(VariableParsingFlags flags);
     virtual ir::Expression *ParsePrefixAssertionExpression();
     // NOLINTNEXTLINE(google-default-arguments)
@@ -446,7 +446,11 @@ protected:
     virtual ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                         bool isExportEquals = false);
     virtual ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
-    virtual void ValidateForInStatement() {};
+    virtual bool ValidateForInStatement()
+    {
+        return true;
+    }
+
     virtual ir::Statement *ParseTryStatement();
     virtual ir::ThrowStatement *ParseThrowStatement();
     virtual ir::DebuggerStatement *ParseDebuggerStatement();

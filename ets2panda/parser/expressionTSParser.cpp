@@ -169,7 +169,6 @@ ir::AnnotatedExpression *TSParser::ParsePatternElementGetReturnNode(ExpressionPa
         }
         case lexer::TokenType::LITERAL_IDENT: {
             ir::AnnotatedExpression *returnNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            returnNode->AsIdentifier()->SetReference();
 
             if (returnNode->AsIdentifier()->Decorators().empty()) {
                 returnNode->SetRange(Lexer()->GetToken().Loc());
@@ -354,7 +353,6 @@ ir::Expression *TSParser::ParseModuleReference()
 ir::TSTypeReference *TSParser::ParseConstExpression()
 {
     auto *identRef = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-    identRef->SetReference();
     identRef->SetRange(Lexer()->GetToken().Loc());
 
     auto *typeReference = AllocNode<ir::TSTypeReference>(identRef, nullptr);

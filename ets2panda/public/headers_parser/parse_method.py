@@ -16,7 +16,6 @@
 
 
 from typing import Tuple, Dict, List, Any
-from log_tools import dump_to_file
 from text_tools import (
     find_first_of_characters,
     rfind_first_of_characters,
@@ -96,13 +95,12 @@ def parse_declaration_without_postfix(data: str, start: int, res: Dict[str, Any]
     end_of_args, res["args"] = parse_arguments(data, start_of_args)
 
     # Name
-    start_of_function_name = rfind_first_of_characters(" *&", data, start_of_args - 1) + 1
+    start_of_function_name = rfind_first_of_characters(" *&\n", data, start_of_args - 1) + 1
     if start_of_function_name > len(data):
         start_of_function_name = 0
     res["name"] = data[start_of_function_name:start_of_args]
 
     if res["name"].isupper():
-        dump_to_file("/gen/new_defines.txt", res["name"])
         raise RuntimeError("New macros found: '" + res["name"] + "'. Please add it to list.")
 
     # Prefix

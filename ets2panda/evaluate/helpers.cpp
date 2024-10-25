@@ -318,8 +318,6 @@ void AddExternalProgram(parser::Program *program, parser::Program *extProgram, s
 ir::ETSTypeReference *CreateETSTypeReference(checker::ETSChecker *checker, util::StringView name)
 {
     auto *identRef = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
-    identRef->AsIdentifier()->SetReference();
-
     auto *typeRefPart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef);
     return checker->AllocNode<ir::ETSTypeReference>(typeRefPart);
 }

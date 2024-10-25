@@ -320,7 +320,7 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
 
     Lexer()->NextToken();  // eat ']'
 
-    tupleType->SetTypeAnnotationsList(tupleTypeList);
+    tupleType->SetTypeAnnotationsList(std::move(tupleTypeList));
     const auto endLoc = Lexer()->GetToken().End();
     tupleType->SetRange({startLoc, endLoc});
 

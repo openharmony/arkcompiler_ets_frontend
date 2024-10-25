@@ -22,6 +22,7 @@
 #include "varbinder/variableFlags.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/statements/classDeclaration.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/scriptFunction.h"
@@ -443,6 +444,22 @@ Variable *FunctionParamScope::AddBinding([[maybe_unused]] ArenaAllocator *alloca
                                          [[maybe_unused]] ScriptExtension extension)
 {
     UNREACHABLE();
+}
+
+Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allocator,
+                                           [[maybe_unused]] Variable *currentVariable, [[maybe_unused]] Decl *newDecl,
+                                           [[maybe_unused]] ScriptExtension extension)
+{
+    auto *ident = newDecl->Node()->AsClassProperty()->Id();
+    auto annoVar = allocator->New<LocalVariable>(newDecl, VariableFlags::PROPERTY);
+    auto var = InsertBinding(ident->Name(), annoVar).first->second;
+    if (var != nullptr) {
+        var->SetScope(this);
+        if (ident != nullptr) {
+            ident->SetVariable(var);
+        }
+    }
+    return var;
 }
 
 Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -895,6 +912,16 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
         case DeclType::TYPE_ALIAS: {
             props->SetBindingProps(VariableFlags::TYPE_ALIAS, newDecl->Node()->AsTSTypeAliasDeclaration()->Id(),
                                    TypeAliasScope());
+            break;
+        }
+        case DeclType::ANNOTATIONDECL: {
+            props->SetBindingProps(VariableFlags::ANNOTATIONDECL, newDecl->Node()->AsAnnotationDeclaration()->Ident(),
+                                   isStatic ? staticDeclScope_ : instanceDeclScope_);
+            break;
+        }
+        case DeclType::ANNOTATIONUSAGE: {
+            props->SetBindingProps(VariableFlags::ANNOTATIONUSAGE, newDecl->Node()->AsAnnotationUsage()->Ident(),
+                                   isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
         }
         default: {

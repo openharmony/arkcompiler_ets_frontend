@@ -20,6 +20,8 @@
 #include "varbinder/variable.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
+#include "ir/srcDump.h"
+#include "ir/statements/annotationUsage.h"
 #include "util/language.h"
 
 namespace ark::es2panda::ir {
@@ -86,7 +88,8 @@ public:
           capturedVars_(body_.get_allocator()),
           localVariableIsNeeded_(body_.get_allocator()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_))
+          localPrefix_("$" + std::to_string(localIndex_)),
+          annotations_(body_.get_allocator())
     {
     }
 
@@ -101,7 +104,8 @@ public:
           capturedVars_(allocator->Adapter()),
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_))
+          localPrefix_("$" + std::to_string(localIndex_)),
+          annotations_(body_.get_allocator())
     {
     }
 
@@ -116,8 +120,8 @@ public:
           capturedVars_(allocator->Adapter()),
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_))
-
+          localPrefix_("$" + std::to_string(localIndex_)),
+          annotations_(body_.get_allocator())
     {
     }
 
@@ -355,6 +359,19 @@ public:
         return capturedVars_.erase(var) != 0;
     }
 
+    const ArenaVector<AnnotationUsage *> &Annotations() const
+    {
+        return annotations_;
+    }
+
+    void SetAnnotations(ArenaVector<AnnotationUsage *> &&annotations)
+    {
+        annotations_ = std::move(annotations);
+        for (auto anno : annotations_) {
+            anno->SetParent(this);
+        }
+    }
+
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
     bool HasComputedInstanceField() const;
@@ -373,6 +390,20 @@ public:
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
+    }
+
+    template <typename T>
+    static void DumpItems(ir::SrcDumper *dumper, const std::string &prefix, const ArenaVector<T *> &items)
+    {
+        if (!items.empty()) {
+            dumper->Add(prefix);
+            for (size_t i = 0; i < items.size(); ++i) {
+                items[i]->Dump(dumper);
+                if (i < items.size() - 1) {
+                    dumper->Add(", ");
+                }
+            }
+        }
     }
 
 private:
@@ -398,6 +429,7 @@ private:
     static int classCounter_;
     const int localIndex_ {};
     const std::string localPrefix_ {};
+    ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir
 

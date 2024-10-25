@@ -151,9 +151,15 @@ __attribute__((unused)) char *StdStringToCString(ArenaAllocator *allocator, std:
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
 }
 
+__attribute__((unused)) char *UStringToCString(ArenaAllocator *allocator, util::UString const sv)
+{
+    return StringViewToCString(allocator, sv.View());
+}
+
 __attribute__((unused)) es2panda_variantDoubleCharArrayBool EnumMemberResultToEs2pandaVariant(
     ArenaAllocator *allocator, varbinder::EnumMemberResult variant)
 {
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
     es2panda_variantDoubleCharArrayBool es2panda_variant;
     es2panda_variant.index = variant.index();
@@ -172,6 +178,33 @@ __attribute__((unused)) es2panda_variantDoubleCharArrayBool EnumMemberResultToEs
     }
     return es2panda_variant;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
+    // NOLINTEND(cppcoreguidelines-pro-type-union-access)
+}
+
+__attribute__((unused)) es2panda_DynamicImportData *DynamicImportDataToE2p(
+    ArenaAllocator *allocator, const varbinder::DynamicImportData *dynamicImportData)
+{
+    auto import = reinterpret_cast<const es2panda_AstNode *>(dynamicImportData->import);
+    auto specifier = reinterpret_cast<const es2panda_AstNode *>(dynamicImportData->specifier);
+    auto variable = reinterpret_cast<es2panda_Variable *>(dynamicImportData->variable);
+    auto es2pandaDynamicImportData = allocator->New<es2panda_DynamicImportData>();
+    es2pandaDynamicImportData->import = import;
+    es2pandaDynamicImportData->specifier = specifier;
+    es2pandaDynamicImportData->variable = variable;
+    return es2pandaDynamicImportData;
+}
+
+__attribute__((unused)) es2panda_DynamicImportData DynamicImportDataToE2p(
+    const varbinder::DynamicImportData dynamicImportData)
+{
+    auto import = reinterpret_cast<const es2panda_AstNode *>(dynamicImportData.import);
+    auto specifier = reinterpret_cast<const es2panda_AstNode *>(dynamicImportData.specifier);
+    auto variable = reinterpret_cast<es2panda_Variable *>(dynamicImportData.variable);
+    es2panda_DynamicImportData es2pandaDynamicImportData;
+    es2pandaDynamicImportData.import = import;
+    es2pandaDynamicImportData.specifier = specifier;
+    es2pandaDynamicImportData.variable = variable;
+    return es2pandaDynamicImportData;
 }
 
 __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char const *src)
@@ -632,20 +665,37 @@ SET_NUMBER_LITERAL_IMPL(Float, float)
 
 #undef SET_NUMBER_LITERAL_IMPL
 
+void *AllocMemory(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement)
+{
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    void *ptr = allocator->Alloc(numberOfElements * sizeOfElement);
+    return ptr;
+}
+
 #include "generated/es2panda_lib/es2panda_lib_impl.inc"
 
 es2panda_Impl g_impl = {
     ES2PANDA_LIB_VERSION,
 
-    CreateConfig,           DestroyConfig,
-    CreateContextFromFile,  CreateContextFromString,
-    ProceedToState,         DestroyContext,
-    ContextState,           ContextErrorMessage,
-    ContextProgram,         ProgramAst,
-    ProgramExternalSources, ExternalSourceName,
-    ExternalSourcePrograms, AstNodeForEach,
-    SetNumberLiteralInt,    SetNumberLiteralLong,
-    SetNumberLiteralDouble, SetNumberLiteralFloat,
+    CreateConfig,
+    DestroyConfig,
+    CreateContextFromFile,
+    CreateContextFromString,
+    ProceedToState,
+    DestroyContext,
+    ContextState,
+    ContextErrorMessage,
+    ContextProgram,
+    ProgramAst,
+    ProgramExternalSources,
+    ExternalSourceName,
+    ExternalSourcePrograms,
+    AstNodeForEach,
+    SetNumberLiteralInt,
+    SetNumberLiteralLong,
+    SetNumberLiteralDouble,
+    SetNumberLiteralFloat,
+    AllocMemory,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

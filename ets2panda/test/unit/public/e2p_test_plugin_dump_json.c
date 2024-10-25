@@ -33,7 +33,7 @@ void e2p_test_plugin_dump_json_Initialize()
 static void DumpJSON(es2panda_AstNode *node, void *arg)
 {
     es2panda_Context *ctx = arg;
-    puts(impl->AstNodeDumpJSON(ctx, node));
+    puts(impl->AstNodeDumpJSONConst(ctx, node));
     puts("---");
 }
 

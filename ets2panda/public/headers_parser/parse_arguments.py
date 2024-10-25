@@ -23,7 +23,6 @@ Provides:
 """
 
 from typing import Tuple, List, Any, Dict
-from log_tools import warning_log
 from cpp_keywords import modifiers_list
 from text_tools import (
     find_first_of_characters,
@@ -38,8 +37,6 @@ from text_tools import (
 
 def parse_type(data: str) -> dict:
     data = data.strip(" \n")
-    if len(data) > 100:
-        warning_log("Parsing big type!\n---\n" + data + "\n---\n")
 
     if data == "":
         return {}

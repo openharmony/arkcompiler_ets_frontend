@@ -294,7 +294,7 @@
                       "column": 32
                     }
                   }
-                }
+                },
                 "throwMarker": "throws",
                 "loc": {
                   "start": {
@@ -396,7 +396,7 @@
                               "column": 27
                             }
                           }
-                        }
+                        },
                         "throwMarker": "throws",
                         "loc": {
                           "start": {
@@ -459,7 +459,7 @@
                       "column": 54
                     }
                   }
-                }
+                },
                 "throwMarker": "rethrows",
                 "loc": {
                   "start": {
@@ -580,7 +580,7 @@
                                     "column": 30
                                   }
                                 }
-                              }
+                              },
                               "throwMarker": "throws",
                               "loc": {
                                 "start": {
@@ -667,7 +667,7 @@
                                     "column": 30
                                   }
                                 }
-                              }
+                              },
                               "throwMarker": "throws",
                               "loc": {
                                 "start": {
@@ -762,7 +762,7 @@
                                             "column": 34
                                           }
                                         }
-                                      }
+                                      },
                                       "throwMarker": "throws",
                                       "loc": {
                                         "start": {
@@ -811,7 +811,7 @@
                                     "column": 50
                                   }
                                 }
-                              }
+                              },
                               "throwMarker": "throws",
                               "loc": {
                                 "start": {

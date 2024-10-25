@@ -56,11 +56,12 @@
 % end
 
 % classData.class_methods&.each_with_index do |method_info, index|
-    <%= method_info["const"] %> <%= method_info["return_type"].lib_type_to_str %>(*<%=
+    <%= method_info["return_type"].lib_type_to_str %>(*<%=
     className + method_info["overload_name"] %>)(
     es2panda_Context *context<%= if classData.call_cast["call_var"]
 then ", " + classData.call_cast["call_var"] end %><%=
-    method_info["args"]&.map { |arg| if arg.lib_args_to_str.strip() != "" then ", " + arg.lib_args_to_str end}&.join("")
+    method_info["args"]&.map { |arg| if arg.lib_args_to_str.strip() != "" && arg.lib_args_to_str.strip() != "const"
+    then ", " + arg.lib_args_to_str end}&.join("")
     %><%= method_info["return_arg_to_str"] %>);
 
 % end

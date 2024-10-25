@@ -21,4 +21,4 @@ final class CClass extends BClass {
     override foo(): void rethrows {}
 }
 
-/* @@? 17:24 Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */
+/* @@? 21:17 Error TypeError: A rethrowing function must have a throwing function parameter */

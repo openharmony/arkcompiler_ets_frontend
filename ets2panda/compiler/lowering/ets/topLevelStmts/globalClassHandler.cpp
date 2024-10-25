@@ -146,7 +146,6 @@ void GlobalClassHandler::AddInitCallFromStaticBlock(ir::ClassDefinition *globalC
 ir::Identifier *GlobalClassHandler::RefIdent(const util::StringView &name)
 {
     auto *const callee = NodeAllocator::Alloc<ir::Identifier>(allocator_, name, allocator_);
-    callee->SetReference();
     return callee;
 }
 

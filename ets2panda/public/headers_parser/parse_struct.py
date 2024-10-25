@@ -18,6 +18,7 @@
 from typing import Tuple, Dict, Any
 from log_tools import warning_log
 from parse_arguments import parse_argument
+from parse_define import is_known_macros
 from parse_method import parse_method_or_constructor
 from text_tools import (
     smart_split_by,
@@ -32,7 +33,8 @@ def parse_struct_body(data: str) -> list:
     res = []
     for x in smart_split_by(data, ";"):
         if x.find("(") != -1:
-            res.append(parse_method_or_constructor(x, 0)[1])
+            if not is_known_macros(x):
+                res.append(parse_method_or_constructor(x, 0)[1])
         else:
             res.append(parse_argument(x))
     return [x for x in res if x]
@@ -57,7 +59,7 @@ def parse_struct(data: str, start: int = 0) -> Tuple[int, Dict]:
     next_semicolon = smart_find_first_of_characters(";", data, end_of_name)
 
     if start_of_body == len(data) or next_semicolon < start_of_body:
-        warning_log("Empty body in struct '" + struct_name + "'")
+        warning_log(f"Empty body in struct '{struct_name}'")
         return end_of_name, res
 
     start_of_body, end_of_body = find_scope_borders(data, start_of_body)

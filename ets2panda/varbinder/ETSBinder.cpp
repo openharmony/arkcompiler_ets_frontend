@@ -17,6 +17,7 @@
 
 #include "ir/expressions/blockExpression.h"
 #include "ir/expressions/identifier.h"
+#include "ir/expressions/objectExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/expressions/typeofExpression.h"
 #include "ir/expressions/memberExpression.h"
@@ -28,6 +29,8 @@
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
+#include "ir/base/decorator.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/classDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
@@ -130,6 +133,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
             case ir::AstNodeType::TS_INTERFACE_DECLARATION:
             case ir::AstNodeType::TS_TYPE_PARAMETER:
             case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
+            case ir::AstNodeType::ANNOTATION_DECLARATION:
             case ir::AstNodeType::IMPORT_NAMESPACE_SPECIFIER: {
                 ident->SetVariable(res.variable);
                 return;
@@ -221,7 +225,7 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
         return;
     }
 
-    if (ident->IsReference() && res.variable->Declaration()->IsLetOrConstDecl() &&
+    if (ident->IsReference(Extension()) && res.variable->Declaration()->IsLetOrConstDecl() &&
         !res.variable->HasFlag(VariableFlags::INITIALIZED)) {
         ThrowTDZ(ident->Start(), name);
     }
@@ -230,6 +234,46 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
 void ETSBinder::BuildClassProperty(const ir::ClassProperty *prop)
 {
     ResolveReferences(prop);
+}
+
+void ETSBinder::BuildETSTypeReference(ir::ETSTypeReference *typeRef)
+{
+    auto *baseName = typeRef->BaseName();
+    ASSERT(baseName->IsReference(Extension()));
+
+    // We allow to resolve following types in pure dynamic mode:
+    // import * as I from "@dynamic"
+    // let x : I.X.Y
+    bool allowDynamicNamespaces = typeRef->Part()->Name() != baseName;
+    LookupTypeReference(baseName, allowDynamicNamespaces);
+    LookupTypeArgumentReferences(typeRef);
+}
+
+void ETSBinder::BuildObjectExpression(ir::ObjectExpression *obj)
+{
+    for (auto *it : obj->Decorators()) {
+        ResolveReference(it);
+    }
+
+    // NOTE: when we try to resolve references for Object Expression
+    // we visit properties, example:
+    // class C { x : boolean }
+    // let x: C = { x: true }
+    //
+    // However we visit Object Expression with _outer_ scope, not class scope.
+    // That means that varbinder will try to resolve `x` as `x` from outer scope, _not from the class scope_.
+    // The following code will skip resolving LHS of the property.
+    // We can do it because currently LHS is still checked in the `ETSAnalyzer::CheckObjectExprProps` function.
+    for (auto expr : obj->Properties()) {
+        if (expr->IsProperty()) {
+            auto *prop = expr->AsProperty();
+            ResolveReference(prop->Value());
+        }
+    }
+
+    if (obj->TypeAnnotation() != nullptr) {
+        ResolveReference(obj->TypeAnnotation());
+    }
 }
 
 void ETSBinder::InitializeInterfaceIdent(ir::TSInterfaceDeclaration *decl)
@@ -302,11 +346,22 @@ void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
     ResolveMethodDefinition(methodDef);
 }
 
+void ETSBinder::BuildAnnotationUsage(ir::AnnotationUsage *annoUsage)
+{
+    LookupTypeReference(annoUsage->AsAnnotationUsage()->Ident(), false);
+    for (auto *property : annoUsage->Properties()) {
+        ResolveReference(property);
+    }
+}
+
 void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
 {
     methodDef->ResolveReferences([this](auto *childNode) { ResolveReference(childNode); });
 
     auto *func = methodDef->Function();
+    for (auto *anno : func->Annotations()) {
+        ResolveReference(anno);
+    }
     if (methodDef->IsStatic() || func->IsStaticBlock()) {
         return;
     }
@@ -366,6 +421,9 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
 
     for (auto *impl : classDef->Implements()) {
         ResolveReference(impl);
+    }
+    for (auto *anno : classDef->Annotations()) {
+        ResolveReference(anno);
     }
 
     for (auto *stmt : classDef->Body()) {
@@ -761,6 +819,12 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         return true;
     }
 
+    if (var->Declaration()->Node()->IsAnnotationDeclaration() &&
+        var->Declaration()->Node()->AsAnnotationDeclaration()->Ident()->Name() != localName) {
+        ThrowError(importPath->Start(), "Can not rename annotation '" + var->Declaration()->Name().Mutf8() +
+                                            "' in export or import statements.");
+    }
+
     // The first part of the condition will be true, if something was given an alias when exported, but we try
     // to import it using its original name.
     if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias()) {
@@ -854,15 +918,7 @@ void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
 {
     switch (childNode->Type()) {
         case ir::AstNodeType::ETS_TYPE_REFERENCE: {
-            auto *typeRef = childNode->AsETSTypeReference();
-            auto *baseName = typeRef->BaseName();
-            ASSERT(baseName->IsReference());
-            // We allow to resolve following types in pure dynamic mode:
-            // import * as I from "@dynamic"
-            // let x : I.X.Y
-            bool allowDynamicNamespaces = typeRef->Part()->Name() != baseName;
-            LookupTypeReference(baseName, allowDynamicNamespaces);
-            LookupTypeArgumentReferences(typeRef);
+            BuildETSTypeReference(childNode->AsETSTypeReference());
             break;
         }
         case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
@@ -894,6 +950,14 @@ void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
         }
         case ir::AstNodeType::ETS_FUNCTION_TYPE: {
             BuildSignatureDeclarationBaseParams(childNode);
+            break;
+        }
+        case ir::AstNodeType::OBJECT_EXPRESSION: {
+            BuildObjectExpression(childNode->AsObjectExpression());
+            break;
+        }
+        case ir::AstNodeType::ANNOTATION_USAGE: {
+            BuildAnnotationUsage(childNode->AsAnnotationUsage());
             break;
         }
         default: {

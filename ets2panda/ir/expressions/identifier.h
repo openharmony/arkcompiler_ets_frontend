@@ -31,12 +31,13 @@ using ENUMBITOPS_OPERATORS;
 enum class IdentifierFlags : uint32_t {
     NONE = 0U,
     OPTIONAL = 1U << 0U,
-    REFERENCE = 1U << 1U,
-    TDZ = 1U << 2U,
-    PRIVATE = 1U << 3U,
-    GET = 1U << 4U,
-    SET = 1U << 5U,
-    IGNORE_BOX = 1U << 6U,
+    TDZ = 1U << 1U,
+    PRIVATE = 1U << 2U,
+    GET = 1U << 3U,
+    SET = 1U << 4U,
+    IGNORE_BOX = 1U << 5U,
+    ANNOTATIONDECL = 1U << 6U,
+    ANNOTATIONUSAGE = 1U << 7U,
 };
 
 }  // namespace ark::es2panda::ir
@@ -111,18 +112,9 @@ public:
         }
     }
 
-    [[nodiscard]] bool IsReference() const noexcept
+    [[nodiscard]] bool IsReference(ScriptExtension ext) const noexcept
     {
-        return (flags_ & IdentifierFlags::REFERENCE) != 0;
-    }
-
-    void SetReference(bool const isReference = true) noexcept
-    {
-        if (isReference) {
-            flags_ |= IdentifierFlags::REFERENCE;
-        } else {
-            flags_ &= ~IdentifierFlags::REFERENCE;
-        }
+        return !IsDeclaration(ext);
     }
 
     [[nodiscard]] bool IsTdz() const noexcept
@@ -179,6 +171,26 @@ public:
         flags_ |= IdentifierFlags::IGNORE_BOX;
     }
 
+    [[nodiscard]] bool IsAnnotationDecl() const noexcept
+    {
+        return (flags_ & IdentifierFlags::ANNOTATIONDECL) != 0;
+    }
+
+    void SetAnnotationDecl() noexcept
+    {
+        flags_ |= IdentifierFlags::ANNOTATIONDECL;
+    }
+
+    [[nodiscard]] bool IsAnnotataionUsage() const noexcept
+    {
+        return (flags_ & IdentifierFlags::ANNOTATIONUSAGE) != 0;
+    }
+
+    void SetAnnotataionUsage() noexcept
+    {
+        flags_ |= IdentifierFlags::ANNOTATIONUSAGE;
+    }
+
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
         decorators_ = std::move(decorators);
@@ -208,6 +220,12 @@ public:
     }
 
 private:
+    bool CheckDeclarationsPart2(const ir::AstNode *parent, ScriptExtension ext) const;
+    bool CheckDeclarationsPart1(const ir::AstNode *parent, ScriptExtension ext) const;
+    bool CheckNotDeclarations(const ir::AstNode *parent, ScriptExtension ext) const;
+    bool CheckDefinitions(const ir::AstNode *parent, ScriptExtension ext) const;
+    bool IsDeclaration(ScriptExtension ext) const;
+
     util::StringView name_;
     IdentifierFlags flags_ {IdentifierFlags::NONE};
     ArenaVector<Decorator *> decorators_;

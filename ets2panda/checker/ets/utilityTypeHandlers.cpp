@@ -16,6 +16,7 @@
 #include "checker/ETSchecker.h"
 
 #include "ir/ets/etsNullishTypes.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/ets/etsUnionType.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "varbinder/ETSBinder.h"
@@ -168,20 +169,6 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
     unionType->SetParent(propClone);
     propClone->SetParent(newClassDefinition);
 
-    // Handle bindings, variables
-    varbinder::Decl *const newDecl =
-        classProp->IsConst()
-            ? static_cast<varbinder::Decl *>(Allocator()->New<varbinder::ConstDecl>(propClone->Id()->Name()))
-            : Allocator()->New<varbinder::LetDecl>(propClone->Id()->Name());
-
-    propClone->SetVariable(Allocator()->New<varbinder::LocalVariable>(newDecl, varbinder::VariableFlags::PROPERTY));
-
-    propClone->Variable()->SetScope(classProp->IsStatic()
-                                        ? newClassDefinition->Scope()->AsClassScope()->StaticFieldScope()
-                                        : newClassDefinition->Scope()->AsClassScope()->InstanceFieldScope());
-
-    propClone->Variable()->Declaration()->BindNode(propClone);
-
     return propClone;
 }
 
@@ -201,9 +188,6 @@ ir::ClassDefinition *ETSChecker::CreatePartialClassDeclaration(ir::ClassDefiniti
         // Method calls on partial classes will make the class not type safe, so we don't copy any methods
         if (prop->IsClassProperty()) {
             auto *const newProp = CreateNullishProperty(prop->AsClassProperty(), newClassDefinition);
-
-            newClassDefinition->Scope()->AddBinding(Allocator(), nullptr, newProp->Variable()->Declaration(),
-                                                    ScriptExtension::ETS);
 
             // Put the new property into the class declaration
             newClassDefinition->Body().emplace_back(newProp);
@@ -228,7 +212,6 @@ ir::ClassDefinition *ETSChecker::CreatePartialClassDeclaration(ir::ClassDefiniti
 
         newClassDefinition->SetTypeParams(newTypeParams);
         newTypeParams->SetParent(newClassDefinition);
-        newTypeParams->SetScope(newClassDefinition->Scope());
     }
 
     newClassDefinition->SetTsType(nullptr);
@@ -359,6 +342,11 @@ Type *ETSChecker::CreatePartialTypeClassDef(ir::ClassDefinition *const partialCl
 {
     // Create nullish properties of the partial class
     CreatePartialClassDeclaration(partialClassDef, classDef);
+
+    // Run varbinder for new partial class to set scopes
+    compiler::InitScopesPhaseETS::RunExternalNode(partialClassDef, VarBinder());
+
+    // Run checker
     partialClassDef->Check(this);
 
     auto *const partialType = partialClassDef->TsType()->AsETSObjectType();

@@ -33,7 +33,7 @@
               "column": 28
             }
           }
-        }
+        },
         "throwMarker": "throws",
         "loc": {
           "start": {

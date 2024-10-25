@@ -33,7 +33,7 @@ void e2p_test_plugin_ets_src_Initialize()
 static void DumpEtsSrc(es2panda_AstNode *node, void *arg)
 {
     es2panda_Context *ctx = arg;
-    puts(impl->AstNodeDumpEtsSrc(ctx, node));
+    puts(impl->AstNodeDumpEtsSrcConst(ctx, node));
     puts("---");
 }
 

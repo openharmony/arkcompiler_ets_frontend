@@ -470,7 +470,6 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, modifiers, Allocator(), false);
     method->SetRange(funcExpr->Range());
-    func->Id()->SetReference();
     return method;
 }
 
@@ -486,7 +485,6 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
     ir::ScriptFunction *func = ParseFunction(desc->newStatus);
     if (propName->IsIdentifier()) {
         func->SetIdent(propName->AsIdentifier()->Clone(Allocator(), nullptr));
-        func->Id()->SetReference();
     }
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -508,16 +506,49 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
     return method;
 }
 
-bool IsParseClassElementSeenStatic(lexer::Lexer *lexer)
+void ETSParser::UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &seenStatic)
 {
-    char32_t nextCp = lexer->Lookahead();
-    if (lexer->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC && nextCp != lexer::LEX_CHAR_EQUALS &&
+    if (InAmbientContext()) {
+        memberModifiers |= ir::ModifierFlags::DECLARE;
+    }
+
+    char32_t nextCp = Lexer()->Lookahead();
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC && nextCp != lexer::LEX_CHAR_EQUALS &&
         nextCp != lexer::LEX_CHAR_COLON && nextCp != lexer::LEX_CHAR_LEFT_PAREN &&
         nextCp != lexer::LEX_CHAR_LESS_THAN) {
-        lexer->NextToken();
-        return true;
+        Lexer()->NextToken();
+        memberModifiers |= ir::ModifierFlags::STATIC;
+        seenStatic = true;
+    } else {
+        seenStatic = false;
     }
-    return false;
+
+    if (IsClassFieldModifier(Lexer()->GetToken().KeywordType())) {
+        memberModifiers |= ParseClassFieldModifiers(seenStatic);
+    } else if (IsClassMethodModifier(Lexer()->GetToken().Type())) {
+        memberModifiers |= ParseClassMethodModifiers(seenStatic);
+    }
+}
+
+void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
+                                       lexer::SourcePosition pos)
+{
+    if (!annotations.empty()) {
+        if (node->IsAbstract() ||
+            (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
+            ThrowSyntaxError("Annotations are not allowed on an abstract class or methods.", pos);
+        }
+
+        if (node->IsMethodDefinition()) {
+            node->AsMethodDefinition()->Function()->SetAnnotations(std::move(annotations));
+        } else if (node->IsClassDeclaration()) {
+            node->AsClassDeclaration()->Definition()->SetAnnotations(std::move(annotations));
+        } else if (node->IsFunctionDeclaration()) {
+            node->AsFunctionDeclaration()->SetAnnotations(std::move(annotations));
+        } else {
+            ThrowSyntaxError("Annotations are not allowed on this type of declaration.", pos);
+        }
+    }
 }
 
 ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
@@ -525,6 +556,13 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
                                           [[maybe_unused]] ir::ModifierFlags flags)
 {
     auto startLoc = Lexer()->GetToken().Start();
+
+    ArenaVector<ir::AnnotationUsage *> annotations(Allocator()->Adapter());
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
+        Lexer()->NextToken();
+        annotations = ParseAnnotations(flags, false);
+    }
+
     ir::ModifierFlags memberModifiers = ir::ModifierFlags::NONE;
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 &&
         Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXPORT) {
@@ -541,21 +579,14 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
     auto [modifierFlags, isStepToken] = ParseClassMemberAccessModifiers();
     memberModifiers |= modifierFlags;
 
-    if (InAmbientContext()) {
-        memberModifiers |= ir::ModifierFlags::DECLARE;
+    bool seenStatic = false;
+    UpdateMemberModifiers(memberModifiers, seenStatic);
+
+    if (!annotations.empty() && (memberModifiers & ir::ModifierFlags::ABSTRACT) != 0) {
+        ThrowSyntaxError("Annotations cannot be applied to an abstract class or method.", Lexer()->GetToken().Start());
     }
 
-    bool seenStatic = IsParseClassElementSeenStatic(Lexer());
-    if (seenStatic) {
-        memberModifiers |= ir::ModifierFlags::STATIC;
-    }
-
-    if (IsClassFieldModifier(Lexer()->GetToken().KeywordType())) {
-        memberModifiers |= ParseClassFieldModifiers(seenStatic);
-    } else if (IsClassMethodModifier(Lexer()->GetToken().Type())) {
-        memberModifiers |= ParseClassMethodModifiers(seenStatic);
-    }
-
+    auto savePos = Lexer()->GetToken().Start();
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_CLASS:
@@ -574,7 +605,9 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
             ThrowSyntaxError("Access modifier must precede field and method modifiers.");
         }
         default: {
-            return ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
+            auto *property = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
+            ApplyAnnotationsToNode(property, std::move(annotations), savePos);
+            return property;
         }
     }
 }
@@ -915,8 +948,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, name->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, flags, Allocator(), false);
     method->SetRange(funcExpr->Range());
-
-    func->Id()->SetReference();
 
     ConsumeSemicolon(method);
 

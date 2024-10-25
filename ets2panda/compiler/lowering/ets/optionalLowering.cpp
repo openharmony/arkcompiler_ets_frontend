@@ -57,7 +57,6 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(expr));
     auto *tmpIdent = Gensym(allocator);
     auto *tmpIdentClone = tmpIdent->Clone(allocator, nullptr);
-    tmpIdentClone->SetReference();
 
     // '0's act as placeholders
     auto *sequenceExpr = parser->CreateFormattedExpression(

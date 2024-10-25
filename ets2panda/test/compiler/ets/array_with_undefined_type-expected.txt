@@ -228,7 +228,7 @@
                             "elements": [
                               {
                                 "type": "UndefinedLiteral",
-                                "value": undefined,
+                                "value": "undefined",
                                 "loc": {
                                   "start": {
                                     "line": 17,
@@ -242,7 +242,7 @@
                               },
                               {
                                 "type": "UndefinedLiteral",
-                                "value": undefined,
+                                "value": "undefined",
                                 "loc": {
                                   "start": {
                                     "line": 17,
@@ -400,7 +400,7 @@
                         },
                         "right": {
                           "type": "UndefinedLiteral",
-                          "value": undefined,
+                          "value": "undefined",
                           "loc": {
                             "start": {
                               "line": 19,

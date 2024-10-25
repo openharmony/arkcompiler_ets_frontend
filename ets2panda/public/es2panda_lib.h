@@ -64,16 +64,44 @@ typedef struct es2panda_LabelPair es2panda_LabelPair;
 typedef struct es2panda_ScriptFunctionData es2panda_ScriptFunctionData;
 typedef struct es2panda_ImportSource es2panda_ImportSource;
 typedef struct es2panda_Signature es2panda_Signature;
+typedef struct es2panda_SignatureInfo es2panda_SignatureInfo;
+typedef struct es2panda_CheckerContext es2panda_CheckerContext;
+typedef struct es2panda_CompilerOptions es2panda_CompilerOptions;
+typedef struct es2panda_ResolveResult es2panda_ResolveResult;
 typedef struct es2panda_ValidationInfo es2panda_ValidationInfo;
 typedef struct es2panda_Type es2panda_Type;
+typedef struct es2panda_TypeRelation es2panda_TypeRelation;
+typedef struct es2panda_IndexInfo es2panda_IndexInfo;
+typedef struct es2panda_GlobalTypesHolder es2panda_GlobalTypesHolder;
+typedef struct es2panda_ObjectDescriptor es2panda_ObjectDescriptor;
 typedef struct es2panda_Variable es2panda_Variable;
 typedef struct es2panda_Scope es2panda_Scope;
+typedef struct es2panda_ScopeFindResult es2panda_ScopeFindResult;
+typedef struct es2panda_BindingProps es2panda_BindingProps;
+typedef struct es2panda_Declaration es2panda_Declaration;
+typedef struct es2panda_RecordTable es2panda_RecordTable;
+typedef struct es2panda_BoundContext es2panda_BoundContext;
 typedef struct es2panda_AstVisitor es2panda_AstVisitor;
 typedef struct es2panda_CodeGen es2panda_CodeGen;
 typedef struct es2panda_VReg es2panda_VReg;
+typedef struct es2panda_IRNode es2panda_IRNode;
+typedef struct es2panda_ErrorLogger es2panda_ErrorLogger;
 typedef void (*NodeTraverser)(es2panda_AstNode *);
 typedef es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *);
 typedef bool (*NodePredicate)(es2panda_AstNode *);
+typedef es2panda_Variable *(*PropertyProcessor)(es2panda_Variable *, es2panda_Type *);
+typedef void (*PropertyTraverser)(const es2panda_Variable *);
+typedef void (*ClassBuilder)(es2panda_AstNode **nodes, size_t size);
+typedef void (*MethodBuilder)(es2panda_AstNode **statements, size_t sizeStatements, es2panda_AstNode **expression,
+                              size_t sizeExpression, es2panda_Type **type);
+typedef void (*ClassInitializerBuilder)(es2panda_AstNode **statements, size_t sizeStatements,
+                                        es2panda_AstNode **expression, size_t sizeExpression);
+
+typedef struct es2panda_DynamicImportData {
+    const es2panda_AstNode *import;
+    const es2panda_AstNode *specifier;
+    es2panda_Variable *variable;
+} es2panda_DynamicImportData;
 
 enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
@@ -119,6 +147,8 @@ struct es2panda_Impl {
     SET_NUMBER_LITERAL_DECL(Float, float);
 
 #undef SET_NUMBER_LITERAL_DECL
+
+    void *(*AllocMemory)(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement);
 
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"
 };

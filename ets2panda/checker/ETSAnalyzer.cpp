@@ -2037,6 +2037,16 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDeclaration *st) const
     return nullptr;
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::AnnotationDeclaration *st) const
+{
+    return nullptr;
+}
+
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::AnnotationUsage *st) const
+{
+    return nullptr;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ContinueStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();

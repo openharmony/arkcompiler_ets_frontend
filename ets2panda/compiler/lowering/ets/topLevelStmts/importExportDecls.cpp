@@ -102,11 +102,16 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
             util::StringView originalName = varbinder_->FindNameInAliasMap(program->SourceFilePath(), exportName);
 
             ASSERT(!originalName.Empty());
-
-            if (fieldMap_.find(originalName) == fieldMap_.end() && !isType &&
-                importedSpecifiersForExportCheck_.count(originalName) == 0) {
+            auto result = fieldMap_.find(originalName);
+            if (result == fieldMap_.end() && !isType && importedSpecifiersForExportCheck_.count(originalName) == 0) {
                 util::ErrorHandler::ThrowSyntaxError(
                     varbinder_->Program(), "Cannot find name '" + originalName.Mutf8() + "' to export", startLoc);
+            }
+            if (result != fieldMap_.end() && result->second->IsAnnotationDeclaration() && exportName != originalName) {
+                util::ErrorHandler::ThrowSyntaxError(varbinder_->Program(),
+                                                     "Can not rename annotation '" + originalName.Mutf8() +
+                                                         "' in export or import statements.",
+                                                     startLoc);
             }
             if (!isType) {
                 HandleSelectiveExportWithAlias(originalName, exportName, startLoc);
@@ -187,6 +192,11 @@ void ImportExportDecls::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *
 void ImportExportDecls::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl)
 {
     fieldMap_.emplace(interfaceDecl->Id()->Name(), interfaceDecl);
+}
+
+void ImportExportDecls::VisitAnnotationDeclaration(ir::AnnotationDeclaration *annotationDecl)
+{
+    fieldMap_.emplace(annotationDecl->Ident()->Name(), annotationDecl);
 }
 
 void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl)

@@ -35,14 +35,17 @@ void ETSFunctionType::Iterate(const NodeTraverser &cb) const
 
 void ETSFunctionType::Dump(ir::AstDumper *dumper) const
 {
+    const char *throwMarker = nullptr;
+    if (IsThrowing()) {
+        throwMarker = "throws";
+    } else if (IsRethrowing()) {
+        throwMarker = "rethrows";
+    }
     dumper->Add({{"type", "ETSFunctionType"},
                  {"params", signature_.Params()},
                  {"typeParameters", AstDumper::Optional(signature_.TypeParams())},
-                 {"returnType", signature_.ReturnType()}});
-
-    if (IsThrowing()) {
-        dumper->Add({"throwMarker", "throws"});
-    }
+                 {"returnType", signature_.ReturnType()},
+                 {"throwMarker", AstDumper::Optional(throwMarker)}});
 }
 
 void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
@@ -131,7 +134,9 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
             clone->SetParent(parent);
         }
 
-        clone->SetScope(scope_);
+        // Reset scope for clone
+        // Using old scopes with clone may lead to incorrect ast-structure
+        clone->SetScope(nullptr);
 
         return clone;
     }

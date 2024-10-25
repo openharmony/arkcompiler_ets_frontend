@@ -16,10 +16,6 @@
 #include "variableHasEnclosingScope.h"
 #include "variableHasScope.h"
 #include "helpers.h"
-#include "ir/expressions/functionExpression.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/identifier.h"
-#include "ir/typeNode.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
@@ -86,16 +82,6 @@ bool VariableHasEnclosingScope::CheckCatchClause(const ir::AstNode *ast, const i
 
 bool VariableHasEnclosingScope::CheckAstExceptions(const ir::AstNode *ast) const
 {
-    // NOTE(kkonkuznetsov): skip parameter expression inside arrow function expression
-    auto parent = ast->Parent();
-    while (parent != nullptr) {
-        if (parent->IsETSParameterExpression()) {
-            return true;
-        }
-
-        parent = parent->Parent();
-    }
-
     // Labels are attached to loop scopes,
     // however label identifier is outside of loop.
     // Example:

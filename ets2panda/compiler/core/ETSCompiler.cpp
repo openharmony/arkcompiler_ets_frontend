@@ -1362,6 +1362,8 @@ void ETSCompiler::Compile(const ir::BreakStatement *st) const
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const {}
+void ETSCompiler::Compile([[maybe_unused]] const ir::AnnotationDeclaration *st) const {}
+void ETSCompiler::Compile([[maybe_unused]] const ir::AnnotationUsage *st) const {}
 
 static void CompileImpl(const ir::ContinueStatement *self, ETSGen *etsg)
 {
@@ -1874,7 +1876,7 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
     auto *targetType = etsg->Checker()->GetApparentType(expr->TsType());
 
     if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-        etsg->ApplyUnboxingConversion(expr->Expr());
+        etsg->ApplyUnboxingConversion(expr->Expr(), targetType);
     }
 
     if (targetType->IsETSObjectType() &&

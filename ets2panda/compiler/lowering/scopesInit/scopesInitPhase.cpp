@@ -120,6 +120,7 @@ void ScopesInitPhase::HandleFunction(ir::ScriptFunction *function)
     }
     BindScopeNode(functionScope, function);
     funcParamScope->BindNode(function);
+    CallNode(function->Annotations());
 }
 
 void ScopesInitPhase::HandleBlockStmt(ir::BlockStatement *block, varbinder::Scope *scope)
@@ -261,6 +262,32 @@ void ScopesInitPhase::VisitClassDeclaration(ir::ClassDeclaration *classDecl)
     BindClassDefinition(classDecl->Definition());
 }
 
+void ScopesInitPhase::VisitAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
+{
+    // First check if there is any redefinition in the current scope
+    const auto locStart = annoDecl->Ident()->Start();
+    const auto &annoName = annoDecl->Ident()->Name();
+    AddOrGetDecl<varbinder::AnnotationDecl>(VarBinder(), annoName, annoDecl, locStart, annoName, annoDecl);
+    // Create and enter annotation scope
+    auto annoCtx = LexicalScopeCreateOrEnter<varbinder::AnnotationScope>(VarBinder(), annoDecl);
+    auto *classScope = annoCtx.GetScope();
+    BindScopeNode(classScope, annoDecl);
+    Iterate(annoDecl);
+}
+
+void ScopesInitPhase::VisitAnnotationUsage(ir::AnnotationUsage *annoUsage)
+{
+    // Temporary solution to solve the problem of repeated use of annotations on an entity
+    const auto locStart = annoUsage->Ident()->Start();
+    const auto &annoName = annoUsage->Ident()->Name();
+    AddOrGetDecl<varbinder::AnnotationUsage>(VarBinder(), annoName, annoUsage, locStart, annoName, annoUsage);
+
+    auto annoCtx = LexicalScopeCreateOrEnter<varbinder::AnnotationParamScope>(VarBinder(), annoUsage);
+    auto *curScope = annoCtx.GetScope();
+    BindScopeNode(curScope, annoUsage);
+    CallNode(annoUsage->Properties());
+}
+
 void ScopesInitPhase::VisitDoWhileStatement(ir::DoWhileStatement *doWhileStmt)
 {
     auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), doWhileStmt);
@@ -375,6 +402,7 @@ void ScopesInitPhase::IterateNoTParams(ir::ClassDefinition *classDef)
 {
     CallNode(classDef->Super());
     CallNode(classDef->SuperTypeParams());
+    CallNode(classDef->Annotations());
     CallNode(classDef->Implements());
     CallNode(classDef->Ctor());
     CallNode(classDef->Body());
@@ -1169,11 +1197,6 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
         }
         AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     } else if (classProp->IsReadonly()) {
-        ASSERT(curScope->Parent() != nullptr);
-        if (curScope->Parent()->IsGlobalScope() && !classProp->IsDeclare()) {
-            auto pos = classProp->End();
-            ThrowSyntaxError("Readonly field cannot be in Global scope", pos);
-        }
         AddOrGetDecl<varbinder::ReadonlyDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     } else {
         AddOrGetDecl<varbinder::LetDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
@@ -1254,6 +1277,11 @@ void InitScopesPhaseETS::AddGlobalDeclaration(ir::AstNode *node)
             }
             ident = def->Ident();
             isBuiltin = def->IsFromExternal();
+            break;
+        }
+        case ir::AstNodeType::ANNOTATION_DECLARATION: {
+            ident = node->AsAnnotationDeclaration()->Ident();
+            isBuiltin = false;
             break;
         }
         case ir::AstNodeType::STRUCT_DECLARATION: {

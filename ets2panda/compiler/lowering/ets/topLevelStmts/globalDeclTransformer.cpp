@@ -53,6 +53,7 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
         allocator_, methodKind, funcDecl->Function()->Id()->Clone(allocator_, nullptr), funcExpr,
         funcDecl->Function()->Modifiers(), allocator_, false);
     method->SetRange(funcDecl->Range());
+    method->Function()->SetAnnotations(std::move(funcDecl->Annotations()));
 
     if (funcDecl->Function()->IsExported() && funcDecl->Function()->HasExportAlias()) {
         method->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
@@ -86,7 +87,6 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
 ir::Identifier *GlobalDeclTransformer::RefIdent(const util::StringView &name)
 {
     auto *const callee = util::NodeAllocator::Alloc<ir::Identifier>(allocator_, name, allocator_);
-    callee->SetReference();
     return callee;
 }
 
