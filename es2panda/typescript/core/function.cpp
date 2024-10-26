@@ -547,17 +547,8 @@ const ir::Statement *FindSubsequentFunctionNode(const ir::BlockStatement *block,
     return nullptr;
 }
 
-void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, binder::Variable *funcVar)
+void Checker::InferFunctionDeclarationSignatures(const binder::FunctionDecl *decl, ObjectDescriptor *descWithOverload)
 {
-    const ir::ScriptFunction *bodyDeclaration = decl->Decls().back();
-
-    if (bodyDeclaration->IsOverload()) {
-        ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
-                       bodyDeclaration->Id()->Start());
-    }
-
-    ObjectDescriptor *descWithOverload = allocator_->New<ObjectDescriptor>(allocator_);
-
     for (auto it = decl->Decls().begin(); it != decl->Decls().end() - 1; it++) {
         const ir::ScriptFunction *func = *it;
         ASSERT(func->IsOverload() && (*it)->Parent()->Parent()->IsBlockStatement());
@@ -598,7 +589,20 @@ void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, bin
         overloadSignature->SetNode(func);
         descWithOverload->callSignatures.push_back(overloadSignature);
     }
+}
 
+void Checker::InferFunctionDeclarationType(const binder::FunctionDecl *decl, binder::Variable *funcVar)
+{
+    const ir::ScriptFunction *bodyDeclaration = decl->Decls().back();
+
+    if (bodyDeclaration->IsOverload()) {
+        ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
+                       bodyDeclaration->Id()->Start());
+    }
+
+    ObjectDescriptor *descWithOverload = allocator_->New<ObjectDescriptor>(allocator_);
+    CHECK_NOT_NULL(descWithOverload);
+    InferFunctionDeclarationSignatures(decl, descWithOverload);
     ScopeContext scopeCtx(this, bodyDeclaration->Scope());
 
     auto *signatureInfo = allocator_->New<checker::SignatureInfo>(allocator_);
