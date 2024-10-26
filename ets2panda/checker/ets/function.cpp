@@ -1761,7 +1761,8 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
 
     // - If R1 is a primitive type then R2 is identical to R1.
     if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_INT_ENUM | TypeFlag::ETS_STRING_ENUM |
-                        TypeFlag::ETS_VOID)) {
+                        TypeFlag::ETS_VOID) ||
+        r2->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_INT_ENUM | TypeFlag::ETS_STRING_ENUM)) {
         return Relation()->IsIdenticalTo(r2, r1);
     }
 
@@ -1774,6 +1775,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     }
 
     return s2->Function()->ReturnTypeAnnotation()->IsETSTypeReference() &&
+           s2->Function()->ReturnTypeAnnotation()->GetType(this)->IsETSTypeParameter() &&
            Relation()->IsSupertypeOf(
                s2->Function()->ReturnTypeAnnotation()->GetType(this)->AsETSTypeParameter()->GetConstraintType(), r1);
 }
