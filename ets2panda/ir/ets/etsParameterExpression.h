@@ -16,7 +16,9 @@
 #ifndef ES2PANDA_IR_EXPRESSION_ETS_PARAMETER_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_ETS_PARAMETER_EXPRESSION_H
 
+#include "ir/annotationAllowed.h"
 #include "ir/expression.h"
+#include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -24,7 +26,7 @@ class ETSAnalyzer;
 
 namespace ark::es2panda::ir {
 
-class ETSParameterExpression final : public Expression {
+class ETSParameterExpression final : public AnnotationAllowed<Expression> {
 public:
     ETSParameterExpression() = delete;
     ~ETSParameterExpression() override = default;
@@ -32,7 +34,8 @@ public:
     NO_COPY_SEMANTIC(ETSParameterExpression);
     NO_MOVE_SEMANTIC(ETSParameterExpression);
 
-    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, Expression *initializer);
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, Expression *initializer,
+                                    ArenaAllocator *const allocator);
 
     // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;

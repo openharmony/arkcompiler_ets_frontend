@@ -36,6 +36,13 @@ void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::stri
         }
     }
 
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
+
     for (auto *&it : VectorIterationGuard(declarators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
@@ -47,6 +54,10 @@ void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::stri
 void VariableDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : VectorIterationGuard(decorators_)) {
+        cb(it);
+    }
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 
@@ -81,11 +92,16 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declarations", declarators_},
                  {"kind", kind},
                  {"decorators", AstDumper::Optional(decorators_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"declare", AstDumper::Optional(IsDeclare())}});
 }
 
 void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
     switch (kind_) {
         case VariableDeclarationKind::CONST:
             dumper->Add("const ");
@@ -115,7 +131,7 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
 
 VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
                                          ArenaAllocator *const allocator)
-    : Statement(static_cast<Statement const &>(other)),
+    : AnnotationAllowed<Statement>(static_cast<AnnotationAllowed<Statement> const &>(other)),
       kind_(other.kind_),
       decorators_(allocator->Adapter()),
       declarators_(allocator->Adapter())

@@ -2327,7 +2327,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
         paramIdent->SetTsType(field->TsType());
     }
 
-    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, Allocator());
     paramExpression->SetRange(paramIdent->Range());
     auto *const paramVar = std::get<2>(paramScope->AddParamDecl(Allocator(), paramExpression));
     paramExpression->SetVariable(paramVar);

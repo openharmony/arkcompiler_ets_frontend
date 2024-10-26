@@ -28,8 +28,9 @@
 
 namespace ark::es2panda::ir {
 
-ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identOrSpread, Expression *const initializer)
-    : Expression(AstNodeType::ETS_PARAMETER_EXPRESSION), initializer_(initializer)
+ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identOrSpread, Expression *const initializer,
+                                               ArenaAllocator *const allocator)
+    : AnnotationAllowed<Expression>(AstNodeType::ETS_PARAMETER_EXPRESSION, allocator), initializer_(initializer)
 {
     ASSERT(identOrSpread != nullptr);
     identOrSpread->SetParent(this);
@@ -128,6 +129,13 @@ void ETSParameterExpression::TransformChildren(const NodeTransformer &cb, std::s
             initializer_ = transformedNode->AsExpression();
         }
     }
+
+    for (auto *&it : Annotations()) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ETSParameterExpression::Iterate(const NodeTraverser &cb) const
@@ -141,20 +149,32 @@ void ETSParameterExpression::Iterate(const NodeTraverser &cb) const
     if (IsDefault()) {
         cb(initializer_);
     }
+
+    for (auto *it : Annotations()) {
+        cb(it);
+    }
 }
 
 void ETSParameterExpression::Dump(ir::AstDumper *const dumper) const
 {
     if (!IsRestParameter()) {
-        dumper->Add(
-            {{"type", "ETSParameterExpression"}, {"name", ident_}, {"initializer", AstDumper::Optional(initializer_)}});
+        dumper->Add({{"type", "ETSParameterExpression"},
+                     {"name", ident_},
+                     {"initializer", AstDumper::Optional(initializer_)},
+                     {"annotations", AstDumper::Optional(Annotations())}});
     } else {
-        dumper->Add({{"type", "ETSParameterExpression"}, {"rest parameter", spread_}});
+        dumper->Add({{"type", "ETSParameterExpression"},
+                     {"rest parameter", spread_},
+                     {"annotations", AstDumper::Optional(Annotations())}});
     }
 }
 
 void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
     if (IsRestParameter()) {
         spread_->Dump(dumper);
     } else {
@@ -204,7 +224,8 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
     auto *const initializer =
         initializer_ != nullptr ? initializer_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSParameterExpression>(identOrSpread, initializer); clone != nullptr) {
+    if (auto *const clone = allocator->New<ETSParameterExpression>(identOrSpread, initializer, allocator);
+        clone != nullptr) {
         identOrSpread->SetParent(clone);
 
         if (initializer != nullptr) {
@@ -216,6 +237,15 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
         }
 
         clone->SetRequiredParams(extraValue_);
+
+        if (!Annotations().empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : Annotations()) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
+        }
+
         return clone;
     }
 

@@ -846,8 +846,24 @@ void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir:
     }
 }
 
-bool ETSChecker::CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations)
+void ETSChecker::CheckFunctionAnnotations(ir::ScriptFunction *scriptFunc)
 {
+    CheckAnnotations(scriptFunc->Annotations());
+
+    if (!scriptFunc->Params().empty()) {
+        for (ir::Expression *param : scriptFunc->Params()) {
+            if (param->IsETSParameterExpression()) {
+                CheckAnnotations(param->AsETSParameterExpression()->Annotations());
+            }
+        }
+    }
+}
+
+void ETSChecker::CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations)
+{
+    if (annotations.empty()) {
+        return;
+    }
     std::unordered_set<util::StringView> seenAnnotations;
     for (const auto &anno : annotations) {
         auto annoName = anno->GetBaseName()->Name();
@@ -855,11 +871,10 @@ bool ETSChecker::CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage
             LogTypeError({"Duplicate annotations are not allowed. The annotation '", annoName,
                           "' has already been applied to this element."},
                          anno->Start());
-            return false;
         }
         seenAnnotations.insert(annoName);
+        anno->Check(this);
     }
-    return true;
 }
 
 void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)

@@ -321,7 +321,8 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinit
 
                 auto *ident =
                     expr->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
-                auto *funcParam = checker->AllocNode<ir::ETSParameterExpression>(ident->AsIdentifier(), nullptr);
+                auto *funcParam = checker->AllocNode<ir::ETSParameterExpression>(ident->AsIdentifier(), nullptr,
+                                                                                 checker->Allocator());
 
                 ASSERT(ident->TypeAnnotation()->Parent() == ident);
                 // prepare args list for overloade method definition

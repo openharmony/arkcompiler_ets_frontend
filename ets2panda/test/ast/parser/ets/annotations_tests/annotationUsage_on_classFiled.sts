@@ -19,7 +19,5 @@
 
 class A{
     @MyAnno1({testProperty1: "123", testProperty2: 123})
-    /* @@ label */a:string = ""
+    a:string = ""
 }
-
-/* @@@ label Error SyntaxError: Annotations are not allowed on this type of declaration.  */

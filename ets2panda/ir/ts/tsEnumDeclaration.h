@@ -16,8 +16,9 @@
 #ifndef ES2PANDA_IR_TS_ENUM_DECLARATION_H
 #define ES2PANDA_IR_TS_ENUM_DECLARATION_H
 
-#include "varbinder/scope.h"
 #include "ir/statement.h"
+#include "ir/statements/annotationUsage.h"
+#include "varbinder/scope.h"
 
 namespace ark::es2panda::varbinder {
 class EnumVariable;

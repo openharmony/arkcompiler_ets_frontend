@@ -168,7 +168,7 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
     return stmt;
 }
 
-ir::Statement *ETSParser::ParseAnnotation(StatementParsingFlags flags, ir::ModifierFlags memberModifiers)
+ir::Statement *ETSParser::ParseTopLevelAnnotation(StatementParsingFlags flags, ir::ModifierFlags memberModifiers)
 {
     ir::Statement *result = nullptr;
 
@@ -176,7 +176,7 @@ ir::Statement *ETSParser::ParseAnnotation(StatementParsingFlags flags, ir::Modif
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE) {
         result = ParseAnnotationDeclaration(memberModifiers);
     } else {
-        auto annotations = ParseAnnotations(memberModifiers);
+        auto annotations = ParseAnnotations(true);
         auto savePos = Lexer()->GetToken().Start();
         result = ParseTopLevelDeclStatement(flags);
         if (result != nullptr) {
@@ -221,7 +221,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
             result = ParseTypeDeclaration(false);
             break;
         case lexer::TokenType::PUNCTUATOR_AT:
-            result = ParseAnnotation(flags, memberModifiers);
+            result = ParseTopLevelAnnotation(flags, memberModifiers);
             break;
         case lexer::TokenType::LITERAL_IDENT: {
             result = ParseIdentKeyword();
@@ -244,6 +244,19 @@ ir::Statement *ETSParser::ParseTopLevelStatement()
     auto result = ParseTopLevelDeclStatement(flags);
     if (result == nullptr) {
         result = ParseStatement(flags);
+    }
+    return result;
+}
+
+ir::Statement *ETSParser::ParseAnnotationsInStatement(StatementParsingFlags flags)
+{
+    Lexer()->NextToken();  // eat '@'
+
+    auto annotations = ParseAnnotations(false);
+    auto savePos = Lexer()->GetToken().Start();
+    ir::Statement *result = ParseStatement(flags);
+    if (result != nullptr) {
+        ApplyAnnotationsToNode(result, std::move(annotations), savePos);
     }
     return result;
 }

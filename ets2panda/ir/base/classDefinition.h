@@ -18,6 +18,7 @@
 
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
+#include "ir/annotationAllowed.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
 #include "ir/srcDump.h"
@@ -61,7 +62,7 @@ struct enumbitops::IsAllowedType<ark::es2panda::ir::ClassDefinitionModifiers> : 
 
 namespace ark::es2panda::ir {
 
-class ClassDefinition : public TypedAstNode {
+class ClassDefinition : public AnnotationAllowed<TypedAstNode> {
 public:
     ClassDefinition() = delete;
     ~ClassDefinition() override = default;
@@ -74,7 +75,8 @@ public:
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *superClass, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
+        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags,
+                                          ArenaVector<AnnotationUsage *>(body.get_allocator())),
           privateId_(privateId),
           ident_(ident),
           typeParams_(typeParams),
@@ -88,14 +90,13 @@ public:
           capturedVars_(body_.get_allocator()),
           localVariableIsNeeded_(body_.get_allocator()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_)),
-          annotations_(body_.get_allocator())
+          localPrefix_("$" + std::to_string(localIndex_))
     {
     }
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ArenaVector<AstNode *> &&body,
                              ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
-        : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
+        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(std::move(body)),
@@ -104,14 +105,13 @@ public:
           capturedVars_(allocator->Adapter()),
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_)),
-          annotations_(body_.get_allocator())
+          localPrefix_("$" + std::to_string(localIndex_))
     {
     }
 
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
-        : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
+        : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags, allocator),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(allocator->Adapter()),
@@ -120,8 +120,7 @@ public:
           capturedVars_(allocator->Adapter()),
           localVariableIsNeeded_(allocator->Adapter()),
           localIndex_(classCounter_++),
-          localPrefix_("$" + std::to_string(localIndex_)),
-          annotations_(body_.get_allocator())
+          localPrefix_("$" + std::to_string(localIndex_))
     {
     }
 
@@ -359,19 +358,6 @@ public:
         return capturedVars_.erase(var) != 0;
     }
 
-    const ArenaVector<AnnotationUsage *> &Annotations() const
-    {
-        return annotations_;
-    }
-
-    void SetAnnotations(ArenaVector<AnnotationUsage *> &&annotations)
-    {
-        annotations_ = std::move(annotations);
-        for (auto anno : annotations_) {
-            anno->SetParent(this);
-        }
-    }
-
     void SetOrigEnumDecl(ir::TSEnumDeclaration *enumDecl)
     {
         origEnumDecl_ = enumDecl;
@@ -441,7 +427,6 @@ private:
     static int classCounter_;
     const int localIndex_ {};
     const std::string localPrefix_ {};
-    ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir
 

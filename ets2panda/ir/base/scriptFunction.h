@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
 #include "checker/types/signature.h"
+#include "ir/annotationAllowed.h"
 #include "ir/statements/annotationUsage.h"
 #include "ir/statements/returnStatement.h"
 #include "ir/astNode.h"
@@ -35,7 +36,7 @@ class TSTypeParameterDeclaration;
 class TypeNode;
 class AnnotationUsage;
 
-class ScriptFunction : public AstNode {
+class ScriptFunction : public AnnotationAllowed<AstNode> {
 public:
     // Need to reduce the number of constructor parameters to pass OHOS CI code check
     struct ScriptFunctionData {
@@ -320,29 +321,6 @@ public:
         return lang_;
     }
 
-    [[nodiscard]] ArenaVector<ir::AnnotationUsage *> &Annotations() noexcept
-    {
-        return annotations_;
-    }
-
-    [[nodiscard]] const ArenaVector<ir::AnnotationUsage *> &Annotations() const noexcept
-    {
-        return annotations_;
-    }
-
-    void SetAnnotations(ArenaVector<ir::AnnotationUsage *> &&annotations)
-    {
-        annotations_ = std::move(annotations);
-        for (auto anno : annotations_) {
-            anno->SetParent(this);
-        }
-    }
-
-    void AddAnnotations(AnnotationUsage *const annotations)
-    {
-        annotations_.emplace_back(annotations);
-    }
-
     [[nodiscard]] ScriptFunction *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -369,7 +347,6 @@ private:
     checker::Signature *signature_ {};
     es2panda::Language lang_;
     ArenaVector<ReturnStatement *> returnStatements_;
-    ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir
 

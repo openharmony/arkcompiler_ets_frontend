@@ -18,6 +18,5 @@
 }
 
 @MyAnno1({testProperty1: "123", testProperty2: 123})
-/* @@ label */let a:string = ""
+let a:string = ""
 
-/* @@@ label Error SyntaxError: Annotations are not allowed on this type of declaration.  */

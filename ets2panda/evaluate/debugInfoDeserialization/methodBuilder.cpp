@@ -114,15 +114,15 @@ ir::AstNode *MethodBuilder::Build() &&
 void MethodBuilder::CollectParametersAndReturnType()
 {
     auto parameters = GetFunctionParameters(checker_, mda_);
-    auto *checker = checker_->Allocator();
+    auto *allocator = checker_->Allocator();
 
     // Start from 1, because 0 is return type
     for (size_t idx = 1U; idx < parameters.size(); ++idx) {
-        util::UString paramName(GetFieldName(idx), checker);
+        util::UString paramName(GetFieldName(idx), allocator);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *paramIdent = checker_->AllocNode<ir::Identifier>(paramName.View(), parameters[idx], checker);
+        auto *paramIdent = checker_->AllocNode<ir::Identifier>(paramName.View(), parameters[idx], allocator);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *param = checker_->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+        auto *param = checker_->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, allocator);
         params_.push_back(param);
     }
 

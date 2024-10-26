@@ -36,6 +36,13 @@ void TSTypeAliasDeclaration::TransformChildren(const NodeTransformer &cb, std::s
         }
     }
 
+    for (auto *&it : Annotations()) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
+
     if (auto *transformedNode = cb(id_); id_ != transformedNode) {
         id_->SetTransformedNode(transformationName, transformedNode);
         id_ = transformedNode->AsIdentifier();
@@ -62,6 +69,10 @@ void TSTypeAliasDeclaration::Iterate(const NodeTraverser &cb) const
         cb(it);
     }
 
+    for (auto *it : Annotations()) {
+        cb(it);
+    }
+
     cb(id_);
 
     if (typeParams_ != nullptr) {
@@ -77,6 +88,7 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypeAliasDeclaration"},
                  {"decorators", AstDumper::Optional(decorators_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"id", id_},
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())},
                  {"typeParameters", AstDumper::Optional(typeParams_)}});
@@ -85,6 +97,10 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
 void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(id_);
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
     dumper->Add("type ");
     id_->Dump(dumper);
     if (typeParams_ != nullptr) {

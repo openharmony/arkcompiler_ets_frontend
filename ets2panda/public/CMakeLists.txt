@@ -97,6 +97,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ts/arrayType.h
     ${ES2PANDA_ROOT}/ir/astNode.h
     ${ES2PANDA_ROOT}/ir/typed.h
+    ${ES2PANDA_ROOT}/ir/annotationAllowed.h
     ${ES2PANDA_ROOT}/ir/statements/ifStatement.h
     ${ES2PANDA_ROOT}/ir/ets/etsTuple.h
     ${ES2PANDA_ROOT}/ir/module/exportSpecifier.h
