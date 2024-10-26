@@ -43,7 +43,7 @@ let temp2: number & (string | number) = 1;
 assert(temp2 === 1);
 type temp7 = number;
 type temp8 = string;
-function foo<e>(f: e extends temp7 ? temp7 : temp8) { return f; }
+function foo<h>(i: h extends temp7 ? temp7 : temp8) { return i; }
 assert(foo<number>(1) === 1);
 type X2<T> = T extends {
     a: infer U;
@@ -82,3 +82,19 @@ let temp4: [
 ] = ["1", 2];
 assert(temp4[0] === "1");
 assert(temp4[1] === 2);
+type T2 = {
+    description: string;
+    h(para1: number): boolean;
+    (para2: number): number;
+};
+const temp9: T2 = (g: number) => g;
+temp9.description = "test";
+temp9.h = (f: number) => {
+    return f > 0 ? true : false;
+};
+assert(temp9(100) === 100);
+assert(temp9.description === "test");
+assert(temp9.h(-100) === false);
+type T3 = (para5: number) => number;
+const temp10: T3 = (e: number) => e;
+assert(temp10(200) === 200);

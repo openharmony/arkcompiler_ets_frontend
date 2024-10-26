@@ -43,7 +43,7 @@ let j: number & (string | number) = 1;
 b(j === 1);
 type k = number;
 type l = string;
-function foo<z>(a1: z extends k ? k : l) { return a1; }
+function foo<g1>(h1: g1 extends k ? k : l) { return h1; }
 b(foo<number>(1) === 1);
 type m<T> = T extends {
     a: infer U;
@@ -82,3 +82,19 @@ let y: [
 ] = ["1", 2];
 b(y[0] === "1");
 b(y[1] === 2);
+type z = {
+    description: string;
+    f1(para1: number): boolean;
+    (para2: number): number;
+};
+const a1: z = (f1: number) => f1;
+a1.description = "test";
+a1.f1 = (e1: number) => {
+    return e1 > 0 ? true : false;
+};
+b(a1(100) === 100);
+b(a1.description === "test");
+b(a1.f1(-100) === false);
+type b1 = (para5: number) => number;
+const c1: b1 = (d1: number) => d1;
+b(c1(200) === 200);
