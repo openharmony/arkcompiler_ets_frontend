@@ -8,3 +8,6 @@ OfflineAssembler
 
 #19623
 rebound_test
+
+#19251
+pdfview_test
