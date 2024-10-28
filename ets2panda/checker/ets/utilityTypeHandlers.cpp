@@ -523,8 +523,6 @@ ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *ETSChecker::CreatePartia
                 continue;
             }
             auto *newProp = CreateNullishPropertyFromAccessor(propMethod, newClassDefinition);
-            // newClassDefinition->Scope()->AddBinding(Allocator(), nullptr, newProp->Variable()->Declaration(),
-            //                                         ScriptExtension::ETS);
             newClassDefinition->Body().emplace_back(newProp);
         }
     }
@@ -533,7 +531,6 @@ ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *ETSChecker::CreatePartia
     newClassDefinition->AddModifier(static_cast<const ir::AstNode *>(classDef)->Modifiers());
 
     ir::TSTypeParameterInstantiation *superPartialRefTypeParams = nullptr;
-    // std::cout<<superPartialType<<std::endl;
     auto *likeSubstitution =
         Allocator()->New<ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *>>(Allocator()->Adapter());
     if (classDef->TypeParams() != nullptr) {

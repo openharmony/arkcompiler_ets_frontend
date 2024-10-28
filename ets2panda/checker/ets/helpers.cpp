@@ -740,7 +740,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     const bool isStatic = (flags & ir::ModifierFlags::STATIC) != 0;
     // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
     // are assigned with CONSTANT, which would not be correct. (After feature supported)
-    const bool omitInitConstness = isConst || (isReadonly && isStatic);
+    const bool omitConstInit = isConst || (isReadonly && isStatic);
 
     if (typeAnnotation != nullptr) {
         annotationType = typeAnnotation->GetType(this);
@@ -779,7 +779,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     if (annotationType != nullptr) {
         CheckAnnotationTypeForVariableDeclaration(annotationType, annotationType->IsETSUnionType(), init, initType);
 
-        if (omitInitConstness &&
+        if (omitConstInit &&
             ((initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) ||
              (initType->IsETSStringType() && annotationType->IsETSStringType()))) {
             bindingVar->SetTsType(init->TsType());
@@ -790,8 +790,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     CheckEnumType(init, initType, varName);
 
     // NOTE: need to be done by smart casts
-    const bool needWidening =
-        !omitInitConstness && typeAnnotation == nullptr && NeedWideningBasedOnInitializerHeuristics(init);
+    auto needWidening = !omitConstInit && typeAnnotation == nullptr && NeedWideningBasedOnInitializerHeuristics(init);
     bindingVar->SetTsType(needWidening ? GetNonConstantType(initType) : initType);
 
     return FixOptionalVariableType(bindingVar, flags, init);

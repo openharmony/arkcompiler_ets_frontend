@@ -530,6 +530,7 @@ protected:
     }
 
 private:
+    bool GetCanBeForInOf(ir::Expression *leftNode, ir::AstNode *initNode);
     Program *program_;
     ParserContext context_;
     ClassPrivateContext classPrivateContext_;

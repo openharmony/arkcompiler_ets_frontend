@@ -926,28 +926,37 @@ std::tuple<ir::Expression *, ir::AstNode *> ParserImpl::ParseForLoopInitializer(
     lexer_->Rewind(currentPosition);
 
     switch (lexer_->GetToken().Type()) {
-        case lexer::TokenType::KEYW_VAR: {
+        case lexer::TokenType::KEYW_VAR:
             return {nullptr, ParseVariableDeclaration(varFlags | VariableParsingFlags::VAR)};
-        }
-        case lexer::TokenType::KEYW_LET: {
+        case lexer::TokenType::KEYW_LET:
             return {nullptr, ParseVariableDeclaration(varFlags | VariableParsingFlags::LET)};
-        }
         case lexer::TokenType::KEYW_CONST: {
             return {nullptr, ParseVariableDeclaration(varFlags | VariableParsingFlags::CONST |
                                                       VariableParsingFlags::ACCEPT_CONST_NO_INIT)};
         }
-        case lexer::TokenType::PUNCTUATOR_SEMI_COLON: {
+        case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
             if ((varFlags & VariableParsingFlags::DISALLOW_INIT) != 0 /*isAsync*/) {
                 ThrowSyntaxError(UNEXPECTED_TOKEN, lexer_->GetToken().Start());
             }
 
             lexer_->NextToken();
             return {nullptr, nullptr};
-        }
-        default: {
+        default:
             return {ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags::POTENTIALLY_IN_PATTERN), nullptr};
+    }
+}
+bool ParserImpl::GetCanBeForInOf(ir::Expression *leftNode, ir::AstNode *initNode)
+{
+    bool canBeForInOf = (leftNode != nullptr) || (initNode != nullptr);
+    if (initNode != nullptr) {
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
+            lexer_->NextToken();
+            canBeForInOf = false;
+        } else if (initNode->AsVariableDeclaration()->Declarators().size() > 1 && lexer_->GetToken().IsForInOf()) {
+            ThrowSyntaxError(INVALID_LEFT_HAND_IN_FOR_OF, initNode->AsVariableDeclaration()->Declarators()[1]->Start());
         }
     }
+    return canBeForInOf;
 }
 
 ir::Statement *ParserImpl::ParseForStatement()
@@ -962,21 +971,11 @@ ir::Statement *ParserImpl::ParseForStatement()
     lexer_->NextToken();
     bool isAwait = lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT;
     std::tie(leftNode, initNode) = ParseForLoopInitializer();
-    bool canBeForInOf = (leftNode != nullptr) || (initNode != nullptr);
 
     IterationContext iterCtx(&context_);
 
-    if (initNode != nullptr) {
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-            lexer_->NextToken();
-            canBeForInOf = false;
-        } else if (initNode->AsVariableDeclaration()->Declarators().size() > 1 && lexer_->GetToken().IsForInOf()) {
-            ThrowSyntaxError(INVALID_LEFT_HAND_IN_FOR_OF, initNode->AsVariableDeclaration()->Declarators()[1]->Start());
-        }
-    }
-
     // VariableDeclaration->DeclarationSize > 1 or seen semi_colon
-    if (!canBeForInOf) {
+    if (!GetCanBeForInOf(leftNode, initNode)) {
         std::tie(rightNode, updateNode) = ParseForUpdate(isAwait);
     } else if (leftNode != nullptr) {
         // initNode was parsed as LHS

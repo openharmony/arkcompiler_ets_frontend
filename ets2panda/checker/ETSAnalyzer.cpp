@@ -146,13 +146,8 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
         }
     }
 }
-
-checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
+void ETSAnalyzer::CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const
 {
-    ETSChecker *checker = GetETSChecker();
-
-    auto *scriptFunc = node->Function();
-
     if (checker->CheckDuplicateAnnotations(scriptFunc->Annotations())) {
         for (auto *it : scriptFunc->Annotations()) {
             if (!it->IsClassProperty()) {
@@ -160,6 +155,15 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
             }
         }
     }
+}
+
+checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
+{
+    ETSChecker *checker = GetETSChecker();
+
+    auto *scriptFunc = node->Function();
+
+    CheckClassProperty(checker, scriptFunc);
 
     if (scriptFunc == nullptr) {
         checker->LogTypeError("Invalid function expression", node->Start());

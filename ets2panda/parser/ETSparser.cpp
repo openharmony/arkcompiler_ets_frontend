@@ -1980,40 +1980,39 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
     }
     auto const indexName = Lexer()->GetToken().Ident();
 
-    Lexer()->NextToken();
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+    if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         // ambient_indexer_8.sts
         LogSyntaxError("Index type expected in index signature", Lexer()->GetToken().Start());
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
     }
 
-    Lexer()->NextToken();  // eat ":"
-    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NUMBER) {
+    // eat ":"
+    if (Lexer()->NextToken(); Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NUMBER) {
         // ambient_indexer_3.sts
         LogSyntaxError("Index type must be number in index signature", Lexer()->GetToken().Start());
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::KEYW_NUMBER);
     }
 
-    Lexer()->NextToken();  // eat indexType
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+    // eat indexType
+    if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         // ambient_indexer_7.sts
         LogSyntaxError("] expected in index signature", Lexer()->GetToken().Start());
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
     }
 
-    Lexer()->NextToken();  // eat "]"
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+    // eat "]"
+    if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         // ambient_indexer_4.sts
         LogSyntaxError("An index signature must have a type annotation.", Lexer()->GetToken().Start());
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
     }
 
-    Lexer()->NextToken();  // eat ":"
-    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+    // eat ":"
+    if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         // ambient_indexer_5.sts
         LogSyntaxError("Return type of index signature from exported class or interface need to be identifier",
                        Lexer()->GetToken().Start());
