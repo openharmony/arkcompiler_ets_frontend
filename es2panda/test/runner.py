@@ -2489,7 +2489,8 @@ def main():
         runner.run()
         failed_tests += runner.summarize()
 
-    # TODO: exit 1 when we have failed tests after all tests are fixed
+    if failed_tests > 0:
+        exit(1)
     exit(0)
 
 
