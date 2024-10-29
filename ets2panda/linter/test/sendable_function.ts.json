@@ -36,7 +36,7 @@
             "line": 71,
             "column": 1,
             "problem": "SendableTypeAliasDecorator",
-            "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" typeAlias (arkts-sendable-typeAlias-decorator)"
+            "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" typeAlias (arkts-sendable-typealias-decorator)"
         },
         {
             "line": 74,

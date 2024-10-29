@@ -24,7 +24,7 @@ import { ProblemSeverity } from './ProblemSeverity';
 import { FaultID } from './Problems';
 import { LinterConfig } from './TypeScriptLinterConfig';
 import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
-import type { Autofix, Autofixer } from './autofixes/Autofixer';
+import type { Autofix } from './autofixes/Autofixer';
 import { TsUtils } from './utils/TsUtils';
 import { ARKTS_COLLECTIONS_D_ETS, ARKTS_LANG_D_ETS } from './utils/consts/SupportedDetsIndexableTypes';
 import { D_ETS, D_TS, ETS, KIT } from './utils/consts/TsSuffix';
@@ -69,8 +69,6 @@ export class InteropTypescriptLinter {
   currentErrorLine: number;
   currentWarningLine: number;
 
-  autofixer: Autofixer | undefined;
-
   private sourceFile?: ts.SourceFile;
   private isInSdk?: boolean;
   static ideMode: boolean = false;
@@ -78,8 +76,11 @@ export class InteropTypescriptLinter {
   static kitInfos = new Map<string, KitInfo>();
   private static etsLoaderPath?: string;
   private static sdkPath?: string;
-  static useSdkLogic = false;
   static advancedClassChecks = false;
+
+  static initGlobals(): void {
+    InteropTypescriptLinter.kitInfos = new Map<string, KitInfo>();
+  }
 
   private initCounters(): void {
     for (let i = 0; i < FaultID.LAST_ID; i++) {
@@ -92,13 +93,14 @@ export class InteropTypescriptLinter {
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly compileOptions: ts.CompilerOptions,
     private readonly arkts2: boolean,
-    etsLoaderPath: string | undefined
+    etsLoaderPath: string | undefined,
+    isUseRtLogic?: boolean
   ) {
     this.tsUtils = new TsUtils(
       this.tsTypeChecker,
       InteropTypescriptLinter.testMode,
       InteropTypescriptLinter.advancedClassChecks,
-      InteropTypescriptLinter.useSdkLogic,
+      !!isUseRtLogic,
       this.arkts2
     );
     this.currentErrorLine = 0;
@@ -198,20 +200,14 @@ export class InteropTypescriptLinter {
   private visitSourceFile(sf: ts.SourceFile): void {
     const callback = (node: ts.Node): void => {
       this.totalVisitedNodes++;
+      const handler = this.handlersMap.get(node.kind);
+      if (handler !== undefined) {
 
-      const incrementedType = LinterConfig.incrementOnlyTokens.get(node.kind);
-      if (incrementedType !== undefined) {
-        this.incrementCounters(node, incrementedType);
-      } else {
-        const handler = this.handlersMap.get(node.kind);
-        if (handler !== undefined) {
-
-          /*
-           * possibly requested cancellation will be checked in a limited number of handlers
-           * checked nodes are selected as construct nodes, similar to how TSC does
-           */
-          handler.call(this, node);
-        }
+        /*
+         * possibly requested cancellation will be checked in a limited number of handlers
+         * checked nodes are selected as construct nodes, similar to how TSC does
+         */
+        handler.call(this, node);
       }
     };
     const stopCondition = (node: ts.Node): boolean => {
@@ -273,7 +269,7 @@ export class InteropTypescriptLinter {
     }
 
     if (!importClause) {
-      this.incrementCounters(node, FaultID.NoNameSpaceImportEtsToTs);
+      this.incrementCounters(node, FaultID.NoSideEffectImportEtsToTs);
       return;
     }
     this.checkImportClause(importClause, resolvedModule);

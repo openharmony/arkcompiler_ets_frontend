@@ -24,4 +24,5 @@ export interface CommandLineOptions {
   inputFiles: string[];
   enableAutofix: boolean;
   arkts2: boolean;
+  enableUseRtLogic?: boolean;
 }

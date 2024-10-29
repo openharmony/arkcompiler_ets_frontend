@@ -502,21 +502,21 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 169,
             "column": 3,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 174,
             "column": 3,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 196,

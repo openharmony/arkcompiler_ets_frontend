@@ -35,6 +35,7 @@ import {
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { clearPathHelperCache, pathContainsDirectory } from './utils/functions/PathHelper';
 import { LibraryTypeCallDiagnosticChecker } from './utils/functions/LibraryTypeCallDiagnosticChecker';
+import { DEFAULT_COMPATIBLE_SDK_VERSION } from './utils/consts/VersionInfo';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles;
@@ -110,12 +111,13 @@ export function lint(options: LintOptions, etsLoaderPath: string | undefined): L
       tsProgram.getTypeChecker(),
       cmdOptions.enableAutofix,
       cmdOptions.arkts2,
+      !!cmdOptions.enableUseRtLogic,
       options.cancellationToken,
       options.incrementalLintInfo,
       tscStrictDiagnostics,
       options.reportAutofixCb,
       options.isEtsFileCb,
-      options.compatibleSdkVersion,
+      Number(options.compatibleSdkVersion) || DEFAULT_COMPATIBLE_SDK_VERSION,
       options.compatibleSdkVersionStage
     ) :
     new InteropTypescriptLinter(

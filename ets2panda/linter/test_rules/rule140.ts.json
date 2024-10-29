@@ -54,7 +54,7 @@
             "column": 39,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)"
         }
     ]
 }

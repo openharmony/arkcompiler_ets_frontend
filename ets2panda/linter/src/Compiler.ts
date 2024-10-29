@@ -32,13 +32,13 @@ function compile(cmdOptions: CommandLineOptions, overrideCompilerOptions: ts.Com
   return program;
 }
 
-export function compileLintOptions(cmdOptions: CommandLineOptions): LintOptions {
+export function compileLintOptions(cmdOptions: CommandLineOptions, enableCheckTsFile?: boolean): LintOptions {
   const strict = compile(cmdOptions, getOverrideCompilerOptions(true));
   const nonStrict = compile(cmdOptions, getOverrideCompilerOptions(false));
   return {
     cmdOptions: cmdOptions,
     tscCompiledProgram: new TSCCompiledProgramWithDiagnostics(strict, nonStrict, cmdOptions.inputFiles),
-    isEtsFile: true
+    isEtsFile: !enableCheckTsFile
   };
 }
 

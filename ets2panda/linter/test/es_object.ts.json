@@ -31,7 +31,7 @@
             "endColumn": 17,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -41,7 +41,7 @@
             "endColumn": 17,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 19,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 17,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 17,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -81,7 +81,7 @@
             "endColumn": 19,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -91,7 +91,7 @@
             "endColumn": 29,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -101,7 +101,7 @@
             "endColumn": 43,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -111,7 +111,7 @@
             "endColumn": 61,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 22,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -131,7 +131,7 @@
             "endColumn": 36,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -141,7 +141,7 @@
             "endColumn": 54,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -151,7 +151,7 @@
             "endColumn": 66,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -161,7 +161,7 @@
             "endColumn": 22,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -171,7 +171,7 @@
             "endColumn": 36,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -181,7 +181,7 @@
             "endColumn": 54,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -191,7 +191,7 @@
             "endColumn": 66,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -201,7 +201,7 @@
             "endColumn": 22,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -211,7 +211,7 @@
             "endColumn": 36,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -221,7 +221,7 @@
             "endColumn": 54,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -231,7 +231,7 @@
             "endColumn": 68,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -241,7 +241,7 @@
             "endColumn": 27,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -251,7 +251,7 @@
             "endColumn": 41,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -261,7 +261,7 @@
             "endColumn": 59,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -271,7 +271,7 @@
             "endColumn": 71,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -281,7 +281,7 @@
             "endColumn": 27,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -291,7 +291,7 @@
             "endColumn": 41,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -301,7 +301,7 @@
             "endColumn": 59,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -311,7 +311,7 @@
             "endColumn": 71,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -321,7 +321,7 @@
             "endColumn": 27,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -331,7 +331,7 @@
             "endColumn": 41,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -341,7 +341,7 @@
             "endColumn": 59,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -351,7 +351,7 @@
             "endColumn": 73,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -381,7 +381,7 @@
             "endColumn": 26,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -391,7 +391,7 @@
             "endColumn": 40,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -401,7 +401,7 @@
             "endColumn": 58,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -411,7 +411,7 @@
             "endColumn": 23,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -421,7 +421,7 @@
             "endColumn": 25,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -431,7 +431,7 @@
             "endColumn": 21,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -441,7 +441,7 @@
             "endColumn": 23,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -451,7 +451,7 @@
             "endColumn": 9,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -461,7 +461,7 @@
             "endColumn": 13,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -471,7 +471,7 @@
             "endColumn": 11,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -481,7 +481,7 @@
             "endColumn": 11,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -491,7 +491,7 @@
             "endColumn": 12,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -501,7 +501,7 @@
             "endColumn": 15,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -511,7 +511,7 @@
             "endColumn": 16,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -521,7 +521,7 @@
             "endColumn": 18,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -531,7 +531,7 @@
             "endColumn": 25,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -541,7 +541,7 @@
             "endColumn": 25,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -551,7 +551,7 @@
             "endColumn": 27,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -561,7 +561,7 @@
             "endColumn": 30,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -571,7 +571,7 @@
             "endColumn": 31,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -581,7 +581,7 @@
             "endColumn": 33,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -591,7 +591,7 @@
             "endColumn": 40,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -601,7 +601,7 @@
             "endColumn": 40,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -611,7 +611,7 @@
             "endColumn": 24,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -621,7 +621,7 @@
             "endColumn": 12,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -641,7 +641,7 @@
             "endColumn": 19,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -651,7 +651,7 @@
             "endColumn": 19,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -661,7 +661,7 @@
             "endColumn": 26,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -671,7 +671,7 @@
             "endColumn": 26,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -691,7 +691,7 @@
             "endColumn": 31,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -701,7 +701,7 @@
             "endColumn": 33,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -711,7 +711,7 @@
             "endColumn": 44,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -721,7 +721,7 @@
             "endColumn": 33,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -731,7 +731,7 @@
             "endColumn": 46,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -741,7 +741,7 @@
             "endColumn": 16,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -751,7 +751,7 @@
             "endColumn": 9,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -761,7 +761,7 @@
             "endColumn": 40,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -771,7 +771,7 @@
             "endColumn": 53,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -781,7 +781,7 @@
             "endColumn": 66,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -791,7 +791,7 @@
             "endColumn": 40,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -801,7 +801,7 @@
             "endColumn": 55,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -811,7 +811,7 @@
             "endColumn": 68,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -821,7 +821,7 @@
             "endColumn": 36,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -831,7 +831,7 @@
             "endColumn": 30,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -841,7 +841,7 @@
             "endColumn": 38,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -861,7 +861,7 @@
             "endColumn": 21,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -871,7 +871,7 @@
             "endColumn": 27,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -881,7 +881,7 @@
             "endColumn": 22,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -901,7 +901,7 @@
             "endColumn": 25,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -911,7 +911,7 @@
             "endColumn": 26,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -921,7 +921,7 @@
             "endColumn": 26,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -931,7 +931,7 @@
             "endColumn": 26,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -941,7 +941,7 @@
             "endColumn": 15,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -951,7 +951,7 @@
             "endColumn": 10,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         },
         {
@@ -961,7 +961,7 @@
             "endColumn": 12,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)",
+            "rule": "Usage of 'ESObject' type is restricted (arkts-limited-esobj)",
             "severity": "WARNING"
         }
     ]

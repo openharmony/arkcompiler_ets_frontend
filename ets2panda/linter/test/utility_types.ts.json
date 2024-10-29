@@ -403,7 +403,7 @@
             "line": 178,
             "column": 18,
             "problem": "FunctionApplyCall",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 184,
@@ -438,7 +438,7 @@
             "column": 60,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)"
         },
         {
             "line": 208,

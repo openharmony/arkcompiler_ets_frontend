@@ -51,12 +51,9 @@ function getAllDiagnostics(
   cancellationToken?: ts.CancellationToken
 ): ts.Diagnostic[] {
   const sourceFile = program.getSourceFile(fileName);
-  return program.
-    getSemanticDiagnostics(sourceFile, cancellationToken).
-    concat(program.getSyntacticDiagnostics(sourceFile, cancellationToken)).
-    filter((diag) => {
-      return diag.file === sourceFile;
-    });
+  return program.getSemanticDiagnostics(sourceFile, cancellationToken).filter((diag) => {
+    return diag.file === sourceFile;
+  });
 }
 
 function hashDiagnostic(diagnostic: ts.Diagnostic): string | undefined {

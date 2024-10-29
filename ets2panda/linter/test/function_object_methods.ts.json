@@ -31,7 +31,7 @@
             "endColumn": 45,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -51,7 +51,7 @@
             "endColumn": 55,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -61,7 +61,7 @@
             "endColumn": 47,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -71,7 +71,7 @@
             "endColumn": 50,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -91,7 +91,7 @@
             "endColumn": 58,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -111,7 +111,7 @@
             "endColumn": 48,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -121,7 +121,7 @@
             "endColumn": 70,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -131,7 +131,7 @@
             "endColumn": 61,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -141,7 +141,7 @@
             "endColumn": 54,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -151,7 +151,7 @@
             "endColumn": 53,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -161,7 +161,7 @@
             "endColumn": 44,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -181,7 +181,7 @@
             "endColumn": 51,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -201,7 +201,7 @@
             "endColumn": 43,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -211,7 +211,7 @@
             "endColumn": 64,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -221,7 +221,7 @@
             "endColumn": 55,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)",
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)",
             "severity": "WARNING"
         },
         {
@@ -231,7 +231,7 @@
             "endColumn": 43,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -241,7 +241,7 @@
             "endColumn": 42,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -251,7 +251,7 @@
             "endColumn": 33,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -361,7 +361,7 @@
             "endColumn": 37,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -371,7 +371,7 @@
             "endColumn": 37,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -381,7 +381,7 @@
             "endColumn": 37,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -391,7 +391,7 @@
             "endColumn": 37,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         },
         {
@@ -401,7 +401,7 @@
             "endColumn": 21,
             "problem": "FunctionApplyCall",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)",
+            "rule": "'Function.apply', 'Function.call' are not supported (arkts-no-func-apply-call)",
             "severity": "ERROR"
         }
     ]

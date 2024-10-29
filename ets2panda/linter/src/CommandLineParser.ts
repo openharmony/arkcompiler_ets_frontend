@@ -63,7 +63,8 @@ function formCommandLineOptions(program: Command): CommandLineOptions {
     inputFiles: inputFiles,
     warningsAsErrors: false,
     enableAutofix: false,
-    arkts2: false
+    arkts2: false,
+    enableUseRtLogic: true
   };
   const options = program.opts();
   if (options.TSC_Errors) {
@@ -90,6 +91,9 @@ function formCommandLineOptions(program: Command): CommandLineOptions {
   if (options.warningsAsErrors) {
     opts.warningsAsErrors = true;
   }
+  if (!options.enableUseRtLogic) {
+    opts.enableUseRtLogic = false;
+  }
   return opts;
 }
 
@@ -105,6 +109,7 @@ export function parseCommandLine(commandLineArgs: string[]): CommandLineOptions 
     option('--project-folder <project_folder>', 'path to folder containig TS files to verify', addProjectFolder, []).
     option('--autofix', 'automatically fix problems found by linter').
     option('--arkts-2', 'enable ArkTS 2.0 mode').
+    option('--enableUseRtLogic', 'linter with RT').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true));
   program.argument('[srcFile...]', 'files to be verified', addSrcFile);
 

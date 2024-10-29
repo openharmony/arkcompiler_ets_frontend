@@ -116,6 +116,31 @@
             ],
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 49,
+            "column": 17,
+            "problem": "ParameterProperties",
+            "autofix": [
+                {
+                    "start": 1301,
+                    "end": 1301,
+                    "replacementText": "readonly a: A;\n"
+                },
+                {
+                    "start": 1313,
+                    "end": 1326,
+                    "replacementText": "a: A"
+                },
+                {
+                    "start": 1328,
+                    "end": 1353,
+                    "replacementText": "{\n    this.a = a;\n    this.a = a;\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "exclusive": "SDK"
         }
     ]
 }
