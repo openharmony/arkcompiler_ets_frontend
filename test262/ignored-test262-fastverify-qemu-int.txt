@@ -97,6 +97,7 @@ test262/data/test_es2021/language/module-code/instn-iee-err-not-found.js
 
 #20112
 test262/data/test_es2021/built-ins/ArrayBuffer/prototype/slice/extensible.js
+test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-word-iterable.js
 
 #18855
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-long-en.js
