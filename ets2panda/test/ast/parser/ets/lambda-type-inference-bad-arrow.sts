@@ -21,4 +21,7 @@ function main(): void {
 }
 
 
-/* @@? 25:1 Error SyntaxError: Expected a ')'  */
+/* @@? 25:1 Error SyntaxError: Expected a ')' */
+/* @@? 25:1 Error SyntaxError: Unexpected token, expected ')' */
+/* @@? 25:1 Error SyntaxError: Expected a ')' */
+/* @@? 25:1 Error SyntaxError: Expected a '}' got 'eos'. */

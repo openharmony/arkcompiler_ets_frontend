@@ -652,9 +652,11 @@ extern "C" void AstNodeForEach(es2panda_AstNode *ast, void (*func)(es2panda_AstN
     {                                                                              \
         auto &n = reinterpret_cast<ir::NumberLiteral *>(node)->Number();           \
         if (!n.Is##name()) {                                                       \
+            /* CC-OFFNXT(G.PRE.05) function gen */                                 \
             return false;                                                          \
         }                                                                          \
         n.SetValue<type>(std::move(new_value));                                    \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. */        \
         return true;                                                               \
     }
 

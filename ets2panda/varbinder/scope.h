@@ -35,8 +35,9 @@ class IRNode;
 }  // namespace ark::es2panda::compiler
 
 namespace ark::es2panda::varbinder {
+// CC-OFFNXT(G.PRE.09) code gen
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_CLASSES(type, className) class className;
+#define DECLARE_CLASSES(type, className) class className;  // CC-OFF(G.PRE.02) name part
 SCOPE_TYPES(DECLARE_CLASSES)
 #undef DECLARE_CLASSES
 
@@ -80,21 +81,26 @@ public:
 
     virtual ScopeType Type() const = 0;
 
+// CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_CHECKS_CASTS(scopeType, className)        \
-    bool Is##className() const                            \
-    {                                                     \
-        return Type() == ScopeType::scopeType;            \
-    }                                                     \
-    className *As##className()                            \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<className *>(this);       \
-    }                                                     \
-    const className *As##className() const                \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<const className *>(this); \
+#define DECLARE_CHECKS_CASTS(scopeType, className)                                           \
+    bool Is##className() const                                                               \
+    {                                                                                        \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/  \
+        return Type() == ScopeType::scopeType; /* CC-OFF(G.PRE.02) name part */              \
+    }                                                                                        \
+    /* CC-OFFNXT(G.PRE.02) name part */                                                      \
+    className *As##className()                                                               \
+    {                                                                                        \
+        ASSERT(Is##className());                                                             \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/  \
+        return reinterpret_cast<className *>(this); /* CC-OFF(G.PRE.02) name part */         \
+    }                                                                                        \
+    const className *As##className() const                                                   \
+    {                                                                                        \
+        ASSERT(Is##className());                                                             \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
+        return reinterpret_cast<const className *>(this);                                    \
     }
     SCOPE_TYPES(DECLARE_CHECKS_CASTS)
 #undef DECLARE_CHECKS_CASTS

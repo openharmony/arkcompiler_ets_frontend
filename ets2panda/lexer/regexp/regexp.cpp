@@ -284,6 +284,60 @@ uint32_t RegExpParser::ParseControlEscape()
     return cp % MODULO;
 }
 
+char32_t RegExpParser::ParseClassAtomHelper(char32_t cp)
+{
+    switch (cp) {
+        case LEX_CHAR_LOWERCASE_C:
+            return ParseControlEscape();
+        case LEX_CHAR_LOWERCASE_X:
+            return ParseHexEscape();
+        case LEX_CHAR_LOWERCASE_U:
+            if (!Unicode() && Peek() == LEX_CHAR_LEFT_BRACE) {
+                return cp;
+            }
+
+            return ParseUnicodeEscape();
+        case LEX_CHAR_LOWERCASE_P:
+        case LEX_CHAR_UPPERCASE_P: {
+            if (!Unicode()) {
+                return cp;
+            }
+
+            ParseUnicodePropertyEscape();
+            [[fallthrough]];
+        }
+        case LEX_CHAR_LOWERCASE_D:
+        case LEX_CHAR_UPPERCASE_D:
+        case LEX_CHAR_LOWERCASE_S:
+        case LEX_CHAR_UPPERCASE_S:
+        case LEX_CHAR_LOWERCASE_W:
+        case LEX_CHAR_UPPERCASE_W:
+            return std::numeric_limits<uint32_t>::max();
+        case LEX_CHAR_LOWERCASE_B:
+            return LEX_CHAR_BS;
+        case LEX_CHAR_LOWERCASE_F:
+            return LEX_CHAR_FF;
+        case LEX_CHAR_LOWERCASE_N:
+            return LEX_CHAR_LF;
+        case LEX_CHAR_LOWERCASE_R:
+            return LEX_CHAR_CR;
+        case LEX_CHAR_LOWERCASE_T:
+            return LEX_CHAR_TAB;
+        case LEX_CHAR_LOWERCASE_V:
+            return LEX_CHAR_VT;
+        case LEX_CHAR_MINUS:
+            return cp;
+        default:
+            if (Unicode() && !IsSyntaxCharacter(cp) && cp != LEX_CHAR_SLASH) {
+                parser_.ThrowSyntaxError("Invalid escape");
+            }
+
+            return cp;
+    }
+
+    return cp;
+}
+
 char32_t RegExpParser::ParseClassAtom()
 {
     char32_t cp = Next();
@@ -300,7 +354,7 @@ char32_t RegExpParser::ParseClassAtom()
         Next();
 
         if (IsDecimalDigit(Peek())) {
-            parser_.ThrowSyntaxError("Invalid class escape");
+            parser_.ThrowSyntaxError("Invalid escape");
         }
 
         return LEX_CHAR_NULL;
@@ -308,68 +362,7 @@ char32_t RegExpParser::ParseClassAtom()
 
     Next();
 
-    switch (cp) {
-        case LEX_CHAR_LOWERCASE_C: {
-            return ParseControlEscape();
-        }
-        case LEX_CHAR_LOWERCASE_X: {
-            return ParseHexEscape();
-        }
-        case LEX_CHAR_LOWERCASE_U: {
-            if (!Unicode() && Peek() == LEX_CHAR_LEFT_BRACE) {
-                return cp;
-            }
-
-            return ParseUnicodeEscape();
-        }
-        case LEX_CHAR_LOWERCASE_P:
-        case LEX_CHAR_UPPERCASE_P: {
-            if (!Unicode()) {
-                return cp;
-            }
-
-            ParseUnicodePropertyEscape();
-            [[fallthrough]];
-        }
-        case LEX_CHAR_LOWERCASE_D:
-        case LEX_CHAR_UPPERCASE_D:
-        case LEX_CHAR_LOWERCASE_S:
-        case LEX_CHAR_UPPERCASE_S:
-        case LEX_CHAR_LOWERCASE_W:
-        case LEX_CHAR_UPPERCASE_W: {
-            return std::numeric_limits<uint32_t>::max();
-        }
-        case LEX_CHAR_LOWERCASE_B: {
-            return LEX_CHAR_BS;
-        }
-        case LEX_CHAR_LOWERCASE_F: {
-            return LEX_CHAR_FF;
-        }
-        case LEX_CHAR_LOWERCASE_N: {
-            return LEX_CHAR_LF;
-        }
-        case LEX_CHAR_LOWERCASE_R: {
-            return LEX_CHAR_CR;
-        }
-        case LEX_CHAR_LOWERCASE_T: {
-            return LEX_CHAR_TAB;
-        }
-        case LEX_CHAR_LOWERCASE_V: {
-            return LEX_CHAR_VT;
-        }
-        case LEX_CHAR_MINUS: {
-            return cp;
-        }
-        default: {
-            if (Unicode() && !IsSyntaxCharacter(cp) && cp != LEX_CHAR_SLASH) {
-                parser_.ThrowSyntaxError("Invalid escape");
-            }
-
-            return cp;
-        }
-    }
-
-    return cp;
+    return ParseClassAtomHelper(cp);
 }
 
 static bool IsClassEscape(uint32_t cp)

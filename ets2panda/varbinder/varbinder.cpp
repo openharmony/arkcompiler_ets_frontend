@@ -535,102 +535,78 @@ void VarBinder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *f
     VisitScriptFunction(func);
 }
 
+void VarBinder::ResolveReferenceDoWhileHelper(ir::AstNode *childNode)
+{
+    auto *doWhileStatement = childNode->AsDoWhileStatement();
+
+    {
+        auto loopScopeCtx = LexicalScope<LoopScope>::Enter(this, doWhileStatement->Scope());
+        ResolveReference(doWhileStatement->Body());
+    }
+    return ResolveReference(doWhileStatement->Test());
+}
+
+void VarBinder::ResolveReferenceWhileHelper(ir::AstNode *childNode)
+{
+    auto *whileStatement = childNode->AsWhileStatement();
+    ResolveReference(whileStatement->Test());
+
+    auto loopScopeCtx = LexicalScope<LoopScope>::Enter(this, whileStatement->Scope());
+    return ResolveReference(whileStatement->Body());
+}
+
 void VarBinder::ResolveReference(ir::AstNode *childNode)
 {
     switch (childNode->Type()) {
-        case ir::AstNodeType::IDENTIFIER: {
-            auto *ident = childNode->AsIdentifier();
-            LookupIdentReference(ident);
-            ResolveReferences(childNode);
-            break;
-        }
-        case ir::AstNodeType::SUPER_EXPRESSION: {
-            VariableScope *varScope = scope_->EnclosingVariableScope();
-            varScope->AddFlag(ScopeFlags::USE_SUPER);
-            ResolveReferences(childNode);
-            break;
-        }
-        case ir::AstNodeType::SCRIPT_FUNCTION: {
-            VisitScriptFunctionWithPotentialTypeParams(childNode->AsScriptFunction());
-            break;
-        }
-        case ir::AstNodeType::VARIABLE_DECLARATOR: {
-            BuildVarDeclarator(childNode->AsVariableDeclarator());
-            break;
-        }
-        case ir::AstNodeType::CLASS_DEFINITION: {
-            BuildClassDefinition(childNode->AsClassDefinition());
-            break;
-        }
-        case ir::AstNodeType::CLASS_PROPERTY: {
-            BuildClassProperty(childNode->AsClassProperty());
-            break;
-        }
+        case ir::AstNodeType::IDENTIFIER:
+            LookupIdentReference(childNode->AsIdentifier());
+            return ResolveReferences(childNode);
+        case ir::AstNodeType::SUPER_EXPRESSION:
+            scope_->EnclosingVariableScope()->AddFlag(ScopeFlags::USE_SUPER);
+            return ResolveReferences(childNode);
+        case ir::AstNodeType::SCRIPT_FUNCTION:
+            return VisitScriptFunctionWithPotentialTypeParams(childNode->AsScriptFunction());
+        case ir::AstNodeType::VARIABLE_DECLARATOR:
+            return BuildVarDeclarator(childNode->AsVariableDeclarator());
+        case ir::AstNodeType::CLASS_DEFINITION:
+            return BuildClassDefinition(childNode->AsClassDefinition());
+        case ir::AstNodeType::CLASS_PROPERTY:
+            return BuildClassProperty(childNode->AsClassProperty());
         case ir::AstNodeType::BLOCK_STATEMENT: {
             auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockStatement()->Scope());
 
-            ResolveReferences(childNode);
-            break;
+            return ResolveReferences(childNode);
         }
         case ir::AstNodeType::BLOCK_EXPRESSION: {
             auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockExpression()->Scope());
 
-            ResolveReferences(childNode);
-            break;
+            return ResolveReferences(childNode);
         }
         case ir::AstNodeType::SWITCH_STATEMENT: {
             auto scopeCtx = LexicalScope<LocalScope>::Enter(this, childNode->AsSwitchStatement()->Scope());
 
-            ResolveReferences(childNode);
-            break;
+            return ResolveReferences(childNode);
         }
-        case ir::AstNodeType::DO_WHILE_STATEMENT: {
-            auto *doWhileStatement = childNode->AsDoWhileStatement();
-
-            {
-                auto loopScopeCtx = LexicalScope<LoopScope>::Enter(this, doWhileStatement->Scope());
-                ResolveReference(doWhileStatement->Body());
-            }
-
-            ResolveReference(doWhileStatement->Test());
-            break;
-        }
-        case ir::AstNodeType::WHILE_STATEMENT: {
-            auto *whileStatement = childNode->AsWhileStatement();
-            ResolveReference(whileStatement->Test());
-
-            auto loopScopeCtx = LexicalScope<LoopScope>::Enter(this, whileStatement->Scope());
-            ResolveReference(whileStatement->Body());
-
-            break;
-        }
-        case ir::AstNodeType::FOR_UPDATE_STATEMENT: {
-            BuildForUpdateLoop(childNode->AsForUpdateStatement());
-            break;
-        }
+        case ir::AstNodeType::DO_WHILE_STATEMENT:
+            return ResolveReferenceDoWhileHelper(childNode);
+        case ir::AstNodeType::WHILE_STATEMENT:
+            return ResolveReferenceWhileHelper(childNode);
+        case ir::AstNodeType::FOR_UPDATE_STATEMENT:
+            return BuildForUpdateLoop(childNode->AsForUpdateStatement());
         case ir::AstNodeType::FOR_IN_STATEMENT: {
             auto *forInStmt = childNode->AsForInStatement();
-            BuildForInOfLoop(forInStmt->Scope(), forInStmt->Left(), forInStmt->Right(), forInStmt->Body());
-
-            break;
+            return BuildForInOfLoop(forInStmt->Scope(), forInStmt->Left(), forInStmt->Right(), forInStmt->Body());
         }
         case ir::AstNodeType::FOR_OF_STATEMENT: {
             auto *forOfStmt = childNode->AsForOfStatement();
-            BuildForInOfLoop(forOfStmt->Scope(), forOfStmt->Left(), forOfStmt->Right(), forOfStmt->Body());
-            break;
+            return BuildForInOfLoop(forOfStmt->Scope(), forOfStmt->Left(), forOfStmt->Right(), forOfStmt->Body());
         }
-        case ir::AstNodeType::CATCH_CLAUSE: {
-            BuildCatchClause(childNode->AsCatchClause());
-            break;
-        }
-        case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION: {
-            BuildTypeAliasDeclaration(childNode->AsTSTypeAliasDeclaration());
-            break;
-        }
-        default: {
-            HandleCustomNodes(childNode);
-            break;
-        }
+        case ir::AstNodeType::CATCH_CLAUSE:
+            return BuildCatchClause(childNode->AsCatchClause());
+        case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
+            return BuildTypeAliasDeclaration(childNode->AsTSTypeAliasDeclaration());
+        default:
+            return HandleCustomNodes(childNode);
     }
 }
 

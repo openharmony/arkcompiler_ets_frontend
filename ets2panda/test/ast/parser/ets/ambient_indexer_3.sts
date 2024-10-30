@@ -22,3 +22,6 @@ function main() {
 }
 
 /* @@? 17:14 Error SyntaxError: Index type must be number in index signature  */
+/* @@? 1:1 Node {
+    "type": "Program"
+}  */

@@ -76,7 +76,10 @@ checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 {
-    auto *type = checker->CreateETSArrayType(elementType_->GetType(checker));
+    checker::Type *type = checker->CreateETSArrayType(elementType_->GetType(checker));
+    if (IsReadonlyType()) {
+        type = checker->GetReadonlyType(type);
+    }
     SetTsType(type);
     return type;
 }
@@ -86,6 +89,8 @@ TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const 
     auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator, nullptr) : nullptr;
 
     if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone); clone != nullptr) {
+        clone->AddModifier(flags_);
+
         if (elementTypeClone != nullptr) {
             elementTypeClone->SetParent(clone);
         }

@@ -87,6 +87,7 @@ void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
                 param->AsETSParameterExpression()->Ident()->TypeAnnotation()->IsETSTypeReference() &&
                 param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part() != nullptr &&
                 param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part()->Name() !=
+                    // CC-OFFNXT(G.FMT.02-CPP) project code style
                     nullptr &&
                 param->AsETSParameterExpression()
                     ->Ident()

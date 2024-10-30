@@ -22,3 +22,6 @@ function main() {
 }
 
 /* @@? 17:22 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
+/* @@? 1:1 Node {
+    "type": "Program"
+}  */

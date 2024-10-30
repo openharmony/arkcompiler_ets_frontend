@@ -13,6 +13,10 @@
  * limitations under the License.
  */
  
+/*
+ * Can not moved into ast/compile while #19557 isn't resolved
+ */
+ 
 enum Color {
     Red = 0,
     Green = 1,

@@ -15,4 +15,5 @@
 
 
 if else;
-/* @@? 17:4 Error SyntaxError: Missing left parenthesis in an 'IfStatement'  */
+/* @@? 17:4 Error SyntaxError: Expected left parenthesis in an 'IfStatement'  */
+/* @@? 17:8 Error SyntaxError: Unexpected token ';'.  */

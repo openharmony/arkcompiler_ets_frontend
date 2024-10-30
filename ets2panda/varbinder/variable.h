@@ -38,8 +38,9 @@ class Decl;
 class Scope;
 class VariableScope;
 
+// CC-OFFNXT(G.PRE.09) code gen
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_CLASSES(type, className) class className;
+#define DECLARE_CLASSES(type, className) class className;  // CC-OFF(G.PRE.02) name part
 VARIABLE_TYPES(DECLARE_CLASSES)
 #undef DECLARE_CLASSES
 
@@ -51,21 +52,26 @@ public:
 
     VariableType virtual Type() const = 0;
 
+/* CC-OFFNXT(G.PRE.06) solid logic */
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DECLARE_CHECKS_CASTS(variableType, className)     \
-    bool Is##className() const                            \
-    {                                                     \
-        return Type() == VariableType::variableType;      \
-    }                                                     \
-    className *As##className()                            \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<className *>(this);       \
-    }                                                     \
-    const className *As##className() const                \
-    {                                                     \
-        ASSERT(Is##className());                          \
-        return reinterpret_cast<const className *>(this); \
+#define DECLARE_CHECKS_CASTS(variableType, className)                                       \
+    bool Is##className() const                                                              \
+    {                                                                                       \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return Type() == VariableType::variableType; /* CC-OFF(G.PRE.02) name part */       \
+    }                                                                                       \
+    /* CC-OFFNXT(G.PRE.02) name part */                                                     \
+    className *As##className()                                                              \
+    {                                                                                       \
+        ASSERT(Is##className());                                                            \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return reinterpret_cast<className *>(this); /* CC-OFF(G.PRE.02) name part */        \
+    }                                                                                       \
+    const className *As##className() const                                                  \
+    {                                                                                       \
+        ASSERT(Is##className());                                                            \
+        /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
+        return reinterpret_cast<const className *>(this);                                   \
     }
     VARIABLE_TYPES(DECLARE_CHECKS_CASTS)
 #undef DECLARE_CHECKS_CASTS

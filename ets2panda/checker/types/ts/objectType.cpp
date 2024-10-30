@@ -70,14 +70,8 @@ bool ObjectType::FindPropertyAndCheckIdentical(TypeRelation *relation, ObjectTyp
     return false;
 }
 
-void ObjectType::Identical(TypeRelation *relation, Type *other)
+bool ObjectType::IdenticalPropertiesHelper(TypeRelation *relation, ObjectType *otherObj)
 {
-    if (!other->IsObjectType() || kind_ != other->AsObjectType()->Kind()) {
-        return;
-    }
-
-    ObjectType *otherObj = other->AsObjectType();
-
     if (desc_->properties.size() != otherObj->Properties().size() ||
         CallSignatures().size() != otherObj->CallSignatures().size() ||
         ConstructSignatures().size() != otherObj->ConstructSignatures().size() ||
@@ -86,6 +80,20 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
         (desc_->stringIndexInfo != nullptr && otherObj->StringIndexInfo() == nullptr) ||
         (desc_->stringIndexInfo == nullptr && otherObj->StringIndexInfo() != nullptr)) {
         relation->Result(false);
+        return false;
+    }
+    return true;
+}
+
+void ObjectType::Identical(TypeRelation *relation, Type *other)
+{
+    if (!other->IsObjectType() || kind_ != other->AsObjectType()->Kind()) {
+        return;
+    }
+
+    ObjectType *otherObj = other->AsObjectType();
+
+    if (!IdenticalPropertiesHelper(relation, otherObj)) {
         return;
     }
 

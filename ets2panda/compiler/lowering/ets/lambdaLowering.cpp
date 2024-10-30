@@ -439,24 +439,22 @@ static ArenaVector<ir::Expression *> CreateArgsForOptionalCall(public_lib::Conte
     size_t i = 0;
 
     for (auto *param : defaultMethod->Function()->Params()) {
-        if (!param->AsETSParameterExpression()->IsDefault()) {
-            auto *paramName =
-                param->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
-            funcCallArgs.push_back(paramName);
-        } else {
+        if (param->AsETSParameterExpression()->IsDefault()) {
             break;
         }
+        auto *paramName =
+            param->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
+        funcCallArgs.push_back(paramName);
         i++;
     }
 
     for (; i < lambda->Function()->Params().size(); i++) {
         auto *param = lambda->Function()->Params()[i]->AsETSParameterExpression();
         if (param->Initializer() == nullptr) {
-            checker->ThrowTypeError({"Expected initializer for parameter ", param->Ident()->Name(), "."},
-                                    param->Start());
-        } else {
-            funcCallArgs.push_back(param->Initializer());
+            checker->LogTypeError({"Expected initializer for parameter ", param->Ident()->Name(), "."}, param->Start());
+            break;
         }
+        funcCallArgs.push_back(param->Initializer());
     }
 
     return funcCallArgs;
@@ -854,7 +852,7 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
 static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda)
 {
     auto *allocator = ctx->allocator;
-
+    auto *checker = ctx->checker->AsETSChecker();
     auto firstDefaultIndex = lambda->Function()->DefaultParamIndex();
 
     LambdaInfo info;
@@ -864,6 +862,9 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     info.capturedVars = &capturedVars;
     info.callReceiver = CheckIfNeedThis(lambda) ? allocator->New<ir::ThisExpression>() : nullptr;
 
+    if (lambda->Function()->Signature() == nullptr) {
+        lambda->Check(checker);
+    }
     auto *callee = CreateCalleeDefault(ctx, lambda, &info);
 
     if (firstDefaultIndex < lambda->Function()->Params().size()) {
@@ -890,8 +891,9 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
     }
 
     if (!ast->Parent()->IsCallExpression()) {
-        checker->ThrowTypeError(
-            std::initializer_list<checker::TypeErrorMessageElement> {"Cannot deduce call signature"}, ast->Start());
+        checker->LogTypeError(std::initializer_list<checker::TypeErrorMessageElement> {"Cannot deduce call signature"},
+                              ast->Start());
+        return nullptr;
     }
 
     auto &args = ast->Parent()->AsCallExpression()->Arguments();
@@ -912,9 +914,10 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
             }
             if (sigFound != nullptr) {
                 // ambiguiuty
-                checker->ThrowTypeError(
+                checker->LogTypeError(
                     std::initializer_list<checker::TypeErrorMessageElement> {"Cannot deduce call signature"},
                     ast->Start());
+                break;
             }
             sigFound = sig;
         }
@@ -923,17 +926,14 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
         }
     }
 
-    checker->ThrowTypeError({"Cannot deduce call signature"}, ast->Start());
+    checker->LogTypeError({"Cannot deduce call signature"}, ast->Start());
+    return nullptr;
 }
 
-static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ctx, ir::Expression *funcRef)
+static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *ctx, ir::Expression *funcRef,
+                                                           checker::Signature *signature)
 {
     auto *allocator = ctx->allocator;
-    auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
-    auto *signature = GuessSignature(ctx->checker->AsETSChecker(), funcRef);
-
-    auto *parent = funcRef->Parent();
-
     ArenaVector<ir::Expression *> params {allocator->Adapter()};
     for (auto *p : signature->Params()) {
         params.push_back(util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(
@@ -966,6 +966,22 @@ static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ct
     bodyStmts.push_back(stmt);
     func->SetBody(util::NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator, allocator, std::move(bodyStmts)));
     func->Body()->SetParent(func);
+    return func;
+}
+
+static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ctx, ir::Expression *funcRef)
+{
+    auto *allocator = ctx->allocator;
+    auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
+    auto *signature = GuessSignature(ctx->checker->AsETSChecker(), funcRef);
+    if (signature == nullptr) {
+        return nullptr;
+    }
+
+    auto *parent = funcRef->Parent();
+
+    auto *func = GetWrappingLambdaParentFunction(ctx, funcRef, signature);
+
     auto *lambda = util::NodeAllocator::ForceSetParent<ir::ArrowFunctionExpression>(allocator, func);
     lambda->SetParent(parent);
 
@@ -1012,6 +1028,9 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
         // Direct reference to method will be impossible from the lambda class, so replace func ref with a lambda
         // that will translate to a proxy method
         auto *lam = CreateWrappingLambda(ctx, funcRef);
+        if (lam == nullptr) {
+            return funcRef;
+        }
         return ConvertLambda(ctx, lam);
     }
 
@@ -1029,6 +1048,9 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     }
 
     auto *signature = GuessSignature(ctx->checker->AsETSChecker(), funcRef);
+    if (signature == nullptr) {
+        return funcRef;
+    }
     ArenaVector<checker::Signature *> signatures(allocator->Adapter());
     signatures.push_back(signature);
     auto *lambdaClass = CreateLambdaClass(ctx, signatures, method, &info);
@@ -1128,8 +1150,9 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         auto *var = id->Variable();
         // We are running this lowering only for ETS files
         // so it is correct to pass ETS extension here to isReference()
-        if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
-            var != nullptr && var->Declaration()->IsFunctionDecl() && !IsInCalleePosition(id)) {
+        if (id->IsReference(ScriptExtension::ETS) && id->TsTypeOrError() != nullptr &&
+            id->TsTypeOrError()->IsETSFunctionType() && var != nullptr && var->Declaration()->IsFunctionDecl() &&
+            !IsInCalleePosition(id)) {
             return ConvertFunctionReference(ctx, id);
         }
     }

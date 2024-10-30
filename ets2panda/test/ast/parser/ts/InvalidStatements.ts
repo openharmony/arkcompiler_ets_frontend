@@ -29,6 +29,7 @@ declare namespace abc {
 
 /* @@? 20:1 Error SyntaxError: Missing catch or finally clause */
 /* @@? 21:9 Error SyntaxError: Expected a '{', got '('. */
-/* @@? 24:8 Error SyntaxError: Unexpected token ')' in catch parameter */
-/* @@? 27:13 Error SyntaxError: Initializers are not allowed in ambient contexts. */
-/* @@? 29:1 Error SyntaxError: Expected a '}' got 'eos'. */
+/* @@? 24:8 Error SyntaxError: Unexpected token ')' in catch parameter  */
+/* @@? 24:8 Error SyntaxError: Unexpected token ')', expected '{' */
+/* @@? 24:8 Error SyntaxError: Expected a '{', got ')'. */
+/* @@? 24:8 Error SyntaxError: Unexpected token ')'. */

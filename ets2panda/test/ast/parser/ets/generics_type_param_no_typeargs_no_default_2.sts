@@ -41,4 +41,6 @@ function doSomethingUseful() {
 
 
 /* @@? 36:20 Error TypeError: Type 'Boxx<T>' is generic but type argument were not provided.  */
-/* @@? 0:0 Error TypeError:   */
+/* @@? 37:5 Error TypeError: No matching call signature for printBoxedValue(*TYPE_ERROR*)  */
+/* @@? 38:20 Error TypeError: Type 'Boxx<T>' is generic but type argument were not provided.  */
+/* @@? 39:5 Error TypeError: No matching call signature for printBoxedValue(*TYPE_ERROR*)  */

@@ -52,6 +52,7 @@ bool AmbientLowering::Perform(public_lib::Context *ctx, parser::Program *program
 
     // Generate $_get and $_set for ambient Indexer
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, ctx](ir::AstNode *ast) -> ir::AstNode * {
             if (ast->IsClassDefinition()) {
                 return CreateIndexerMethodIfNeeded(ast->AsClassDefinition(), ctx);

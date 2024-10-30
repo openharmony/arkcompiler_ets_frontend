@@ -20,8 +20,7 @@ namespace ark::es2panda::compiler {
 void GlobalDeclTransformer::FilterDeclarations(ArenaVector<ir::Statement *> &stmts)
 {
     const auto isDeclCb = [&types = typeDecl_](const ir::AstNode *node) {
-        return types.count(node->Type()) == 0U ||
-               (node->IsExportNamedDeclaration() && !node->AsExportNamedDeclaration()->Specifiers().empty());
+        return types.count(node->Type()) == 0U || (node->IsExportNamedDeclaration());
     };
     stmts.erase(std::remove_if(stmts.begin(), stmts.end(), isDeclCb), stmts.end());
 }

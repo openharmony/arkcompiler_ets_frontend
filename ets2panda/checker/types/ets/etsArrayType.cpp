@@ -23,6 +23,9 @@
 namespace ark::es2panda::checker {
 void ETSArrayType::ToString(std::stringstream &ss, bool precise) const
 {
+    if (HasTypeFlag(TypeFlag::READONLY)) {
+        ss << "readonly ";
+    }
     bool needParens = (element_->IsETSUnionType() || element_->IsETSFunctionType());
     if (needParens) {
         ss << "(";
@@ -80,6 +83,10 @@ void ETSArrayType::Identical(TypeRelation *relation, Type *other)
 
 void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
+    if (source->HasTypeFlag(TypeFlag::READONLY)) {
+        relation->Result(false);
+        return;
+    }
     if (source->IsETSArrayType()) {
         if (AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ||
             source->AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
@@ -145,8 +152,12 @@ void ETSArrayType::IsSupertypeOf(TypeRelation *const relation, Type *source)
 
 Type *ETSArrayType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    return relation->GetChecker()->AsETSChecker()->CreateETSArrayType(
-        element_->Instantiate(allocator, relation, globalTypes));
+    auto *elementType = element_->Instantiate(allocator, relation, globalTypes);
+    bool needAllocator = HasTypeFlag(TypeFlag::READONLY);
+    ETSArrayType *arrayType = needAllocator ? relation->GetChecker()->Allocator()->New<ETSArrayType>(elementType)
+                                            : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(elementType);
+    arrayType->typeFlags_ = typeFlags_;
+    return arrayType;
 }
 
 Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *substitution)

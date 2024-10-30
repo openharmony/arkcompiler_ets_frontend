@@ -456,6 +456,7 @@ libes2panda_sources = [
   "util/bitset.cpp",
   "util/errorHandler.cpp",
   "util/errorLogger.cpp",
+  "util/errorRecovery.cpp",
   "util/helpers.cpp",
   "util/importPathManager.cpp",
   "util/path.cpp",

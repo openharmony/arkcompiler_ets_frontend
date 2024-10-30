@@ -2613,6 +2613,7 @@ export class TsUtils {
 
   isShareableEntity(node: ts.Node): boolean {
     const decl = this.getDeclarationNode(node);
+    // CC-OFFNXT(no_explicit_any) std lib
     const typeNode = (decl as any)?.type;
     return typeNode && !TsUtils.isFunctionLikeDeclaration(decl!) ?
       this.isSendableTypeNode(typeNode, true) :
@@ -2839,6 +2840,7 @@ export class TsUtils {
   }
 
   static isAmbientNode(node: ts.Node): boolean {
+    // CC-OFFNXT(no_explicit_any) std lib
     // Ambient flag is not exposed, so we apply dirty hack to make it visible
     return !!(node.flags & (ts.NodeFlags as any).Ambient);
   }

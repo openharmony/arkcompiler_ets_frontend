@@ -19,7 +19,7 @@ assignment_lowering.sts
 conditionalExpression2.sts
 default_parameters.sts
 generic-function-optional-param.sts
-implicit_package_import_2.sts
+mypackage/implicit_package_import_2.sts
 interfaceMethodWithOptionalParameter.sts
 nullishTypeCodesamples.sts
 objectLiteralInterfaceType.sts

@@ -25,3 +25,6 @@ let void6: (i: int  )       = void1; // CTE; need return type
 function main() {}
 
 /* @@? 23:29 Error SyntaxError: Unexpected token, expected: '=>'.  */
+/* @@? 1:1 Node {
+    "type": "Program"
+}  */

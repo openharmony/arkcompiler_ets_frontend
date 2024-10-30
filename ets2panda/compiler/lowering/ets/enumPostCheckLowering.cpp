@@ -17,10 +17,21 @@
 #include "checker/types/ets/etsEnumType.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/type.h"
+#include "compiler/lowering/util.h"
 #include "varbinder/ETSBinder.h"
 #include "varbinder/variable.h"
 
 namespace ark::es2panda::compiler {
+
+static ir::ClassDeclaration *FindEnclosingClass(ir::AstNode *ast)
+{
+    for (ir::AstNode *curr = ast->Parent(); curr != nullptr; curr = curr->Parent()) {
+        if (curr->IsClassDeclaration()) {
+            return curr->AsClassDeclaration();
+        }
+    }
+    UNREACHABLE();
+}
 
 ir::CallExpression *EnumPostCheckLoweringPhase::CreateCall(
     checker::ETSChecker *checker, ir::ClassDefinition *const classDef,
@@ -35,6 +46,35 @@ ir::CallExpression *EnumPostCheckLoweringPhase::CreateCall(
     ArenaVector<ir::Expression *> callArguments(checker->Allocator()->Adapter());
     callArguments.push_back(argument);
     return checker->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
+}
+
+ir::CallExpression *EnumPostCheckLoweringPhase::GenerateValueOfCall(checker::ETSChecker *checker,
+                                                                    ir::AstNode *const node)
+{
+    ASSERT(node->IsExpression());
+    auto expr = node->AsExpression();
+    auto parent = expr->Parent();
+    parent->AddAstNodeFlags(ir::AstNodeFlags::RECHECK);
+    ASSERT((node->AsExpression()->TsType()->IsETSEnumType()));
+    auto *enumIf = expr->TsType()->AsETSEnumType();
+    auto *callExpr = CreateCall(checker, enumIf->GetDecl()->BoxedClass(), &checker::ETSEnumType::ValueOfMethod, expr);
+    callExpr->SetParent(parent);
+
+    auto *calleClass = FindEnclosingClass(expr);
+
+    auto *varBinder = checker->VarBinder()->AsETSBinder();
+
+    auto *nearestScope = NearestScope(parent);
+    auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, nearestScope);
+    varBinder->ResolveReferencesForScopeWithContext(callExpr, nearestScope);
+
+    auto checkerCtx = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_CLASS,
+                                                   calleClass->Definition()->TsType()->AsETSObjectType());
+    auto scopeCtx = checker::ScopeContext(checker, nearestScope);
+
+    callExpr->Check(checker);
+    node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    return callExpr;
 }
 
 bool EnumPostCheckLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *program)
@@ -60,18 +100,7 @@ bool EnumPostCheckLoweringPhase::Perform(public_lib::Context *ctx, parser::Progr
                 node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
             }
             if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
-                ASSERT(node->IsExpression());
-                auto expr = node->AsExpression();
-                auto parent = expr->Parent();
-                parent->AddAstNodeFlags(ir::AstNodeFlags::RECHECK);
-                ASSERT((node->AsExpression()->TsType()->IsETSEnumType()));
-                auto *enumIf = expr->TsType()->AsETSEnumType();
-                auto *callExpr = CreateCall(ctx->checker->AsETSChecker(), enumIf->GetDecl()->BoxedClass(),
-                                            &checker::ETSEnumType::ValueOfMethod, expr);
-                callExpr->SetParent(parent);
-                callExpr->Check(ctx->checker->AsETSChecker());
-                node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
-                return callExpr;
+                return GenerateValueOfCall(ctx->checker->AsETSChecker(), node);
             }
             if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME)) {
                 ASSERT(node->IsMemberExpression());

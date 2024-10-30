@@ -54,17 +54,17 @@ std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> li
 
     for (const auto &it : list) {
         if (std::holds_alternative<char *>(it)) {
-            ss << std::get<char *>(it);
+            ss << (std::get<char *>(it));
         } else if (std::holds_alternative<util::StringView>(it)) {
-            ss << std::get<util::StringView>(it);
+            ss << (std::get<util::StringView>(it));
         } else if (std::holds_alternative<lexer::TokenType>(it)) {
-            ss << TokenToString(std::get<lexer::TokenType>(it));
+            ss << (TokenToString(std::get<lexer::TokenType>(it)));
         } else if (std::holds_alternative<const Type *>(it)) {
             std::get<const Type *>(it)->ToString(ss);
         } else if (std::holds_alternative<AsSrc>(it)) {
             std::get<AsSrc>(it).GetType()->ToStringAsSrc(ss);
         } else if (std::holds_alternative<size_t>(it)) {
-            ss << std::to_string(std::get<size_t>(it));
+            ss << (std::to_string(std::get<size_t>(it)));
         } else if (std::holds_alternative<const Signature *>(it)) {
             std::get<const Signature *>(it)->ToString(ss, nullptr, true);
         } else {
@@ -73,19 +73,6 @@ std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> li
     }
 
     return ss.str();
-}
-
-void Checker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
-{
-    ThrowTypeError(FormatMsg(list), pos);
-}
-
-void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos)
-{
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    throw Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col};
 }
 
 void Checker::LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)

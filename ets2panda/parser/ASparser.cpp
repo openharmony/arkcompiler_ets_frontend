@@ -757,6 +757,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *option
 }
 
 ir::ArrowFunctionExpression *ASParser::ParsePotentialArrowExpression(
+    // CC-OFFNXT(G.FMT.06-CPP) project code style
     [[maybe_unused]] ir::Expression **returnExpression, [[maybe_unused]] const lexer::SourcePosition &startLoc)
 {
     return nullptr;
@@ -1201,9 +1202,7 @@ void ASParser::ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNo
 void ASParser::ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                    ir::Expression *propName, ir::ScriptFunction *func)
 {
-    if (func->Params().size() != 1) {
-        ThrowSyntaxError("Setter must have exactly one formal parameter");
-    }
+    ValidateGetterSetter(ir::MethodDefinitionKind::SET, func->Params().size());
 
     if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
         ir::ModifierFlags access = GetAccessability(desc->modifiers);
@@ -1323,6 +1322,7 @@ std::tuple<bool, bool, bool> ASParser::ParseComputedClassFieldOrIndexSignature(i
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ASParser::ParseFunctionBody(
+    // CC-OFFNXT(G.FMT.06-CPP) project code style
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus newStatus,
     ParserStatus contextStatus)
 {
@@ -1352,7 +1352,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ASParser::Pa
 
 ir::AstNode *ASParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers)
 {
-    ir::Identifier *local = ParseNamedImport(Lexer()->GetToken());
+    ir::Identifier *local = ParseNamedImport(&Lexer()->GetToken());
     Lexer()->NextToken();  // eat local name
 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
@@ -1415,7 +1415,7 @@ ir::Expression *ASParser::ParseArrowFunctionNoParameter(lexer::SourcePosition st
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ASParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
-    [[maybe_unused]] ExpressionParseFlags flags)
+    [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();

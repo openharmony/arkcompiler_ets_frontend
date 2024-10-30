@@ -63,6 +63,7 @@ private:
     void ParseCapturingGroup();
 
     void ParseAssertion();
+    char32_t ParseClassAtomHelper(char32_t cp);
     char32_t ParseClassAtom();
     void ParseCharacterClass();
     void ParseAtomEscape();

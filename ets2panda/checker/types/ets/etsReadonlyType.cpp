@@ -58,7 +58,7 @@ void ETSReadonlyType::Cast(TypeRelation *relation, [[maybe_unused]] Type *target
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
         return;
     }
-    if (target->IsETSObjectType() && target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::READONLY)) {
+    if (target->IsETSObjectType() && target->HasTypeFlag(TypeFlag::READONLY)) {
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
     }
     relation->Result(relation->InCastingContext());

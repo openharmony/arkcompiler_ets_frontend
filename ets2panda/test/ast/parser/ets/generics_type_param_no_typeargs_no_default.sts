@@ -22,4 +22,5 @@ class Base<T> {
 class Derived extends Base {}
 
 /* @@? 18:11 Error TypeError: Type 'Base<T>' is generic but type argument were not provided.  */
-/* @@? 0:0 Error TypeError:   */
+/* @@? 22:23 Error TypeError: Type 'Base<T>' is generic but type argument were not provided. */
+/* @@? 22:23 Error TypeError: The super type of 'Derived' class is not extensible. */

@@ -445,7 +445,7 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_CONSTRUCTOR) {
-        ThrowSyntaxError({"Unexpected token. 'Constructor' keyword is expected."});
+        LogExpectedToken(lexer::TokenType::KEYW_CONSTRUCTOR);
     }
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {

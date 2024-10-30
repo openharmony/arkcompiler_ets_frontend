@@ -18,4 +18,5 @@ class Foo {
     function a();
 }
 
-/* @@? 18:14 Error SyntaxError: ';' expected.  */
+/* @@? 18:14 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 18:15 Error SyntaxError: Unexpected token in class property  */

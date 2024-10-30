@@ -262,6 +262,58 @@ void ObjectExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     pg->GetAstCompiler()->Compile(this);
 }
 
+// CC-OFFNXT(G.FMT.10-CPP) project code style
+std::tuple<bool, varbinder::Variable *, checker::Type *, varbinder::LocalVariable *>
+ObjectExpression::CheckPatternIsShorthand(CheckPatternIsShorthandArgs *args)
+{
+    if (args->prop->IsShorthand()) {
+        switch (args->prop->Value()->Type()) {
+            case ir::AstNodeType::IDENTIFIER: {
+                const ir::Identifier *ident = args->prop->Value()->AsIdentifier();
+                ASSERT(ident->Variable());
+                args->bindingVar = ident->Variable();
+                break;
+            }
+            case ir::AstNodeType::ASSIGNMENT_PATTERN: {
+                auto *assignmentPattern = args->prop->Value()->AsAssignmentPattern();
+                args->patternParamType = assignmentPattern->Right()->Check(args->checker);
+                ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
+                args->bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
+                args->isOptional = true;
+                break;
+            }
+            default: {
+                UNREACHABLE();
+            }
+        }
+        return {args->isOptional, args->bindingVar, args->patternParamType, args->foundVar};
+    }
+
+    switch (args->prop->Value()->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            args->bindingVar = args->prop->Value()->AsIdentifier()->Variable();
+            break;
+        }
+        case ir::AstNodeType::ARRAY_PATTERN: {
+            args->patternParamType = args->prop->Value()->AsArrayPattern()->CheckPattern(args->checker);
+            break;
+        }
+        case ir::AstNodeType::OBJECT_PATTERN: {
+            args->patternParamType = args->prop->Value()->AsObjectPattern()->CheckPattern(args->checker);
+            break;
+        }
+        case ir::AstNodeType::ASSIGNMENT_PATTERN: {
+            args->isOptional = CheckAssignmentPattern(args->prop, args->bindingVar, args->patternParamType,
+                                                      args->checker, args->foundVar);
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+    return {args->isOptional, args->bindingVar, args->patternParamType, args->foundVar};
+}
+
 checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
 {
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
@@ -288,50 +340,9 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
         varbinder::LocalVariable *foundVar = desc->FindProperty(prop->Key()->AsIdentifier()->Name());
         checker::Type *patternParamType = checker->GlobalAnyType();
         varbinder::Variable *bindingVar = nullptr;
+        auto args = CheckPatternIsShorthandArgs {checker, patternParamType, bindingVar, prop, foundVar, isOptional};
 
-        if (prop->IsShorthand()) {
-            switch (prop->Value()->Type()) {
-                case ir::AstNodeType::IDENTIFIER: {
-                    const ir::Identifier *ident = prop->Value()->AsIdentifier();
-                    ASSERT(ident->Variable());
-                    bindingVar = ident->Variable();
-                    break;
-                }
-                case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                    auto *assignmentPattern = prop->Value()->AsAssignmentPattern();
-                    patternParamType = assignmentPattern->Right()->Check(checker);
-                    ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
-                    bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
-                    isOptional = true;
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                }
-            }
-        } else {
-            switch (prop->Value()->Type()) {
-                case ir::AstNodeType::IDENTIFIER: {
-                    bindingVar = prop->Value()->AsIdentifier()->Variable();
-                    break;
-                }
-                case ir::AstNodeType::ARRAY_PATTERN: {
-                    patternParamType = prop->Value()->AsArrayPattern()->CheckPattern(checker);
-                    break;
-                }
-                case ir::AstNodeType::OBJECT_PATTERN: {
-                    patternParamType = prop->Value()->AsObjectPattern()->CheckPattern(checker);
-                    break;
-                }
-                case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                    isOptional = CheckAssignmentPattern(prop, bindingVar, patternParamType, checker, foundVar);
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                }
-            }
-        }
+        std::tie(isOptional, bindingVar, patternParamType, foundVar) = CheckPatternIsShorthand(&args);
 
         if (bindingVar != nullptr) {
             bindingVar->SetTsType(patternParamType);

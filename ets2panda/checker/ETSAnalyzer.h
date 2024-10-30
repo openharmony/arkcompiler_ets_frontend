@@ -25,7 +25,7 @@ namespace ark::es2panda::checker {
 class ETSAnalyzer final : public SemanticAnalyzer {
 public:
     explicit ETSAnalyzer(Checker *checker) : SemanticAnalyzer(checker) {};
-
+// CC-OFFNXT(G.PRE.02,G.PRE.09) name part
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_ETSANALYZER_CHECK_METHOD(_, nodeType) checker::Type *Check(ir::nodeType *node) const override;
     AST_NODE_MAPPING(DECLARE_ETSANALYZER_CHECK_METHOD)
@@ -33,10 +33,11 @@ public:
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_ETSANALYZER_CHECK_METHOD(_, __, nodeType, ___) \
-    virtual checker::Type *Check(ir::nodeType *node) const override;
+    virtual checker::Type *Check(ir::nodeType *node) const override;  // CC-OFF(G.PRE.02,G.PRE.09) name part
     AST_NODE_REINTERPRET_MAPPING(DECLARE_ETSANALYZER_CHECK_METHOD)
 #undef DECLARE_ETSANALYZER_CHECK_METHOD
     checker::Type *PreferredType(ir::ObjectExpression *expr) const;
+    checker::Type *CheckDynamic(ir::ObjectExpression *expr) const;
     checker::Type *GetPreferredType(ir::ArrayExpression *expr) const;
     void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const;
     std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
@@ -57,7 +58,7 @@ private:
     bool CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
                                          checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                          ETSChecker *checker) const;
-
+    void CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const;
     checker::Type *GetCalleeType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr) const
     {
         checker::Type *calleeType = expr->GetTypeRef()->Check(checker);

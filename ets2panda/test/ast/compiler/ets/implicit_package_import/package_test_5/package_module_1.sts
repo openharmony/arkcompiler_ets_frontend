@@ -17,4 +17,4 @@ package mypack;
 
 let myvar: number = wont_exist;
 
-/* @@? 18:21 Error TypeError: Unresolved reference wont_exist  */
+/* @@? package_module_2_neg.sts:20:6 Error SyntaxError: Unexpected token: 'identification literal'. */

@@ -20,5 +20,6 @@ function main(): void {
   }
 }
 
-/* @@? 18:25 Error SyntaxError: Unexpected token 'let'.  */
-/* @@? 18:25 Error SyntaxError: Unexpected token, expected ')'  */
+/* @@? 18:25 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 18:25 Error SyntaxError: Unexpected token, expected ')' */
+/* @@? 18:25 Error SyntaxError: Unexpected token, expected ';' in 'ForStatement'. */

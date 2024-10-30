@@ -181,6 +181,7 @@ bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [checker](ir::AstNode *ast) -> ir::AstNode * {
             if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr) {
                 auto *objType =

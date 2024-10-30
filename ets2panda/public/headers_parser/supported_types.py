@@ -299,14 +299,14 @@ def is_method_supported(function: dict) -> bool:
 
 def need_to_gen(function: dict) -> bool:
     if "postfix" in function:
-        for ban in no_gen_keywords["postfix"]:
+        for ban in no_gen_keywords["postfix"]: # CC-OFF(G.TYP.07) dict key exist
             if function["postfix"].find(ban) != -1:
                 return False
-    for name_start in no_gen_keywords["name_starts_with"]:
+    for name_start in no_gen_keywords["name_starts_with"]: # CC-OFF(G.TYP.07) dict key exist
         if function["name"].startswith(name_start):
             return False
     if "return_type" in function:
-        for ban in no_gen_keywords["return_type"]:
+        for ban in no_gen_keywords["return_type"]: # CC-OFF(G.TYP.07) dict key exist
             if "name" in function["return_type"] and function["return_type"]["name"].find(ban) != -1:
                 return False
     return True

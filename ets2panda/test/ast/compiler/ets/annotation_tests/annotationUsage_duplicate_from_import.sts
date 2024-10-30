@@ -19,4 +19,4 @@ class A{
     @MyAnno
     foo(){}
 }
-/* @@? 19:6 Error SyntaxError: Variable 'MyAnno' has already been declared.  */
+/* @@? 19:6 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */

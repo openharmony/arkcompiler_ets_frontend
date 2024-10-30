@@ -38,7 +38,7 @@ public:
     NO_MOVE_SEMANTIC(MethodDefinition);
 
     using OverloadsT = ArenaVector<MethodDefinition *>;
-
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit MethodDefinition(MethodDefinitionKind const kind, Expression *const key, Expression *const value,
                               ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
         : ClassElement(AstNodeType::METHOD_DEFINITION, key, value, modifiers, allocator, isComputed),

@@ -201,6 +201,7 @@ bool InterfacePropertyDeclarationsPhase::Perform(public_lib::Context *ctx, parse
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [checker](ir::AstNode *const ast) -> ir::AstNode * {
             return ast->IsTSInterfaceBody() ? UpdateInterfacePropertys(checker, ast->AsTSInterfaceBody()) : ast;
         },

@@ -565,7 +565,11 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 {
     ArenaVector<checker::Type *> elementTypes(Allocator()->Adapter());
     for (auto e : init->AsArrayExpression()->Elements()) {
-        elementTypes.push_back(GetNonConstantType(e->Check(this)));
+        Type *eType = e->Check(this);
+        if (eType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+            return eType;
+        }
+        elementTypes.push_back(GetNonConstantType(eType));
     }
 
     if (elementTypes.empty()) {
@@ -676,6 +680,10 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
                      ident->Start());
     }
 
+    if (annotationType != nullptr && annotationType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+        return false;
+    }
+
     if ((init->IsMemberExpression()) && (annotationType != nullptr)) {
         SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
     }
@@ -690,13 +698,14 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
         init->AsArrayExpression()->SetPreferredType(annotationType);
     }
 
-    if (init->IsObjectExpression()) {
+    if (init->IsObjectExpression() && annotationType != nullptr) {
         init->AsObjectExpression()->SetPreferredType(PreferredObjectTypeFromAnnotation(annotationType));
     }
 
     if (typeAnnotation != nullptr && init->IsArrowFunctionExpression()) {
         InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
     }
+
     return true;
 }
 void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName)
@@ -731,7 +740,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     const bool isStatic = (flags & ir::ModifierFlags::STATIC) != 0;
     // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
     // are assigned with CONSTANT, which would not be correct. (After feature supported)
-    const bool omitInitConstness = isConst || (isReadonly && isStatic);
+    const bool omitConstInit = isConst || (isReadonly && isStatic);
 
     if (typeAnnotation != nullptr) {
         annotationType = typeAnnotation->GetType(this);
@@ -755,7 +764,9 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
 
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
         if (!init->IsArrowFunctionExpression() && (initType->AsETSFunctionType()->CallSignatures().size() != 1)) {
-            ThrowTypeError("Ambiguous function initialization because of multiple overloads", init->Start());
+            LogTypeError("Ambiguous function initialization because of multiple overloads", init->Start());
+            bindingVar->SetTsType(GlobalTypeError());
+            return bindingVar->TsTypeOrError();
         }
 
         annotationType =
@@ -768,7 +779,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     if (annotationType != nullptr) {
         CheckAnnotationTypeForVariableDeclaration(annotationType, annotationType->IsETSUnionType(), init, initType);
 
-        if (omitInitConstness &&
+        if (omitConstInit &&
             ((initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) ||
              (initType->IsETSStringType() && annotationType->IsETSStringType()))) {
             bindingVar->SetTsType(init->TsType());
@@ -779,8 +790,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     CheckEnumType(init, initType, varName);
 
     // NOTE: need to be done by smart casts
-    const bool needWidening =
-        !omitInitConstness && typeAnnotation == nullptr && NeedWideningBasedOnInitializerHeuristics(init);
+    auto needWidening = !omitConstInit && typeAnnotation == nullptr && NeedWideningBasedOnInitializerHeuristics(init);
     bindingVar->SetTsType(needWidening ? GetNonConstantType(initType) : initType);
 
     return FixOptionalVariableType(bindingVar, flags, init);
@@ -801,20 +811,11 @@ void ETSChecker::CheckAnnotationTypeForVariableDeclaration(checker::Type *annota
         }
     }
 
-    if (isUnionFunction) {
-        if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {},
-                               TypeRelationFlag::NO_THROW)
-                 .IsAssignable()) {
-            LogTypeError({"Type '", sourceType, "' cannot be assigned to type '", annotationType, "'"}, init->Start());
-        }
-    } else {
-        if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {},
-                               TypeRelationFlag::NO_THROW)
-                 .IsAssignable()) {
-            LogTypeError({"Type '", sourceType, "' cannot be assigned to type '",
-                          TryGettingFunctionTypeFromInvokeFunction(annotationType), "'"},
-                         init->Start());
-        }
+    if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {}, TypeRelationFlag::NO_THROW)
+             // CC-OFFNXT(G.FMT.02) project code style
+             .IsAssignable()) {
+        Type *targetType = isUnionFunction ? annotationType : TryGettingFunctionTypeFromInvokeFunction(annotationType);
+        LogTypeError({"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"}, init->Start());
     }
 }
 
@@ -860,11 +861,11 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
     }
 
     //  In case of Union left-hand type we have to select the proper type from the Union
-    //  NOTE: it always exists at this point!
+    //  Because now we have logging of errors we have to continue analyze incorrect program, for
+    //  this case we change typeError to source type.
     if (targetType->IsETSUnionType()) {
-        sourceType = targetType->AsETSUnionType()->GetAssignableType(this, sourceType);
-        ASSERT(sourceType != nullptr);
-        return sourceType;
+        auto component = targetType->AsETSUnionType()->GetAssignableType(this, sourceType);
+        return component->IsTypeError() ? MaybePromotedBuiltinType(sourceType) : component;
     }
 
     //  If source is reference type, set it as the current and use it for identifier smart cast
@@ -1397,9 +1398,7 @@ void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjec
 
 Type *ETSChecker::GetReferencedTypeFromBase([[maybe_unused]] Type *baseType, [[maybe_unused]] ir::Expression *name)
 {
-    LogTypeError("Invalid type reference.", name->Start());
-    name->SetTsType(GlobalTypeError());
-    return name->TsTypeOrError();
+    return TypeError(name, "Invalid type reference.", name->Start());
 }
 
 Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
@@ -1445,7 +1444,7 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
             break;
         }
         case ir::AstNodeType::ANNOTATION_DECLARATION: {
-            LogTypeError("Annotations are only implemented at the parse stage.", name->Start());
+            LogTypeError("Annotations cannot be used as a type.", name->Start());
             tsType = GlobalTypeError();
             break;
         }
@@ -1935,6 +1934,7 @@ bool ETSChecker::CheckRethrowingParams(const ir::AstNode *ancestorFunction, cons
 {
     for (const auto param : ancestorFunction->AsScriptFunction()->Signature()->Function()->Params()) {
         if (node->AsCallExpression()->Callee()->AsIdentifier()->Name().Is(
+                // CC-OFFNXT(G.FMT.06-CPP) project code style
                 param->AsETSParameterExpression()->Ident()->Name().Mutf8())) {
             return true;
         }

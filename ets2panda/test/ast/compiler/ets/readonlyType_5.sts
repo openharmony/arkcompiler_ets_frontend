@@ -22,4 +22,4 @@ function foo(): void {
     let a_class: A = a;
 }
 
-/* @@? 22:22 Error TypeError: Type 'A' cannot be assigned to type 'A'  */
+/* @@? 22:22 Error TypeError: Type 'Readonly<A>' cannot be assigned to type 'A'  */

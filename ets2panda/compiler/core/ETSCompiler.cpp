@@ -1267,10 +1267,10 @@ void ETSCompiler::Compile(const ir::NumberLiteral *expr) const
 
     if (expr->Number().IsInt()) {
         if (util::Helpers::IsTargetFitInSourceRange<checker::ByteType::UType, checker::IntType::UType>(
-                expr->Number().GetInt())) {
+                expr->Number().GetInt())) {  // CC-OFF(G.FMT.06-CPP) project code style
             etsg->LoadAccumulatorByte(expr, static_cast<int8_t>(expr->Number().GetInt()));
         } else if (util::Helpers::IsTargetFitInSourceRange<checker::ShortType::UType, checker::IntType::UType>(
-                       expr->Number().GetInt())) {
+                       expr->Number().GetInt())) {  // CC-OFF(G.FMT.06-CPP) project code style
             etsg->LoadAccumulatorShort(expr, static_cast<int16_t>(expr->Number().GetInt()));
         } else {
             etsg->LoadAccumulatorInt(expr, static_cast<int32_t>(expr->Number().GetInt()));
@@ -1686,7 +1686,7 @@ void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
     if (st->Init() != nullptr) {
         if (!etsg->TryLoadConstantExpression(st->Init())) {
             st->Init()->Compile(etsg);
-            etsg->ApplyConversion(st->Init(), nullptr);
+            etsg->ApplyConversion(st->Init(), st->TsType());
         }
     } else {
         etsg->LoadDefaultValue(st, st->Id()->AsIdentifier()->Variable()->TsType());
@@ -1924,4 +1924,6 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const {}
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSEnumDeclaration *st) const {}
+
 }  // namespace ark::es2panda::compiler

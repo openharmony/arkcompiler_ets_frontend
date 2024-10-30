@@ -126,10 +126,6 @@ ir::Statement *ETSParser::ParseEnumDeclaration(bool isConst, bool isStatic)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM);
 
-    if ((GetContext().Status() & parser::ParserStatus::FUNCTION) != 0U) {
-        ThrowSyntaxError("Local enum declaration support is not yet implemented.");
-    }
-
     lexer::SourcePosition enumStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat enum keyword
 
@@ -150,7 +146,6 @@ ir::Statement *ETSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
 }
 
 // NOLINTBEGIN(cert-err58-cpp)
-static std::string const DUPLICATE_ENUM_VALUE = "Duplicate enum initialization value "s;
 static std::string const INVALID_ENUM_TYPE = "Invalid enum initialization type"s;
 static std::string const INVALID_ENUM_VALUE = "Invalid enum initialization value"s;
 static std::string const MISSING_COMMA_IN_ENUM = "Missing comma between enum constants"s;
@@ -180,7 +175,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
                                                    const bool isConst, const bool isStatic)
 {
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ThrowSyntaxError("'{' expected");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
     }
 
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
@@ -212,6 +207,55 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
     return enumDeclaration;
 }
 
+bool ETSParser::ParseNumberEnumEnd()
+{
+    bool isBreak = false;
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
+        // enum5.sts
+        LogSyntaxError(MISSING_COMMA_IN_ENUM);
+        if (lexer::Token::IsPunctuatorToken((Lexer()->GetToken().Type()))) {
+            /*  enum Direction {
+                  Left = -1;
+                  Right = 1",
+                }*/
+            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
+            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
+        }
+        /* in another case just skip the token
+            enum Direction {
+              Left = -1
+              Right = 1,
+            }
+        */
+    } else {
+        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
+    }
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        isBreak = true;
+    }
+    return isBreak;
+}
+
+bool ETSParser::ParseNumberEnumHelper()
+{
+    bool minusSign = false;
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PLUS) {
+        Lexer()->NextToken();
+    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MINUS) {
+        minusSign = true;
+        Lexer()->NextToken();
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
+        // enum15.sts; will be zero by default
+        LogSyntaxError(INVALID_ENUM_TYPE);
+        Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_NUMBER);
+        Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
+    }
+    return minusSign;
+}
+
 void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
 {
     checker::ETSIntEnumType::ValueType currentValue {};
@@ -229,16 +273,7 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
             bool minusSign = false;
 
             Lexer()->NextToken();
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PLUS) {
-                Lexer()->NextToken();
-            } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MINUS) {
-                minusSign = true;
-                Lexer()->NextToken();
-            }
-
-            if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
-                ThrowSyntaxError(INVALID_ENUM_TYPE);
-            }
+            minusSign = ParseNumberEnumHelper();
 
             ordinal = ParseNumberLiteral()->AsNumberLiteral();
             if (minusSign) {
@@ -270,13 +305,7 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
     parseMember();
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-            ThrowSyntaxError(MISSING_COMMA_IN_ENUM);
-        }
-
-        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        if (ParseNumberEnumEnd()) {
             break;
         }
 
@@ -297,7 +326,10 @@ void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
 
             Lexer()->NextToken();
             if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
-                ThrowSyntaxError(INVALID_ENUM_TYPE);
+                // enum24.sts; will be set as "0" by default
+                LogSyntaxError(INVALID_ENUM_TYPE);
+                Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_STRING);
+                Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
             }
 
             itemValue = ParseStringLiteral();
@@ -315,10 +347,25 @@ void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-            ThrowSyntaxError(MISSING_COMMA_IN_ENUM);
+            // enum5.sts
+            LogSyntaxError(MISSING_COMMA_IN_ENUM);
+            if (lexer::Token::IsPunctuatorToken((Lexer()->GetToken().Type()))) {
+                /*  enum Direction {
+                      Left = "LEFT";
+                      Right = "RIGHT",
+                    }*/
+                Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
+                Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
+            }
+            /* in another case just skip the token
+                enum Direction {
+                  Left = "LEFT"
+                  Right = "RIGHT",
+                }
+            */
+        } else {
+            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
         }
-
-        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
             ThrowSyntaxError(TRAILING_COMMA_IN_ENUM);

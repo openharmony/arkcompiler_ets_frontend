@@ -697,16 +697,23 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
                 })) {
                 continue;
             }
+            implDecl = item->GetETSImportDeclarations();
         } else {
             ArenaVector<parser::Program *> record =
                 GetExternalProgram(item->GetETSImportDeclarations()->ResolvedSource()->Str(), importPath);
-            if (FindImportSpecifiersVariable(imported, record.front()->GlobalScope()->Bindings(), record) == nullptr) {
+            auto *const var = FindImportSpecifiersVariable(imported, record.front()->GlobalScope()->Bindings(), record);
+            if (var != nullptr) {
+                implDecl = item->GetETSImportDeclarations();
                 continue;
             }
+            auto reExportImport = item->GetETSImportDeclarations();
+            auto reExportImportPath = reExportImport->Source();
+            auto implDeclOrNullptr =
+                FindImportDeclInReExports(reExportImport, viewedReExport, imported, reExportImportPath);
+            if (implDeclOrNullptr != nullptr) {
+                implDecl = implDeclOrNullptr;
+            }
         }
-
-        // NOTE: ttamas - Duplication check created error
-        implDecl = item->GetETSImportDeclarations();
     }
     return implDecl;
 }
@@ -918,51 +925,40 @@ void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
 {
     switch (childNode->Type()) {
         case ir::AstNodeType::ETS_TYPE_REFERENCE: {
-            BuildETSTypeReference(childNode->AsETSTypeReference());
-            break;
+            return BuildETSTypeReference(childNode->AsETSTypeReference());
         }
         case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
-            BuildInterfaceDeclaration(childNode->AsTSInterfaceDeclaration());
-            break;
+            return BuildInterfaceDeclaration(childNode->AsTSInterfaceDeclaration());
         }
         case ir::AstNodeType::TS_ENUM_DECLARATION: {
-            ResolveEnumDeclaration(childNode->AsTSEnumDeclaration());
-            break;
+            return ResolveEnumDeclaration(childNode->AsTSEnumDeclaration());
         }
         case ir::AstNodeType::EXPORT_NAMED_DECLARATION: {
             break;
         }
         case ir::AstNodeType::ETS_IMPORT_DECLARATION: {
-            BuildImportDeclaration(childNode->AsETSImportDeclaration());
-            break;
+            return BuildImportDeclaration(childNode->AsETSImportDeclaration());
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
-            BuildMemberExpression(childNode->AsMemberExpression());
-            break;
+            return BuildMemberExpression(childNode->AsMemberExpression());
         }
         case ir::AstNodeType::METHOD_DEFINITION: {
-            BuildMethodDefinition(childNode->AsMethodDefinition());
-            break;
+            return BuildMethodDefinition(childNode->AsMethodDefinition());
         }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
-            BuildETSNewClassInstanceExpression(childNode->AsETSNewClassInstanceExpression());
-            break;
+            return BuildETSNewClassInstanceExpression(childNode->AsETSNewClassInstanceExpression());
         }
         case ir::AstNodeType::ETS_FUNCTION_TYPE: {
-            BuildSignatureDeclarationBaseParams(childNode);
-            break;
+            return BuildSignatureDeclarationBaseParams(childNode);
         }
         case ir::AstNodeType::OBJECT_EXPRESSION: {
-            BuildObjectExpression(childNode->AsObjectExpression());
-            break;
+            return BuildObjectExpression(childNode->AsObjectExpression());
         }
         case ir::AstNodeType::ANNOTATION_USAGE: {
-            BuildAnnotationUsage(childNode->AsAnnotationUsage());
-            break;
+            return BuildAnnotationUsage(childNode->AsAnnotationUsage());
         }
         default: {
-            ResolveReferences(childNode);
-            break;
+            return ResolveReferences(childNode);
         }
     }
 }

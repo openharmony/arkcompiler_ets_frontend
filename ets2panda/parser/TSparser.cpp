@@ -1929,9 +1929,7 @@ ir::MethodDefinition *TSParser::ParseClassMethod(ClassElementDescriptor *desc,
 void TSParser::ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                    ir::Expression *propName, ir::ScriptFunction *func)
 {
-    if (func->Params().size() != 1) {
-        ThrowSyntaxError("Setter must have exactly one formal parameter");
-    }
+    ValidateGetterSetter(ir::MethodDefinitionKind::SET, func->Params().size());
 
     if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
         ir::ModifierFlags access = GetAccessability(desc->modifiers);
@@ -1942,9 +1940,7 @@ void TSParser::ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVect
 void TSParser::ValidateClassGetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                    ir::Expression *propName, ir::ScriptFunction *func)
 {
-    if (!func->Params().empty()) {
-        ThrowSyntaxError("Getter must not have formal parameters");
-    }
+    ValidateGetterSetter(ir::MethodDefinitionKind::GET, func->Params().size());
 
     if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
         ir::ModifierFlags access = GetAccessability(desc->modifiers);
@@ -2099,7 +2095,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> TSParser::Pa
 
 ir::AstNode *TSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers)
 {
-    ir::Identifier *local = ParseNamedImport(Lexer()->GetToken());
+    ir::Identifier *local = ParseNamedImport(&Lexer()->GetToken());
     Lexer()->NextToken();  // eat local name
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {

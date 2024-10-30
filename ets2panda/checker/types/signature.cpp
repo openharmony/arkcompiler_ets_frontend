@@ -45,8 +45,8 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
 
     for (auto *param : signatureInfo_->params) {
         auto *newParam = param;
-        auto *newParamType = param->TsType()->Substitute(relation, substitution);
-        if (newParamType != param->TsType()) {
+        auto *newParamType = param->TsTypeOrError()->Substitute(relation, substitution);
+        if (newParamType != param->TsTypeOrError()) {
             anyChange = true;
             newParam = param->Copy(allocator, param->Declaration());
             newParam->SetTsType(newParamType);
@@ -87,7 +87,7 @@ void Signature::ToAssemblerType(std::stringstream &ss) const
     ss << compiler::Signatures::MANGLE_BEGIN;
 
     for (const auto *param : signatureInfo_->params) {
-        param->TsType()->ToAssemblerTypeWithRank(ss);
+        param->TsTypeOrError()->ToAssemblerTypeWithRank(ss);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
@@ -273,7 +273,7 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
 
     std::size_t i = 0U;
     for (; i < parametersNumber; ++i) {
-        if (!CheckParameter(relation, this->Params()[i]->TsType(), other->Params()[i]->TsType())) {
+        if (!CheckParameter(relation, this->Params()[i]->TsTypeOrError(), other->Params()[i]->TsTypeOrError())) {
             return;
         }
     }

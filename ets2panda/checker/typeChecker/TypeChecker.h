@@ -38,11 +38,6 @@ protected:
     // NOTE(aleksisch): checker should be replaced with some `ErrorHandler`
     explicit TypeChecker(Checker *checker) : checker_(checker) {}
 
-    void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
-    {
-        checker_->ThrowTypeError(list, pos);
-    }
-
     void LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
     {
         checker_->LogTypeError(list, pos);

@@ -10,3 +10,34 @@ ast/parser/ets/iterator_override_next.sts
 # Fails with Assertion. Description in Issue #19645
 ast/parser/ets/switch_readonly_member_different_enum_2.sts
 ast/parser/ets/extension_function_tests/extension_function_not_for_class_type.sts
+
+
+# Issue: #19532. About astchecker format
+ast/parser/ets/unexpected_token_1.sts
+ast/parser/ets/unexpected_token_10.sts
+ast/parser/ets/unexpected_token_12.sts
+ast/parser/ets/unexpected_token_13.sts
+ast/parser/ets/unexpected_token_5.sts
+
+# For future multi error logging
+ast/parser/ets/unexpected_token_14.sts
+
+# Issue: #19396
+ast/parser/ets/InvalidStatements2.sts
+ast/parser/ets/AllowSequence.sts
+ets/lambda_infer_type/lambda_infer_type_param1.sts
+ast/compiler/ets/annotation_tests/annotion_using_bad01.sts
+ast/compiler/ets/annotation_tests/annotion_using_bad02.sts
+ast/compiler/ets/annotation_tests/annotion_using_bad03.sts
+ast/compiler/ets/annotation_tests/annotion_decalaration_bad01.sts
+ast/compiler/ets/annotation_tests/annotion_decalaration_bad02.sts
+ast/compiler/ets/annotation_tests/annotion_decalaration_bad03.sts
+ast/compiler/ets/annotation_tests/annotion_decalaration_bad04.sts
+ast/parser/ets/unexpected_token_29.sts
+ast/parser/ets/unexpected_token_50.sts
+ast/parser/ets/unexpected_token_30.sts
+ast/parser/ets/unexpected_token_49.sts
+ast/parser/ets/UnexpectedToken.sts
+ast/parser/ets/unexpected_token_54.sts
+ast/parser/ets/arrow_1.sts
+ast/parser/ets/unexpected_token_3.sts

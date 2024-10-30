@@ -15,4 +15,5 @@
 
 type bar number;
 
-/* @@? 16:10 Error SyntaxError: '=' expected  */
+/* @@? 16:10 Error SyntaxError: Unexpected token, expected: '='.  */
+/* @@? 16:16 Error SyntaxError: Invalid Type  */

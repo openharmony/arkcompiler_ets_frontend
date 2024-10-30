@@ -74,6 +74,9 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
 
     Type *lub = nullptr;
     for (auto *t : un->ConstituentTypes()) {
+        if (t->IsTypeError()) {
+            return checker->GlobalTypeError();
+        }
         ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
         if (t->IsETSNullType() || lub == t) {
             continue;
@@ -650,7 +653,7 @@ Type *ETSUnionType::FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelat
                            [relation, target, &isCastablePred](Type *source) {
                                return isCastablePred(relation, source, target) && source->IsETSReferenceType() &&
                                       target->IsETSReferenceType();
-                           });
+                           });  // CC-OFF(G.FMT.02) project code style
     if (it != constituentTypes_.end()) {
         if (nodeWasSet) {
             relation->SetNode(nullptr);

@@ -273,7 +273,7 @@ public:
      * @param varbinder ref to VarBinder. All varbinder scopes should be set to current context.
      * Note: It's programmer responsibility to prepare VarBinder (remove previous names, set current scope, etc...)
      *
-     * Example:
+     * Example: // CC-OFF(G.CMT.04) false positive
      * f<T>(x: Int) :  {
      *     let y = 0;
      * }
@@ -293,7 +293,7 @@ public:
      *
      * Then you should pass your new created node = ir::BlockStatement() to RunExternalNode,
      * set varbinder to previous `function_scope` and call RunExternalNode(node, varbinder).
-     * It will update scopes to:
+     * It will update scopes to: // CC-OFF(G.CMT.04) false positive
      * global_scope:
      *     [f],
      *     local_scope:

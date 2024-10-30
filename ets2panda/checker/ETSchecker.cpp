@@ -245,7 +245,7 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
 
 #ifndef NDEBUG
     for (auto *func : varbinder->Functions()) {
-        ASSERT(!func->Node()->AsScriptFunction()->Scope()->InternalName().Empty());
+        ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());
     }
 #endif
 
@@ -526,6 +526,25 @@ const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
 Type *ETSChecker::GlobalTypeError() const
 {
     return GetGlobalTypesHolder()->GlobalTypeError();
+}
+
+Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
+{
+    node->SetTsType(GlobalTypeError());
+    return node->TsTypeOrError();
+}
+
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)
+{
+    LogTypeError(message, at);
+    return InvalidateType(node);
+}
+
+Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at)
+{
+    LogTypeError(message, at);
+    var->SetTsType(GlobalTypeError());
+    return var->TsTypeOrError();
 }
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)

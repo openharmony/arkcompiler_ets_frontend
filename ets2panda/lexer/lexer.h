@@ -155,9 +155,19 @@ public:
     bool CheckArrow();
 
     RegExp ScanRegExp();
+
+    void HandleNewlineHelper(util::UString *str, size_t *escapeEnd);
+    void HandleBackslashHelper(util::UString *str, size_t *escapeEnd);
+    bool HandleDollarSignHelper(const char32_t &end);
+    bool HandleDoubleQuoteHelper(const char32_t &end, const char32_t &cp);
+    void FinalizeTokenHelper(util::UString *str, const size_t &startPos, size_t escapeEnd);
     template <char32_t END>
     void ScanString();
+
     void ResetTokenEnd();
+    void CheckOctalDigit(char32_t const nextCp);
+    std::tuple<bool, bool, LexerTemplateString> ScanTemplateStringCpHelper(char32_t cp,
+                                                                           LexerTemplateString templateStr);
     LexerTemplateString ScanTemplateString();
     void ScanTemplateStringEnd();
     void PushTemplateContext(TemplateLiteralParserContext *ctx);
@@ -243,6 +253,8 @@ protected:
 
     util::StringView SourceView(const util::StringView::Iterator &begin, const util::StringView::Iterator &end) const;
 
+    bool SkipWhiteSpacesHelperSlash(char32_t *cp);
+    bool SkipWhiteSpacesHelperDefault(const char32_t &cp);
     void SkipWhiteSpaces();
     void SkipSingleLineComment();
 
@@ -279,6 +291,7 @@ protected:
     char32_t ScanUnicodeCodePointEscape();
 
     void ScanStringUnicodePart(util::UString *str);
+    char32_t ScanUnicodeCharacterHelper(size_t cpSize, char32_t cp);
     char32_t ScanUnicodeCharacter();
 
     void ScanDecimalNumbers();
@@ -371,62 +384,31 @@ void Lexer::ScanString()
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
                 ThrowError("Unterminated string");
-                break;
             }
             case LEX_CHAR_CR:
             case LEX_CHAR_LF: {
-                // NOLINTNEXTLINE(readability-braces-around-statements,bugprone-suspicious-semicolon)
                 if constexpr (END != LEX_CHAR_BACK_TICK) {
                     ThrowError("Newline is not allowed in strings");
                 }
-
-                GetToken().flags_ |= TokenFlags::HAS_ESCAPE;
-                str.Append(SourceView(escapeEnd, Iterator().Index()));
-
-                if (cp == LEX_CHAR_CR) {
-                    Iterator().Forward(1);
-
-                    if (Iterator().Peek() != LEX_CHAR_LF) {
-                        Iterator().Backward(1);
-                    }
-                }
-
-                pos_.line_++;
-                str.Append(LEX_CHAR_LF);
-                Iterator().Forward(1);
-                escapeEnd = Iterator().Index();
+                HandleNewlineHelper(&str, &escapeEnd);
                 continue;
             }
             case LEX_CHAR_BACKSLASH: {
-                GetToken().flags_ |= TokenFlags::HAS_ESCAPE;
-                str.Append(SourceView(escapeEnd, Iterator().Index()));
-
-                Iterator().Forward(1);
-                ScanStringUnicodePart(&str);
-                escapeEnd = Iterator().Index();
+                HandleBackslashHelper(&str, &escapeEnd);
                 continue;
             }
             case LEX_CHAR_BACK_TICK:
             case LEX_CHAR_SINGLE_QUOTE:
             case LEX_CHAR_DOUBLE_QUOTE: {
-                if (END == cp) {
+                if (!HandleDoubleQuoteHelper(END, cp)) {
                     break;
                 }
-
-                Iterator().Forward(1);
                 continue;
             }
             case LEX_CHAR_DOLLAR_SIGN: {
-                Iterator().Forward(1);
-
-                // NOLINTNEXTLINE(readability-braces-around-statements,bugprone-suspicious-semicolon)
-                if constexpr (END == LEX_CHAR_BACK_TICK) {
-                    if (Iterator().Peek() == LEX_CHAR_LEFT_BRACE) {
-                        Iterator().Backward(1);
-                        break;
-                    }
+                if (HandleDollarSignHelper(END)) {
+                    break;
                 }
-
                 continue;
             }
             default: {
@@ -434,14 +416,7 @@ void Lexer::ScanString()
                 continue;
             }
         }
-
-        if (GetToken().flags_ & TokenFlags::HAS_ESCAPE) {
-            str.Append(SourceView(escapeEnd, Iterator().Index()));
-            GetToken().src_ = str.View();
-        } else {
-            GetToken().src_ = SourceView(startPos, Iterator().Index());
-        }
-
+        FinalizeTokenHelper(&str, startPos, escapeEnd);
         break;
     } while (true);
 

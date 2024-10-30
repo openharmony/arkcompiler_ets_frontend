@@ -650,6 +650,44 @@ Type *ObjectDestructuringContext::NextInferredType([[maybe_unused]] const util::
     return nullptr;
 }
 
+void ObjectDestructuringContext::StartPropertyHelper(ir::Expression *it)
+{
+    ir::Property *property = it->AsProperty();
+
+    Type *nextInferredType = ConvertTupleTypeToArrayTypeIfNecessary(
+        it->AsProperty(), NextInferredType(property->Key()->AsIdentifier()->Name(),
+                                           (!property->Value()->IsAssignmentPattern() || validateTypeAnnotation_)));
+
+    if (property->Value()->IsIdentifier()) {
+        if (inAssignment_) {
+            HandleDestructuringAssignment(property->Value()->AsIdentifier(), nextInferredType, nullptr);
+            return;
+        }
+
+        SetInferredTypeForVariable(property->Value()->AsIdentifier()->Variable(), nextInferredType, it->Start());
+        return;
+    }
+
+    if (property->Value()->IsArrayPattern()) {
+        ArrayDestructuringContext nextContext = ArrayDestructuringContext(
+            {checker_, property->Value()->AsArrayPattern(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
+        nextContext.SetInferredType(nextInferredType);
+        nextContext.Start();
+        return;
+    }
+
+    if (property->Value()->IsObjectPattern()) {
+        ObjectDestructuringContext nextContext = ObjectDestructuringContext(
+            {checker_, property->Value()->AsObjectPattern(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
+        nextContext.SetInferredType(nextInferredType);
+        nextContext.Start();
+        return;
+    }
+
+    ASSERT(property->Value()->IsAssignmentPattern());
+    HandleAssignmentPattern(property->Value()->AsAssignmentPattern(), nextInferredType, true);
+}
+
 void ObjectDestructuringContext::Start()
 {
     ASSERT(id_->IsObjectPattern());
@@ -659,60 +697,18 @@ void ObjectDestructuringContext::Start()
     }
 
     for (auto *it : id_->AsObjectPattern()->Properties()) {
-        switch (it->Type()) {
-            case ir::AstNodeType::PROPERTY: {
-                ir::Property *property = it->AsProperty();
-
-                if (property->IsComputed()) {
-                    // NOTE: aszilagyi.
-                    return;
-                }
-
-                Type *nextInferredType = ConvertTupleTypeToArrayTypeIfNecessary(
-                    it->AsProperty(),
-                    NextInferredType(property->Key()->AsIdentifier()->Name(),
-                                     (!property->Value()->IsAssignmentPattern() || validateTypeAnnotation_)));
-
-                if (property->Value()->IsIdentifier()) {
-                    if (inAssignment_) {
-                        HandleDestructuringAssignment(property->Value()->AsIdentifier(), nextInferredType, nullptr);
-                        break;
-                    }
-
-                    SetInferredTypeForVariable(property->Value()->AsIdentifier()->Variable(), nextInferredType,
-                                               it->Start());
-                    break;
-                }
-
-                if (property->Value()->IsArrayPattern()) {
-                    ArrayDestructuringContext nextContext =
-                        ArrayDestructuringContext({checker_, property->Value()->AsArrayPattern(), inAssignment_,
-                                                   convertTupleToArray_, nullptr, nullptr});
-                    nextContext.SetInferredType(nextInferredType);
-                    nextContext.Start();
-                    break;
-                }
-
-                if (property->Value()->IsObjectPattern()) {
-                    ObjectDestructuringContext nextContext =
-                        ObjectDestructuringContext({checker_, property->Value()->AsObjectPattern(), inAssignment_,
-                                                    convertTupleToArray_, nullptr, nullptr});
-                    nextContext.SetInferredType(nextInferredType);
-                    nextContext.Start();
-                    break;
-                }
-
-                ASSERT(property->Value()->IsAssignmentPattern());
-                HandleAssignmentPattern(property->Value()->AsAssignmentPattern(), nextInferredType, true);
-                break;
+        const auto itType = it->Type();
+        if (itType == ir::AstNodeType::PROPERTY) {
+            ir::Property *property = it->AsProperty();
+            if (property->IsComputed()) {
+                // NOTE: aszilagyi.
+                return;
             }
-            case ir::AstNodeType::REST_ELEMENT: {
-                HandleRest(it->AsRestElement());
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
+            StartPropertyHelper(it);
+        } else if (itType == ir::AstNodeType::REST_ELEMENT) {
+            HandleRest(it->AsRestElement());
+        } else {
+            UNREACHABLE();
         }
     }
 }

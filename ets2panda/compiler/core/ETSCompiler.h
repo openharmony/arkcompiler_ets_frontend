@@ -22,12 +22,12 @@ namespace ark::es2panda::compiler {
 class ETSCompiler final : public AstCompiler {
 public:
     ETSCompiler() = default;
-
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_ETSCOMPILER_COMPILE_METHOD(_, nodeType) void Compile(const ir::nodeType *node) const override;
     AST_NODE_MAPPING(DECLARE_ETSCOMPILER_COMPILE_METHOD)
 #undef DECLARE_ETSCOMPILER_COMPILE_METHOD
-
+/* CC-OFFNXT(G.PRE.02,G.PRE.09) name part*/
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_ETSCOMPILER_COMPILE_METHOD(_, __, nodeType, ___) void Compile(const ir::nodeType *node) const override;
     AST_NODE_REINTERPRET_MAPPING(DECLARE_ETSCOMPILER_COMPILE_METHOD)

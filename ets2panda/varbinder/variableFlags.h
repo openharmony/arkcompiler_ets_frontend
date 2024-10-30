@@ -20,6 +20,7 @@
 #include "util/enumbitops.h"
 
 namespace ark::es2panda::varbinder {
+// CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARATION_KINDS(_)             \
     _(VAR, VarDecl)                      \
@@ -47,12 +48,14 @@ namespace ark::es2panda::varbinder {
 
 enum class DeclType {
     NONE,
+// CC-OFFNXT(G.PRE.02) name part
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_TYPES(decl_kind, class_name) decl_kind,
     DECLARATION_KINDS(DECLARE_TYPES)
 #undef DECLARE_TYPES
 };
 
+// CC-OFFNXT(G.PRE.06) solid logic
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define SCOPE_TYPES(_)                            \
     _(PARAM, ParamScope)                          \

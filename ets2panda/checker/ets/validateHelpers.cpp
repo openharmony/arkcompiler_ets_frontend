@@ -79,8 +79,7 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
             return;
         }
 
-        LogTypeError({"Property ", var->Name(), " is not visible here."}, pos);
-        var->SetTsType(GlobalTypeError());
+        std::ignore = TypeError(var, FormatMsg({"Property ", var->Name(), " is not visible here."}), pos);
     }
 }
 
@@ -89,8 +88,9 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
 {
     if (resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
         ident->Parent()->AsCallExpression()->Callee() != ident) {
-        LogTypeError({"Class or interface '", ident->Name(), "' cannot be used as object"}, ident->Start());
-        ident->Variable()->SetTsType(GlobalTypeError());
+        std::ignore =
+            TypeError(ident->Variable(),
+                      FormatMsg({"Class or interface '", ident->Name(), "' cannot be used as object"}), ident->Start());
     }
 
     if (ident->Parent()->AsCallExpression()->Callee() != ident) {
@@ -99,8 +99,9 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
     if (ident->Variable() != nullptr &&  // It should always be true!
         ident->Variable()->Declaration()->Node() != nullptr &&
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
-        LogTypeError({"Namespace style identifier ", ident->Name(), " is not callable."}, ident->Start());
-        ident->Variable()->SetTsType(GlobalTypeError());
+        std::ignore =
+            TypeError(ident->Variable(), FormatMsg({"Namespace style identifier ", ident->Name(), " is not callable."}),
+                      ident->Start());
     }
     if (type->IsETSFunctionType() || type->IsETSDynamicType() ||
         (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
@@ -120,8 +121,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
         }
     }
 
-    LogTypeError({"This expression is not callable."}, ident->Start());
-    ident->Variable()->SetTsType(GlobalTypeError());
+    std::ignore = TypeError(ident->Variable(), FormatMsg({"This expression is not callable."}), ident->Start());
 }
 
 void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
@@ -159,7 +159,7 @@ void ETSChecker::ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const id
 {
     const auto [target_ident, typeAnnotation] = GetTargetIdentifierAndType(ident);
 
-    if ((resolved != nullptr) && resolved->TsType()->IsETSFunctionType()) {
+    if ((resolved != nullptr) && resolved->TsType() != nullptr && resolved->TsType()->IsETSFunctionType()) {
         CheckEtsFunctionType(ident, target_ident);
         return;
     }
@@ -192,9 +192,10 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     bool isFinished = false;
     if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Right() == ident) {
         if (!IsReferenceType(type)) {
-            LogTypeError({R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""},
-                         ident->Start());
-            ident->Variable()->SetTsType(GlobalTypeError());
+            std::ignore = TypeError(
+                ident->Variable(),
+                FormatMsg({R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""}),
+                ident->Start());
         }
         isFinished = true;
     }
@@ -203,6 +204,10 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
 
 void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
 {
+    if (resolved->Declaration()->IsAnnotationDecl() && !ident->IsAnnotationUsage()) {
+        LogTypeError("Annotation missing '@' symbol before annotation name.", ident->Start());
+    }
+
     auto *smartType = Context().GetSmartCast(resolved);
     auto *const resolvedType = GetApparentType(smartType != nullptr ? smartType : GetTypeOfVariable(resolved));
 
@@ -252,6 +257,16 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
     }
 }
 
+bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
+{
+    if (type->IsETSArrayType()) {
+        return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
+    }
+
+    return MaybePrimitiveBuiltinType(type)->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_BOOLEAN) ||
+           type->IsETSStringType() || type->IsETSBooleanType() || type->IsETSEnumType();
+}
+
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 {
     if (variable == nullptr || IsVariableGetterSetter(variable) || variable->Declaration() == nullptr) {
@@ -262,15 +277,14 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         std::string_view fieldType = variable->Declaration()->IsConstDecl() ? "constant" : "readonly";
         if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
             !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
-            LogTypeError({"Cannot reassign ", fieldType, " ", variable->Name()},
-                         variable->Declaration()->Node()->Start());
-            variable->SetTsType(GlobalTypeError());
+            std::ignore = TypeError(variable, FormatMsg({"Cannot reassign ", fieldType, " ", variable->Name()}),
+                                    variable->Declaration()->Node()->Start());
             return;
         }
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
-            LogTypeError({"Cannot assign to a ", fieldType, " variable ", variable->Name()},
-                         variable->Declaration()->Node()->Start());
-            variable->SetTsType(GlobalTypeError());
+            std::ignore =
+                TypeError(variable, FormatMsg({"Cannot assign to a ", fieldType, " variable ", variable->Name()}),
+                          variable->Declaration()->Node()->Start());
         }
     }
 }
@@ -292,6 +306,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
 
     // Only transforming a temporary cloned node, so no modification is made in the AST
     clonedNode->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, &checkTypealias, &exactTypeParams, typeAliasNode](ir::AstNode *const node) -> ir::AstNode * {
             if (!node->IsETSTypeReference()) {
                 return node;

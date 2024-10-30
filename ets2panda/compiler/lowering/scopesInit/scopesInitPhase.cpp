@@ -148,6 +148,7 @@ void ScopesInitPhase::VisitForUpdateStatement(ir::ForUpdateStatement *forUpdateS
     auto declCtx = (forUpdateStmt->Scope() == nullptr)
                        ? varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder())
                        : varbinder::LexicalScope<varbinder::LoopDeclarationScope>::Enter(
+                             // CC-OFFNXT(G.FMT.06-CPP) project code style
                              VarBinder(), forUpdateStmt->Scope()->DeclScope());
     CallNode(forUpdateStmt->Init());
 
@@ -165,6 +166,7 @@ void ScopesInitPhase::VisitForInStatement(ir::ForInStatement *forInStmt)
     auto declCtx = (forInStmt->Scope() == nullptr)
                        ? varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder())
                        : varbinder::LexicalScope<varbinder::LoopDeclarationScope>::Enter(
+                             // CC-OFFNXT(G.FMT.06-CPP) project code style
                              VarBinder(), forInStmt->Scope()->DeclScope());
     CallNode(forInStmt->Left());
 
@@ -178,6 +180,7 @@ void ScopesInitPhase::VisitForOfStatement(ir::ForOfStatement *forOfStmt)
     auto declCtx = (forOfStmt->Scope() == nullptr)
                        ? varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder())
                        : varbinder::LexicalScope<varbinder::LoopDeclarationScope>::Enter(
+                             // CC-OFFNXT(G.FMT.06-CPP) project code style
                              VarBinder(), forOfStmt->Scope()->DeclScope());
     CallNode(forOfStmt->Left());
 
@@ -193,6 +196,7 @@ void ScopesInitPhase::VisitCatchClause(ir::CatchClause *catchClause)
     auto catchParamCtx = (catchClause->Scope() == nullptr)
                              ? varbinder::LexicalScope<varbinder::CatchParamScope>(VarBinder())
                              : varbinder::LexicalScope<varbinder::CatchParamScope>::Enter(
+                                   // CC-OFFNXT(G.FMT.06-CPP) project code style
                                    VarBinder(), catchClause->Scope()->ParamScope());
     auto *catchParamScope = catchParamCtx.GetScope();
     auto *param = catchClause->Param();
@@ -277,11 +281,6 @@ void ScopesInitPhase::VisitAnnotationDeclaration(ir::AnnotationDeclaration *anno
 
 void ScopesInitPhase::VisitAnnotationUsage(ir::AnnotationUsage *annoUsage)
 {
-    // Temporary solution to solve the problem of repeated use of annotations on an entity
-    const auto locStart = annoUsage->Ident()->Start();
-    const auto &annoName = annoUsage->Ident()->Name();
-    AddOrGetDecl<varbinder::AnnotationUsage>(VarBinder(), annoName, annoUsage, locStart, annoName, annoUsage);
-
     auto annoCtx = LexicalScopeCreateOrEnter<varbinder::AnnotationParamScope>(VarBinder(), annoUsage);
     auto *curScope = annoCtx.GetScope();
     BindScopeNode(curScope, annoUsage);
@@ -826,6 +825,7 @@ void InitScopesPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock
         auto funcParamCtx = (func->Scope() == nullptr)
                                 ? varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder())
                                 : varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
+                                      // CC-OFFNXT(G.FMT.06-CPP) project code style
                                       VarBinder(), func->Scope()->ParamScope());
         auto *funcParamScope = funcParamCtx.GetScope();
         auto funcCtx = LexicalScopeCreateOrEnter<varbinder::FunctionScope>(VarBinder(), func);

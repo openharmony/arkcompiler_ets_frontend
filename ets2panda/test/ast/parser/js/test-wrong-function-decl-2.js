@@ -16,4 +16,6 @@
 
 function f(a,b,c);
 
-/* @@? 17:18 Error SyntaxError: Unexpected token, expected '{'  */
+/* @@? 17:18 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@? 22:1 Error SyntaxError: Unexpected token 'eos'.  */
+

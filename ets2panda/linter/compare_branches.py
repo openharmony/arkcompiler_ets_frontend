@@ -14,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 import re
 import sys
-
 import git
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 LINTER_PATH = 'ets2panda/linter'
 
@@ -55,17 +57,17 @@ def get_branch_map(repo, branch_name, path):
 
 
 def print_complement(of, to):
-    print('-' * 40)
+    logging.info('-' * 40)
     for sha in to:
         if sha not in of:
             commit = to[sha]
-            print('{}\n\n{}'.format(commit.hexsha, commit.message.strip('\n')))
-            print('-' * 40)
+            logging.info('{}\n\n{}', commit.hexsha, commit.message.strip('\n'))
+            logging.info('-' * 40)
 
 
 def main():
     if len(sys.argv) != 3:
-        print('Usage:\n{} first_branch_name second_branch_name'.format(sys.argv[0]))
+        logging.info('Usage:\n{} first_branch_name second_branch_name', sys.argv[0])
         return -1
 
     first_branch_name = sys.argv[1]
@@ -75,14 +77,14 @@ def main():
     first_branch_map = get_branch_map(repo, first_branch_name, LINTER_PATH)
     second_branch_map = get_branch_map(repo, second_branch_name, LINTER_PATH)
 
-    print('Commits in `{}`, but not in `{}`:\n'.format(first_branch_name, second_branch_name))
+    logging.info('Commits in `{}`, but not in `{}`:\n', first_branch_name, second_branch_name)
     print_complement(second_branch_map, first_branch_map)
 
-    print('\n')
-    print('=' * 80)
-    print('\n')
+    logging.info('\n')
+    logging.info('=' * 80)
+    logging.info('\n')
 
-    print('Commits in `{}`, but not in `{}`:\n'.format(second_branch_name, first_branch_name))
+    logging.info('Commits in `{}`, but not in `{}`:\n', second_branch_name, first_branch_name)
     print_complement(first_branch_map, second_branch_map)
 
     return 0

@@ -15,4 +15,4 @@
 
 import {default} from "./modules/class_default_module.sts";
 
-/* @@? 16:16 Error SyntaxError: Unexpected token. 'as' keyword is expected.  */
+/* @@? 16:16 Error SyntaxError: Unexpected token, expected: 'as'.  */

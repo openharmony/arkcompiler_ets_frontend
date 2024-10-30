@@ -55,7 +55,7 @@ bool InterfaceType::CheckVarType(TypeRelation *relation,
                                              return relation->IsIdenticalTo(targetType, sourceType);
                                          }
 
-                                         return false;
+                                         return false;  // CC-OFF(G.FMT.02) project code style
                                      });
         if (!foundProp) {
             relation->Result(false);

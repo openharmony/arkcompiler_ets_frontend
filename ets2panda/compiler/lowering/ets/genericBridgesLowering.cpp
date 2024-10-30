@@ -291,6 +291,7 @@ bool GenericBridgesPhase::Perform(public_lib::Context *ctx, parser::Program *pro
     }
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this](ir::AstNode *ast) -> ir::AstNode * {
             if (ast->IsClassDefinition()) {
                 return ProcessClassDefinition(ast->AsClassDefinition());

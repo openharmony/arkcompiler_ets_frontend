@@ -242,11 +242,16 @@ bool ValidatePropertyAccessForClass(const ir::AstNode *ast, const ir::AstNode *p
     }
     if (propVarDeclNode->IsProtected()) {
         auto *classDefinitionType = GetClassDefinitionType(ast);
-        if (classDefinitionType == nullptr || !classDefinitionType->IsETSObjectType()) {
-            return false;
+        if (classDefinitionType != nullptr && classDefinitionType->IsETSObjectType()) {
+            auto *classObjectType = classDefinitionType->AsETSObjectType();
+            return classObjectType->IsPropertyOfAscendant(propVar);
         }
-        auto *classObjectType = classDefinitionType->AsETSObjectType();
-        return classObjectType->IsPropertyOfAscendant(propVar);
+        auto *interfaceDefType = GetTSInterfaceDeclarationType(ast);
+        if (interfaceDefType != nullptr && interfaceDefType->IsETSObjectType()) {
+            auto *interfaceObjectType = interfaceDefType->AsETSObjectType();
+            return interfaceObjectType->IsPropertyOfAscendant(propVar);
+        }
+        return false;
     }
     if (propVarDeclNode->IsInternal()) {
         return IsVisibleInternalNode(ast, objTypeDeclNode);
@@ -279,7 +284,8 @@ bool ValidateVariableAccess(const varbinder::LocalVariable *propVar, const ir::M
     if (propVarDeclNodeParent == nullptr) {
         return false;
     }
-    if (propVarDeclNodeParent->IsClassDefinition() && objTypeDeclNode->IsClassDefinition()) {
+    if ((propVarDeclNodeParent->IsClassDefinition() && objTypeDeclNode->IsClassDefinition()) ||
+        (propVarDeclNodeParent->IsTSInterfaceDeclaration() && objTypeDeclNode->IsTSInterfaceDeclaration())) {
         return ValidatePropertyAccessForClass(ast, propVarDeclNode, propVarDeclNodeParent, propVar, objTypeDeclNode);
     }
     return false;

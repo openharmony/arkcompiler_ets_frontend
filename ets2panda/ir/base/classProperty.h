@@ -33,7 +33,7 @@ public:
 
     NO_COPY_SEMANTIC(ClassProperty);
     NO_MOVE_SEMANTIC(ClassProperty);
-
+    // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassProperty(Expression *const key, Expression *const value, TypeNode *const typeAnnotation,
                            ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
         : ClassElement(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, isComputed),

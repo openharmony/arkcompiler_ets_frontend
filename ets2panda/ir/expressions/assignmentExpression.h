@@ -30,7 +30,7 @@ public:
     AssignmentExpression() = delete;
     ~AssignmentExpression() override = default;
 
-    NO_COPY_OPERATOR(AssignmentExpression);
+    AssignmentExpression &operator=(const AssignmentExpression &) = delete;
     NO_MOVE_SEMANTIC(AssignmentExpression);
 
     explicit AssignmentExpression(Expression *const left, Expression *const right,

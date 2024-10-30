@@ -111,12 +111,15 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
         } else if (caseType->IsETSIntEnumType() && comparedExprType->IsETSIntEnumType()) {
             validCaseType = comparedExprType->AsETSIntEnumType()->IsSameEnumType(caseType->AsETSIntEnumType());
         } else if (caseType->IsETSStringEnumType() && comparedExprType->IsETSStringEnumType()) {
+            // CC-OFFNXT(G.FMT.06-CPP) project code style
             validCaseType = comparedExprType->AsETSStringEnumType()->IsSameEnumType(caseType->AsETSStringEnumType());
         } else {
             if (!checker::AssignmentContext(
+                     // CC-OFFNXT(G.FMT.06-CPP) project code style
                      checker->Relation(), node, caseType, unboxedDiscType, test_->Start(), {},
                      (comparedExprType->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
                                                           : checker::TypeRelationFlag::NO_UNBOXING) |
+                         // CC-OFFNXT(G.FMT.02) project code style
                          checker::TypeRelationFlag::NO_BOXING | checker::TypeRelationFlag::NO_THROW)
                      .IsAssignable()) {
                 checker->LogTypeError({"Switch case type '", caseType, "' is not comparable to discriminant type '",

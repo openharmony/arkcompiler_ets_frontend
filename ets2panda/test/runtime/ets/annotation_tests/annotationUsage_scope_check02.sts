@@ -14,7 +14,7 @@
  */
 
 @interface ClassAuthor {
-    authorName: string
+    authorName: string = "1"
 }
 @ClassAuthor
 class A{}

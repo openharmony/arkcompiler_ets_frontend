@@ -210,9 +210,11 @@ bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *p
     }
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *ast) -> ir::AstNode * {
             // Skip processing dynamic objects
             if (ast->IsObjectExpression() && !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(
+                                                 // CC-OFFNXT(G.FMT.14-CPP,G.FMT.06-CPP) project code style
                                                  checker::ETSObjectFlags::DYNAMIC)) {
                 return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
             }

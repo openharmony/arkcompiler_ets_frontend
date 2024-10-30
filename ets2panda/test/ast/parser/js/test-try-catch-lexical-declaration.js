@@ -27,4 +27,4 @@ finally
 
 }
 
-/* @@? 23:7 Error SyntaxError: Variable 'e' has already been declared.  */
+/* @@? 23:7 Error SyntaxError: Variable 'e' has already been declared. */

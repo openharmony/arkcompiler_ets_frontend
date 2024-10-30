@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,12 +22,14 @@
 #include <tuple>
 
 namespace ark::es2panda::ir {
+// CC-OFFNXT(G.PRE.02,G.PRE.09) name part
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_CLASSES(nodeType, className) class className;
 
 AST_NODE_MAPPING(DECLARE_CLASSES)
 
 #undef DECLARE_CLASSES
+// CC-OFFNXT(G.PRE.02,G.PRE.09) name part
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_AST_NODE_CHECK_METHOD(_, __, nodeType, ___) class nodeType;
 AST_NODE_REINTERPRET_MAPPING(DECLARE_AST_NODE_CHECK_METHOD)

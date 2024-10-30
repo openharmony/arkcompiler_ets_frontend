@@ -272,6 +272,7 @@ bool TupleLowering::Perform(public_lib::Context *const ctx, parser::Program *con
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [checker](ir::AstNode *const ast) -> ir::AstNode * {
             // Check if node is an 'assignment expression', with a member expression on the left (potentially tuple)
             if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression()) {

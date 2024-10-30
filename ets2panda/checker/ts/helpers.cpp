@@ -276,6 +276,19 @@ bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbi
     return false;
 }
 
+void TSChecker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+{
+    ThrowTypeError(FormatMsg(list), pos);
+}
+
+void TSChecker::ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos)
+{
+    lexer::LineIndex index(Program()->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    throw Error {ErrorType::TYPE, Program()->SourceFilePath().Utf8(), message, loc.line, loc.col};
+}
+
 void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
                                      lexer::SourcePosition lineInfo)
 {

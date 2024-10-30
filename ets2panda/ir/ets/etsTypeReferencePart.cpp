@@ -116,12 +116,16 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
     }
 
     if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
-        auto *const baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
+        auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
         if (baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
-            checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
-            return ctx.Result();
+            // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
+            // but not a generic type param for Partial<>
+            for (auto &typeRef : typeParams_->Params()) {
+                checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(),
+                                                  typeRef->AsETSTypeReference()->Part()->typeParams_, Start());
+                baseType = ctx.Result();
+            }
         }
-
         return baseType;
     }
 

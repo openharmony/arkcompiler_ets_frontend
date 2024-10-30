@@ -966,7 +966,8 @@ module Es2pandaLibApi
        'CheckExpressionsInConstructor', 'PerformArithmeticOperationOnTypes', 'PerformRelationOperationOnTypes',
        'BindingsModuleObjectAddProperty', 'MakePropertyNonNullish', 'GetProxyMethodBody', 'GetFlagsForProxyLambda',
        'ComputeProxyMethods', 'CheckValidUnionEqual', 'TestUnionType', 'IsValidSetterLeftSide', 'CreateProxyFunc',
-       'ApplyModifiersAndRemoveImplementedAbstracts', 'ValidateAbstractSignature', 'ValidateNonOverriddenFunction'],
+       'ApplyModifiersAndRemoveImplementedAbstracts', 'ValidateAbstractSignature', 'ValidateNonOverriddenFunction',
+       'InvalidateType', 'TypeError'],
       'postfix_contains' =>
       ['= delete', 'override'],
       'return_type' =>

@@ -134,8 +134,12 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
             Lexer()->NextToken();  // eat abstract keyword
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
-                ThrowSyntaxError(
+                LogSyntaxError(
                     "abstract modifier can only appear on a class, struct, method, or property declaration.");
+                if (Lexer()->GetToken().IsKeyword()) {
+                    return ParseExpressionStatement(flags);
+                }
+                Lexer()->GetToken().SetTokenType(lexer::TokenType::KEYW_CLASS);
             }
 
             return ParseClassStatement(flags, ir::ClassDefinitionModifiers::NONE, ir::ModifierFlags::ABSTRACT);
@@ -263,7 +267,9 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
     } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
         Lexer()->NextToken();
     } else {
-        ThrowSyntaxError("';' expected");
+        // test exists for ts extension only
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
+        Lexer()->NextToken();
     }
 
     auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(
@@ -276,7 +282,7 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
 ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const lexer::SourcePosition &startLoc)
 {
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        ThrowSyntaxError("Identifier expected");
+        LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
     }
 
     auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
@@ -304,7 +310,7 @@ ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const le
 ir::TSModuleBlock *TypedParser::ParseTsModuleBlock()
 {
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ThrowSyntaxError("'{' expected.");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
     }
 
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
@@ -312,7 +318,9 @@ ir::TSModuleBlock *TypedParser::ParseTsModuleBlock()
     auto statements = ParseStatementList();
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        ThrowSyntaxError("Expected a '}'");
+        // redundant check -> we have it in parse statements
+        // we even do not do lexer_->NextToken() trying to eat '}' after
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
     }
 
     auto *blockNode = AllocNode<ir::TSModuleBlock>(std::move(statements));
@@ -417,7 +425,7 @@ ArenaVector<ir::TSInterfaceHeritage *> TypedParser::ParseInterfaceExtendsClause(
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-            ThrowSyntaxError("',' expected");
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_COMMA);
         }
 
         Lexer()->NextToken();
@@ -557,15 +565,17 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&
             Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-                ThrowSyntaxError("Interface member initialization is prohibited");
+                LogSyntaxError("Interface member initialization is prohibited");
+                Lexer()->NextToken();  // Error processing.
             }
             if (!Lexer()->GetToken().NewLine()) {
-                ThrowSyntaxError("',' expected");
+                LogExpectedToken(lexer::TokenType::PUNCTUATOR_COMMA);
             }
 
             if (Lexer()->GetToken().IsKeyword() && ((Lexer()->GetToken().Type() != lexer::TokenType::KEYW_STATIC) &&
                                                     (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PRIVATE))) {
                 Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+                Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
             }
 
             continue;
@@ -584,7 +594,7 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ThrowSyntaxError("Unexpected token, expected '{'");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
     }
 
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
@@ -600,7 +610,9 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
         !formattedParsing ? ParseTypeLiteralOrInterfaceBody() : std::move(ParseAstNodesArrayFormatPlaceholder());
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        ThrowSyntaxError("Expected a '}'");
+        // redundant check since we have the same check
+        // in ParseTypeLiteralOrInterfaceBody() above
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
     }
 
     return members;
@@ -610,7 +622,8 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
                                                      bool isConst, [[maybe_unused]] bool isStatic)
 {
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ThrowSyntaxError("'{' expected");
+        // test exists for ts extension only
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
     }
 
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
@@ -777,7 +790,7 @@ ir::TSTypeParameterDeclaration *TypedParser::ParseTypeParameterDeclaration(TypeA
         if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
-        ThrowSyntaxError("Expected closing '>'.");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN);
     }
 
     lexer::SourcePosition endLoc = Lexer()->GetToken().End();
@@ -859,7 +872,7 @@ ArenaVector<ir::TSClassImplements *> TypedParser::ParseClassImplementClause()
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-            ThrowSyntaxError("',' expected");
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_COMMA);
         }
     }
 
@@ -981,7 +994,7 @@ ir::AstNode *TypedParser::ParseProperty(const ArenaVector<ir::AstNode *> &proper
         ((Lexer()->GetToken().Flags() & lexer::TokenFlags::NEW_LINE) == 0) &&
         !(property->IsMethodDefinition() &&
           property->AsMethodDefinition()->Value()->AsFunctionExpression()->Function()->Body() != nullptr)) {
-        ThrowSyntaxError("';' expected.");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
@@ -1038,7 +1051,8 @@ ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &pr
         ParseOptionalClassElement(&desc);
     } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
         if (desc.isIndexSignature || Lexer()->Lookahead() != lexer::LEX_CHAR_COLON) {
-            ThrowSyntaxError("';' expected");
+            // test exists for ts extension only
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
         }
 
         desc.modifiers |= ir::ModifierFlags::DEFINITE;
@@ -1051,11 +1065,12 @@ ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &pr
 void TypedParser::ParseOptionalClassElement(ClassElementDescriptor *desc)
 {
     if (desc->isIndexSignature) {
-        ThrowSyntaxError("';' expected");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);  // no test
     }
 
     if (desc->methodKind == ir::MethodDefinitionKind::CONSTRUCTOR) {
-        ThrowSyntaxError("'(' expected");
+        // test exists for ts extension only
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     }
 
     desc->modifiers |= ir::ModifierFlags::OPTIONAL;
@@ -1294,7 +1309,7 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
         if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
-        ThrowSyntaxError("Expected closing '>'.");
+        LogExpectedToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN);
     }
 
     lexer::SourcePosition endLoc = Lexer()->GetToken().End();
@@ -1332,6 +1347,7 @@ void TypedParser::ConvertThisKeywordToIdentIfNecessary()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS) {
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+        Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
     }
 }
 

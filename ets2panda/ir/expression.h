@@ -29,7 +29,7 @@ public:
     Expression() = delete;
     ~Expression() override = default;
 
-    NO_COPY_OPERATOR(Expression);
+    Expression &operator=(const Expression &) = delete;
     NO_MOVE_SEMANTIC(Expression);
 
     [[nodiscard]] bool IsGrouped() const noexcept
@@ -139,7 +139,7 @@ public:
     MaybeOptionalExpression() = delete;
     ~MaybeOptionalExpression() override = default;
 
-    NO_COPY_OPERATOR(MaybeOptionalExpression);
+    MaybeOptionalExpression &operator=(const MaybeOptionalExpression &) = delete;
     NO_MOVE_SEMANTIC(MaybeOptionalExpression);
 
     [[nodiscard]] bool IsOptional() const noexcept

@@ -24,4 +24,7 @@ function main(): void {
     new A() { console.print(2); };
 }
 
-/* @@? 24:22 Error SyntaxError: Field type annotation expected  */
+/* @@? 24:22 Error SyntaxError: Field type annotation expected */
+/* @@? 24:22 Error SyntaxError: Identifier expected, got '.'. */
+/* @@? 24:23 Error SyntaxError: Field type annotation expected */
+/* @@? 24:29 Error SyntaxError: Unexpected token, expected an identifier. */

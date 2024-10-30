@@ -19,3 +19,6 @@ enum MissingCommaEnum {
 }
 
 /* @@? 18:3 Error SyntaxError: Missing comma between enum constants  */
+/* @@? 1:1 Node {
+    "type": "Program"
+}  */

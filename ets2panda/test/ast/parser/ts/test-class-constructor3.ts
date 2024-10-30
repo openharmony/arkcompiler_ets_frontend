@@ -15,6 +15,10 @@
 
 
 class Foo {
-    constructor?() { };
+    constructor ?() { };
 }
 /* @@? 18:5 Error SyntaxError: Classes may not have a field named 'constructor'  */
+/* @@? 18:17 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@? 1:1 Node {
+    "type": "Program"
+}  */

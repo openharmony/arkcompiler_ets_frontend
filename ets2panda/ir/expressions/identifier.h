@@ -181,12 +181,12 @@ public:
         flags_ |= IdentifierFlags::ANNOTATIONDECL;
     }
 
-    [[nodiscard]] bool IsAnnotataionUsage() const noexcept
+    [[nodiscard]] bool IsAnnotationUsage() const noexcept
     {
         return (flags_ & IdentifierFlags::ANNOTATIONUSAGE) != 0;
     }
 
-    void SetAnnotataionUsage() noexcept
+    void SetAnnotationUsage() noexcept
     {
         flags_ |= IdentifierFlags::ANNOTATIONUSAGE;
     }

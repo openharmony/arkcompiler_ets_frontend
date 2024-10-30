@@ -158,6 +158,7 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
     ASSERT(checker != nullptr);
 
     program->Ast()->TransformChildrenRecursively(
+        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
             if (ast->IsETSNewArrayInstanceExpression()) {
                 return ProcessNewArrayInstanceExpression(parser, checker, ast->AsETSNewArrayInstanceExpression());

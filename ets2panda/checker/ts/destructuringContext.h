@@ -125,6 +125,7 @@ public:
 
     Type *CreateObjectTypeForRest(ObjectType *objType);
 
+    void StartPropertyHelper(ir::Expression *it);
     void Start() override;
     void ValidateInferredType() override;
     Type *NextInferredType([[maybe_unused]] const util::StringView &searchName, bool throwError) override;

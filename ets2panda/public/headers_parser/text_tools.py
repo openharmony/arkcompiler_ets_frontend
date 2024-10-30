@@ -78,7 +78,7 @@ def find_scope_borders(data: str, start: int = 0, opening: str = "{") -> Tuple[i
             raise RuntimeError("Error while finding end of scope in ANY mode")
         opening = data[opening_pos]
 
-    closing = brackets_match[opening]
+    closing = brackets_match[opening] # CC-OFF(G.TYP.07) dict key exist
     start_of_scope = data.find(opening, start)
 
     if start_of_scope == -1:
