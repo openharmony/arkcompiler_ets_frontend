@@ -218,21 +218,34 @@ public:
         }
     }
 
-    bool CheckEtsSpecificOptions(const es2panda::CompilationMode &compMode,
-                                 const ark::PandArg<std::string> &arktsConfig)
+    std::optional<ArkTsConfig> ParseArktsConfig(std::string_view path)
     {
-        if (extension_ != es2panda::ScriptExtension::ETS) {
-            if (compMode == CompilationMode::PROJECT) {
-                errorMsg_ = "Error: only --extension=sts is supported for project compilation mode.";
-                return false;
-            }
-        } else {
-            if (!compilerOptions_.arktsConfig->Parse()) {
-                errorMsg_ = "Invalid ArkTsConfig: ";
-                errorMsg_.append(arktsConfig.GetValue());
-                return false;
-            }
+        auto config = ArkTsConfig {path};
+        if (!config.Parse()) {
+            errorMsg_ = "Invalid ArkTsConfig path: ";
+            errorMsg_.append(path);
+            return std::nullopt;
         }
+        return std::make_optional(config);
+    }
+
+    bool ProcessEtsSpecificOptions(std::string_view arktsConfigPath, const es2panda::CompilationMode &compMode)
+    {
+        if (extension_ != es2panda::ScriptExtension::ETS && compMode == CompilationMode::PROJECT) {
+            errorMsg_ = "Error: only --extension=sts is supported for project compilation mode.";
+            return false;
+        }
+
+        if (extension_ != es2panda::ScriptExtension::ETS) {
+            return true;
+        }
+
+        if (auto config = ParseArktsConfig(arktsConfigPath); config != std::nullopt) {
+            compilerOptions_.arktsConfig = std::make_shared<ArkTsConfig>(*config);
+        } else {
+            return false;
+        }
+
         return true;
     }
 

@@ -77,7 +77,7 @@ public:
         bool hasDecl_;
     };
 
-    explicit ArkTsConfig(std::string configPath) : configPath_(std::move(configPath)) {}
+    explicit ArkTsConfig(std::string_view configPath) : configPath_(configPath) {}
     bool Parse();
 
     std::optional<std::string> ResolvePath(const std::string &path) const;
@@ -123,10 +123,16 @@ public:
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
 private:
+    static constexpr const char *BASE_URL = "baseUrl";
+    static constexpr const char *COMPILER_OPTIONS = "compilerOptions";
+    static constexpr const char *EXCLUDE = "exclude";
+    static constexpr const char *EXTENDS = "extends";
+    static constexpr const char *FILES = "files";
+    static constexpr const char *INCLUDE = "include";
+    static constexpr const char *OUT_DIR = "outDir";
+    static constexpr const char *ROOT_DIR = "rootDir";
+
     void Inherit(const ArkTsConfig &base);
-#ifdef ARKTSCONFIG_USE_FILESYSTEM
-    bool ParseExtends(const std::string &extends, const std::string &configDir);
-#endif  // ARKTSCONFIG_USE_FILESYSTEM
 
     bool isParsed_ = false;
     std::string configPath_;
