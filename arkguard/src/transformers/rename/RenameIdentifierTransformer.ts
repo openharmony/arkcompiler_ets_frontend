@@ -37,11 +37,14 @@ import {
   isArrowFunction,
   isVariableDeclaration,
   isPropertyAssignment,
-  isPrivateIdentifier
+  isPrivateIdentifier,
+  isParameter,
+  isPropertyAccessExpression
 } from 'typescript';
 
 import type {
   ClassElement,
+  Declaration,
   Identifier,
   Node,
   SourceFile,
@@ -87,7 +90,9 @@ import {
   isInLocalWhitelist,
   isReservedLocalVariable,
   isReservedTopLevel,
-  recordHistoryUnobfuscatedNames
+  recordHistoryUnobfuscatedNames,
+  isInPropertyWhitelist,
+  isReservedProperty
 } from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
@@ -132,6 +137,7 @@ namespace secharmony {
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
       initWhitelist();
       let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
+      let mangledPropertyParameterSymbolNames: Map<Declaration, MangledSymbolInfo> = new Map<Declaration, MangledSymbolInfo>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
       let fileExportNames: Set<string> = undefined;
       let fileImportNames: Set<string> = undefined;
@@ -170,43 +176,53 @@ namespace secharmony {
         manager.analyze(node, checker, exportObfuscation);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
 
-        let root: Scope = manager.getRootScope();
-        fileExportNames = root.fileExportNames;
-        fileImportNames = root.fileImportNames;
+        let rootScope: Scope = manager.getRootScope();
+        fileExportNames = rootScope.fileExportNames;
+        fileImportNames = rootScope.fileImportNames;
+        let renameProcessors: ((scope: Scope) => void)[] = [renameLabelsInScope, renameNamesInScope];
+        if (profile.mRenameProperties) {
+          renameProcessors.push(renamePropertyParametersInScope);
+        }
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
-        renameInScope(root);
+        getMangledNamesInScope(rootScope, renameProcessors);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
 
-        root = undefined;
+        rootScope = undefined;
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
-        let ret: Node = visit(node);
+        let updatedNode: Node = renameIdentifiers(node);
 
-        let parentNodes = setParentRecursive(ret, true);
+        // obfuscate property parameter declaration
+        if (profile.mRenameProperties) {
+          updatedNode = visitPropertyParameter(updatedNode);
+        }
+
+        let parentNodes = setParentRecursive(updatedNode, true);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         return parentNodes;
       }
 
       /**
-       * rename symbol table store in scopes...
+       * get mangled names of symbols stored in scopes.
        *
        * @param scope scope, such as global, module, function, block
+       * @param processors processors to get mangled names
        */
-      function renameInScope(scope: Scope): void {
-        // process labels in scope, the label can't rename as the name of top labels.
-        renameLabelsInScope(scope);
-        // process symbols in scope, exclude property name.
-        renameNamesInScope(scope);
+      function getMangledNamesInScope(scope: Scope, processors: ((scope: Scope) => void)[]): void {
+        for (const process of processors) {
+          process(scope);
+        }
 
         let subScope = undefined;
         while (scope.children.length > 0) {
           subScope = scope.children.pop();
-          renameInScope(subScope);
+          getMangledNamesInScope(subScope, processors);
           subScope = undefined;
         }
       }
 
+      // process symbols in scope, exclude property name.
       function renameNamesInScope(scope: Scope): void {
         if (isExcludeScope(scope)) {
           return;
@@ -226,6 +242,15 @@ namespace secharmony {
         }
 
         renames(scope, scope.defs, generator);
+      }
+
+      // process property parameters symbols in class scope
+      function renamePropertyParametersInScope(scope: Scope): void {
+        if (!isClassScope(scope)) {
+          return;
+        }
+
+        renamePropertyParameters(scope, scope.defs, generator);
       }
 
       function renames(scope: Scope, defs: Set<Symbol>, generator: INameGenerator): void {
@@ -268,6 +293,56 @@ namespace secharmony {
           scope.mangledNames.add(mangled);
           mangledSymbolNames.set(def, symbolInfo);
         });
+      }
+
+      function renamePropertyParameters(scope: Scope, defs: Set<Symbol>, generator: INameGenerator): void {
+        defs.forEach((def) => {
+          //only rename property parameters
+          if (!def.valueDeclaration || !isParameter(def.valueDeclaration)) {
+            return;
+          }
+          const originalName: string = def.name;
+          const path: string = scope.loc + '#' + originalName;
+          let mangledName: string;
+          if (isInPropertyWhitelist(originalName, UnobfuscationCollections.unobfuscatedPropMap)) {
+            mangledName = originalName;
+          } else {
+            mangledName = getMangledPropertyParameters(scope, generator, originalName);
+          }
+          scope.mangledNames.add(mangledName);
+          let symbolInfo: MangledSymbolInfo = {
+            mangledName: mangledName,
+            originalNameWithScope: path
+          };
+          mangledPropertyParameterSymbolNames.set(def.valueDeclaration, symbolInfo);
+        });
+      }
+
+      function getMangledPropertyParameters(scope: Scope, localGenerator: INameGenerator, originalName: string): string {
+        const historyName: string = PropCollections.historyMangledTable?.get(originalName);
+        let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(originalName);
+        while (!mangledName) {
+          let tmpName = localGenerator.getName();
+          if (isReservedLocalVariable(tmpName)) {
+            continue;
+          }
+          if (isReservedProperty(tmpName) || tmpName == originalName) {
+            continue;
+          }
+          if (historyMangledNames && historyMangledNames.has(tmpName)) {
+            continue;
+          }
+          if (PropCollections.newlyOccupiedMangledProps.has(tmpName) || PropCollections.mangledPropsInNameCache.has(tmpName)) {
+            continue;
+          }
+          if (searchMangledInParent(scope, tmpName)) {
+            continue;
+          }
+          mangledName = tmpName;
+        }
+        PropCollections.globalMangledTable.set(originalName, mangledName);
+        PropCollections.newlyOccupiedMangledProps.add(mangledName);
+        return mangledName;
       }
 
       function getPropertyMangledName(original: string, nameWithScope: string): string {
@@ -389,6 +464,7 @@ namespace secharmony {
         return mangled;
       }
 
+      // process labels in scope, the label can't rename as the name of top labels.
       function renameLabelsInScope(scope: Scope): void {
         const labels: Label[] = scope.labels;
         if (labels.length > 0) {
@@ -461,7 +537,7 @@ namespace secharmony {
        *  - calculate shadow name index to find shadow node
        * @param node
        */
-      function visit(node: Node): Node {
+      function renameIdentifiers(node: Node): Node {
         let needHandlePositionInfo: boolean = isFunctionLike(node) || nodeHasFunctionLikeChild(node);
         if (needHandlePositionInfo) {
           // Obtain line info for nameCache.
@@ -469,7 +545,7 @@ namespace secharmony {
         }
 
         if (!isIdentifier(node) || !node.parent) {
-          return visitEachChild(node, visit, context);
+          return visitEachChild(node, renameIdentifiers, context);
         }
 
         if (isLabeledStatement(node.parent) || isBreakOrContinueStatement(node.parent)) {
@@ -477,6 +553,33 @@ namespace secharmony {
         }
 
         return updateNameNode(node);
+      }
+
+      /**
+       * visit each property parameter to change identifier name to mangled name
+       *  - calculate shadow name index to find shadow node
+       * @param node
+       */
+      function visitPropertyParameter(node: Node): Node {
+        if (isConstructorDeclaration(node)) {
+          return visitPropertyParameterInConstructor(node);
+        }
+
+        return visitEachChild(node, visitPropertyParameter, context);
+
+        function visitPropertyParameterInConstructor(node: Node): Node {
+          if (!isIdentifier(node) || !node.parent) {
+            return visitEachChild(node, visitPropertyParameterInConstructor, context);
+          }
+
+          // we do not obfuscate the identifier of property access expression, like "a" in "this.a",
+          // since it will be obfuscated in renamePropertiesTransformer
+          if (NodeUtils.isPropertyNode(node)) {
+            return node;
+          }
+
+          return updatePropertyParameterNameNode(node);
+        }
       }
 
       function handlePositionInfo(node: Node): void {
@@ -600,6 +703,20 @@ namespace secharmony {
           mangledName = mangledPropertyNameOfNoSymbolImportExport;
         }
 
+        if (!mangledName || mangledName === sym?.name) {
+          return node;
+        }
+
+        return factory.createIdentifier(mangledName);
+      }
+
+      function updatePropertyParameterNameNode(node: Identifier): Node {
+        let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
+        if (!sym || sym.valueDeclaration?.kind != SyntaxKind.Parameter) {
+          return node;
+        }
+
+        let mangledName: string | undefined = mangledPropertyParameterSymbolNames.get(sym.valueDeclaration)?.mangledName;
         if (!mangledName || mangledName === sym?.name) {
           return node;
         }

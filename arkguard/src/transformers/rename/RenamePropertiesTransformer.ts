@@ -76,7 +76,6 @@ namespace secharmony {
     function renamePropertiesFactory(context: TransformationContext): Transformer<Node> {
       let options: NameGeneratorOptions = {};
       let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
-      let currentConstructorParams: Set<string> = new Set<string>();
 
       return renamePropertiesTransformer;
 
@@ -94,21 +93,6 @@ namespace secharmony {
       }
 
       function renameProperties(node: Node): Node {
-        if (isConstructorDeclaration(node)) {
-          currentConstructorParams.clear();
-        }
-
-        if (NodeUtils.isClassPropertyInConstructorParams(node)) {
-          currentConstructorParams.add((node as Identifier).escapedText.toString());
-          return renameProperty(node, false);
-        }
-
-        if (NodeUtils.isClassPropertyInConstructorBody(node, currentConstructorParams)) {
-          if (currentConstructorParams.has((node as Identifier).escapedText.toString())) {
-            return renameProperty(node, false);
-          }
-        }
-
         if (!NodeUtils.isPropertyNode(node)) {
           return visitEachChild(node, renameProperties, context);
         }

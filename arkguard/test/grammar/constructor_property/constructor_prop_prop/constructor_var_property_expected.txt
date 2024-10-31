@@ -14,23 +14,23 @@
  */
 import assert from 'assert';
 namespace ts {
-    class l {
+    class o {
         n: string = "";
-        constructor(q: string) {
-            this.n = q;
+        constructor(v: string) {
+            this.n = v;
         }
         method() {
             return (this.n);
         }
     }
-    let m = new l("global");
-    class n {
+    let p = new o("global");
+    class q {
         m: string = '';
-        constructor(p: string, public o: l) {
-            o.method();
+        constructor(u: string, public t: o) {
+            t.method();
         }
     }
-    let o = new n('aa', new l("param"));
-    assert(o.o.n === 'param', 'success');
-    assert(m.n === 'global', 'success');
+    let r = new q('aa', new o("param"));
+    assert(r.t.n === 'param', 'success');
+    assert(p.n === 'global', 'success');
 }

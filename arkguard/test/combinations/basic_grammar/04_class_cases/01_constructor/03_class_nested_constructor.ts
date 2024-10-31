@@ -12,17 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import assert from "assert";
-class A5 {
-    u = 5;
-    constructor(public o: number, private p: string, protected q: boolean, readonly t: number, u: string) {
-        u = u + 1;
-        let v = o;
-        let w = p;
-        let x = q;
-        let y = t;
-        this.u = t;
+let a1 = 1;
+class A6 {
+  constructor(public p001: number, public p002: string) {
+    p001 = p001 + 1;
+    class A7 {
+      constructor(public p001: number, public p003: string) {
+        p001 = p001 + 2;
+        p002 = p002 + "2";
+        p003 = "4";
+        this.p001 = p001 + 1;
+      }
     }
+    let insA7 = new A7(1,"3");
+    assert(insA7.p001 === 4);
+    assert(insA7.p003 === "3");
+    this.p001 = p001;
+    this.p002 = p002;
+  }
 }
-let insA5 = new A5(1, '2', false, 4, '5');
-assert(insA5.u === 4);
+
+let insA6 = new A6(1,"2");
+assert(insA6.p001 === 2);
+assert(insA6.p002 === "22");
+assert(a1 === 1);
