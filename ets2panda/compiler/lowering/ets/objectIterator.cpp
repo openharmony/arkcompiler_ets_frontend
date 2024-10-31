@@ -135,9 +135,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
                               ->AsBlockStatement(),
                           declared);
 
-    InitScopesPhaseETS::RunExternalNode(loweringResult, varbinder);
-    loweringResult->Check(checker);
-
+    CheckLoweredNode(varbinder, checker, loweringResult);
     return loweringResult;
 }
 
