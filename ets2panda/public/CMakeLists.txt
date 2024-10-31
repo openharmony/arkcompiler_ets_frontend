@@ -583,7 +583,7 @@ set(HEADERS_PARSER_SOURCES
 add_custom_command(
     OUTPUT ${ES2PANDA_API_GENERATED}
     COMMAND python3 -B ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/main.py
-        "${ES2PANDA_ROOT}" "${LIBGEN_DIR}" ${HEADERS_TO_BE_PARSED}
+        --es2panda-root "${ES2PANDA_ROOT}" --lib-gen-dir "${LIBGEN_DIR}" --headers ${HEADERS_TO_BE_PARSED}
     DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES}
 )
 

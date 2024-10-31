@@ -99,7 +99,7 @@ def extract_type_name(data: str, res: Dict[str, Any]) -> int:
 
     # Extract type name
     while type_name in modifiers_list or type_name == "":
-        prefix_modifiers += f" {type_name}" 
+        prefix_modifiers += f" {type_name}"
 
         type_name_start = find_first_not_restricted_character(" <*", data, type_name_end)
         type_name_end = find_first_of_characters(" <(*", data, type_name_start)

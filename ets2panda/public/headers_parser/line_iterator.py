@@ -18,7 +18,6 @@
 """Provides line iterator class."""
 
 from text_tools import find_first_of_characters
-from cpp_keywords import known_macroses
 
 
 class LineIterator:  # pylint: disable=C0115

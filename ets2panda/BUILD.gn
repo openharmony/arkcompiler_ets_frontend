@@ -1002,8 +1002,11 @@ action("libes2panda_public_parse_headers") {
   script = "./public/headers_parser/main.py"
 
   args = [
+           "--es2panda-root",
            rebase_path(".", ""),
+           "--lib-gen-dir",
            rebase_path(LIBGEN_DIR, root_build_dir),
+           "--headers",
          ] + rebase_path(HEADERS_TO_BE_PARSED, "")
 
   sources = HEADERS_TO_BE_PARSED
