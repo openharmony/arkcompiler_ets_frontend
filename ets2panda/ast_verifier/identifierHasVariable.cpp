@@ -93,18 +93,12 @@ bool IdentifierHasVariable::CheckAstExceptions(const ir::Identifier *ast) const
         return true;
     }
 
-    // NOTE(kkonkuznetsov): skip anonymous class id
-    if (ast->Parent()->Parent() != nullptr && ast->Parent()->Parent()->IsETSNewClassInstanceExpression()) {
-        return true;
-    }
-
     // NOTE(kkonkuznetsov): skip package declarations
     auto parent = ast->Parent();
     while (parent != nullptr) {
         if (parent->IsETSPackageDeclaration()) {
             return true;
         }
-
         parent = parent->Parent();
     }
 
