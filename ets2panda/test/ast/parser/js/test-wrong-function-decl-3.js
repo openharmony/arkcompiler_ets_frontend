@@ -18,4 +18,4 @@ function f(p1, p2, p3) {
   a[;
 }
 
-/* @@? 18:5 Error SyntaxError: Unexpected token ';'.  */
+/* @@? 18:5 Error SyntaxError: Unexpected token: ';'. */

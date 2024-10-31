@@ -13,4 +13,4 @@
 export a from "./type"
 
 /* @@? 13:10 Error SyntaxError: Unexpected token 'identification literal'. */
-/* @@? 13:15 Error SyntaxError: Unexpected token: 'string literal'. */
+/* @@? 13:15 Error SyntaxError: Unexpected token 'string literal'. */

@@ -215,6 +215,10 @@ ir::Statement *ParserImpl::ParseConstStatement(StatementParsingFlags flags)
     lexer_->NextToken();
 
     auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::CONST | VariableParsingFlags::NO_SKIP_VAR_KIND);
+    if (variableDecl == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     variableDecl->SetStart(constVarStar);
     ConsumeSemicolon(variableDecl);
 
@@ -402,6 +406,10 @@ bool ParserImpl::ParseDirective(ArenaVector<ir::Statement *> *statements)
     }
 
     ir::Expression *exprNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    if (exprNode == nullptr) {  // Error processing.
+        return false;
+    }
+
     bool isDirective = exprNode->IsStringLiteral();
 
     auto *exprStatement = AllocNode<ir::ExpressionStatement>(exprNode);
@@ -593,6 +601,10 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
+    }
+
+    if (body == nullptr || test == nullptr) {  // Error processing.
+        return nullptr;
     }
 
     auto *doWhileStatement = AllocNode<ir::DoWhileStatement>(body, test);
@@ -959,6 +971,41 @@ bool ParserImpl::GetCanBeForInOf(ir::Expression *leftNode, ir::AstNode *initNode
     return canBeForInOf;
 }
 
+struct ForStatementNodes {
+    ir::AstNode *init;
+    ir::Expression *right;
+    ir::Expression *update;
+    ir::Statement *body;
+};
+
+ir::Statement *ParserImpl::CreateForStatement(ForStatementNodes &&nodes, ForStatementKind forKind,
+                                              const lexer::SourcePosition &startLoc, bool isAwait)
+{
+    if (nodes.body == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
+    ir::Statement *forStatement = nullptr;
+
+    if (forKind == ForStatementKind::UPDATE) {
+        forStatement = AllocNode<ir::ForUpdateStatement>(nodes.init, nodes.right, nodes.update, nodes.body);
+    } else {
+        if (nodes.init == nullptr || nodes.right == nullptr) {  // Error processing.
+            return nullptr;
+        }
+
+        if (forKind == ForStatementKind::IN) {
+            forStatement = AllocNode<ir::ForInStatement>(nodes.init, nodes.right, nodes.body);
+        } else {
+            forStatement = AllocNode<ir::ForOfStatement>(nodes.init, nodes.right, nodes.body, isAwait);
+        }
+    }
+
+    forStatement->SetRange({startLoc, nodes.body->End()});
+
+    return forStatement;
+}
+
 ir::Statement *ParserImpl::ParseForStatement()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
@@ -1000,19 +1047,7 @@ ir::Statement *ParserImpl::ParseForStatement()
     lexer_->NextToken();
 
     ir::Statement *bodyNode = ParseStatement();
-    ir::Statement *forStatement = nullptr;
-
-    if (forKind == ForStatementKind::UPDATE) {
-        forStatement = AllocNode<ir::ForUpdateStatement>(initNode, rightNode, updateNode, bodyNode);
-    } else if (forKind == ForStatementKind::IN) {
-        forStatement = AllocNode<ir::ForInStatement>(initNode, rightNode, bodyNode);
-    } else {
-        forStatement = AllocNode<ir::ForOfStatement>(initNode, rightNode, bodyNode, isAwait);
-    }
-
-    forStatement->SetRange({startLoc, bodyNode->End()});
-
-    return forStatement;
+    return CreateForStatement({initNode, rightNode, updateNode, bodyNode}, forKind, startLoc, isAwait);
 }
 
 void ParserImpl::ThrowIfBodyEmptyError([[maybe_unused]] ir::Statement *consequent) {}
@@ -1056,6 +1091,10 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
         if (alternate != nullptr) {  // Error processing.
             endLoc = alternate->End();
         }
+    }
+
+    if (test == nullptr) {  // Error processing.
+        return nullptr;
     }
 
     auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, alternate);
@@ -1112,7 +1151,11 @@ ir::ReturnStatement *ParserImpl::ParseReturnStatement()
 
     if (hasArgument) {
         ir::Expression *expression = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
-        endLoc = expression->End();
+        if (expression != nullptr) {  // Error processing.
+            endLoc = expression->End();
+        }
+
+        // returnStatement will have void return type if expression == nullptr
         returnStatement = AllocNode<ir::ReturnStatement>(expression);
     } else {
         returnStatement = AllocNode<ir::ReturnStatement>();
@@ -1212,19 +1255,24 @@ ir::SwitchStatement *ParserImpl::ParseSwitchStatement()
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
            lexer_->GetToken().Type() != lexer::TokenType::EOS) {
+        util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
         auto caseStatement = ParseSwitchCaseStatement(&seenDefault);
         if (caseStatement != nullptr) {
             cases.push_back(caseStatement);
         }
     }
 
-    auto *switchStatement = AllocNode<ir::SwitchStatement>(discriminant, std::move(cases));
-    switchStatement->SetRange({startLoc, lexer_->GetToken().End()});
-
+    auto endLoc = lexer_->GetToken().End();
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         lexer_->NextToken();
     }
 
+    if (discriminant == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
+    auto *switchStatement = AllocNode<ir::SwitchStatement>(discriminant, std::move(cases));
+    switchStatement->SetRange({startLoc, endLoc});
     return switchStatement;
 }
 
@@ -1243,6 +1291,10 @@ ir::ThrowStatement *ParserImpl::ParseThrowStatement()
     }
 
     ir::Expression *expression = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    if (expression == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     lexer::SourcePosition endLoc = expression->End();
 
     auto *throwStatement = AllocNode<ir::ThrowStatement>(expression);
@@ -1381,6 +1433,10 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclaratorInitializer(ir::Expre
                                                                       : ExpressionParseFlags::NO_OPTS);
 
     ir::Expression *initializer = ParseExpression(exprFlags);
+    if (initializer == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
     lexer::SourcePosition endLoc = initializer->End();
 
     auto *declarator = AllocNode<ir::VariableDeclarator>(GetFlag(flags), init, initializer);
@@ -1554,21 +1610,18 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
     bool eatSemicolon = false;
 
     switch (lexer_->GetToken().Type()) {
-        case lexer::TokenType::KEYW_FUNCTION: {
+        case lexer::TokenType::KEYW_FUNCTION:
             declNode = ParseFunctionDeclaration(true);
             break;
-        }
-        case lexer::TokenType::KEYW_CLASS: {
+        case lexer::TokenType::KEYW_CLASS:
             declNode = ParseClassDeclaration(ir::ClassDefinitionModifiers::NONE);
             break;
-        }
-        case lexer::TokenType::LITERAL_IDENT: {
+        case lexer::TokenType::LITERAL_IDENT:
             switch (lexer_->GetToken().KeywordType()) {
-                case lexer::TokenType::KEYW_STRUCT: {
+                case lexer::TokenType::KEYW_STRUCT:
                     declNode = ParseStructDeclaration(ir::ClassDefinitionModifiers::NONE);
                     break;
-                }
-                case lexer::TokenType::KEYW_ASYNC: {
+                case lexer::TokenType::KEYW_ASYNC:
                     if ((lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) == 0) {
                         lexer_->NextToken();  // eat `async`
                         declNode = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
@@ -1576,21 +1629,21 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
                     }
 
                     [[fallthrough]];
-                }
-                default: {
+                default:
                     declNode = ParseExpression();
                     eatSemicolon = true;
                     break;
-                }
             }
 
             break;
-        }
-        default: {
+        default:
             declNode = ParseExpression();
             eatSemicolon = true;
             break;
-        }
+    }
+
+    if (declNode == nullptr) {  // Error processing.
+        return nullptr;
     }
 
     lexer::SourcePosition endLoc = declNode->End();

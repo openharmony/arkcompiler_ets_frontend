@@ -16,4 +16,4 @@
 
 throw ;
 
-/* @@? 17:7 Error SyntaxError: Unexpected token ';'.  */
+/* @@? 17:7 Error SyntaxError: Unexpected token: ';'. */

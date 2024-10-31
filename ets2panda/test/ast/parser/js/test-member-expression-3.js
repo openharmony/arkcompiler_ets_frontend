@@ -15,4 +15,4 @@
 
 
 "sfs".b[]
-/* @@? 17:9 Error SyntaxError: Unexpected token ']'.  */
+/* @@? 17:9 Error SyntaxError: Unexpected token: ']'.  */

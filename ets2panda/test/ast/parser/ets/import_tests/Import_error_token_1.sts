@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * 12345 Test from '"modules/module.sts" // We have no option to =check supported paths for now in astchecker
+import * 12345 Test from "import_tests/packages"
 
 function main():void{
     console.log("not hehe")
 }
 
 /* @@? 15:10 Error SyntaxError: Unexpected token, expected: 'as'.  */
-/* @@? 15:116 Error SyntaxError: Newline is not allowed in strings  */
+/* @@? 15:10 Error SyntaxError: Unexpected token */

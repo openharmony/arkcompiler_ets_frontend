@@ -24,7 +24,11 @@ let void6: (i: int  )       = void1; // CTE; need return type
 
 function main() {}
 
-/* @@? 23:29 Error SyntaxError: Unexpected token, expected: '=>'.  */
+/* @@? 23:29 Error SyntaxError: Unexpected token, expected: '=>'. */
+/* @@? 23:29 Error SyntaxError: Invalid Type */
+/* @@? 23:29 Error SyntaxError: Invalid Type */
+/* @@? 23:29 Error SyntaxError: Invalid Type */
+/* @@? 23:29 Error SyntaxError: Variable must be initialized or it's type must be declared */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */

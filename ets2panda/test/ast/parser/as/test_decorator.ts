@@ -18,4 +18,4 @@ function a(): void {
     @a
 }
 
-/* @@? 19:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 19:1 Error SyntaxError: Unexpected token: '}'. */

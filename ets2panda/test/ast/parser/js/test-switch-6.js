@@ -17,4 +17,4 @@
 switch (a) {
   case 1: AnimationPlaybackEvent() case 2:
 }
-/* @@? 18:36 Error SyntaxError: Unexpected token  */
+/* @@? 18:36 Error SyntaxError: Unexpected token 'case'. */

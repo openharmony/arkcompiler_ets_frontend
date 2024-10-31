@@ -126,9 +126,10 @@ ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat launch
 
+    lexer::SourcePosition exprStart = Lexer()->GetToken().Start();
     ir::Expression *expr = ParseLeftHandSideExpression(flags);
     if (expr == nullptr || !expr->IsCallExpression()) {
-        LogSyntaxError("Only call expressions are allowed after 'launch'", Lexer()->GetToken().Start());
+        LogSyntaxError("Only call expressions are allowed after 'launch'", exprStart);
         return nullptr;
     }
     auto call = expr->AsCallExpression();

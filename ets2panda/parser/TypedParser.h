@@ -92,7 +92,7 @@ protected:
     virtual std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement();
     virtual ir::TypeNode *ParseInterfaceExtendsElement();
 
-    virtual void ValidateIndexSignatureTypeAnnotation([[maybe_unused]] ir::TypeNode *typeAnnotation) {}
+    virtual void ValidateIndexSignatureTypeAnnotation(ir::TypeNode *typeAnnotation);
     virtual ir::Decorator *ParseDecorator()
     {
         return nullptr;
