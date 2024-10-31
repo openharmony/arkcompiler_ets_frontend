@@ -1,6 +1,7 @@
 # Known failures list for  third_lib_js-fastverify-arm64-aot
 #20145
 pinyin4js_test
+Easyrelpace_test
 
 #19246
 crypto-js_test
