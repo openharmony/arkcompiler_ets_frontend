@@ -263,14 +263,14 @@ struct AllArgs {
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
         "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll,CheckAbstractMethodForAll,"
-        "GetterSetterValidationForAll,CheckScopeDeclarationForAll"};
+        "GetterSetterValidationForAll,CheckScopeDeclarationForAll,CheckConstPropertiesForAll"};
     ark::PandArg<std::string> verifierErrors {
         "verifier-errors",
         "ForLoopCorrectlyInitializedForAll,SequenceExpressionHasLastTypeForAll,NodeHasTypeForAll,NodeHasParentForAll,"
         "EveryChildHasValidParentForAll,ModifierAccessValidForAll,ArithmeticOperationValidForAll,"
         "VariableHasScopeForAll,IdentifierHasVariableForAll,VariableHasEnclosingScopeForAll,"
         "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll,CheckAbstractMethodForAll,"
-        "GetterSetterValidationForAll,CheckScopeDeclarationForAll",
+        "GetterSetterValidationForAll,CheckScopeDeclarationForAll,CheckConstPropertiesForAll",
         "Print errors and stop compilation if AST tree is incorrect. "
         "Possible values: "
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
@@ -279,7 +279,7 @@ struct AllArgs {
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
         "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll,CheckAbstractMethodForAll,"
-        "GetterSetterValidationForAll,CheckScopeDeclarationForAll"};
+        "GetterSetterValidationForAll,CheckScopeDeclarationForAll,CheckConstPropertiesForAll"};
     ark::PandArg<bool> verifierAllChecks {
         "verifier-all-checks", false,
         "Run verifier checks on every phase, monotonically expanding them on every phase"};

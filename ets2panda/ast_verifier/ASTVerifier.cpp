@@ -34,6 +34,7 @@
 #include "ast_verifier/arithmeticOperationValid.h"
 #include "ast_verifier/variableNameIdentifierNameSame.h"
 #include "ast_verifier/checkScopeDeclaration.h"
+#include "ast_verifier/checkConstProperties.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
@@ -58,6 +59,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<CheckAbstractMethod>(allocator, "CheckAbstractMethod");
     AddInvariant<GetterSetterValidation>(allocator, "GetterSetterValidation");
     AddInvariant<CheckScopeDeclaration>(allocator, "CheckScopeDeclaration");
+    AddInvariant<CheckConstProperties>(allocator, "CheckConstProperties");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)

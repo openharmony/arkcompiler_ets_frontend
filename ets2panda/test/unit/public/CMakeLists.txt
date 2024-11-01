@@ -82,6 +82,9 @@ ets2panda_add_gtest(ast_verifier_check_abstract_call_test
 ets2panda_add_gtest(ast_verifier_getter_setter_test
     CPP_SOURCES ast_verifier_getter_setter_test.cpp
 )
+ets2panda_add_gtest(ast_verifier_check_const_properties_test
+    CPP_SOURCES ast_verifier_check_const_properties_test.cpp
+)
 
 ets2panda_add_gtest(ast_verifier_getter_setter_neg_test
     CPP_SOURCES ast_verifier_getter_setter_neg_test.cpp
