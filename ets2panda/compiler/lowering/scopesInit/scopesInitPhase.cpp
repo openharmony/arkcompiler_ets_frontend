@@ -1033,6 +1033,8 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
         anonymousName.Append(std::to_string(parentClassScope->AsClassScope()->GetAndIncrementAnonymousClassIdx()));
         classDef->SetInternalName(anonymousName.View());
         classDef->Ident()->SetName(anonymousName.View());
+        AddOrGetDecl<varbinder::ClassDecl>(VarBinder(), anonymousName.View(), classDef, classDef->Start(),
+                                           anonymousName.View(), classDef);
         CallNode(classDef);
     }
 }

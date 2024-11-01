@@ -39,6 +39,10 @@ protected:
     void RemapReferencesFromCapturedVariablesToClassProperties(
         ir::ClassDefinition *classDef, ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap);
 
+    void HandleLocalClass(public_lib::Context *ctx,
+                          ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> &capturedVarsMap,
+                          ir::ClassDefinition *classDef);
+
     ir::ETSParameterExpression *CreateParam(checker::ETSChecker *const checker, varbinder::FunctionParamScope *scope,
                                             util::StringView name, checker::Type *type);
 };

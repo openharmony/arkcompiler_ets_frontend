@@ -210,31 +210,35 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
     }
 }
 
+void LocalClassConstructionPhase::HandleLocalClass(
+    public_lib::Context *ctx,
+    ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> &capturedVarsMap,
+    ir::ClassDefinition *classDef)
+{
+    LOG(DEBUG, ES2PANDA) << "Altering local class with the captured variables: " << classDef->InternalName();
+    auto capturedVars = FindCaptured(ctx->allocator, classDef);
+    // Map the captured variable to the variable of the class property
+    ArenaMap<varbinder::Variable *, varbinder::Variable *> variableMap(ctx->allocator->Adapter());
+    // Map the captured variable to the class property
+    ArenaMap<varbinder::Variable *, ir::ClassProperty *> propertyMap(ctx->allocator->Adapter());
+    // Map the captured variable to the constructor parameter
+    ArenaMap<varbinder::Variable *, varbinder::Variable *> parameterMap(ctx->allocator->Adapter());
+
+    CreateClassPropertiesForCapturedVariables(ctx, classDef, capturedVars, variableMap, propertyMap);
+    ModifyConstructorParameters(ctx, classDef, capturedVars, variableMap, parameterMap);
+    RemapReferencesFromCapturedVariablesToClassProperties(classDef, variableMap);
+    capturedVarsMap.emplace(classDef, std::move(capturedVars));
+}
+
 bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    auto *allocator = ctx->allocator;
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
-    ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> capturedVarsMap {allocator->Adapter()};
-
-    auto handleLocalClass = [this, ctx, &capturedVarsMap](ir::ClassDefinition *classDef) {
-        LOG(DEBUG, ES2PANDA) << "Altering local class with the captured variables: " << classDef->InternalName();
-        auto capturedVars = FindCaptured(ctx->allocator, classDef);
-        // Map the captured variable to the variable of the class property
-        ArenaMap<varbinder::Variable *, varbinder::Variable *> variableMap(ctx->allocator->Adapter());
-        // Map the captured variable to the class property
-        ArenaMap<varbinder::Variable *, ir::ClassProperty *> propertyMap(ctx->allocator->Adapter());
-        // Map the captured variable to the constructor parameter
-        ArenaMap<varbinder::Variable *, varbinder::Variable *> parameterMap(ctx->allocator->Adapter());
-
-        CreateClassPropertiesForCapturedVariables(ctx, classDef, capturedVars, variableMap, propertyMap);
-        ModifyConstructorParameters(ctx, classDef, capturedVars, variableMap, parameterMap);
-        RemapReferencesFromCapturedVariablesToClassProperties(classDef, variableMap);
-        capturedVarsMap.emplace(classDef, std::move(capturedVars));
-    };
+    ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> capturedVarsMap {
+        ctx->allocator->Adapter()};
 
     program->Ast()->IterateRecursivelyPostorder([&](ir::AstNode *ast) {
         if (ast->IsClassDefinition() && ast->AsClassDefinition()->IsLocal()) {
-            handleLocalClass(ast->AsClassDefinition());
+            HandleLocalClass(ctx, capturedVarsMap, ast->AsClassDefinition());
         }
     });
 
@@ -262,6 +266,9 @@ bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Prog
             auto *newExpr = ast->AsETSNewClassInstanceExpression();
             checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
             auto *calleeObj = calleeType->AsETSObjectType();
+            if (!calleeObj->GetDeclNode()->IsClassDefinition()) {
+                return;
+            }
             auto *classDef = calleeObj->GetDeclNode()->AsClassDefinition();
             if (classDef->IsLocal()) {
                 handleLocalClassInstantiation(classDef, newExpr);
