@@ -129,9 +129,9 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     }
 
     this.producePropertyCache(propertyCachePath);
-    performancePrinter?.filesPrinter?.endEvent(EventList.ALL_FILES_OBFUSCATION);
-    performancePrinter?.timeSumPrinter?.print('Sum up time of processes');
+    performancePrinter?.timeSumPrinter?.print('All files obfuscation:');
     performancePrinter?.timeSumPrinter?.summarizeEventDuration();
+    performancePrinter?.filesPrinter?.endEvent(EventList.ALL_FILES_OBFUSCATION);
   }
 
   private writeUnobfuscationContentForTest(printKeptNamesPath: string, printWhitelistPath: string): void {
@@ -254,7 +254,9 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     this.readNameCache(sourceFilePath, outputDir);
     performancePrinter?.filesPrinter?.startEvent(sourceFilePath);
     let filePath = { buildFilePath: sourceFilePath, relativeFilePath: sourceFilePath };
+    performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE, performancePrinter.timeSumPrinter, sourceFilePath);
     const mixedInfo: ObfuscationResultType = await this.obfuscate(content, filePath);
+    performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE, performancePrinter.timeSumPrinter);
     performancePrinter?.filesPrinter?.endEvent(sourceFilePath, undefined, true);
 
     if (this.mWriteOriginalFile && mixedInfo) {

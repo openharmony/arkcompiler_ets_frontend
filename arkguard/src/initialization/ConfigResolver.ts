@@ -24,6 +24,7 @@ import {
   type ReservedNameInfo,
   ApiExtractor,
   containWildcards,
+  EventList,
   getMapFromJson,
   performancePrinter,
   PropCollections,
@@ -241,9 +242,9 @@ export class ObConfigResolver {
       if (isFileExist(systemApiCachePath)) {
         this.getSystemApiConfigsByCache(systemApiCachePath);
       } else {
-        performancePrinter?.iniPrinter?.startEvent('  Scan system api');
+        performancePrinter?.filesPrinter?.startEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
         this.getSystemApiCache(mergedConfigs, systemApiCachePath);
-        performancePrinter?.iniPrinter?.endEvent('  Scan system api');
+        performancePrinter?.filesPrinter?.endEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
       }
     }
 
