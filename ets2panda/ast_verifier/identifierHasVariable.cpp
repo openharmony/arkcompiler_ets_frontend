@@ -80,11 +80,6 @@ bool IdentifierHasVariable::CheckMoreAstExceptions(const ir::Identifier *ast) co
 
 bool IdentifierHasVariable::CheckAstExceptions(const ir::Identifier *ast) const
 {
-    // NOTE(kkonkuznetsov): warnings in lambdas
-    if (ast->Name().Utf8().find("lambda$invoke$") == 0) {
-        return true;
-    }
-
     // NOTE(kkonkuznetsov): skip length property
     if (ast->Parent()->IsMemberExpression() && ast->Name().Is("length")) {
         return true;
