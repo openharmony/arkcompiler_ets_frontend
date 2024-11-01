@@ -15,6 +15,7 @@
 
 import * as ts from 'typescript';
 import { TsUtils } from '../utils/TsUtils';
+import { FaultID } from '../Problems';
 import { scopeContainsThis } from '../utils/functions/ContainsThis';
 import { forEachNodeInSubtree } from '../utils/functions/ForEachNodeInSubtree';
 import { NameGenerator } from '../utils/functions/NameGenerator';
@@ -26,6 +27,12 @@ const GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD = 1000;
 
 const GENERATED_TYPE_LITERAL_INTERFACE_NAME = 'GeneratedTypeLiteralInterface_';
 const GENERATED_TYPE_LITERAL_INTERFACE_TRESHOLD = 1000;
+
+const GENERATED_DESTRUCT_OBJECT_NAME = 'GeneratedDestructObj_';
+const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
+
+const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
+const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
 
 export interface Autofix {
   replacementText: string;
@@ -41,6 +48,758 @@ export class Autofixer {
     readonly cancellationToken?: ts.CancellationToken
   ) {
     this.symbolCache = new SymbolCache(this.typeChecker, this.utils, sourceFile, cancellationToken);
+  }
+
+  /**
+   * Generates the text representation for destructuring elements in an object.
+   * @param variableDeclarationMap - Map of property names to variable names.
+   * @param newObjectName - Name of the new object to destructure.
+   * @param declarationFlags - Flags for the variable declaration.
+   * @param printer - TypeScript printer instance.
+   * @param sourceFile - Source file from which the nodes are taken.
+   * @returns The generated destructuring text.
+   */
+  private static genDestructElementTextForObjDecls(
+    variableDeclarationMap: Map<string, string>,
+    newObjectName: string,
+    declarationFlags: ts.NodeFlags,
+    printer: ts.Printer,
+    sourceFile: ts.SourceFile
+  ): string {
+    let destructElementText: string = '';
+
+    variableDeclarationMap.forEach((propertyName, variableName) => {
+      // Create a property access expression for the new object
+      const propertyAccessExpr = ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(newObjectName),
+        ts.factory.createIdentifier(variableName)
+      );
+
+      // Create a variable declaration with the property access expression
+      const variableDecl = ts.factory.createVariableDeclaration(
+        ts.factory.createIdentifier(propertyName),
+        undefined,
+        undefined,
+        propertyAccessExpr
+      );
+
+      // Create a variable statement for the variable declaration
+      const variableStatement = ts.factory.createVariableStatement(
+        undefined,
+        ts.factory.createVariableDeclarationList([variableDecl], declarationFlags)
+      );
+
+      // Print the variable statement to text and append it
+      const text = printer.printNode(ts.EmitHint.Unspecified, variableStatement, sourceFile);
+      destructElementText += text;
+    });
+
+    return destructElementText;
+  }
+
+  /**
+   * Creates autofix suggestions for destructuring assignment.
+   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param newObjectName - Name of the new object to use for destructuring.
+   * @param destructElementText - Generated text for destructuring elements.
+   * @returns Array of autofix suggestions or undefined.
+   */
+  private static genAutofixForObjDecls(
+    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    newObjectName: string | undefined,
+    destructElementText: string,
+    isIdentifier: boolean
+  ): Autofix[] | undefined {
+    let variableNameReplaceText: Autofix;
+    let destructElementReplaceText: Autofix;
+    let autofix: Autofix[] | undefined = [];
+
+    // Check if the initializer is a identifier
+    if (isIdentifier) {
+      destructElementReplaceText = {
+        replacementText: destructElementText,
+        start: variableDeclaration.parent.getStart(),
+        end: variableDeclaration.parent.parent.getEnd()
+      };
+      autofix = [destructElementReplaceText];
+    } else {
+      // Create autofix suggestions for both variable name and destructuring
+      variableNameReplaceText = {
+        replacementText: newObjectName as string,
+        start: variableDeclaration.name.getStart(),
+        end: variableDeclaration.name.getEnd()
+      };
+      destructElementReplaceText = {
+        replacementText: destructElementText,
+        start: variableDeclaration.parent.parent.getEnd(),
+        end: variableDeclaration.parent.parent.getEnd()
+      };
+      autofix = [variableNameReplaceText, destructElementReplaceText];
+    }
+
+    return autofix;
+  }
+
+  /**
+   * Checks if the given variable declaration passes boundary checks for object declarations.
+   *
+   * @param faultId - The fault ID indicating the type of check to perform (e.g., destructuring parameter).
+   * @param variableDeclaration - The variable or parameter declaration to check for boundary conditions.
+   * @returns A boolean indicating if the declaration passes the boundary checks.
+   */
+  private static passBoundaryCheckForObjDecls(
+    faultId: number,
+    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration
+  ): boolean {
+    // Check if the fault ID is for a destructuring parameter or if the declaration has a spread operator
+    if (
+      faultId === FaultID.DestructuringParameter ||
+      TsUtils.destructuringDeclarationHasSpreadOperator(variableDeclaration.name as ts.BindingPattern) ||
+      TsUtils.destructuringDeclarationHasDefaultValue(variableDeclaration.name as ts.BindingPattern)
+    ) {
+      return false;
+    }
+
+    // If the initializer is an object literal expression, check its properties
+    if (ts.isObjectLiteralExpression(variableDeclaration.initializer as ts.Node)) {
+      const len = (variableDeclaration.initializer as ts.ObjectLiteralExpression).properties.length;
+      if (len === 0) {
+        // Return false if there are no properties
+        return false;
+      }
+    }
+
+    // Return true if all checks are passed
+    return true;
+  }
+
+  /**
+   ** Fixes object binding pattern declarations by generating appropriate autofix suggestions.
+   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param faultId - The fault ID indicating the type of check to perform.
+   * @returns Array of autofix suggestions or undefined.
+   */
+  fixObjectBindingPatternDeclarations(
+    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    faultId: number
+  ): Autofix[] | undefined {
+    if (!Autofixer.passBoundaryCheckForObjDecls(faultId, variableDeclaration)) {
+      return undefined;
+    }
+    // Map to hold variable names and their corresponding property names
+    const variableDeclarationMap: Map<string, string> = new Map();
+    // If the declaration is an object binding pattern, extract names
+    if (ts.isObjectBindingPattern(variableDeclaration.name)) {
+      variableDeclaration.name.elements.forEach((element) => {
+        if (!element.propertyName) {
+          variableDeclarationMap.set(element.name.getText(), element.name.getText());
+        } else {
+          variableDeclarationMap.set((element.propertyName as ts.Identifier).text, element.name.getText());
+        }
+      });
+    }
+    const sourceFile = variableDeclaration.getSourceFile();
+    let newObjectName: string | undefined;
+    const isIdentifier = ts.isIdentifier(variableDeclaration.initializer as ts.Node);
+    // If it is identifer, use its text as the new object name; otherwise, generate a unique name
+    if (isIdentifier) {
+      newObjectName = variableDeclaration.initializer?.getText();
+    } else {
+      newObjectName = TsUtils.generateUniqueName(this.destructObjNameGenerator, sourceFile);
+    }
+    if (!newObjectName) {
+      return undefined;
+    }
+    const declarationFlags = ts.getCombinedNodeFlags(variableDeclaration);
+    const destructElementText = Autofixer.genDestructElementTextForObjDecls(
+      variableDeclarationMap,
+      newObjectName,
+      declarationFlags,
+      this.printer,
+      sourceFile
+    );
+
+    // Generate and return autofix suggestions for the object declarations
+    return Autofixer.genAutofixForObjDecls(variableDeclaration, newObjectName, destructElementText, isIdentifier);
+  }
+
+  /**
+   * Generates the text representation for destructuring elements in an array.
+   * @param variableNames - Array of variable names corresponding to array elements.
+   * @param newArrayName - Name of the new array to destructure.
+   * @param declarationFlags - Flags for the variable declaration.
+   * @param printer - TypeScript printer instance.
+   * @param sourceFile - Source file from which the nodes are taken.
+   * @returns The generated destructuring text.
+   */
+  private static genDestructElementTextForArrayDecls(
+    variableNames: string[],
+    newArrayName: string,
+    declarationFlags: ts.NodeFlags,
+    printer: ts.Printer,
+    sourceFile: ts.SourceFile
+  ): string {
+    let destructElementText: string = '';
+    const length = variableNames.length;
+
+    // Iterate over the array of variable names
+    for (let i = 0; i < length; i++) {
+      const variableName = variableNames[i];
+
+      // Create an element access expression for the new array
+      const elementAccessExpr = ts.factory.createElementAccessExpression(
+        ts.factory.createIdentifier(newArrayName),
+        ts.factory.createNumericLiteral(i)
+      );
+
+      // Create a variable declaration with the element access expression
+      const variableDecl = ts.factory.createVariableDeclaration(
+        ts.factory.createIdentifier(variableName),
+        undefined,
+        undefined,
+        elementAccessExpr
+      );
+
+      // Create a variable statement for the variable declaration
+      const variableStatement = ts.factory.createVariableStatement(
+        undefined,
+        ts.factory.createVariableDeclarationList([variableDecl], declarationFlags)
+      );
+
+      // Print the variable statement to text and append it
+      const text = printer.printNode(ts.EmitHint.Unspecified, variableStatement, sourceFile);
+      destructElementText += text;
+    }
+
+    return destructElementText;
+  }
+
+  /**
+   * Creates autofix suggestions for array destructuring assignment.
+   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param newArrayName - Name of the new array to use for destructuring.
+   * @param destructElementText - Generated text for destructuring elements.
+   * @returns Array of autofix suggestions.
+   */
+  private static genAutofixForArrayDecls(
+    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    newArrayName: string | undefined,
+    destructElementText: string,
+    isIdentifierOrElementAccess: boolean
+  ): Autofix[] {
+    let variableNameReplaceText: Autofix;
+    let destructElementReplaceText: Autofix;
+    let autofix: Autofix[] = [];
+
+    // Check if the initializer is an identifier or element access expression
+    if (isIdentifierOrElementAccess) {
+      destructElementReplaceText = {
+        replacementText: destructElementText,
+        start: variableDeclaration.parent.getStart(),
+        end: variableDeclaration.parent.parent.getEnd()
+      };
+      autofix = [destructElementReplaceText];
+    } else {
+      // Create autofix suggestions for both variable name and destructuring
+      variableNameReplaceText = {
+        replacementText: newArrayName as string,
+        start: variableDeclaration.name.getStart(),
+        end: variableDeclaration.name.getEnd()
+      };
+      destructElementReplaceText = {
+        replacementText: destructElementText,
+        start: variableDeclaration.parent.parent.getEnd(),
+        end: variableDeclaration.parent.parent.getEnd()
+      };
+      autofix = [variableNameReplaceText, destructElementReplaceText];
+    }
+
+    return autofix;
+  }
+
+  /**
+   * Checks if the given variable declaration passes boundary checks for array or tuple declarations.
+   *
+   * @param variableDeclaration - A variable declaration or parameter declaration to be checked.
+   * @param isArrayOrTuple - A boolean indicating whether the declaration is an array or tuple.
+   * @returns A boolean indicating if the declaration passes the boundary checks.
+   */
+  private static passBoundaryCheckForArrayDecls(
+    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    isArrayOrTuple: boolean
+  ): boolean {
+    // If it's not an array/tuple or the declaration has a spread operator in destructuring
+    if (
+      !isArrayOrTuple ||
+      TsUtils.destructuringDeclarationHasSpreadOperator(variableDeclaration.name as ts.BindingPattern) ||
+      TsUtils.destructuringDeclarationHasDefaultValue(variableDeclaration.name as ts.BindingPattern)
+    ) {
+      // Return false if it fails the boundary check
+      return false;
+    }
+
+    // Check if the array binding pattern has any empty elements
+    if (TsUtils.checkArrayBindingHasEmptyElement(variableDeclaration.name as ts.ArrayBindingPattern)) {
+      // Return false if it contains empty elements
+      return false;
+    }
+
+    // Check if the initializer has the same dimension as expected
+    if (!TsUtils.isSameDimension(variableDeclaration.initializer as ts.Node)) {
+      return false;
+    }
+
+    // Return true if all checks are passed
+    return true;
+  }
+
+  /**
+   * Fixes array binding pattern declarations by generating appropriate autofix suggestions.
+   *
+   * @param variableDeclaration - The variable or parameter declaration to fix.
+   * @param isArrayOrTuple - Flag indicating if the declaration is for an array or tuple.
+   * @returns Array of autofix suggestions or undefined.
+   */
+  fixArrayBindingPatternDeclarations(
+    variableDeclaration: ts.VariableDeclaration | ts.ParameterDeclaration,
+    isArrayOrTuple: boolean
+  ): Autofix[] | undefined {
+    if (!Autofixer.passBoundaryCheckForArrayDecls(variableDeclaration, isArrayOrTuple)) {
+      return undefined;
+    }
+    const variableNames: string[] = [];
+    // If the declaration is an array binding pattern, extract variable names
+    if (ts.isArrayBindingPattern(variableDeclaration.name)) {
+      variableDeclaration.name.elements.forEach((element) => {
+        variableNames.push(element.getText());
+      });
+    }
+
+    const sourceFile = variableDeclaration.getSourceFile();
+    let newArrayName: string | undefined = '';
+    // Check if the initializer is either an identifier or an element access expression
+    const isIdentifierOrElementAccess =
+      ts.isIdentifier(variableDeclaration.initializer as ts.Node) ||
+      ts.isElementAccessExpression(variableDeclaration.initializer as ts.Node);
+    // If it is, use its text as the new array name; otherwise, generate a unique name
+    if (isIdentifierOrElementAccess) {
+      newArrayName = variableDeclaration.initializer?.getText();
+    } else {
+      newArrayName = TsUtils.generateUniqueName(this.destructArrayNameGenerator, sourceFile);
+    }
+    if (!newArrayName) {
+      return undefined;
+    }
+
+    // Get the combined node flags for the variable declaration
+    const declarationFlags = ts.getCombinedNodeFlags(variableDeclaration);
+    // Generate the destructuring element text for the array declaration
+    const destructElementText = Autofixer.genDestructElementTextForArrayDecls(
+      variableNames,
+      newArrayName,
+      declarationFlags,
+      this.printer,
+      sourceFile
+    );
+
+    // Generate and return autofix suggestions for the array declarations
+    return Autofixer.genAutofixForArrayDecls(
+      variableDeclaration,
+      newArrayName,
+      destructElementText,
+      isIdentifierOrElementAccess
+    );
+  }
+
+  /**
+   * Generates the text representation for destructuring assignments in an array.
+   * @param variableNames - Array of variable names corresponding to array elements.
+   * @param newArrayName - Name of the new array to use for destructuring.
+   * @param printer - TypeScript printer instance.
+   * @param sourceFile - Source file from which the nodes are taken.
+   * @returns The generated destructuring assignment text.
+   */
+  private static genDestructElementTextForArrayAssignment(
+    variableNames: string[],
+    newArrayName: string | undefined,
+    printer: ts.Printer,
+    sourceFile: ts.SourceFile
+  ): string {
+    let destructElementText: string = '';
+    const length = variableNames.length;
+
+    // Iterate over the array of variable names
+    for (let i = 0; i < length; i++) {
+      const variableName = variableNames[i];
+
+      // Create an element access expression for the new array
+      const elementAccessExpr = ts.factory.createElementAccessExpression(
+        ts.factory.createIdentifier(newArrayName as string),
+        ts.factory.createNumericLiteral(i)
+      );
+
+      // Create a binary expression to assign the array element to the variable
+      const assignmentExpr = ts.factory.createBinaryExpression(
+        ts.factory.createIdentifier(variableName),
+        ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+        elementAccessExpr
+      );
+
+      // Create an expression statement for the assignment expression
+      const expressionStatement = ts.factory.createExpressionStatement(assignmentExpr);
+
+      // Print the expression statement to text and append it
+      const text = printer.printNode(ts.EmitHint.Unspecified, expressionStatement, sourceFile);
+      destructElementText += text;
+    }
+
+    return destructElementText;
+  }
+
+  /**
+   * Creates autofix suggestions for array destructuring assignment.
+   * @param assignmentExpr - The binary expression for the assignment.
+   * @param newArrayName - Name of the new array to use for destructuring.
+   * @param destructElementText - Generated text for destructuring assignments.
+   * @returns Array of autofix suggestions.
+   */
+  private static genAutofixForArrayAssignment(
+    assignmentExpr: ts.BinaryExpression,
+    newArrayName: string | undefined,
+    destructElementText: string,
+    isIdentifierOrElementAccess: boolean
+  ): Autofix[] {
+    let arrayNameReplaceText: Autofix;
+    let destructElementReplaceText: Autofix;
+    let autofix: Autofix[] = [];
+
+    // Check if the right side of the assignment is an identifier or element access expression
+    if (isIdentifierOrElementAccess) {
+      destructElementReplaceText = {
+        replacementText: destructElementText,
+        start: assignmentExpr.parent.getStart(),
+        end: assignmentExpr.parent.getEnd()
+      };
+      autofix = [destructElementReplaceText];
+    } else {
+      // Create autofix suggestions for both array name and destructuring assignments
+      const keywordsLet = 'let ';
+      arrayNameReplaceText = {
+        replacementText: keywordsLet + newArrayName,
+        start: assignmentExpr.left.getStart(),
+        end: assignmentExpr.left.getEnd()
+      };
+      destructElementReplaceText = {
+        replacementText: destructElementText,
+        start: assignmentExpr.parent.getEnd(),
+        end: assignmentExpr.parent.getEnd()
+      };
+      autofix = [arrayNameReplaceText, destructElementReplaceText];
+    }
+
+    return autofix;
+  }
+
+  /**
+   * Checks if the given assignment expression passes boundary checks for array assignments.
+   *
+   * @param assignmentExpr - The assignment expression to check (a binary expression).
+   * @param isArrayOrTuple - A boolean indicating if the assignment is for an array or tuple.
+   * @returns A boolean indicating if the assignment passes the boundary checks.
+   */
+  private static passBoundaryCheckForArrayAssignment(
+    assignmentExpr: ts.BinaryExpression,
+    isArrayOrTuple: boolean
+  ): boolean {
+    // Return false if the assignment is not for an array or tuple
+    if (!isArrayOrTuple) {
+      return false;
+    }
+
+    // Check if the left side of the assignment is an array literal expression with a spread operator
+    if (TsUtils.destructuringAssignmentHasSpreadOperator(assignmentExpr.left as ts.ArrayLiteralExpression)) {
+      return false;
+    }
+
+    if (TsUtils.destructuringAssignmentHasDefaultValue(assignmentExpr.left as ts.ArrayLiteralExpression)) {
+      return false;
+    }
+
+    // Check if the left side of the assignment has an empty element
+    if (TsUtils.checkArrayLiteralHasEmptyElement(assignmentExpr.left as ts.ArrayLiteralExpression)) {
+      return false;
+    }
+
+    // Check if the right side of the assignment has the same dimension as the left side
+    if (!TsUtils.isSameDimension(assignmentExpr.right)) {
+      return false;
+    }
+
+    // Return true if all boundary checks are passed
+    return true;
+  }
+
+  /**
+   * Fixes array binding pattern assignments by generating appropriate autofix suggestions.
+   * @param assignmentExpr - The binary expression for the assignment.
+   * @param isArrayOrTuple - Flag indicating if the assignment is for an array or tuple.
+   * @returns Array of autofix suggestions or undefined.
+   */
+  fixArrayBindingPatternAssignment(
+    assignmentExpr: ts.BinaryExpression,
+    isArrayOrTuple: boolean
+  ): Autofix[] | undefined {
+    if (!Autofixer.passBoundaryCheckForArrayAssignment(assignmentExpr, isArrayOrTuple)) {
+      return undefined;
+    }
+    // Collect variable names from array literal expression
+    const variableNames: string[] = [];
+    if (ts.isArrayLiteralExpression(assignmentExpr.left)) {
+      assignmentExpr.left.elements.forEach((element) => {
+        variableNames.push(element.getText());
+      });
+    }
+
+    const sourceFile = assignmentExpr.getSourceFile();
+    let newArrayName: string | undefined = '';
+    const isIdentifierOrElementAccess =
+      ts.isIdentifier(assignmentExpr.right) || ts.isElementAccessExpression(assignmentExpr.right as ts.Node);
+    if (isIdentifierOrElementAccess) {
+      newArrayName = assignmentExpr.right.getText();
+    } else {
+      newArrayName = TsUtils.generateUniqueName(this.destructArrayNameGenerator, sourceFile);
+    }
+    if (!newArrayName) {
+      return undefined;
+    }
+
+    // Generate the text for destructuring assignments
+    const destructElementText = Autofixer.genDestructElementTextForArrayAssignment(
+      variableNames,
+      newArrayName,
+      this.printer,
+      sourceFile
+    );
+
+    return Autofixer.genAutofixForArrayAssignment(
+      assignmentExpr,
+      newArrayName,
+      destructElementText,
+      isIdentifierOrElementAccess
+    );
+  }
+
+  /**
+   * Creates a mapping of variable declarations and needParentheses for object properties based on the provided binary expression.
+   * @param binaryExpr - The binary expression containing the object literal.
+   * @returns An object containing the variable declaration map and needParentheses indicating if property initializers are object literals.
+   */
+  private static genTsVarDeclMapAndFlags(binaryExpr: ts.BinaryExpression): {
+    tsVarDeclMap: Map<string, string>;
+    needParentheses: boolean[];
+  } {
+    const tsVarDeclMap: Map<string, string> = new Map();
+    const needParentheses: boolean[] = [];
+
+    // Check if the left side of the binary expression is an object literal
+    if (ts.isObjectLiteralExpression(binaryExpr.left)) {
+      binaryExpr.left.properties.forEach((property) => {
+        // Handle property assignments with initializer
+        if (ts.isPropertyAssignment(property)) {
+          tsVarDeclMap.set(property.name?.getText(), property.initializer.getText());
+          if (ts.isObjectLiteralExpression(property.initializer)) {
+            needParentheses.push(true);
+          } else {
+            needParentheses.push(false);
+          }
+        } else if (ts.isShorthandPropertyAssignment(property)) {
+          tsVarDeclMap.set(property.name?.getText(), property.name.getText());
+          needParentheses.push(false);
+        }
+      });
+    }
+
+    return { tsVarDeclMap, needParentheses };
+  }
+
+  /**
+   * Generates the text for destructuring assignments based on the variable declaration map and needParentheses.
+   * @param tsVarDeclMap - Map of variable names to property names.
+   * @param needParentheses - Array of needParentheses indicating if property initializers are object literals.
+   * @param newObjName - The name of the new object to use for destructuring.
+   * @param binaryExpr - The binary expression representing the destructuring.
+   * @param printer - TypeScript printer instance for printing nodes.
+   * @returns The generated text for destructuring assignments.
+   */
+  private static genDestructElementTextForObjAssignment(
+    tsVarDeclMap: Map<string, string>,
+    needParentheses: boolean[],
+    newObjName: string,
+    binaryExpr: ts.BinaryExpression,
+    printer: ts.Printer
+  ): string {
+    let destructElementText: string = '';
+    let index: number = 0;
+
+    // Iterate through the variable declaration map to generate destructuring assignments
+    tsVarDeclMap.forEach((propertyName, variableName) => {
+      // Create property access expression for the new object
+      const propAccessExpr = ts.factory.createPropertyAccessExpression(
+        ts.factory.createIdentifier(newObjName),
+        ts.factory.createIdentifier(variableName)
+      );
+      // Create binary expression for assignment
+      const assignmentExpr = ts.factory.createBinaryExpression(
+        ts.factory.createIdentifier(propertyName),
+        ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+        propAccessExpr
+      );
+      // Create statement for the assignment expression, with or without parentheses based on the flag
+      const statement = needParentheses[index] ?
+        ts.factory.createExpressionStatement(ts.factory.createParenthesizedExpression(assignmentExpr)) :
+        ts.factory.createExpressionStatement(assignmentExpr);
+
+      // Append the generated text for the destructuring assignment
+      destructElementText += printer.printNode(ts.EmitHint.Unspecified, statement, binaryExpr.getSourceFile());
+
+      index++;
+    });
+
+    return destructElementText;
+  }
+
+  /**
+   * Creates the replacement text for the variable declaration name.
+   * @param binaryExpr - The binary expression containing the object literal or call expression.
+   * @param newObjName - The new object name to be used in the replacement.
+   * @param printer - TypeScript printer instance for printing nodes.
+   * @returns The replacement text for the variable declaration name.
+   */
+  private static genDeclNameReplaceTextForObjAssignment(
+    binaryExpr: ts.BinaryExpression,
+    newObjName: string,
+    printer: ts.Printer
+  ): string {
+    let declNameReplaceText = '';
+
+    // create variableDeclList and get declNameReplaceText text
+    const variableDecl = ts.factory.createVariableDeclaration(
+      ts.factory.createIdentifier(newObjName),
+      undefined,
+      undefined,
+      binaryExpr.right
+    );
+    const variableDeclList = ts.factory.createVariableDeclarationList([variableDecl], ts.NodeFlags.Let);
+    declNameReplaceText = printer.printNode(ts.EmitHint.Unspecified, variableDeclList, binaryExpr.getSourceFile());
+
+    return declNameReplaceText;
+  }
+
+  /**
+   * Creates autofix suggestions for object literal destructuring assignments.
+   * @param binaryExpr - The binary expression containing the destructuring assignment.
+   * @param declNameReplaceText - Replacement text for the variable declaration name.
+   * @param destructElementText - Generated text for destructuring assignments.
+   * @returns Array of autofix suggestions or undefined if no fixes are needed.
+   */
+  private static createAutofixForObjAssignment(
+    binaryExpr: ts.BinaryExpression,
+    declNameReplaceText: string,
+    destructElementText: string,
+    isIdentifier: boolean
+  ): Autofix[] | undefined {
+    let declNameReplaceTextAutofix: Autofix;
+    let destructElementReplaceTextAutofix: Autofix;
+    let autofix: Autofix[] | undefined;
+
+    // Check if the right side of the binary expression is identifer
+    if (isIdentifier) {
+      destructElementReplaceTextAutofix = {
+        replacementText: destructElementText,
+        start: binaryExpr.parent.parent.getStart(),
+        end: binaryExpr.parent.parent.getEnd()
+      };
+      autofix = [destructElementReplaceTextAutofix];
+    } else {
+      declNameReplaceTextAutofix = {
+        replacementText: declNameReplaceText,
+        start: binaryExpr.parent.getStart(),
+        end: binaryExpr.parent.getEnd()
+      };
+      destructElementReplaceTextAutofix = {
+        replacementText: destructElementText,
+        start: binaryExpr.parent.parent.getEnd(),
+        end: binaryExpr.parent.parent.getEnd()
+      };
+      autofix = [declNameReplaceTextAutofix, destructElementReplaceTextAutofix];
+    }
+
+    return autofix;
+  }
+
+  /**
+   * Checks if the given assignment expression passes boundary checks for object assignments.
+   *
+   * @param binaryExpr - The binary expression representing the assignment to check.
+   * @returns A boolean indicating if the assignment passes the boundary checks.
+   */
+  private static passBoundaryCheckForObjAssignment(binaryExpr: ts.BinaryExpression): boolean {
+    // Check for spread operator in destructuring assignment on the left side
+    if (TsUtils.destructuringAssignmentHasSpreadOperator(binaryExpr.left as ts.ObjectLiteralExpression)) {
+      return false;
+    }
+
+    if (TsUtils.destructuringAssignmentHasDefaultValue(binaryExpr.left as ts.ObjectLiteralExpression)) {
+      return false;
+    }
+
+    // Check if the right side is an object literal expression with no properties
+    if (ts.isObjectLiteralExpression(binaryExpr.right) && binaryExpr.right.properties.length === 0) {
+      return false;
+    }
+
+    // Return true if all boundary checks are passed
+    return true;
+  }
+
+  /**
+   * Fixes object literal expression destructuring assignments by generating autofix suggestions.
+   * @param binaryExpr - The binary expression representing the destructuring assignment.
+   * @returns Array of autofix suggestions or undefined if no fixes are needed.
+   */
+  fixObjectLiteralExpressionDestructAssignment(binaryExpr: ts.BinaryExpression): Autofix[] | undefined {
+    if (!Autofixer.passBoundaryCheckForObjAssignment(binaryExpr)) {
+      return undefined;
+    }
+    // Create a mapping of variable declarations and needParentheses
+    const { tsVarDeclMap, needParentheses } = Autofixer.genTsVarDeclMapAndFlags(binaryExpr);
+
+    const sourceFile = binaryExpr.getSourceFile();
+    let newObjName: string | undefined = '';
+    // Generate a unique name if right expression is not identifer
+    const isIdentifier = ts.isIdentifier(binaryExpr.right);
+    if (isIdentifier) {
+      newObjName = binaryExpr.right?.getText();
+    } else {
+      newObjName = TsUtils.generateUniqueName(this.destructObjNameGenerator, sourceFile);
+    }
+    if (!newObjName) {
+      return undefined;
+    }
+    // Create the text for destructuring elements
+    const destructElementText = Autofixer.genDestructElementTextForObjAssignment(
+      tsVarDeclMap,
+      needParentheses,
+      newObjName,
+      binaryExpr,
+      this.printer
+    );
+
+    // Create the replacement text for the variable declaration name
+    const declNameReplaceText = Autofixer.genDeclNameReplaceTextForObjAssignment(binaryExpr, newObjName, this.printer);
+
+    // Generate autofix suggestions
+    return Autofixer.createAutofixForObjAssignment(binaryExpr, declNameReplaceText, destructElementText, isIdentifier);
   }
 
   fixLiteralAsPropertyNamePropertyAssignment(node: ts.PropertyAssignment): Autofix[] | undefined {
@@ -1146,6 +1905,16 @@ export class Autofixer {
   private readonly typeLiteralInterfaceNameGenerator = new NameGenerator(
     GENERATED_TYPE_LITERAL_INTERFACE_NAME,
     GENERATED_TYPE_LITERAL_INTERFACE_TRESHOLD
+  );
+
+  private readonly destructObjNameGenerator = new NameGenerator(
+    GENERATED_DESTRUCT_OBJECT_NAME,
+    GENERATED_DESTRUCT_OBJECT_TRESHOLD
+  );
+
+  private readonly destructArrayNameGenerator = new NameGenerator(
+    GENERATED_DESTRUCT_ARRAY_NAME,
+    GENERATED_DESTRUCT_ARRAY_TRESHOLD
   );
 
   private readonly symbolCache: SymbolCache;

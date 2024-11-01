@@ -1204,7 +1204,8 @@ export class TypeScriptLinter {
 
   private processBinaryAssignment(node: ts.Node, tsLhsExpr: ts.Expression, tsRhsExpr: ts.Expression): void {
     if (ts.isObjectLiteralExpression(tsLhsExpr)) {
-      this.incrementCounters(node, FaultID.DestructuringAssignment);
+      const autofix = this.autofixer?.fixObjectLiteralExpressionDestructAssignment(node as ts.BinaryExpression);
+      this.incrementCounters(node, FaultID.DestructuringAssignment, autofix);
     } else if (ts.isArrayLiteralExpression(tsLhsExpr)) {
       // Array destructuring is allowed only for Arrays/Tuples and without spread operator.
       const rhsType = this.tsTypeChecker.getTypeAtLocation(tsRhsExpr);
@@ -1219,7 +1220,8 @@ export class TypeScriptLinter {
         hasNestedObjectDestructuring ||
         TsUtils.destructuringAssignmentHasSpreadOperator(tsLhsExpr)
       ) {
-        this.incrementCounters(node, FaultID.DestructuringAssignment);
+        const autofix = this.autofixer?.fixArrayBindingPatternAssignment(node as ts.BinaryExpression, isArrayOrTuple);
+        this.incrementCounters(node, FaultID.DestructuringAssignment, autofix);
       }
     }
 
@@ -1318,13 +1320,9 @@ export class TypeScriptLinter {
   private handleDeclarationDestructuring(decl: ts.VariableDeclaration | ts.ParameterDeclaration): void {
     const faultId = ts.isVariableDeclaration(decl) ? FaultID.DestructuringDeclaration : FaultID.DestructuringParameter;
     if (ts.isObjectBindingPattern(decl.name)) {
-      this.incrementCounters(decl, faultId);
+      const autofix = this.autofixer?.fixObjectBindingPatternDeclarations(decl, faultId);
+      this.incrementCounters(decl, faultId, autofix);
     } else if (ts.isArrayBindingPattern(decl.name)) {
-      if (!TypeScriptLinter.useRelaxedRules) {
-        this.incrementCounters(decl, faultId);
-        return;
-      }
-
       // Array destructuring is allowed only for Arrays/Tuples and without spread operator.
       const rhsType = this.tsTypeChecker.getTypeAtLocation(decl.initializer ?? decl.name);
       const isArrayOrTuple =
@@ -1334,11 +1332,13 @@ export class TypeScriptLinter {
       const hasNestedObjectDestructuring = TsUtils.hasNestedObjectDestructuring(decl.name);
 
       if (
+        !TypeScriptLinter.useRelaxedRules ||
         !isArrayOrTuple ||
         hasNestedObjectDestructuring ||
         TsUtils.destructuringDeclarationHasSpreadOperator(decl.name)
       ) {
-        this.incrementCounters(decl, faultId);
+        const autofix = this.autofixer?.fixArrayBindingPatternDeclarations(decl, isArrayOrTuple);
+        this.incrementCounters(decl, faultId, autofix);
       }
     }
   }

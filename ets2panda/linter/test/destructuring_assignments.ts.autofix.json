@@ -1,6 +1,6 @@
 {
     "copyright": [
-        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
         "Licensed under the Apache License, Version 2.0 (the 'License');",
         "you may not use this file except in compliance with the License.",
         "You may obtain a copy of the License at",
@@ -38,6 +38,18 @@
             "endLine": 19,
             "endColumn": 44,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructObj_1 = { a: 100, b: 200, s: 'bar' }",
+                    "start": 692,
+                    "end": 736
+                },
+                {
+                    "replacementText": "a = GeneratedDestructObj_1.a;b = GeneratedDestructObj_1.b;s = GeneratedDestructObj_1.s;",
+                    "start": 737,
+                    "end": 737
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -92,6 +104,18 @@
             "endLine": 22,
             "endColumn": 56,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructObj_2 = { a: 1, b: { c: 3, d: 'baz' } }",
+                    "start": 836,
+                    "end": 892
+                },
+                {
+                    "replacementText": "a = GeneratedDestructObj_2.a;({ c, d: s } = GeneratedDestructObj_2.b);",
+                    "start": 893,
+                    "end": 893
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -146,6 +170,18 @@
             "endLine": 26,
             "endColumn": 11,
             "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 973,
+                    "end": 973,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    a: number;\n    b: number;\n}\n"
+                },
+                {
+                    "start": 1005,
+                    "end": 1019,
+                    "replacementText": "({ a: 1, b: 2 } as GeneratedObjectLiteralInterface_1)"
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -155,6 +191,18 @@
             "endLine": 28,
             "endColumn": 24,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructObj_3 = getObject()",
+                    "start": 1023,
+                    "end": 1047
+                },
+                {
+                    "replacementText": "a = GeneratedDestructObj_3.a;b = GeneratedDestructObj_3.b;",
+                    "start": 1048,
+                    "end": 1048
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -164,6 +212,18 @@
             "endLine": 31,
             "endColumn": 25,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructArray_1",
+                    "start": 1083,
+                    "end": 1092
+                },
+                {
+                    "replacementText": "a = GeneratedDestructArray_1[0];b = GeneratedDestructArray_1[1];c = GeneratedDestructArray_1[2];",
+                    "start": 1108,
+                    "end": 1108
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -182,6 +242,18 @@
             "endLine": 33,
             "endColumn": 58,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructArray_2",
+                    "start": 1125,
+                    "end": 1155
+                },
+                {
+                    "replacementText": "[a1, a2] = GeneratedDestructArray_2[0];[b1, b2] = GeneratedDestructArray_2[1];[c1, c2] = GeneratedDestructArray_2[2];",
+                    "start": 1183,
+                    "end": 1183
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -191,6 +263,18 @@
             "endLine": 34,
             "endColumn": 16,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructArray_3",
+                    "start": 1186,
+                    "end": 1192
+                },
+                {
+                    "replacementText": "a = GeneratedDestructArray_3[0];b = GeneratedDestructArray_3[1];",
+                    "start": 1202,
+                    "end": 1202
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -272,6 +356,18 @@
             "endLine": 44,
             "endColumn": 20,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructArray_4",
+                    "start": 1500,
+                    "end": 1506
+                },
+                {
+                    "replacementText": "a = GeneratedDestructArray_4[0];b = GeneratedDestructArray_4[1];",
+                    "start": 1520,
+                    "end": 1520
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -299,6 +395,18 @@
             "endLine": 53,
             "endColumn": 31,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1700,
+                    "end": 1700,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n    e: number;\n}\n"
+                },
+                {
+                    "start": 1729,
+                    "end": 1742,
+                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -407,6 +515,18 @@
             "endLine": 58,
             "endColumn": 41,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructObj_4 = { a: 1, b: [2, 3] }",
+                    "start": 1912,
+                    "end": 1953
+                },
+                {
+                    "replacementText": "a = GeneratedDestructObj_4.a;[c, d] = GeneratedDestructObj_4.b;",
+                    "start": 1954,
+                    "end": 1954
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -425,6 +545,18 @@
             "endLine": 65,
             "endColumn": 44,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructObj_5 = { a: 10, b: { s: 'foo', c: [30, 40] } }",
+                    "start": 1965,
+                    "end": 2051
+                },
+                {
+                    "replacementText": "a = GeneratedDestructObj_5.a;({\n    s,\n    c: [d, f],\n  } = GeneratedDestructObj_5.b);",
+                    "start": 2052,
+                    "end": 2052
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
@@ -542,6 +674,18 @@
             "endLine": 87,
             "endColumn": 23,
             "problem": "DestructuringAssignment",
+            "autofix": [
+                {
+                    "replacementText": "let GeneratedDestructObj_6 = new C()",
+                    "start": 2502,
+                    "end": 2525
+                },
+                {
+                    "replacementText": "a = GeneratedDestructObj_6.a;b = GeneratedDestructObj_6.b;s = GeneratedDestructObj_6.s;",
+                    "start": 2526,
+                    "end": 2526
+                }
+            ],
             "suggest": "",
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
