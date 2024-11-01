@@ -210,17 +210,17 @@ public:
     }
 
 private:
-    NodeFormatType GetFormatPlaceholderType() const;
+    NodeFormatType GetFormatPlaceholderType();
 
-    ir::Statement *ParseStatementFormatPlaceholder() const override;
+    ir::Statement *ParseStatementFormatPlaceholder() override;
     ir::Expression *ParseExpressionFormatPlaceholder();
-    ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) const override;
+    ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) override;
     ir::TypeNode *ParseTypeFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
-    ir::AstNode *ParseTypeParametersFormatPlaceholder() const override;
+    ir::AstNode *ParseTypeParametersFormatPlaceholder() override;
 
-    ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder() const override;
-    ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder() const override;
-    ArenaVector<ir::Expression *> &ParseExpressionsArrayFormatPlaceholder() const override;
+    ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder() override;
+    ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder() override;
+    ArenaVector<ir::Expression *> &ParseExpressionsArrayFormatPlaceholder() override;
 
     ir::Statement *CreateStatement(std::string_view sourceCode);
 

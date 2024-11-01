@@ -446,12 +446,12 @@ protected:
     }
 
     using NodeFormatType = std::tuple<bool, char, std::size_t>;
-    virtual ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) const;
-    virtual ir::Statement *ParseStatementFormatPlaceholder() const;
-    virtual ir::AstNode *ParseTypeParametersFormatPlaceholder() const;
-    virtual ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder() const;
-    virtual ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder() const;
-    virtual ArenaVector<ir::Expression *> &ParseExpressionsArrayFormatPlaceholder() const;
+    virtual ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat);
+    virtual ir::Statement *ParseStatementFormatPlaceholder();
+    virtual ir::AstNode *ParseTypeParametersFormatPlaceholder();
+    virtual ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder();
+    virtual ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder();
+    virtual ArenaVector<ir::Expression *> &ParseExpressionsArrayFormatPlaceholder();
 
     virtual std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
         const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus);
