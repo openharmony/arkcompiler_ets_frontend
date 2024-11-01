@@ -1592,7 +1592,10 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
     checker::ETSObjectType *objType = expr->PreferredType()->AsETSObjectType();
 
     for (ir::Expression *propExpr : expr->Properties()) {
-        ASSERT(propExpr->IsProperty());
+        if (!propExpr->IsProperty()) {
+            checker->LogTypeError({"The object literal properties must be key-value pairs"}, expr->Start());
+            return;
+        }
         ir::Property *prop = propExpr->AsProperty();
         ir::Expression *key = prop->Key();
         ir::Expression *value = prop->Value();
