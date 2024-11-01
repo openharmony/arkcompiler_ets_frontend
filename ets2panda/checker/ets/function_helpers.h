@@ -228,6 +228,9 @@ static varbinder::Scope *NodeScope(ir::AstNode *ast)
     if (ast->IsBlockStatement()) {
         return ast->AsBlockStatement()->Scope();
     }
+    if (ast->IsBlockExpression()) {
+        return ast->AsBlockExpression()->Scope();
+    }
     if (ast->IsDoWhileStatement()) {
         return ast->AsDoWhileStatement()->Scope();
     }
