@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-function foo(): void {}
-class TestClass {}
+package subpackage_a;
 
-export {foo}
-export type {TestClass as foo}
+export let a: String = "SubpackageA";
 
-/* @@? 20:27 Error SyntaxError: The given name 'foo' is already used in another export  */
-/* @@? 1:1 Error SyntaxError: The given name 'foo' is already used in another export  */
+import {myvar} from "./package_module"
+import {myvar2} from "./package_module"
+
+/* @@? 20:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
+/* @@? 21:1 Error SyntaxError: Package module cannot import from a file in it's own package  */

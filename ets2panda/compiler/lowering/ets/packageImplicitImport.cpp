@@ -50,10 +50,9 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
             //
             // Showing the full path would be more informative, but it also leaks it to the stdout, which is
             // not the best idea
-            ctx->parser->ThrowSyntaxError("Files '" + prog1->FileName().Mutf8() + "' and '" +
-                                              prog2->FileName().Mutf8() +
-                                              "' are in the same folder, but have different package names.",
-                                          lexer::SourcePosition(0, 0));
+            ctx->parser->LogSyntaxError("Files '" + prog1->FileName().Mutf8() + "' and '" + prog2->FileName().Mutf8() +
+                                            "' are in the same folder, but have different package names.",
+                                        lexer::SourcePosition(0, 0));
         }
     };
 
@@ -80,8 +79,7 @@ static void ValidateImportDeclarationsSourcePath(const public_lib::Context *cons
                 return prog->SourceFilePath() == stmt->AsETSImportDeclaration()->ResolvedSource()->Str();
             });
         if (doesImportFromPackage) {
-            ctx->parser->ThrowSyntaxError("Package module cannot import from a file in it's own package",
-                                          stmt->Start());
+            ctx->parser->LogSyntaxError("Package module cannot import from a file in it's own package", stmt->Start());
         }
     }
 }

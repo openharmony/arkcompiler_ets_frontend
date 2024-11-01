@@ -13,6 +13,14 @@
  * limitations under the License.
  */
 
-package import_tests.packages.subpackage_a;
+function foo(a : int = 10, b : int, c : int = 15) : int
+{
+    return a + b;
+}
 
-export let a: String = "SubpackageA";
+function foo2 (x: int, y: int = 0, ...r: int[]): int {
+  return 4;
+}
+
+/* @@? 16:28 Error SyntaxError: Required parameter follows default parameter(s).  */
+/* @@? 21:14 Error SyntaxError: Both optional and rest parameters are not allowed in function's parameter list.  */

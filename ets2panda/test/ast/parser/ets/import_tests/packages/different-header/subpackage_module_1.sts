@@ -13,11 +13,8 @@
  * limitations under the License.
  */
 
-function foo(): void {}
-class TestClass {}
+package import_tests.packages.subpackage_a;
 
-export {foo}
-export type {TestClass as foo}
+export let a: String = "SubpackageA";
 
-/* @@? 20:27 Error SyntaxError: The given name 'foo' is already used in another export  */
-/* @@? 1:1 Error SyntaxError: The given name 'foo' is already used in another export  */
+/* @@? 1:1 Error SyntaxError: Files 'subpackage_module_1' and 'subpackage_module_2' are in the same folder, but have different package names.  */

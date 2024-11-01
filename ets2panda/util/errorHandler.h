@@ -19,20 +19,25 @@
 #include <string_view>
 #include "parser/program/program.h"
 #include "lexer/token/sourceLocation.h"
+#include "util/errorLogger.h"
 
 namespace ark::es2panda::util {
 
 class ErrorHandler {
 public:
-    explicit ErrorHandler(const parser::Program *program) : program_(program) {}
+    explicit ErrorHandler(const parser::Program *program, util::ErrorLogger *errorLogger)
+        : program_(program), errorLogger_(errorLogger)
+    {
+    }
 
-    [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
 
-    [[noreturn]] static void ThrowSyntaxError(const parser::Program *program, std::string_view errorMessage,
-                                              const lexer::SourcePosition &pos);
+    static void LogSyntaxError(util::ErrorLogger *errorLogger, const parser::Program *program,
+                               std::string_view errorMessage, const lexer::SourcePosition &pos);
 
 private:
     const parser::Program *program_;
+    util::ErrorLogger *errorLogger_;
 };
 }  // namespace ark::es2panda::util
 

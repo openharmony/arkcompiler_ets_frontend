@@ -21,15 +21,8 @@
 namespace ark::es2panda::compiler {
 
 class DefaultParameterLowering : public Phase {
-    std::pair<bool, std::size_t> HasDefaultParam(const ir::ScriptFunction *function, parser::Program *program);
-    void ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos,
-                          parser::Program *program) const
-    {
-        lexer::LineIndex index(program->SourceCode());
-        lexer::SourceLocation loc = index.GetLocation(pos);
-
-        throw Error {ErrorType::SYNTAX, program->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col};
-    }
+    std::pair<bool, std::size_t> HasDefaultParam(const ir::ScriptFunction *function, parser::Program *program,
+                                                 util::ErrorLogger *logger);
     ir::TSTypeParameterDeclaration *CreateParameterDeclaraion(ir::MethodDefinition *method, public_lib::Context *ctx);
     ir::FunctionSignature CreateFunctionSignature(ir::MethodDefinition *method, ArenaVector<ir::Expression *> funcParam,
                                                   public_lib::Context *ctx);
