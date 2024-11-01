@@ -503,7 +503,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         Lexer()->NextToken();  // eat 'readonly'
         ir::TypeNode *typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
-            ThrowSyntaxError("'readonly' type modifier is only permitted on array and tuple types.");
+            LogSyntaxError("'readonly' type modifier is only permitted on array and tuple types.");
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);

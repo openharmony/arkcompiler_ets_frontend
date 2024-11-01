@@ -88,7 +88,6 @@ public:
         return reinterpret_cast<const ETSParser *>(this);
     }
 
-    [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
     void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos);
 
     util::ErrorLogger *ErrorLogger()
@@ -174,12 +173,6 @@ protected:
     friend class ArrowFunctionContext;
     friend class ETSNolintParser;
     friend class lexer::RegExpParser;
-
-    [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;
-    [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage) const;
-    [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list) const;
-    [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list,
-                                       const lexer::SourcePosition &pos) const;
 
     void LogError(ErrorType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
     void LogExpectedToken(lexer::TokenType tokenType);
@@ -483,18 +476,20 @@ protected:
     virtual ir::Statement *ParseModuleDeclaration(StatementParsingFlags flags = StatementParsingFlags::NONE)
     {
         return ParsePotentialExpressionStatement(flags);
-    };
+    }
 
     virtual ir::Statement *ParseInterfaceDeclaration([[maybe_unused]] bool isStatic)
     {
-        ThrowUnexpectedToken(lexer::TokenType::KEYW_INTERFACE);
+        LogUnexpectedToken(lexer::TokenType::KEYW_INTERFACE);
+        return nullptr;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Statement *ParseEnumDeclaration([[maybe_unused]] bool isConst = false,
                                                 [[maybe_unused]] bool isStatic = false)
     {
-        ThrowUnexpectedToken(lexer::TokenType::KEYW_ENUM);
+        LogUnexpectedToken(lexer::TokenType::KEYW_ENUM);
+        return nullptr;
     }
 
     virtual std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseSuperClass();

@@ -12,9 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* @@ label */static @interface MyAnno {
+/* @@ label */static /* @@ label1 */@interface MyAnno {
     testProperty1: string
 }
 
 
 /* @@@ label Error SyntaxError: Unexpected token: 'static'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token: '@'. */
+/* @@@ label1 Error SyntaxError: Unexpected token '@'. */
