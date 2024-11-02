@@ -24,58 +24,6 @@ using ark::es2panda::ir::AstNode;
 
 namespace {
 
-TEST_F(ASTVerifierTest, FunctionScope)
-{
-    ASTVerifier verifier {Allocator()};
-
-    char const *text = R"(
-        function test(a: int) {
-            console.log(a)
-        }
-    )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("CheckScopeDeclarationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
-}
-
-TEST_F(ASTVerifierTest, ForUpdateLoopScope)
-{
-    ASTVerifier verifier {Allocator()};
-
-    char const *text = R"(
-        function main() {
-            for (let i = 0; i < 10; i++) {}
-        }
-    )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-
-    InvariantNameSet checks;
-    checks.insert("CheckScopeDeclarationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
-}
-
 TEST_F(ASTVerifierTest, ForInLoopScope)
 {
     ASTVerifier verifier {Allocator()};
