@@ -265,7 +265,7 @@ public:
         instantiationRecursionMap_.insert({type, 1});
     }
 
-    bool TypeInstantiationPossible(Type *const type)
+    bool IsAtTypeDepthLimit(Type *const type)
     {
         // This limitation makes sure that no type can be instantiated in infinite recursion. When declaring generic
         // classes with recursive types, so the generic class itself, we need to allow 2 depth of recursion, to make it

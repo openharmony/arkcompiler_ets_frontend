@@ -304,7 +304,7 @@ bool Type::IsETSReferenceType() const
 {
     return IsETSObjectType() || IsETSArrayType() || IsETSNullType() || IsETSUndefinedType() || IsETSStringType() ||
            IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType() ||
-           IsETSFunctionType();
+           IsETSFunctionType() || IsETSTypeAliasType();
 }
 
 bool Type::IsETSUnboxableObject() const
@@ -550,6 +550,49 @@ void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifie
     }
 }
 
+bool ETSChecker::IsAllowedTypeAliasRecursion(const ir::TSTypeAliasDeclaration *typeAliasNode,
+                                             std::unordered_set<const ir::TSTypeAliasDeclaration *> &typeAliases)
+{
+    bool isAllowedRerursiveType = true;
+
+    RecursionPreserver<const ir::TSTypeAliasDeclaration> recursionPreserver(typeAliases, typeAliasNode);
+
+    if (*recursionPreserver) {
+        return false;
+    }
+
+    auto typeAliasDeclarationCheck = [this, &typeAliases](ir::ETSTypeReferencePart *part) {
+        if (!part->Name()->IsIdentifier()) {
+            return false;
+        }
+        if (part->Name()->AsIdentifier()->Variable() != nullptr &&
+            part->Name()->AsIdentifier()->Variable()->Declaration() != nullptr &&
+            part->Name()->AsIdentifier()->Variable()->Declaration()->Node() != nullptr &&
+            part->Name()->AsIdentifier()->Variable()->Declaration()->Node()->IsTSTypeAliasDeclaration()) {
+            auto *aliasTypeNode =
+                part->Name()->AsIdentifier()->Variable()->Declaration()->Node()->AsTSTypeAliasDeclaration();
+            return IsAllowedTypeAliasRecursion(aliasTypeNode, typeAliases);
+        }
+
+        return true;
+    };
+
+    if (typeAliasNode->TypeAnnotation()->IsETSTypeReference()) {
+        isAllowedRerursiveType &=
+            typeAliasDeclarationCheck(typeAliasNode->TypeAnnotation()->AsETSTypeReference()->Part());
+    }
+
+    if (isAllowedRerursiveType && typeAliasNode->TypeAnnotation()->IsETSUnionType()) {
+        for (auto &type : typeAliasNode->TypeAnnotation()->AsETSUnionType()->Types()) {
+            if (type->IsETSTypeReference()) {
+                isAllowedRerursiveType &= typeAliasDeclarationCheck(type->AsETSTypeReference()->Part());
+            }
+        }
+    }
+
+    return isAllowedRerursiveType;
+}
+
 Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
 {
     if (var->TsType() != nullptr) {
@@ -557,16 +600,41 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
     }
 
     auto *const aliasTypeNode = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
-    TypeStackElement tse(this, aliasTypeNode, "Circular type alias reference", aliasTypeNode->Start());
+    std::unordered_set<const ir::TSTypeAliasDeclaration *> typeAliases;
+    auto isAllowedRecursion = IsAllowedTypeAliasRecursion(aliasTypeNode, typeAliases);
+
+    TypeStackElement tse(this, aliasTypeNode, "Circular type alias reference", aliasTypeNode->Start(),
+                         isAllowedRecursion);
+
     if (tse.HasTypeError()) {
         var->SetTsType(GlobalTypeError());
         return GlobalTypeError();
     }
-    aliasTypeNode->Check(this);
-    auto *const aliasedType = aliasTypeNode->TypeAnnotation()->GetType(this);
 
-    var->SetTsType(aliasedType);
-    return aliasedType;
+    auto *typeAliasType = tse.GetElementType();
+
+    if (typeAliasType != nullptr) {
+        typeAliasType->AsETSTypeAliasType()->SetRecursive();
+        return typeAliasType;
+    }
+
+    typeAliasType = CreateETSTypeAliasType(aliasTypeNode->Id()->Name(), aliasTypeNode);
+    if (aliasTypeNode->TypeParams() != nullptr) {
+        auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(aliasTypeNode->TypeParams());
+        typeAliasType->AsETSTypeAliasType()->SetTypeArguments(std::move(typeParamTypes));
+        if (ok) {
+            AssignTypeParameterConstraints(aliasTypeNode->TypeParams());
+        }
+    }
+    tse.SetElementType(typeAliasType);
+
+    aliasTypeNode->Check(this);
+    Type *targetType = aliasTypeNode->TypeAnnotation()->GetType(this);
+    typeAliasType->AsETSTypeAliasType()->SetTargetType(targetType);
+    typeAliasType->AsETSTypeAliasType()->ApplySubstitution(Relation());
+
+    var->SetTsType(targetType);
+    return targetType;
 }
 
 Type *ETSChecker::GetTypeFromInterfaceReference(varbinder::Variable *var)

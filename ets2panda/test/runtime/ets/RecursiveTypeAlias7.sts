@@ -13,10 +13,17 @@
  * limitations under the License.
  */
 
-function main(){
-    let x: ()=>int[] = [
-        ():int =>{return 1}
-    ]
-}
+type A<K> = string | A<K>[]
 
-/* @@? 17:24 Error TypeError: Expected type for array literal should be an array type, got () => int[]  */
+function main(): int {
+  let a: A<Int> = "test";
+
+  a = [a, [a, [a, [a] as A<Int>] as A<Int>] as A<Int>] as A<Int>;
+  
+  assert((a as A<Int>[])[0] == "test");
+  assert(((a as A<Int>[])[1] as A<Int>[])[0] == "test");
+  assert((((a as A<Int>[])[1] as A<Int>[])[1] as A<Int>[])[0] == "test");
+  assert(((((a as A<Int>[])[1] as A<Int>[])[1] as A<Int>[])[1] as A<Int>[])[0] == "test");
+
+  return 0;
+}

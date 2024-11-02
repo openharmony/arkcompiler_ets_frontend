@@ -836,7 +836,12 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
     auto const checkType = [this, srcReg, ifTrue, ifFalse, allowUndefined](const ir::AstNode *const n,
                                                                            checker::Type const *t) {
         LoadAccumulator(n, srcReg);
-        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, allowUndefined);
+        if (t->IsETSTypeAliasType()) {
+            TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t->AsETSTypeAliasType()->GetTargetType(),
+                                      allowUndefined);
+        } else {
+            TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, allowUndefined);
+        }
     };
 
     if (!target->IsETSUnionType()) {

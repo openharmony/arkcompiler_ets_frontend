@@ -131,7 +131,7 @@ public:
         return supertypeResults_;
     }
 
-    [[nodiscard]] std::unordered_set<const void *> &TypeStack() noexcept
+    [[nodiscard]] std::unordered_map<const void *, Type *> &TypeStack() noexcept
     {
         return typeStack_;
     }
@@ -224,7 +224,7 @@ private:
     RelationHolder uncheckedCastableResults_ {{}, RelationType::UNCHECKED_CASTABLE};
     RelationHolder supertypeResults_ {{}, RelationType::SUPERTYPE};
 
-    std::unordered_set<const void *> typeStack_;
+    std::unordered_map<const void *, Type *> typeStack_;
     std::unordered_set<Type *> namedTypeStack_;
 };
 
@@ -250,21 +250,30 @@ private:
 class TypeStackElement {
 public:
     explicit TypeStackElement(Checker *checker, void *element, std::initializer_list<TypeErrorMessageElement> list,
-                              const lexer::SourcePosition &pos)
-        : checker_(checker), element_(element), hasErrorChecker_(false)
+                              const lexer::SourcePosition &pos, bool isRecursive = false)
+        : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
     {
-        if (!checker->typeStack_.insert(element).second) {
-            checker_->LogTypeError(list, pos);
-            element_ = nullptr;
+        if (!checker->typeStack_.insert({element, nullptr}).second) {
+            if (isRecursive_) {
+                cleanup_ = false;
+            } else {
+                checker_->LogTypeError(list, pos);
+                element_ = nullptr;
+            }
         }
     }
 
-    explicit TypeStackElement(Checker *checker, void *element, std::string_view err, const lexer::SourcePosition &pos)
-        : checker_(checker), element_(element), hasErrorChecker_(false)
+    explicit TypeStackElement(Checker *checker, void *element, std::string_view err, const lexer::SourcePosition &pos,
+                              bool isRecursive = false)
+        : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
     {
-        if (!checker->typeStack_.insert(element).second) {
-            checker_->LogTypeError(err, pos);
-            element_ = nullptr;
+        if (!checker->typeStack_.insert({element, nullptr}).second) {
+            if (isRecursive_) {
+                cleanup_ = false;
+            } else {
+                checker_->LogTypeError(err, pos);
+                element_ = nullptr;
+            }
         }
     }
 
@@ -274,10 +283,24 @@ public:
         return element_ == nullptr;
     }
 
+    Type *GetElementType()
+    {
+        auto recursiveType = checker_->typeStack_.find(element_);
+        if (recursiveType != checker_->typeStack_.end()) {
+            return recursiveType->second;
+        }
+        return nullptr;
+    }
+
+    void SetElementType(Type *type)
+    {
+        checker_->typeStack_[element_] = type;
+    }
+
     ~TypeStackElement()
     {
         ASSERT(hasErrorChecker_);
-        if (element_ != nullptr) {
+        if (element_ != nullptr && cleanup_) {
             checker_->typeStack_.erase(element_);
         }
     }
@@ -289,6 +312,38 @@ private:
     Checker *checker_;
     void *element_;
     bool hasErrorChecker_;
+    bool isRecursive_;
+    bool cleanup_;
+};
+
+template <typename T>
+class RecursionPreserver {
+public:
+    explicit RecursionPreserver(std::unordered_set<T *> &elementStack, T *element)
+        : elementStack_(elementStack), element_(element)
+    {
+        recursion_ = !elementStack_.insert(element_).second;
+    }
+
+    bool &operator*()
+    {
+        return recursion_;
+    }
+
+    ~RecursionPreserver()
+    {
+        if (!recursion_) {
+            elementStack_.erase(element_);
+        }
+    }
+
+    NO_COPY_SEMANTIC(RecursionPreserver);
+    NO_MOVE_SEMANTIC(RecursionPreserver);
+
+private:
+    std::unordered_set<T *> &elementStack_;
+    T *element_;
+    bool recursion_;
 };
 
 class ScopeContext {

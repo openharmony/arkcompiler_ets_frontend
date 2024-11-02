@@ -274,7 +274,7 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
 
     std::string opSign = lexer::TokenToString(CombinedOpToOp(upd->OperatorType()));
 
-    std::string suffix = (argument->TsType() == checker->GlobalETSBigIntType()) ? "n" : "";
+    std::string suffix = argument->TsType()->IsETSBigIntType() ? "n" : "";
 
     // NOLINTBEGIN(readability-magic-numbers)
     if (upd->IsPrefix()) {

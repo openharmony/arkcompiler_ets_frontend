@@ -13,10 +13,15 @@
  * limitations under the License.
  */
 
-function main(){
-    let x: ()=>int[] = [
-        ():int =>{return 1}
-    ]
-}
+type A = A[]
 
-/* @@? 17:24 Error TypeError: Expected type for array literal should be an array type, got () => int[]  */
+function main(): int {
+
+  let a: A = [[]] as A;
+
+  a[0] = a;
+
+  assert(a != null);
+
+  return 0;
+}

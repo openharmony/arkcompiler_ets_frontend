@@ -267,6 +267,8 @@ public:
     {
         return CreateETSUnionType(Span<Type *const>(constituentTypes));
     }
+    ETSTypeAliasType *CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
+                                             bool isRecursive = false);
     ETSFunctionType *CreateETSFunctionType(Signature *signature);
     ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
@@ -915,6 +917,10 @@ private:
     // Static invoke
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
 
+    // Check type alias for recursive cases
+    bool IsAllowedTypeAliasRecursion(const ir::TSTypeAliasDeclaration *typeAliasNode,
+                                     std::unordered_set<const ir::TSTypeAliasDeclaration *> &typeAliases);
+
     ArrayMap arrayTypes_;
     ArenaVector<ConstraintCheckRecord> pendingConstraintCheckRecords_;
     size_t constraintCheckScopesCount_ {0};
@@ -930,6 +936,7 @@ private:
     std::array<DynamicCallNamesMap, 2U> dynamicCallNames_;
     std::recursive_mutex mtx_;
     evaluate::ScopedDebugInfoPlugin *debugInfoPlugin_ {nullptr};
+    std::unordered_set<ir::TSTypeAliasDeclaration *> elementStack_;
 };
 
 }  // namespace ark::es2panda::checker

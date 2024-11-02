@@ -97,6 +97,8 @@ private:
         checker::ETSChecker *checker, checker::ETSObjectType *sourceType, bool isBool, bool isChar,
         std::map<std::uint32_t, checker::Type *> &numericTypes) const noexcept;
 
+    bool IsAssignableType(checker::Type *sourceType) const noexcept;
+
     static Type *ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un);
 
     ArenaVector<Type *> const constituentTypes_;
