@@ -228,8 +228,7 @@ varbinder::Variable *DebugInfoDeserializer::CreateLocalVarDecl(ir::Identifier *i
     auto statementScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, topStatement->Scope());
 
     parser::Program p(checker->Allocator(), varBinder);
-    auto parser = parser::ETSParser(&p, varBinder->GetContext()->config->options->CompilerOptions(),
-                                    parser::ParserStatus::NO_OPTS);
+    auto parser = parser::ETSParser(&p, *varBinder->GetContext()->config->options, parser::ParserStatus::NO_OPTS);
 
     auto *varDecl = parser.CreateFormattedStatement(varDeclSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
     ASSERT(varDecl != nullptr);

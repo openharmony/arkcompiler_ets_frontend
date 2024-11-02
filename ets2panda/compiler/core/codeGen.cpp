@@ -23,6 +23,7 @@
 #include "compiler/base/catchTable.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -119,7 +120,7 @@ Label *CodeGen::AllocLabel()
 
 bool CodeGen::IsDebug() const noexcept
 {
-    return context_->config->options->CompilerOptions().isDebug;
+    return context_->config->options->IsDebugInfo();
 }
 
 std::uint32_t CodeGen::ParamCount() const noexcept

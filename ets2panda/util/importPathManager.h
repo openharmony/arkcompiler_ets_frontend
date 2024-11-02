@@ -24,9 +24,10 @@
 #include "util/ustring.h"
 #include "util/enumbitops.h"
 
-#include "es2panda.h"
-
 namespace ark::es2panda::util {
+namespace gen::extension {
+enum Enum : size_t;
+}  // namespace gen::extension
 
 using ENUMBITOPS_OPERATORS;
 
@@ -69,7 +70,7 @@ public:
 
     StringView ResolvePath(const StringView &currentModulePath, const StringView &importPath) const;
     void AddToParseList(const StringView &resolvedPath, ImportFlags importFlags);
-    ImportData GetImportData(const util::StringView &path, const ScriptExtension &extension) const;
+    ImportData GetImportData(const util::StringView &path, util::gen::extension::Enum extension) const;
     void MarkAsParsed(const StringView &path);
 
 private:

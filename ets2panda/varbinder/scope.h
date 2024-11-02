@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_COMPILER_SCOPES_SCOPE_H
 #define ES2PANDA_COMPILER_SCOPES_SCOPE_H
 
+#include "es2panda.h"
 #include "varbinder/declaration.h"
 #include "varbinder/variable.h"
-#include "es2panda.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 
@@ -221,7 +221,7 @@ public:
         node_ = node;
     }
 
-    Variable *AddDecl(ArenaAllocator *allocator, Decl *decl, [[maybe_unused]] ScriptExtension extension)
+    Variable *AddDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
     {
         decls_.push_back(decl);
         auto options = decl->IsTypeAliasDecl() ? varbinder::ResolveBindingOptions::TYPE_ALIASES
@@ -229,7 +229,7 @@ public:
         return AddBinding(allocator, FindLocal(decl->Name(), options), decl, extension);
     }
 
-    Variable *AddTsDecl(ArenaAllocator *allocator, Decl *decl, [[maybe_unused]] ScriptExtension extension)
+    Variable *AddTsDecl(ArenaAllocator *allocator, Decl *decl, ScriptExtension extension)
     {
         decls_.push_back(decl);
         return AddBinding(allocator, FindLocal(decl->Name(), ResolveBindingOptions::ALL), decl, extension);
@@ -999,7 +999,7 @@ Variable *VariableScope::AddVar(ArenaAllocator *allocator, Variable *currentVari
 
 template <typename T>
 Variable *VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
-                                     [[maybe_unused]] ScriptExtension extension)
+                                     ScriptExtension extension)
 {
     VariableFlags flags = (extension == ScriptExtension::JS) ? VariableFlags::HOIST_VAR : VariableFlags::HOIST;
 

@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_PARSER_CORE_PARSER_IMPL_H
 #define ES2PANDA_PARSER_CORE_PARSER_IMPL_H
 
-#include "es2panda.h"
 #include "forwardDeclForParserImpl.h"
 #include "ir/base/scriptFunctionSignature.h"
 #include "lexer/token/sourceLocation.h"
@@ -31,6 +30,11 @@
 namespace ark::es2panda::lexer {
 class RegExpParser;
 }  // namespace ark::es2panda::lexer
+
+namespace ark::es2panda::util {
+class Options;
+}  // namespace ark::es2panda::util
+
 namespace ark::es2panda::parser {
 using ENUMBITOPS_OPERATORS;
 
@@ -57,7 +61,7 @@ enum class TypeAnnotationParsingOptions : uint32_t {
 
 class ParserImpl {
 public:
-    explicit ParserImpl(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS);
+    explicit ParserImpl(Program *program, const util::Options *options, ParserStatus status = ParserStatus::NO_OPTS);
     NO_COPY_SEMANTIC(ParserImpl);
     NO_MOVE_SEMANTIC(ParserImpl);
     virtual ~ParserImpl() = default;
@@ -523,9 +527,9 @@ protected:
         return context_;
     }
 
-    const CompilerOptions &GetOptions() const
+    const auto &GetOptions() const
     {
-        return options_;
+        return *options_;
     }
 
     uint32_t &ClassId()
@@ -540,7 +544,7 @@ private:
     ClassPrivateContext classPrivateContext_;
     uint32_t classId_ {};
     lexer::Lexer *lexer_ {};
-    const CompilerOptions &options_;
+    const util::Options *options_;
     util::ErrorLogger errorLogger_;
 };
 }  // namespace ark::es2panda::parser

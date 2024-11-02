@@ -25,7 +25,7 @@ class TSClassImplements;
 namespace ark::es2panda::parser {
 class TypedParser : public ParserImpl {
 public:
-    TypedParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
+    TypedParser(Program *program, const util::Options *options, ParserStatus status = ParserStatus::NO_OPTS)
         : ParserImpl(program, options, status)
     {
     }

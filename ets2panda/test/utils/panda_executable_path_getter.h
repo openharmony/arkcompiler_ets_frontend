@@ -16,15 +16,15 @@
 #ifndef PANDA_EXECUTABLE_PATH_GETTER
 #define PANDA_EXECUTABLE_PATH_GETTER
 
+#include <vector>
 #include <string>
+#include <array>
 
 namespace test::utils {
 
 class PandaExecutablePathGetter {
 public:
-    PandaExecutablePathGetter() = default;
-
-    std::string Get() const;
+    static const std::array<const char *, 1> &Get();
 };
 
 }  // namespace test::utils

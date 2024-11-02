@@ -35,6 +35,7 @@
 #include "compiler/lowering/util.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "checker/ETSchecker.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -141,8 +142,7 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
 
 bool ObjectIteratorLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    const auto &options = ctx->config->options->CompilerOptions();
-    if (options.compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {

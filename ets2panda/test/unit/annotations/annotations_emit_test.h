@@ -71,10 +71,10 @@ protected:
 
     std::unique_ptr<pandasm::Program> GetCurrentProgram(std::string_view src)
     {
-        int argc = 1;
+        unsigned argc = 1;
         const char *argv = "../../../../../bin/es2panda";
         static constexpr std::string_view FILE_NAME = "annotation.sts";
-        auto program = std::unique_ptr<pandasm::Program>(GetProgram(argc, &argv, FILE_NAME, src));
+        auto program = std::unique_ptr<pandasm::Program>(GetProgram({&argv, argc}, FILE_NAME, src));
         return program;
     }
 
@@ -177,20 +177,22 @@ protected:
         }
     }
 
-    static pandasm::Program *GetProgram(int argc, const char **argv, std::string_view fileName, std::string_view src)
+    static pandasm::Program *GetProgram(ark::Span<const char *const> args, std::string_view fileName,
+                                        std::string_view src)
     {
-        auto options = std::make_unique<util::Options>();
-        if (!options->Parse(argc, argv)) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        auto options = std::make_unique<util::Options>(args[0]);
+        if (!options->Parse(args)) {
             std::cerr << options->ErrorMsg() << std::endl;
             return nullptr;
         }
 
         ark::Logger::ComponentMask mask {};
         mask.set(ark::Logger::Component::ES2PANDA);
-        ark::Logger::InitializeStdLogging(ark::Logger::LevelFromString(options->LogLevel()), mask);
+        ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
 
-        ark::es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
-        ark::es2panda::SourceFile input(fileName, src, options->ParseModule());
+        ark::es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
+        ark::es2panda::SourceFile input(fileName, src, options->IsModule());
         auto program = compiler.Compile(input, *options);
         return program;
     }

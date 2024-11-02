@@ -16,6 +16,7 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "declgenEts2Ts.h"
+#include "util/options.h"
 
 namespace ark::es2panda::declgen_ets2ts {
 
@@ -27,9 +28,9 @@ static int Run(int argc, const char **argv)
         return 1;
     }
     auto *cfgImpl = reinterpret_cast<ark::es2panda::public_lib::ConfigImpl *>(cfg);
-
-    es2panda_Context *ctx = impl->CreateContextFromString(cfg, cfgImpl->options->ParserInput().c_str(),
-                                                          cfgImpl->options->SourceFile().c_str());
+    auto parserInputCStr = cfgImpl->options->CStrParserInputContents().first;
+    es2panda_Context *ctx =
+        impl->CreateContextFromString(cfg, parserInputCStr, cfgImpl->options->SourceFileName().c_str());
 
     auto *ctxImpl = reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx);
     auto *checker = reinterpret_cast<checker::ETSChecker *>(ctxImpl->checker);
@@ -37,7 +38,7 @@ static int Run(int argc, const char **argv)
     impl->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
 
     int res = 0;
-    if (!GenerateTsDeclarations(checker, ctxImpl->parserProgram, cfgImpl->options->CompilerOutput())) {
+    if (!GenerateTsDeclarations(checker, ctxImpl->parserProgram, cfgImpl->options->GetOutput())) {
         res = 1;
     }
 

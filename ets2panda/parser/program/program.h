@@ -23,8 +23,6 @@
 #include "util/path.h"
 #include "varbinder/varbinder.h"
 
-#include "es2panda.h"
-
 #include <set>
 
 namespace ark::es2panda::ir {

@@ -18,6 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -200,7 +201,7 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
 
 bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {
@@ -240,7 +241,7 @@ bool ObjectLiteralLowering::ExternalSourcesPostcondition(public_lib::Context *ct
 
 bool ObjectLiteralLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB &&
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB &&
         !ExternalSourcesPostcondition(ctx, program)) {
         return false;
     }

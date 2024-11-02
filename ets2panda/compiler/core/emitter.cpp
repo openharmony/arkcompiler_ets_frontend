@@ -289,7 +289,7 @@ void FunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
 }
 
 static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variableDebug, varbinder::Variable *var,
-                                 std::tuple<uint32_t, uint32_t, uint32_t> info, const ScriptExtension extension)
+                                 std::tuple<uint32_t, uint32_t, uint32_t> info, ScriptExtension extension)
 {
     const auto [start, varsLength, totalRegsNum] = info;
 

@@ -82,7 +82,7 @@ std::pair<ir::VariableDeclaration *, ir::ReturnStatement *> BreakLastStatement(c
 }  // namespace
 
 ScopedDebugInfoPlugin::ScopedDebugInfoPlugin(parser::Program *globalProgram, checker::ETSChecker *checker,
-                                             const CompilerOptions &options)
+                                             const util::Options &options)
     : globalProgram_(globalProgram),
       checker_(checker),
       context_(options),
@@ -392,9 +392,9 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindLocalVariable(ir::Identifier *id
     return debugInfoDeserializer_.CreateIrLocalVariable(ident, localVariableTable, context_.bytecodeOffset);
 }
 
-void ScopedDebugInfoPlugin::ValidateEvaluationOptions(const CompilerOptions &options)
+void ScopedDebugInfoPlugin::ValidateEvaluationOptions(const util::Options &options)
 {
-    if (!options.isEtsModule) {
+    if (!options.IsEtsModule()) {
         LOG(FATAL, ES2PANDA) << "Evaluation mode must be used in conjunction with ets-module option.";
     }
 }

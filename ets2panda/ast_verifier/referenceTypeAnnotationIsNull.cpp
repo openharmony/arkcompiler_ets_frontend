@@ -29,7 +29,7 @@ CheckResult ReferenceTypeAnnotationIsNull::operator()([[maybe_unused]] CheckCont
 
     // We are running AST verifier only for ETS files so it is correct to pass ETS extension here
     auto const *const id = ast->AsIdentifier();
-    if (id->IsReference(ScriptExtension::ETS) && id->TypeAnnotation() != nullptr) {
+    if (id->IsReference(ScriptExtension::STS) && id->TypeAnnotation() != nullptr) {
         ctx.AddCheckMessage("TYPE_ANNOTATION_NOT_NULLPTR", *ast, ast->Start());
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }

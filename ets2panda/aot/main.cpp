@@ -51,9 +51,9 @@ public:
     }
 };
 
-static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile &input, util::Options *options)
+static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile &input, const util::Options &options)
 {
-    auto program = std::unique_ptr<pandasm::Program> {compiler.Compile(input, *options)};
+    auto program = std::unique_ptr<pandasm::Program> {compiler.Compile(input, options)};
     if (program == nullptr) {
         const auto &err = compiler.GetError();
 
@@ -66,8 +66,9 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
         }
 
         std::cout << err.TypeString() << ": " << err.Message();
-        std::cout << " [" << (err.File().empty() ? util::BaseName(options->SourceFile()) : util::BaseName(err.File()))
-                  << ":" << err.Line() << ":" << err.Col() << "]" << std::endl;
+        std::cout << " ["
+                  << (err.File().empty() ? util::BaseName(options.SourceFileName()) : util::BaseName(err.File())) << ":"
+                  << err.Line() << ":" << err.Col() << "]" << std::endl;
 
         return err.ErrorCode();
     }
@@ -77,7 +78,7 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
 
 static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options)
 {
-    auto compilationList = FindProjectSources(options->CompilerOptions().arktsConfig);
+    auto compilationList = FindProjectSources(options->ArkTSConfig());
     if (compilationList.empty()) {
         std::cerr << "Error: No files to compile" << std::endl;
         return 1;
@@ -95,12 +96,12 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
         ss << inputStream.rdbuf();
         std::string parserInput = ss.str();
         inputStream.close();
-        es2panda::SourceFile input(src, parserInput, options->ParseModule());
-        options->SetCompilerOutput(dst);
+        es2panda::SourceFile input(src, parserInput, options->IsModule());
+        options->SetOutput(dst);
 
-        options->ListFiles() && std::cout << "> es2panda: compiling from '" << src << "' to '" << dst << "'"
-                                          << std::endl;
-        auto res = CompileFromSource(compiler, input, options);
+        options->IsListFiles() && std::cout << "> es2panda: compiling from '" << src << "' to '" << dst << "'"
+                                            << std::endl;
+        auto res = CompileFromSource(compiler, input, *options);
         if (res != 0) {
             std::cout << "> es2panda: failed to compile from " << src << " to " << dst << std::endl;
             overallRes |= static_cast<unsigned>(res);
@@ -125,49 +126,50 @@ static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<st
     return {std::move(res)};
 }
 
-static int Run(int argc, const char **argv)
+static int Run(Span<const char *const> args)
 {
-    auto options = std::make_unique<util::Options>();
-    if (!options->Parse(argc, argv)) {
+    auto options = std::make_unique<util::Options>(args[0]);
+    if (!options->Parse(args)) {
         std::cerr << options->ErrorMsg() << std::endl;
         return 1;
     }
 
-    Logger::ComponentMask mask {};
-    mask.set(Logger::Component::ES2PANDA);
-    Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), mask);
-    auto pluginsOpt = InitializePlugins(options->CompilerOptions().plugins);
+    ark::Logger::ComponentMask mask {};
+    mask.set(ark::Logger::Component::ES2PANDA);
+    ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
+    auto pluginsOpt = InitializePlugins(options->GetPlugins());
     if (!pluginsOpt.has_value()) {
         return 1;
     }
-    es2panda::Compiler compiler(options->Extension(), options->ThreadCount(), std::move(pluginsOpt.value()));
+    es2panda::Compiler compiler(options->GetExtension(), options->GetThread(), std::move(pluginsOpt.value()));
 
-    if (options->ListPhases()) {
+    if (options->IsListPhases()) {
         std::cerr << "Available phases:" << std::endl;
         std::cerr << compiler.GetPhasesList();
         return 1;
     }
 
-    if (options->CompilerOptions().compilationMode == CompilationMode::PROJECT) {
+    if (options->GetCompilationMode() == CompilationMode::PROJECT) {
         return CompileFromConfig(compiler, options.get());
     }
 
-    std::string_view sourceFile;
+    std::string sourceFile;
     std::string_view parserInput;
-    if (options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         sourceFile = "etsstdlib.sts";
         parserInput = "";
     } else {
-        sourceFile = options->SourceFile();
-        parserInput = options->ParserInput();
+        sourceFile = options->SourceFileName();
+        auto [buf, size] = options->CStrParserInputContents();
+        parserInput = std::string_view(buf, size);
     }
-    es2panda::SourceFile input(sourceFile, parserInput, options->ParseModule());
-    return CompileFromSource(compiler, input, options.get());
+    es2panda::SourceFile input(sourceFile, parserInput, options->IsModule());
+    return CompileFromSource(compiler, input, *options.get());
 }
 }  // namespace ark::es2panda::aot
 
-int main(int argc, const char **argv)
+int main(int argc, const char *argv[])
 {
     ark::es2panda::aot::MemManager mm;
-    return ark::es2panda::aot::Run(argc, argv);
+    return ark::es2panda::aot::Run(ark::Span<const char *const>(argv, argc));
 }

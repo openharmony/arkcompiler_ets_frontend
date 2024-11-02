@@ -17,6 +17,7 @@
 #include "varbinder/privateBinding.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
+#include "util/options.h"
 #include "varbinder/scope.h"
 #include "varbinder/tsBinding.h"
 #include "es2panda.h"
@@ -656,15 +657,15 @@ void VarBinder::AddMandatoryParams()
 
     ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
 
-    const auto &options = context_->config->options->CompilerOptions();
-    if (options.isDirectEval) {
+    const auto *options = context_->config->options;
+    if (options->IsDirectEval()) {
         AddMandatoryParams(EVAL_SCRIPT_MANDATORY_PARAMS);
         topScope_->ParamScope()->Params().back()->SetLexical(topScope_);
     } else {
         AddMandatoryParams(FUNCTION_MANDATORY_PARAMS);
     }
 
-    if (options.isFunctionEval) {
+    if (options->IsFunctionEval()) {
         ASSERT(iter != functionScopes_.end());
         funcScope = *iter++;
         auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);

@@ -110,7 +110,7 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     auto const &name = field->Key()->AsIdentifier()->Name();
     auto methodIdent = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
     auto *decl = checker->Allocator()->New<varbinder::VarDecl>(name);
-    auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+    auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::STS);
 
     methodIdent->SetVariable(var);
 
@@ -157,7 +157,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
 
         auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(), name, getter);
 
-        if (methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS) == nullptr) {
+        if (methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::STS) == nullptr) {
             auto prevDecl = methodScope->FindDecl(name);
             ASSERT(prevDecl->IsFunctionDecl());
             prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);

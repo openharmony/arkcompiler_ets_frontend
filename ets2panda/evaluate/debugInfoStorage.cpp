@@ -48,10 +48,10 @@ ImportExportTable::ImportExportTable(ArenaAllocator *allocator)
 {
 }
 
-DebugInfoStorage::DebugInfoStorage(const CompilerOptions &options, ArenaAllocator *allocator)
+DebugInfoStorage::DebugInfoStorage(const util::Options &options, ArenaAllocator *allocator)
     : allocator_(allocator), sourceFileToDebugInfo_(allocator->Adapter()), moduleNameToDebugInfo_(allocator->Adapter())
 {
-    for (const auto &pfPath : options.debuggerEvalPandaFiles) {
+    for (const auto &pfPath : options.GetDebuggerEvalPandaFiles()) {
         LoadFileDebugInfo(pfPath);
     }
 }

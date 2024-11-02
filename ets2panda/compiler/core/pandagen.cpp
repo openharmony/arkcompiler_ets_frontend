@@ -19,6 +19,7 @@
 #include "checker/checker.h"
 #include "checker/types/globalTypesHolder.h"
 #include "util/helpers.h"
+#include "util/options.h"
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "compiler/base/catchTable.h"
@@ -1812,12 +1813,12 @@ void PandaGen::LoadLexicalContext(const ir::AstNode *node)
 
 bool PandaGen::IsDirectEval() const
 {
-    return Context()->config->options->CompilerOptions().isDirectEval;
+    return Context()->config->options->IsDirectEval();
 }
 
 bool PandaGen::IsEval() const
 {
-    return Context()->config->options->CompilerOptions().isEval;
+    return Context()->config->options->IsEval();
 }
 
 const checker::Type *PandaGen::GetVRegType(VReg vreg) const

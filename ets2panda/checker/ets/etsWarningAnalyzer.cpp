@@ -119,7 +119,7 @@ void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefi
 
 void ETSWarningAnalyzer::ETSWarningSuggestFinal(const ir::AstNode *node)
 {
-    if (node->IsClassDeclaration() && !program_->NodeContainsETSNolint(node, ETSWarnings::SUGGEST_FINAL)) {
+    if (node->IsClassDeclaration() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_SUGGEST_FINAL)) {
         if (node->AsClassDeclaration()->Definition()->IsClassDefinition()) {
             AnalyzeClassDefForFinalModifier(node->AsClassDeclaration()->Definition());
         }
@@ -172,7 +172,7 @@ void ETSWarningAnalyzer::CheckProhibitedTopLevelStatements(const ir::Statement *
 void ETSWarningAnalyzer::ETSWarningsProhibitTopLevelStatements(const ir::AstNode *node)
 {
     if (!node->IsClassDeclaration() ||
-        program_->NodeContainsETSNolint(node, ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS)) {
+        program_->NodeContainsETSNolint(node, ETSWarnings::ETS_PROHIBIT_TOP_LEVEL_STATEMENTS)) {
         node->Iterate([&](auto *childNode) { ETSWarningsProhibitTopLevelStatements(childNode); });
         return;
     }
@@ -191,7 +191,7 @@ void ETSWarningAnalyzer::ETSWarningsProhibitTopLevelStatements(const ir::AstNode
 
         for (const auto *statement :
              itBody->AsMethodDefinition()->Function()->Body()->AsBlockStatement()->Statements()) {
-            if (program_->NodeContainsETSNolint(statement, ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS)) {
+            if (program_->NodeContainsETSNolint(statement, ETSWarnings::ETS_PROHIBIT_TOP_LEVEL_STATEMENTS)) {
                 continue;
             }
 
@@ -210,7 +210,8 @@ void ETSWarningAnalyzer::ETSWarningBoostEqualityStatement(const ir::AstNode *nod
 {
     ASSERT(node != nullptr);
 
-    if (node->IsBinaryExpression() && !program_->NodeContainsETSNolint(node, ETSWarnings::BOOST_EQUALITY_STATEMENT)) {
+    if (node->IsBinaryExpression() &&
+        !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_BOOST_EQUALITY_STATEMENT)) {
         const auto binExpr = node->AsBinaryExpression();
         if (binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
             binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
@@ -224,7 +225,7 @@ void ETSWarningAnalyzer::ETSWarningBoostEqualityStatement(const ir::AstNode *nod
 
 void ETSWarningAnalyzer::ETSWarningRemoveAsync(const ir::AstNode *node)
 {
-    if (node->IsMethodDefinition() && !program_->NodeContainsETSNolint(node, ETSWarnings::REMOVE_ASYNC_FUNCTIONS)) {
+    if (node->IsMethodDefinition() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_REMOVE_ASYNC)) {
         const auto methodDefinition = node->AsMethodDefinition();
         if (methodDefinition->IsAsync()) {
             ETSThrowWarning("Replace asynchronous function with coroutine", methodDefinition->Start());
@@ -237,7 +238,7 @@ void ETSWarningAnalyzer::ETSWarningRemoveLambda(const ir::AstNode *node)
 {
     ASSERT(node != nullptr);
 
-    if (node->IsArrowFunctionExpression() && !program_->NodeContainsETSNolint(node, ETSWarnings::REMOVE_LAMBDA)) {
+    if (node->IsArrowFunctionExpression() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_REMOVE_LAMBDA)) {
         ETSThrowWarning("Replace the lambda function with a regular function", node->Start());
     }
     node->Iterate([&](auto *childNode) { ETSWarningRemoveLambda(childNode); });
@@ -372,7 +373,7 @@ void ETSWarningAnalyzer::ETSWarningImplicitBoxingUnboxing(const ir::AstNode *nod
         case ir::AstNodeType::UNARY_EXPRESSION:
         case ir::AstNodeType::UPDATE_EXPRESSION:
         case ir::AstNodeType::MEMBER_EXPRESSION: {
-            if (!program_->NodeContainsETSNolint(node, ETSWarnings::IMPLICIT_BOXING_UNBOXING)) {
+            if (!program_->NodeContainsETSNolint(node, ETSWarnings::ETS_IMPLICIT_BOXING_UNBOXING)) {
                 node->Iterate([this](auto *childNode) { CheckTypeOfBoxingUnboxing(childNode); });
             }
             break;

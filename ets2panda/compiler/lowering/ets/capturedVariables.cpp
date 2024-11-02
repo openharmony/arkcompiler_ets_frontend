@@ -14,6 +14,7 @@
  */
 
 #include "capturedVariables.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -114,7 +115,7 @@ static void HandleScriptFunction(ir::ScriptFunction const *const scriptFunction)
 
 bool CapturedVariables::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : ext_programs) {

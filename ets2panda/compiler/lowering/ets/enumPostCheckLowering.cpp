@@ -103,7 +103,7 @@ static ir::CallExpression *GenerateValueOfCall(checker::ETSChecker *checker, ir:
 
 bool EnumPostCheckLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (program->Extension() != ScriptExtension::ETS) {
+    if (program->Extension() != ScriptExtension::STS) {
         return true;
     }
 

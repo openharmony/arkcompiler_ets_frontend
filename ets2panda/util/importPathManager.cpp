@@ -14,6 +14,7 @@
  */
 
 #include "importPathManager.h"
+#include "es2panda.h"
 #include <libpandabase/os/filesystem.h>
 
 #ifdef USE_UNIX_SYSCALL
@@ -188,7 +189,7 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, const Imp
 }
 
 ImportPathManager::ImportData ImportPathManager::GetImportData(const util::StringView &path,
-                                                               const ScriptExtension &extension) const
+                                                               util::gen::extension::Enum extension) const
 {
     const auto &dynamicPaths = arktsConfig_->DynamicPaths();
     auto key = ark::os::NormalizePath(path.Mutf8());

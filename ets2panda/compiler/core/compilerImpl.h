@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_COMPILER_INCLUDE_COMPILER_IMPL_H
 #define ES2PANDA_COMPILER_INCLUDE_COMPILER_IMPL_H
 
-#include "es2panda.h"
 #include "compiler/core/compileQueue.h"
 #include "macros.h"
 #include "mem/arena_allocator.h"
@@ -64,7 +63,7 @@ public:
     }
 
     static void DumpAsm(const ark::pandasm::Program *prog);
-    static std::string GetPhasesList(const ScriptExtension ext);
+    static std::string GetPhasesList(ScriptExtension ext);
 
     ark::pandasm::Program *Emit(public_lib::Context *context);
 

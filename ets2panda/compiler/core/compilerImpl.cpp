@@ -70,7 +70,7 @@ ark::pandasm::Program *CompilerImpl::Emit(public_lib::Context *context)
     auto *emitter = context->emitter;
     queue_.Wait([emitter](CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
 
-    return emitter->Finalize(context->config->options->CompilerOptions().dumpDebugInfo, Signatures::ETS_GLOBAL);
+    return emitter->Finalize(context->config->options->IsDumpDebugInfo(), Signatures::ETS_GLOBAL);
 }
 
 class ASTVerificationRunner {
@@ -104,10 +104,10 @@ public:
     using GroupedMessages = std::map<Source, ast_verifier::Messages>;
 
     ASTVerificationRunner(ArenaAllocator &allocator, const public_lib::Context &context)
-        : checkFullProgram_ {context.config->options->CompilerOptions().verifierFullProgram},
+        : checkFullProgram_ {context.config->options->IsVerifierInvariantsFullProgram()},
           verifier_ {&allocator},
-          treatAsWarnings_ {context.config->options->CompilerOptions().verifierWarnings},
-          treatAsErrors_ {context.config->options->CompilerOptions().verifierErrors}
+          treatAsWarnings_ {context.config->options->GetVerifierInvariantsAsWarnings()},
+          treatAsErrors_ {context.config->options->GetVerifierInvariantsAsErrors()}
     {
     }
 
@@ -168,8 +168,8 @@ private:
     bool checkFullProgram_;
     GroupedMessages report_;
     ast_verifier::ASTVerifier verifier_;
-    std::unordered_set<std::string> treatAsWarnings_;
-    std::unordered_set<std::string> treatAsErrors_;
+    const std::set<std::string> &treatAsWarnings_;
+    const std::set<std::string> &treatAsErrors_;
 };
 
 template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
@@ -193,7 +193,7 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
 {
     auto runner = ASTVerificationRunner(*context.allocator, context);
     auto verificationCtx = ast_verifier::VerificationContext {};
-    const auto runAllChecks = context.config->options->CompilerOptions().verifierAllChecks;
+    const auto runAllChecks = context.config->options->IsVerifierInvariantsEachPhase();
 
     for (auto *phase : phases) {
         if (!phase->Apply(&context, &program)) {
@@ -241,11 +241,11 @@ static bool RunPhases(CompilerImpl *compilerImpl, public_lib::Context &context, 
 }
 
 static void CreateDebuggerEvaluationPlugin(checker::ETSChecker &checker, ArenaAllocator &allocator,
-                                           parser::Program *program, const CompilerOptions &options)
+                                           parser::Program *program, const util::Options &options)
 {
     // Sometimes evaluation mode might work without project context.
     // In this case, users might omit context files.
-    if (options.debuggerEvalMode && !options.debuggerEvalPandaFiles.empty()) {
+    if (options.IsDebuggerEval() && !options.GetDebuggerEvalPandaFiles().empty()) {
         auto *plugin = allocator.New<evaluate::ScopedDebugInfoPlugin>(program, &checker, options);
         checker.SetDebugInfoPlugin(plugin);
     }
@@ -259,7 +259,7 @@ static bool ParserErrorChecker(bool isAnyError, parser::Program *program, Compil
 {
     if (isAnyError) {
         compilerImpl->SetIsAnyError(isAnyError);
-        if (unit.options.CompilerOptions().dumpAst) {
+        if (unit.options.IsDumpAst()) {
             std::cout << program->Dump() << std::endl;
         }
         return false;
@@ -275,8 +275,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
     auto program = parser::Program::NewProgram<VarBinder>(&allocator);
     program.MarkEntry();
-    auto parser =
-        Parser(&program, unit.options.CompilerOptions(), static_cast<parser::ParserStatus>(unit.rawParserStatus));
+    auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
     auto checker = Checker();
     auto analyzer = Analyzer(&checker);
     checker.SetAnalyzer(&analyzer);
@@ -285,7 +284,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     varbinder->SetProgram(&program);
 
     if constexpr (std::is_same_v<Checker, checker::ETSChecker>) {
-        CreateDebuggerEvaluationPlugin(checker, allocator, &program, unit.options.CompilerOptions());
+        CreateDebuggerEvaluationPlugin(checker, allocator, &program, unit.options);
     }
 
     public_lib::Context context;
@@ -308,12 +307,12 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
 
     varbinder->SetContext(&context);
 
-    parser.ParseScript(unit.input, unit.options.CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB);
+    parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
     if (!ParserErrorChecker(parser.ErrorLogger()->IsAnyError(), &program, compilerImpl, unit)) {
         return nullptr;
     }
 #ifndef NDEBUG
-    if (unit.ext == ScriptExtension::ETS) {
+    if (unit.ext == ScriptExtension::STS) {
         if (!RunVerifierAndPhases(compilerImpl, context, getPhases(unit.ext), program)) {
             return nullptr;
         }
@@ -344,7 +343,7 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
                                   compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList, this);
         }
-        case ScriptExtension::ETS: {
+        case ScriptExtension::STS: {
             return CreateCompiler<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                                   compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
                                   compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetPhaseList,

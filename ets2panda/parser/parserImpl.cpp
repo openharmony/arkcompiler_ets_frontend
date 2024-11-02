@@ -49,7 +49,7 @@
 using namespace std::literals::string_literals;
 
 namespace ark::es2panda::parser {
-ParserImpl::ParserImpl(Program *program, const CompilerOptions &options, ParserStatus status)
+ParserImpl::ParserImpl(Program *program, const util::Options *options, ParserStatus status)
     : program_(program), context_(program_, status), options_(options)
 {
 }

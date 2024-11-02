@@ -38,7 +38,7 @@ public:
             Allocator()->New<parser::Program>(Allocator(), Allocator()->New<varbinder::ETSBinder>(Allocator()));
         program->VarBinder()->SetProgram(program);
         program->VarBinder()->InitTopScope();
-        auto etsParser = parser::ETSParser(program, CompilerOptions {});
+        auto etsParser = parser::ETSParser(program, nullptr);
         auto expr = etsParser.CreateExpression(strExpr);
         return {program, expr};
     }

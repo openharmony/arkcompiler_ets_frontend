@@ -17,7 +17,6 @@
 #define ES2PANDA_COMPILER_CORE_COMPILE_JOB_H
 
 #include "macros.h"
-#include "es2panda.h"
 #include "compiler/core/programElement.h"
 
 #include <condition_variable>

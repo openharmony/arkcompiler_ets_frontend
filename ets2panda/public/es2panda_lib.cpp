@@ -194,22 +194,22 @@ __attribute__((unused)) char const *ArenaStrdup(ArenaAllocator *allocator, char 
     return res;
 }
 
-extern "C" es2panda_Config *CreateConfig(int args, char const **argv)
+extern "C" es2panda_Config *CreateConfig(int args, char const *const *argv)
 {
     constexpr auto COMPILER_SIZE = 256_MB;
 
     mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
     PoolManager::Initialize(PoolType::MMAP);
 
-    auto *options = new util::Options();
-    if (!options->Parse(args, argv)) {
+    auto *options = new util::Options(argv[0]);
+    if (!options->Parse(Span(argv, args))) {
         // NOTE: gogabr. report option errors properly.
         std::cerr << options->ErrorMsg() << std::endl;
         return nullptr;
     }
-    Logger::ComponentMask mask {};
-    mask.set(Logger::Component::ES2PANDA);
-    Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), mask);
+    ark::Logger::ComponentMask mask {};
+    mask.set(ark::Logger::Component::ES2PANDA);
+    ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
 
     auto *res = new ConfigImpl;
     res->options = options;
@@ -241,25 +241,24 @@ static void CompileJob(public_lib::Context *context, varbinder::FunctionScope *s
     funcEmitter.Generate();
 }
 
-__attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *config, std::string const &&source,
-                                                               std::string const &&fileName)
+__attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *config, std::string &&source,
+                                                               const char *fileName)
 {
     auto *cfg = reinterpret_cast<ConfigImpl *>(config);
     auto *res = new Context;
-    res->input = source;
+    res->input = std::move(source);
     res->sourceFileName = fileName;
     res->config = cfg;
 
     try {
-        res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->ParseModule());
+        res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
         res->allocator = new ArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-        res->queue = new compiler::CompileQueue(cfg->options->ThreadCount());
+        res->queue = new compiler::CompileQueue(cfg->options->GetThread());
 
         auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator);
         res->parserProgram = new parser::Program(res->allocator, varbinder);
         res->parserProgram->MarkEntry();
-        res->parser =
-            new parser::ETSParser(res->parserProgram, cfg->options->CompilerOptions(), parser::ParserStatus::NO_OPTS);
+        res->parser = new parser::ETSParser(res->parserProgram, *cfg->options, parser::ParserStatus::NO_OPTS);
         res->checker = new checker::ETSChecker();
         res->checker->ErrorLogger()->SetOstream(nullptr);
         res->analyzer = new checker::ETSAnalyzer(res->checker);
@@ -269,7 +268,7 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
 
         varbinder->SetContext(res);
         res->codeGenCb = CompileJob;
-        res->phases = compiler::GetPhaseList(ScriptExtension::ETS);
+        res->phases = compiler::GetPhaseList(ScriptExtension::STS);
         res->currentPhase = 0;
         res->emitter = new compiler::ETSEmitter(res);
         res->program = nullptr;
@@ -306,10 +305,10 @@ extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromFile(es2pa
 }
 
 extern "C" __attribute__((unused)) es2panda_Context *CreateContextFromString(es2panda_Config *config,
-                                                                             char const *source, char const *fileName)
+                                                                             const char *source, char const *fileName)
 {
     // NOTE: gogabr. avoid copying source.
-    return CreateContext(config, source, fileName);
+    return CreateContext(config, std::string(source), fileName);
 }
 
 __attribute__((unused)) static Context *Parse(Context *ctx)
@@ -327,8 +326,8 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
     };
 
     try {
-        ctx->parser->ParseScript(*ctx->sourceFile, ctx->config->options->CompilerOptions().compilationMode ==
-                                                       CompilationMode::GEN_STD_LIB);
+        ctx->parser->ParseScript(*ctx->sourceFile,
+                                 ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
         ctx->state = ES2PANDA_STATE_PARSED;
         if (ctx->parser->ErrorLogger()->IsAnyError()) {
             handleError(ctx->parser->ErrorLogger()->Log()[0]);
@@ -470,8 +469,7 @@ __attribute__((unused)) static Context *GenerateAsm(Context *ctx)
         ctx->queue->Wait(
             [emitter](compiler::CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
         ASSERT(ctx->program == nullptr);
-        ctx->program =
-            emitter->Finalize(ctx->config->options->CompilerOptions().dumpDebugInfo, compiler::Signatures::ETS_GLOBAL);
+        ctx->program = emitter->Finalize(ctx->config->options->IsDumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
 
         ctx->state = ES2PANDA_STATE_ASM_GENERATED;
     } catch (Error &e) {
@@ -497,7 +495,7 @@ __attribute__((unused)) Context *GenerateBin(Context *ctx)
 
     try {
         ASSERT(ctx->program != nullptr);
-        util::GenerateProgram(ctx->program, ctx->config->options,
+        util::GenerateProgram(ctx->program, *ctx->config->options,
                               [ctx](const std::string &str) { ctx->errorMessage = str; });
 
         ctx->state = ES2PANDA_STATE_BIN_GENERATED;

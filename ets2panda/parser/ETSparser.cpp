@@ -22,6 +22,7 @@
 #include "parser/parserStatusContext.h"
 #include "util/helpers.h"
 #include "util/language.h"
+#include "util/options.h"
 #include "utils/arena_containers.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
@@ -77,10 +78,16 @@ class FunctionContext;
 
 using namespace std::literals::string_literals;
 
-ETSParser::ETSParser(Program *program, const CompilerOptions &options, ParserStatus status)
-    : TypedParser(program, options, status), globalProgram_(GetProgram())
+ETSParser::ETSParser(Program *program, const util::Options &options, ParserStatus status)
+    : TypedParser(program, &options, status), globalProgram_(GetProgram())
 {
-    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), ArkTSConfig(), GetOptions().stdLib);
+    importPathManager_ =
+        std::make_unique<util::ImportPathManager>(Allocator(), GetOptions().ArkTSConfig(), GetOptions().GetStdlib());
+}
+
+ETSParser::ETSParser(Program *program, std::nullptr_t)
+    : TypedParser(program, nullptr, ParserStatus::NO_OPTS), globalProgram_(GetProgram())
+{
 }
 
 bool ETSParser::IsETSParser() const noexcept
@@ -88,6 +95,10 @@ bool ETSParser::IsETSParser() const noexcept
     return true;
 }
 
+bool ETSParser::IsETSModule() const
+{
+    return GetOptions().IsEtsModule();
+}
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);

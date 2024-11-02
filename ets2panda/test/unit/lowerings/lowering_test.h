@@ -28,8 +28,7 @@ public:
     LoweringTest()
     {
         impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-        auto es2pandaPath = test::utils::PandaExecutablePathGetter {}.Get();
-        std::array argv = {es2pandaPath.c_str()};
+        auto argv = test::utils::PandaExecutablePathGetter::Get();
         cfg_ = impl_->CreateConfig(argv.size(), argv.data());
         allocator_ = new ark::ArenaAllocator(ark::SpaceType::SPACE_TYPE_COMPILER);
     }

@@ -1089,6 +1089,7 @@ ohos_source_set("libes2panda_frontend_static") {
   configs = libes2panda_configs
 
   deps = [
+    ":es2panda_options_gen_options_h",
     ":gen_${LIB_NAME}_decl_inc",
     ":gen_${LIB_NAME}_enums_inc",
     ":gen_${LIB_NAME}_impl_inc",
@@ -1145,6 +1146,14 @@ ark_isa_gen("isa_gen_es2panda") {
   ]
   sources = "compiler/templates"
   destination = "$target_gen_dir/generated"
+}
+
+ark_gen("es2panda_options_gen") {
+  data = [ "util/options.yaml" ]
+  template_files = [ "options.h.erb" ]
+  sources = "$ark_root/templates/options"
+  destination = "$target_gen_dir/generated"
+  api = [ "$ark_root/templates/common.rb" ]
 }
 
 ark_gen("gen_es2panda_lexer") {
