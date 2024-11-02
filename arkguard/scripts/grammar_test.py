@@ -424,6 +424,8 @@ class Runner:
         result_suffix = get_file_suffix(file_path)
         result_cache_path = f"{result_suffix.file_name}.ts.cache.json"
         expectation_cache_path = f"{source_suffix.file_name}_expected_cache.txt"
+        result_map_path = f"{result_suffix.file_name}.ts.map"
+        expectation_map_path = f"{source_suffix.file_name}_expected_map.txt"
 
         result_unobfuscation_path = os.path.join(
             os.path.dirname(result_suffix.file_name), PRINT_UNOBFUSCATION_SUFFIX
@@ -470,6 +472,20 @@ class Runner:
                     expectation,
                     result_unobfuscation_path,
                     expect_unobfuscation_path,
+                )
+
+        if os.path.exists(expectation_map_path) and os.path.exists(result_map_path):
+            with open(result_map_path) as actual_file, open(
+                expectation_map_path
+            ) as expectation_file:
+                actual = actual_file.read()
+                expectation = expectation_file.read()
+                self.__compare_expected(
+                    file_path,
+                    actual,
+                    expectation,
+                    result_map_path,
+                    expectation_map_path,
                 )
 
 
