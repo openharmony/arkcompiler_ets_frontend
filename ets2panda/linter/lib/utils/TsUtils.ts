@@ -1987,38 +1987,38 @@ export class TsUtils {
 
   // Check that the dimensions of the destruct array are the same
   static isSameDimension(arr: ts.Node): boolean | undefined {
-    if (ts.isArrayLiteralExpression(arr)) {
-      let hasOneDimensional: boolean = false;
-      let hasMultipleDimensions: boolean = false;
-      const arrElements = arr.elements;
-      let maxlen: number = 0;
-      let minlen: number = 1000;
-      for (let i = 0; i < arrElements.length; i++) {
-        const e = arrElements[i] as ts.Node;
-        if (!ts.isArrayLiteralExpression(e)) {
-          hasOneDimensional = true;
-        } else {
-          hasMultipleDimensions = true;
-          if (hasOneDimensional && hasMultipleDimensions) {
-            return false;
-          }
-          if (!this.isSameDimension(e)) {
-            return false;
-          }
-          maxlen = Math.max(e.elements.length, maxlen);
-          minlen = Math.min(e.elements.length, minlen);
-        }
-      }
-      if (hasOneDimensional && hasMultipleDimensions) {
-        return false;
-      } else if (hasOneDimensional && !hasMultipleDimensions) {
-        return true;
-      } else if (!hasOneDimensional && hasMultipleDimensions && maxlen === minlen) {
-        return true;
-      }
-      return false;
+    if (!ts.isArrayLiteralExpression(arr)) {
+      return true;
     }
-    return true;
+    let hasOneDimensional: boolean = false;
+    let hasMultipleDimensions: boolean = false;
+    const arrElements = arr.elements;
+    let maxlen: number = 0;
+    let minlen: number = 1000;
+    for (let i = 0; i < arrElements.length; i++) {
+      const e = arrElements[i] as ts.Node;
+      if (!ts.isArrayLiteralExpression(e)) {
+        hasOneDimensional = true;
+      } else {
+        hasMultipleDimensions = true;
+        if (hasOneDimensional && hasMultipleDimensions) {
+          return false;
+        }
+        if (!this.isSameDimension(e)) {
+          return false;
+        }
+        maxlen = Math.max(e.elements.length, maxlen);
+        minlen = Math.min(e.elements.length, minlen);
+      }
+    }
+    if (hasOneDimensional && hasMultipleDimensions) {
+      return false;
+    } else if (hasOneDimensional && !hasMultipleDimensions) {
+      return true;
+    } else if (!hasOneDimensional && hasMultipleDimensions && maxlen === minlen) {
+      return true;
+    }
+    return false;
   }
 
   // if ArrayLiteralExpression has empty element, will be marked as not fixable
@@ -3011,7 +3011,8 @@ export class TsUtils {
   }
 
   static isAmbientNode(node: ts.Node): boolean {
-    // CC-OFFNXT(no_explicit_any) std lib
+
+    /* CC-OFFNXT(no_explicit_any) std lib */
     // Ambient flag is not exposed, so we apply dirty hack to make it visible
     return !!(node.flags & (ts.NodeFlags as any).Ambient);
   }

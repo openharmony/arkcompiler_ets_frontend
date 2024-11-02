@@ -13,4 +13,4 @@
  * limitations under the License.
  */
 
-import("../ets/test3"); // Importing ArkTS files in JS and TS files in forbidden.
+import('../ets/test3'); // Importing ArkTS files in JS and TS files in forbidden.

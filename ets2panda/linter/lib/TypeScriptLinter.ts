@@ -2578,6 +2578,7 @@ export class TypeScriptLinter {
         }
       }
     }
+
     /* CC-OFFNXT(no_explicit_any) std lib */
     // Handle comment directives '@ts-ignore' and '@ts-expect-error'
     const commentDirectives = (sourceFile as any).commentDirectives;
