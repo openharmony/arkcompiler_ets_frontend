@@ -21,3 +21,6 @@ crypto-js_test
 
 #19623
 rebound_test
+
+#20374
+base64_test

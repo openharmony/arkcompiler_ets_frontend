@@ -53,3 +53,7 @@ test262/data/other_tests/built-ins/Date/prototype/setMonth/this-value-invalid-da
 test262/data/other_tests/built-ins/Date/prototype/setSeconds/arg-coercion-order.js
 test262/data/other_tests/built-ins/Date/prototype/setSeconds/this-value-invalid-date.js
 # --- end of Issue #19228
+
+#20321
+test262/data/other_tests/built-ins/parseFloat/S15.1.2.3_A6.js
+test262/data/other_tests/built-ins/parseInt/S15.1.2.2_A8.js
