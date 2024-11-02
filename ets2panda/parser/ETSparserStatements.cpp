@@ -144,7 +144,8 @@ ArenaVector<ir::Statement *> ETSParser::ParseTopLevelStatements()
 }
 
 static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Statement *stmt,
-                                                  ark::es2panda::ir::ModifierFlags memberModifiers)
+                                                  ark::es2panda::ir::ModifierFlags memberModifiers,
+                                                  lexer::SourcePosition pos)
 {
     if (stmt != nullptr) {
         if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
@@ -153,11 +154,17 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
         }
         if (stmt->IsAnnotationDeclaration()) {
             if ((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U) {
-                parser->ThrowSyntaxError("Can not export annotation default!", stmt->Start());
+                parser->LogSyntaxError("Can not export annotation default!", stmt->Start());
             }
         }
         stmt->AddModifier(memberModifiers);
+    } else {
+        if ((memberModifiers &
+             (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT | ir::ModifierFlags::EXPORT_TYPE)) != 0U) {
+            parser->LogSyntaxError("Export is allowed only for declarations.", pos);
+        }
     }
+
     return stmt;
 }
 
@@ -227,7 +234,7 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         }
     }
 
-    return ValidateExportableStatement(this, result, memberModifiers);
+    return ValidateExportableStatement(this, result, memberModifiers, startLoc);
 }
 
 ir::Statement *ETSParser::ParseTopLevelStatement()
