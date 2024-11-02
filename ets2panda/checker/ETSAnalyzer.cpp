@@ -1363,8 +1363,9 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
             }
         }
         expr->SetTsType(identType);
-
-        checker->Context().CheckIdentifierSmartCastCondition(expr);
+        if (!identType->IsTypeError()) {
+            checker->Context().CheckIdentifierSmartCastCondition(expr);
+        }
     }
     return expr->TsTypeOrError();
 }
