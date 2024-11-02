@@ -98,7 +98,7 @@ private:
     bool ParsePotentialNonNullExpression(ir::Expression **returnExpression, lexer::SourcePosition startLoc) override;
     bool IsNamedFunctionExpression() override;
     ir::Identifier *ParsePrimaryExpressionIdent(ExpressionParseFlags flags) override;
-    void ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement) override;
+    bool ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement) override;
     ir::Decorator *ParseDecorator() override;
     void AddDecorators(ir::AstNode *node, ArenaVector<ir::Decorator *> &decorators) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;

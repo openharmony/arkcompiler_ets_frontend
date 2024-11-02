@@ -54,7 +54,7 @@ private:
     bool IsNamedFunctionExpression() override;
     ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpression) override;
     ir::Identifier *ParsePrimaryExpressionIdent(ExpressionParseFlags flags) override;
-    void ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement) override;
+    bool ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement) override;
     ir::Decorator *ParseDecorator() override;
     void AddDecorators(ir::AstNode *node, ArenaVector<ir::Decorator *> &decorators) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;

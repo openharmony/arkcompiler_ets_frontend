@@ -100,7 +100,7 @@ protected:
 
     void ThrowIfPrivateIdent(ClassElementDescriptor *desc, const char *msg);
     void ValidateClassKey(ClassElementDescriptor *desc);
-    void ValidatePrivateIdentifier();
+    bool ValidatePrivateIdentifier();
 
     static ir::VariableDeclaratorFlag GetFlag(VariableParsingFlags flags);
 
@@ -126,7 +126,6 @@ protected:
                                           ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::Expression *SetupChainExpr(ir::Expression *const top, lexer::SourcePosition startLoc);
     ir::MetaProperty *ParsePotentialNewTarget();
-    void CheckInvalidDestructuring(const ir::AstNode *object) const;
     void ValidateParenthesizedExpression(ir::Expression *lhsExpression);
     bool ValidateGroupedExpression(ir::Expression *lhsExpression);
     ir::Expression *ParseImportExpression();
@@ -361,7 +360,7 @@ protected:
     virtual ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpression);
     virtual bool IsNamedFunctionExpression();
     virtual ir::Identifier *ParsePrimaryExpressionIdent(ExpressionParseFlags flags);
-    virtual void ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement);
+    virtual bool ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement);
     virtual ir::Statement *ParsePotentialExpressionStatement(StatementParsingFlags flags);
     virtual ArenaVector<ir::Expression *> ParseFunctionParams();
     virtual ir::Expression *CreateParameterThis(util::StringView className);

@@ -855,13 +855,15 @@ ir::Identifier *ASParser::ParsePrimaryExpressionIdent([[maybe_unused]] Expressio
     return identNode;
 }
 
-void ASParser::ValidateArrowFunctionRestParameter([[maybe_unused]] ir::SpreadElement *restElement)
+bool ASParser::ValidateArrowFunctionRestParameter([[maybe_unused]] ir::SpreadElement *restElement)
 {
     ParseOptionalFunctionParameter(restElement, true);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("')' expected");
     }
+
+    return true;
 }
 
 ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
