@@ -103,4 +103,18 @@ void ReturnStatement::SetArgument(Expression *arg)
         argument_->SetParent(this);
     }
 }
+
+ReturnStatement *ReturnStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    ir::ReturnStatement *clone = allocator->New<ir::ReturnStatement>();
+    if (clone != nullptr) {
+        clone->SetParent(parent);
+        if (argument_ != nullptr) {
+            clone->SetArgument(argument_->Clone(allocator, clone)->AsExpression());
+        }
+        clone->returnType_ = returnType_;
+        clone->SetRange(Range());
+    }
+    return clone;
+}
 }  // namespace ark::es2panda::ir

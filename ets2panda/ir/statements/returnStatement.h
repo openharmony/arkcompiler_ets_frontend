@@ -78,6 +78,8 @@ public:
         v->Accept(this);
     }
 
+    ReturnStatement *Clone(ArenaAllocator *const allocator, AstNode *const parent) override;
+
 private:
     Expression *argument_ {};
     checker::Type *returnType_ {};
