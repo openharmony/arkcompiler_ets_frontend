@@ -607,11 +607,7 @@ export class Autofixer {
         // Handle property assignments with initializer
         if (ts.isPropertyAssignment(property)) {
           tsVarDeclMap.set(property.name?.getText(), property.initializer.getText());
-          if (ts.isObjectLiteralExpression(property.initializer)) {
-            needParentheses.push(true);
-          } else {
-            needParentheses.push(false);
-          }
+          needParentheses.push(ts.isObjectLiteralExpression(property.initializer));
         } else if (ts.isShorthandPropertyAssignment(property)) {
           tsVarDeclMap.set(property.name?.getText(), property.name.getText());
           needParentheses.push(false);

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import { A, A1, A as A2, B, B1, B as B2, C, C1, C as C2 } from '../ets/test7'
-import { I, J } from '../ets/test7'
+import { A, A1, A as A2, B, B1, B as B2, C, C1, C as C2 } from '../ets/test7';
+import { I, J } from '../ets/test7';
 
 let a1 = {} as A;
 let a2 = {} as A1;
@@ -31,7 +31,7 @@ let j = { v: 0, u: 0 } as J;
 
 class D {}
 
-function foo(d: D) {}
+function foo(d: D): void {}
 foo(new D() as A);
 foo(new D() as A1);
 foo(new D() as A2);

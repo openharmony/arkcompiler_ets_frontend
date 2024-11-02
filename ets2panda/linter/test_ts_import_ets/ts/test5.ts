@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { A, A1, A as A2, B, B1, B as B2, C, C1, C as C2 } from '../ets/test5'
+import { A, A1, A as A2, B, B1, B as B2, C, C1, C as C2 } from '../ets/test5';
 
 class D {}
 interface T {}
