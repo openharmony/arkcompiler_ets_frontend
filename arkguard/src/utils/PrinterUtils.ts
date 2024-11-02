@@ -203,16 +203,16 @@ export class TimeTracker extends BasePrinter {
   getCurrentEventData(): string {
     let eventData = "";
     for (const eventName of this.eventStack.keys()) {
-      if (eventName == EventList.OBFUSCATION_INITIALIZATION) {
+      if (eventName === EventList.OBFUSCATION_INITIALIZATION) {
         const totalTimeUsage = this.getTotalTime();
         eventData += `Obfuscation time cost: ${totalTimeUsage} s\n`;
       }
       let depth = eventList.get(eventName) ?? DEFAULT_DEPTH;
       let eventInfo = this.eventStack.get(eventName);
       const duration = eventInfo.duration;
-      const startMemory = eventInfo.startMemory/BYTE_TO_MB;
-      const endMemory = eventInfo.endMemory/BYTE_TO_MB;
-      const memoryUsage = eventInfo.memoryUsage/BYTE_TO_MB;
+      const startMemory = eventInfo.startMemory / BYTE_TO_MB;
+      const endMemory = eventInfo.endMemory / BYTE_TO_MB;
+      const memoryUsage = eventInfo.memoryUsage / BYTE_TO_MB;
       if (eventInfo.filePath) {
         eventData += eventInfo.filePath + `\n`;
       }
