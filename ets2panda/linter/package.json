@@ -11,6 +11,7 @@
   "scripts": {
     "tsc": "tsc",
     "webpack": "webpack -t node --config webpack.config.js",
+    "postwebpack": "node scripts/bundle-ts-lib-declarations.mjs",
     "clean": "rimraf build dist bundle",
     "compile": "npm run tsc",
     "build": "npm run clean && npm run compile && npm run webpack && npm run pack:linter",
