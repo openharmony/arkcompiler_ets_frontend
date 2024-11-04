@@ -35,9 +35,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1313
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1329
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1317
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1333
 {
   index: 0
     tag: 2
@@ -127,9 +127,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1367
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1383
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1371
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1387
 {
   index: 0
     tag: 2
@@ -229,9 +229,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1114
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1130
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1118
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1134
 {
   index: 0
     tag: 2
@@ -299,9 +299,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1154
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1170
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1158
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1174
 {
   index: 0
     tag: 2
@@ -619,9 +619,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1313
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1329
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1317
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1333
 {
   index: 0
     tag: 2
@@ -709,9 +709,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1114
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1130
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1118
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1134
 {
   index: 0
     tag: 2

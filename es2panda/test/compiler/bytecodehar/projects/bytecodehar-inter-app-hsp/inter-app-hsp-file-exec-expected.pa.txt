@@ -81,9 +81,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_1988
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2004
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_1992
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2008
 {
   index: 0
     tag: 2
@@ -221,9 +221,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2028
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2044
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2032
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2048
 {
   index: 0
     tag: 2
