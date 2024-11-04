@@ -30,6 +30,7 @@ import type {
 import { Extension, PathAndExtension } from '../common/type';
 import { FileUtils } from './FileUtils';
 import { EventList, performancePrinter } from '../ArkObfuscator';
+import { endSingleFileEvent, startSingleFileEvent } from './PrinterUtils';
 
 export class TypeUtils {
   /**
@@ -91,13 +92,13 @@ export class TypeUtils {
       option.allowJs = true;
     }
 
-    performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_PROGRAM, performancePrinter.timeSumPrinter);
+    startSingleFileEvent(EventList.CREATE_PROGRAM, performancePrinter.timeSumPrinter);
     let program: Program = createProgram([ast.fileName], option, customHost);
-    performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_PROGRAM, performancePrinter.timeSumPrinter);
+    endSingleFileEvent(EventList.CREATE_PROGRAM, performancePrinter.timeSumPrinter);
 
-    performancePrinter?.singleFilePrinter?.startEvent(EventList.GET_CHECKER, performancePrinter.timeSumPrinter);
+    startSingleFileEvent(EventList.GET_CHECKER, performancePrinter.timeSumPrinter);
     let typeChecker: TypeChecker = program.getTypeChecker();
-    performancePrinter?.singleFilePrinter?.endEvent(EventList.GET_CHECKER, performancePrinter.timeSumPrinter);
+    endSingleFileEvent(EventList.GET_CHECKER, performancePrinter.timeSumPrinter);
     return typeChecker;
   }
 }

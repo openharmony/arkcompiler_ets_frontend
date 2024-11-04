@@ -16,7 +16,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { ArkObfuscator, renameIdentifierModule } from '../ArkObfuscator';
+import { ArkObfuscator, blockPrinter, renameIdentifierModule } from '../ArkObfuscator';
 import { collectResevedFileNameInIDEConfig, MergedConfig, ObConfigResolver, readNameCache } from './ConfigResolver';
 import { type IOptions } from '../configs/IOptions';
 
@@ -40,6 +40,7 @@ export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any,
   const mergedObConfig: MergedConfig = obConfig.resolveObfuscationConfigs();
   const isHarCompiled: boolean = projectConfig.compileHar;
   if (mergedObConfig.options.disableObfuscation) {
+    blockPrinter();
     return;
   }
 
