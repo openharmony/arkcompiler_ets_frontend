@@ -21,8 +21,14 @@ import { Extension } from '../src/common/type';
 import { FileUtils } from '../src/utils/FileUtils';
 
 const testDirectory = path.resolve('./test/local');
-const NonExecutableFile = ['name_as_export_api_1.ts', 'name_as_import_api_1.ts', 'ohmurl_test.ts', 'ohmurl_test_new.ts',
-  'export_struct_transform_class.ts', 'nosymbolIdentifierTest.ts'];
+const NonExecutableFile = [
+  'name_as_export_api_1.ts',
+  'name_as_import_api_1.ts',
+  'ohmurl_test.ts',
+  'ohmurl_test_new.ts',
+  'export_struct_transform_class.ts',
+  'nosymbolIdentifierTest.ts'
+];
 const PRINT_UNOBFUSCATION_SUFFIX = 'keptNames.unobf.json';
 const EXPECTED_UNOBFUSCATION_SUFFIX = '_expected_unobf.txt';
 
