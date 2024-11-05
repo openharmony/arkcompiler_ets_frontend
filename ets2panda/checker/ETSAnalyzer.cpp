@@ -1322,7 +1322,7 @@ std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *
     for (auto *const item : baseType->ReExports()) {
         auto name = item->GetReExportAliasValue(aliasName);
         if (name == aliasName && item->IsReExportHaveAliasValue(name)) {
-            break;
+            continue;
         }
 
         if (item->GetProperty(name, PropertySearchFlags::SEARCH_ALL) != nullptr) {
