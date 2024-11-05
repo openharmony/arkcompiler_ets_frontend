@@ -20,3 +20,4 @@ enum InvalidInitTypeEnum {
 }
 
 /* @@? 18:13 Error SyntaxError: Invalid numeric literal  */
+/* @@? 18:13 Error SyntaxError: Missing comma between enum constants  */

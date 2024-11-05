@@ -57,7 +57,7 @@ ParserImpl::ParserImpl(Program *program, const CompilerOptions &options, ParserS
 std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const SourceFile &sourceFile)
 {
     program_->SetSource(sourceFile);
-    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&context_);
+    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&context_, &errorLogger_);
     lexer_ = lexer.get();
     return lexer;
 }

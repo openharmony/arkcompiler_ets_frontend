@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,7 @@ KeywordString JSKeywords::Handle_yield(const KeywordsUtil &util, std::string_vie
     const auto *parserContext = util.GetParserContext();
 
     if (!parserContext->IsGenerator()) {
-        util.ThrowUnexpectedStrictModeReservedKeyword();
+        util.LogUnexpectedStrictModeReservedKeyword();
     }
 
     util.CheckEscapedKeyword();

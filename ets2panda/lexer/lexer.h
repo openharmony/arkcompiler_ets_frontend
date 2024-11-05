@@ -106,6 +106,7 @@ public:
     util::UString str;
     size_t end {};
     bool scanExpression {};
+    bool validSequence {true};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -113,7 +114,7 @@ class TemplateLiteralParserContext;
 
 class Lexer {
 public:
-    explicit Lexer(const parser::ParserContext *parserContext, bool startLexer = true);
+    explicit Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger, bool startLexer = true);
     NO_COPY_SEMANTIC(Lexer);
     NO_MOVE_SEMANTIC(Lexer);
     virtual ~Lexer() = default;
@@ -134,6 +135,11 @@ public:
             return true;
         }
         return false;
+    }
+
+    const util::ErrorLogger *ErrorLogger()
+    {
+        return errorLogger_;
     }
 
     std::optional<Token> TryEatTokenKeyword(lexer::TokenType type)
@@ -157,23 +163,24 @@ public:
     RegExp ScanRegExp();
 
     void HandleNewlineHelper(util::UString *str, size_t *escapeEnd);
-    void HandleBackslashHelper(util::UString *str, size_t *escapeEnd);
+    bool HandleBackslashHelper(util::UString *str, size_t *escapeEnd);
     bool HandleDollarSignHelper(const char32_t &end);
     bool HandleDoubleQuoteHelper(const char32_t &end, const char32_t &cp);
-    void FinalizeTokenHelper(util::UString *str, const size_t &startPos, size_t escapeEnd);
+    void PrepareStringTokenHelper();
+    void FinalizeTokenHelper(util::UString *str, const size_t &startPos, size_t escapeEnd, bool finalize = true);
     template <char32_t END>
     void ScanString();
 
     void ResetTokenEnd();
-    void CheckOctalDigit(char32_t const nextCp);
+    bool CheckOctalDigit(char32_t const nextCp);
     std::tuple<bool, bool, LexerTemplateString> ScanTemplateStringCpHelper(char32_t cp,
                                                                            LexerTemplateString templateStr);
     LexerTemplateString ScanTemplateString();
     void ScanTemplateStringEnd();
     void PushTemplateContext(TemplateLiteralParserContext *ctx);
-    [[noreturn]] void ThrowUnexpectedStrictModeReservedKeyword() const
+    void LogUnexpectedStrictModeReservedKeyword() const
     {
-        ThrowError("Unexpected strict mode reserved keyword");
+        LogSyntaxError("Unexpected strict mode reserved keyword");
     }
 
     enum class ConversionResult : uint8_t {
@@ -232,11 +239,12 @@ protected:
     void NextToken(Keywords *kws);
     ArenaAllocator *Allocator();
     bool IsLineTerminatorOrEos() const;
-    void ScanRegExpPattern();
+    bool ScanRegExpPattern();
     RegExpFlags ScanRegExpFlags();
 
-    [[noreturn]] void ThrowError(std::string_view message) const;
-    [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;
+    void LogSyntaxError(std::string_view const errorMessage) const;
+    void LogSyntaxError(std::string_view const errorMessage, const lexer::SourcePosition &pos) const;
+    void LogUnexpectedToken(lexer::TokenType const tokenType) const;
 
     void SetTokenStart();
     void SetTokenEnd();
@@ -290,7 +298,7 @@ protected:
     char32_t ScanHexEscape();
     char32_t ScanUnicodeCodePointEscape();
 
-    void ScanStringUnicodePart(util::UString *str);
+    bool ScanStringUnicodePart(util::UString *str);
     char32_t ScanUnicodeCharacterHelper(size_t cpSize, char32_t cp);
     char32_t ScanUnicodeCharacter();
 
@@ -335,6 +343,7 @@ private:
     const parser::ParserContext *parserContext_;
     util::StringView source_;
     LexerPosition pos_;
+    util::ErrorLogger *const errorLogger_;
 };
 
 class TemplateLiteralParserContext {
@@ -367,32 +376,33 @@ private:
 };
 
 template <char32_t END>
+// CC-OFFNXT(huge_method,G.FUN.01) big switch-case, solid logic
 void Lexer::ScanString()
 {
     util::UString str(Allocator());
-    GetToken().type_ = TokenType::LITERAL_STRING;
-    GetToken().keywordType_ = TokenType::LITERAL_STRING;
-
+    PrepareStringTokenHelper();
     const auto startPos = Iterator().Index();
     auto escapeEnd = startPos;
+    bool validEscape = true;
 
     do {
-        char32_t cp = Iterator().Peek();
-
+        const char32_t cp = Iterator().Peek();
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
-                ThrowError("Unterminated string");
+                LogSyntaxError("Unterminated string");
+                break;
             }
             case LEX_CHAR_CR:
             case LEX_CHAR_LF: {
                 if constexpr (END != LEX_CHAR_BACK_TICK) {
-                    ThrowError("Newline is not allowed in strings");
+                    LogSyntaxError("Newline is not allowed in strings");
+                    break;
                 }
                 HandleNewlineHelper(&str, &escapeEnd);
                 continue;
             }
             case LEX_CHAR_BACKSLASH: {
-                HandleBackslashHelper(&str, &escapeEnd);
+                validEscape &= HandleBackslashHelper(&str, &escapeEnd);
                 continue;
             }
             case LEX_CHAR_BACK_TICK:
@@ -414,7 +424,8 @@ void Lexer::ScanString()
                 continue;
             }
         }
-        FinalizeTokenHelper(&str, startPos, escapeEnd);
+
+        FinalizeTokenHelper(&str, startPos, escapeEnd, validEscape);
         break;
     } while (true);
 
@@ -438,7 +449,8 @@ char32_t Lexer::ScanHexEscape()
         Iterator().Forward(1);
 
         if (!IsHexDigit(cp)) {
-            ThrowError("Invalid unicode escape sequence");
+            LogSyntaxError("Invalid unicode escape sequence");
+            return UNICODE_INVALID_CP;
         }
 
         constexpr auto MULTIPLIER = 16;
@@ -516,7 +528,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
     auto cp = Iterator().Peek();
     if (!RANGE_CHECK(cp)) {
-        ThrowError("Invalid digit");
+        LogSyntaxError("Invalid digit");
     }
 
     bool allowNumericOnNext = true;
@@ -537,7 +549,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
         if (cp == LEX_CHAR_UNDERSCORE) {
             if (!allowNumericSeparator || !allowNumericOnNext) {
-                ThrowError("Invalid numeric separator");
+                LogSyntaxError("Invalid numeric separator");
             }
 
             GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
@@ -548,7 +560,7 @@ bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 
         if (!allowNumericOnNext) {
             Iterator().Backward(1);
-            ThrowError("Numeric separators are not allowed at the end of numeric literals");
+            LogSyntaxError("Numeric separators are not allowed at the end of numeric literals");
         }
 
         break;

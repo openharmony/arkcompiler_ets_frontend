@@ -26,13 +26,15 @@ void ETSLexer::NextToken(NextTokenFlags flags)
 
 void ETSLexer::ScanHashMark()
 {
-    ThrowUnexpectedToken(TokenType::PUNCTUATOR_HASH_MARK);
+    LogUnexpectedToken(TokenType::PUNCTUATOR_HASH_MARK);
 }
 
 bool ETSLexer::ScanCharLiteral()
 {
     //  Note: for character literal on call iterator is pointed to the opening single quote (') character!
     //  Otherwise it's another token.
+    bool status = true;
+
     if (Iterator().Peek() != LEX_CHAR_SINGLE_QUOTE) {
         return false;
     }
@@ -45,7 +47,8 @@ bool ETSLexer::ScanCharLiteral()
     switch (cp) {
         case LEX_CHAR_SINGLE_QUOTE:
         case util::StringView::Iterator::INVALID_CP: {
-            ThrowError("Invalid character literal");
+            LogSyntaxError("Invalid character literal");
+            status = false;
             break;
         }
         case LEX_CHAR_BACKSLASH: {
@@ -61,15 +64,17 @@ bool ETSLexer::ScanCharLiteral()
         }
     }
 
-    CheckUtf16Compatible(cp);
-    GetToken().c16_ = cp;
+    if (CheckUtf16Compatible(cp)) {
+        GetToken().c16_ = cp;
+    }
 
     if (Iterator().Peek() != LEX_CHAR_SINGLE_QUOTE) {
-        ThrowError("Unterminated character literal");
+        LogSyntaxError("Unterminated character literal");
+        return false;
     }
 
     Iterator().Forward(1);
-    return true;
+    return status;
 }
 
 void ETSLexer::CheckNumberLiteralEnd()
@@ -80,18 +85,22 @@ void ETSLexer::CheckNumberLiteralEnd()
         Iterator().Forward(1);
         const auto nextCp = Iterator().PeekCp();
         if (KeywordsUtil::IsIdentifierStart(nextCp) || IsDecimalDigit(nextCp)) {
-            ThrowError("Invalid numeric literal");
+            LogSyntaxError("Invalid numeric literal");
+            Iterator().Forward(1);  // Error processing
         }
     } else {
         Lexer::CheckNumberLiteralEnd();
     }
 }
 
-void ETSLexer::CheckUtf16Compatible(char32_t cp) const
+bool ETSLexer::CheckUtf16Compatible(char32_t cp) const
 {
     if (cp >= util::StringView::Constants::CELESTIAL_OFFSET) {
-        ThrowError("Unsupported character literal");
+        // lexer_invalid_characters.sts
+        LogSyntaxError("Unsupported character literal");
+        return false;
     }
+    return true;
 }
 
 void ETSLexer::ScanAsteriskPunctuator()
@@ -114,7 +123,7 @@ void ETSLexer::ConvertNumber(NumberFlags const flags)
 {
     GetToken().number_ = lexer::Number(GetToken().src_, flags);
     if (GetToken().number_.ConversionError()) {
-        ThrowError("Invalid number");
+        LogSyntaxError("Invalid number");
     }
 }
 

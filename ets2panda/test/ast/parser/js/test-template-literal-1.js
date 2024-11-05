@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
+/* @@? 21:1 Error SyntaxError: Unterminated string  */
+/* @@? 21:1 Error SyntaxError: Unexpected token, expected '${' or '`'  */
+/* @@? 21:1 Error SyntaxError: Unexpected token, expected '`'  */
 
 `
-
-/* @@@ label Error SyntaxError: Unterminated string  */
-/* @@ label */
