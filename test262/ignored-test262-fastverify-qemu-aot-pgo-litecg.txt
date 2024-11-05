@@ -132,3 +132,6 @@ test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-short
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-long-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-narrow-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-short-en.js
+
+#20319
+test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-word-iterable.js
