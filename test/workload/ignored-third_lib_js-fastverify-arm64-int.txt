@@ -10,3 +10,5 @@ jsDiff_test
 #18383
 memory-cache_test
 
+#20145
+asn-one_test

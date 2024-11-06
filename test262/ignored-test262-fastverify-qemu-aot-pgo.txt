@@ -169,6 +169,9 @@ test262/data/test_es2021/intl402/NumberFormat/constructor-order.js
 #19265
 test262/data/test_es2021/built-ins/DataView/prototype/setFloat64/toindex-byteoffset.js
 
+#20456
+test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-grapheme-iterable.js
+
 #18626
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-long-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-narrow-en.js
