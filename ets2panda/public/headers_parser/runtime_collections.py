@@ -18,7 +18,6 @@
 """This module provides structures, to save some info while parsing headers."""
 
 import os
-import sys
 from typing import Any, Dict
 from file_tools import print_to_yaml
 

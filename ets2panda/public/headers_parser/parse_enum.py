@@ -16,7 +16,7 @@
 
 
 from typing import Tuple, Dict, Any
-from log_tools import warning_log
+from log_tools import debug_log
 from text_tools import (
     find_first_of_characters,
     find_first_not_restricted_character,
@@ -60,7 +60,7 @@ def parse_enum_class_body(data: str) -> dict:
     value_end = data.find(",", value_start)
 
     if data.find("#define") != -1:
-        warning_log(f"Defines in enum not realized yet. Can't parse enum body with define:\n---\n{data}\n---\n")
+        debug_log(f"Defines in enum not realized yet. Can't parse enum body with define:\n---\n{data}\n---\n")
         return {}
 
     if value_end == -1:

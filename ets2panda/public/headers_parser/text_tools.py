@@ -18,7 +18,7 @@
 """Module provides custom text tools for parsing."""
 
 from typing import Tuple, Dict
-from log_tools import warning_log
+from log_tools import debug_log
 
 
 MAX_LEN = 10000000
@@ -114,7 +114,7 @@ def smart_split_by(data: str, delim: str = ",") -> list:
         if segment != "":
             res.append(segment)
         else:
-            warning_log("Empty segment in smart_split_by.")
+            debug_log("Empty segment in smart_split_by.")
 
         segment_start = find_first_not_restricted_character(f"{delim} \n", data, next_delim)
 

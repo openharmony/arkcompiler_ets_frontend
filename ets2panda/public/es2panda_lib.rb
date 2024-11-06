@@ -80,7 +80,7 @@ module Es2pandaLibApi
     def modify_template_nested_arg(arg, base_namespace)
       arg['type'] = ClassData.add_base_namespace(arg['type'], base_namespace)
       tmp = Arg.new(arg, base_namespace)
-      raise 'Unsupported double+ nested complex types: ' + arg_info.to_s if tmp.lib_args.length > 1
+      raise "Unsupported double+ nested complex types: #{arg_info.to_s}\n" if tmp.lib_args.length > 1
       return nil if tmp.lib_args.nil? || tmp.lib_args[0].nil?
 
       tmp.lib_args[0]['increase_ptr_depth'] = arg['increase_ptr_depth'] if (arg['increase_ptr_depth'] || 0) != 0
@@ -88,6 +88,13 @@ module Es2pandaLibApi
 
       tmp.lib_args[0]['type']['const'] = tmp.const
       tmp.lib_args[0]
+    end
+
+    def unsupported_type_msg()
+      ptr_depth = @es2panda_arg['type'].ptr_depth || 0
+      "'#{@es2panda_arg['type'].namespace + '::' || ''}"\
+      "#{@es2panda_arg['type'].name}"\
+      "#{' ' * [1, ptr_depth].min + '*' * (ptr_depth)}'"
     end
 
     def initialize(arg_info, base_namespace)
@@ -251,32 +258,28 @@ module Es2pandaLibApi
       end
 
       unless found_change_type_link || @primitive_types.include?(@es2panda_arg['type'].name)
-        raise "Unsupported type: '" + @es2panda_arg['type'].name +  + "' namespace: '" +
-              (@es2panda_arg['type'].namespace || 'no') + "' ptr depth: " + (@es2panda_arg['type'].ptr_depth || 0).to_s
+        raise "Unsupported type: #{unsupported_type_msg}"
       end
 
       ptr_depth = @es2panda_arg['type']['ptr_depth'] || 0
 
       if found_change_type_link && !check_ptr_depth(found_change_type_link, ptr_depth)
-        raise 'invalid ptr_depth: ' + ptr_depth.to_s + ', type: ' + @es2panda_arg['type'].name
+        raise "Invalid ptr depth for type: #{unsupported_type_msg}"
       end
 
       if found_change_type_link && @es2panda_arg['name'] == 'returnType' &&
          !found_change_type_link.cast.respond_to?('reverse_cast')
-        raise 'Unsupported return type: ' + @es2panda_arg['type'].name + ' ptr depth: ' +
-              (@es2panda_arg['type'].ptr_depth || 0).to_s
+         raise "Unsupported return type: #{unsupported_type_msg}"
       end
 
       if found_change_type_link && @es2panda_arg['name'] == 'callType' &&
          !found_change_type_link.cast.respond_to?('call_cast')
-        raise 'Unsupported call type: ' + @es2panda_arg['type'].name + ' ptr depth: ' +
-              (@es2panda_arg['type'].ptr_depth || 0).to_s
+        raise "Unsupported call type: #{unsupported_type_msg}"
       end
 
       if found_change_type_link && @es2panda_arg['name'] == 'constructorType' &&
          !found_change_type_link.cast.respond_to?('constructor_cast')
-        raise 'Unsupported constructor type: ' + @es2panda_arg['type'].name + ' ptr depth: ' +
-              (@es2panda_arg['type'].ptr_depth || 0).to_s
+        raise "Unsupported constructor type: #{unsupported_type_msg}"
       end
 
       if found_change_type_link
@@ -304,7 +307,8 @@ module Es2pandaLibApi
             template_arg = Arg.new({ 'name' => @es2panda_arg['name'] + "Element#{i + 1}",
                                      'type' => ClassData.add_base_namespace(template_arg_raw['type'], base_namespace) },
                                    base_namespace)
-            raise 'Unsupported double+ nested complex types: ' + @es2panda_arg.to_s if template_arg.lib_args.length > 1
+
+            raise "Unsupported double+ nested complex types: #{@es2panda_arg.to_s}\n" if template_arg.lib_args.length > 1
 
             template_arg.add_const_modifier_to_lib_args('const') unless template_arg_raw['type']['const'].nil?
 
@@ -347,7 +351,7 @@ module Es2pandaLibApi
             is_known_replacement = clever_replacements.any? do |sub_array|
               sub_array[0] =~ /_nested_expression_|\|accessor\|/
             end
-            raise 'Unknown placeholder: ' + placeholder + "\n" unless is_known_replacement
+            raise "Unknown placeholder: #{placeholder}\n" unless is_known_replacement
           end
         end
 
@@ -440,7 +444,7 @@ module Es2pandaLibApi
         elsif placeholder.end_with?('const|')
           value = ''
         else
-          raise 'Unknown integer found for placeholer: ' + placeholder + ', res: ' + value.to_s + "\n"
+          raise "Unknown int found for placeholder '#{placeholder}', value: #{value.to_s}\n"
         end
       end
       value
@@ -678,17 +682,17 @@ module Es2pandaLibApi
     end
 
     def error_catch_log(mode, function, err)
-      if mode == 'constructor'
-        Es2pandaLibApi.log('error', "Error: '#{err.message}'\nConstructor: #{function.name}\nRaw:\n---\n"\
-                                                                          "#{function.raw_declaration}\n---\n\n")
-        Es2pandaLibApi.log('backtrace', err.backtrace.join("\n"), "\n")
+      Es2pandaLibApi.log('warning', "#{err.message}\n")
+      Es2pandaLibApi.log('debug', "#{mode} name: #{function.name}\n\n"\
+                                    "#{mode} raw C++ declaration:\n"\
+                                    "```\n#{function.raw_declaration}\n```\n")
+      Es2pandaLibApi.log('backtrace', err.backtrace.join("\n"), "\n\n")
+
+      if mode == 'Constructor'
         Es2pandaLibApi.stat_add_unsupported_type(err.message) if err.message.include?('Unsupported type')
         Es2pandaLibApi.stat_add_constructor(0)
         Es2pandaLibApi.stat_add_class(0, function.name)
-      elsif mode == 'method'
-        Es2pandaLibApi.log('error', "Error: '#{err.message}'\nFunction name: #{function.name}\nRaw:\n---\n"\
-                                                                    "#{function.raw_declaration}\n---\n\n")
-        Es2pandaLibApi.log('backtrace', err.backtrace.join("\n"), "\n\n")
+      elsif mode == 'Method'
         Es2pandaLibApi.stat_add_unsupported_type(err.message) if err.message.include?('Unsupported type')
         Es2pandaLibApi.stat_add_method(0)
       else
@@ -711,7 +715,7 @@ module Es2pandaLibApi
               args << Arg.new(arg, class_base_namespace)
             end
           rescue StandardError => e
-            error_catch_log('constructor', constructor, e)
+            error_catch_log('Constructor', constructor, e)
           else
             Es2pandaLibApi.stat_add_constructor(1)
             Es2pandaLibApi.stat_add_class(1, class_name)
@@ -863,7 +867,7 @@ module Es2pandaLibApi
 
             return_expr = get_return_expr(return_type, call_cast, [const, const_return], method, args)
           rescue StandardError => e
-            error_catch_log('method', method, e)
+            error_catch_log('Method', method, e)
           else
             Es2pandaLibApi.stat_add_method(1)
             Es2pandaLibApi.log('info', 'supported method: ', method.name, ' class: ', class_name, "\n")
@@ -899,22 +903,23 @@ module Es2pandaLibApi
   @supported_methods = 0.0
   @supported_constructors = 0.0
 
-  def log(debug_level, *args)
-    info_log = false
-    debug_log = false
-    error_log = true
-    backtrace_log = true
-    stat_log = false
+  @info_log = false
+  @debug_log = false
+  @warning_log = true
+  @backtrace_log = false
+  @stat_log = false
 
-    if debug_level == 'info' && info_log
+  def log(debug_level, *args)
+
+    if debug_level == 'info' && @info_log
       print args.join('').to_s
-    elsif debug_level == 'debug' && debug_log
+    elsif debug_level == 'debug' && @debug_log
       print args.join('').to_s
-    elsif debug_level == 'error' && error_log
+    elsif debug_level == 'warning' && @warning_log
+      print "WARNING:[e2p_api_generator]: #{args.join('').to_s}"
+    elsif debug_level == 'backtrace' && @backtrace_log
       print args.join('').to_s
-    elsif debug_level == 'backtrace' && backtrace_log
-      print args.join('').to_s
-    elsif debug_level == 'stat' && stat_log
+    elsif debug_level == 'stat' && @stat_log
       print args.join('').to_s
     end
   end
@@ -1063,22 +1068,16 @@ module Es2pandaLibApi
   end
 
   def print_stats
-    Es2pandaLibApi.log('stat', "--------------\n")
-    Es2pandaLibApi.log('stat', 'Supported methods: ', @supported_methods, ' / ', @all_methods, ' ( ',
-                       @supported_methods / @all_methods * 100, " % )\n")
-    Es2pandaLibApi.log('stat', 'Supported constructors: ', @supported_constructors, ' / ', @all_constructors, ' ( ',
-                       @supported_constructors / @all_constructors * 100, " % )\n")
-    Es2pandaLibApi.log('stat', "Classes with supported constructor: #{@classes_with_supported_constructor.size} / "\
-        "#{@all_classes.size} ( #{@classes_with_supported_constructor.size.to_f / @all_classes.size * 100} % )\n")
-    Es2pandaLibApi.log('stat', "--------------\n")
-
-    return if @unsupported_types.empty?
-
-    Es2pandaLibApi.log('stat', "Unsupported types for constructor: \n")
-    sorted_items = @unsupported_types.sort_by { |_key, value| -value }
-    sorted_items.each do |key, value|
-      Es2pandaLibApi.log('stat', "#{key}: #{value}\n")
-    end
+    Es2pandaLibApi.log('stat',
+    "--------------\n"\
+    "Es2panda API generated:\n"\
+    " - Methods: #{@supported_methods} / #{@all_methods} ( #{(@supported_methods / @all_methods * 100).round(2)} % )\n"\
+    " - Constructors: #{@supported_constructors} / #{@all_constructors} ( "\
+    "#{(@supported_constructors / @all_constructors * 100).round(2)} % )\n"\
+    " - Classes: #{@classes_with_supported_constructor.size} / #{@all_classes.size} ( "\
+    "#{(@classes_with_supported_constructor.size.to_f / @all_classes.size * 100).round(2)} % )\n"\
+    "--------------\n"
+    )
   end
 
   def ast_nodes
