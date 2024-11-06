@@ -14,5 +14,5 @@
  */
 
 
-var a: [a?: number, b: string]
-/* @@? 17:22 Error SyntaxError: A required element cannot follow an optional element  */
+var a: [a?: number, b/* @@ label */: string]
+/* @@@ label Error SyntaxError: A required element cannot follow an optional element  */

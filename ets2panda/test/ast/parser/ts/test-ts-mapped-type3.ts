@@ -14,5 +14,5 @@
  */
 
 
-type Foo<T> = { readonly [prop keyof T] };
-/* @@? 17:32 Error SyntaxError: Unexpected token, expected ']'  */
+type Foo<T> = { readonly [prop /* @@ label */keyof T] };
+/* @@@ label Error SyntaxError: Unexpected token, expected ']'  */

@@ -14,7 +14,7 @@
  */
 
 class A {
-    # a;
+    # /* @@ label */a;
 }
 
-/* @@? 17:7 Error SyntaxError: Unexpected token in private field  */
+/* @@@ label Error SyntaxError: Unexpected token in private field  */

@@ -15,6 +15,6 @@
 
 
 declare class Foo {
-    public *g()
+    public *g/* @@ label */()
 }
-/* @@? 18:14 Error SyntaxError: Generators are not allowed in an ambient context.  */
+/* @@@ label Error SyntaxError: Generators are not allowed in an ambient context.  */

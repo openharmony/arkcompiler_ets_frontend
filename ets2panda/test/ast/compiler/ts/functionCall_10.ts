@@ -15,5 +15,5 @@
 
 
 var func: { (a: number, b: string): number, (a: string, b?: number): string };
-func();
-/* @@? 18:1 Error TypeError: Expected 1-2 arguments, but got 0  */
+/* @@ label */func();
+/* @@@ label Error TypeError: Expected 1-2 arguments, but got 0  */

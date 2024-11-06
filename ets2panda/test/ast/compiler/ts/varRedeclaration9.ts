@@ -15,5 +15,5 @@
 
 
 var a: (a: number, b?: number) => number;
-var a: (a: number, b: number) => number;
-/* @@? 18:5 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '(a: number, b?: number) => number', but here has type '(a: number, b: number) => number'.  */
+var /* @@ label */a: (a: number, b: number) => number;
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '(a: number, b?: number) => number', but here has type '(a: number, b: number) => number'.  */

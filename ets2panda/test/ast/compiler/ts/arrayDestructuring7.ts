@@ -14,5 +14,5 @@
  */
 
 
-var [a = [1, "foo"], b] = [[true, false],];
-/* @@? 17:5 Error TypeError: Tuple type [boolean[]] of length 1 has no element at index 1.  */
+var /* @@ label */[a = [1, "foo"], b] = [[true, false],];
+/* @@@ label Error TypeError: Tuple type [boolean[]] of length 1 has no element at index 1.  */

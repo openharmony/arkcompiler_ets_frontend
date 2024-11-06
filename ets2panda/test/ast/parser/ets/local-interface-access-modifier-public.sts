@@ -15,8 +15,8 @@
 
 function foo()
 {
-    public interface LocalInterface
+    /* @@ label */public interface LocalInterface
     {
     }
 }
-/* @@? 18:5 Error SyntaxError: A local class or interface declaration can not have access modifier  */
+/* @@@ label Error SyntaxError: A local class or interface declaration can not have access modifier  */

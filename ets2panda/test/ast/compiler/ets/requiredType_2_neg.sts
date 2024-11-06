@@ -19,7 +19,7 @@ class B {
 
 function main(): void {
     let req_b: Required<B> = {fld: 2.0};
-    req_b.fld = undefined;
+    req_b.fld = /* @@ label */undefined;
 }
 
-/* @@? 22:17 Error TypeError: Type 'undefined' cannot be assigned to type 'Double'  */
+/* @@@ label Error TypeError: Type 'undefined' cannot be assigned to type 'Double'  */

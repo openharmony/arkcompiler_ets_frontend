@@ -20,8 +20,8 @@ class A<T=string> {
 }
 
 function main() : void {
-    let a1 = new A<number>("hello")
+    let a1 = /* @@ label */new A<number>(/* @@ label1 */"hello")
 }
 
-/* @@? 23:28 Error TypeError: Type '"hello"' is not compatible with type 'Double' at index 1  */
-/* @@? 23:14 Error TypeError: No matching construct signature for A("hello")  */
+/* @@@ label1 Error TypeError: Type '"hello"' is not compatible with type 'Double' at index 1  */
+/* @@@ label Error TypeError: No matching construct signature for A("hello")  */

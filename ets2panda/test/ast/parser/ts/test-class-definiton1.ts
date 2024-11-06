@@ -15,6 +15,6 @@
 
 
 class Foo {
-    static constructor() { };
+    static /* @@ label */constructor() { };
 }
-/* @@? 18:12 Error SyntaxError: Static modifier can not appear on a constructor  */
+/* @@@ label Error SyntaxError: Static modifier can not appear on a constructor  */

@@ -16,7 +16,7 @@
 
 function main(): void {
     let a: [number, number] = [1, 2];
-    a[2];
+    a[/* @@ label */2];
 }
 
-/* @@? 19:7 Error TypeError: Element accessor value is out of tuple size bounds.  */
+/* @@@ label Error TypeError: Element accessor value is out of tuple size bounds.  */

@@ -14,6 +14,6 @@
  */
 
 
-var [a = 5, ...b]: [number, string, boolean] | string[] | number = ["foo", "bar"];
+var /* @@ label */[a = 5, ...b]: [number, string, boolean] | string[] | number = ["foo", "bar"];
 
-/* @@? 17:5 Error TypeError: Type [number, string, boolean] | string[] | number must have a '[Symbol.iterator]()' method that returns an iterator.  */
+/* @@@ label Error TypeError: Type [number, string, boolean] | string[] | number must have a '[Symbol.iterator]()' method that returns an iterator.  */

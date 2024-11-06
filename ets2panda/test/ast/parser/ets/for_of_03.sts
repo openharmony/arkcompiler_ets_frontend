@@ -17,9 +17,9 @@ let a: int[] = [1, 2, 3];
 
 function main(): void {
   let res = 0;
-  for (let v, u of a) {
+  for (let v, /* @@ label */u of a) {
     res += v;
   }
 }
 
-/* @@? 20:15 Error SyntaxError: Invalid left-hand side in 'for' statement: must have a single binding.  */
+/* @@@ label Error SyntaxError: Invalid left-hand side in 'for' statement: must have a single binding.  */

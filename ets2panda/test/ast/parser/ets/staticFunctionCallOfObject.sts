@@ -19,7 +19,7 @@ function main() {
     let c2: int = 4
     console.log(Number.toString(c1))
     console.log(x.toString(c2))
-    console.log(x.toString(c1))
+    console.log(/* @@ label */x.toString(c1))
 }
 
-/* @@? 22:17 Error TypeError: No matching call signature for toString(double)  */
+/* @@@ label Error TypeError: No matching call signature for toString(double)  */

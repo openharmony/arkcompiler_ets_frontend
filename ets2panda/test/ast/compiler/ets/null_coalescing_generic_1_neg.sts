@@ -15,7 +15,7 @@
 
 function fos<T extends Integral>(a0: T): T {
     let myval: Short = 2;
-    return a0 ?? myval;
+    return /* @@ label */a0 ?? myval;
 }
 
-/* @@? 18:12 Error TypeError: Type 'T|Short' is not compatible with the enclosing method's return type 'T'  */
+/* @@@ label Error TypeError: Type 'T|Short' is not compatible with the enclosing method's return type 'T'  */

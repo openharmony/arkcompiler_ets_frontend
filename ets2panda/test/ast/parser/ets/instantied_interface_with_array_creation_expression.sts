@@ -16,7 +16,7 @@
 interface iface {}
 
 function main(): void {
-  new iface[5];
+  /* @@ label */new iface[5];
 }
 
-/* @@? 19:3 Error TypeError: Cannot use array creation expression with abstract classes and interfaces.  */
+/* @@@ label Error TypeError: Cannot use array creation expression with abstract classes and interfaces.  */

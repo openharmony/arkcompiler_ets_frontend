@@ -18,7 +18,7 @@ class TestClass {
 }
 
 function main(): void {
-  let a = new TestClass();
+  let a = /* @@ label */new TestClass();
 }
 
-/* @@? 21:11 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@@ label Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */

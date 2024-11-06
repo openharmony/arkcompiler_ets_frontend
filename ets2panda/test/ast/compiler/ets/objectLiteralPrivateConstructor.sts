@@ -17,6 +17,6 @@ class C {
     private constructor () {}
 }
 
-let c: C = {};
+let c: C = /* @@ label */{};
 
-/* @@? 20:12 Error TypeError: Signature constructor(): void is not visible here.  */
+/* @@@ label Error TypeError: Signature constructor(): void is not visible here.  */

@@ -24,11 +24,11 @@ final class StaticClass<T> implements AInterface<T>{
 }
 
 function func (arg: B<String>) {
-    return StaticClass.staticFunction(arg);
+    return /* @@ label */StaticClass.staticFunction(arg);
 }
 
 function main() {
     let a = func(new B<String>());
 }
 
-/* @@? 27:12 Error TypeError: No matching call signature for staticFunction(B<String>)  */
+/* @@@ label Error TypeError: No matching call signature for staticFunction(B<String>)  */

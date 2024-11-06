@@ -16,6 +16,6 @@
 
 var a = {foo : {bar : {baz : 5}}};
 var b: number;
-b = a.foo.bar.bad;
+b = a.foo.bar./* @@ label */bad;
 
-/* @@? 19:15 Error TypeError: Property bad does not exist on this type.  */
+/* @@@ label Error TypeError: Property bad does not exist on this type.  */

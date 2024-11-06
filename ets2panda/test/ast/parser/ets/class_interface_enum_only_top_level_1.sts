@@ -14,9 +14,9 @@
  */
 
 class A {
-  class B {
+  /* @@ label */class B {
     public foo(): void {}
   }
 }
 
-/* @@? 17:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

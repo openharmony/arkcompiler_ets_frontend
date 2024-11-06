@@ -16,8 +16,8 @@
 class A {
     static {
         let a;
-        let a;
+        let /* @@ label */a;
     }
 }
 
-/* @@? 19:13 Error SyntaxError: Variable 'a' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'a' has already been declared.  */

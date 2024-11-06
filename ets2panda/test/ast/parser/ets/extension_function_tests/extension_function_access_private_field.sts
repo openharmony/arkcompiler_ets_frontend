@@ -18,7 +18,7 @@ class Banana {
 }
 
 function Banana.name(): int {
-    return 1 + this.id;
+    return 1 + this./* @@ label */id;
 }
 
 function main() {
@@ -26,4 +26,4 @@ function main() {
     console.println(banana.name());
 }
 
-/* @@? 21:21 Error TypeError: Property id is not visible here.  */
+/* @@@ label Error TypeError: Property id is not visible here.  */

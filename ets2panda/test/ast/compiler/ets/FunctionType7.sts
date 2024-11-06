@@ -21,7 +21,7 @@ class A {
 
 function main(): void {
   let instance = new A();
-  let cb = instance.foo;
+  let /* @@ label */cb = instance.foo;
 }
 
-/* @@? 24:7 Error TypeError: Cannot infer type for cb because method reference needs an explicit target type  */
+/* @@@ label Error TypeError: Cannot infer type for cb because method reference needs an explicit target type  */

@@ -14,7 +14,7 @@
  */
 
 function main() : void {
-    let a: Byte = new Byte(2);
+    let a: Byte = /* @@ label */new Byte(2);
 }
 
-/* @@? 17:19 Error TypeError: No matching construct signature for std.core.Byte(int)  */
+/* @@@ label Error TypeError: No matching construct signature for std.core.Byte(int)  */

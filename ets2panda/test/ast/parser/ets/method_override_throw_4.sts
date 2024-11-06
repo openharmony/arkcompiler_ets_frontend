@@ -14,11 +14,11 @@
  */
 
 class BClass {
-    foo(param: () => void throws): void rethrows {}
+    foo(param: () => void throws): void rethrows /* @@ label */{}
 }
 
 final class CClass extends BClass {
     override foo(param: () => void throws): void {}
 }
 
-/* @@? 17:50 Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */
+/* @@@ label Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */

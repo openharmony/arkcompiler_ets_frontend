@@ -16,5 +16,5 @@
 
 var a: [number, number, number] | number[];
 var b: [number, number, number, number] | string[];
-a = b;
-/* @@? 19:1 Error TypeError: Type '[number, number, number, number] | string[]' is not assignable to type '[number, number, number] | number[]'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type '[number, number, number, number] | string[]' is not assignable to type '[number, number, number] | number[]'.  */

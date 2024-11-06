@@ -15,6 +15,6 @@
 
 enum duplicateKeysStringCase {
     Gray = "#ff808080",
-    Gray = "#ff808080"
+    /* @@ label */Gray = "#ff808080"
 }
-/* @@? 18:5 Error SyntaxError: Variable 'Gray' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'Gray' has already been declared.  */

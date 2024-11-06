@@ -19,5 +19,5 @@ function a(a: number[]): { b: number, c: [number, string] } {
 }
 
 var { b = "foo", c: [c, d] } = a([1, 2, 3]);
-d = {};
-/* @@? 22:1 Error TypeError: Type '{ }' is not assignable to type 'string'.  */
+/* @@ label */d = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'string'.  */

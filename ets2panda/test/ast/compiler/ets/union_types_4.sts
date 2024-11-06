@@ -27,7 +27,7 @@ function main() {
     assert (x as String).equals("STRSTR"): "Error! Must be `STRSTR`";
     x = new A();
     assert (x as A).num == 42: "Error! Field of A must be `42`";
-    x = new B();  // CTE
+    x = /* @@ label */new B();  // CTE
 }
 
-/* @@? 30:9 Error TypeError: Type 'B' cannot be assigned to type 'String|Short|A'  */
+/* @@@ label Error TypeError: Type 'B' cannot be assigned to type 'String|Short|A'  */

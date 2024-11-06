@@ -17,24 +17,24 @@ function foo(callback: (x: int, y: String) => boolean): void {
     let x: boolean = callback(5, "Hello");
 }
 
-function foo(callback: (x: double, y: String) => boolean): void {
+/* @@ label */function foo(callback: (x: double, y: String) => boolean): void {
     let x: boolean = callback(5, "Hello");
 }
 
 function main(): void {
-    foo((x: int, y: String): boolean => {
+    /* @@ label1 */foo((x: int, y: String): boolean => {
         return y.length == x;
     });
-    foo((x: double, y: String): boolean => {
+    /* @@ label2 */foo((x: double, y: String): boolean => {
         return y.length == x;
     });
     // Should report an error
-    foo((x, y) => {
+    /* @@ label3 */foo((x, y) => {
         console.println("hello");
     });
 }
 
-/* @@? 20:1 Error TypeError: Function foo with this assembly signature already declared.  */
-/* @@? 25:5 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
-/* @@? 28:5 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
-/* @@? 32:5 Error TypeError: Reference to foo is ambiguous  */
+/* @@@ label Error TypeError: Function foo with this assembly signature already declared.  */
+/* @@@ label1 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
+/* @@@ label2 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
+/* @@@ label3 Error TypeError: Reference to foo is ambiguous  */

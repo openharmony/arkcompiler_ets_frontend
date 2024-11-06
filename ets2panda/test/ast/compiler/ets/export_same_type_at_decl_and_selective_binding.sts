@@ -14,7 +14,7 @@
  */
 
 export type class A {}
-export type {A}
+export type {/* @@ label */A}
 
 
-/* @@? 17:14 Error SyntaxError: Cannot export the same 'A' type twice.  */
+/* @@@ label Error SyntaxError: Cannot export the same 'A' type twice.  */

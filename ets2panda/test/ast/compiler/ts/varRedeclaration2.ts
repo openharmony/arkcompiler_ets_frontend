@@ -15,5 +15,5 @@
 
 
 var a: number;
-var a: 5;
-/* @@? 18:5 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number', but here has type '5'.  */
+var /* @@ label */a: 5;
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number', but here has type '5'.  */

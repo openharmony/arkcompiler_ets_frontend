@@ -14,6 +14,6 @@
  */
 
 
-var a: { b: number } = { b: function (): string { return "foo" } }
+var a: { b: number } = { /* @@ label */b: function (): string { return "foo" } }
 
-/* @@? 17:26 Error TypeError: Type '() => string' is not assignable to type 'number'.  */
+/* @@@ label Error TypeError: Type '() => string' is not assignable to type 'number'.  */

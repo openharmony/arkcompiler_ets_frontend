@@ -18,8 +18,8 @@ function fn(i: int) {
   if (i > 0) { 
    return true;
   }
-  return 0; 
-  return 1.1; 
+  return /* @@ label */0; 
+  return /* @@ label1 */1.1; 
 }
 
 function main() {
@@ -27,5 +27,5 @@ function main() {
 }
 
 
-/* @@? 21:10 Error TypeError: Function cannot have different primitive return types, require 'boolean', found 'int'  */
-/* @@? 22:10 Error TypeError: Function cannot have different primitive return types, require 'boolean', found 'double'  */
+/* @@@ label Error TypeError: Function cannot have different primitive return types, require 'boolean', found 'int'  */
+/* @@@ label1 Error TypeError: Function cannot have different primitive return types, require 'boolean', found 'double'  */

@@ -19,6 +19,6 @@ interface A {
     [x: string]: number | string,
 }
 
-var a: A = { 5: "foo" };
+var a: A = { /* @@ label */5: "foo" };
 
-/* @@? 22:14 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

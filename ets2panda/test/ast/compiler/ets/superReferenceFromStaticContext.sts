@@ -19,8 +19,8 @@ class A {
 
 class B extends A {
     static {
-        super.a = 13;
+        /* @@ label */super.a = 13;
     }
 }
 
-/* @@? 22:9 Error TypeError: 'super' cannot be referenced from a static context  */
+/* @@@ label Error TypeError: 'super' cannot be referenced from a static context  */

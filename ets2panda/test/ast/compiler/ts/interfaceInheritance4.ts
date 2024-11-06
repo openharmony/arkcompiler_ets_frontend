@@ -24,5 +24,5 @@ interface B {
     c: boolean[]
 }
 
-interface C extends A, B { }
-/* @@? 27:11 Error TypeError: Interface 'C' incorrectly extends interface 'B'  */
+interface /* @@ label */C extends A, B { }
+/* @@@ label Error TypeError: Interface 'C' incorrectly extends interface 'B'  */

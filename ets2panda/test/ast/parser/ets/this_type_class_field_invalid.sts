@@ -15,7 +15,7 @@
 
 class A {
     attr_i: int;
-    attr_a: this;
+    attr_a: /* @@ label */this;
 }
 
-/* @@? 18:13 Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */
+/* @@@ label Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */

@@ -18,10 +18,10 @@ function main(): void {
         try {
             throw new Exception();
         } catch (e) {}
-        finally {
+        finally /* @@ label */{
             throw new Exception();
         }
     } catch (e) {}
 }
 
-/* @@? 21:17 Warning Warning: Finally clause cannot complete normally  */
+/* @@@ label Warning Warning: Finally clause cannot complete normally  */

@@ -14,5 +14,5 @@
  */
 
 
-function foo(@dec a) { };
-/* @@? 17:14 Error SyntaxError: Decorators are not valid here  */
+function foo(/* @@ label */@dec a) { };
+/* @@@ label Error SyntaxError: Decorators are not valid here  */

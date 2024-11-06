@@ -17,6 +17,6 @@ function main(): void {
     type a = Double;
 }
 
-let outA : a;
+let outA : /* @@ label */a;
 
-/* @@? 20:12 Error SyntaxError: Cannot find type 'a'.  */
+/* @@@ label Error SyntaxError: Cannot find type 'a'.  */

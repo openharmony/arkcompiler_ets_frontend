@@ -16,6 +16,6 @@
 
 interface A {
     [x: string]: boolean,
-    a: string;
+    /* @@ label */a: string;
 }
-/* @@? 19:5 Error TypeError: Property 'a' of type 'string' is not assignable to string index type 'boolean'.  */
+/* @@@ label Error TypeError: Property 'a' of type 'string' is not assignable to string index type 'boolean'.  */

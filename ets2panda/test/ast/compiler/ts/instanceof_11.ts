@@ -16,6 +16,6 @@
 
 var a: any;
 var b: number;
-a instanceof b;
+a instanceof /* @@ label */b;
 
-/* @@? 19:14 Error TypeError: The right-hand side of an 'instanceof' expression must be of type 'any' or of a type assignable to the 'Function' interface type.  */
+/* @@@ label Error TypeError: The right-hand side of an 'instanceof' expression must be of type 'any' or of a type assignable to the 'Function' interface type.  */

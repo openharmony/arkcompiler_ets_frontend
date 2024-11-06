@@ -17,7 +17,7 @@ enum Color { Red }
 enum Color2 { Red }
 
 function main(): void {
-  let red: Color = Color2.Red;
+  let red: Color = /* @@ label */Color2.Red;
 }
 
-/* @@? 20:20 Error TypeError: Type 'Color2' cannot be assigned to type 'Color'  */
+/* @@@ label Error TypeError: Type 'Color2' cannot be assigned to type 'Color'  */

@@ -21,7 +21,7 @@ class Base extends A {
 	instance_method () {
 	  console.log(`Base: instance_method() ...`)
 	  super.instance_method(1)
-		super.instance_method() // Should be CTE as instance_method() is abstract
+		/* @@ label */super.instance_method() // Should be CTE as instance_method() is abstract
 	}
 }
 
@@ -30,4 +30,4 @@ a.instance_method ()
 
 function main() {}
 
-/* @@? 24:3 Error TypeError: Cannot call abstract method!  */
+/* @@@ label Error TypeError: Cannot call abstract method!  */

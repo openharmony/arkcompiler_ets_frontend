@@ -15,5 +15,5 @@
 
 
 var a: number[]
-var a: string[]
-/* @@? 18:5 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number[]', but here has type 'string[]'.  */
+var /* @@ label */a: string[]
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number[]', but here has type 'string[]'.  */

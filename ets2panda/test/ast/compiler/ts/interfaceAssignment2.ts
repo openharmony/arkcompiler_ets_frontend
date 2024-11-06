@@ -27,5 +27,5 @@ interface B {
 var a: A;
 var b: B;
 
-a = b;
-/* @@? 30:1 Error TypeError: Type 'B' is not assignable to type 'A'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type 'B' is not assignable to type 'A'.  */

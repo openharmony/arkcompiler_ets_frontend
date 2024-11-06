@@ -16,6 +16,6 @@
 
 var a = [0, 1, 2, 3, 4];
 var b: boolean;
-b = a?.[5];
+/* @@ label */b = a?.[5];
 
-/* @@? 19:1 Error TypeError: Type 'number' is not assignable to type 'boolean'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'boolean'.  */

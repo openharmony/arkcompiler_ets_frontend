@@ -14,5 +14,5 @@
  */
 
 
-a?.a?.a?.``
-/* @@? 17:10 Error SyntaxError: Tagged Template Literals are not allowed in optionalChain  */
+a?.a?.a?./* @@ label */``
+/* @@@ label Error SyntaxError: Tagged Template Literals are not allowed in optionalChain  */

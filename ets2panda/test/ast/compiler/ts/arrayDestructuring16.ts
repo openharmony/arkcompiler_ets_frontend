@@ -16,5 +16,5 @@
 
 var a: [string];
 var [b, c = "foo"] = a;
-c = {};
-/* @@? 19:1 Error TypeError: Type '{ }' is not assignable to type 'string'.  */
+/* @@ label */c = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'string'.  */

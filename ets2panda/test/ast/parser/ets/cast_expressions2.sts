@@ -18,6 +18,6 @@ class B {}
 
 function narrowing_reference_test(): void {
   let A_ = new A();
-  let B_ = A_ as B;
+  let B_ = /* @@ label */A_ as B;
 }
-/* @@? 21:12 Error TypeError: Cannot cast type 'A' to 'B'  */
+/* @@@ label Error TypeError: Cannot cast type 'A' to 'B'  */

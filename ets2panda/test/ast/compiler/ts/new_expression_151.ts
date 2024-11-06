@@ -15,6 +15,6 @@
 
 
 var foo: new (a: boolean, b: boolean) => any;
-var a = new foo(5,"foo");
+var a = new foo(/* @@ label */5,"foo");
 
-/* @@? 18:17 Error TypeError: Type 'number' is not assignable to type 'boolean'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'boolean'.  */

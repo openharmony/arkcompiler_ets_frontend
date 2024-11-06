@@ -18,5 +18,5 @@ var a: number;
 var b: string;
 var c = {};
 
-({c: {b, a} = {a: "baz"}} = {c : {a: 10, b: "bar"}});
-/* @@? 21:6 Error TypeError: Property b does not exist on type { a: number; b: string; } | { a: string; }.  */
+({c: /* @@ label */{b, a} = {a: "baz"}} = {c : {a: 10, b: "bar"}});
+/* @@@ label Error TypeError: Property b does not exist on type { a: number; b: string; } | { a: string; }.  */

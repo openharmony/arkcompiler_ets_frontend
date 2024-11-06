@@ -14,5 +14,5 @@
  */
 
 
-var { a = "foo", b }: { a: number } = { a: 12 };
-/* @@? 17:7 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+var { /* @@ label */a = "foo", b }: { a: number } = { a: 12 };
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

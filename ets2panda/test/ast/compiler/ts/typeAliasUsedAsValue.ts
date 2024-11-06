@@ -17,5 +17,5 @@
 type a = { a: number, b?: string } | number | [string, string, string];
 var b: a;
 
-a += 2;
-/* @@? 20:1 Error TypeError: a only refers to a type, but is being used as a value here.  */
+/* @@ label */a += 2;
+/* @@@ label Error TypeError: a only refers to a type, but is being used as a value here.  */

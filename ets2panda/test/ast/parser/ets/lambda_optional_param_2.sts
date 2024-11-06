@@ -18,8 +18,8 @@ function gf(x: String, fn: (x?: String) => Int): Int {
 }
 
 function main(): void {
-   gf("abc" as String, (x: String): Int => { return x=="TEST"?0:1})
+   /* @@ label */gf("abc" as String, /* @@ label1 */(x: String): Int => { return x=="TEST"?0:1})
 }
 
-/* @@? 21:24 Error TypeError: Type '(x: String) => Int' is not compatible with type '() => Int|(p1: undefined|String) => Int' at index 2  */
-/* @@? 21:4 Error TypeError: No matching call signature  */
+/* @@@ label1 Error TypeError: Type '(x: String) => Int' is not compatible with type '() => Int|(p1: undefined|String) => Int' at index 2  */
+/* @@@ label Error TypeError: No matching call signature  */

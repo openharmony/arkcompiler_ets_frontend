@@ -14,6 +14,6 @@
  */
 class A<T extends A<T>>{}
 class B{}
-class C extends A<B>{}
+class C extends A/* @@ label */<B>{}
 
-/* @@? 17:18 Error TypeError: Type B is not assignable to constraint type A<B>  */
+/* @@@ label Error TypeError: Type B is not assignable to constraint type A<B>  */

@@ -15,6 +15,6 @@
 
 package mypackage;
 
-function foo(): void {}
+/* @@ label */function foo(): void {}
 
-/* @@? 18:1 Error TypeError: Function foo is already declared.  */
+/* @@@ label Error TypeError: Function foo is already declared.  */

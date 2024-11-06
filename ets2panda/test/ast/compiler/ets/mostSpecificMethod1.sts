@@ -21,7 +21,7 @@ function foo(x: A, y: Object) : void {};
 function main() : void {
     let a: A = new A();
 
-    foo(a, a);
+    /* @@ label */foo(a, a);
 }
 
-/* @@? 24:5 Error TypeError: Reference to foo is ambiguous  */
+/* @@@ label Error TypeError: Reference to foo is ambiguous  */

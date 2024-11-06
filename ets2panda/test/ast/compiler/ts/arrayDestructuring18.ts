@@ -15,5 +15,5 @@
 
 
 var [...a]: [number, string] | boolean[] | [bigint, void, {}] = [true, false];
-a = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type '(number | string | boolean | bigint | void | { })[]'.  */
+/* @@ label */a = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type '(number | string | boolean | bigint | void | { })[]'.  */

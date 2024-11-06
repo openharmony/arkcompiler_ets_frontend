@@ -16,13 +16,13 @@
 function refInt(a: Int): void {}
 
 function main() : void {
-    let a: Short = new Short(3); // 3 is int, invocation context won't allow primitive narrowing
+    let a: Short = /* @@ label */new Short(3); // 3 is int, invocation context won't allow primitive narrowing
     let b: short = 2;
-    let c: short = -b; // due to unary operator promotion, '-b' will be int, which is not assignable
-    let d: short = b | b; // due to binary operator promotion, 'b | b' will be int, which is not assignable
+    let c: short = /* @@ label1 */-b; // due to unary operator promotion, '-b' will be int, which is not assignable
+    let d: short = /* @@ label2 */b | b; // due to binary operator promotion, 'b | b' will be int, which is not assignable
     refInt(b); // primitive widening before boxing is not allowed
 }
 
-/* @@? 19:20 Error TypeError: No matching construct signature for std.core.Short(int)  */
-/* @@? 21:20 Error TypeError: Type 'int' cannot be assigned to type 'short'  */
-/* @@? 22:20 Error TypeError: Type 'int' cannot be assigned to type 'short'  */
+/* @@@ label Error TypeError: No matching construct signature for std.core.Short(int)  */
+/* @@@ label1 Error TypeError: Type 'int' cannot be assigned to type 'short'  */
+/* @@@ label2 Error TypeError: Type 'int' cannot be assigned to type 'short'  */

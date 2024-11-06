@@ -22,7 +22,7 @@ class A<T> {
 }
 
 function main(): void {
-    let req_a: A<B> = {fld: {}};
+    let req_a: A<B> = {fld: /* @@ label */{}};
 }
 
-/* @@? 25:29 Error TypeError: Class property 'b_fld' needs to be initialized for required type.  */
+/* @@@ label Error TypeError: Class property 'b_fld' needs to be initialized for required type.  */

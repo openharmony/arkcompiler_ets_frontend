@@ -15,5 +15,5 @@
 
 
 var a;
-delete a;
-/* @@? 18:9 Error SyntaxError: Deleting local variable in strict mode  */
+delete a/* @@ label */;
+/* @@@ label Error SyntaxError: Deleting local variable in strict mode  */

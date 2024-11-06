@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-enum double {
+enum /* @@ label */double {
     A, B, C
 }
 
-/* @@? 16:6 Error SyntaxError: Cannot be used as user-defined type.  */
+/* @@@ label Error SyntaxError: Cannot be used as user-defined type.  */

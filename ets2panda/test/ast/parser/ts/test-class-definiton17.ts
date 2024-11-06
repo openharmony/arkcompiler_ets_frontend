@@ -15,6 +15,6 @@
 
 
 class Foo {
-    abstract a()
+    abstract /* @@ label */a()
 }
-/* @@? 18:14 Error SyntaxError: Abstract methods can only appear within an abstract class.  */
+/* @@@ label Error SyntaxError: Abstract methods can only appear within an abstract class.  */

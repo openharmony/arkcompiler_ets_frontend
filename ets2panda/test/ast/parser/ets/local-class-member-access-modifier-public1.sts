@@ -17,7 +17,7 @@ function foo()
 {
     class LocalClass
     {
-        public property : int;
+        /* @@ label */public property : int;
     }
 }
-/* @@? 20:9 Error SyntaxError: Local class declaration members can not have access modifies  */
+/* @@@ label Error SyntaxError: Local class declaration members can not have access modifies  */

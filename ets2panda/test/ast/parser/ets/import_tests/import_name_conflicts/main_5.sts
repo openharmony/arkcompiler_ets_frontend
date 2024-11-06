@@ -14,8 +14,8 @@
  */
 
 import * as b from "./imported_module_1.sts"
-import * as b from "./imported_module_2.sts"
+import /* @@ label */* as b from "./imported_module_2.sts"
 
 function main() : void {}
 
-/* @@? 17:8 Error SyntaxError: Variable 'b' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'b' has already been declared.  */

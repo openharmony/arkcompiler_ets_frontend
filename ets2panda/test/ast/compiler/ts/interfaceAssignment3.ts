@@ -34,6 +34,6 @@ var d: D;
 var a: A;
 
 a = d;
-d = a;
+/* @@ label */d = a;
 
-/* @@? 37:1 Error TypeError: Type 'A' is not assignable to type 'D'.  */
+/* @@@ label Error TypeError: Type 'A' is not assignable to type 'D'.  */

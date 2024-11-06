@@ -33,11 +33,11 @@ final class C2 extends C1 {
 }
 
 class C3 {
-  a(): void;
+  a/* @@ label */(): void;
 }
 
 final class C4 extends C3 {
   override a(): void {};
 }
 
-/* @@? 36:4 Error TypeError: Only abstract or native methods can't have body.  */
+/* @@@ label Error TypeError: Only abstract or native methods can't have body.  */

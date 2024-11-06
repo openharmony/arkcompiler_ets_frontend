@@ -18,6 +18,6 @@ class G <T> {
 }
 
 let a = new G<String>();
-a.y++;
+a./* @@ label */y++;
 
-/* @@? 21:3 Error TypeError: 'y' is a static property of 'G'  */
+/* @@@ label Error TypeError: 'y' is a static property of 'G'  */

@@ -20,6 +20,6 @@ flags: [dynamic-ast]
 import { A } from "dynamic_import_tests/modules/module"
 
 function foo(): void {
-    let x: string = A.bar()
+    let x: string = /* @@ label */A.bar()
 }
-/* @@? 23:21 Error TypeError: Type 'double' cannot be assigned to type 'String'  */
+/* @@@ label Error TypeError: Type 'double' cannot be assigned to type 'String'  */

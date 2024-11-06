@@ -17,10 +17,10 @@ enum Color { Red, Green, Blue }
 
 function main(): void {
 	switch (Color.Red) {
-        case 0: break;
+        case /* @@ label */0: break;
 		default:
 			break;
 	}
 }
 
-/* @@? 20:14 Error TypeError: Switch case type 'int' is not comparable to discriminant type 'Color'  */
+/* @@@ label Error TypeError: Switch case type 'int' is not comparable to discriminant type 'Color'  */

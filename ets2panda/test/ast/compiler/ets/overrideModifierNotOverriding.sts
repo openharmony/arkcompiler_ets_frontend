@@ -20,9 +20,9 @@ class A {
 }
 
 class B {
-    public override foo(a: int): int {
+    public override foo/* @@ label */(a: int): int {
         return 1;
     }
 }
 
-/* @@? 23:24 Error TypeError: Method foo(a: int): int in B not overriding any method  */
+/* @@@ label Error TypeError: Method foo(a: int): int in B not overriding any method  */

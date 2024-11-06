@@ -15,6 +15,6 @@
 
 
 declare class Foo {
-    public g() { };
+    public g() /* @@ label */{ };
 }
-/* @@? 18:16 Error SyntaxError: An implementation cannot be declared in ambient contexts.  */
+/* @@@ label Error SyntaxError: An implementation cannot be declared in ambient contexts.  */

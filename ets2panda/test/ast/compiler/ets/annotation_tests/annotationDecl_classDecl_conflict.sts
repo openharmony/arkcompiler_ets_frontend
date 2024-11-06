@@ -14,6 +14,6 @@
  */
 
 @interface MyAnno {}
-class MyAnno {}
+class /* @@ label */MyAnno {}
 
-/* @@? 17:7 Error SyntaxError: Variable 'MyAnno' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'MyAnno' has already been declared.  */

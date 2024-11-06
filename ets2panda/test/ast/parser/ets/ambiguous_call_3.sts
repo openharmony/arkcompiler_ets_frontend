@@ -20,7 +20,7 @@ class B {}
 class X extends B implements I1 {}
 
 function main (): void {
-    goo (new X())
+    /* @@ label */goo (new X())
 }
 
-/* @@? 23:5 Error TypeError: Call to `goo` is ambiguous as `2` versions of `goo` are available: `goo(p2: B): void` and `goo(p1: I1): void`  */
+/* @@@ label Error TypeError: Call to `goo` is ambiguous as `2` versions of `goo` are available: `goo(p2: B): void` and `goo(p1: I1): void`  */

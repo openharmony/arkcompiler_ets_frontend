@@ -14,5 +14,5 @@
  */
 
 
-var a: [number, string] = [5, 6];
-/* @@? 17:31 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+var a: [number, string] = [5, /* @@ label */6];
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

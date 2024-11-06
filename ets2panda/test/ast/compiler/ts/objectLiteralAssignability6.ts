@@ -14,5 +14,5 @@
  */
 
 
-var a: { a: number, b: string } | { a: string, b: number } = { a: true };
-/* @@? 17:64 Error TypeError: Type 'boolean' is not assignable to type 'number | string'.  */
+var a: { a: number, b: string } | { a: string, b: number } = { /* @@ label */a: true };
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'number | string'.  */

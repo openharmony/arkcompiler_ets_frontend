@@ -14,5 +14,5 @@
  */
 
 
-var [a, ...[b, c]] = [1, 2];
-/* @@? 17:12 Error TypeError: Tuple type [number] of length 1 has no element at index 1.  */
+var [a, .../* @@ label */[b, c]] = [1, 2];
+/* @@@ label Error TypeError: Tuple type [number] of length 1 has no element at index 1.  */

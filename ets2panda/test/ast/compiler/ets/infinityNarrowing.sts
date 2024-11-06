@@ -14,8 +14,8 @@
  */
 
 export const floatInf: float = 1.0 / 0.0
-export const byteInf: byte = 1.0 / 0.0
-export const shortInf: short = 1.0 / 0.0
+export const byteInf: byte = /* @@ label */1.0 / 0.0
+export const shortInf: short = /* @@ label1 */1.0 / 0.0
 
-/* @@? 17:30 Error TypeError: Type 'double' cannot be assigned to type 'byte'  */
-/* @@? 18:32 Error TypeError: Type 'double' cannot be assigned to type 'short'  */
+/* @@@ label Error TypeError: Type 'double' cannot be assigned to type 'byte'  */
+/* @@@ label1 Error TypeError: Type 'double' cannot be assigned to type 'short'  */

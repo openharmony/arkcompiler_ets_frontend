@@ -15,6 +15,6 @@
  */
 
 function void1(i: int) {}
-let fn: (i: int) => int = void1;
+let fn: (i: int) => int = /* @@ label */void1;
 
-/* @@? 18:27 Error TypeError: Type '(i: int) => void' cannot be assigned to type '(p1: Int) => Int'  */
+/* @@@ label Error TypeError: Type '(i: int) => void' cannot be assigned to type '(p1: Int) => Int'  */

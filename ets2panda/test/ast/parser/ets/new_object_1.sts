@@ -15,7 +15,7 @@
 
 function main() : void
 {
-  let x : int = new int();
+  let x : int = new /* @@ label */int();
 }
 
-/* @@? 18:21 Error SyntaxError: Can not use 'new' on primitive types.  */
+/* @@@ label Error SyntaxError: Can not use 'new' on primitive types.  */

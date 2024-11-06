@@ -19,7 +19,7 @@ function main(): void {
     s.toString()
     let a: int [] = [1, 2]
     let b = s ?? a;
-    b.toString();
+    /* @@ label */b.toString();
 }
 
-/* @@? 22:5 Error TypeError: Type String|int[] is illegal in union member expression.  */
+/* @@@ label Error TypeError: Type String|int[] is illegal in union member expression.  */

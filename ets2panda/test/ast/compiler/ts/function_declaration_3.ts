@@ -15,7 +15,7 @@
 
 
 function foo(): string {
-return false;
+/* @@ label */return false;
 }
 
-/* @@? 18:1 Error TypeError: Type 'boolean' is not assignable to type 'string'.  */
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'string'.  */

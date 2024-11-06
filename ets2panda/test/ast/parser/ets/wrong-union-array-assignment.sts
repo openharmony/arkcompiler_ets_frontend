@@ -21,7 +21,7 @@ class Bad
 function main()
 {
     let array = [1, 2.3, "string"];
-    array = new Bad();
+    array = /* @@ label */new Bad();
 }
 
-/* @@? 24:13 Error TypeError: Type 'Bad' cannot be assigned to type '(Int|Double|String)[]'  */
+/* @@@ label Error TypeError: Type 'Bad' cannot be assigned to type '(Int|Double|String)[]'  */

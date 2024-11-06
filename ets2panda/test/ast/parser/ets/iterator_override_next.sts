@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-class CLterator implements Iterator <string> {
+class CLterator implements Iterator <string> /* @@ label */{
     next(): Iterator<string> {}
 }
 
-/* @@? 16:46 Error TypeError: CLterator is not abstract and does not override abstract method next(): IteratorResult<String> in Iterator  */
+/* @@@ label Error TypeError: CLterator is not abstract and does not override abstract method next(): IteratorResult<String> in Iterator  */
 

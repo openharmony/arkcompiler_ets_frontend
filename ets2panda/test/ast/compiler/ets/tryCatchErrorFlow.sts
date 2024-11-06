@@ -18,9 +18,9 @@ function main(): void {
     throw new DivideByZeroError();
   } catch (p){
     //Do something.
-  } catch (p: DivideByZeroError) {
+  } /* @@ label */catch (p: DivideByZeroError) {
     //Do something.
   }
 }
 
-/* @@? 21:5 Error TypeError: Default catch clause should be the last in the try statement  */
+/* @@@ label Error TypeError: Default catch clause should be the last in the try statement  */

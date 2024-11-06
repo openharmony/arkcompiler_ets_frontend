@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-"a\bcde\fg"
+/* @@ label */"a\bcde\fg"
 
 
-/* @@? 16:1 Error SyntaxError: Unexpected token: 'string literal'.  */
+/* @@@ label Error SyntaxError: Unexpected token: 'string literal'.  */

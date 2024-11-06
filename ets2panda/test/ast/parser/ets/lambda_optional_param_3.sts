@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function gf(x: String, fn: (x: String = "TEST") => Int): Int {
+function gf(x: String, fn: (x: String = /* @@ label */"TEST") => Int): Int {
   return fn(x)
 }
 
@@ -21,4 +21,4 @@ function main(): void {
    gf("abc" as String, (x: String): Int => { return x=="TEST"?0:1})
 }
 
-/* @@? 16:41 Error SyntaxError: Default value is allowed only for optional parameters  */
+/* @@@ label Error SyntaxError: Default value is allowed only for optional parameters  */

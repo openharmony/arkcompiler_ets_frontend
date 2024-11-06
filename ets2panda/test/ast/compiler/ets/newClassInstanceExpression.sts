@@ -20,8 +20,8 @@ class A {
 }
 
 function main(): int {
-    let obj = new A.fun();
+    let obj = new A./* @@ label */fun();
     return 0;
 }
 
-/* @@? 23:21 Error TypeError: 'fun' type does not exist.  */
+/* @@@ label Error TypeError: 'fun' type does not exist.  */

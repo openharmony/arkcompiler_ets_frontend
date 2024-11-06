@@ -14,5 +14,5 @@
  */
 
 
-function foo([]?) { }
-/* @@? 17:17 Error SyntaxError: A binding pattern parameter cannot be optional in an implementation signature.  */
+function foo([]?/* @@ label */) { }
+/* @@@ label Error SyntaxError: A binding pattern parameter cannot be optional in an implementation signature.  */

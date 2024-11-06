@@ -14,5 +14,5 @@
  */
 
 
-declare let a = 5;
-/* @@? 17:17 Error SyntaxError: Initializers are not allowed in ambient contexts.  */
+declare let a = /* @@ label */5;
+/* @@@ label Error SyntaxError: Initializers are not allowed in ambient contexts.  */

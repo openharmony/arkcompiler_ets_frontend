@@ -18,8 +18,8 @@ type BaseColor = Color;
 
 function main(): void {
     let a: Color = Color.Red;  // OK
-    let v: BaseColor = BaseColor.Red;  // TypeError, bc 'BaseColor' is type alias
+    let v: BaseColor = BaseColor./* @@ label */Red;  // TypeError, bc 'BaseColor' is type alias
 }
 
 
-/* @@? 21:34 Error TypeError: Cannot refer to enum members through type alias.  */
+/* @@@ label Error TypeError: Cannot refer to enum members through type alias.  */

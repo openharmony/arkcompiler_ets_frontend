@@ -22,7 +22,7 @@ class A {
 
 class B extends A {
     public constructor() {
-        this(alma(super.x))
+        this(alma(/* @@ label */super.x))
     }
 
     public constructor(x: int) {
@@ -33,4 +33,4 @@ function alma(param: int) : int {
     return param;
 }
 
-/* @@? 25:19 Error TypeError: Using super is not allowed in constructor  */
+/* @@@ label Error TypeError: Using super is not allowed in constructor  */

@@ -17,10 +17,10 @@ function f(c: ()=>void) {
     c();
 }
 
-f(()=>{
+/* @@ label */f(()=>{
 
 }) {
 
 }
 
-/* @@? 20:1 Error TypeError: No matching call signature with trailing lambda  */
+/* @@@ label Error TypeError: No matching call signature with trailing lambda  */

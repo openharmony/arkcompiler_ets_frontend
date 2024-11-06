@@ -22,7 +22,7 @@ function foo(a: boolean | undefined) : int {
         }
     } else {
     //a is undefined
-        if (a == false) {
+        if (/* @@ label */a == false) {
             return 0;
         } else {
             return 1;
@@ -36,4 +36,4 @@ function main() {
     foo(undefined);
 }
 
-/* @@? 25:13 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */
+/* @@@ label Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */

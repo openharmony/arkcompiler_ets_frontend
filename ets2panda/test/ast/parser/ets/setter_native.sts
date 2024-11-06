@@ -15,9 +15,9 @@
 
 class Door {
     private _width: int;
-    native set width(w:int): void {
+    native /* @@ label */set width(w:int): void {
         this._width = w;
     }
 }
 
-/* @@? 18:12 Error SyntaxError: Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override'). */
+/* @@@ label Error SyntaxError: Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override'). */

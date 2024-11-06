@@ -15,7 +15,7 @@
 class A{}
 
 declare class C {
-    [Symbol.iterator](): A;
+    [Symbol.iterator]/* @@ label */(): A;
 }
 
-/* @@? 18:22 Error TypeError: The return type of '$_iterator' must be a type that implements Iterator interface.  */
+/* @@@ label Error TypeError: The return type of '$_iterator' must be a type that implements Iterator interface.  */

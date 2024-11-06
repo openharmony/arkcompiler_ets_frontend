@@ -14,7 +14,7 @@
  */
 
 function labeledBlockTest01():void{
-label1:{}
+label1:/* @@ label */{}
 }
 
-/* @@? 17:8 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label Error SyntaxError: Label must be followed by a loop statement  */

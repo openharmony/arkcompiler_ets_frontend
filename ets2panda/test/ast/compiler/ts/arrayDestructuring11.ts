@@ -15,5 +15,5 @@
 
 
 var [...a] = [1, "foo", true];
-a = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type '[number, string, boolean]'.  */
+/* @@ label */a = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type '[number, string, boolean]'.  */

@@ -14,8 +14,8 @@
  */
 
 function main(): void {
-  let a : Int = new Double(2);
+  let a : Int = /* @@ label */new Double(2);
   return;
 }
 
-/* @@? 17:17 Error TypeError: Type 'Double' cannot be assigned to type 'Int'  */
+/* @@@ label Error TypeError: Type 'Double' cannot be assigned to type 'Int'  */

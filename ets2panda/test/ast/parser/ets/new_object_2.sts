@@ -15,7 +15,7 @@
 
 function main() : void
 {
-  let x = new boolean();
+  let x = new /* @@ label */boolean();
 }
 
-/* @@? 18:15 Error SyntaxError: Can not use 'new' on primitive types.  */
+/* @@@ label Error SyntaxError: Can not use 'new' on primitive types.  */

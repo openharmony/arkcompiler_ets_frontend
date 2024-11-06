@@ -18,7 +18,7 @@ type func_type = () => void throws;
 function main(): void {
   let a: func_type = (): void => {};
 
-  a();
+  /* @@ label */a();
 }
 
-/* @@? 21:3 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@@ label Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */

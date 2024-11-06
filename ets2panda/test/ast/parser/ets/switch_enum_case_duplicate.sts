@@ -22,11 +22,11 @@ function main() {
     switch (m) {
         case B.C:
             break;
-        case B.D:
+        case /* @@ label */B.D:
             break;
         case B.D:
             break;
     }
 }
 
-/* @@? 25:14 Error TypeError: Case duplicate  */
+/* @@@ label Error TypeError: Case duplicate  */

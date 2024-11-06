@@ -21,8 +21,8 @@ function main() {
   };
 
   if (x instanceof string) {
-    let tmp: string = x;            // no smart cast!
+    let tmp: string = /* @@ label */x;            // no smart cast!
   }	
 }
 
-/* @@? 24:23 Error TypeError: Type 'Double|String|undefined' cannot be assigned to type 'String'  */
+/* @@@ label Error TypeError: Type 'Double|String|undefined' cannot be assigned to type 'String'  */

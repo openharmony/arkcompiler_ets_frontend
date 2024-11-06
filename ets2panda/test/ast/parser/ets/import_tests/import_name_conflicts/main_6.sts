@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-import {dbl as c} from "./imported_module_1.sts";
+import {dbl as c} from /* @@ label */"./imported_module_1.sts";
 import * as c from "./imported_module_2.sts";
 
 
 function main() {
     console.log(c);
 }
-/* @@? 16:24 Error SyntaxError: Variable 'c' is already defined with different type.  */
+/* @@@ label Error SyntaxError: Variable 'c' is already defined with different type.  */

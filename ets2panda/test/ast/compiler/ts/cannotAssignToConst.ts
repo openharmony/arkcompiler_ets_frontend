@@ -15,6 +15,6 @@
 
 
 const a = 5;
-a = 5;
+/* @@ label */a = 5;
 
-/* @@? 18:1 Error TypeError: Cannot assign to a because it is a constant.  */
+/* @@@ label Error TypeError: Cannot assign to a because it is a constant.  */

@@ -14,9 +14,9 @@
  */
 
 
-function foo(a: number, b?: string): number;
+function /* @@ label */foo(a: number, b?: string): number;
 function foo(a: string | number, b: string, c: number): number;
 function foo(a: string | number, b?: string, c?: number) {
     return "foo";
 }
-/* @@? 17:10 Error TypeError: This overload signature is not compatible with its implementation signature  */
+/* @@@ label Error TypeError: This overload signature is not compatible with its implementation signature  */

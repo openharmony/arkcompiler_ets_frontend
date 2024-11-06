@@ -17,10 +17,10 @@ class A {
     a: int = 1;
 }
 
-class B extends A {
+class B extends /* @@ label */A {
     a(a: int): void {
 
     }
 }
 
-/* @@? 20:17 Error TypeError: Cannot inherit from class A, because method a is inherited with a different declaration type  */
+/* @@@ label Error TypeError: Cannot inherit from class A, because method a is inherited with a different declaration type  */

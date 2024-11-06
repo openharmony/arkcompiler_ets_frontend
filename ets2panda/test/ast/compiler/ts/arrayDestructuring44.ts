@@ -17,5 +17,5 @@
 var a: string[];
 var b: string[];
 
-[[...b], ...a] = [["foo", false], "foo"]
-/* @@? 20:6 Error TypeError: Type '[string, boolean]' is not assignable to type 'string[]'.  */
+[[.../* @@ label */b], ...a] = [["foo", false], "foo"]
+/* @@@ label Error TypeError: Type '[string, boolean]' is not assignable to type 'string[]'.  */

@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 class SomeType{}
-function foo<T=[T2, SomeType], T2=SomeType>(){}
-/* @@? 16:17 Error TypeError: Type Parameter T2 should be defined before use.  */
+function foo<T=[/* @@ label */T2, SomeType], T2=SomeType>(){}
+/* @@@ label Error TypeError: Type Parameter T2 should be defined before use.  */

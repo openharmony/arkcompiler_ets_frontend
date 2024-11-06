@@ -16,5 +16,5 @@
 
 var a: string | number;
 
-[a = 2] = [false];
-/* @@? 19:2 Error TypeError: Type 'boolean' is not assignable to type 'string | number'.  */
+[/* @@ label */a = 2] = [false];
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'string | number'.  */

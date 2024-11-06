@@ -14,9 +14,9 @@
  */
 
 
-"foo
+"foo/* @@ label */
 
 
 "
 
-/* @@? 17:5 Error SyntaxError: Newline is not allowed in strings  */
+/* @@@ label Error SyntaxError: Newline is not allowed in strings  */

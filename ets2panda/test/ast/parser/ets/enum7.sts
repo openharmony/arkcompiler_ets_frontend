@@ -17,7 +17,7 @@ enum Color { Red }
 enum Color2 { Red }
 
 function main(): void {
-  assert Color.Red == Color2.Red;
+  assert /* @@ label */Color.Red == Color2.Red;
 }
 
-/* @@? 20:10 Error TypeError: Bad operand type, the types of the operands must be the same enum type.  */
+/* @@@ label Error TypeError: Bad operand type, the types of the operands must be the same enum type.  */

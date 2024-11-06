@@ -24,5 +24,5 @@ interface b extends a {
 }
 
 var c: b;
-c.d = "foo";
-/* @@? 27:1 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+/* @@ label */c.d = "foo";
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

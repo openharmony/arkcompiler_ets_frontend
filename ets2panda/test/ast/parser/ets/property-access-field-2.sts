@@ -17,8 +17,8 @@ class A {
     instanceVal: int = 42;
 
     public getInstanceVal(): int {
-        return A.instanceVal;
+        return A./* @@ label */instanceVal;
     }
 }
 
-/* @@? 20:18 Error TypeError: 'instanceVal' is an instance property of 'A'  */
+/* @@@ label Error TypeError: 'instanceVal' is an instance property of 'A'  */

@@ -19,7 +19,7 @@ class B{}
 function main(): void {
   let a : A = new A();
   let b : B = new B();
-  let c = a === b;
+  let c = /* @@ label */a === b;
 }
 
-/* @@? 22:11 Error TypeError: Operator '===' cannot be applied to types 'A' and 'B'.  */
+/* @@@ label Error TypeError: Operator '===' cannot be applied to types 'A' and 'B'.  */

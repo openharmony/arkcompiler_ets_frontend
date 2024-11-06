@@ -17,11 +17,11 @@ enum Color { Red, Green, Blue }
 
 function main(): void {
 	switch (Color.Red) {
-        case Color.Red: break;
+        case /* @@ label */Color.Red: break;
         case Color.Red: break;
 		default:
 			break;
 	}
 }
 
-/* @@? 20:14 Error TypeError: Case duplicate  */
+/* @@@ label Error TypeError: Case duplicate  */

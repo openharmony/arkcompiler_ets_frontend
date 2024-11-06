@@ -16,6 +16,6 @@
 class A{}
 
 function main(){
-    let a: Record<BigInt, number>
+    let a: Record/* @@ label */<BigInt, number>
 }
-/* @@? 19:18 Error TypeError: Type BigInt is not assignable to constraint type Numeric|String  */
+/* @@@ label Error TypeError: Type BigInt is not assignable to constraint type Numeric|String  */

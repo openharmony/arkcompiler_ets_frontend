@@ -15,6 +15,6 @@
 
 // TODO: Should be a "SyntaxError: Variance modifier is not allowed here [type_variance4.sts:18:13]",
 // after generic global function parsing is implemented.
-function fn<in T>(t: T): void {}
+function fn</* @@ label */in T>(t: T): void {}
 
-/* @@? 18:13 Error SyntaxError: Variance modifier is not allowed here.  */
+/* @@@ label Error SyntaxError: Variance modifier is not allowed here.  */

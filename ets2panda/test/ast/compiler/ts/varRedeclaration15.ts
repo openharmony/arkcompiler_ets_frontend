@@ -15,5 +15,5 @@
 
 
 var a: { a: number, b: string };
-var a: typeof a | 5;
-/* @@? 18:5 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '{ a: number; b: string; }', but here has type '{ a: number; b: string; } | 5'.  */
+var /* @@ label */a: typeof a | 5;
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '{ a: number; b: string; }', but here has type '{ a: number; b: string; } | 5'.  */

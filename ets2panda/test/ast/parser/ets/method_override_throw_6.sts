@@ -14,11 +14,11 @@
  */
 
 class BClass {
-    static bar(): void throws {}
+    static bar(): void throws /* @@ label */{}
 }
 
 class CClass extends BClass {
     static bar(): void {}
 }
 
-/* @@? 17:31 Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */
+/* @@@ label Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */

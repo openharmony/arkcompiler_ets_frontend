@@ -14,5 +14,5 @@
  */
 
 
-var a: string &;
-/* @@? 17:16 Error SyntaxError: Type expected  */
+var a: string &/* @@ label */;
+/* @@@ label Error SyntaxError: Type expected  */

@@ -15,7 +15,7 @@
 
 class A {
     static bar() {}
-    foo() { bar(); }
+    foo() { /* @@ label */bar(); }
 }
 
-/* @@? 18:13 Error TypeError: Static property 'bar' must be accessed through it's class 'A'  */
+/* @@@ label Error TypeError: Static property 'bar' must be accessed through it's class 'A'  */

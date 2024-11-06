@@ -14,7 +14,7 @@
  */
 
 
-function func(...a: string) {
+function func(/* @@ label */...a: string) {
     return 6;
 }
-/* @@? 17:15 Error TypeError: A rest parameter must be of an array type  */
+/* @@@ label Error TypeError: A rest parameter must be of an array type  */

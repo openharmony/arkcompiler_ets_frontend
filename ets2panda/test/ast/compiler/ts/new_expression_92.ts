@@ -15,6 +15,6 @@
 
 
 var foo: { new(a: any, b: any): any ;};
-var a = new foo("foo",5,5n,false);
+var a = new foo("foo",5,/* @@ label */5n,false);
 
-/* @@? 18:25 Error TypeError: Expected 2 arguments, but got 4.  */
+/* @@@ label Error TypeError: Expected 2 arguments, but got 4.  */

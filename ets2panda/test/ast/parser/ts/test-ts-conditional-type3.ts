@@ -14,5 +14,5 @@
  */
 
 
-type Foo = string extends number ? number string : string;
-/* @@? 17:43 Error SyntaxError: ':' expected.  */
+type Foo = string extends number ? number /* @@ label */string : string;
+/* @@@ label Error SyntaxError: ':' expected.  */

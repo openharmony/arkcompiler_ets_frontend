@@ -15,8 +15,8 @@
 
 enum Fruit { size = 4 };
 
-function Fruit.name(): int {
+/* @@ label */function Fruit.name(): int {
     return 1;
 }
 
-/* @@? 18:1 Error TypeError: Extension function can only defined for class and interface type.  */
+/* @@@ label Error TypeError: Extension function can only defined for class and interface type.  */

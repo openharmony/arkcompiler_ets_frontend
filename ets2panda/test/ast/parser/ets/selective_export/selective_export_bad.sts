@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-export { foo };
+export { /* @@ label */foo };
 
 function bar(): int {
     return 1;
 }
 
-/* @@? 16:10 Error SyntaxError: Cannot find name 'foo' to export  */
+/* @@@ label Error SyntaxError: Cannot find name 'foo' to export  */

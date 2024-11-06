@@ -14,6 +14,6 @@
  */
 
 
-let a: [number, ...number[], number] = [1, 2, 3];
+let a: [number, ...number[], /* @@ label */number] = [1, 2, 3];
 
-/* @@? 17:30 Error SyntaxError: Spread type must be at the last index in the tuple type  */
+/* @@@ label Error SyntaxError: Spread type must be at the last index in the tuple type  */

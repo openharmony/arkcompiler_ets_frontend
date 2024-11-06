@@ -16,7 +16,7 @@
 var a = {};
 var b: number;
 var c: string;
-({a : {c}} = {a : "foo"})
+({a : /* @@ label */{c}} = {a : "foo"})
 
 
-/* @@? 19:7 Error TypeError: Property c does not exist on type string.  */
+/* @@@ label Error TypeError: Property c does not exist on type string.  */

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function foo(): int {
+function /* @@ label */foo(): int {
     try {
         return 0;
     } catch (e: ArithmeticError) {
@@ -23,4 +23,4 @@ function foo(): int {
     }
 }
 
-/* @@? 16:10 Error TypeError: Not all code paths return a value.  */
+/* @@@ label Error TypeError: Not all code paths return a value.  */

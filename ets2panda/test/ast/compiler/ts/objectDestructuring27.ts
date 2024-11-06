@@ -15,8 +15,8 @@
 
 
 var e: void;
-var { a: { b: [c = 2, d] = ["foo", true] } = { b: [2, "foo"] } } = { a: { k: 2, b: [true, 2n] }, t: 6 };
+var /* @@ label */{ a: { b: [c = 2, d] = ["foo", true] } = { b: [2, "foo"] } } = { a: { k: 2, b: [true, 2n] }, t: 6 };
 
 
 
-/* @@? 18:5 Error TypeError: Object literal may only specify known properties, and property 't' does not exist in the pattern.  */
+/* @@@ label Error TypeError: Object literal may only specify known properties, and property 't' does not exist in the pattern.  */

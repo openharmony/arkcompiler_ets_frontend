@@ -14,6 +14,6 @@
  */
 
 
-let a: [a0: , a1: number] = [1, 2, 3];
+let a: [a0: /* @@ label */, a1: number] = [1, 2, 3];
 
-/* @@? 17:13 Error SyntaxError: Invalid Type  */
+/* @@@ label Error SyntaxError: Invalid Type  */

@@ -20,6 +20,6 @@ class A1<in T> {}
 class A2<out T> {}
 
 function main(): void {
-    let x2: A1<B> = new A1<A>()
+    let x2: A1<B> = /* @@ label */new A1<A>()
 }
-/* @@? 23:21 Error TypeError: Type 'A1<A>' cannot be assigned to type 'A1<B>'  */
+/* @@@ label Error TypeError: Type 'A1<A>' cannot be assigned to type 'A1<B>'  */

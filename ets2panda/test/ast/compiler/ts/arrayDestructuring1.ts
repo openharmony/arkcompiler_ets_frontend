@@ -14,5 +14,5 @@
  */
 
 
-var [a] = [];
-/* @@? 17:5 Error TypeError: Tuple type [] of length 0 has no element at index 0.  */
+var /* @@ label */[a] = [];
+/* @@@ label Error TypeError: Tuple type [] of length 0 has no element at index 0.  */

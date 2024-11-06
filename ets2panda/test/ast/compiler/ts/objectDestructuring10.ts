@@ -14,5 +14,5 @@
  */
 
 
-var { a: { a, b } = { a: 1, b: true } } = { a: 5 }
-/* @@? 17:10 Error TypeError: Property a does not exist on type number | { a: number; b: boolean; }.  */
+var { a: /* @@ label */{ a, b } = { a: 1, b: true } } = { a: 5 }
+/* @@@ label Error TypeError: Property a does not exist on type number | { a: number; b: boolean; }.  */

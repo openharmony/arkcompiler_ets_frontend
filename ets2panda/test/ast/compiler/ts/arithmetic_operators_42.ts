@@ -15,7 +15,7 @@
 
 
 var a: bigint;
-a = 5;
+/* @@ label */a = 5;
 a / false;
 
-/* @@? 18:1 Error TypeError: Type 'number' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'bigint'.  */

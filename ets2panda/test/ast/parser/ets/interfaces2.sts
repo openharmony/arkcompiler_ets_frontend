@@ -15,6 +15,6 @@
 
 interface K {}
 
-interface J implements K {}
+interface J /* @@ label */implements K {}
 
-/* @@? 18:13 Error SyntaxError: Interface declaration cannot have 'implements' clause.  */
+/* @@@ label Error SyntaxError: Interface declaration cannot have 'implements' clause.  */

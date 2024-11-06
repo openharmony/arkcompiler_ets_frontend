@@ -21,8 +21,8 @@ class A {
   a: B = new B();
 
   bar(): void {
-    this.a.a = "foo";
+    this.a.a = /* @@ label */"foo";
   }
 }
 
-/* @@? 24:16 Error TypeError: Type '"foo"' cannot be assigned to type 'int'  */
+/* @@@ label Error TypeError: Type '"foo"' cannot be assigned to type 'int'  */

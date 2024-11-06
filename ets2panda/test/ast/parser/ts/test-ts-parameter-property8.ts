@@ -15,6 +15,6 @@
 
 
 class Foo {
-    constructor(private readonly ...rest) { };
+    constructor(/* @@ label */private readonly ...rest) { };
 }
-/* @@? 18:17 Error SyntaxError: A parameter property cannot be declared using a rest parameter.  */
+/* @@@ label Error SyntaxError: A parameter property cannot be declared using a rest parameter.  */

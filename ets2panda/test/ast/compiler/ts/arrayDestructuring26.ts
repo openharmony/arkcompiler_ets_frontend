@@ -14,5 +14,5 @@
  */
 
 
-var [a = 5, { b, c }] = [, { b: 5 }]
-/* @@? 17:13 Error TypeError: Property c does not exist on type { b: number; }.  */
+var [a = 5, /* @@ label */{ b, c }] = [, { b: 5 }]
+/* @@@ label Error TypeError: Property c does not exist on type { b: number; }.  */

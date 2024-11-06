@@ -27,7 +27,7 @@ function main() : void {
     let a: A = new A();
     let obj : KlassB = new KlassB();
 
-    obj.Foo(a, a);
+    /* @@ label */obj.Foo(a, a);
 }
 
-/* @@? 30:5 Error TypeError: Reference to Foo is ambiguous  */
+/* @@@ label Error TypeError: Reference to Foo is ambiguous  */

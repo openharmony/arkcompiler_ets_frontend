@@ -14,6 +14,6 @@
  */
 
 type firstType = secondType;
-type secondType = firstType;
+/* @@ label */type secondType = firstType;
 
-/* @@? 17:1 Error TypeError: Circular type alias reference  */
+/* @@@ label Error TypeError: Circular type alias reference  */

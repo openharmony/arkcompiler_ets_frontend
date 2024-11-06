@@ -14,8 +14,8 @@
  */
 
 import type {BType as A} from "./imported_module_1.sts"
-import type {CType as A} from "./imported_module_2.sts"
+import type {CType as A} from /* @@ label */"./imported_module_2.sts"
 
 function main() : void {}
 
-/* @@? 17:31 Error SyntaxError: Class 'A' is already defined.  */
+/* @@@ label Error SyntaxError: Class 'A' is already defined.  */

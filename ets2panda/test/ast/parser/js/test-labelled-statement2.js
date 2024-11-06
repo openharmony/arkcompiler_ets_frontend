@@ -17,6 +17,6 @@
 a:
 while(true)
 {
-  break b; 
+  break /* @@ label */b; 
 }
-/* @@? 20:9 Error SyntaxError: Undefined label  */
+/* @@@ label Error SyntaxError: Undefined label  */

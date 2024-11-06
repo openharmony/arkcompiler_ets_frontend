@@ -15,6 +15,6 @@
 
 
 var a = {foo : {bar : {baz : 5}}};
-a?.foo?.bar?.baz = a?.foo?.bar?.baz;
+a?.foo?.bar?.baz /* @@ label */= a?.foo?.bar?.baz;
 
-/* @@? 18:18 Error SyntaxError: Invalid left-hand side in assignment expression  */
+/* @@@ label Error SyntaxError: Invalid left-hand side in assignment expression  */

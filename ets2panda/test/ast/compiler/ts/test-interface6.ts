@@ -14,5 +14,5 @@
  */
 
 
-interface A { readonly a(a: number): string };
-/* @@? 17:15 Error SyntaxError: 'readonly' modifier can only appear on a property declaration or index signature.  */
+interface A { /* @@ label */readonly a(a: number): string };
+/* @@@ label Error SyntaxError: 'readonly' modifier can only appear on a property declaration or index signature.  */

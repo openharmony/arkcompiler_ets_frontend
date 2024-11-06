@@ -16,5 +16,5 @@
 
 var a: [number, string];
 var b: [string, number];
-a = b;
-/* @@? 19:1 Error TypeError: Type '[string, number]' is not assignable to type '[number, string]'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type '[string, number]' is not assignable to type '[number, string]'.  */

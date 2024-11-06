@@ -14,11 +14,11 @@
  */
  
  function foo(a: Int|null, b: Int|null): Int {
-    return a + b;
+    return /* @@ label */a + b;
 }
 
 function main() {
     let result = foo(null, null);
 }
 
-/* @@? 17:12 Error TypeError: Bad operand type: multiple types left in the normalized union type (Int|null). Unions are not allowed in binary expressions except equality.  */
+/* @@@ label Error TypeError: Bad operand type: multiple types left in the normalized union type (Int|null). Unions are not allowed in binary expressions except equality.  */

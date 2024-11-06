@@ -24,7 +24,7 @@ function A.price(id: int): int {
 }
 
 function main() {
-    console.println(A.price(1));
+    console.println(A./* @@ label */price(1));
 }
 
-/* @@? 27:23 Error TypeError: Property 'price' does not exist on type 'A'  */
+/* @@@ label Error TypeError: Property 'price' does not exist on type 'A'  */

@@ -20,7 +20,7 @@ function foo() : A | null {
 }
 
 function main(): void {
-    let x : Object = foo();
+    let x : Object = /* @@ label */foo();
 }
 
-/* @@? 23:22 Error TypeError: Type 'A|null' cannot be assigned to type 'Object'  */
+/* @@@ label Error TypeError: Type 'A|null' cannot be assigned to type 'Object'  */

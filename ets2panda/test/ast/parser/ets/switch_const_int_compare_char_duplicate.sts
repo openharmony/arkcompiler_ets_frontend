@@ -17,7 +17,7 @@ function main() {
     let a = c'a';
     const b : int = 97;
     switch (a) {
-        case b:
+        /* @@ label */case b:
             break;
         case c'a':
             break;
@@ -26,4 +26,4 @@ function main() {
     }
 }
 
-/* @@? 20:9 Error TypeError: Variable has same value with another switch case  */
+/* @@@ label Error TypeError: Variable has same value with another switch case  */

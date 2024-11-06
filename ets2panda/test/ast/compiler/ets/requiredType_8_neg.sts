@@ -18,7 +18,7 @@ class A {
 }
 
 function main(): void {
-    let req_a: Required<A> = new Required<A>();
+    let req_a: Required<A> = new /* @@ label */Required<A>();
 }
 
-/* @@? 21:34 Error TypeError: Required type can be instantiated only with object literal  */
+/* @@@ label Error TypeError: Required type can be instantiated only with object literal  */

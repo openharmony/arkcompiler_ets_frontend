@@ -14,10 +14,10 @@
  */
 
 function main(){
-    let a: Record<string, number> = {
+    let a: Record<string, number> = /* @@ label */{
         "key1": 1,
         "key2": 2,
         "key2": 3
     } 
 }
-/* @@? 17:37 Error TypeError: An object literal cannot multiple properties with same name  */
+/* @@@ label Error TypeError: An object literal cannot multiple properties with same name  */

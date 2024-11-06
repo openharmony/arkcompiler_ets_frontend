@@ -17,6 +17,6 @@
 var a = [0, 1, 2, 3, 4];
 var b: number;
 var c: string;
-b = a[c = 5];
+b = a[/* @@ label */c = 5];
 
-/* @@? 20:7 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

@@ -18,7 +18,7 @@ export default function foo(): void {}
 let msg = "hello";
 
 export {
-  msg as foo
+  msg as /* @@ label */foo
 }
 
-/* @@? 21:10 Error SyntaxError: The given name 'foo' is already used in another export  */
+/* @@@ label Error SyntaxError: The given name 'foo' is already used in another export  */

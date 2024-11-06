@@ -18,6 +18,6 @@ function foo({ a, b: { t = "foo" } = { t: 3 }, d: [e = {}, f = 6] = [3, ["foo", 
 
 }
 
-foo({ a: false, b: { t: 7 }, d: [2, 5n] });
+foo({ a: false, b: { t: 7 }, d: [2, /* @@ label */5n] });
 
-/* @@? 21:37 Error TypeError: Type 'bigint' is not assignable to type 'string[]'.  */
+/* @@@ label Error TypeError: Type 'bigint' is not assignable to type 'string[]'.  */

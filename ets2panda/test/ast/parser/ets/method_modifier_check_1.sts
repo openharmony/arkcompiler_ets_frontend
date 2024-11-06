@@ -14,8 +14,8 @@
  */
 
 abstract class A {
-    abstract static foo(): void {}
+    /* @@ label */abstract static foo(): void /* @@ label1 */{}
 }
 
-/* @@? 17:5 Error TypeError: Invalid method modifier(s): an abstract method can't have private, override, static, final or native modifier.  */
-/* @@? 17:33 Error TypeError: Native, Abstract and Declare methods cannot have body.  */
+/* @@@ label Error TypeError: Invalid method modifier(s): an abstract method can't have private, override, static, final or native modifier.  */
+/* @@@ label1 Error TypeError: Native, Abstract and Declare methods cannot have body.  */

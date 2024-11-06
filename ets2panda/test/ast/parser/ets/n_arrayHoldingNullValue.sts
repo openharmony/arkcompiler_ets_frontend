@@ -14,9 +14,9 @@
  */
 
 function main(): void {
-    const c: float[] = null;
-    let d: char[] = null;
+    const c: float[] = /* @@ label */null;
+    let d: char[] = /* @@ label1 */null;
 }
 
-/* @@? 17:24 Error TypeError: Type 'null' cannot be assigned to type 'float[]'  */
-/* @@? 18:21 Error TypeError: Type 'null' cannot be assigned to type 'char[]'  */
+/* @@@ label Error TypeError: Type 'null' cannot be assigned to type 'float[]'  */
+/* @@@ label1 Error TypeError: Type 'null' cannot be assigned to type 'char[]'  */

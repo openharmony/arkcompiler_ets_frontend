@@ -22,7 +22,7 @@ class D extends A<D>{}
 function main(){
     let y:D
     let a_obj = new A<C>()
-    a_obj.foo<C>(y) 
+    /* @@ label */a_obj.foo<C>(/* @@ label1 */y) 
 }
-/* @@? 25:18 Error TypeError: Type 'D' is not compatible with type 'C' at index 1  */
-/* @@? 25:5 Error TypeError: No matching call signature for foo(D)  */
+/* @@@ label1 Error TypeError: Type 'D' is not compatible with type 'C' at index 1  */
+/* @@@ label Error TypeError: No matching call signature for foo(D)  */

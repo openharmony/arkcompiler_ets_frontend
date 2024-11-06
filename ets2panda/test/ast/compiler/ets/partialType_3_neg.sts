@@ -23,7 +23,7 @@ function foo(): void {
     let partial_A: Partial<A> = {mmeb: 4};
     partial_A.mmeb = undefined;
 
-    a_class.mmeb = undefined;
+    a_class.mmeb = /* @@ label */undefined;
 }
 
-/* @@? 26:20 Error TypeError: Type 'undefined' cannot be assigned to type 'Double'  */
+/* @@@ label Error TypeError: Type 'undefined' cannot be assigned to type 'Double'  */

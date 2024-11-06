@@ -12,5 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function foo<T, U=F, F=T>(){}
-/* @@? 15:19 Error TypeError: Type Parameter F should be defined before use.  */
+function foo<T, U=/* @@ label */F, F=T>(){}
+/* @@@ label Error TypeError: Type Parameter F should be defined before use.  */

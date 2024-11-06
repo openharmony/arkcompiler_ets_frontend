@@ -15,6 +15,6 @@
 
 
 var a: bigint[];
-a = [5n,false];
+a = [5n,/* @@ label */false];
 
-/* @@? 18:9 Error TypeError: Type 'boolean' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'bigint'.  */

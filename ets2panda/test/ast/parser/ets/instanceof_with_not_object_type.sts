@@ -21,7 +21,7 @@ function a()
 function main()
 {
     let b = 0
-    b instanceof a
+    b instanceof /* @@ label */a
 }
 
-/* @@? 24:18 Error SyntaxError: Cannot find type 'a'.  */
+/* @@@ label Error SyntaxError: Cannot find type 'a'.  */

@@ -14,6 +14,6 @@
  */
 interface A<T extends A<T>>{}
 interface D{}
-interface B extends A<D>{}
+interface B extends A/* @@ label */<D>{}
 
-/* @@? 17:22 Error TypeError: Type D is not assignable to constraint type A<D>  */
+/* @@@ label Error TypeError: Type D is not assignable to constraint type A<D>  */

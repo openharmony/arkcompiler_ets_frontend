@@ -16,8 +16,8 @@
 import * as all from './export' 
 
 function main():void{ 
-    let a = new all.bar1();
+    let a = new all./* @@ label */bar1();
 }
 
 
-/* @@? 19:21 Error TypeError: 'bar1' type does not exist.  */
+/* @@@ label Error TypeError: 'bar1' type does not exist.  */

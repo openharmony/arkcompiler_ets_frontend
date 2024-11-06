@@ -14,5 +14,5 @@
  */
 
 
-var a: [] = 6;
-/* @@? 17:5 Error TypeError: Type 'number' is not assignable to type '[]'.  */
+var /* @@ label */a: [] = 6;
+/* @@@ label Error TypeError: Type 'number' is not assignable to type '[]'.  */

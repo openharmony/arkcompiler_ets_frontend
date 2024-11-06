@@ -14,5 +14,5 @@
  */
 
 
-var a: { a: { a: number, b: string[] } } | { a: { a: number[], b: number } } = { a: 5 }
-/* @@? 17:82 Error TypeError: Type 'number' is not assignable to type '{ a: number; b: string[]; } | { a: number[]; b: number; }'.  */
+var a: { a: { a: number, b: string[] } } | { a: { a: number[], b: number } } = { /* @@ label */a: 5 }
+/* @@@ label Error TypeError: Type 'number' is not assignable to type '{ a: number; b: string[]; } | { a: number[]; b: number; }'.  */

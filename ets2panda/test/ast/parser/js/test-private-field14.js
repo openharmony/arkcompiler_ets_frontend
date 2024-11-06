@@ -16,6 +16,6 @@
 class A {
     #a;
     get #a() { }
-}
+/* @@ label */}
 
-/* @@? 19:1 Error SyntaxError: Private field has already been declared  */
+/* @@@ label Error SyntaxError: Private field has already been declared  */

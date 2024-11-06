@@ -15,6 +15,6 @@
 
 
 var a: any;
-a as const;
+/* @@ label */a as const;
 
-/* @@? 18:1 Error TypeError: A 'const' assertions can only be applied to references to enum members, or string, number, boolean, array, or object literals.  */
+/* @@@ label Error TypeError: A 'const' assertions can only be applied to references to enum members, or string, number, boolean, array, or object literals.  */

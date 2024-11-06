@@ -14,12 +14,12 @@
  */
 
 function getD(d : double): Int {
-    try { return new Double(d); } 
+    try { return /* @@ label */new Double(d); } 
     catch (e) {}
-    finally { return new Double(0.0)}
+    finally { return /* @@ label1 */new Double(0.0)}
 }
 
 function main(): void { }
 
-/* @@? 17:18 Error TypeError: Type 'Double' is not compatible with the enclosing method's return type 'Int'  */
-/* @@? 19:22 Error TypeError: Type 'Double' is not compatible with the enclosing method's return type 'Int'  */
+/* @@@ label Error TypeError: Type 'Double' is not compatible with the enclosing method's return type 'Int'  */
+/* @@@ label1 Error TypeError: Type 'Double' is not compatible with the enclosing method's return type 'Int'  */

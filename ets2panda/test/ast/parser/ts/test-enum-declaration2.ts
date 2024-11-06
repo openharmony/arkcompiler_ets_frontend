@@ -15,8 +15,8 @@
 
 
 enum Foo {
-    5 = 2,
+    /* @@ label */5 = 2,
     B = "foo",
 }
 
-/* @@? 18:5 Error SyntaxError: Unexpected token in enum member  */
+/* @@@ label Error SyntaxError: Unexpected token in enum member  */

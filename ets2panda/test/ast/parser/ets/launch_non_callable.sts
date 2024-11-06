@@ -15,7 +15,7 @@
 
 function main(): void {
     let x = 5;
-    launch x;
+    launch /* @@ label */x;
 }
 
-/* @@? 18:12 Error SyntaxError: Only call expressions are allowed after 'launch'  */
+/* @@@ label Error SyntaxError: Only call expressions are allowed after 'launch'  */

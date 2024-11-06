@@ -18,7 +18,7 @@ interface A {
     a: number,
 }
 
-interface B extends A {
+interface /* @@ label */B extends A {
     a: string;
 }
-/* @@? 21:11 Error TypeError: Interface 'B' incorrectly extends interface 'A'  */
+/* @@@ label Error TypeError: Interface 'B' incorrectly extends interface 'A'  */

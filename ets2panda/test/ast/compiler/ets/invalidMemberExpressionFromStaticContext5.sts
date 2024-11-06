@@ -20,8 +20,8 @@ class A {
 
 final class B extends A {
     static bar_in_B() : void {
-        this.foo_in_A()
+        /* @@ label */this.foo_in_A()
     }
 }
 
-/* @@? 23:9 Error TypeError: 'this' cannot be referenced from a static context  */
+/* @@@ label Error TypeError: 'this' cannot be referenced from a static context  */

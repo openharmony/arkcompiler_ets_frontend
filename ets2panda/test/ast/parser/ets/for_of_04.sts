@@ -17,9 +17,9 @@ let v: double;
 
 function main(): void {
   let res = 0;
-  for (v: double of a) {
+  for (v/* @@ label */: double of a) {
     res += v;
   }
 }
 
-/* @@? 20:9 Error SyntaxError: Type annotation is not allowed when existing variable is used as loop iterator in 'for' statement.  */
+/* @@@ label Error SyntaxError: Type annotation is not allowed when existing variable is used as loop iterator in 'for' statement.  */

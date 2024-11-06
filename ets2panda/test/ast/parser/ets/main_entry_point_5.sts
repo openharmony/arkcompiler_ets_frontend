@@ -17,8 +17,8 @@ function main(): void {
     return;
 }
 
-function main(i : string[]): void {
+function /* @@ label */main(i : string[]): void {
     return;
 }
 
-/* @@? 20:10 Error SyntaxError: Main overload is not enabled  */
+/* @@@ label Error SyntaxError: Main overload is not enabled  */

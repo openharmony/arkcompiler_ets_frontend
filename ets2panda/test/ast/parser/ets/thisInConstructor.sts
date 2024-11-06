@@ -23,11 +23,11 @@ class A {
 class B extends A {
     public y: int;
     public constructor() {
-        this(this.x)
+        this(/* @@ label */this.x)
     }
 
     public constructor(x: int) {
     }
 }
 
-/* @@? 26:14 Error TypeError: Using this is not allowed in constructor  */
+/* @@@ label Error TypeError: Using this is not allowed in constructor  */

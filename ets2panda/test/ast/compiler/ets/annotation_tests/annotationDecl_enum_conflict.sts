@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-@interface MyAnno {}
-enum MyAnno {one, two, three}
+interface MyAnno {}
+/* @@ label */enum MyAnno {one, two, three}
 
-/* @@? 17:1 Error SyntaxError: Variable 'MyAnno' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'MyAnno' has already been declared.  */

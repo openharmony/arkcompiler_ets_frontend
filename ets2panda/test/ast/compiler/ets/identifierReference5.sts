@@ -28,8 +28,8 @@ class A extends B {
   }
 
   static foo(): void {
-    this.c = bar;
+    /* @@ label */this.c = bar;
   }
 }
 
-/* @@? 31:5 Error TypeError: 'this' cannot be referenced from a static context  */
+/* @@@ label Error TypeError: 'this' cannot be referenced from a static context  */

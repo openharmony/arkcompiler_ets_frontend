@@ -16,4 +16,5 @@
 
 let a: (a: i32, b: u8) =>
 
-/* @@? 20:1 Error SyntaxError: Type expected  */
+/* @@@ label Error SyntaxError: Type expected  */
+/* @@ label */

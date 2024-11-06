@@ -22,6 +22,6 @@ var a = {
   __proto__(){},
   __proto__(){},
   *__proto__(){},
-  __proto__: 8,
+  /* @@ label */__proto__: 8,
 }
-/* @@? 25:3 Error SyntaxError: Duplicate __proto__ fields are not allowed in object literals  */
+/* @@@ label Error SyntaxError: Duplicate __proto__ fields are not allowed in object literals  */

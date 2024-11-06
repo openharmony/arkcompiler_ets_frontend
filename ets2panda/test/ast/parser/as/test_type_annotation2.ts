@@ -16,4 +16,5 @@
 
 let a: i32[
 
-/* @@? 20:1 Error SyntaxError: ']' expected  */
+/* @@@ label Error SyntaxError: ']' expected  */
+/* @@ label */

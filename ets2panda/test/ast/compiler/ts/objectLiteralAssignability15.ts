@@ -24,5 +24,5 @@ interface b extends a {
     c: boolean
 }
 
-var a: b = { a: 5 };
-/* @@? 27:14 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+var a: b = { /* @@ label */a: 5 };
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

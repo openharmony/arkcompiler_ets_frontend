@@ -19,6 +19,6 @@ interface A {
 }
 
 interface B extends A {
-    5: boolean;
+    /* @@ label */5: boolean;
 }
-/* @@? 22:5 Error TypeError: Property '5' of type 'boolean' is not assignable to numeric index type 'number'.  */
+/* @@@ label Error TypeError: Property '5' of type 'boolean' is not assignable to numeric index type 'number'.  */

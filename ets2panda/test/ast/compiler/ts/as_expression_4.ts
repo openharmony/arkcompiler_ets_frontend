@@ -15,6 +15,6 @@
 
 
 var a = [5,5,5,5] as const;
-a = [5,4,5,5];
+a = [5,/* @@ label */4,5,5];
 
-/* @@? 18:8 Error TypeError: Type '4' is not assignable to type '5'.  */
+/* @@@ label Error TypeError: Type '4' is not assignable to type '5'.  */

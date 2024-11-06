@@ -14,9 +14,9 @@
  */
 
 function main(){
-    let x: ()=>int[] = [
+    let x: ()=>int[] = /* @@ label */[
         ():int =>{return 1}
     ]
 }
 
-/* @@? 17:24 Error TypeError: Expected type for array literal should be an array type, got () => int[]  */
+/* @@@ label Error TypeError: Expected type for array literal should be an array type, got () => int[]  */

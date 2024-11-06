@@ -16,6 +16,6 @@
 
 var a: number;
 a = 5;
-a / false;
+a / /* @@ label */false;
 
-/* @@? 19:5 Error TypeError: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.  */
+/* @@@ label Error TypeError: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.  */

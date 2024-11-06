@@ -21,6 +21,6 @@ interface a {
     new(): string
 }
 
-var b = a;
+var b = /* @@ label */a;
 
-/* @@? 24:9 Error TypeError: a only refers to a type, but is being used as a value here.  */
+/* @@@ label Error TypeError: a only refers to a type, but is being used as a value here.  */

@@ -17,8 +17,8 @@ class A {
     static classVal: int = 42;
 
     public getClassVal(): int {
-        return this.classVal;
+        return this./* @@ label */classVal;
     }
 }
 
-/* @@? 20:21 Error TypeError: 'classVal' is a static property of 'A'  */
+/* @@@ label Error TypeError: 'classVal' is a static property of 'A'  */

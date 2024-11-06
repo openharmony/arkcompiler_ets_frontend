@@ -20,7 +20,7 @@ function main(): void {
     let a : string = "alma";
     let b : int = 10;
 
-    foo(a == b);
+    foo(/* @@ label */a == b);
 }
 
-/* @@? 23:9 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */
+/* @@@ label Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.  */

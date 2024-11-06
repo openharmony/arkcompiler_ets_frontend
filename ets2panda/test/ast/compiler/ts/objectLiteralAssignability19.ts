@@ -16,5 +16,5 @@
 
 var a: { a: number, b: { a: number, b: string }, c: { b: boolean, a: null, } };
 var b: { a: number | string, b: { a: number, b: number }, c: { a: { a: number, b: string }, d: boolean } };
-a = b;
-/* @@? 19:1 Error TypeError: Type '{ a: number | string; b: { a: number; b: number; }; c: { a: { a: number; b: string; }; d: boolean; }; }' is not assignable to type '{ a: number; b: { a: number; b: string; }; c: { b: boolean; a: null; }; }'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type '{ a: number | string; b: { a: number; b: number; }; c: { a: { a: number; b: string; }; d: boolean; }; }' is not assignable to type '{ a: number; b: { a: number; b: string; }; c: { b: boolean; a: null; }; }'.  */

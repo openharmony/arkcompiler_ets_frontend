@@ -22,7 +22,7 @@ enum Color {
 function main(): void {
   let i: Color = Color.Red;
   i = Color.Green;
-  i = i.Blue;
+  i = i./* @@ label */Blue;
 }
 
-/* @@? 25:9 Error TypeError: Enum constant does not have property 'Blue'.  */
+/* @@@ label Error TypeError: Enum constant does not have property 'Blue'.  */

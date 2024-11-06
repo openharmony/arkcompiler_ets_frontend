@@ -17,11 +17,11 @@ function main() {
     let a = 97
     let b = c'a'
     switch (a) {
-        case b:
+        /* @@ label */case b:
             break;
         case 98:
             break;
     }
 }
 
-/* @@? 20:9 Error TypeError: Constant expression required  */
+/* @@@ label Error TypeError: Constant expression required  */

@@ -14,6 +14,6 @@
  */
 
 type UT = "abc" | "bcd" | "cde"
-let a: UT = "abcde"
+let a: UT = /* @@ label */"abcde"
 
-/* @@? 17:13 Error TypeError: Type '"abcde"' cannot be assigned to type '"abc"|"bcd"|"cde"'  */
+/* @@@ label Error TypeError: Type '"abcde"' cannot be assigned to type '"abc"|"bcd"|"cde"'  */

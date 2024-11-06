@@ -14,5 +14,5 @@
  */
 
 
-var [a = 1, b = "foo"]: [number, number] = [1, 1];
-/* @@? 17:13 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+var [a = 1, /* @@ label */b = "foo"]: [number, number] = [1, 1];
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

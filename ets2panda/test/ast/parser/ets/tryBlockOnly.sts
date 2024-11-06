@@ -14,9 +14,9 @@
  */
 
 function main() : int {
-    try {      
+    /* @@ label */try {      
     }
     return 0;
 }
 
-/* @@? 17:5 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
+/* @@@ label Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */

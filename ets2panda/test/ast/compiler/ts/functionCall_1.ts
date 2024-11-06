@@ -17,5 +17,5 @@
 function func(a : number) : void {
 
 }
-func("foo");
-/* @@? 20:6 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+func(/* @@ label */"foo");
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

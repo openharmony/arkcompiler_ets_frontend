@@ -20,11 +20,11 @@ class C {
 class A {
   a: int = 2;
 
-  class B extends C {
+  /* @@ label */class B extends C {
     foo(): void {
       this.a++;
     }
   }
 }
 
-/* @@? 23:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

@@ -15,6 +15,6 @@
 
 
 class Foo {
-    constructor(private static readonly readonly) { };
+    constructor(private /* @@ label */static readonly readonly) { };
 }
-/* @@? 18:25 Error SyntaxError: 'static' modifier cannot appear on a parameter.  */
+/* @@@ label Error SyntaxError: 'static' modifier cannot appear on a parameter.  */

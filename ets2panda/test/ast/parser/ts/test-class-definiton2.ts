@@ -15,6 +15,6 @@
 
 
 class Foo {
-    private readonly [a](){}
+    private readonly [a]/* @@ label */(){}
 }
-/* @@? 18:25 Error SyntaxError: Class method can not be declare nor readonly  */
+/* @@@ label Error SyntaxError: Class method can not be declare nor readonly  */

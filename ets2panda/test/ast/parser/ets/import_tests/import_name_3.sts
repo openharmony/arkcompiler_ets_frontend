@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-import {DefaultExportedFunc} from "import_tests/modules/default_export";
+import {DefaultExportedFunc} from /* @@ label */"import_tests/modules/default_export";
 
-/* @@? 16:35 Error SyntaxError: Use the default import syntax to import a default exported element  */
+/* @@@ label Error SyntaxError: Use the default import syntax to import a default exported element  */

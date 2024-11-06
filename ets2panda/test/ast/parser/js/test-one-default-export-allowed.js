@@ -18,5 +18,5 @@ flags: [module]
 ---*/
 
 export default a = 1;
-export default b = 2;
-/* @@? 21:16 Error SyntaxError: Variable '*default*' has already been declared.  */
+export default /* @@ label */b = 2;
+/* @@@ label Error SyntaxError: Variable '*default*' has already been declared.  */

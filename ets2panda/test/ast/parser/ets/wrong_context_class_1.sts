@@ -19,8 +19,8 @@ class a
 }
 function main()
 {
-    a = 5
+    /* @@ label */a = /* @@ label1 */5
 }
 
-/* @@? 22:5 Error TypeError: Class name "a" used in the wrong context  */
-/* @@? 22:9 Error TypeError: Type 'int' cannot be assigned to type 'a'  */
+/* @@@ label Error TypeError: Class name "a" used in the wrong context  */
+/* @@@ label1 Error TypeError: Type 'int' cannot be assigned to type 'a'  */

@@ -16,4 +16,5 @@
 
 `
 
-/* @@? 20:1 Error SyntaxError: Unterminated string  */
+/* @@@ label Error SyntaxError: Unterminated string  */
+/* @@ label */

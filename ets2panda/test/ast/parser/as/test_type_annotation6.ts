@@ -16,4 +16,5 @@
 
 let b: ((a: i32, b?: void, c: u8) => i32) |
 
-/* @@? 20:1 Error SyntaxError: 'null' expected  */
+/* @@@ label Error SyntaxError: 'null' expected  */
+/* @@ label */

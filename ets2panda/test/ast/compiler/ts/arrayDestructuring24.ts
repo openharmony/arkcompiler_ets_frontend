@@ -15,5 +15,5 @@
 
 
 var [a, [b, c] = [true, "foo"]] = [1, ["foo", { a: "foo" }]];
-c = { a: 5 }
-/* @@? 18:7 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+c = { /* @@ label */a: 5 }
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

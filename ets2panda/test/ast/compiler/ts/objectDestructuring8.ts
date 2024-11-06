@@ -14,6 +14,6 @@
  */
 
 
-var { a: { a = "bar", b } = { a: 1, b: true, c: {} } } = { a: { a: 5n, b: "foo" } }
+var { a: /* @@ label */{ a = "bar", b } = { a: 1, b: true, c: {} } } = { a: { a: 5n, b: "foo" } }
 
-/* @@? 17:10 Error TypeError: Object literal may only specify known properties, and property 'c' does not exist in the pattern.  */
+/* @@@ label Error TypeError: Object literal may only specify known properties, and property 'c' does not exist in the pattern.  */
