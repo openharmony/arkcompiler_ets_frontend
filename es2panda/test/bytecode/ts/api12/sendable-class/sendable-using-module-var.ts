@@ -15,12 +15,39 @@
 
 import {a} from './test'
 
-class A{
+class A {
   constructor() {
     "use sendable";
     a;
+    class B {
+      constructor() {
+        "use sendable";
+        a;
+      }
+      static {
+        a;
+      }
+    }
+
   }
   B() {
     a;
   }
+
+  static {
+    a;
+    ()=>{a;}
+
+    class B {
+      constructor() {
+        "use sendable";
+        a;
+      }
+      static {
+        a;
+        ()=>{a;}
+      }
+    }
+  }
+
 }
