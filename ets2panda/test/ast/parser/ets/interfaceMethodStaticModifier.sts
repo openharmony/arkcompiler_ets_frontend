@@ -13,16 +13,8 @@
  * limitations under the License.
  */
 
-interface A {
-    static invoke(): int {
-        return 1;
-    }
+interface I {
+    static foo()
 }
 
-class B implements A{
-    static instantiate<T extends A>(factory: ()=>T): T {
-        return factory();
-    }
-}
-
-/* @@? 22:21 Error TypeError: Static invoke method and static instantiate method both exist in class/interface B is not allowed.  */
+/* @@? 17:5 Error SyntaxError: Unexpected token, expected 'private' or identifier  */

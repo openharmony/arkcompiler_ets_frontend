@@ -14,25 +14,7 @@
  */
 
 interface I {
-    static xyz(): int {
-        return 5;
-    }
-
-    xyz2(): int {
-        return 5;
-    }
+    readonly foo()
 }
 
-class C implements I {
-    override xyz2(): int {
-        return 10;
-    }
-}
-
-function main(): void {
-    let i: I = new C();
-    i.xyz();
-}
-
-/* @@? 34:7 Error TypeError: 'xyz' is a static property of 'C'  */
-/* @@? 34:5 Error TypeError: No matching call signature  */
+/* @@? 17:5 Error SyntaxError: Modifier 'readonly' cannot be applied to an interface method  */

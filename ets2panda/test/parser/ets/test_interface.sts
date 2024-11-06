@@ -19,7 +19,7 @@ interface test_interface {
     i : int;
     pi : double;
     foo(): void;
-    static foo(i : int): void {
+    foo(i : int): void {
     }
     private foo(b : boolean): void {
     }

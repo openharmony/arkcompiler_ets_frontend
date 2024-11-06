@@ -451,6 +451,8 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
             return "$$";
         case TokenType::KEYW_OVERRIDE:
             return "override";
+        case TokenType::KEYW_NATIVE:
+            return "native";
         case TokenType::LITERAL_IDENT:
             return "identification literal";
         case TokenType::LITERAL_NUMBER:
