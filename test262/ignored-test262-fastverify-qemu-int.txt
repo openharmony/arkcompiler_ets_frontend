@@ -150,3 +150,4 @@ test262/data/test_es2021/intl402/supportedLocalesOf-default-locale-and-zxx-local
 test262/data/test_es2021/intl402/supportedLocalesOf-taint-Array-2.js
 test262/data/test_es2021/intl402/supportedLocalesOf-empty-and-undefined.js
 test262/data/test_es2021/intl402/supportedLocalesOf-locales-arg-empty-array.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-valid.js
