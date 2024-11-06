@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "multiLine_logs.ts",
+  "sourceRoot": "",
+  "sources": [
+    "test/grammar/compact_remove_console/multiLine_logs.ts"
+  ],
+  "names": [],
+  "mappings": "AAmBA,MAAM,IAAI,GAAG;;MAEP,CAEN,MAAM,SAAS,EACX,KAAK,EAAE,MAAM,GAAG,GAAG,CAAC,CACpB,KAAK,EAAE,MAAM,GAAG,CAAC,CAAC,CAClB,MAAM,EAAE,MAAM,GAAG,CAAC,CAAC,CACnB,QAAQ,EAAE,MAAM,GAAG,CAAC,CAAC,CACrB,CAAC,EAAE,MAAM,GAAG,CAAC,CAEb,YAAY,IAER,OAAO,+BAA+B,CAAC,CAC1C,CAGJ,MAAM,IAAI,GAAG;;OAEP,CAKN,SAAS,GAAG,IACR,IAAI,IAAO,CAAC,CACZ,IAAI,IAAM,CAAC,CAAA,CACd"
+}

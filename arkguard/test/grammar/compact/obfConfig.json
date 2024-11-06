@@ -1,0 +1,17 @@
+{
+    "mCompact": true,
+    "mRemoveComments": false,
+    "mOutputDir": "../../local",
+    "mDisableConsole": false,
+    "mSimplify": false,
+    "mNameObfuscation": {
+        "mEnable": false,
+        "mNameGeneratorType": 1,
+        "mDictionaryList": [],
+        "mRenameProperties": false,
+        "mKeepStringProperty": false,
+        "mTopLevel": false
+    },
+    "mEnableSourceMap": true,
+    "mEnableNameCache": false
+}
