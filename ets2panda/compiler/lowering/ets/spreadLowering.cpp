@@ -49,86 +49,81 @@ void CreateSpreadArrayDeclareStatements(public_lib::Context *ctx, ir::ArrayExpre
     }
 }
 
-void CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
-                                   std::vector<ir::Identifier *> &spreadArrayIds,
-                                   ArenaVector<ir::Statement *> &statements, ir::Identifier *newArrayLengthId)
+ir::Identifier *CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
+                                              std::vector<ir::Identifier *> &spreadArrayIds,
+                                              ArenaVector<ir::Statement *> &statements)
 {
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
-    std::vector<ir::AstNode *> nodesWaitingInsert {newArrayLengthId};
+    ir::Identifier *newArrayLengthId = Gensym(allocator);
+    std::vector<ir::AstNode *> nodesWaitingInsert {newArrayLengthId->Clone(allocator, nullptr)};
     int argumentCount = 1;
     std::stringstream lengthString;
     int normalElementCount = array->Elements().size() - spreadArrayIds.size();
-    lengthString.clear();
     lengthString << "let @@I" << (argumentCount++) << " : int = " << normalElementCount << " + ";
     for (auto *spaId : spreadArrayIds) {
         lengthString << "@@I" << (argumentCount++) << ".length + ";
         nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
     }
     lengthString << "0;";
-    statements.emplace_back(parser->CreateFormattedStatement(lengthString.str(), nodesWaitingInsert));
+
+    ir::Statement *newArrayLengthStatement = parser->CreateFormattedStatement(lengthString.str(), nodesWaitingInsert);
+    statements.emplace_back(newArrayLengthStatement);
+    return newArrayLengthId;
 }
 
-ir::Identifier *ClearIdentifierAnnotation(ir::Identifier *node)
-{
-    if (!node->IsAnnotatedExpression() || (node->AsAnnotatedExpression()->TypeAnnotation() == nullptr)) {
-        return node;
-    }
-
-    node->AsAnnotatedExpression()->SetTsTypeAnnotation(nullptr);
-    return node;
-}
-
-ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
-                                               ArenaVector<ir::Statement *> &statements,
-                                               ir::Identifier *newArrayLengthId)
+static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
+                                                      ArenaVector<ir::Statement *> &statements,
+                                                      ir::Identifier *newArrayLengthId)
 {
     auto *const checker = ctx->checker->AsETSChecker();
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayId = Gensym(allocator);
-    auto arrayType = array->TsType()->AsETSArrayType();
-    auto initElemType = arrayType->ElementType();
-    checker::ETSArrayType *newArrayType = arrayType;
-    if (checker->IsReferenceType(initElemType)) {
-        newArrayType = checker->Allocator()->New<checker::ETSArrayType>(
-            checker->CreateETSUnionType({initElemType, checker->GlobalETSNullType()}));
-    }
-    std::stringstream newArrayDeclareStr;
-    // NOTE: For ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we canot use "new Type[]" to
-    //       declare an array, so we add "|null" to solve it temporarily.
-    //       We might need to use cast Expression in the end of the generated source code to remove "|null", such as
+    checker::Type *arrayElementType = array->TsType()->AsETSArrayType()->ElementType();
+    checker::Type *newArrayElementType = arrayElementType;
+
+    // NOTE: If arrayElementType is ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we cannot
+    //       use "new Type[]" to declare an array, so we generate a new UnionType "arrayElementType|null" to solve
+    //       array initialization problems temporarily.
+    //       We probably need to use cast Expression in the end of the generated source code to remove "|null", such as
     //       "newArrayName as arrayType[]".
     //       But now cast Expression doesn't support built-in array (cast fatherType[] to sonType[]), so "newArrayName
     //       as arrayType" should be added after cast Expression is implemented completely.
-    newArrayDeclareStr.clear();
-    newArrayDeclareStr << "let @@I1: @@T2 = new @@T3 [@@I4];";
+    //       Related issue: #issue20162
+    if (checker->IsReferenceType(arrayElementType)) {
+        newArrayElementType = checker->CreateETSUnionType({arrayElementType, checker->GlobalETSNullType()});
+    }
+
+    std::stringstream newArrayDeclareStr;
+    newArrayDeclareStr << "let @@I1: @@T2[] = new @@T3[@@I4];" << std::endl;
 
     ir::Statement *newArrayDeclareSt = parser->CreateFormattedStatement(
-        newArrayDeclareStr.str(), newArrayId, newArrayType, newArrayType->ElementType(),
-        ClearIdentifierAnnotation(newArrayLengthId->Clone(allocator, nullptr)));
+        newArrayDeclareStr.str(), newArrayId->Clone(allocator, nullptr), newArrayElementType, newArrayElementType,
+        newArrayLengthId->Clone(allocator, nullptr));
     statements.emplace_back(newArrayDeclareSt);
+
     return newArrayId;
 }
 
-ir::Statement *CreateSpreadArrIteratorStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
-                                                ir::Identifier *spreadArrIterator)
+static ir::Statement *CreateSpreadArrIteratorStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
+                                                       ir::Identifier *spreadArrIterator)
 {
+    auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
-    auto elemType = array->TsType()->AsETSArrayType()->ElementType();
+    checker::Type *arrayElementType = array->TsType()->AsETSArrayType()->ElementType();
 
     std::stringstream spArrIterDeclareStr;
-    spArrIterDeclareStr.clear();
-    spArrIterDeclareStr << "let @@I1: @@T2;";
-    ir::Statement *spArrIterDeclareSt =
-        parser->CreateFormattedStatement(spArrIterDeclareStr.str(), spreadArrIterator, elemType);
+    spArrIterDeclareStr << "let @@I1: @@T2;" << std::endl;
+    ir::Statement *spArrIterDeclareSt = parser->CreateFormattedStatement(
+        spArrIterDeclareStr.str(), spreadArrIterator->Clone(allocator, nullptr), arrayElementType);
 
     return spArrIterDeclareSt;
 }
 
-ir::Statement *CreateElementsAssignStatementBySpreadArr(public_lib::Context *ctx, ir::Identifier *spId,
-                                                        std::vector<ir::AstNode *> &newArrayAndIndex,
-                                                        ir::Identifier *spreadArrIterator)
+static ir::Statement *CreateElementsAssignStatementBySpreadArr(public_lib::Context *ctx, ir::Identifier *spId,
+                                                               std::vector<ir::AstNode *> &newArrayAndIndex,
+                                                               ir::Identifier *spreadArrIterator)
 {
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
@@ -136,31 +131,28 @@ ir::Statement *CreateElementsAssignStatementBySpreadArr(public_lib::Context *ctx
     auto *const newArrayIndexId = newArrayAndIndex[1];
 
     std::stringstream elementsAssignStr;
-    elementsAssignStr.clear();
     elementsAssignStr << "for (@@I2 of @@I3) {";
     elementsAssignStr << "@@I4[@@I5] = @@I6;";
     elementsAssignStr << "@@I7++;";
     elementsAssignStr << "}";
 
     ir::Statement *elementsAssignStatement = parser->CreateFormattedStatement(
-        elementsAssignStr.str(), ClearIdentifierAnnotation(spreadArrIterator->Clone(allocator, nullptr)),
-        ClearIdentifierAnnotation(spreadArrIterator->Clone(allocator, nullptr)), spId->Clone(allocator, nullptr),
+        elementsAssignStr.str(), spreadArrIterator->Clone(allocator, nullptr),
+        spreadArrIterator->Clone(allocator, nullptr), spId->Clone(allocator, nullptr),
         newArrayId->Clone(allocator, nullptr), newArrayIndexId->Clone(allocator, nullptr),
-        ClearIdentifierAnnotation(spreadArrIterator->Clone(allocator, nullptr)),
-        newArrayIndexId->Clone(allocator, nullptr));
+        spreadArrIterator->Clone(allocator, nullptr), newArrayIndexId->Clone(allocator, nullptr));
 
     return elementsAssignStatement;
 }
 
-ir::Statement *CreateElementsAssignStatementBySingle(public_lib::Context *ctx, ir::AstNode *element,
-                                                     std::vector<ir::AstNode *> &newArrayAndIndex)
+static ir::Statement *CreateElementsAssignStatementBySingle(public_lib::Context *ctx, ir::AstNode *element,
+                                                            std::vector<ir::AstNode *> &newArrayAndIndex)
 {
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     auto *const newArrayId = newArrayAndIndex[0];
     auto *const newArrayIndexId = newArrayAndIndex[1];
     std::stringstream elementsAssignStr;
-    elementsAssignStr.clear();
     elementsAssignStr << "@@I1[@@I2] = (@@E3);";
     elementsAssignStr << "@@I4++;";
 
@@ -171,10 +163,10 @@ ir::Statement *CreateElementsAssignStatementBySingle(public_lib::Context *ctx, i
     return elementsAssignStatement;
 }
 
-void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
-                                           std::vector<ir::Identifier *> &spArrIds,
-                                           ArenaVector<ir::Statement *> &statements,
-                                           std::vector<ir::AstNode *> &newArrayAndIndex)
+static void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::ArrayExpression *array,
+                                                  std::vector<ir::Identifier *> &spArrIds,
+                                                  ArenaVector<ir::Statement *> &statements,
+                                                  std::vector<ir::AstNode *> &newArrayAndIndex)
 {
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
@@ -212,22 +204,23 @@ void CreateNewArrayElementsAssignStatement(public_lib::Context *ctx, ir::ArrayEx
  * ...
  * newArray;
  */
-ir::BlockExpression *CreateLoweredExpression(public_lib::Context *ctx, ir::ArrayExpression *array)
+static ir::BlockExpression *CreateLoweredExpression(public_lib::Context *ctx, ir::ArrayExpression *array)
 {
     auto *const checker = ctx->checker->AsETSChecker();
     auto *const parser = ctx->parser->AsETSParser();
     auto *const allocator = ctx->allocator;
     ArenaVector<ir::Statement *> statements(allocator->Adapter());
     std::vector<ir::Identifier *> spreadArrayIds = {};
-    ir::Identifier *newArrayLengthId = Gensym(allocator);
 
     CreateSpreadArrayDeclareStatements(ctx, array, spreadArrayIds, statements);
-    CreateNewArrayLengthStatement(ctx, array, spreadArrayIds, statements, newArrayLengthId);
+
+    ir::Identifier *newArrayLengthId = CreateNewArrayLengthStatement(ctx, array, spreadArrayIds, statements);
 
     ir::Identifier *newArrayId = CreateNewArrayDeclareStatement(ctx, array, statements, newArrayLengthId);
     ir::Identifier *newArrayIndexId = Gensym(allocator);
-    statements.emplace_back(parser->CreateFormattedStatement("let @@I1 = 0;", newArrayIndexId));
-    std::vector<ir::AstNode *> newArrayAndIndex {ClearIdentifierAnnotation(newArrayId->Clone(allocator, nullptr)),
+    statements.emplace_back(
+        parser->CreateFormattedStatement("let @@I1 = 0", newArrayIndexId->Clone(allocator, nullptr)));
+    std::vector<ir::AstNode *> newArrayAndIndex {newArrayId->Clone(allocator, nullptr),
                                                  newArrayIndexId->Clone(allocator, nullptr)};
 
     CreateNewArrayElementsAssignStatement(ctx, array, spreadArrayIds, statements, newArrayAndIndex);
@@ -244,9 +237,10 @@ bool SpreadConstructionPhase::Perform(public_lib::Context *ctx, parser::Program 
     }
 
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    varbinder::ETSBinder *const varbinder = checker->VarBinder()->AsETSBinder();
 
     program->Ast()->TransformChildrenRecursively(
-        [&checker, &ctx](ir::AstNode *const node) -> AstNodePtr {
+        [&checker, &varbinder, &ctx](ir::AstNode *const node) -> AstNodePtr {
             if (node->IsArrayExpression() &&
                 std::any_of(node->AsArrayExpression()->Elements().begin(), node->AsArrayExpression()->Elements().end(),
                             [](const auto *param) { return param->Type() == ir::AstNodeType::SPREAD_ELEMENT; })) {
@@ -263,7 +257,7 @@ bool SpreadConstructionPhase::Perform(public_lib::Context *ctx, parser::Program 
                     SetSourceRangesRecursively(st);
                 }
 
-                Recheck(checker->VarBinder()->AsETSBinder(), checker, blockExpression);
+                Recheck(varbinder, checker, blockExpression);
 
                 return blockExpression;
             }
