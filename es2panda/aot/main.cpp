@@ -171,6 +171,12 @@ static bool GenerateProgram(std::map<std::string, panda::es2panda::util::Program
                             const std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation)
 {
     DumpProgramInfos(programsInfo, options);
+    for (auto &[name, progCache] : programsInfo) {
+        panda::pandasm::MakeSlotNumberRecord(&(progCache->program));
+        panda::pandasm::MakeSlotNumberAnnotation(&(progCache->program));
+        panda::pandasm::MakeConcurrentModuleRequestsRecord(&(progCache->program));
+        panda::pandasm::MakeConcurrentModuleRequestsAnnotation(&(progCache->program));
+    }
 
     if (programsInfo.size() == 1) {
         auto *prog = &(programsInfo.begin()->second->program);
