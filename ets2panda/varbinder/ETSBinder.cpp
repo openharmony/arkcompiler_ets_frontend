@@ -1197,6 +1197,29 @@ const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var)
     return &it->second;
 }
 
+ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &path) const
+{
+    for (const auto &extRecords : globalRecordTable_.Program()->ExternalSources()) {
+        for (const auto &program : extRecords.second) {
+            if (program->AbsoluteName() == path) {
+                return extRecords.second;
+            }
+
+            // in case of importing a package folder, the path could not be resolved to a specific file
+            if (program->IsPackageModule() && program->SourceFileFolder() == path) {
+                return extRecords.second;
+            }
+        }
+    }
+
+    bool globalIsPackage = globalRecordTable_.Program()->IsPackageModule();
+    if (globalIsPackage && path.Compare(globalRecordTable_.Program()->SourceFileFolder()) == 0) {
+        return ArenaVector<parser::Program *>({GetContext()->parserProgram}, Allocator()->Adapter());
+    }
+
+    return ArenaVector<parser::Program *>(Allocator()->Adapter());
+}
+
 bool ETSBinder::IsDynamicModuleVariable(const Variable *var) const
 {
     auto *data = DynamicImportDataForVar(var);

@@ -207,23 +207,7 @@ public:
     }
 
     /* Returns the list of programs belonging to the same compilation unit based on a program path */
-    ArenaVector<parser::Program *> GetProgramList(const util::StringView &path) const
-    {
-        for (const auto &extRecords : globalRecordTable_.Program()->ExternalSources()) {
-            for (const auto &program : extRecords.second) {
-                if (program->AbsoluteName() == path) {
-                    return extRecords.second;
-                }
-
-                // in case of importing a package folder, the path could not be resolved to a specific file
-                if (program->IsPackageModule() && program->SourceFileFolder() == path) {
-                    return extRecords.second;
-                }
-            }
-        }
-
-        return ArenaVector<parser::Program *>(Allocator()->Adapter());
-    }
+    ArenaVector<parser::Program *> GetProgramList(const util::StringView &path) const;
 
     bool IsDynamicModuleVariable(const Variable *var) const;
     bool IsDynamicNamespaceVariable(const Variable *var) const;
