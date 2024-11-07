@@ -1577,7 +1577,6 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         st->Argument()->Compile(etsg);
     }
 
-    etsg->ApplyConversion(st->Argument(), nullptr);
     etsg->ApplyConversion(st->Argument(), st->ReturnType());
 
     if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
