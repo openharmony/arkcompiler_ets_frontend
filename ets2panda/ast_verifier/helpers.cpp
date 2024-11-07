@@ -293,6 +293,15 @@ bool ValidateVariableAccess(const varbinder::LocalVariable *propVar, const ir::M
 
 bool ValidateMethodAccess(const ir::MemberExpression *memberExpression, const ir::CallExpression *ast)
 {
+    if (memberExpression->Object()->TsType() != nullptr) {
+        // When calling enum methods member expression
+        // object has ETSEnumType instead of ETSObjectType.
+        const auto *const type = memberExpression->Object()->TsType();
+        if (type->IsETSEnumType()) {
+            return true;
+        }
+    }
+
     auto *memberObjType = memberExpression->ObjType();
     if (memberObjType == nullptr) {
         return false;
