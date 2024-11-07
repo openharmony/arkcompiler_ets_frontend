@@ -12,3 +12,6 @@ memory-cache_test
 
 #20145
 asn-one_test
+
+#20145
+rxjs_test

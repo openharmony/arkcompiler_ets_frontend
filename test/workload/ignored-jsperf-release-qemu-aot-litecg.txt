@@ -27,12 +27,5 @@ Eval_Eval
 Proxy.handler_applyProxy
 # --- end of Issue #18851
 
-
-
-
-
-
-
-
-
-
+#20257
+String_toLocaleUpperCase
