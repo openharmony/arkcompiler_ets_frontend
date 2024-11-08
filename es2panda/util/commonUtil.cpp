@@ -16,6 +16,7 @@
 #include "commonUtil.h"
 
 #include <algorithm>
+#include <sstream>
 
 #include "util/helpers.h"
 
@@ -39,6 +40,20 @@ std::vector<std::string> Split(const std::string &str, const char delimiter)
     items.emplace_back(tail);
 
     return items;
+}
+
+std::string GetStringByVectorElementsWithDelimiter(const std::vector<std::string> &vec, const char delimiter)
+{
+    std::ostringstream oss;
+    auto it = vec.begin();
+    if (it != vec.end()) {
+        oss << *it;
+        ++it;
+    }
+    for (; it != vec.end(); ++it) {
+        oss << delimiter << *it;
+    }
+    return oss.str();
 }
 
 std::string GetPkgNameFromNormalizedImport(const std::string &normalizedImport)
@@ -117,6 +132,44 @@ std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl,
         return ohmurl;
     }
     return ohmurl.substr(0, versionStart + 1) + iter->second.version;
+}
+
+/**
+ * If a Har package is dependent of a cross-app Hsp, its ohmurl need to contain the bundleName of this cross-app Hsp.
+ * Since Har's ohmurl doesn't contain bundleName during its own compilation, the bundleName need to be added during
+ * the compilation of cross-app Hsp.
+ */
+std::string UpdateBundleNameIfNeeded(std::string &ohmurl, const std::string &bundleName,
+                                     const std::set<std::string> &externalPkgNames)
+{
+    // Input ohmurl format:
+    // @normalized:{N|Y}&[module name]&[bundle name]&{<package name>|<@package/name>}/{import_path}&[version]
+    if (ohmurl.find(util::NORMALIZED) != 0) {
+        return ohmurl;
+    }
+
+    std::vector<std::string> items = Split(ohmurl, NORMALIZED_OHMURL_SEPARATOR);
+    // Incorrect ohmurl format: The quantity of '&' is incorrect
+    if (items.size() <= VERSION_POS) {
+        return ohmurl;
+    }
+    /**
+     * If an ohmurl already contains [bundle name], it means its not from a Har, so there's no need to updated its
+     * [bundle name].
+     */
+    if (!items[BUNDLE_NAME_POS].empty()) {
+        return ohmurl;
+    }
+    /**
+     * The hsp package don't compile into the current abc file.
+     * Ohmurl of both Har and in-app Hsp don't contain [bundle name], need to further screen out Hsp.
+     */
+    if (IsExternalPkgNames(ohmurl, externalPkgNames)) {
+        return ohmurl;
+    }
+
+    items[BUNDLE_NAME_POS] = bundleName;
+    return GetStringByVectorElementsWithDelimiter(items, NORMALIZED_OHMURL_SEPARATOR);
 }
 
 bool RecordNotGeneratedFromBytecode(std::string recordName)

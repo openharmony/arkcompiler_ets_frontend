@@ -54,6 +54,12 @@ struct CompileContextInfo {
     // The key of updateVersionInfo is the package name for an abc file, and the value contains the name of its
     // dependent pacakge and corresponding package version which need to update version.
     std::unordered_map<std::string, std::unordered_map<std::string, PkgInfo>> updateVersionInfo;
+    /**
+     * When there is an abc file as input and needModifyRecord is true, it is necessary to modify the recordName
+     * in abc2program and modify the ohmurl for dynamic and static imports.
+     **/
+    bool needModifyRecord {false};
+    std::string bundleName {};
 };
 }  // namespace panda::es2panda
 
