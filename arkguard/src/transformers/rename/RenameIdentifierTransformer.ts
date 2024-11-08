@@ -64,6 +64,7 @@ import {
   isInterfaceScope,
   isObjectLiteralScope,
   noSymbolIdentifier,
+  getNameWithScopeLoc
 } from '../../utils/ScopeAnalyzer';
 
 import type {
@@ -257,7 +258,7 @@ namespace secharmony {
         defs.forEach((def) => {
           const original: string = def.name;
           let mangled: string = original;
-          const path: string = scope.loc + '#' + original;
+          const path: string = getNameWithScopeLoc(scope, original);
           // No allow to rename reserved names.
           if (!Reflect.has(def, 'obfuscateAsProperty') &&
             isInLocalWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, path) ||
@@ -302,7 +303,7 @@ namespace secharmony {
             return;
           }
           const originalName: string = def.name;
-          const path: string = scope.loc + '#' + originalName;
+          const path: string = getNameWithScopeLoc(scope, originalName);
           let mangledName: string;
           if (isInPropertyWhitelist(originalName, UnobfuscationCollections.unobfuscatedPropMap)) {
             mangledName = originalName;
@@ -326,7 +327,7 @@ namespace secharmony {
           if (isReservedLocalVariable(tmpName)) {
             continue;
           }
-          if (isReservedProperty(tmpName) || tmpName == originalName) {
+          if (isReservedProperty(tmpName) || tmpName === originalName) {
             continue;
           }
           if (historyMangledNames && historyMangledNames.has(tmpName)) {
@@ -712,7 +713,7 @@ namespace secharmony {
 
       function updatePropertyParameterNameNode(node: Identifier): Node {
         let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
-        if (!sym || sym.valueDeclaration?.kind != SyntaxKind.Parameter) {
+        if (!sym || sym.valueDeclaration?.kind !== SyntaxKind.Parameter) {
           return node;
         }
 

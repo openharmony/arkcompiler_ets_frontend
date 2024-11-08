@@ -30,7 +30,8 @@ import {
   isFunctionScope,
   isGlobalScope,
   isInterfaceScope,
-  isObjectLiteralScope
+  isObjectLiteralScope,
+  getNameWithScopeLoc
 } from '../../../src/utils/ScopeAnalyzer';
 import { ScriptTarget, SourceFile, createSourceFile, isSourceFile, Symbol, __String, Declaration, JSDocTagInfo,
    SymbolDisplayPart, SymbolFlags, TypeChecker, LabeledStatement, Identifier, SyntaxKind,
@@ -500,6 +501,14 @@ describe('ScopeAnalyzer ut', function () {
       });
     });
   });
+
+  describe('unit test for getNameWithScopeLoc', function () {
+    const sourceFileContent: string = `
+     let a = 1;
+    `;
+    const sourceFile: SourceFile = createSourceFile('test.ts', sourceFileContent, ScriptTarget.ES2015, true);
+    let scope: Scope = new Scope("testScope", sourceFile, ScopeKind.GLOBAL);
+    const scopeName: string = getNameWithScopeLoc(scope, "testName");
+    assert.equal(scopeName, "testScope#testName");
+  });
 });
-
-
