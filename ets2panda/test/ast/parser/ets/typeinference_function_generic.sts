@@ -35,4 +35,4 @@ fn6("123","456","321")
 function fn7<T extends D, D extends T>(x:T, y:D){}
 fn7("123","456")
 
-/* @@? 35:37 Error TypeError: Type parameter 'D' has circular constraint dependency. */
+/* @@? 35:37 Error TypeError: Type parameter 'D' has circular constraint dependency.  */

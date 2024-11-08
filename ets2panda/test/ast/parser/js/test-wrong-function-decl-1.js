@@ -18,3 +18,5 @@ function f{}
 
 /* @@? 17:11 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 17:12 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 23:1 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@? 23:1 Error SyntaxError: Expected a '}' got 'eos'.  */

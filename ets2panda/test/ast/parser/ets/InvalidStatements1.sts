@@ -51,8 +51,24 @@ class A {
 throw
 "abc"
 // there were more errors
-/* @@? 16:13 Error SyntaxError: Can only type export class or interface! */
-/* @@? 19:13 Error SyntaxError: Can only type export class or interface! */
-/* @@? 22:1 Error SyntaxError: Label must be followed by a loop statement */
-/* @@? 25:5 Error SyntaxError: Identifier expected, got 'let'. */
-/* @@? 25:9 Error SyntaxError: Field type annotation expected */
+/* @@? 16:13 Error SyntaxError: Can only type export class or interface!  */
+/* @@? 19:13 Error SyntaxError: Can only type export class or interface!  */
+/* @@? 22:1 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 25:5 Error SyntaxError: Identifier expected, got 'let'.  */
+/* @@? 25:9 Error SyntaxError: Field type annotation expected  */
+/* @@? 29:5 Error SyntaxError: Illegal start of STRUCT expression  */
+/* @@? 30:9 Error SyntaxError: Identifier expected, got 'let'.  */
+/* @@? 30:13 Error SyntaxError: Field type annotation expected  */
+/* @@? 32:5 Error SyntaxError: Nested functions are not allowed  */
+/* @@? 36:5 Error SyntaxError: Expected a '{', got 'let'.  */
+/* @@? 40:5 Error SyntaxError: Expected a '{', got 'identification literal'.  */
+/* @@? 40:8 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 43:5 Error SyntaxError: Expected a '{', got 'let'.  */
+/* @@? 45:9 Error SyntaxError: Unexpected token '{'.  */
+/* @@? 48:5 Error SyntaxError: Identifier expected, got 'let'.  */
+/* @@? 48:9 Error SyntaxError: Field type annotation expected  */
+/* @@? 52:1 Error SyntaxError: Illegal newline after throw  */
+/* @@? 75:1 Error SyntaxError: Expected a '}' got 'eos'.  */
+/* @@? 42:1 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
+/* @@? 75:1 Error SyntaxError: Expected a '}' got 'eos'.  */
+/* @@? 40:1 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */

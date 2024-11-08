@@ -16,4 +16,6 @@
 
 if else;
 /* @@? 17:4 Error SyntaxError: Expected left parenthesis in an 'IfStatement'  */
-/* @@? 17:8 Error SyntaxError: Unexpected token ';'.  */
+/* @@? 17:8 Error SyntaxError: Unexpected token: ';'.  */
+/* @@? 17:8 Error SyntaxError: Expected right parenthesis in an 'IfStatement'  */
+/* @@? 22:1 Error SyntaxError: Unexpected token: 'eos'.  */

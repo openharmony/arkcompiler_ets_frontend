@@ -18,3 +18,6 @@ class A {
 }
 
 /* @@? 17:12 Error SyntaxError: Access modifier must precede field and method modifiers.  */
+/* @@? 17:20 Error SyntaxError: Identifier expected, got ':'.  */
+/* @@? 17:22 Error SyntaxError: Field type annotation expected  */
+/* @@? 17:25 Error SyntaxError: Field type annotation expected  */

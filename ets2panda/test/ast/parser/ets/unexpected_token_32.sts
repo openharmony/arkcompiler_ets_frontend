@@ -17,4 +17,3 @@ class G<T, S extends T {}
 
 /* @@? 16:24 Error SyntaxError: Unexpected token, expected: '>'.  */
 /* @@? 16:25 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 21:1 Error SyntaxError: Identifier expected.  */

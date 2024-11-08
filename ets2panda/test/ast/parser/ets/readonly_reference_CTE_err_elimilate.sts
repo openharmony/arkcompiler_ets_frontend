@@ -29,4 +29,4 @@ function bar(a:Readonly<A>){
 bar(changeAbleVar)
 
 
-/* @@? 17:5 Error TypeError: Cannot assign to a readonly variable x */
+/* @@? 17:5 Error TypeError: Cannot assign to a readonly variable x  */

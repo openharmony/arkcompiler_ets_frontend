@@ -19,4 +19,5 @@ class A {
     }
 }
 
-/* @@? 17:13 Error SyntaxError: ';' expected.  */
+/* @@? 17:13 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 20:1 Error SyntaxError: Unexpected token: '}'.  */

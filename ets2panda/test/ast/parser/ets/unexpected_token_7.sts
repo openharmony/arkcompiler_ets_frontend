@@ -17,5 +17,4 @@ while true) {
     console.log("hehehehe")
 }
 
-/* @@? 16:7 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 16:11 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 16:7 Error SyntaxError: Unexpected token '', expected '('  */

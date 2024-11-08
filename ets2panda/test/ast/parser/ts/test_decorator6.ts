@@ -17,5 +17,6 @@
 class Foo {
     @dec [a: number]: string;
 }
-/* @@? 18:5 Error SyntaxError: Decorators are not valid here. */
-/* @@? 18:23 Error SyntaxError: An index signature must have a type annotation */
+
+/* @@? 18:5 Error SyntaxError: Decorators are not valid here.  */
+/* @@? 18:23 Error SyntaxError: An index signature must have a type annotation  */

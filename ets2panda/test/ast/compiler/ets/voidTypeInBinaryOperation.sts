@@ -21,5 +21,5 @@ function main(): void {
 }
 
 /* @@? 20:19 Error TypeError: Cannot use type 'void' as value.   */
-/* @@? 20:10 Error TypeError: Bad operand type, the types of the operands must be of possible condition type.   */
+/* @@? 20:10 Error TypeError: Bad operand type, the types of the operands must be of possible condition type.  */
 /* @@? 20:10 Error TypeError: Bad operand type, the type of the operand must be boolean type.  */

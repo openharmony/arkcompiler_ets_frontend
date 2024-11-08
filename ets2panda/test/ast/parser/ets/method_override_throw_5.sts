@@ -21,4 +21,4 @@ final class CClass extends BClass {
     override foo(): void rethrows {}
 }
 
-/* @@? 21:17 Error TypeError: A rethrowing function must have a throwing function parameter */
+/* @@? 21:17 Error TypeError: A rethrowing function must have a throwing function parameter  */

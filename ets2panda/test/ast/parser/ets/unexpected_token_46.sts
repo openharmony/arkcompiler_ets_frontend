@@ -22,3 +22,5 @@ interface IEmployee {
 /* @@? 17:7 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 17:8 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 17:17 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 17:25 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 17:25 Error SyntaxError: Invalid token: ',' or ')' expected.  */

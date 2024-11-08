@@ -18,6 +18,9 @@ interface Test {
     proc()()  // throws SyntaxError
 }
 
-/* @@? 18:11 Error SyntaxError: Unexpected token '('. */
-/* @@? 18:11 Error SyntaxError: Unexpected token, expected: ','. */
-/* @@? 18:11 Error SyntaxError: Unexpected token: ','. */
+/* @@? 18:11 Error SyntaxError: Unexpected token '('.  */
+/* @@? 18:11 Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@? 18:11 Error SyntaxError: Unexpected token, expected 'private' or identifier  */
+/* @@? 18:12 Error SyntaxError: Identifier expected  */
+/* @@? 18:12 Error SyntaxError: Unexpected token, expected 'private' or identifier  */
+/* @@? 19:1 Error SyntaxError: Identifier expected  */

@@ -1,26 +1,9 @@
-# Skipped until #16329 is done. It is not properly checked and does not cause a CTE when using namespace import with alias.
-ast/parser/ets/re_export/import_5.sts
-
-# Issue: #17983
-ast/parser/ets/TypeInferFunc.sts
-
 # Issue: #19440
 ast/parser/ets/iterator_override_next.sts
 
 # Fails with Assertion. Description in Issue #19645
 ast/parser/ets/switch_readonly_member_different_enum_2.sts
 ast/parser/ets/extension_function_tests/extension_function_not_for_class_type.sts
-
-
-# Issue: #19532. About astchecker format
-ast/parser/ets/unexpected_token_1.sts
-ast/parser/ets/unexpected_token_10.sts
-ast/parser/ets/unexpected_token_12.sts
-ast/parser/ets/unexpected_token_13.sts
-ast/parser/ets/unexpected_token_5.sts
-
-# For future multi error logging
-ast/parser/ets/unexpected_token_14.sts
 
 # Issue: #19396
 ast/parser/ets/InvalidStatements2.sts
@@ -41,3 +24,24 @@ ast/parser/ets/UnexpectedToken.sts
 ast/parser/ets/unexpected_token_54.sts
 ast/parser/ets/arrow_1.sts
 ast/parser/ets/unexpected_token_3.sts
+ast/parser/ets/type_references.sts
+ast/parser/ets/unexpected_token_41.sts
+
+# Issue: #20326
+ast/compiler/ets/readonlyType_6.sts
+ast/parser/ets/class_interface_enum_only_top_level_5.sts
+ast/parser/ets/generics_1.sts
+ast/parser/ets/global_scope_boolean.sts
+ast/parser/ets/global_scope_string.sts
+ast/parser/ets/lexer001.sts
+ast/parser/ets/lexer002.sts
+ast/parser/ets/method_override_throw_2.sts
+ast/parser/ets/method_override_throw_4.sts
+ast/parser/ets/method_override_throw_6.sts
+ast/parser/ets/TypeInferFunc.sts
+
+# Issue: #20167
+ast/compiler/ets/union_string_literals_6.sts
+
+# Issue: #19700
+ast/compiler/ets/returnStatementClone.sts

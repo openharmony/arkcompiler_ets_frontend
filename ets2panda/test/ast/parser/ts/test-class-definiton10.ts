@@ -18,4 +18,4 @@ class Foo {
     a() { } b() { } c() { } private static readonly declare d e;
 }
 
-/* @@? 18:63 Error SyntaxError: ';' expected.  */
+/* @@? 18:63 Error SyntaxError: Unexpected token, expected: ';'.  */

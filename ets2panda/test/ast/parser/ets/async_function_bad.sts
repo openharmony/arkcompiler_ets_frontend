@@ -19,3 +19,6 @@ async native function foo(): Promise;
 /* @@? 16:14 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword  */
 /* @@? 16:14 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 16:26 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 16:26 Error SyntaxError: Invalid token: ',' or ')' expected.  */
+/* @@? 16:27 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 16:28 Error SyntaxError: Unexpected token ':'.  */

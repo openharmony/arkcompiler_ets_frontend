@@ -17,5 +17,6 @@
 class Foo {
     static static a;
 }
-/* @@? 18:12 Error SyntaxError: Unexpected modifier */
-/* @@? 18:12 Error SyntaxError: Duplicated modifier is not allowed */
+
+/* @@? 18:12 Error SyntaxError: Unexpected modifier  */
+/* @@? 18:12 Error SyntaxError: Duplicated modifier is not allowed  */

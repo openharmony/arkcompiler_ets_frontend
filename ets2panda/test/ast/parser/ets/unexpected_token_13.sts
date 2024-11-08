@@ -16,5 +16,4 @@
 import X1~ from
 
 /* @@? 16:10 Error SyntaxError: Unexpected token, expected: 'from'.  */
-/* @@? 21:1 Error SyntaxError: Unexpected token, expected string literal.  */
-/* @@? 0:0 Error Error: Can't find prefix for 'from' in  */
+/* @@? 20:1 Error SyntaxError: Unexpected token, expected string literal.  */

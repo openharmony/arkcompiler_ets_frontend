@@ -19,3 +19,7 @@ interface C extends A, B [}
 
 /* @@? 18:26 Error SyntaxError: Unexpected token, expected: ','.  */
 /* @@? 18:27 Error SyntaxError: Identifier expected  */
+/* @@? 18:27 Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@? 26:1 Error SyntaxError: Identifier expected  */
+/* @@? 26:1 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@? 26:1 Error SyntaxError: Unexpected token, expected: '}'.  */

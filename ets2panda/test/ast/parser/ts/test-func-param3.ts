@@ -17,4 +17,5 @@
 class A {
     constructor(this) { }
 }
+
 /* @@? 18:21 Error SyntaxError: A constructor cannot have a 'this' parameter  */

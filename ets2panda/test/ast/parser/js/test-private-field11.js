@@ -23,3 +23,4 @@ class A {
 }
 
 /* @@? 20:23 Error SyntaxError: Unexpected private identifier  */
+/* @@? 21:9 Error SyntaxError: Unexpected token: '}'.  */

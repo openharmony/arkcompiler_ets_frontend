@@ -22,9 +22,3 @@ function main() {
 }
 
 /* @@? 17:6 Error SyntaxError: Unexpected token at  */
-/* @@? 17:7 Error SyntaxError: Index type expected in index signature  */
-/* @@? 17:9 Error SyntaxError: Index type must be number in index signature  */
-/* @@? 17:15 Error SyntaxError: ] expected in index signature  */
-/* @@? 17:17 Error SyntaxError: An index signature must have a type annotation.  */
-/* @@? 17:23 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
-/* @@? 17:24 Error SyntaxError: Identifier expected.  */

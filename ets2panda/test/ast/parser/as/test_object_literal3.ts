@@ -17,4 +17,3 @@
 let a = { b , a  n )
 
 /* @@? 17:18 Error SyntaxError: Unexpected token, expected ',' or '}'  */
-/* @@? 17:20 Error SyntaxError: Unexpected token, expected ',' or '}'  */

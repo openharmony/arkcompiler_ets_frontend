@@ -24,4 +24,4 @@ class A {
 
 /* @@? 19:15 Error SyntaxError: Unexpected private identifier  */
 /* @@? 22:5 Error SyntaxError: Expected right parenthesis in an 'IfStatement'  */
-/* @@? 23:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 23:1 Error SyntaxError: Unexpected token: '}'.  */

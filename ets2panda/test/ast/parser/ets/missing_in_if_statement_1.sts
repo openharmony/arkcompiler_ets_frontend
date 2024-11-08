@@ -16,4 +16,4 @@
 if (true { console.log("hello!") }
 
 /* @@? 16:10 Error SyntaxError: Expected right parenthesis in an 'IfStatement'  */
-/* @@? 16:34 Error SyntaxError: Unexpected token: '}'.  */
+/* @@? 16:34 Error SyntaxError: Unexpected token '}'.  */

@@ -28,4 +28,4 @@ function main(): void {
 }
 
 /* @@? 25:14 Error TypeError: Switch case type 'Int' is not comparable to discriminant type 'int'  */
-/* @@? 25:9  Error TypeError: Constant expression required  */
+/* @@? 25:9 Error TypeError: Constant expression required  */

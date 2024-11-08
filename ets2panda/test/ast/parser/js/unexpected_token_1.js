@@ -17,4 +17,3 @@ class A
 }
 
 /* @@? 17:1 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 21:1 Error SyntaxError: Unexpected token in class property  */

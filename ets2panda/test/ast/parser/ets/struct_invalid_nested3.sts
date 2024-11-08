@@ -20,3 +20,7 @@ class A {
 }
 
 /* @@? 17:12 Error SyntaxError: Field type annotation expected  */
+/* @@? 17:14 Error SyntaxError: Field type annotation expected  */
+/* @@? 17:14 Error SyntaxError: Identifier expected, got '{'.  */
+/* @@? 19:5 Error SyntaxError: Field type annotation expected  */
+/* @@? 20:1 Error SyntaxError: Unexpected token '}'.  */

@@ -30,3 +30,6 @@ function main() {
 /* @@? 20:5 Error SyntaxError: Nested functions are not allowed  */
 /* @@? 20:19 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 20:25 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 20:25 Error SyntaxError: Invalid token: ',' or ')' expected.  */
+/* @@? 20:26 Error SyntaxError: Expected token '{', got ')'  */
+/* @@? 20:26 Error SyntaxError: Unexpected token ')'.  */
