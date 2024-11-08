@@ -297,9 +297,9 @@ export class ArkObfuscator {
     const outputPath = printerConfig.mOutputPath;
 
     // Helper function to configure or disable a printer.
-    const configurePrinter = (printer: TimeTracker | TimeSumPrinter, isEnabled: boolean) => {
+    const configurePrinter = (printer: TimeTracker | TimeSumPrinter, isEnabled: boolean): void => {
       printer.setOutputPath(outputPath);
-      if (!isEnabled){
+      if (!isEnabled) {
         printer.disablePrinter();
       }
     };

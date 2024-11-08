@@ -1142,7 +1142,7 @@ export function enableObfuscateFileName(isPackageModules: boolean, projectConfig
  */
 export function getRelativeSourcePath(
   filePath: string,
-  projectRootPath: string,
+  projectRootPath: string | undefined,
   belongProjectPath: string | undefined,
 ): string {
   filePath = FileUtils.toUnixPath(filePath);

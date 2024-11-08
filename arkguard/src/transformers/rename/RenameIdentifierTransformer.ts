@@ -326,7 +326,7 @@ namespace secharmony {
           if (isReservedLocalVariable(tmpName)) {
             continue;
           }
-          if (isReservedProperty(tmpName) || tmpName == originalName) {
+          if (isReservedProperty(tmpName) || tmpName === originalName) {
             continue;
           }
           if (historyMangledNames && historyMangledNames.has(tmpName)) {
@@ -712,7 +712,7 @@ namespace secharmony {
 
       function updatePropertyParameterNameNode(node: Identifier): Node {
         let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
-        if (!sym || sym.valueDeclaration?.kind != SyntaxKind.Parameter) {
+        if (!sym || sym.valueDeclaration?.kind !== SyntaxKind.Parameter) {
           return node;
         }
 
