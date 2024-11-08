@@ -484,23 +484,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "-",
-              "prefix": true,
-              "argument": {
-                "type": "NumberLiteral",
-                "value": 1e-06,
-                "loc": {
-                  "start": {
-                    "line": 25,
-                    "column": 16
-                  },
-                  "end": {
-                    "line": 25,
-                    "column": 22
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": -1e-06,
               "loc": {
                 "start": {
                   "line": 25,
@@ -799,34 +784,8 @@
               }
             },
             "value": {
-              "type": "TSAsExpression",
-              "expression": {
-                "type": "NumberLiteral",
-                "value": 123.45,
-                "loc": {
-                  "start": {
-                    "line": 31,
-                    "column": 15
-                  },
-                  "end": {
-                    "line": 31,
-                    "column": 22
-                  }
-                }
-              },
-              "typeAnnotation": {
-                "type": "ETSPrimitiveType",
-                "loc": {
-                  "start": {
-                    "line": 31,
-                    "column": 15
-                  },
-                  "end": {
-                    "line": 31,
-                    "column": 22
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": 123.45,
               "loc": {
                 "start": {
                   "line": 31,
@@ -875,34 +834,8 @@
               }
             },
             "value": {
-              "type": "TSAsExpression",
-              "expression": {
-                "type": "NumberLiteral",
-                "value": 1.2345e+12,
-                "loc": {
-                  "start": {
-                    "line": 32,
-                    "column": 15
-                  },
-                  "end": {
-                    "line": 32,
-                    "column": 25
-                  }
-                }
-              },
-              "typeAnnotation": {
-                "type": "ETSPrimitiveType",
-                "loc": {
-                  "start": {
-                    "line": 32,
-                    "column": 15
-                  },
-                  "end": {
-                    "line": 32,
-                    "column": 25
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": 1.2345e+12,
               "loc": {
                 "start": {
                   "line": 32,
@@ -951,49 +884,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "-",
-              "prefix": true,
-              "argument": {
-                "type": "TSAsExpression",
-                "expression": {
-                  "type": "NumberLiteral",
-                  "value": 123.45,
-                  "loc": {
-                    "start": {
-                      "line": 33,
-                      "column": 16
-                    },
-                    "end": {
-                      "line": 33,
-                      "column": 23
-                    }
-                  }
-                },
-                "typeAnnotation": {
-                  "type": "ETSPrimitiveType",
-                  "loc": {
-                    "start": {
-                      "line": 33,
-                      "column": 16
-                    },
-                    "end": {
-                      "line": 33,
-                      "column": 23
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 33,
-                    "column": 16
-                  },
-                  "end": {
-                    "line": 33,
-                    "column": 23
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": -123.45,
               "loc": {
                 "start": {
                   "line": 33,
@@ -1042,49 +934,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "-",
-              "prefix": true,
-              "argument": {
-                "type": "TSAsExpression",
-                "expression": {
-                  "type": "NumberLiteral",
-                  "value": 1.2345e+12,
-                  "loc": {
-                    "start": {
-                      "line": 34,
-                      "column": 16
-                    },
-                    "end": {
-                      "line": 34,
-                      "column": 26
-                    }
-                  }
-                },
-                "typeAnnotation": {
-                  "type": "ETSPrimitiveType",
-                  "loc": {
-                    "start": {
-                      "line": 34,
-                      "column": 16
-                    },
-                    "end": {
-                      "line": 34,
-                      "column": 26
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 34,
-                    "column": 16
-                  },
-                  "end": {
-                    "line": 34,
-                    "column": 26
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": -1.2345e+12,
               "loc": {
                 "start": {
                   "line": 34,

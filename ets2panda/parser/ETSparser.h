@@ -280,7 +280,6 @@ private:
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::ClassProperty *ParseInterfaceField();
-    ir::Expression *ParseCoercedNumberLiteral();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);

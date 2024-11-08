@@ -15,14 +15,7 @@
 
 #include "lexer.h"
 
-#include "es2panda.h"
 #include "generated/keywords.h"
-#include "lexer/token/letters.h"
-#include "lexer/token/tokenType.h"
-#include "parser/context/parserContext.h"
-#include "parser/program/program.h"
-
-#include <array>
 
 namespace ark::es2panda::lexer {
 LexerPosition::LexerPosition(const util::StringView &source) : iterator_(source) {}
@@ -278,10 +271,10 @@ void Lexer::ScanDecimalNumbers()
     }
 }
 
-void Lexer::ConvertNumber(const std::string &utf8, [[maybe_unused]] NumberFlags flags)
+void Lexer::ConvertNumber([[maybe_unused]] NumberFlags flags)
 {
     ConversionResult res;
-    const long double temp = StrToNumeric(&std::strtold, utf8.c_str(), res);
+    const long double temp = StrToNumeric(&std::strtold, GetToken().src_.Utf8().data(), res);
     if (res == ConversionResult::SUCCESS) {
         GetToken().number_ = Number(GetToken().src_, static_cast<double>(temp));
     } else if (res == ConversionResult::INVALID_ARGUMENT) {
@@ -291,7 +284,7 @@ void Lexer::ConvertNumber(const std::string &utf8, [[maybe_unused]] NumberFlags 
     }
 }
 
-void Lexer::ScanNumber(bool allowBigInt)
+void Lexer::ScanNumber(bool const leadingMinus, bool allowBigInt)
 {
     const bool isPeriod = GetToken().type_ == TokenType::PUNCTUATOR_PERIOD;
     GetToken().type_ = TokenType::LITERAL_NUMBER;
@@ -301,7 +294,6 @@ void Lexer::ScanNumber(bool allowBigInt)
         ScanDecimalNumbers();
     }
 
-    size_t exponentSignPos = std::numeric_limits<size_t>::max();
     bool parseExponent = true;
     auto flags = NumberFlags::NONE;
 
@@ -320,7 +312,7 @@ void Lexer::ScanNumber(bool allowBigInt)
         }
     }
 
-    std::tie(exponentSignPos, allowBigInt, flags) = ScanCharLex(allowBigInt, parseExponent, flags);
+    auto const signPosition = ScanCharLex(parseExponent, allowBigInt, flags);
 
     CheckNumberLiteralEnd();
 
@@ -333,11 +325,11 @@ void Lexer::ScanNumber(bool allowBigInt)
     }
 
     util::StringView sv = SourceView(GetToken().Start().index, Iterator().Index());
-    std::string utf8 = std::string {sv.Utf8()};
-    bool needConversion = false;
+    std::string utf8 = !leadingMinus ? std::string {sv.Utf8()} : '-' + std::string {sv.Utf8()};
+    bool needConversion = leadingMinus;
 
-    if (exponentSignPos != std::numeric_limits<size_t>::max()) {
-        utf8.insert(exponentSignPos, 1, '+');
+    if (signPosition) {
+        utf8.insert(*signPosition + (!leadingMinus ? 0U : 1U), 1U, '+');
         needConversion = true;
     }
 
@@ -346,50 +338,37 @@ void Lexer::ScanNumber(bool allowBigInt)
         needConversion = true;
     }
 
-    if (needConversion) {
-        util::UString converted(utf8, Allocator());
-        GetToken().src_ = converted.View();
-    } else {
-        GetToken().src_ = sv;
-    }
+    GetToken().src_ = needConversion ? util::UString(utf8, Allocator()).View() : sv;
 
-    ConvertNumber(utf8, flags);
+    ConvertNumber(flags);
 }
 
-std::tuple<size_t, bool, NumberFlags> Lexer::ScanCharLex(bool allowBigInt, bool parseExponent, NumberFlags flags)
+std::optional<std::size_t> Lexer::ScanCharLex(bool const parseExponent, bool &allowBigInt, NumberFlags &flags)
 {
-    size_t exponentSignPos = std::numeric_limits<size_t>::max();
-    switch (Iterator().Peek()) {
-        case LEX_CHAR_LOWERCASE_E:
-        case LEX_CHAR_UPPERCASE_E: {
-            allowBigInt = false;
+    std::optional<std::size_t> rc {};
 
-            if (!parseExponent) {
-                break;
-            }
+    if (auto const ch = Iterator().Peek(); ch == LEX_CHAR_LOWERCASE_E || ch == LEX_CHAR_UPPERCASE_E) {
+        allowBigInt = false;
 
+        if (parseExponent) {
             flags |= NumberFlags::EXPONENT;
 
             Iterator().Forward(1);
 
-            exponentSignPos = ScanSignOfNumber();
+            rc = ScanSignOfNumber();
 
             if (!IsDecimalDigit(Iterator().Peek())) {
                 ThrowError("Invalid numeric literal");
             }
             ScanDecimalNumbers();
-            break;
-        }
-        default: {
-            break;
         }
     }
-    return {exponentSignPos, allowBigInt, flags};
+
+    return rc;
 }
 
-size_t Lexer::ScanSignOfNumber()
+std::optional<std::size_t> Lexer::ScanSignOfNumber() noexcept
 {
-    size_t exponentSignPos = std::numeric_limits<size_t>::max();
     switch (Iterator().Peek()) {
         case LEX_CHAR_UNDERSCORE: {
             break;
@@ -400,11 +379,10 @@ size_t Lexer::ScanSignOfNumber()
             break;
         }
         default: {
-            exponentSignPos = Iterator().Index() - GetToken().Start().index;
-            break;
+            return std::make_optional(Iterator().Index() - GetToken().Start().index);
         }
     }
-    return exponentSignPos;
+    return std::nullopt;
 }
 
 void Lexer::PushTemplateContext(TemplateLiteralParserContext *ctx)
@@ -1349,8 +1327,12 @@ void Lexer::NextToken(Keywords *kws)
             break;
         }
         case LEX_CHAR_0: {
-            ScanNumberLeadingZero();
-            break;
+            if (Iterator().Peek() != LEX_CHAR_DOT) {
+                ScanNumberLeadingZero((kwu.Flags() & NextTokenFlags::UNARY_MINUS) !=
+                                      std::underlying_type_t<NextTokenFlags>(0U));
+                break;
+            }
+            [[fallthrough]];
         }
         case LEX_CHAR_1:
         case LEX_CHAR_2:
@@ -1361,7 +1343,7 @@ void Lexer::NextToken(Keywords *kws)
         case LEX_CHAR_7:
         case LEX_CHAR_8:
         case LEX_CHAR_9: {
-            ScanNumber();
+            ScanNumber((kwu.Flags() & NextTokenFlags::UNARY_MINUS) != std::underlying_type_t<NextTokenFlags>(0U));
             break;
         }
         case LEX_CHAR_COLON: {

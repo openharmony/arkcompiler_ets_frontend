@@ -110,10 +110,9 @@ void ETSLexer::ScanAsteriskPunctuator()
     }
 }
 
-void ETSLexer::ConvertNumber(const std::string &utf8, NumberFlags flags)
+void ETSLexer::ConvertNumber(NumberFlags const flags)
 {
-    GetToken().number_ = lexer::Number(GetToken().src_, utf8, flags);
-
+    GetToken().number_ = lexer::Number(GetToken().src_, flags);
     if (GetToken().number_.ConversionError()) {
         ThrowError("Invalid number");
     }

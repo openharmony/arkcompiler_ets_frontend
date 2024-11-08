@@ -1149,23 +1149,8 @@
                             }
                           },
                           "init": {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 1,
-                              "loc": {
-                                "start": {
-                                  "line": 34,
-                                  "column": 24
-                                },
-                                "end": {
-                                  "line": 34,
-                                  "column": 27
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -1,
                             "loc": {
                               "start": {
                                 "line": 34,
@@ -2311,23 +2296,8 @@
                                     }
                                   },
                                   {
-                                    "type": "UnaryExpression",
-                                    "operator": "-",
-                                    "prefix": true,
-                                    "argument": {
-                                      "type": "NumberLiteral",
-                                      "value": 0.5,
-                                      "loc": {
-                                        "start": {
-                                          "line": 49,
-                                          "column": 23
-                                        },
-                                        "end": {
-                                          "line": 49,
-                                          "column": 26
-                                        }
-                                      }
-                                    },
+                                    "type": "NumberLiteral",
+                                    "value": -0.5,
                                     "loc": {
                                       "start": {
                                         "line": 49,

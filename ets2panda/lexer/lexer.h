@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_PARSER_CORE_LEXER_H
 #define ES2PANDA_PARSER_CORE_LEXER_H
 
-#include <ios>
 #include "lexer/regexp/regexp.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/token.h"
@@ -37,6 +36,7 @@ enum class NextTokenFlags : uint32_t {
     KEYWORD_TO_IDENT = 1U << 0U,
     NUMERIC_SEPARATOR_ALLOWED = 1U << 1U,
     BIGINT_ALLOWED = 1U << 2U,
+    UNARY_MINUS = 1U << 3U,
 };
 
 class LexerPosition {
@@ -209,9 +209,9 @@ public:
         const Tret tmp = converter(str, &endPtr, base...);
 
         bool outOfRange = false;
-        if constexpr (std::is_same_v<Ret, int>) {
-            outOfRange = tmp < static_cast<Tret>(std::numeric_limits<int>::min()) ||
-                         tmp > static_cast<Tret>(std::numeric_limits<int>::max());
+        if constexpr (!std::is_same_v<Ret, Tret>) {
+            outOfRange = tmp < static_cast<Tret>(std::numeric_limits<Ret>::min()) ||
+                         tmp > static_cast<Tret>(std::numeric_limits<Ret>::max());
         }
 
         if (endPtr == str) {
@@ -296,22 +296,20 @@ protected:
 
     void ScanDecimalNumbers();
 
-    virtual void ScanNumberLeadingZero()
+    virtual void ScanNumberLeadingZero(bool const leadingMinus)
     {
-        ScanNumberLeadingZeroImpl<double>();
+        ScanNumberLeadingZeroImpl<double>(leadingMinus);
     }
 
-    template <typename RadixType, typename RadixLimit = void *>
-    bool ScanNumberLeadingZeroImpl();
+    template <typename RadixType, typename RadixLimit = RadixType>
+    bool ScanNumberLeadingZeroImpl(bool leadingMinus);
     void ScanNumberLeadingZeroImplNonAllowedCases();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-    bool ScanNumberRadix(bool allowNumericSeparator = true);
-    void ScanNumber(bool allowBigInt = true);
-    std::tuple<size_t, bool, NumberFlags> ScanCharLex(bool allowBigInt, bool parseExponent, NumberFlags flags);
-    size_t ScanSignOfNumber();
-    template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-    bool ScanTooLargeNumber(RadixType number);
-    virtual void ConvertNumber(const std::string &utf8, NumberFlags flags);
+    bool ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator = true);
+    void ScanNumber(bool leadingMinus = false, bool allowBigInt = true);
+    std::optional<std::size_t> ScanCharLex(bool parseExponent, bool &allowBigInt, NumberFlags &flags);
+    std::optional<std::size_t> ScanSignOfNumber() noexcept;
+    virtual void ConvertNumber(NumberFlags flags);
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allowNumericSeparator);
     virtual void CheckNumberLiteralEnd();
@@ -451,7 +449,7 @@ char32_t Lexer::ScanHexEscape()
 }
 
 template <typename RadixType, typename RadixLimit>
-bool Lexer::ScanNumberLeadingZeroImpl()
+bool Lexer::ScanNumberLeadingZeroImpl(bool const leadingMinus)
 {
     GetToken().type_ = TokenType::LITERAL_NUMBER;
     GetToken().keywordType_ = TokenType::LITERAL_NUMBER;
@@ -461,7 +459,7 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         case LEX_CHAR_UPPERCASE_X: {
             Iterator().Forward(1);
             constexpr auto RADIX = 16;
-            if (!ScanNumberRadix<IsHexDigit, RADIX, RadixType, RadixLimit>()) {
+            if (!ScanNumberRadix<IsHexDigit, RADIX, RadixType, RadixLimit>(leadingMinus)) {
                 return false;
             }
             CheckNumberLiteralEnd();
@@ -471,7 +469,7 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         case LEX_CHAR_UPPERCASE_B: {
             Iterator().Forward(1);
             constexpr auto RADIX = 2;
-            if (!ScanNumberRadix<IsBinaryDigit, RADIX, RadixType, RadixLimit>()) {
+            if (!ScanNumberRadix<IsBinaryDigit, RADIX, RadixType, RadixLimit>(leadingMinus)) {
                 return false;
             }
             CheckNumberLiteralEnd();
@@ -481,7 +479,7 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         case LEX_CHAR_UPPERCASE_O: {
             Iterator().Forward(1);
             constexpr auto RADIX = 8;
-            if (!ScanNumberRadix<IsOctalDigit, RADIX, RadixType, RadixLimit>()) {
+            if (!ScanNumberRadix<IsOctalDigit, RADIX, RadixType, RadixLimit>(leadingMinus)) {
                 return false;
             }
             CheckOctal();
@@ -494,15 +492,17 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         }
     }
 
-    ScanNumber();
+    ScanNumber(leadingMinus);
     return true;
 }
 
-template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-bool Lexer::ScanTooLargeNumber([[maybe_unused]] RadixType number)
+template <int RADIX, typename RadixType, typename RadixLimit>
+bool ScanTooLargeNumber([[maybe_unused]] RadixType const number, [[maybe_unused]] std::uint32_t const digit)
 {
-    if constexpr (std::is_arithmetic_v<RadixLimit>) {
-        if (number > std::numeric_limits<RadixLimit>::max() / RADIX) {
+    // NOTE (DZ): probably more sophisticates check will be required for general usage
+    if constexpr (std::is_integral_v<RadixLimit>) {
+        if (static_cast<RadixType>(std::numeric_limits<RadixLimit>::max()) / RADIX < number ||
+            static_cast<RadixType>(std::numeric_limits<RadixLimit>::max()) - number * RADIX < digit) {
             return false;
         }
     }
@@ -510,7 +510,7 @@ bool Lexer::ScanTooLargeNumber([[maybe_unused]] RadixType number)
 }
 
 template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-bool Lexer::ScanNumberRadix(bool allowNumericSeparator)
+bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 {
     RadixType number {};
 
@@ -524,13 +524,12 @@ bool Lexer::ScanNumberRadix(bool allowNumericSeparator)
     do {
         cp = Iterator().Peek();
         if (RANGE_CHECK(cp)) {
-            auto digit = HexValue(cp);
-
-            if (!ScanTooLargeNumber<RANGE_CHECK, RADIX, RadixType, RadixLimit>(number)) {
+            auto const digit = HexValue(cp);
+            if (!ScanTooLargeNumber<RADIX, RadixType, RadixLimit>(number, digit)) {
                 return false;
             }
-
             number = number * RADIX + digit;
+
             Iterator().Forward(1);
             allowNumericOnNext = true;
             continue;
@@ -554,6 +553,14 @@ bool Lexer::ScanNumberRadix(bool allowNumericSeparator)
 
         break;
     } while (true);
+
+    if (leadingMinus) {
+        if constexpr (std::is_integral_v<RadixType>) {
+            number = ~number + static_cast<RadixType>(1);
+        } else {
+            number = -number;
+        }
+    }
 
     GetToken().number_ = lexer::Number(number);
     return true;

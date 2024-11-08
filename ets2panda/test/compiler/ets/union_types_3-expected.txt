@@ -449,23 +449,8 @@
                           }
                         },
                         "right": {
-                          "type": "UnaryExpression",
-                          "operator": "-",
-                          "prefix": true,
-                          "argument": {
-                            "type": "NumberLiteral",
-                            "value": 2,
-                            "loc": {
-                              "start": {
-                                "line": 19,
-                                "column": 11
-                              },
-                              "end": {
-                                "line": 19,
-                                "column": 12
-                              }
-                            }
-                          },
+                          "type": "NumberLiteral",
+                          "value": -2,
                           "loc": {
                             "start": {
                               "line": 19,
@@ -574,23 +559,8 @@
                           }
                         },
                         "right": {
-                          "type": "UnaryExpression",
-                          "operator": "-",
-                          "prefix": true,
-                          "argument": {
-                            "type": "NumberLiteral",
-                            "value": 6,
-                            "loc": {
-                              "start": {
-                                "line": 20,
-                                "column": 32
-                              },
-                              "end": {
-                                "line": 20,
-                                "column": 33
-                              }
-                            }
-                          },
+                          "type": "NumberLiteral",
+                          "value": -6,
                           "loc": {
                             "start": {
                               "line": 20,

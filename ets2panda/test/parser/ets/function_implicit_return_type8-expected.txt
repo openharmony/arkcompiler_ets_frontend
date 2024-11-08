@@ -538,23 +538,8 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "UnaryExpression",
-                        "operator": "-",
-                        "prefix": true,
-                        "argument": {
-                          "type": "NumberLiteral",
-                          "value": 33,
-                          "loc": {
-                            "start": {
-                              "line": 29,
-                              "column": 11
-                            },
-                            "end": {
-                              "line": 29,
-                              "column": 13
-                            }
-                          }
-                        },
+                        "type": "NumberLiteral",
+                        "value": -33,
                         "loc": {
                           "start": {
                             "line": 29,
@@ -889,23 +874,8 @@
                             },
                             "arguments": [
                               {
-                                "type": "UnaryExpression",
-                                "operator": "-",
-                                "prefix": true,
-                                "argument": {
-                                  "type": "NumberLiteral",
-                                  "value": 1,
-                                  "loc": {
-                                    "start": {
-                                      "line": 36,
-                                      "column": 17
-                                    },
-                                    "end": {
-                                      "line": 36,
-                                      "column": 18
-                                    }
-                                  }
-                                },
+                                "type": "NumberLiteral",
+                                "value": -1,
                                 "loc": {
                                   "start": {
                                     "line": 36,

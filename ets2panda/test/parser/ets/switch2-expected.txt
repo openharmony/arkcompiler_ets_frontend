@@ -588,23 +588,8 @@
                                   }
                                 },
                                 "right": {
-                                  "type": "UnaryExpression",
-                                  "operator": "-",
-                                  "prefix": true,
-                                  "argument": {
-                                    "type": "NumberLiteral",
-                                    "value": 1,
-                                    "loc": {
-                                      "start": {
-                                        "line": 29,
-                                        "column": 14
-                                      },
-                                      "end": {
-                                        "line": 29,
-                                        "column": 15
-                                      }
-                                    }
-                                  },
+                                  "type": "NumberLiteral",
+                                  "value": -1,
                                   "loc": {
                                     "start": {
                                       "line": 29,
