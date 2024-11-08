@@ -24,3 +24,6 @@ rebound_test
 
 #20374
 base64_test
+
+#20257
+mathjs_test
