@@ -273,7 +273,7 @@
                                 "type": "VariableDeclarator",
                                 "id": {
                                   "type": "Identifier",
-                                  "name": "gensym$_4",
+                                  "name": "gensym%%_4",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
@@ -334,7 +334,7 @@
                                 "operator": "==",
                                 "left": {
                                   "type": "Identifier",
-                                  "name": "gensym$_4",
+                                  "name": "gensym%%_4",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
@@ -390,7 +390,7 @@
                                 "type": "CallExpression",
                                 "callee": {
                                   "type": "Identifier",
-                                  "name": "gensym$_4",
+                                  "name": "gensym%%_4",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
