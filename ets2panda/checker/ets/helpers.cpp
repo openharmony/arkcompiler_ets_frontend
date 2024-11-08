@@ -1665,7 +1665,9 @@ std::optional<const ir::AstNode *> ETSChecker::FindJumpTarget(ir::AstNode *node)
         iter = iter->Parent();
     }
 
-    UNREACHABLE();
+    LogTypeError({"Control flow redirection statement can not be used out of loop or switch statement."},
+                 node->Start());
+    return nullptr;
 }
 
 varbinder::VariableFlags ETSChecker::GetAccessFlagFromNode(const ir::AstNode *node)
