@@ -139,7 +139,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
             SetTsType(HandleInternalTypes(checker, name_->AsIdentifier()));
         }
 
-        if (TsTypeOrError() == nullptr) {
+        if (TsType() == nullptr) {
             checker::Type *baseType = checker->GetReferencedTypeBase(name_);
 
             ASSERT(baseType != nullptr);
@@ -154,7 +154,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
         checker::Type *baseType = prev_->GetType(checker);
         SetTsType(checker->GetReferencedTypeFromBase(baseType, name_));
     }
-    return TsTypeOrError();
+    return TsType();
 }
 
 ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -531,7 +531,7 @@ Type *ETSChecker::GlobalTypeError() const
 Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
 {
     node->SetTsType(GlobalTypeError());
-    return node->TsTypeOrError();
+    return node->TsType();
 }
 
 Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)
@@ -544,7 +544,7 @@ Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, 
 {
     LogTypeError(message, at);
     var->SetTsType(GlobalTypeError());
-    return var->TsTypeOrError();
+    return var->TsType();
 }
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)

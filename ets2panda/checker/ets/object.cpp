@@ -1019,7 +1019,7 @@ void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &c
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
     classDef->SetClassDefinitionChecked();
-    auto *classType = classDef->TsTypeOrError()->AsETSObjectType();
+    auto *classType = classDef->TsType()->AsETSObjectType();
     if (classType->SuperType() != nullptr) {
         classType->SuperType()->GetDeclNode()->Check(this);
     }
@@ -1666,7 +1666,7 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
                 return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS | SETTER_FLAGS;
             }
 
-            auto const *targetType = assignmentExpr->Left()->TsTypeOrError();
+            auto const *targetType = assignmentExpr->Left()->TsType();
             if (targetType->IsETSObjectType() &&
                 targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
                 return FUNCTIONAL_FLAGS;

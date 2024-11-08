@@ -284,7 +284,7 @@ bool InterfaceObjectLiteralLowering::Postcondition(public_lib::Context *ctx, con
     }
 
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
-        return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsTypeOrError());
+        return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType());
     });
 }
 }  // namespace ark::es2panda::compiler
