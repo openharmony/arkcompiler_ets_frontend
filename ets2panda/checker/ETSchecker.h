@@ -109,6 +109,7 @@ public:
     Type *GlobalVoidType() const;
     Type *GlobalETSNullType() const;
     Type *GlobalETSUndefinedType() const;
+    Type *GlobalETSNeverType() const;
     Type *GlobalETSStringLiteralType() const;
     Type *GlobalETSBigIntType() const;
     Type *GlobalWildcardType() const;

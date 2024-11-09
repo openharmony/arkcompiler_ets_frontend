@@ -340,6 +340,7 @@ set(ES2PANDA_LIB_SRC
   ir/ets/etsParameterExpression.cpp
   ir/ets/etsPrimitiveType.cpp
   ir/ets/etsNullishTypes.cpp
+  ir/ets/etsNeverType.cpp
   ir/ets/etsScript.cpp
   ir/ets/etsStringLiteralType.cpp
   ir/ets/etsTuple.cpp
@@ -492,6 +493,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsExtensionFuncHelperType.cpp
   checker/types/ets/etsFunctionType.cpp
   checker/types/ets/etsNonNullishType.cpp
+  checker/types/ets/etsNeverType.cpp
   checker/types/ets/etsReadonlyType.cpp
   checker/types/ets/etsNullishTypes.cpp
   checker/types/ets/etsObjectType.cpp

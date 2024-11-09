@@ -158,6 +158,7 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NONNULLISH:
+        case checker::TypeFlag::ETS_NEVER:
         case checker::TypeFlag::ETS_READONLY:
         case checker::TypeFlag::ETS_INT_ENUM:
             Out(checkerType->ToString());

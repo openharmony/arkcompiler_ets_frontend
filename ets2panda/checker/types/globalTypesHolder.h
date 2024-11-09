@@ -58,6 +58,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_NULL,
     ETS_UNDEFINED,
     ETS_NULLISH_TYPE,
+    ETS_NEVER,
     ETS_NULLISH_OBJECT,
     ETS_WILDCARD,
     ETS_BOOLEAN_BUILTIN,
@@ -110,7 +111,6 @@ enum class GlobalTypeId : std::size_t {
     ETS_LONG_BOX_BUILTIN,
     ETS_FLOAT_BOX_BUILTIN,
     ETS_DOUBLE_BOX_BUILTIN,
-    ETS_NEVER_BUILTIN,
     ETS_BIG_INT_BUILTIN,
     ETS_BIG_INT,
 
@@ -228,6 +228,7 @@ public:
     Type *GlobalETSObjectType();
     Type *GlobalETSNullType();
     Type *GlobalETSUndefinedType();
+    Type *GlobalETSNeverType();
     Type *GlobalETSNullishType();
     Type *GlobalETSNullishObjectType();
     Type *GlobalWildcardType();
@@ -269,7 +270,6 @@ public:
     Type *GlobalLongBoxBuiltinType();
     Type *GlobalFloatBoxBuiltinType();
     Type *GlobalDoubleBoxBuiltinType();
-    Type *GlobalBuiltinNeverType();
 
     // Functional types
     size_t VariadicFunctionTypeThreshold();

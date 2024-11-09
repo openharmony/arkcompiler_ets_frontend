@@ -98,7 +98,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
     }
 
     if (type->IsETSNullType() || type->IsETSUndefinedType()) {
-        return GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+        return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
     ArenaVector<Type *> copied(Allocator()->Adapter());
@@ -108,7 +108,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
         }
         copied.push_back(GetNonNullishType(t));
     }
-    return copied.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType() : CreateETSUnionType(std::move(copied));
+    return copied.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType() : CreateETSUnionType(std::move(copied));
 }
 
 Type *ETSChecker::RemoveNullType(Type *const type)
@@ -122,7 +122,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
     }
 
     if (type->IsETSNullType()) {
-        return GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+        return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
     ASSERT(type->IsETSUnionType());
@@ -134,7 +134,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
         }
     }
 
-    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                : CreateETSUnionType(std::move(copiedTypes));
 }
 
@@ -149,7 +149,7 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
     }
 
     if (type->IsETSUndefinedType()) {
-        return GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+        return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
     ASSERT(type->IsETSUnionType());
@@ -161,14 +161,14 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
         }
     }
 
-    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                : CreateETSUnionType(std::move(copiedTypes));
 }
 
 std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
 {
     if (type->DefinitelyNotETSNullish()) {
-        return {GetGlobalTypesHolder()->GlobalBuiltinNeverType(), type};
+        return {GetGlobalTypesHolder()->GlobalETSNeverType(), type};
     }
 
     if (type->IsETSTypeParameter()) {
@@ -177,7 +177,7 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
     }
 
     if (type->IsETSUndefinedType() || type->IsETSNullType()) {
-        return {type, GetGlobalTypesHolder()->GlobalBuiltinNeverType()};
+        return {type, GetGlobalTypesHolder()->GlobalETSNeverType()};
     }
 
     ASSERT(type->IsETSUnionType());
@@ -194,9 +194,9 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
         }
     }
 
-    Type *nullishType = nullishTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    Type *nullishType = nullishTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                              : CreateETSUnionType(std::move(nullishTypes));
-    Type *notNullishType = notNullishTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    Type *notNullishType = notNullishTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                                    : CreateETSUnionType(std::move(notNullishTypes));
     return {nullishType, notNullishType};
 }
@@ -304,7 +304,7 @@ bool Type::IsETSReferenceType() const
 {
     return IsETSObjectType() || IsETSArrayType() || IsETSNullType() || IsETSUndefinedType() || IsETSStringType() ||
            IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType() ||
-           IsETSFunctionType() || IsETSTypeAliasType();
+           IsETSFunctionType() || IsETSTypeAliasType() || IsETSNeverType();
 }
 
 bool Type::IsETSUnboxableObject() const

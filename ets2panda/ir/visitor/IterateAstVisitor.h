@@ -22,6 +22,7 @@
 #include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsStringLiteralType.h"
 #include "ir/ets/etsTuple.h"
+#include "ir/ets/etsNeverType.h"
 #include "ir/ets/etsNullishTypes.h"
 #include "ir/statements/functionDeclaration.h"
 #include "ir/expressions/functionExpression.h"

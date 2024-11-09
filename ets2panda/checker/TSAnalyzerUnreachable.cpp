@@ -154,6 +154,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSUndefinedType *node) co
     UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNeverType *node) const
+{
+    UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSStringLiteralType *node) const
 {
     UNREACHABLE();

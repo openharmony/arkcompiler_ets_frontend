@@ -50,7 +50,8 @@ namespace ark::es2panda::compiler {
 static constexpr auto TYPE_FLAG_BYTECODE_REF =
     checker::TypeFlag::ETS_ARRAY | checker::TypeFlag::ETS_OBJECT | checker::TypeFlag::FUNCTION |
     checker::TypeFlag::ETS_UNION | checker::TypeFlag::ETS_TYPE_PARAMETER | checker::TypeFlag::ETS_NONNULLISH |
-    checker::TypeFlag::ETS_NULL | checker::TypeFlag::ETS_UNDEFINED | checker::TypeFlag::ETS_READONLY;
+    checker::TypeFlag::ETS_NULL | checker::TypeFlag::ETS_UNDEFINED | checker::TypeFlag::ETS_READONLY |
+    checker::TypeFlag::ETS_NEVER;
 
 ETSGen::ETSGen(ArenaAllocator *allocator, RegSpiller *spiller, public_lib::Context *context,
                std::tuple<varbinder::FunctionScope *, ProgramElement *, AstCompiler *> toCompile) noexcept
@@ -643,7 +644,8 @@ const checker::Type *ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode
     if (type->IsUndefinedType() || type->IsETSUndefinedType() || type->IsETSVoidType()) {
         LoadAccumulatorUndefined(node);
     } else if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter() ||
-               type->IsETSNullType()) {
+               type->IsETSNullType() || type->IsETSNeverType()) {
+        // NOTE: need rework about ETSNeverType #20340
         LoadAccumulatorNull(node, type);
     } else if (type->IsETSBooleanType()) {
         LoadAccumulatorBoolean(node, type->AsETSBooleanType()->GetValue());
@@ -844,13 +846,14 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
         }
     };
 
-    if (!target->IsETSUnionType()) {
-        checkType(node, target);
-    } else {
+    if (target->IsETSUnionType()) {
         for (auto *ct : target->AsETSUnionType()->ConstituentTypes()) {
             checkType(node, ct);
         }
+    } else if (!target->IsETSNeverType()) {
+        checkType(node, target);
     }
+
     SetLabel(node, ifFalse);
     SetAccumulatorType(nullptr);
 }
@@ -1595,6 +1598,7 @@ void ETSGen::CastToDouble(const ir::AstNode *node)
             Sa().Emit<F32tof64>(node);
             break;
         }
+        case checker::TypeFlag::ETS_NEVER:
         case checker::TypeFlag::ETS_OBJECT: {
             break;
         }

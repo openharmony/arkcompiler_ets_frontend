@@ -53,6 +53,7 @@
     _(TypeFlag::ETS_VOID, ETSVoidType)                                 \
     _(TypeFlag::ETS_NULL, ETSNullType)                                 \
     _(TypeFlag::ETS_UNDEFINED, ETSUndefinedType)                       \
+    _(TypeFlag::ETS_NEVER, ETSNeverType)                               \
     _(TypeFlag::FUNCTION, ETSFunctionType)                             \
     _(TypeFlag::ETS_OBJECT, ETSObjectType)                             \
     _(TypeFlag::ETS_ARRAY, ETSArrayType)                               \
