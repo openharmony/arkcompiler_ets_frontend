@@ -29,7 +29,6 @@ class Type;
 enum class PropertyType;
 // NOLINTBEGIN(readability-redundant-declaration)
 bool IsTypeError(Type const *tp);
-[[noreturn]] void ThrowEmptyError();
 // NOLINTEND(readability-redundant-declaration)
 }  // namespace ark::es2panda::checker
 
@@ -92,14 +91,6 @@ public:
     }
 
     [[nodiscard]] checker::Type *TsType() const
-    {
-        if (UNLIKELY(IsTypeError(tsType_))) {
-            checker::ThrowEmptyError();
-        }
-        return tsType_;
-    }
-
-    [[nodiscard]] checker::Type *TsTypeOrError() const noexcept
     {
         return tsType_;
     }

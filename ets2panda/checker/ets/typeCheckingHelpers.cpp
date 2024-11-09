@@ -81,7 +81,7 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 
 bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
 {
-    if (expr->TsTypeOrError()->PossiblyETSNullish()) {
+    if (expr->TsType()->PossiblyETSNullish()) {
         LogTypeError("Value is possibly nullish.", expr->Start());
         return false;
     }
@@ -457,8 +457,8 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
         return GetTypeOfSetterGetter(var);
     }
 
-    if (var->TsTypeOrError() != nullptr) {
-        return var->TsTypeOrError();
+    if (var->TsType() != nullptr) {
+        return var->TsType();
     }
 
     // NOTE: kbaladurin. forbid usage of imported entities as types without declarations
@@ -666,7 +666,7 @@ Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable 
     }
 
     auto *const enumDecl = var->Declaration()->Node()->AsTSEnumDeclaration();
-    if (enumDecl->BoxedClass()->TsTypeOrError() == nullptr) {
+    if (enumDecl->BoxedClass()->TsType() == nullptr) {
         BuildBasicClassProperties(enumDecl->BoxedClass());
     }
     if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {

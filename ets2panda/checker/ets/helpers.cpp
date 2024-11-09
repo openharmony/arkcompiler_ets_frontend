@@ -65,7 +65,7 @@ bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
 
 bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var)
 {
-    return var->TsTypeOrError() != nullptr && var->TsTypeOrError()->HasTypeFlag(TypeFlag::GETTER_SETTER);
+    return var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
 }
 
 void ETSChecker::LogUnResolvedError(ir::Identifier *const ident)
@@ -620,7 +620,7 @@ checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bi
                                                    ir::Expression *init)
 {
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
-        auto type = bindingVar->TsTypeOrError();
+        auto type = bindingVar->TsType();
         if (init != nullptr && init->TsType()->IsETSEnumType()) {
             init->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
         }
@@ -636,7 +636,7 @@ checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bi
         }
         bindingVar->SetTsType(type);
     }
-    return bindingVar->TsTypeOrError();
+    return bindingVar->TsType();
 }
 
 checker::Type *PreferredObjectTypeFromAnnotation(checker::Type *annotationType)
@@ -768,7 +768,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         if (!init->IsArrowFunctionExpression() && (initType->AsETSFunctionType()->CallSignatures().size() != 1)) {
             LogTypeError("Ambiguous function initialization because of multiple overloads", init->Start());
             bindingVar->SetTsType(GlobalTypeError());
-            return bindingVar->TsTypeOrError();
+            return bindingVar->TsType();
         }
 
         annotationType =
@@ -1714,8 +1714,8 @@ void ETSChecker::AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnb
 
 Type *ETSChecker::MaybeBoxExpression(ir::Expression *expr)
 {
-    auto *promoted = MaybePromotedBuiltinType(expr->TsTypeOrError());
-    if (promoted != expr->TsTypeOrError()) {
+    auto *promoted = MaybePromotedBuiltinType(expr->TsType());
+    if (promoted != expr->TsType()) {
         expr->AddBoxingUnboxingFlags(GetBoxingFlag(promoted));
     }
     return promoted;

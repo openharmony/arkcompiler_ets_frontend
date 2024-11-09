@@ -22,7 +22,6 @@
 namespace ark::es2panda::checker {
 // NOLINTBEGIN(readability-redundant-declaration)
 bool IsTypeError(Type const *tp);
-[[noreturn]] void ThrowEmptyError();
 // NOLINTEND(readability-redundant-declaration)
 }  // namespace ark::es2panda::checker
 
@@ -39,26 +38,10 @@ public:
 
     [[nodiscard]] checker::Type const *TsType() const
     {
-        if (UNLIKELY(IsTypeError(tsType_))) {
-            checker::ThrowEmptyError();
-        }
-        return tsType_;
-    }
-
-    [[nodiscard]] checker::Type const *TsTypeOrError() const noexcept
-    {
         return tsType_;
     }
 
     [[nodiscard]] checker::Type *TsType()
-    {
-        if (UNLIKELY(IsTypeError(tsType_))) {
-            checker::ThrowEmptyError();
-        }
-        return tsType_;
-    }
-
-    [[nodiscard]] checker::Type *TsTypeOrError() noexcept
     {
         return tsType_;
     }

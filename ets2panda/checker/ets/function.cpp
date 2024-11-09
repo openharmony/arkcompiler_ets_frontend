@@ -320,7 +320,7 @@ bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature
 
         if (ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
             CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
-            if (arrowFuncExpr->TsTypeOrError() != nullptr) {
+            if (arrowFuncExpr->TsType() != nullptr) {
                 arrowFuncExpr->Check(this);
                 return true;
             }
@@ -347,7 +347,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         auto &argument = arguments[index];
 
         if (argument->IsObjectExpression()) {
-            if (substitutedSig->Params()[index]->TsTypeOrError()->IsETSObjectType()) {
+            if (substitutedSig->Params()[index]->TsType()->IsETSObjectType()) {
                 // No chance to check the argument at this point
                 continue;
             }
@@ -356,7 +356,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
 
         if (argument->IsMemberExpression()) {
             SetArrayPreferredTypeForNestedMemberExpressions(arguments[index]->AsMemberExpression(),
-                                                            substitutedSig->Params()[index]->TsTypeOrError());
+                                                            substitutedSig->Params()[index]->TsType());
         } else if (argument->IsSpreadElement()) {
             if (reportError) {
                 LogTypeError("Spread argument cannot be passed for ordinary parameter.", argument->Start());
@@ -391,7 +391,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         // clang-format off
         if (!ValidateSignatureInvocationContext(
             substitutedSig, argument,
-            TryGettingFunctionTypeFromInvokeFunction(substitutedSig->Params()[index]->TsTypeOrError()), index, flags)) {
+            TryGettingFunctionTypeFromInvokeFunction(substitutedSig->Params()[index]->TsType()), index, flags)) {
             // clang-format on
             return false;
         }
@@ -407,7 +407,7 @@ bool ETSChecker::CheckInvokable(Signature *substitutedSig, ir::Expression *argum
     if (argumentType->IsTypeError()) {
         return true;
     }
-    auto *targetType = substitutedSig->Params()[index]->TsTypeOrError();
+    auto *targetType = substitutedSig->Params()[index]->TsType();
 
     auto const invocationCtx =
         checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
@@ -422,7 +422,7 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
 {
     Type *argumentType = argument->Check(this);
     auto const invocationCtx = checker::InvocationContext(
-        Relation(), argument, argumentType, substitutedSig->Params()[index]->TsTypeOrError(), argument->Start(),
+        Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
         {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
     if (!invocationCtx.IsInvocable()) {
         return CheckOptionalLambdaFunction(argument, substitutedSig, index);
@@ -762,7 +762,7 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
             }
 
             arguments[index]->Check(this);
-            arguments[index]->TsTypeOrError()->ToString(ss);
+            arguments[index]->TsType()->ToString(ss);
 
             if (index == arguments.size() - 1) {
                 ss << ")";
@@ -1015,8 +1015,8 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
 
 checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
 {
-    if (method->TsTypeOrError() != nullptr) {
-        return method->TsTypeOrError()->AsETSFunctionType();
+    if (method->TsType() != nullptr) {
+        return method->TsType()->AsETSFunctionType();
     }
 
     bool isConstructSig = method->IsConstructor();
@@ -1204,7 +1204,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
 
                 paramVar->SetTsType(paramTypeAnnotation->GetType(this));
             } else {
-                paramVar->SetTsType(paramIdent->TsTypeOrError());
+                paramVar->SetTsType(paramIdent->TsType());
             }
             signatureInfo->params.push_back(paramVar->AsLocalVariable());
             ++signatureInfo->minArgCount;
@@ -1631,7 +1631,7 @@ void ETSChecker::CheckOverride(Signature *signature)
 
 Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef)
 {
-    if (methodDef->TsTypeOrError()->IsTypeError()) {
+    if (methodDef->TsType()->IsTypeError()) {
         return nullptr;
     }
     ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
@@ -2160,8 +2160,8 @@ bool ETSChecker::CmpAssemblerTypesWithRank(Signature const *const sig1, Signatur
     for (size_t ix = 0; ix < sig1->MinArgCount(); ix++) {
         std::stringstream s1;
         std::stringstream s2;
-        sig1->Params()[ix]->TsTypeOrError()->ToAssemblerTypeWithRank(s1);
-        sig2->Params()[ix]->TsTypeOrError()->ToAssemblerTypeWithRank(s2);
+        sig1->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s1);
+        sig2->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s2);
         if (s1.str() != s2.str()) {
             return false;
             break;

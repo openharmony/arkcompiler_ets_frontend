@@ -98,7 +98,7 @@ checker::Type *ETSUnionType::GetType(checker::ETSChecker *checker)
         SetTsType(checker->CreateETSUnionType(std::move(types)));
     }
     checker->Relation()->SetNode(nullptr);
-    return TsTypeOrError();
+    return TsType();
 }
 
 ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)

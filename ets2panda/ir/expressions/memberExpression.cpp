@@ -272,7 +272,7 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
     }
     SetTsType(type == nullptr ? checker->GlobalTypeError() : type);
-    return TsTypeOrError();
+    return TsType();
 }
 
 checker::Type *MemberExpression::SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType)

@@ -902,7 +902,7 @@ bool IsStringEnum(const ir::Expression *expr)
     if (expr == nullptr) {
         return false;
     }
-    if (expr->TsTypeOrError()->IsTypeError()) {
+    if (expr->TsType()->IsTypeError()) {
         return false;
     }
 
@@ -919,7 +919,7 @@ bool IsIntEnum(const ir::Expression *expr)
     if (expr == nullptr) {
         return false;
     }
-    if (expr->TsTypeOrError()->IsTypeError()) {
+    if (expr->TsType()->IsTypeError()) {
         return false;
     }
 
@@ -1006,8 +1006,8 @@ void CheckNeedToGenerateGetValueForBinaryExpression(ir::Expression *expression)
     }
 
     // String Operator Context
-    CheckStringOperatorContext(leftExp, rightExp->TsTypeOrError(), op);
-    CheckStringOperatorContext(rightExp, leftExp->TsTypeOrError(), op);
+    CheckStringOperatorContext(leftExp, rightExp->TsType(), op);
+    CheckStringOperatorContext(rightExp, leftExp->TsType(), op);
 
     // Relational operators if both are enumeration Types
     if (CheckRelationalOperatorsBetweenEnums(leftExp, rightExp, op)) {
