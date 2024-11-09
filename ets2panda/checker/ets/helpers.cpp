@@ -723,7 +723,9 @@ static bool NeedWideningBasedOnInitializerHeuristics(ir::Expression *e)
     if (e->IsUnaryExpression()) {
         return NeedWideningBasedOnInitializerHeuristics(e->AsUnaryExpression()->Argument());
     }
-    const bool isConstInit = e->IsIdentifier() && e->Variable()->Declaration()->IsConstDecl();
+    const bool isConstInit =
+        e->IsIdentifier() && e->Variable() != nullptr && e->Variable()->Declaration()->IsConstDecl();
+
     return e->IsConditionalExpression() || e->IsLiteral() || isConstInit;
 }
 
