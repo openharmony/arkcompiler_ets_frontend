@@ -30,6 +30,24 @@ public:
         panda::ArenaAllocator *allocator);
     static void UpdateCacheFile(const panda::es2panda::util::ProgramCache *programCache,
         const std::string &cacheFilePath);
+    static panda::es2panda::util::AbcProgramsCache *GetAbcInputCacheContext(const std::string &cacheFilePath,
+        panda::ArenaAllocator *allocator);
+    static void UpdateAbcCacheFile(const panda::es2panda::util::AbcProgramsCache *abcProgramsCache,
+        const std::string &cacheFilePath);
+
+    template<class T>
+    static void SerializeToProtoPath(T &protoCache, std::string cacheFilePath)
+    {
+        std::fstream output = panda::es2panda::util::Helpers::FileStream<std::fstream>(
+            panda::os::file::File::GetExtendedFilePath(cacheFilePath),
+            std::ios::out | std::ios::trunc | std::ios::binary);
+        if (!output) {
+            std::cerr << "Failed to create cache file: " << cacheFilePath << std::endl;
+            return;
+        }
+        protoCache.SerializeToOstream(&output);
+        output.close();
+    }
 };
 } // panda::proto
 #endif

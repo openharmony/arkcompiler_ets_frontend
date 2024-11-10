@@ -88,9 +88,11 @@ public:
 
 private:
     friend class CompileAbcClassJob;
-    bool RetrieveProgramFromCacheFiles(const std::string &buffer);
     void CompileProgram();
     void OptimizeAndCacheProgram(panda::pandasm::Program *prog);
+    bool RetrieveProgramFromCacheFiles(const std::string &buffer, bool isAbcFile = false);
+    void InsertAbcCachePrograms(uint32_t hashCode,
+                                std::map<std::string, panda::es2panda::util::ProgramCache *> &abcProgramsInfo);
 
     static std::mutex globalMutex_;
     es2panda::SourceFile *src_;
@@ -103,14 +105,14 @@ private:
 
 class CompileAbcClassJob : public util::WorkerJob {
 public:
-    explicit CompileAbcClassJob(const uint32_t classId,
+    explicit CompileAbcClassJob(es2panda::SourceFile *src, const uint32_t classId,
                                 const es2panda::CompilerOptions &options,
                                 abc2program::Abc2ProgramCompiler &compiler,
                                 std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
                                 panda::ArenaAllocator *allocator,
                                 std::string abcPkgName,
                                 bool pkgVersionUpdateRequiredInAbc = true)
-        : classId_(classId), options_(options), compiler_(compiler), progsInfo_(progsInfo),
+        : src_(src), classId_(classId), options_(options), compiler_(compiler), progsInfo_(progsInfo),
           allocator_(allocator), abcPkgName_(abcPkgName),
           pkgVersionUpdateRequiredInAbc_(pkgVersionUpdateRequiredInAbc) {};
 
@@ -133,6 +135,7 @@ private:
         const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
     void UpdateBundleNameOfOhmurl(std::string &ohmurl);
 
+    es2panda::SourceFile *src_;
     const uint32_t classId_;
     const es2panda::CompilerOptions &options_;
     abc2program::Abc2ProgramCompiler &compiler_;

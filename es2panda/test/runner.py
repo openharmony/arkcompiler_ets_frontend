@@ -417,6 +417,8 @@ class Runner:
         success_list = []
 
         for test in self.tests:
+            if not test.passed:
+                print(test.path, "--------")
             assert(test.passed is not None)
             if not test.passed:
                 fail_list.append(test)
@@ -597,6 +599,10 @@ class CompilerRunner(Runner):
                 files = glob(glob_expression, recursive=True)
                 files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
                 self.tests.append(CompilerProjectTest(projects_path, project, files, flags))
+        elif directory.endswith("protobin"):
+            test_path = path.join(self.test_root, directory)
+            for project in os.listdir(test_path):
+                self.tests.append(CompilerProtobinTest(path.join(test_path, project), flags))
         else:
             glob_expression = path.join(
                 self.test_root, directory, "**/*.%s" % (extension))
@@ -712,6 +718,69 @@ class CompilerTest(Test):
         return self
 
 
+class CompilerProtobinTest(Test):
+    def __init__(self, test_dir, flags):
+        Test.__init__(self, test_dir, flags)
+        self.test_dir = test_dir
+        self.generated_path = os.path.join(self.test_dir, "gen")
+        if not path.exists(self.generated_path):
+            os.makedirs(self.generated_path)
+        self.protobin_path = os.path.join(self.generated_path, "cache.protobin")
+        self.original_abc_path = os.path.join(self.generated_path, "base.abc")
+        self.output_path = os.path.join(self.generated_path, "module.abc")
+        self.original_test = os.path.join(self.test_dir, "base.ts")
+        self.modify_test = os.path.join(self.test_dir, "base_mod.ts")
+        self.expected_path = os.path.join(self.test_dir, "expected.txt")
+
+    def remove_test_build(self, runner):
+        if path.exists(self.generated_path):
+            shutil.rmtree(self.generated_path)
+
+    def gen_merge_abc(self, runner, test_path, need_cache, output_path):
+        es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
+        es2abc_cmd.extend(["--merge-abc"])
+        if need_cache:
+           es2abc_cmd.extend(["--enable-abc-input", '%s%s' % ("--cache-file=", self.protobin_path)])
+        es2abc_cmd.extend(['%s%s' % ("--output=", output_path)])
+        es2abc_cmd.append(test_path)
+        process = run_subprocess_with_beta3(self, es2abc_cmd)
+        out, err = process.communicate()
+        if err:
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+            self.remove_test_build(runner)
+            return self
+
+    def run(self, runner):
+        # Generate 'abc' from the source file before modifying it
+        self.gen_merge_abc(runner, self.original_test, False, self.original_abc_path)
+        # Generate protobin from the abc file before modifying it
+        self.gen_merge_abc(runner, self.original_abc_path, True, self.output_path)
+        # Modify the original abc file
+        self.gen_merge_abc(runner, self.modify_test, False, self.original_abc_path)
+        # Compile based on the modified abc file
+        self.gen_merge_abc(runner, self.original_abc_path, True, self.output_path)
+        ld_library_path = runner.ld_library_path
+        os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
+        run_abc_cmd = [runner.ark_js_vm, '--entry-point=base', self.output_path]
+        self.log_cmd(run_abc_cmd)
+
+        process = subprocess.Popen(run_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+        try:
+            with open(self.expected_path, 'r') as fp:
+                expected = fp.read()
+            self.passed = expected == self.output and process.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+        if not self.passed:
+            self.remove_test_build(runner)
+            return self
+        self.remove_test_build(runner)
+        return self
+
+
 class CompilerProjectTest(Test):
     def __init__(self, projects_path, project, test_paths, flags):
         Test.__init__(self, "", flags)
@@ -724,8 +793,10 @@ class CompilerProjectTest(Test):
         self.file_record_mapping = None
         self.generated_abc_inputs_path = os.path.join(os.path.join(self.projects_path, self.project), "abcinputs_gen")
         self.abc_input_filenames = None
+        self.protoBin_file_path = ""
         self.record_names_path = os.path.join(os.path.join(self.projects_path, self.project), 'recordnames.txt')
         self.abc_inputs_path = os.path.join(os.path.join(self.projects_path, self.project), 'abcinputs')
+        self.modules_cache_path = os.path.join(os.path.join(self.projects_path, self.project), 'modulescache.cache')
 
     def remove_project(self, runner):
         project_path = runner.build_dir + "/" + self.project
@@ -735,6 +806,20 @@ class CompilerProjectTest(Test):
             os.remove(self.files_info_path)
         if path.exists(self.generated_abc_inputs_path):
             shutil.rmtree(self.generated_abc_inputs_path)
+        if path.exists(self.protoBin_file_path):
+            os.remove(self.protoBin_file_path)
+        if path.exists(self.modules_cache_path):
+            self.remove_cache_files()
+
+    def remove_cache_files(self):
+        if path.exists(self.modules_cache_path):
+            with open(self.modules_cache_path) as cache_fp:
+                cache_lines = cache_fp.readlines()
+                for cache_line in cache_lines:
+                    cache_file_path = cache_line[:-1].split(";")[1]
+                    if path.exists(cache_file_path):
+                        os.remove(cache_file_path)
+            os.remove(self.modules_cache_path)
 
     def get_file_absolute_path_and_name(self, runner):
         sub_path = self.path[len(self.projects_path):]
@@ -849,9 +934,44 @@ class CompilerProjectTest(Test):
         self.gen_abc_input_files_infos(runner, abc_files_infos, f)
         f.close()
 
+    def gen_modules_cache(self, runner):
+        if "--cache-file" not in self.flags or "--file-threads=0" in self.flags:
+            return
+        fd = os.open(self.modules_cache_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
+        f = os.fdopen(fd, 'w')
+        abc_files = set()
+        for test_path in self.test_paths:
+            cache_info = ('%s;%s\n' % (test_path, f"{test_path.rsplit('.', 1)[0]}.protobin"))
+            belonging_abc_input = self.get_belonging_abc_input(test_path)
+            if belonging_abc_input is not None:
+                abc_files.add(belonging_abc_input)
+            else:
+                f.writelines(cache_info)
+        for abc_path in abc_files:
+            abc_input_path = f"{path.join(self.generated_abc_inputs_path, abc_path)}-abcinput.abc"
+            cache_info = ('%s;%s\n' % (abc_input_path, f"{abc_input_path.rsplit('.', 1)[0]}.protobin"))
+            f.writelines(cache_info)
+        f.close()
+
     def gen_es2abc_cmd(self, runner, input_file, output_file):
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
-        es2abc_cmd.extend(self.flags)
+
+        new_flags = self.flags
+        if "--cache-file" in new_flags and len(self.test_paths) == 1:
+            # Generate cache-file test case in single thread 
+            new_flags.remove("--cache-file")
+            protobin_path = f"{self.test_paths[0].rsplit('.', 1)[0]}.protobin"
+            self.protoBin_file_path = protobin_path
+            es2abc_cmd.append('--cache-file=%s' % (protobin_path))
+        elif "--cache-file" in self.flags and output_file.endswith("-abcinput.abc"):
+            # Generate abc for bytecode har
+            new_flags = list(filter(lambda x: x != "--cache-file", new_flags))
+        elif "--cache-file" in self.flags:
+            new_flags = list(filter(lambda x: x != "--cache-file", new_flags))
+            es2abc_cmd.append('--cache-file')
+            es2abc_cmd.append('@%s' % (self.modules_cache_path))
+
+        es2abc_cmd.extend(new_flags)
         es2abc_cmd.extend(['%s%s' % ("--output=", output_file)])
         es2abc_cmd.append(input_file)
         return es2abc_cmd
@@ -910,7 +1030,22 @@ class CompilerProjectTest(Test):
             es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
         process = run_subprocess_with_beta3(self, es2abc_cmd)
         self.path = exec_file_path
-        out, err = process.communicate()
+        out, err = [None, None]
+
+        # Check single-thread execution timeout when required
+        if "--file-threads=0" in self.flags:
+            try:
+                out, err = process.communicate(timeout=60)
+            except:
+                process.kill()
+                print("Generating the abc file timed out.")
+        else:
+            out, err = process.communicate()
+        
+        if "--cache-file" in self.flags:
+            # Firstly generate cache file, and generate abc from cache file
+            process = run_subprocess_with_beta3(self, es2abc_cmd)
+            out, err = process.communicate()
 
         # restore merge-abc flag
         if "merge_abc_consistence_check" in self.path and "--merge-abc" not in self.flags:
@@ -946,6 +1081,7 @@ class CompilerProjectTest(Test):
         # Compile all ts source files in the project to abc files.
         if ("--merge-abc" in self.flags):
             self.gen_files_info(runner)
+            self.gen_modules_cache(runner)
             self.gen_merged_abc(runner)
         else:
             self.gen_single_abc(runner)
@@ -2357,9 +2493,15 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/merge_abc_consistence_check/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
                                                  "--abc-class-threads=4"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/cache_projects", "ts",
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input",
+                                                 "--dump-deps-info", "--remove-redundant-file",
+                                                 "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4",
+                                                 "--cache-file"]))
 
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/shared_module/projects", "ts",
                                                 ["--module", "--merge-abc", "--dump-assembly"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/protobin", "ts", []))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)
