@@ -141,3 +141,14 @@ test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-word-iterab
 
 #20550
 test262/data/test_es2021/built-ins/TypedArray/prototype/find/predicate-call-parameters.js
+test262/data/test_es2021/built-ins/TypedArray/prototype/forEach/callbackfn-arguments-without-thisarg.js
+
+#20555
+test262/data/test_es2021/built-ins/TypedArray/prototype/filter/callbackfn-arguments-without-thisarg.js
+
+#20582
+test262/data/test_es2021/built-ins/TypedArray/prototype/map/callbackfn-arguments-without-thisarg.js
+
+#20585
+test262/data/test_es2021/built-ins/TypedArray/prototype/every/callbackfn-arguments-with-thisarg.js
+test262/data/test_es2021/built-ins/TypedArray/prototype/filter/callbackfn-arguments-with-thisarg.js
