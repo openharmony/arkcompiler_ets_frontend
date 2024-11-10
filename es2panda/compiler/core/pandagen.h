@@ -247,6 +247,7 @@ public:
     const util::StringView &InternalName() const;
     const util::StringView &FunctionName() const;
     binder::Binder *Binder() const;
+    pandasm::extensions::Language SourceLang() const;
 
     Label *AllocLabel();
 

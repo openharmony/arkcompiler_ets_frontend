@@ -28,7 +28,6 @@
 namespace panda::es2panda::util {
 
 const std::string EXTERNAL_ATTRIBUTE = "external";
-const panda::panda_file::SourceLang SRC_LANG = panda::panda_file::SourceLang::ECMASCRIPT;
 
 void PatchFix::ProcessFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func,
     LiteralBuffers &literalBuffers)
@@ -420,8 +419,8 @@ void PatchFix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchF
     patchFuncMain0.params.reserve(defaultParamCount);
     patchFuncMain1.params.reserve(defaultParamCount);
     for (uint32_t i = 0; i < defaultParamCount; ++i) {
-        patchFuncMain0.params.emplace_back(panda::pandasm::Type("any", 0), SRC_LANG);
-        patchFuncMain1.params.emplace_back(panda::pandasm::Type("any", 0), SRC_LANG);
+        patchFuncMain0.params.emplace_back(panda::pandasm::Type("any", 0), patchFuncMain0.language);
+        patchFuncMain1.params.emplace_back(panda::pandasm::Type("any", 0), patchFuncMain1.language);
     }
 
     std::vector<panda::pandasm::Ins> patchMain0DefineIns;
@@ -472,8 +471,8 @@ void PatchFix::Finalize(panda::pandasm::Program **prog)
         return;
     }
 
-    panda::pandasm::Function patchFuncMain0(patchMain0_, SRC_LANG);
-    panda::pandasm::Function patchFuncMain1(patchMain1_, SRC_LANG);
+    panda::pandasm::Function patchFuncMain0(patchMain0_, (*prog)->lang);
+    panda::pandasm::Function patchFuncMain1(patchMain1_, (*prog)->lang);
     CreateFunctionPatchMain0AndMain1(patchFuncMain0, patchFuncMain1);
 
     (*prog)->function_table.emplace(patchFuncMain0.name, std::move(patchFuncMain0));

@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x7
+.language ECMAScript
 .function any .#&#LongNameScace(any a0, any a1, any a2, any a3) {
 label_4: 
 label_0: 
@@ -27,6 +26,7 @@ label_5:
 }
 
 slotNum = 0x7
+.language ECMAScript
 .function any .#&@0%#LongEnum(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -49,6 +49,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#&@0%@1*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -58,6 +59,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#&@0~@2=#LongClass(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -67,6 +69,7 @@ label_2:
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .#&@0~@2>#LongFunction1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -77,6 +80,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#&@0~@2>@3*#LongFunction2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -86,6 +90,7 @@ label_2:
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 

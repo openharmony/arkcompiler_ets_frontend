@@ -68,6 +68,7 @@ struct SourceFile {
     uint32_t hash {0};
     bool isSharedModule {false};
     bool isSourceMode {true};
+    std::string sourceLang {};
 };
 
 struct PatchFixOptions {

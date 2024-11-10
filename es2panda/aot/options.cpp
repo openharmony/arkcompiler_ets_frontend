@@ -37,10 +37,10 @@
 
 namespace panda::es2panda::aot {
 constexpr char PROCESS_AS_LIST_MARK = '@';
-// item list: [filePath; recordName; moduleKind; sourceFile; pkgName; isSharedModule]
-constexpr size_t ITEM_COUNT_MERGE = 6;
-// item list: [filePath; recordName; moduleKind; sourceFile; outputfile; isSharedModule]
-constexpr size_t ITEM_COUNT_NOT_MERGE = 6;
+// item list: [filePath; recordName; moduleKind; sourceFile; pkgName; isSharedModule; sourceLang]
+constexpr size_t ITEM_COUNT_MERGE = 7;
+// item list: [filePath; recordName; moduleKind; sourceFile; outputfile; isSharedModule; sourceLang]
+constexpr size_t ITEM_COUNT_NOT_MERGE = 7;
 const std::string LIST_ITEM_SEPERATOR = ";";
 const std::set<std::string> VALID_EXTENSIONS = { "js", "ts", "as", "abc" };
 
@@ -123,6 +123,7 @@ void Options::CollectInputSourceFile(const std::vector<std::string> &itemList, c
     constexpr uint32_t SOURCE_FIEL_IDX = 3;
     constexpr uint32_t PKG_NAME_IDX = 4;
     constexpr uint32_t IS_SHARED_MODULE_IDX = 5;
+    constexpr uint32_t ORIGIN_SOURCE_LANG_IDX = 6;
     parser::ScriptKind scriptKind;
     if (itemList[SCRIPT_KIND_IDX] == "script") {
         scriptKind = parser::ScriptKind::SCRIPT;
@@ -138,8 +139,12 @@ void Options::CollectInputSourceFile(const std::vector<std::string> &itemList, c
         src.pkgName = itemList[PKG_NAME_IDX];
     }
 
-    if (itemList.size() == ITEM_COUNT_MERGE) {
+    if (itemList.size() > IS_SHARED_MODULE_IDX) {
         src.isSharedModule = itemList[IS_SHARED_MODULE_IDX] == "true";
+    }
+
+    if (itemList.size() > ORIGIN_SOURCE_LANG_IDX) {
+        src.sourceLang = itemList[ORIGIN_SOURCE_LANG_IDX];
     }
 
     sourceFiles_.push_back(src);

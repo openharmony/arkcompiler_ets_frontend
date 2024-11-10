@@ -10,39 +10,33 @@ record_name: com.inter_app.hsp&@ohos/lib2/importfile4&
 program_file: inter-app-hsp-file-exec.ts
 record_name: com.inter_app.hsp&myapp/inter-app-hsp-file-exec&
 
-.language ECMAScript
+
+======> literal array buffer <======
+======> strings <======
 
 
 ======> literal array buffer <======
 ======> strings <======
 
-.language ECMAScript
-
 
 ======> literal array buffer <======
 ======> strings <======
-
-.language ECMAScript
-
-
-======> literal array buffer <======
-======> strings <======
-
-.language ECMAScript
 
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst(any a0, any a1, any a2) {
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
 	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl(any a0, any a1, any a2) {
 	lda.str aaa
 	dynamicimport
@@ -51,14 +45,15 @@ slotNum = 0x0
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt(any a0, any a1, any a2) {
-	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
-	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
 	lda.str @normalized:N&&com.inter_app.hsp&@ohos/lib2/importfile4&
 	dynamicimport
@@ -67,14 +62,15 @@ slotNum = 0x0
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
 	lda.str @normalized:N&&com.inter_app.hsp&lib2/importfile3&
 	dynamicimport
@@ -83,6 +79,7 @@ slotNum = 0x0
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst, 0x0
 	definefunc 0x1, com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl, 0x0
@@ -97,9 +94,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2041
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2116
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2045
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2120
 {
   index: 0
     tag: 2
@@ -141,10 +138,9 @@ slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2045
     val: 0
 },
 ======> strings <======
-"@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&&com.inter_app.hsp&@ohos/lib2/importfile4&"; "@normalized:N&&com.inter_app.hsp&lib2/importfile3&"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "test"; 
-.language ECMAScript
-
+"@normalized:N&&com.inter_app.hsp&@ohos/lib2/importfile4&"; "@normalized:N&&com.inter_app.hsp&lib2/importfile3&"; "@normalized:N&lib&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "test"; 
 slotNum = 0x18
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.#*#foo(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -207,6 +203,7 @@ slotNum = 0x18
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.func_main_0(any a0, any a1, any a2) {
 	newlexenv 0xa
 	definefunc 0x0, com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.#*#foo, 0x0
@@ -237,9 +234,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2081
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2156
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2085
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2160
 {
   index: 0
     tag: 2
@@ -422,9 +419,8 @@ slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2085
 },
 ======> strings <======
 "a"; "b"; "c"; "com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.#*#foo"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any bundle&lib/importfile1&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -483,9 +479,8 @@ slot bundle&lib/importfile1&2.0.0_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&@ohos/lib/importfile2&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -544,9 +539,8 @@ slot com.inter_app.hsp&@ohos/lib/importfile2&2.0.0_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&lib2/importfile3&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -605,9 +599,8 @@ slot com.inter_app.hsp&lib2/importfile3&_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&@ohos/lib2/importfile4&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -666,9 +659,8 @@ slot com.inter_app.hsp&@ohos/lib2/importfile4&_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0xa
+.language ECMAScript
 .function any com.inter_app.hsp&myapp/inter-app-hsp-file-exec&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -763,21 +755,21 @@ slot com.inter_app.hsp&myapp/inter-app-hsp-file-exec&_1
 },
 ======> strings <======
 "print"; "test"; 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst(any a0, any a1, any a2) {
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
 	ldundefined
 	returnundefined
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl(any a0, any a1, any a2) {
 	lda.str aaa
 	dynamicimport
@@ -786,14 +778,15 @@ slotNum = 0x0
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt(any a0, any a1, any a2) {
-	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
-	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&&@ohos/lib/importfile2&2.0.0
+	lda.str @normalized:N&lib&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
 	lda.str @normalized:N&&com.inter_app.hsp&@ohos/lib2/importfile4&
 	dynamicimport
@@ -802,14 +795,15 @@ slotNum = 0x0
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
 	lda.str @normalized:N&&com.inter_app.hsp&lib2/importfile3&
 	dynamicimport
@@ -818,6 +812,7 @@ slotNum = 0x0
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst, 0x0
 	definefunc 0x1, com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl, 0x0
@@ -832,9 +827,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2041
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2116
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2045
+slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2120
 {
   index: 0
     tag: 2
@@ -876,10 +871,9 @@ slot com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&_2045
     val: 0
 },
 ======> strings <======
-"@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&&com.inter_app.hsp&@ohos/lib2/importfile4&"; "@normalized:N&&com.inter_app.hsp&lib2/importfile3&"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "test"; 
-.language ECMAScript
-
+"@normalized:N&&com.inter_app.hsp&@ohos/lib2/importfile4&"; "@normalized:N&&com.inter_app.hsp&lib2/importfile3&"; "@normalized:N&lib&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "com.inter_app.hsp&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "test"; 
 slotNum = 0x18
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.#*#foo(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -942,6 +936,7 @@ slotNum = 0x18
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.func_main_0(any a0, any a1, any a2) {
 	newlexenv 0xa
 	definefunc 0x0, com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.#*#foo, 0x0
@@ -972,9 +967,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2081
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2156
 ------------------------------------
-slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2085
+slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2160
 {
   index: 0
     tag: 2
@@ -1157,9 +1152,8 @@ slot com.inter_app.hsp&bytecodehar/bytecodehar-static-import&_2085
 },
 ======> strings <======
 "a"; "b"; "c"; "com.inter_app.hsp&bytecodehar/bytecodehar-static-import&.#*#foo"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&lib2/importfile3&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1218,9 +1212,8 @@ slot com.inter_app.hsp&lib2/importfile3&_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any com.inter_app.hsp&@ohos/lib2/importfile4&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -1279,9 +1272,8 @@ slot com.inter_app.hsp&@ohos/lib2/importfile4&_1
 },
 ======> strings <======
 
-.language ECMAScript
-
 slotNum = 0xa
+.language ECMAScript
 .function any com.inter_app.hsp&myapp/inter-app-hsp-file-exec&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 

@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x4
+.language ECMAScript
 .function any .#*#testCatchPhiDataflow(any a0, any a1, any a2) {
 	nop
 label_9: 
@@ -37,6 +36,7 @@ label_10:
 .catchall label_5, end_label_6, label_11
 
 slotNum = 0x3
+.language ECMAScript
 .function any .#*#testTryWithAccCatchPhi(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -59,6 +59,7 @@ label_8:
 .catchall label_2, end_label_3, label_9
 
 slotNum = 0x8
+.language ECMAScript
 .function any .#*#testTryWithMoveConstants(any a0, any a1, any a2) {
 	nop
 label_12: 
@@ -106,6 +107,7 @@ label_13:
 .catchall label_5, end_label_6, label_15
 
 slotNum = 0xc
+.language ECMAScript
 .function any .#*#testTryWithRegAccAlloc(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -152,6 +154,7 @@ label_8:
 .catchall label_2, end_label_3, label_9
 
 slotNum = 0xc
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 

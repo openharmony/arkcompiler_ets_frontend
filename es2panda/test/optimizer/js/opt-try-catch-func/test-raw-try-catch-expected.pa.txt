@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x1a
+.language ECMAScript
 .function any .#*#testComplexThrow(any a0, any a1, any a2) {
 	nop
 label_21: 
@@ -98,6 +97,7 @@ label_22:
 .catchall label_12, end_label_13, label_25
 
 slotNum = 0x6
+.language ECMAScript
 .function any .#*#testSimpleThrow(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -113,6 +113,7 @@ label_2:
 }
 
 slotNum = 0x22
+.language ECMAScript
 .function any .#*#testThrowInTry(any a0, any a1, any a2) {
 	nop
 label_35: 
@@ -253,6 +254,7 @@ label_36:
 .catchall label_22, end_label_23, label_41
 
 slotNum = 0x1f
+.language ECMAScript
 .function any .#*#testTryCatchFinally(any a0, any a1, any a2) {
 	nop
 label_35: 
@@ -404,6 +406,7 @@ label_36:
 .catchall label_22, end_label_23, label_41
 
 slotNum = 0x23
+.language ECMAScript
 .function any .#*#testTryCatchFinallyWithReturn(any a0, any a1, any a2) {
 	nop
 label_15: 
@@ -486,6 +489,7 @@ label_16:
 .catchall label_9, end_label_10, label_18
 
 slotNum = 0x1e
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_22: 

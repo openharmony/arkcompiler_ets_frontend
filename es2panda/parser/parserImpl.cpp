@@ -140,6 +140,7 @@ Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &o
     program_.SetEnableAnnotations(options.enableAnnotations);
     program_.SetShared(sourceFile.isSharedModule);
     program_.SetModuleRecordFieldName(options.moduleRecordFieldName);
+    program_.SetSourceLang(sourceFile.sourceLang);
     if (Extension() == ScriptExtension::TS) {
         program_.SetDefineSemantic(options.useDefineSemantic);
     }

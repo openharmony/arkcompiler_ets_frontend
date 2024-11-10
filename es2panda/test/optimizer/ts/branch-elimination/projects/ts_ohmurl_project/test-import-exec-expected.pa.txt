@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any myapp/test-export-bundle.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -14,9 +13,8 @@ label_2:
 }
 
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any test-export-non-ohmurl.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -28,9 +26,8 @@ label_2:
 }
 
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any bundlename&myapp/test-export-normalized-bundlename&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -42,9 +39,8 @@ label_2:
 }
 
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any &myapp/test-export-normalized&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -70,9 +66,8 @@ label_2:
 }
 
 
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any myapp/test-export-package.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -88,9 +83,8 @@ label_2:
 }
 
 
-.language ECMAScript
-
 slotNum = 0xd
+.language ECMAScript
 .function any &myapp/test-import-datatypes&.#*#testDataTypeRegularImport(any a0, any a1, any a2) {
 label_16: 
 label_0: 
@@ -110,6 +104,7 @@ label_17:
 }
 
 slotNum = 0x1a
+.language ECMAScript
 .function any &myapp/test-import-datatypes&.func_main_0(any a0, any a1, any a2) {
 label_15: 
 label_0: 
@@ -134,9 +129,8 @@ label_16:
 }
 
 
-.language ECMAScript
-
 slotNum = 0x24
+.language ECMAScript
 .function any &myapp/test-import-exec&.#*#testUrlType(any a0, any a1, any a2) {
 label_24: 
 label_0: 
@@ -234,6 +228,7 @@ label_25:
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any &myapp/test-import-exec&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -244,9 +239,8 @@ label_2:
 }
 
 
-.language ECMAScript
-
 slotNum = 0x6
+.language ECMAScript
 .function any &myapp/test-import-namespace&.#*#namespaceAsLexVar(any a0, any a1, any a2) {
 label_3: 
 label_0: 
@@ -273,6 +267,7 @@ label_4:
 }
 
 slotNum = 0x3b
+.language ECMAScript
 .function any &myapp/test-import-namespace&.func_main_0(any a0, any a1, any a2) {
 label_23: 
 label_0: 

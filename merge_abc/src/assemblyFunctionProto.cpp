@@ -174,7 +174,7 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     function.params.reserve(protoFunction.params_size());
     for (const auto &protoParam : protoFunction.params()) {
         auto &paramType = Type::Deserialize(protoParam.type(), allocator);
-        panda::pandasm::Function::Parameter param(paramType, panda::panda_file::SourceLang::ECMASCRIPT);
+        panda::pandasm::Function::Parameter param(paramType, function.language);
         Parameter::Deserialize(protoParam, param, allocator);
         function.params.emplace_back(std::move(param));
     }

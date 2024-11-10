@@ -50,7 +50,8 @@ Program::Program(Program &&other)
       useDefineSemantic_(other.useDefineSemantic_),
       isShared_(other.isShared_),
       targetApiSubVersion_(other.targetApiSubVersion_),
-      moduleRecordFieldName_(other.moduleRecordFieldName_)
+      moduleRecordFieldName_(other.moduleRecordFieldName_),
+      sourceLang_(other.sourceLang_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;
@@ -80,6 +81,7 @@ Program &Program::operator=(Program &&other)
     isShared_ = other.isShared_;
     targetApiSubVersion_ = other.targetApiSubVersion_;
     moduleRecordFieldName_ = other.moduleRecordFieldName_;
+    sourceLang_ = other.sourceLang_;
 
     other.ast_ = nullptr;
     other.binder_ = nullptr;
