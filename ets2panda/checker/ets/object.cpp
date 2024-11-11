@@ -85,6 +85,14 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
         return false;
     }
 
+    auto superName = classDef->Super()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
+    if (superName == compiler::Signatures::PARTIAL_TYPE_NAME || superName == compiler::Signatures::READONLY_TYPE_NAME ||
+        superName == compiler::Signatures::REQUIRED_TYPE_NAME) {
+        LogTypeError({"The super type of '", classDef->Ident()->Name(), "' class is not extensible."},
+                     classDef->Super()->Start());
+        return false;
+    }
+
     Type *superType = classDef->Super()->AsTypeNode()->GetType(this);
     if (superType == nullptr) {
         return true;

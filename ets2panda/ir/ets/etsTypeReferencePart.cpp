@@ -121,7 +121,8 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
 
     if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
         auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
-        if (baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
+        if (baseType != nullptr && baseType->IsETSObjectType() &&
+            !baseType->AsETSObjectType()->TypeArguments().empty()) {
             // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
             // but not a generic type param for Partial<>
             for (auto &typeRef : typeParams_->Params()) {
