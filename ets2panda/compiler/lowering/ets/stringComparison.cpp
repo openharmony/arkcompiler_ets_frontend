@@ -83,6 +83,9 @@ void StringComparisonLowering::ProcessBinaryExpression(ir::BinaryExpression *exp
     ir::Expression *accessor = nullptr;
     auto *zeroExpr = checker->AllocNode<ir::NumberLiteral>(util::StringView("0"));
     auto *const callee = checker->AllocNode<ir::Identifier>("compareTo", checker->Allocator());
+    auto *var = checker->GlobalBuiltinETSStringType()->GetProperty(callee->AsIdentifier()->Name(),
+                                                                   checker::PropertySearchFlags::SEARCH_METHOD);
+    callee->SetVariable(var);
     accessor = checker->AllocNode<ir::MemberExpression>(expr->Left(), callee, ir::MemberExpressionKind::PROPERTY_ACCESS,
                                                         false, false);
 
@@ -92,8 +95,8 @@ void StringComparisonLowering::ProcessBinaryExpression(ir::BinaryExpression *exp
     expr->SetRight(zeroExpr);
 
     auto *parent = expr->Parent();
-    if (parent->IsBinaryExpression()) {
-        parent->AsBinaryExpression()->SetTsType(nullptr);
+    if (parent->IsBinaryExpression() || parent->IsConditionalExpression()) {
+        parent->AsExpression()->SetTsType(nullptr);
     }
 
     InitScopesPhaseETS::RunExternalNode(expr, ctx->checker->VarBinder());
