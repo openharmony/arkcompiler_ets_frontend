@@ -1819,7 +1819,7 @@ void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression
 
     GetTypeOfVariable(prop);
 
-    if (prop->TsType()->IsETSFunctionType() && !IsVariableGetterSetter(prop)) {
+    if (prop->TsType() != nullptr && prop->TsType()->IsETSFunctionType() && !IsVariableGetterSetter(prop)) {
         if (type_annotation == nullptr) {
             LogTypeError({"Cannot infer type for ", target_ident->Name(),
                           " because method reference needs an explicit target type"},
@@ -1853,10 +1853,8 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
     varbinder::Variable *globalFunctionVar = nullptr;
 
-    if (memberExpr->Parent()->IsCallExpression() && memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
-        globalFunctionVar = ResolveInstanceExtension(memberExpr);
-    } else if (target->GetDeclNode() != nullptr && target->GetDeclNode()->IsClassDefinition() &&
-               !target->GetDeclNode()->AsClassDefinition()->IsClassDefinitionChecked()) {
+    if (target->GetDeclNode() != nullptr && target->GetDeclNode()->IsClassDefinition() &&
+        !target->GetDeclNode()->AsClassDefinition()->IsClassDefinitionChecked()) {
         this->CheckClassDefinition(target->GetDeclNode()->AsClassDefinition());
     }
     const auto *const targetRef = GetTargetRef(memberExpr);

@@ -578,16 +578,6 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
     return GuaranteedTypeForUncheckedCast(baseSig->ReturnType(), sig->ReturnType());
 }
 
-void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifier const *const id)
-{
-    const auto *const targetType = GetTypeOfVariable(id->Variable());
-    ASSERT(targetType != nullptr);
-
-    if (!targetType->IsETSObjectType() && !targetType->IsETSUnionType()) {
-        LogTypeError("Initializers type is not assignable to the target type", ident->Start());
-    }
-}
-
 bool ETSChecker::IsAllowedTypeAliasRecursion(const ir::TSTypeAliasDeclaration *typeAliasNode,
                                              std::unordered_set<const ir::TSTypeAliasDeclaration *> &typeAliases)
 {

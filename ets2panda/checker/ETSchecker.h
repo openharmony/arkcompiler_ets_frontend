@@ -799,7 +799,6 @@ private:
                                    bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
-    void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id);
     void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
                           const ETSObjectType *classType);
     void ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type);
