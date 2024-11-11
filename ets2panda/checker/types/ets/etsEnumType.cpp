@@ -363,7 +363,7 @@ ir::TSEnumMember *ETSEnumType::FindMember(const util::StringView &name) const no
 
 ETSFunctionType *ETSEnumType::LookupConstantMethod(ETSChecker *const checker, const ir::Identifier *const prop) const
 {
-    if (prop->Name() == TO_STRING_METHOD_NAME) {
+    if (prop->Name() == BOXED_TO_STRING_METHOD_NAME) {
         ASSERT(toStringMethod_.memberProxyType != nullptr);
         return toStringMethod_.memberProxyType;
     }

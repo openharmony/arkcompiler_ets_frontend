@@ -76,6 +76,9 @@ private:
                                  const util::StringView &returnTypeName);
     void CreateEnumToStringMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                   ir::Identifier *const stringValuesArrayIdent);
+    void CreateEnumUnboxingToStringMethod(ir::TSEnumDeclaration const *const enumDecl,
+                                          ir::ClassDefinition *const enumClass,
+                                          ir::Identifier *const stringValuesArrayIdent);
     void CreateEnumValueOfMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                  ir::Identifier *const valuesArrayIdent);
     void CreateEnumGetNameMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
