@@ -56,7 +56,7 @@ import { FileUtils, BUNDLE, NORMALIZE } from '../../utils/FileUtils';
 import { NodeUtils } from '../../utils/NodeUtils';
 import { orignalFilePathForSearching, performancePrinter, ArkObfuscator } from '../../ArkObfuscator';
 import type { PathAndExtension, ProjectInfo } from '../../common/type';
-import { EventList } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import { needToBeReserved } from '../../utils/TransformUtil';
 namespace secharmony {
 
@@ -127,7 +127,7 @@ namespace secharmony {
           globalFileNameMangledTable = new Map<string, string>();
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = updateNodeInfo(node);
         if (!isInOhModules(projectInfo, orignalFilePathForSearching) && isSourceFile(ret)) {
           const orignalAbsPath = ret.fileName;
@@ -135,7 +135,7 @@ namespace secharmony {
           ret.fileName = mangledAbsPath;
         }
         let parentNodes = setParentRecursive(ret, true);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
         return parentNodes;
       }
 

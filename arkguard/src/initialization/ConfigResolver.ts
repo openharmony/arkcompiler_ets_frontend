@@ -39,6 +39,7 @@ import { historyUnobfuscatedPropMap } from './Initializer';
 import { LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 import { WhitelistType } from '../utils/TransformUtil';
+import { endFilesEvent, startFilesEvent } from '../utils/PrinterUtils';
 
 enum OptionType {
   NONE,
@@ -242,9 +243,9 @@ export class ObConfigResolver {
       if (isFileExist(systemApiCachePath)) {
         this.getSystemApiConfigsByCache(systemApiCachePath);
       } else {
-        performancePrinter?.filesPrinter?.startEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
+        startFilesEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
         this.getSystemApiCache(mergedConfigs, systemApiCachePath);
-        performancePrinter?.filesPrinter?.endEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
+        endFilesEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
       }
     }
 

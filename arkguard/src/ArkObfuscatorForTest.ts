@@ -22,7 +22,15 @@ import {
 } from './ArkObfuscator';
 import { readProjectProperties } from './common/ApiReaderForTest';
 import { FileUtils } from './utils/FileUtils';
-import { EventList } from './utils/PrinterUtils';
+import {
+  EventList,
+  endFilesEvent,
+  endSingleFileEvent,
+  printTimeSumData,
+  printTimeSumInfo,
+  startFilesEvent,
+  startSingleFileEvent,
+} from './utils/PrinterUtils';
 import { handleReservedConfig } from './utils/TransformUtil';
 import {
   IDENTIFIER_CACHE,
@@ -98,7 +106,7 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
       this.mCustomProfiles.mOutputDir = path.join(path.dirname(this.mConfigPath), this.mCustomProfiles.mOutputDir);
     }
 
-    performancePrinter?.filesPrinter?.startEvent(EventList.ALL_FILES_OBFUSCATION);
+    startFilesEvent(EventList.ALL_FILES_OBFUSCATION);
     readProjectProperties(this.mSourceFiles, structuredClone(this.mCustomProfiles), this);
     const propertyCachePath = path.join(this.mCustomProfiles.mOutputDir, 
                                         path.basename(this.mSourceFiles[0])); // Get dir name
@@ -129,9 +137,9 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     }
 
     this.producePropertyCache(propertyCachePath);
-    performancePrinter?.timeSumPrinter?.print('All files obfuscation:');
-    performancePrinter?.timeSumPrinter?.summarizeEventDuration();
-    performancePrinter?.filesPrinter?.endEvent(EventList.ALL_FILES_OBFUSCATION);
+    printTimeSumInfo('All files obfuscation:');
+    printTimeSumData();
+    endFilesEvent(EventList.ALL_FILES_OBFUSCATION);
   }
 
   private writeUnobfuscationContentForTest(printKeptNamesPath: string, printWhitelistPath: string): void {
@@ -252,12 +260,12 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     }
     let content: string = FileUtils.readFile(sourceFilePath);
     this.readNameCache(sourceFilePath, outputDir);
-    performancePrinter?.filesPrinter?.startEvent(sourceFilePath);
+    startFilesEvent(sourceFilePath);
     let filePath = { buildFilePath: sourceFilePath, relativeFilePath: sourceFilePath };
-    performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE, performancePrinter.timeSumPrinter, sourceFilePath);
+    startSingleFileEvent(EventList.OBFUSCATE, performancePrinter.timeSumPrinter, sourceFilePath);
     const mixedInfo: ObfuscationResultType = await this.obfuscate(content, filePath);
-    performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE, performancePrinter.timeSumPrinter);
-    performancePrinter?.filesPrinter?.endEvent(sourceFilePath, undefined, true);
+    endSingleFileEvent(EventList.OBFUSCATE, performancePrinter.timeSumPrinter);
+    endFilesEvent(sourceFilePath, undefined, true);
 
     if (this.mWriteOriginalFile && mixedInfo) {
       // Write the obfuscated content directly to orignal file.

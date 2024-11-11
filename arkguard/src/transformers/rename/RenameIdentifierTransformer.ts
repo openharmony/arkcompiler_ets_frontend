@@ -97,7 +97,7 @@ import {
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
 import {performancePrinter, ArkObfuscator, cleanFileMangledNames} from '../../ArkObfuscator';
-import { EventList } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
 import {
   PropCollections,
@@ -168,13 +168,13 @@ namespace secharmony {
           return node;
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
         checker = TypeUtils.createChecker(node);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
         manager.analyze(node, checker, exportObfuscation);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
 
         let rootScope: Scope = manager.getRootScope();
         fileExportNames = rootScope.fileExportNames;
@@ -184,13 +184,13 @@ namespace secharmony {
           renameProcessors.push(renamePropertyParametersInScope);
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
         getMangledNamesInScope(rootScope, renameProcessors);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
 
         rootScope = undefined;
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         let updatedNode: Node = renameIdentifiers(node);
 
         // obfuscate property parameter declaration
@@ -199,7 +199,7 @@ namespace secharmony {
         }
 
         let parentNodes = setParentRecursive(updatedNode, true);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         return parentNodes;
       }
 

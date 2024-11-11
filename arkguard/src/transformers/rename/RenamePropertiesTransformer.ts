@@ -45,7 +45,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
-import { EventList } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import {
   isInPropertyWhitelist,
   isReservedProperty,
@@ -84,11 +84,11 @@ namespace secharmony {
           return node;
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = renameProperties(node);
         UpdateMemberMethodName(nameCache, PropCollections.globalMangledTable, classInfoInMemberMethodCache);
         let parentNodes = setParentRecursive(ret, true);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         return parentNodes;
       }
 

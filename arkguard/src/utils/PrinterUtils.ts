@@ -14,6 +14,9 @@
  */
 
 import * as fs from 'fs';
+import type { IOptions } from '../configs/IOptions';
+import { performancePrinter } from '../ArkObfuscator';
+import type { IPrinterOption } from '../configs/INameObfuscationOption';
 
 export enum EventList {
   OBFUSCATION_INITIALIZATION = 'Obfuscation initialization',
@@ -101,6 +104,13 @@ abstract class BasePrinter {
 
   disablePrinter(): void {
     this.enablePrinter = false;
+  }
+
+  /**
+   * Only for ut
+   */
+  isEnabled(): boolean {
+    return this.enablePrinter;
   }
 
   constructor(outputPath: string = "") {
@@ -299,4 +309,106 @@ export class TimeSumPrinter extends BasePrinter {
   getEventSum(): Map<string, number> {
     return this.eventSum;
   }
+}
+
+/**
+ * Initialize performance printer
+ */
+export function initPerformancePrinter(mCustomProfiles: IOptions): void {
+  const printerConfig: IPrinterOption = mCustomProfiles.mPerformancePrinter;
+
+  // If no performance printer configuration is provided, disable the printer and return.
+  if (!printerConfig) {
+    blockPrinter();
+    return;
+  }
+
+  // Disable performance printer if no specific printer types (files, single file, or summary) are enabled.
+  const isPrinterDisabled = !(
+    printerConfig.mFilesPrinter ||
+    printerConfig.mSingleFilePrinter ||
+    printerConfig.mSumPrinter
+  );
+  
+  if (isPrinterDisabled) {
+    blockPrinter();
+    return;
+  }
+
+  const outputPath: string = printerConfig.mOutputPath;
+
+  // Helper function to configure or disable a printer.
+  const configurePrinter = (printer: TimeTracker | TimeSumPrinter, isEnabled: boolean): void => {
+    if (!isEnabled) {
+      printer?.disablePrinter();
+      return;
+    }
+    printer?.setOutputPath(outputPath);
+  };
+
+  // Setup the individual printers based on configuration.
+  configurePrinter(performancePrinter.filesPrinter, printerConfig.mFilesPrinter);
+  configurePrinter(performancePrinter.singleFilePrinter, printerConfig.mSingleFilePrinter);
+  configurePrinter(performancePrinter.timeSumPrinter, printerConfig.mSumPrinter);
+}
+
+/**
+ * Disable performance printer
+ */
+export function blockPrinter(): void {
+  performancePrinter.filesPrinter = undefined;
+  performancePrinter.singleFilePrinter = undefined;
+  performancePrinter.timeSumPrinter = undefined;
+}
+
+/**
+ * Start recording singleFilePrinter event
+ */
+export function startSingleFileEvent(eventName: string, timeSumPrinter?: TimeSumPrinter, currentFile?: string): void {
+  performancePrinter.singleFilePrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+}
+
+/**
+ * End recording singleFilePrinter event
+ */
+export function endSingleFileEvent(
+  eventName: string,
+  timeSumPrinter?: TimeSumPrinter,
+  isFilesPrinter?: boolean,
+  triggerSingleFilePrinter?: boolean,
+): void {
+  performancePrinter.singleFilePrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+}
+
+/**
+ * Start recording filesPrinter event
+ */
+export function startFilesEvent(eventName: string, timeSumPrinter?: TimeSumPrinter, currentFile?: string): void {
+  performancePrinter.filesPrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+}
+
+/**
+ * End recording filesPrinter event
+ */
+export function endFilesEvent(
+  eventName: string,
+  timeSumPrinter?: TimeSumPrinter,
+  isFilesPrinter?: boolean,
+  triggerSingleFilePrinter?: boolean,
+): void {
+  performancePrinter.filesPrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+}
+
+/**
+ * Print input info for timeSumPrinter
+ */
+export function printTimeSumInfo(info: string): void {
+  performancePrinter.timeSumPrinter?.print(info);
+}
+
+/**
+ * Print data of timeSumPrinter
+ */
+export function printTimeSumData(): void {
+  performancePrinter.timeSumPrinter?.summarizeEventDuration();
 }
