@@ -44,7 +44,8 @@ import {
 
 import * as fs from 'fs';
 import path from 'path';
-import filterFileArray from './configs/test262filename/filterFilenameList.json';
+import ingoreTest262List from './configs/ingoreFilenameList/ingoreTest262List.json';
+import ingoreCompilerTestList from './configs/ingoreFilenameList/ingoreCompilerTestList.json';
 import { UnobfuscationCollections } from './utils/CommonCollections';
 import { unobfuscationNamesObj } from './initialization/CommonObject';
 import { printUnobfuscationReasons } from './initialization/ConfigResolver';
@@ -246,10 +247,8 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
       return;
     }
 
-    const test262Filename = this.getPathAfterTest262SecondLevel(sourceFilePath);
-    const isFileInArray = filterFileArray.includes(test262Filename);
-    // To skip the path where 262 test will fail.
-    if (isFileInArray) {
+    // To skip the path where 262 and compiler test will fail.
+    if (this.shouldIgnoreFile(sourceFilePath)) {
       return;
     }
 
@@ -333,16 +332,30 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     unobfuscationNamesObj[relativePath] = arrayObject;
   }
 
-  private getPathAfterTest262SecondLevel(fullPath: string): string {
-    const pathParts = fullPath.split('/');
-    const dataIndex = pathParts.indexOf('test262');
-    // 2: Calculate the index of the second-level directory after 'test262'
-    const secondLevelIndex = dataIndex + 2;
+  private shouldIgnoreFile(sourceFilePath: string): boolean {
+    const isIgnored = (path: string, ignoreList: string[]) => ignoreList.includes(path);
 
-    if (dataIndex !== -1 && secondLevelIndex < pathParts.length) {
-      return pathParts.slice(secondLevelIndex).join('/');
+    // 1: Relative path of the first-level directory after '.local'
+    const compilerTestFilename = this.getPathAfterDirectory(sourceFilePath, '.local', 1);
+    if (isIgnored(compilerTestFilename, ingoreCompilerTestList)) {
+      return true;
     }
-  
+
+    // 2: Relative path of the second-level directory after 'test262'
+    const test262Filename = this.getPathAfterDirectory(sourceFilePath, 'test262', 2);
+    return isIgnored(test262Filename, ingoreTest262List);
+  }
+
+  private getPathAfterDirectory(fullPath: string, directory: string, level: number): string {  
+    const pathParts = fullPath.split('/');  
+    const dataIndex = pathParts.indexOf(directory);  
+    // -1: The directory name does not exist in the absolute path
+    const targetIndex = dataIndex !== -1 ? dataIndex + level : -1;
+
+    if (targetIndex < pathParts.length) {
+        return pathParts.slice(targetIndex).join('/');
+    }
+
     return fullPath;
   }
 
