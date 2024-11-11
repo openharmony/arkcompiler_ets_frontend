@@ -213,7 +213,7 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
             relation->GetChecker()->LogTypeError(
                 "Functions that can throw exceptions cannot be assigned to non throwing functions.",
                 relation->GetNode()->Start());
-            relation->Result(false);
+            relation->Result(RelationResult::ERROR);
             return;
         }
     }

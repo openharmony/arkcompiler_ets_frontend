@@ -416,6 +416,9 @@ bool ETSChecker::CheckInvokable(Signature *substitutedSig, ir::Expression *argum
                                    {"Type '", argumentType, "' is not compatible with type '",
                                     TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
                                    flags);
+    if (Relation()->IsError()) {
+        return false;
+    }
     return invocationCtx.IsInvocable() || CheckOptionalLambdaFunction(argument, substitutedSig, index);
 }
 
