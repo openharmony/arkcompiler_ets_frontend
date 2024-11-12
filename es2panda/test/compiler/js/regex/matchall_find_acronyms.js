@@ -16,4 +16,3 @@ const regex = /\b[A-Z]{2,}\b/g;
 const str = "The UN and NATO are international organizations.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // UN,NATO
-

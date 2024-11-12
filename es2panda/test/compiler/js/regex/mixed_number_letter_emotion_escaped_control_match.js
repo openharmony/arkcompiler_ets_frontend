@@ -24,4 +24,3 @@ d😑\xFF &\x14😑
 `;
 const matches = str.match(regex);
 print(JSON.stringify(matches));
-

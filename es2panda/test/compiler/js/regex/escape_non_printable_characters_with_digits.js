@@ -15,4 +15,3 @@
 const regex = /[\x7F-\x9F]\d+/;
 const str = "Hello\x7F890World";
 print(JSON.stringify(str.match(regex))); // \x7F890
-

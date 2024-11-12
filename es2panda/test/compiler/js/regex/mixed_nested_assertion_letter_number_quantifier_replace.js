@@ -22,4 +22,3 @@ abc12_123456
 `;
 const matches = str.replace(regex, "$1");
 print(JSON.stringify(matches)); 
-

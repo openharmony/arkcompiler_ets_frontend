@@ -16,4 +16,3 @@ var str = "hello jack, you&me124, Good new day goo";
 var regex = /\d{2}/;
 var match = regex.exec(str);
 print(JSON.stringify(match)); // 12
-

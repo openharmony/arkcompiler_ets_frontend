@@ -16,4 +16,3 @@ var str = "abc ABC Abc";
 var regex = /abc/gi;
 var match = str.match(regex);
 print(JSON.stringify(match)); // abc,ABC,Abc
-

@@ -17,4 +17,3 @@ var regex = /abc/y;
 var match = str.match(regex);
 match = str.match(regex);
 print(JSON.stringify(match)); // null
-

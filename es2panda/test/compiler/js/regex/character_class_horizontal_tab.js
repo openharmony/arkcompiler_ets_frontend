@@ -16,4 +16,3 @@ var str = "abc\t123";
 var regex = /\t/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // \t
-

@@ -16,4 +16,3 @@ var str = "abc\r123";
 var regex = /\r/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // \r
-

@@ -16,4 +16,3 @@ var str = "abc123";
 var regex = /\p{L}/u;
 var match = str.match(regex);
 print(JSON.stringify(match)); // a
-

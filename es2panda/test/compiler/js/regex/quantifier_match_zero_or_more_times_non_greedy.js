@@ -16,4 +16,3 @@ var str = "abbbbc";
 var regex = /ab*?/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // a
-

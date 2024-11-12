@@ -16,4 +16,3 @@ var str = "abc,111,www";
 var regex = /,/;
 var result = str.split(regex);
 print(JSON.stringify(result)); // abc,111,www
-

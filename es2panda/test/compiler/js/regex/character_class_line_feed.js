@@ -16,4 +16,3 @@ var str = "abc\n123";
 var regex = /\n/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // \n
-

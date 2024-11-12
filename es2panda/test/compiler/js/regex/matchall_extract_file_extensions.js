@@ -16,4 +16,3 @@ const regex = /\.\w{2,4}.$/g;
 const str = "The files are file.txt, image.png, and document.pdf.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // .pdf.
-

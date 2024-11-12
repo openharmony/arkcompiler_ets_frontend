@@ -16,4 +16,3 @@ var str = "abc\b123";
 var regex = /\b[1-3]3/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // 123
-

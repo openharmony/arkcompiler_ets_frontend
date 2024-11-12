@@ -16,4 +16,3 @@ var str = "hello....jack";
 var regex = /\.{2,4}?/;
 var match = regex.exec(str);
 print(JSON.stringify(match)); // ..
-

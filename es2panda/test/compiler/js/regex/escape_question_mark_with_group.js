@@ -15,4 +15,3 @@
 const regex = /(\?)/;
 const str = "Is this optional?";
 print(JSON.stringify(str.match(regex))); // ?,?
-

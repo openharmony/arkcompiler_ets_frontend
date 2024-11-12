@@ -16,4 +16,3 @@ var str = "abc abc def";
 var regex = /(\w+) \1/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // abc abc,abc
-

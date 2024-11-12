@@ -16,4 +16,3 @@ var str = "abc123";
 var regex = /ab{2}c/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // null
-

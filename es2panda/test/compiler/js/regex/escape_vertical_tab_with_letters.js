@@ -15,4 +15,3 @@
 const regex = /\v[a-z]+/;
 const str = "Line1\vhelloLine2";
 print(JSON.stringify(str.match(regex))); // \x0Bhello
-

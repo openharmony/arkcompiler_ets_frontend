@@ -16,4 +16,3 @@ var str = "abc.123";
 var regex = /\./;
 var match = str.match(regex);
 print(JSON.stringify(match)); // .
-

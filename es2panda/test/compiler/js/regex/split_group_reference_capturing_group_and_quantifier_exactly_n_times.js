@@ -16,4 +16,3 @@ var str = "hello hello jack, you&me, Good new day goo";
 var regex = /(\w+)\1{2}/;
 var result = str.split(regex);
 print(JSON.stringify(result)); // hello hello jack, you&me, Good new day goo
-

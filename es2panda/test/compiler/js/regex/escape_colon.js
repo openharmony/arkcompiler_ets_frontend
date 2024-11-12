@@ -15,4 +15,3 @@
 const regex = /\:/;
 const str = "Time: 12:00";
 print(JSON.stringify(regex.test(str))); // true
-

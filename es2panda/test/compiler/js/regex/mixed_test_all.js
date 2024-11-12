@@ -29,4 +29,3 @@ const regex = new RegExp('^\\w+(?<=\\w+)([^\\S]?)\\W{1,2}([!@#;:,.]{0,2})' +
     '[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]{2,}([^\S]?\\d+\\s*)\\w*.\\b\\w+\\.$', 'gsmiu');
 const matches = str.match(regex);
 print(JSON.stringify(matches));
-

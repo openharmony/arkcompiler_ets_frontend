@@ -16,4 +16,3 @@ var str = "abcABCabc";
 var regex = /ABC/;
 var index = str.search(regex);
 print(JSON.stringify(index)); // 3
-

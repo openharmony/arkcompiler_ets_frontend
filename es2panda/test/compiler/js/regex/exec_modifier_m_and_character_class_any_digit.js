@@ -17,4 +17,3 @@ var regex = /^\w/gm;
 var match = regex.exec(str);
 match = regex.exec(str);
 print(JSON.stringify(match)); // 1
-

@@ -21,4 +21,3 @@ const regex = new RegExp(
 const str = "^^^^\0\r12aaA \\\\\naBb  *\n\0Cc  \\\b2dd  \"\'\r3eE  :<>\n\rcff  \[\/\0dgGGg   \\\b4HH  \\\(w1iii  \|\|zABC$";
 const matches = str.replace(regex);
 print(JSON.stringify(matches));
-

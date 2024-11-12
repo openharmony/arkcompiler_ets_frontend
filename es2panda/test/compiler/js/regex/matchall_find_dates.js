@@ -16,4 +16,3 @@ const regex = /\d{2}\/\d{2}\/\d{4}/g;
 const str = "The event is on 01/15/2023 and the deadline is 02/28/2023.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // 01/15/2023,02/28/2023
-

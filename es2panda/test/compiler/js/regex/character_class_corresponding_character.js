@@ -16,4 +16,3 @@ var str = "abc\u0061123";
 var regex = /\u0061/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // a
-

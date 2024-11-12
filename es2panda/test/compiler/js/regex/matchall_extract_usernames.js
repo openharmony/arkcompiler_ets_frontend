@@ -16,4 +16,3 @@ const regex = /@\w+/g;
 const str = "Follow us @example and @support.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // @example,@support
-

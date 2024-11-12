@@ -15,4 +15,3 @@
 const regex = /\./g;
 const str = "test.com";
 print(JSON.stringify(str.match(regex))); // .
-

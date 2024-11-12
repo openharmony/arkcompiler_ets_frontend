@@ -15,4 +15,3 @@
 const regex = /\r[a-z]+/;
 const str = "Line1\rhelloLine2";
 print(JSON.stringify(str.match(regex))); // \rhello
-

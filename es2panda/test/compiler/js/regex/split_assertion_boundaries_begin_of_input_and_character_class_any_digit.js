@@ -16,4 +16,3 @@ var str = "123hello jack, you&me, Good new day goo";
 var regex = /^\d+/;
 var result = str.split(regex);
 print(JSON.stringify(result)); // ,hello jack, you&me, Good new day goo
-

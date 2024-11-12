@@ -15,4 +15,3 @@
 const regex = /\\/;
 const str = "C:\\Windows";
 print(JSON.stringify(regex.test(str))); // true
-

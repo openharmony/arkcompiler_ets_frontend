@@ -15,4 +15,3 @@
 const regex = /(\f)(\d+)([a-z]+)/;
 const str = "Page1\f234helloPage2";
 print(JSON.stringify(str.match(regex))); // \f234hello,\f,234,hello
-

@@ -15,4 +15,3 @@
 const regex = /\r+/g;
 const str = "Line1\r\rLine2";
 print(JSON.stringify(str.match(regex))); // \r\r
-

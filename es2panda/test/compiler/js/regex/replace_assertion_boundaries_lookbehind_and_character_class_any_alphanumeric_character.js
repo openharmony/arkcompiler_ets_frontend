@@ -16,4 +16,3 @@ var str = "hello jack, you&me, Good new day goo";
 var regex = /(?<=hello )\w+/;
 var result = str.replace(regex, "BEHIND");
 print(JSON.stringify(result)); // hello BEHIND, you&me, Good new day goo
-

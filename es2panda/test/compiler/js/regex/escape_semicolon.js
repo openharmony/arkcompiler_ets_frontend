@@ -15,4 +15,3 @@
 const regex = /\;/;
 const str = "A;B";
 print(JSON.stringify(regex.test(str))); // true
-

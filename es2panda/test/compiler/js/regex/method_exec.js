@@ -16,4 +16,3 @@ var str = "ijkIJKijk";
 var regex = /ijk/g;
 var match = regex.exec(str);
 print(JSON.stringify(match)); // ijk
-

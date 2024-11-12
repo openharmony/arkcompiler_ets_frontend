@@ -16,4 +16,3 @@ var str = "hello jack, you&me, Good new day goo";
 var regex = /\p{L}{3,}?/u;
 var match = regex.exec(str);
 print(JSON.stringify(match)); // hel
-

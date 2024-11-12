@@ -20,4 +20,3 @@ abc\n   ٩(๑❛ᴗ❛๑)۶ \t  ノ◕ω◕ノ \v ღゝ◡╹ノ♡  🌎123
 `;
 const matches = str.replace(regex, "@");
 print(JSON.stringify(matches)); 
-

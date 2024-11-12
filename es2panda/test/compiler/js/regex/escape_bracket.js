@@ -15,4 +15,3 @@
 const regex = /\[/;
 const str = "[Hello]";
 print(JSON.stringify(regex.test(str))); // true
-

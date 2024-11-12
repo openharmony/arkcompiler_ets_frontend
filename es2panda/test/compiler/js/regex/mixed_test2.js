@@ -27,28 +27,3 @@ const regex = new RegExp(`(?<=(?<![\\w])(?:[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]{1,2}
     \\s+(?=(?<=[a-zA-Z0-9]{1,})(?:[\\f\\r\\n\\t\\v]+)(?=\\w{3,}\\w+))`, 'gimu');
 const matches = str.match(regex);
 print(JSON.stringify(matches));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

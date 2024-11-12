@@ -15,4 +15,3 @@
 const regex = /\t[a-z]+/;
 const str = "Line1\thelloLine2";
 print(JSON.stringify(str.match(regex))); // \thello
-

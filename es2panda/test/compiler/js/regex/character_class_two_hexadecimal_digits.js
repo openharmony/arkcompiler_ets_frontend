@@ -16,4 +16,3 @@ var str = "abc\x1B123";
 var regex = /\x1B/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // \x1B
-

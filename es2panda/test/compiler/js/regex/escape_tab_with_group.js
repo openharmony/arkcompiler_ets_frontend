@@ -15,4 +15,3 @@
 const regex = /(\t)/;
 const str = "Line1\tLine2";
 print(JSON.stringify(str.match(regex))); // \t,\t
-

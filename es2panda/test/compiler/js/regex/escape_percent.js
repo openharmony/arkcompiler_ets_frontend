@@ -15,4 +15,3 @@
 const regex = /\%/;
 const str = "100%";
 print(JSON.stringify(regex.test(str))); // true
-

@@ -16,4 +16,3 @@ var str = "hello jack, you&me, Good new day goo";
 var regex = /\w{2,4}/;
 var result = str.search(regex);
 print(JSON.stringify(result)); // 0
-

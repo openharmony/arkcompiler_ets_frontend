@@ -16,4 +16,3 @@ const regex = /.\d{3}. \d{3}-\d{4}/g;
 const str = "Call us at (123) 456-7890 or (987) 654-3210.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // (123) 456-7890,(987) 654-3210
-

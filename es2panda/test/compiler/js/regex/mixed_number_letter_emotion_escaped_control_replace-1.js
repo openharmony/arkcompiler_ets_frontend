@@ -24,4 +24,3 @@ d😑\xFF &\x14😑
 `;
 const matches = str.replace(regex, "@");
 print(JSON.stringify(matches)); 
-

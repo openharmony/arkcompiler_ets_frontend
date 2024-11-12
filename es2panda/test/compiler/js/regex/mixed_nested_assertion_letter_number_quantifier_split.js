@@ -22,4 +22,3 @@ abc12_123456
 `;
 const matches = str.split(regex);
 print(JSON.stringify(matches)); 
-

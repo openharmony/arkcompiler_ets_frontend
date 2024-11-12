@@ -16,4 +16,3 @@ var str = "1abc\nABC\nabc";
 var regex = /^abc/m;
 var match = str.match(regex);
 print(JSON.stringify(match)); // abc
-

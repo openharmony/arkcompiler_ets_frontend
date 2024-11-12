@@ -15,4 +15,3 @@
 const regex = /(\f)p/gi;
 const str = "Page1\fPage2";
 print(JSON.stringify(str.match(regex))); // \fP
-
