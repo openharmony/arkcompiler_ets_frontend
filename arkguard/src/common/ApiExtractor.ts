@@ -58,6 +58,8 @@ import {
   isMethodSignature,
   isPropertyAssignment,
   isEnumMember,
+  isParameter,
+  isTypeParameterDeclaration,
   isIndexedAccessTypeNode,
   Extension
 } from 'typescript';
@@ -181,7 +183,6 @@ export namespace ApiExtractor {
 
     let {hasExport, hasDeclare} = getKeyword(astNode.modifiers);
     if (!hasExport) {
-      addCommonJsExports(astNode, isSystemApi);
       return;
     }
 
@@ -204,7 +205,7 @@ export namespace ApiExtractor {
     }
   };
 
-  const isCollectedToplevelElements = function (astNode): boolean {
+  const isCollectedExportNames = function (astNode): boolean {
     if (astNode.name && !mCurrentExportNameSet.has(astNode.name.getText())) {
       return false;
     }
@@ -224,21 +225,20 @@ export namespace ApiExtractor {
    * used only in oh sdk api extract or api of xxx.d.ts declaration file
    * @param astNode
    */
-  const visitChildNode = function (astNode): void {
+  const visitChildNode = function (astNode, isSdkApi: boolean = false): void {
     if (!astNode) {
       return;
     }
-
     if (astNode.name !== undefined && !mCurrentExportedPropertySet.has(astNode.name.getText())) {
-      if (isStringLiteral(astNode.name)) {
-        mCurrentExportedPropertySet.add(astNode.name.text);
-      } else {
-        mCurrentExportedPropertySet.add(astNode.name.getText());
+      const notAddParameter: boolean = scanProjectConfig.mStripSystemApiArgs && isSdkApi;
+      if (!notAddParameter || (!isParameter(astNode) && !isTypeParameterDeclaration(astNode))) {
+        const nameToAdd = isStringLiteral(astNode.name) ? astNode.name.text : astNode.name.getText();
+        mCurrentExportedPropertySet.add(nameToAdd);
       }
     }
 
     astNode.forEachChild((childNode) => {
-      visitChildNode(childNode);
+      visitChildNode(childNode, isSdkApi);
     });
   };
 
@@ -276,17 +276,17 @@ export namespace ApiExtractor {
    * used only in oh sdk api extract
    * @param astNode node of ast
    */
-  const visitPropertyAndName = function (astNode): void {
-    if (!isCollectedToplevelElements(astNode)) {
+  const visitPropertyAndNameForSdk = function (astNode): void {
+    if (!isCollectedExportNames(astNode)) {
       /**
-       * Collects property names of elements within top-level elements that haven't been collected yet.
-       * @param astNode toplevel elements of sourcefile
+       * Collects property names of elements that haven't been collected yet.
+       * @param astNode elements of sourcefile
        */
       collectPropertyNames(astNode);
       return;
     }
 
-    visitChildNode(astNode);
+    visitChildNode(astNode, true);
   };
 
   /**
@@ -630,6 +630,8 @@ export namespace ApiExtractor {
     // get export name list
     switch (apiType) {
       case ApiType.COMPONENT:
+        forEachChild(sourceFile, node => visitChildNode(node, true));
+        break;
       case ApiType.KEEP_DTS:
         forEachChild(sourceFile, visitChildNode);
         break;
@@ -638,7 +640,7 @@ export namespace ApiExtractor {
         forEachChild(sourceFile, node => visitExport(node, true));
         mCurrentExportNameSet.forEach(item => mSystemExportSet.add(item));
 
-        forEachChild(sourceFile, visitPropertyAndName);
+        forEachChild(sourceFile, visitPropertyAndNameForSdk);
         mCurrentExportNameSet.clear();
         break;
       case ApiType.PROJECT:

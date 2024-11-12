@@ -398,12 +398,12 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
           export let b = 1;
           import {c} from 'filePath';
         `;
-        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
-        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
-        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
         const textWriter = ts.createTextWriter('\n');
         let arkobfuscator = new ArkObfuscatorForTest();
         arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
         arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
         const actualContent = textWriter.getText();
         const expectContent = `
