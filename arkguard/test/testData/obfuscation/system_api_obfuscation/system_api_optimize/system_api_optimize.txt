@@ -1,0 +1,2 @@
+-enable-property-obfuscation
+-extra-options strip-system-api-args
