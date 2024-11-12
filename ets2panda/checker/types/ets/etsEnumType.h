@@ -90,8 +90,7 @@ public:
 
     [[nodiscard]] bool IsEnumTypeExpression(const ir::Expression *expression) const noexcept;
 
-    static constexpr std::string_view const TO_STRING_METHOD_NAME {"enumToString"};
-    static constexpr std::string_view const BOXED_TO_STRING_METHOD_NAME {"toString"};
+    static constexpr std::string_view const TO_STRING_METHOD_NAME {"toString"};
     static constexpr std::string_view const VALUE_OF_METHOD_NAME {"valueOf"};
     static constexpr std::string_view const GET_NAME_METHOD_NAME {"getName"};
     static constexpr std::string_view const GET_VALUE_OF_METHOD_NAME {"getValueOf"};

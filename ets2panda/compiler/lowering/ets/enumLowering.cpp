@@ -262,8 +262,6 @@ void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclarat
 
     CreateEnumToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
 
-    CreateEnumUnboxingToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
-
     CreateEnumValuesMethod(enumDecl, enumClass, itemsArrayIdent);
 
     CreateEnumFromIntMethod(enumDecl, enumClass, itemsArrayIdent, checker::ETSEnumType::FROM_INT_METHOD_NAME,
@@ -301,8 +299,6 @@ void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDecla
     CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent);
 
     CreateEnumToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
-
-    CreateEnumUnboxingToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
 
     CreateEnumValuesMethod(enumDecl, enumClass, itemsArrayIdent);
 
@@ -592,35 +588,6 @@ void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *co
 
     auto *const functionIdent =
         checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::TO_STRING_METHOD_NAME, Allocator());
-
-    function->SetIdent(functionIdent);
-    MakeMethodDef(checker_, enumClass, functionIdent, function);
-}
-
-void EnumLoweringPhase::CreateEnumUnboxingToStringMethod(const ir::TSEnumDeclaration *const enumDecl,
-                                                         ir::ClassDefinition *const enumClass,
-                                                         ir::Identifier *const stringValuesArrayIdent)
-{
-    auto *thisExpr = Allocator()->New<ir::ThisExpression>();
-    auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
-    auto *arrayIndexExpr = checker_->AllocNode<ir::MemberExpression>(
-        thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-
-    auto propertyAccessEXPR = CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), stringValuesArrayIdent);
-    auto *const arrayAccessExpr = checker_->AllocNode<ir::MemberExpression>(
-        propertyAccessEXPR, arrayIndexExpr, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-
-    auto *const returnStmt = checker_->AllocNode<ir::ReturnStatement>(arrayAccessExpr);
-    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(returnStmt);
-
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
-    auto *const function =
-        MakeFunction({std::move(params), std::move(body), stringTypeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
-
-    auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::BOXED_TO_STRING_METHOD_NAME, Allocator());
 
     function->SetIdent(functionIdent);
     MakeMethodDef(checker_, enumClass, functionIdent, function);
