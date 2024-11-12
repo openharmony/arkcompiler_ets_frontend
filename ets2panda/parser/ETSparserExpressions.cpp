@@ -287,6 +287,45 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
+ir::Expression *ETSParser::ParsePropertyDefinition(ExpressionParseFlags flags)
+{
+    ir::PropertyKind propertyKind = ir::PropertyKind::INIT;
+    ParserStatus methodStatus = ParserStatus::NO_OPTS;
+
+    const auto startPos = Lexer()->Save();
+    Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
+    lexer::SourcePosition start = Lexer()->GetToken().Start();
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+        return ParseSpreadElement(flags);
+    }
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+        if (ParsePropertyModifiers(flags, &propertyKind, &methodStatus)) {
+            return ParseShorthandProperty(&startPos);
+        }
+    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
+        ParseGeneratorPropertyModifier(flags, &methodStatus);
+    }
+
+    bool isComputed = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET;
+    ir::Expression *key = ParsePropertyKey(flags);
+
+    ir::Expression *value = ParsePropertyValue(&propertyKind, &methodStatus, flags);
+    if (key == nullptr || value == nullptr) {  // Error processing.
+        return nullptr;
+    }
+
+    lexer::SourcePosition end = value->End();
+
+    auto *returnProperty =
+        AllocNode<ir::Property>(propertyKind, key, value, methodStatus != ParserStatus::NO_OPTS, isComputed);
+    returnProperty->SetRange({start, end});
+
+    return returnProperty;
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags flags)
 {
     auto startLoc = Lexer()->GetToken().Start();
