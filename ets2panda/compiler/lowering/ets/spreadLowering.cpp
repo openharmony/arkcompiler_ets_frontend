@@ -65,7 +65,7 @@ void CreateNewArrayLengthStatement(public_lib::Context *ctx, ir::ArrayExpression
         lengthString << "@@I" << (argumentCount++) << ".length + ";
         nodesWaitingInsert.emplace_back(spaId->Clone(allocator, nullptr));
     }
-    lengthString << "0;" << std::endl;
+    lengthString << "0;";
     statements.emplace_back(parser->CreateFormattedStatement(lengthString.str(), nodesWaitingInsert));
 }
 
@@ -83,12 +83,18 @@ ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, ir::Arr
                                                ArenaVector<ir::Statement *> &statements,
                                                ir::Identifier *newArrayLengthId)
 {
+    auto *const checker = ctx->checker->AsETSChecker();
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
     ir::Identifier *newArrayId = Gensym(allocator);
-    std::string arrayType = array->TsType()->AsETSArrayType()->ElementType()->ToString();
+    auto arrayType = array->TsType()->AsETSArrayType();
+    auto initElemType = arrayType->ElementType();
+    checker::ETSArrayType *newArrayType = arrayType;
+    if (checker->IsReferenceType(initElemType)) {
+        newArrayType = checker->Allocator()->New<checker::ETSArrayType>(
+            checker->CreateETSUnionType({initElemType, checker->GlobalETSNullType()}));
+    }
     std::stringstream newArrayDeclareStr;
-    std::stringstream typeOfNewArray;
     // NOTE: For ETSUnionType(String|Int) or ETSObjectType(private constructor) or ..., we canot use "new Type[]" to
     //       declare an array, so we add "|null" to solve it temporarily.
     //       We might need to use cast Expression in the end of the generated source code to remove "|null", such as
@@ -96,13 +102,11 @@ ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, ir::Arr
     //       But now cast Expression doesn't support built-in array (cast fatherType[] to sonType[]), so "newArrayName
     //       as arrayType" should be added after cast Expression is implemented completely.
     newArrayDeclareStr.clear();
-    typeOfNewArray.clear();
-    typeOfNewArray << "(" << arrayType << "|null)";
-    newArrayDeclareStr << "let @@I1: " << typeOfNewArray.str() << "[] = new " << typeOfNewArray.str() << "[@@I2];"
-                       << std::endl;
+    newArrayDeclareStr << "let @@I1: @@T2 = new @@T3 [@@I4];";
 
     ir::Statement *newArrayDeclareSt = parser->CreateFormattedStatement(
-        newArrayDeclareStr.str(), newArrayId, ClearIdentifierAnnotation(newArrayLengthId->Clone(allocator, nullptr)));
+        newArrayDeclareStr.str(), newArrayId, newArrayType, newArrayType->ElementType(),
+        ClearIdentifierAnnotation(newArrayLengthId->Clone(allocator, nullptr)));
     statements.emplace_back(newArrayDeclareSt);
     return newArrayId;
 }
@@ -111,12 +115,13 @@ ir::Statement *CreateSpreadArrIteratorStatement(public_lib::Context *ctx, ir::Ar
                                                 ir::Identifier *spreadArrIterator)
 {
     auto *const parser = ctx->parser->AsETSParser();
-    std::string arrayType = array->TsType()->AsETSArrayType()->ElementType()->ToString();
+    auto elemType = array->TsType()->AsETSArrayType()->ElementType();
 
     std::stringstream spArrIterDeclareStr;
     spArrIterDeclareStr.clear();
-    spArrIterDeclareStr << "let @@I1: " << arrayType << ";" << std::endl;
-    ir::Statement *spArrIterDeclareSt = parser->CreateFormattedStatement(spArrIterDeclareStr.str(), spreadArrIterator);
+    spArrIterDeclareStr << "let @@I1: @@T2;";
+    ir::Statement *spArrIterDeclareSt =
+        parser->CreateFormattedStatement(spArrIterDeclareStr.str(), spreadArrIterator, elemType);
 
     return spArrIterDeclareSt;
 }
@@ -132,10 +137,10 @@ ir::Statement *CreateElementsAssignStatementBySpreadArr(public_lib::Context *ctx
 
     std::stringstream elementsAssignStr;
     elementsAssignStr.clear();
-    elementsAssignStr << "for (@@I2 of @@I3) {" << std::endl;
-    elementsAssignStr << "@@I4[@@I5] = @@I6;" << std::endl;
-    elementsAssignStr << "@@I7++;" << std::endl;
-    elementsAssignStr << "}" << std::endl;
+    elementsAssignStr << "for (@@I2 of @@I3) {";
+    elementsAssignStr << "@@I4[@@I5] = @@I6;";
+    elementsAssignStr << "@@I7++;";
+    elementsAssignStr << "}";
 
     ir::Statement *elementsAssignStatement = parser->CreateFormattedStatement(
         elementsAssignStr.str(), ClearIdentifierAnnotation(spreadArrIterator->Clone(allocator, nullptr)),
@@ -156,8 +161,8 @@ ir::Statement *CreateElementsAssignStatementBySingle(public_lib::Context *ctx, i
     auto *const newArrayIndexId = newArrayAndIndex[1];
     std::stringstream elementsAssignStr;
     elementsAssignStr.clear();
-    elementsAssignStr << "@@I1[@@I2] = (@@E3);" << std::endl;
-    elementsAssignStr << "@@I4++;" << std::endl;
+    elementsAssignStr << "@@I1[@@I2] = (@@E3);";
+    elementsAssignStr << "@@I4++;";
 
     ir::Statement *elementsAssignStatement = parser->CreateFormattedStatement(
         elementsAssignStr.str(), newArrayId->Clone(allocator, nullptr), newArrayIndexId->Clone(allocator, nullptr),
@@ -250,14 +255,16 @@ bool SpreadConstructionPhase::Perform(public_lib::Context *ctx, parser::Program 
 
                 ir::BlockExpression *blockExpression = CreateLoweredExpression(ctx, node->AsArrayExpression());
                 blockExpression->SetParent(node->Parent());
-                InitScopesPhaseETS::RunExternalNode(blockExpression, checker->VarBinder());
-                checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression,
-                                                                               NearestScope(blockExpression));
-                blockExpression->Check(checker);
 
                 // NOTE: this blockExpression is a kind of formatted-dummy code, which is invisible to users,
                 //       so, its source range should be same as the original code([element1, element2, ...spreadExpr])
-                SetSourceRangesRecursively(blockExpression);
+                blockExpression->SetRange(node->Range());
+                for (auto st : blockExpression->Statements()) {
+                    SetSourceRangesRecursively(st);
+                }
+
+                Recheck(checker->VarBinder()->AsETSBinder(), checker, blockExpression);
+
                 return blockExpression;
             }
 

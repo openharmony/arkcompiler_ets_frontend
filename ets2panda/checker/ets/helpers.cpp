@@ -526,9 +526,11 @@ checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
         return Allocator()->New<ETSArrayType>(GlobalETSObjectType());
     }
     auto const isNumeric = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC); };
-    auto const elementType = std::all_of(elementTypes.begin(), elementTypes.end(), isNumeric)
-                                 ? GlobalDoubleType()
-                                 : CreateETSUnionType(std::move(elementTypes));
+    auto const isChar = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::CHAR); };
+    auto const elementType =
+        std::all_of(elementTypes.begin(), elementTypes.end(), isNumeric)
+            ? std::all_of(elementTypes.begin(), elementTypes.end(), isChar) ? GlobalCharType() : GlobalDoubleType()
+            : CreateETSUnionType(std::move(elementTypes));
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return Allocator()->New<ETSArrayType>(elementType);
