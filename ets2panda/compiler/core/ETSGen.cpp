@@ -418,7 +418,8 @@ void ETSGen::LoadStaticProperty(const ir::AstNode *const node, const checker::Ty
 void ETSGen::StoreProperty(const ir::AstNode *const node, const checker::Type *propType, const VReg objReg,
                            const util::StringView &name)
 {
-    const auto fullName = FormClassPropReference(GetVRegType(objReg)->AsETSObjectType(), name);
+    auto *objType = Checker()->GetApparentType(GetVRegType(objReg))->AsETSObjectType();
+    const auto fullName = FormClassPropReference(objType, name);
 
     if (propType->HasTypeFlag(TYPE_FLAG_BYTECODE_REF)) {
         Ra().Emit<StobjObj>(node, objReg, fullName);
