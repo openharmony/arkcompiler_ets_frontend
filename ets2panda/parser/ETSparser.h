@@ -427,7 +427,6 @@ private:
     void ParseStringEnum(ArenaVector<ir::AstNode *> &members);
 
     ir::Statement *ParseInterfaceDeclaration(bool isStatic) override;
-    ir::ThisExpression *ParseThisExpression() override;
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers);

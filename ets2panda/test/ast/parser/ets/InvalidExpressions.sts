@@ -93,7 +93,6 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 48:5 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 50:7 Error SyntaxError: Invalid token: ',' or ')' expected.  */
 /* @@? 50:8 Error SyntaxError: Unexpected token, expected: '=>'.  */
-/* @@? 51:13 Error SyntaxError: Unexpected token: 'number literal'.  */
 /* @@? 51:13 Error SyntaxError: Unexpected token 'number literal'.  */
 /* @@? 51:16 Error SyntaxError: Invalid left-hand side operator.  */
 /* @@? 55:1 Error SyntaxError: Identifier expected, got 'function'.  */

@@ -19,7 +19,6 @@ let wont_exist: number = 8;
 
 this file will contain parse error, but compilation of 'package_module_1' is not aborted, file is just ignored
 
-/* @@? 20:6 Error SyntaxError: Unexpected token: 'identification literal'. */
 /* @@? 20:6 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? 20:11 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? 20:16 Error SyntaxError: Unexpected token 'identification literal'. */

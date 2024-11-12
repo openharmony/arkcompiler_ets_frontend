@@ -17,7 +17,6 @@ package mypack;
 
 let myvar: number = wont_exist;
 
-/* @@? package_module_2_neg.sts:20:6 Error SyntaxError: Unexpected token: 'identification literal'. */
 /* @@? package_module_2_neg.sts:20:6 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? package_module_2_neg.sts:20:11 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? package_module_2_neg.sts:20:16 Error SyntaxError: Unexpected token 'identification literal'. */

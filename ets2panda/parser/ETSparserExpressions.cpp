@@ -709,41 +709,6 @@ ir::Expression *ETSParser::ParseETSImportExpression()
     return importExpression;
 }
 
-ir::ThisExpression *ETSParser::ParseThisExpression()
-{
-    auto *thisExpression = TypedParser::ParseThisExpression();
-
-    if (Lexer()->GetToken().NewLine()) {
-        return thisExpression;
-    }
-
-    switch (Lexer()->GetToken().Type()) {
-        case lexer::TokenType::PUNCTUATOR_PERIOD:
-        case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_BRACE:
-        case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
-        case lexer::TokenType::PUNCTUATOR_COLON:
-        case lexer::TokenType::PUNCTUATOR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_COMMA:
-        case lexer::TokenType::PUNCTUATOR_QUESTION_MARK:
-        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
-        case lexer::TokenType::KEYW_INSTANCEOF:
-        case lexer::TokenType::KEYW_AS: {
-            break;
-        }
-        default: {
-            LogUnexpectedToken(Lexer()->GetToken().Type());
-            break;
-        }
-    }
-
-    return thisExpression;
-}
-
 ir::Expression *ETSParser::ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags)
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA &&
