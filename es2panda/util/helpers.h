@@ -88,6 +88,20 @@ public:
     static constexpr std::string_view DYLIB = ".dylib";
 };
 
+template<typename T>
+class SaveValue {
+public:
+    explicit SaveValue(T &value) : ptr_(&value), value_(value) {}
+
+    ~SaveValue()
+    {
+        *ptr_ = value_;
+    }
+private:
+    T *ptr_;
+    T value_;
+};
+
 using AopTransformFuncDef = int (*)(const char *);
 
 class Helpers {
