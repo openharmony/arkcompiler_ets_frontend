@@ -98,21 +98,13 @@ namespace secharmony {
 
         if (isSourceFile(node)) {
           return factory.updateSourceFile(node, deletedStatements);
-        }
-
-        if (isBlock(node)) {
+        } else if (isBlock(node)) {
           return factory.createBlock(deletedStatements, true);
-        }
-
-        if (isModuleBlock(node)) {
-          return factory.createModuleBlock(deletedStatements)
-        }
-
-        if (isCaseClause(node)) {
+        } else if (isModuleBlock(node)) {
+          return factory.createModuleBlock(deletedStatements);
+        } else if (isCaseClause(node)) {
           return factory.createCaseClause(node.expression, deletedStatements);
-        }
-
-        if (isDefaultClause(node)) {
+        } else {
           return factory.createDefaultClause(deletedStatements);
         }
       }
