@@ -39,3 +39,6 @@ test262/data/test_es2021/language/statements/for/S12.6.3_A10_T2.js
 #19182
 test262/data/test_es2021/language/statements/async-generator/dstr/ary-ptrn-elem-obj-val-null.js
 # --- end of Issue #19182
+
+#19208
+test262/data/test/language/module-code/instn-iee-err-circular-as.js
