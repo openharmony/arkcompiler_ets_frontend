@@ -22,7 +22,7 @@ import type {IOptions} from '../configs/IOptions';
 import { stringPropsSet, structPropsSet, enumPropsSet } from '../utils/OhsUtil';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 
-export const scanProjectConfig: {
+export let scanProjectConfig: {
   mPropertyObfuscation?: boolean,
   mKeepStringProperty?: boolean,
   mExportObfuscation?: boolean,
@@ -174,6 +174,9 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   if (scanProjectConfig.mExportObfuscation) {
     mergeReservedNames(nameObfuscationConfig, exportNames);
   }
+
+  // scanProjectConfig needs to be cleared to prevent affecting incremental compilation
+  scanProjectConfig = {};
 
   return {
     projectAndLibsReservedProperties: nameObfuscationConfig.mReservedProperties ?? [],

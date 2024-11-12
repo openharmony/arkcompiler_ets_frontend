@@ -34,6 +34,7 @@ import {
 
 import { isDebug, isFileExist, sortAndDeduplicateStringArr } from './utils';
 import { nameCacheMap, yellow } from './CommonObject';
+import { ListUtil } from '../utils/ListUtil';
 
 enum OptionType {
   NONE,
@@ -469,7 +470,7 @@ export class ObConfigResolver {
   private resolveDts(dtsFilePaths: string[], configs: MergedConfig): void {
     ApiExtractor.mPropertySet.clear();
     dtsFilePaths.forEach((token) => {
-      ApiExtractor.traverseApiFiles(token, ApiExtractor.ApiType.PROJECT);
+      ApiExtractor.traverseApiFiles(token, ApiExtractor.ApiType.KEEP_DTS);
     });
     configs.reservedNames = configs.reservedNames.concat([...ApiExtractor.mPropertySet]);
     configs.reservedPropertyNames = configs.reservedPropertyNames.concat([...ApiExtractor.mPropertySet]);
@@ -621,13 +622,13 @@ export class ObConfigResolver {
       ReservedGlobalNames?: string[];
     } = JSON.parse(fs.readFileSync(systemApiCachePath, 'utf-8'));
     if (systemApiContent.ReservedPropertyNames) {
-      systemConfigs.reservedPropertyNames = systemApiContent.ReservedPropertyNames;
+      systemConfigs.reservedPropertyNames = ListUtil.uniqueMergeList(systemConfigs.reservedPropertyNames, systemApiContent.ReservedPropertyNames);
     }
     if (systemApiContent.ReservedNames) {
-      systemConfigs.reservedNames = systemApiContent.ReservedNames;
+      systemConfigs.reservedNames = ListUtil.uniqueMergeList(systemConfigs.reservedNames, systemApiContent.ReservedNames);
     }
     if (systemApiContent.ReservedGlobalNames) {
-      systemConfigs.reservedGlobalNames = systemApiContent.ReservedGlobalNames;
+      systemConfigs.reservedGlobalNames = ListUtil.uniqueMergeList(systemConfigs.reservedGlobalNames, systemApiContent.ReservedGlobalNames);
     }
   }
 
