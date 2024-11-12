@@ -519,7 +519,7 @@ export class ObConfigResolver {
   private resolveDts(dtsFilePaths: string[], configs: MergedConfig): void {
     ApiExtractor.mPropertySet.clear();
     dtsFilePaths.forEach((token) => {
-      ApiExtractor.traverseApiFiles(token, ApiExtractor.ApiType.PROJECT);
+      ApiExtractor.traverseApiFiles(token, ApiExtractor.ApiType.KEEP_DTS);
     });
     configs.reservedNames = configs.reservedNames.concat([...ApiExtractor.mPropertySet]);
     configs.reservedPropertyNames = configs.reservedPropertyNames.concat([...ApiExtractor.mPropertySet]);
