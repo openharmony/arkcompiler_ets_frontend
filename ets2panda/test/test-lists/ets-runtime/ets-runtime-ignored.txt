@@ -74,3 +74,8 @@ lambdaWithOptionalParam3.sts
 lambdaWithOptionalParam4.sts
 lambdaWithOptionalParam5.sts
 unnecessary_boxing.sts
+
+
+#Issue 21065
+implementsClassPropertyUnionType1.sts
+implementsClassPropertyUnionType2.sts

@@ -1516,6 +1516,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     }
 
     if (baseType->IsETSObjectType()) {
+        checker->ETSObjectTypeDeclNode(checker, baseType->AsETSObjectType());
         return expr->SetAndAdjustType(checker, baseType->AsETSObjectType());
     }
 
