@@ -16,7 +16,7 @@
 
 export function foo(
     style?: number,
-    context?: number,
+    context?: number
 ) {
     return
 }

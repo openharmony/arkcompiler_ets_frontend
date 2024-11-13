@@ -261,7 +261,6 @@ private:
     std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     bool IsDefaultImport();
-    bool ParseNamedSpecifiesHelper(bool *logError);
     void ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
                                           const std::string &fileName);
     std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> ParseNamedSpecifiers();
@@ -410,7 +409,7 @@ private:
                                                   const lexer::SourcePosition &startLoc);
     ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                 ir::ModifierFlags memberModifiers, const lexer::SourcePosition &startLoc);
-    void CheckAccessorDeclaration(ir::ModifierFlags memberModifiers);
+    bool CheckAccessorDeclaration(ir::ModifierFlags memberModifiers);
 
     ir::AstNode *ParseAmbientSignature();
 
@@ -423,15 +422,15 @@ private:
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
     ir::Expression *ParseETSImportExpression();
+    ir::ArrayExpression *ParseArrayExpression(ExpressionParseFlags flags) override;
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
 
     bool IsStringEnum();
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst,
                                             bool isStatic) override;
-    bool ParseNumberEnumEnd();
     bool ParseNumberEnumHelper();
-    void ParseNumberEnum(ArenaVector<ir::AstNode *> &members);
-    void ParseStringEnum(ArenaVector<ir::AstNode *> &members);
+    lexer::SourcePosition ParseNumberEnum(ArenaVector<ir::AstNode *> &members);
+    lexer::SourcePosition ParseStringEnum(ArenaVector<ir::AstNode *> &members);
 
     ir::Statement *ParseInterfaceDeclaration(bool isStatic) override;
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);

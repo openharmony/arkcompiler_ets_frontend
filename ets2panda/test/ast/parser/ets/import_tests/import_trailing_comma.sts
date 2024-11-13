@@ -13,10 +13,6 @@
  * limitations under the License.
  */
 
-function identity<Type>(arg: Type): Type {
-  return arg;
-}
-let output = identity<string>"hehe"
+import {foo, flt,} from "import_tests/packages";
+import {dbl as floatingPointNumber,} from "import_tests/packages";
 
-/* @@? 19:30 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: ')'.  */

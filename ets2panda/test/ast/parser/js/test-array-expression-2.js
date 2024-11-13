@@ -16,4 +16,4 @@
 
 [a;
 
-/* @@? 17:3 Error SyntaxError: Unexpected token, expected ',' or ']'  */
+/* @@? 17:3 Error SyntaxError: Unexpected token, expected ',' or ']'.  */

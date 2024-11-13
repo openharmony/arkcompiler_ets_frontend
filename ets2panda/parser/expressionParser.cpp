@@ -160,40 +160,20 @@ ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
     return assignmentExpression;
 }
 
-bool ParserImpl::ParseArrayExpressionRightBracketHelper(bool containsRest, bool trailingComma,
-                                                        const lexer::SourcePosition &startLoc)
+bool ParserImpl::ParseArrayExpressionRightBracketHelper(bool containsRest, const lexer::SourcePosition &startLoc)
 {
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
         if (containsRest) {
             LogSyntaxError("Rest element must be last element", startLoc);
         }
 
-        lexer_->NextToken();  // eat comma
-
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            return true;
-        }
-
-        return trailingComma;
+        return true;
     }
-
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-        // array_2.sts
-        LogSyntaxError("Unexpected token, expected ',' or ']'");
-        lexer_->NextToken();
-        if (lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
-            // [0, 1, 2} -> [0, 1, 2]
-            // the problem is that ["abc". "sss", "aaa"] -> ["abc"] "sss", "aaa"]
-            lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
-        }
-        // [0 1, 2] -> [0, 1, 2] ; we just skeep the token in this case
-    }
-
-    return trailingComma;
+    return false;
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags)
+ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags, bool allowOmitted)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
@@ -204,41 +184,41 @@ ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags
     bool trailingComma = false;
     bool inPattern = (flags & ExpressionParseFlags::MUST_BE_PATTERN) != 0;
 
-    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET &&
-           lexer_->GetToken().Type() != lexer::TokenType::EOS) {
-        util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
+    lexer::SourcePosition endLoc;
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET, lexer::NextTokenFlags::NONE,
+        [this, inPattern, startLoc, allowOmitted, &elements, &trailingComma]() {
+            if (allowOmitted && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+                auto *omitted = AllocNode<ir::OmittedExpression>();
+                omitted->SetRange(lexer_->GetToken().Loc());
+                elements.push_back(omitted);
+                return true;
+            }
 
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            auto *omitted = AllocNode<ir::OmittedExpression>();
-            omitted->SetRange(lexer_->GetToken().Loc());
-            elements.push_back(omitted);
-            lexer_->NextToken();
-            continue;
-        }
+            ir::Expression *element {};
+            if (inPattern) {
+                element = ParsePatternElement();
+            } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+                element = ParseSpreadElement(ExpressionParseFlags::POTENTIALLY_IN_PATTERN);
+            } else {
+                element = ParseExpression(ExpressionParseFlags::POTENTIALLY_IN_PATTERN);
+            }
 
-        ir::Expression *element {};
-        if (inPattern) {
-            element = ParsePatternElement();
-        } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
-            element = ParseSpreadElement(ExpressionParseFlags::POTENTIALLY_IN_PATTERN);
-        } else {
-            element = ParseExpression(ExpressionParseFlags::POTENTIALLY_IN_PATTERN);
-        }
+            bool containsRest = false;
+            if (element != nullptr) {  // Error processing.
+                containsRest = element->IsRestElement();
+                elements.push_back(element);
+            }
 
-        bool containsRest = false;
-        if (element != nullptr) {  // Error processing.
-            containsRest = element->IsRestElement();
-            elements.push_back(element);
-        }
-
-        trailingComma = ParseArrayExpressionRightBracketHelper(containsRest, trailingComma, startLoc);
-    }
+            trailingComma = ParseArrayExpressionRightBracketHelper(containsRest, startLoc);
+            return true;
+        },
+        &endLoc, true);
 
     auto nodeType = inPattern ? ir::AstNodeType::ARRAY_PATTERN : ir::AstNodeType::ARRAY_EXPRESSION;
     auto *arrayExpressionNode =
         AllocNode<ir::ArrayExpression>(nodeType, std::move(elements), Allocator(), trailingComma);
-    arrayExpressionNode->SetRange({startLoc, lexer_->GetToken().End()});
-    lexer_->NextToken();
+    arrayExpressionNode->SetRange({startLoc, endLoc});
 
     if (inPattern) {
         arrayExpressionNode->SetDeclaration();
@@ -246,6 +226,11 @@ ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags
 
     ParseArrayExpressionErrorCheck(arrayExpressionNode, flags, inPattern);
     return arrayExpressionNode;
+}
+
+ir::ArrayExpression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags)
+{
+    return ParseArrayExpression(flags, true);
 }
 
 void ParserImpl::ParseArrayExpressionErrorCheck(ir::ArrayExpression *arrayExpressionNode,
@@ -857,35 +842,28 @@ ir::Expression *ParserImpl::ParseNewExpression()
 
     lexer_->NextToken();  // eat left parenthesis
 
+    lexer::SourcePosition endLoc;
     // parse argument part of NewExpression
-    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
-        ir::Expression *argument = nullptr;
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE,
+        [this, &arguments]() {
+            ir::Expression *argument = nullptr;
 
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
-            argument = ParseSpreadElement();
-        } else {
-            argument = ParseExpression();
-        }
+            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+                argument = ParseSpreadElement();
+            } else {
+                argument = ParseExpression();
+            }
 
-        if (argument != nullptr) {  // Error processing.
-            arguments.push_back(argument);
-        }
-
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            lexer_->NextToken();  // eat comma
-        }
-
-        if (lexer_->GetToken().Type() == lexer::TokenType::EOS) {
-            LogSyntaxError("Unexpected token in argument parsing");
-            break;  // All tokens may be exhausted.
-        }
-    }
+            if (argument != nullptr) {  // Error processing.
+                arguments.push_back(argument);
+            }
+            return true;
+        },
+        &endLoc, true);
 
     auto *newExprNode = AllocNode<ir::NewExpression>(callee, std::move(arguments));
-    newExprNode->SetRange({start, lexer_->GetToken().End()});
-
-    lexer_->NextToken();
+    newExprNode->SetRange({start, endLoc});
 
     return newExprNode;
 }
@@ -1445,41 +1423,38 @@ ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, Expressi
     return rightExpr;
 }
 
-ArenaVector<ir::Expression *> ParserImpl::ParseCallExpressionArguments(bool &trailingComma)
+ArenaVector<ir::Expression *> ParserImpl::ParseCallExpressionArguments(bool &trailingComma,
+                                                                       lexer::SourcePosition &endLoc)
 {
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
         lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
         arguments = std::move(ParseExpressionsArrayFormatPlaceholder());
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-            UNREACHABLE();
-        }
+        endLoc = Lexer()->GetToken().End();
+        ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     } else {
-        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS &&
-               lexer_->GetToken().Type() != lexer::TokenType::EOS) {
-            util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
+        ParseList(
+            lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE,
+            [this, &trailingComma, &arguments]() {
+                trailingComma = false;
+                ir::Expression *argument {};
+                if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+                    argument = ParseSpreadElement();
+                } else {
+                    argument = ParseExpression();
+                }
 
-            trailingComma = false;
-            ir::Expression *argument {};
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
-                argument = ParseSpreadElement();
-            } else {
-                argument = ParseExpression();
-            }
+                if (argument != nullptr) {  // Error processing.
+                    arguments.push_back(argument);
+                }
 
-            if (argument != nullptr) {  // Error processing.
-                arguments.push_back(argument);
-            }
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-                lexer_->NextToken();
-                trailingComma = true;
-            } else if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-                LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-            }
-        }
+                if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+                    trailingComma = true;
+                }
+                return true;
+            },
+            &endLoc, true);
     }
 
     return arguments;
@@ -1492,7 +1467,8 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
 
     while (true) {
         lexer_->NextToken();
-        ArenaVector<ir::Expression *> arguments = ParseCallExpressionArguments(trailingComma);
+        lexer::SourcePosition endLoc;
+        ArenaVector<ir::Expression *> arguments = ParseCallExpressionArguments(trailingComma, endLoc);
         ir::CallExpression *callExpr {};
 
         if (!isOptionalChain && handleEval && callee->IsIdentifier() && callee->AsIdentifier()->Name().Is("eval")) {
@@ -1504,10 +1480,8 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
                 AllocNode<ir::CallExpression>(callee, std::move(arguments), nullptr, isOptionalChain, trailingComma);
         }
 
-        callExpr->SetRange({callee->Start(), lexer_->GetToken().End()});
+        callExpr->SetRange({callee->Start(), endLoc});
         isOptionalChain = false;
-
-        lexer_->NextToken();
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
             ParseTrailingBlock(callExpr);
@@ -2376,9 +2350,7 @@ ir::SequenceExpression *ParserImpl::ParseSequenceExpression(ir::Expression *star
     ArenaVector<ir::Expression *> sequence(Allocator()->Adapter());
     sequence.push_back(startExpr);
 
-    while (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-        lexer_->NextToken();
-
+    while (lexer_->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COMMA)) {
         if (acceptRest && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
             ir::SpreadElement *expr = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
             if (expr != nullptr) {  // Error processing.

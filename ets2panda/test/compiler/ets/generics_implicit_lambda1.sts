@@ -38,7 +38,7 @@ function main() {
     foo((): Int => { return new Int(42) });
 
     X(
-    (): String => { return "XXX" },
+    (): String => { return "XXX" }
     ) {
     }
 }

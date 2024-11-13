@@ -582,22 +582,17 @@ ir::ClassDefinition *ETSParser::CreateClassDefinitionForNewExpression(ArenaVecto
 
         Lexer()->NextToken();
 
-        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS &&
-               Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-            util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
-            ir::Expression *const argument = ParseExpression();
-            if (argument != nullptr) {
+        ParseList(
+            lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE,
+            [this, &arguments]() {
+                ir::Expression *argument = ParseExpression();
+                if (argument == nullptr) {
+                    return false;
+                }
                 arguments.push_back(argument);
-            }
-
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-                Lexer()->NextToken();
-                continue;
-            }
-        }
-
-        endLoc = Lexer()->GetToken().End();
-        Lexer()->NextToken();
+                return true;
+            },
+            &endLoc, true);
     }
 
     ir::ClassDefinition *classDefinition {};
@@ -724,6 +719,11 @@ ir::Expression *ETSParser::ParseETSImportExpression()
     auto *importExpression = AllocNode<ir::ImportExpression>(source);
     importExpression->SetRange({startLoc, endLoc});
     return importExpression;
+}
+
+ir::ArrayExpression *ETSParser::ParseArrayExpression(ExpressionParseFlags flags)
+{
+    return ParserImpl::ParseArrayExpression(flags, false);
 }
 
 ir::Expression *ETSParser::ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags)

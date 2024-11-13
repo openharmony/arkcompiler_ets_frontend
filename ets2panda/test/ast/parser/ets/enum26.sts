@@ -20,4 +20,5 @@ enum Direction {
   Right = "RIGHT"
 }
 
-/* @@? 20:3 Error SyntaxError: Missing comma between enum constants  */
+/* @@? 20:3 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
+/* @@? 21:1 Error SyntaxError: Unexpected token '}'.  */

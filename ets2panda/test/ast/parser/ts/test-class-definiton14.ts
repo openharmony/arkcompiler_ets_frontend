@@ -20,3 +20,4 @@ class Foo {
 
 /* @@? 18:14 Error SyntaxError: Unexpected token, expected: ';'.  */
 /* @@? 18:15 Error SyntaxError: Unexpected token in class property  */
+/* @@? 18:16 Error SyntaxError: Unexpected token in class property  */

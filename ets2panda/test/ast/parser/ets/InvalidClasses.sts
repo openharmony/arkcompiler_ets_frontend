@@ -98,7 +98,8 @@ interface I1 {
 /* @@? 58:25 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 60:1 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 60:11 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
-/* @@? 60:11 Error SyntaxError: Invalid token: ',' or ')' expected.  */
+/* @@? 60:11 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 60:12 Error SyntaxError: Unexpected token ')'.  */
 /* @@? 60:12 Error SyntaxError: Unexpected token ')'.  */
 /* @@? 60:13 Error SyntaxError: Unexpected token ':'.  */
 /* @@? 60:20 Error SyntaxError: Unexpected token '{'.  */

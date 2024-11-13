@@ -15,4 +15,5 @@
 
 console.log("aaaaaaaa"}
 
-/* @@? 16:23 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 16:23 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 16:23 Error SyntaxError: Unexpected token '}'.  */

@@ -20,7 +20,8 @@ async function asyncFunc): Promise<boolean> {
 /* @@? 16:25 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 16:26 Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@? 16:35 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
-/* @@? 16:35 Error SyntaxError: Invalid token: ',' or ')' expected.  */
+/* @@? 16:35 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 16:35 Error SyntaxError: Unexpected token '<'.  */
 /* @@? 17:5 Error SyntaxError: Unexpected token in property key  */
 /* @@? 17:5 Error SyntaxError: Unexpected token, expected: ':'.  */
 /* @@? 17:5 Error SyntaxError: Unexpected token 'return'.  */

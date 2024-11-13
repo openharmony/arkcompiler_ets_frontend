@@ -139,13 +139,13 @@ ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<Parser
     if (!nodeFormat.has_value()) {
         if (insertingNodes_.empty()) {
             LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            return nullptr;
         }
 
         nodeFormat = GetFormatPlaceholderType();
         if (std::get<0>(*nodeFormat) || std::get<1>(*nodeFormat) != IDENTIFIER_FORMAT_NODE) {
             LogSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-            UNREACHABLE();
+            return nullptr;
         }
     }
 

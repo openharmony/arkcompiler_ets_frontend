@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-function identity<Type>(arg: Type): Type {
-  return arg;
-}
-let output = identity<string>"hehe"
+function foo2(): void {}
+function foo3(): void {}
 
-/* @@? 19:30 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+export {foo2,}
+export {, foo3}
+
+/* @@? 20:9 Error SyntaxError: Unexpected token, expected an identifier.  */

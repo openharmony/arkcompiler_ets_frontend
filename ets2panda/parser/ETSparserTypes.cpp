@@ -279,10 +279,7 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
 
     bool spreadTypePresent = false;
 
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET &&
-           Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-        util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
-
+    auto parseElem = [this, options, &tupleTypeList, &tupleType, &spreadTypePresent]() {
         // Parse named parameter if name presents
         if ((Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) &&
             (Lexer()->Lookahead() == lexer::LEX_CHAR_COLON)) {
@@ -293,42 +290,29 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
         spreadTypePresent = ParseTriplePeriod(spreadTypePresent);
 
         auto *const currentTypeAnnotation = ParseTypeAnnotation(options);
-        if (currentTypeAnnotation != nullptr) {
-            currentTypeAnnotation->SetParent(tupleType);
-
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-                // NOTE(mmartin): implement optional types for tuples
-                LogSyntaxError("Optional types in tuples are not yet implemented.");
-                Lexer()->NextToken();  // eat '?'
-            }
-
-            if (spreadTypePresent && !currentTypeAnnotation->IsTSArrayType()) {
-                LogSyntaxError("Spread type must be an array type");
-            }
-
-            if (spreadTypePresent) {
-                tupleType->SetSpreadType(currentTypeAnnotation);
-            } else {
-                tupleTypeList.push_back(currentTypeAnnotation);
-            }
+        if (currentTypeAnnotation == nullptr) {  // Error processing.
+            Lexer()->NextToken();
+            return false;
+        }
+        currentTypeAnnotation->SetParent(tupleType);
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+            // NOTE(mmartin): implement optional types for tuples
+            LogSyntaxError("Optional types in tuples are not yet implemented.");
+            Lexer()->NextToken();  // eat '?'
         }
 
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            Lexer()->NextToken();  // eat comma
-            continue;
+        if (spreadTypePresent && !currentTypeAnnotation->IsTSArrayType()) {
+            LogSyntaxError("Spread type must be an array type");
         }
 
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            // tuple_type_3_neg.sts
-            LogSyntaxError("Comma is mandatory between elements in a tuple type declaration");
-            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
+        if (spreadTypePresent) {
+            tupleType->SetSpreadType(currentTypeAnnotation);
+        } else {
+            tupleTypeList.push_back(currentTypeAnnotation);
         }
-    }
-
-    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET)) {
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
-        return nullptr;  // Error processing;
-    }
+        return true;
+    };
+    ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET, lexer::NextTokenFlags::NONE, parseElem);
 
     tupleType->SetTypeAnnotationsList(std::move(tupleTypeList));
     tupleType->SetRange({startLoc, Lexer()->GetToken().End()});
