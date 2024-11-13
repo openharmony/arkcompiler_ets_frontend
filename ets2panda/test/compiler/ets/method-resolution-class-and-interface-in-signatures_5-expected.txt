@@ -1003,7 +1003,7 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 13
+                    "column": 10
                   },
                   "end": {
                     "line": 25,
@@ -1014,7 +1014,7 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 13
+                  "column": 10
                 },
                 "end": {
                   "line": 25,
@@ -1224,7 +1224,7 @@
                     "loc": {
                       "start": {
                         "line": 26,
-                        "column": 13
+                        "column": 10
                       },
                       "end": {
                         "line": 28,
@@ -1235,7 +1235,7 @@
                   "loc": {
                     "start": {
                       "line": 26,
-                      "column": 13
+                      "column": 10
                     },
                     "end": {
                       "line": 28,
@@ -1457,7 +1457,7 @@
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 13
+                        "column": 10
                       },
                       "end": {
                         "line": 31,
@@ -1468,7 +1468,7 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 13
+                      "column": 10
                     },
                     "end": {
                       "line": 31,
@@ -1690,7 +1690,7 @@
                     "loc": {
                       "start": {
                         "line": 32,
-                        "column": 13
+                        "column": 10
                       },
                       "end": {
                         "line": 34,
@@ -1701,7 +1701,7 @@
                   "loc": {
                     "start": {
                       "line": 32,
-                      "column": 13
+                      "column": 10
                     },
                     "end": {
                       "line": 34,
@@ -2009,7 +2009,7 @@
                 "loc": {
                   "start": {
                     "line": 36,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 39,
@@ -2020,7 +2020,7 @@
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 39,

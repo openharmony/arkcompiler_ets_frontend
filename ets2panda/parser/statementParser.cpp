@@ -1319,6 +1319,7 @@ ir::ThrowStatement *ParserImpl::ParseThrowStatement()
     throwStatement->SetRange({startLoc, endLoc});
     ConsumeSemicolon(throwStatement);
 
+    context_.Status() |= ParserStatus::FUNCTION_HAS_THROW_STATEMENT;
     return throwStatement;
 }
 

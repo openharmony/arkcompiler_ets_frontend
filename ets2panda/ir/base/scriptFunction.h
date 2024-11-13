@@ -246,6 +246,11 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::HAS_RETURN) != 0;
     }
 
+    [[nodiscard]] bool HasThrowStatement() const noexcept
+    {
+        return (funcFlags_ & ir::ScriptFunctionFlags::HAS_THROW) != 0;
+    }
+
     [[nodiscard]] bool IsThrowing() const noexcept
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::THROWS) != 0;

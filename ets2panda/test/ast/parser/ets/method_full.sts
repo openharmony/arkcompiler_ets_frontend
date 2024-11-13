@@ -30,8 +30,8 @@ abstract class method_full  {
     private native foo_native(): int ;
 }
 
-/* @@? 19:5 Error TypeError: Function with a non void return type must return a value.  */
-/* @@? 21:5 Error TypeError: Function with a non void return type must return a value.  */
-/* @@? 23:19 Error TypeError: Function with a non void return type must return a value.  */
-/* @@? 25:18 Error TypeError: Function with a non void return type must return a value.  */
-/* @@? 27:22 Error TypeError: Function with a non void return type must return a value.  */
+/* @@? 19:12 Error TypeError: Function with a non void return type must return a value. */
+/* @@? 21:13 Error TypeError: Function with a non void return type must return a value. */
+/* @@? 23:30 Error TypeError: Function with a non void return type must return a value. */
+/* @@? 25:27 Error TypeError: Function with a non void return type must return a value. */
+/* @@? 27:31 Error TypeError: Function with a non void return type must return a value. */

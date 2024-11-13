@@ -318,7 +318,7 @@ TypeError: Bad operand type, the types of the operands must be same type. [insta
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 12
+                    "column": 10
                   },
                   "end": {
                     "line": 22,
@@ -329,7 +329,7 @@ TypeError: Bad operand type, the types of the operands must be same type. [insta
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 12
+                  "column": 10
                 },
                 "end": {
                   "line": 22,

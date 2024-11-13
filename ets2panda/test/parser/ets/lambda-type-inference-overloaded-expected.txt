@@ -261,7 +261,7 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 13
+                    "column": 10
                   },
                   "end": {
                     "line": 17,
@@ -272,7 +272,7 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 13
+                  "column": 10
                 },
                 "end": {
                   "line": 17,
@@ -456,7 +456,7 @@
                     "loc": {
                       "start": {
                         "line": 19,
-                        "column": 13
+                        "column": 10
                       },
                       "end": {
                         "line": 21,
@@ -467,7 +467,7 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 13
+                      "column": 10
                     },
                     "end": {
                       "line": 21,
@@ -847,7 +847,7 @@
                     "loc": {
                       "start": {
                         "line": 23,
-                        "column": 13
+                        "column": 10
                       },
                       "end": {
                         "line": 25,
@@ -858,7 +858,7 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 13
+                      "column": 10
                     },
                     "end": {
                       "line": 25,
@@ -1380,7 +1380,7 @@
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 34,
@@ -1391,7 +1391,7 @@
               "loc": {
                 "start": {
                   "line": 27,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 34,

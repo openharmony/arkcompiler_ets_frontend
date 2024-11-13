@@ -262,7 +262,7 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 13
+                    "column": 10
                   },
                   "end": {
                     "line": 19,
@@ -273,7 +273,7 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 13
+                  "column": 10
                 },
                 "end": {
                   "line": 19,
@@ -857,7 +857,7 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 13
+                    "column": 10
                   },
                   "end": {
                     "line": 27,
@@ -868,7 +868,7 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 13
+                  "column": 10
                 },
                 "end": {
                   "line": 27,
