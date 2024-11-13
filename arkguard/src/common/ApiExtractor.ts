@@ -96,7 +96,8 @@ export namespace ApiExtractor {
     COMPONENT = 2,
     PROJECT_DEPENDS = 3,
     PROJECT = 4,
-    CONSTRUCTOR_PROPERTY = 5
+    CONSTRUCTOR_PROPERTY = 5,
+    KEEP_DTS = 6
   }
 
   let mCurrentExportedPropertySet: Set<string> = new Set<string>();
@@ -629,6 +630,7 @@ export namespace ApiExtractor {
     // get export name list
     switch (apiType) {
       case ApiType.COMPONENT:
+      case ApiType.KEEP_DTS:
         forEachChild(sourceFile, visitChildNode);
         break;
       case ApiType.API:
