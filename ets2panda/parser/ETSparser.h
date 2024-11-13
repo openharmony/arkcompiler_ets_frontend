@@ -42,6 +42,16 @@ public:
 
     ~ETSParser() final = default;
 
+    util::ImportPathManager *GetImportPathManager()
+    {
+        return importPathManager_.get();
+    }
+
+    util::StringView GetGlobalProgramAbsName()
+    {
+        return globalProgram_->AbsoluteName();
+    }
+
     [[nodiscard]] bool IsETSParser() const noexcept override;
 
     void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
@@ -292,6 +302,7 @@ private:
     parser::Program *ParseSource(const SourceFile &sourceFile);
     void AddExternalSource(const std::vector<Program *> &programs);
     ir::ETSModule *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
+    ir::ETSModule *ParseImportsOnly(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
 
     void *ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVector<ir::AnnotationUsage *> &&annotations,
