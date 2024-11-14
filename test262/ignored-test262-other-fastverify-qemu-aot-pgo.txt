@@ -55,6 +55,3 @@ test262/data/other_tests/built-ins/Date/prototype/setMonth/arg-coercion-order.js
 test262/data/other_tests/built-ins/Date/prototype/setSeconds/arg-coercion-order.js
 test262/data/other_tests/built-ins/Date/prototype/setSeconds/this-value-invalid-date.js
 # --- end of Issue #19228
-
-# Issue #20585
-test262/data/other_tests/built-ins/TypedArray/prototype/findLastIndex/predicate-call-parameters.js
