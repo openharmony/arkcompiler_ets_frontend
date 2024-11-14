@@ -16,8 +16,8 @@
 class A {
     #a;
     foo() {
-        delete this.#a;
+        delete this.#a/* @@ label */;
     }
 }
 
-/* @@? 19:23 Error SyntaxError: Private fields can not be deleted  */
+/* @@@ label Error SyntaxError: Private fields can not be deleted  */

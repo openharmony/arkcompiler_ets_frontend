@@ -17,10 +17,10 @@ interface A {
     foo(): void;
 }
 
-class B implements A {
+class B implements A /* @@ label */{
     public foo(a: int): void {
 
     }
 }
 
-/* @@? 20:22 Error TypeError: B is not abstract and does not override abstract method foo(): void in A  */
+/* @@@ label Error TypeError: B is not abstract and does not override abstract method foo(): void in A  */

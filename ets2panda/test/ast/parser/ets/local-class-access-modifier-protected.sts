@@ -15,8 +15,8 @@
 
 function foo()
 {
-    protected class LocalClass
+    /* @@ label */protected class LocalClass
     {
     }
 }
-/* @@? 18:5 Error SyntaxError: A local class or interface declaration can not have access modifier  */
+/* @@@ label Error SyntaxError: A local class or interface declaration can not have access modifier  */

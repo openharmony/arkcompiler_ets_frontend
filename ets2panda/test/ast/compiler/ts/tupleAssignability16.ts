@@ -14,5 +14,5 @@
  */
 
 
-var a: [number[], string[]] = [["foo"], ["bar"]];
-/* @@? 17:33 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+var a: [number[], string[]] = [[/* @@ label */"foo"], ["bar"]];
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

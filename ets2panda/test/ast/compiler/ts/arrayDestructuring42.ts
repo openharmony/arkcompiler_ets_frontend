@@ -16,5 +16,5 @@
 
 var a: string[];
 
-[a] = [["foo", 1]]
-/* @@? 19:2 Error TypeError: Type '(string | number)[]' is not assignable to type 'string[]'.  */
+[/* @@ label */a] = [["foo", 1]]
+/* @@@ label Error TypeError: Type '(string | number)[]' is not assignable to type 'string[]'.  */

@@ -18,9 +18,9 @@ switch (a) {
 case 0:
     a = 1;
     break;
-case '1':
+case /* @@ label */'1':
     a = 0;
     break;
 }
 
-/* @@? 21:6 Error TypeError: Type string is not comparable to type number  */
+/* @@@ label Error TypeError: Type string is not comparable to type number  */

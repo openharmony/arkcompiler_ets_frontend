@@ -14,5 +14,5 @@
  */
 
 
-var a: { b: number, a: number } | { b: string, a: string } | { b: boolean, a: boolean } = { b: "foo", a: 5n };
-/* @@? 17:103 Error TypeError: Type 'bigint' is not assignable to type 'string'.  */
+var a: { b: number, a: number } | { b: string, a: string } | { b: boolean, a: boolean } = { b: "foo", /* @@ label */a: 5n };
+/* @@@ label Error TypeError: Type 'bigint' is not assignable to type 'string'.  */

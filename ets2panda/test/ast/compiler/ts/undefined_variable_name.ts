@@ -15,9 +15,9 @@
 
 
 function foo (undefined: string = "bar"): number {
-    return undefined;
+    /* @@ label */return undefined;
 }
 
 foo();
 
-/* @@? 18:5 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

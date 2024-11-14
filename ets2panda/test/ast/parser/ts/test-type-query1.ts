@@ -14,5 +14,5 @@
  */
 
 
-var a: typeof 5;
-/* @@? 17:15 Error SyntaxError: Identifier expected.  */
+var a: typeof /* @@ label */5;
+/* @@@ label Error SyntaxError: Identifier expected.  */

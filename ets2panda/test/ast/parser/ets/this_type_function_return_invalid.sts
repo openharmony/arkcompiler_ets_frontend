@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-function foo(arg1: int): this { return this; }
+function foo(arg1: int): /* @@ label */this { return this; }
 
-/* @@? 16:26 Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */
+/* @@@ label Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */

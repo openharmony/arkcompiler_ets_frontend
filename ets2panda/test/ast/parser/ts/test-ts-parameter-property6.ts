@@ -15,6 +15,6 @@
 
 
 class Foo {
-    constructor(private declare readonly readonly) { };
+    constructor(private /* @@ label */declare readonly readonly) { };
 }
-/* @@? 18:25 Error SyntaxError: 'declare' modifier cannot appear on a parameter.  */
+/* @@@ label Error SyntaxError: 'declare' modifier cannot appear on a parameter.  */

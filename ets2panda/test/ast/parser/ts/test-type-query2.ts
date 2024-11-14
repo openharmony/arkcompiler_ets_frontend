@@ -15,4 +15,5 @@
 
 
 var a: typeof
-/* @@? 19:1 Error SyntaxError: Identifier expected.  */
+/* @@@ label Error SyntaxError: Identifier expected.  */
+/* @@ label */

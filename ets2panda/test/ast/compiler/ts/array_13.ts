@@ -15,6 +15,6 @@
 
 
 var a: bigint[];
-a = [5n,"foo"];
+a = [5n,/* @@ label */"foo"];
 
-/* @@? 18:9 Error TypeError: Type 'string' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'bigint'.  */

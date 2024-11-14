@@ -14,7 +14,7 @@
  */
 
 
-function foo(): never {
+function foo(): /* @@ label */never {
 }
 
-/* @@? 17:17 Error TypeError: A function returning 'never' cannot have a reachable end point.  */
+/* @@@ label Error TypeError: A function returning 'never' cannot have a reachable end point.  */

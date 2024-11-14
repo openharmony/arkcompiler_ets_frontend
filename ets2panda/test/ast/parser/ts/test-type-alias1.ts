@@ -14,5 +14,5 @@
  */
 
 
-type 5 = number;
-/* @@? 17:6 Error SyntaxError: Identifier expected  */
+type /* @@ label */5 = number;
+/* @@@ label Error SyntaxError: Identifier expected  */

@@ -20,9 +20,9 @@ abstract class __Observable__ {
 class Observable {
     static installOn(value: Object, observable: Observable|undefined)
     {
-        (value as __Observable__).__memo_state_observable_handler__ = observable
+        (value as __Observable__).__memo_state_observable_handler__ = /* @@ label */observable
     }
 
 }
 
-/* @@? 23:71 Error TypeError: Type 'Observable|undefined' cannot be assigned to type '() => Observable|undefined'  */
+/* @@@ label Error TypeError: Type 'Observable|undefined' cannot be assigned to type '() => Observable|undefined'  */

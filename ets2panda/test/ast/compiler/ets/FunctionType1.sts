@@ -23,7 +23,7 @@ class Klass {
 
 function main(): void {
     let klass: Klass = new Klass();
-    func = klass.a;
+    func = /* @@ label */klass.a;
 }
 
-/* @@? 26:12 Error TypeError: Type '(a: int, b: int) => int' cannot be assigned to type '(p1: Int, p2: Int) => void'  */
+/* @@@ label Error TypeError: Type '(a: int, b: int) => int' cannot be assigned to type '(p1: Int, p2: Int) => void'  */

@@ -15,6 +15,6 @@
 
 
 export declare module Foo {
-    declare var a;
+    /* @@ label */declare var a;
 }
-/* @@? 18:5 Error SyntaxError: A 'declare' modifier cannot be used in an already ambient context.  */
+/* @@@ label Error SyntaxError: A 'declare' modifier cannot be used in an already ambient context.  */

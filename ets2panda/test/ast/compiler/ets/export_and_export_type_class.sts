@@ -14,6 +14,6 @@
  */
 
 export class A {}
-export type {A}
+export type {/* @@ label */A}
 
-/* @@? 17:14 Error SyntaxError: Name 'A' cannot be exported and type exported at the same time.  */
+/* @@@ label Error SyntaxError: Name 'A' cannot be exported and type exported at the same time.  */

@@ -15,5 +15,5 @@
 
 
 var { a: { a, b } = { a: 1, b: true } } = {}
-a = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type 'number'.  */
+/* @@ label */a = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'number'.  */

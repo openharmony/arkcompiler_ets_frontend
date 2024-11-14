@@ -15,5 +15,5 @@
 
 
 function func(a : number) : void { }
-func(5, 5);
-/* @@? 18:9 Error TypeError: Expected 1 arguments, but got 2.  */
+func(5, /* @@ label */5);
+/* @@@ label Error TypeError: Expected 1 arguments, but got 2.  */

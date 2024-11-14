@@ -14,5 +14,5 @@
  */
 
 
-interface A { readonly new(a: number): string };
-/* @@? 17:24 Error SyntaxError: Unexpected token in property key  */
+interface A { readonly /* @@ label */new(a: number): string };
+/* @@@ label Error SyntaxError: Unexpected token in property key  */

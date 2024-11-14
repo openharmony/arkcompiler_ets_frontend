@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-function Fruit.name(): int {
+function Fruit.name(/* @@ label */): int {
     return 1;
 }
 
-/* @@? 16:21 Error SyntaxError: Cannot find type 'Fruit'.  */
+/* @@@ label Error SyntaxError: Cannot find type 'Fruit'.  */

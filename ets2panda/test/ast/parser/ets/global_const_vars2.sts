@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-const date: Date;
+const date: Date/* @@ label */;
 
 function main(): void {}
 
-/* @@? 16:17 Error SyntaxError: Missing initializer in const declaration  */
+/* @@@ label Error SyntaxError: Missing initializer in const declaration  */

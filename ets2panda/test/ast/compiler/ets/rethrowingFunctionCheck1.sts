@@ -18,7 +18,7 @@ function TestFunction(f: () => void throws): void rethrows {}
 function TestFunctionToo(): void throws {}
 
 function main(): void {
-  TestFunction(TestFunctionToo);
+  /* @@ label */TestFunction(TestFunctionToo);
 }
 
-/* @@? 21:3 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@@ label Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */

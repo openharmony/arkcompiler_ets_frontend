@@ -16,7 +16,7 @@
 
 function main(): void {
     let a: [number, string, ...Int[]] = [2, "a", 3];
-    let b: [number, string, Int] = a;
+    let b: [number, string, Int] = /* @@ label */a;
 }
 
-/* @@? 19:36 Error TypeError: Type '[Double, String, ...Int[]]' cannot be assigned to type '[Double, String, Int]'  */
+/* @@@ label Error TypeError: Type '[Double, String, ...Int[]]' cannot be assigned to type '[Double, String, Int]'  */

@@ -16,5 +16,5 @@
 
 var a:number;
 var b: number;
-[[a = 5, b]] = [[]];
-/* @@? 19:2 Error TypeError: Tuple type [] of length 0 has no element at index 1.  */
+[/* @@ label */[a = 5, b]] = [[]];
+/* @@@ label Error TypeError: Tuple type [] of length 0 has no element at index 1.  */

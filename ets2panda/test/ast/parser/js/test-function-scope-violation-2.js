@@ -17,7 +17,7 @@
 let c;
 
 function f(a, b, c) {
-  const c = 1;
+  const /* @@ label */c = 1;
 }
 
-/* @@? 20:9 Error SyntaxError: Variable 'c' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'c' has already been declared.  */

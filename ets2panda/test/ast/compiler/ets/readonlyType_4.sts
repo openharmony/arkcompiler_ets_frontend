@@ -14,7 +14,7 @@
  */
  
 class A {
-    fld: Number = 2
+    /* @@ label */fld: Number = 2
     foo (a0: A) {
         a0.fld = 5
     }
@@ -29,4 +29,4 @@ class C extends B {
     }
 }
 
-/* @@? 17:5 Error TypeError: Cannot assign to a readonly variable fld  */
+/* @@@ label Error TypeError: Cannot assign to a readonly variable fld  */

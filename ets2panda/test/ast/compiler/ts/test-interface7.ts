@@ -14,5 +14,5 @@
  */
 
 
-interface A { [a: number] };
-/* @@? 17:27 Error SyntaxError: An index signature must have a type annotation.  */
+interface A { [a: number] /* @@ label */};
+/* @@@ label Error SyntaxError: An index signature must have a type annotation.  */

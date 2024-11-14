@@ -16,5 +16,5 @@
 
 var a: [a: number, b: string, c?: number];
 var b: [a: number, b: string, c: number, d: number];
-a = b;
-/* @@? 19:1 Error TypeError: Type '[a: number, b: string, c: number, d: number]' is not assignable to type '[a: number, b: string, c?: number]'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type '[a: number, b: string, c: number, d: number]' is not assignable to type '[a: number, b: string, c?: number]'.  */

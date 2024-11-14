@@ -15,6 +15,6 @@
 
 
 declare module "foo" {
-    import a = require("bar"[0]);
+    import a = require("bar"/* @@ label */[0]);
 }
-/* @@? 18:29 Error SyntaxError: ')' expected.  */
+/* @@@ label Error SyntaxError: ')' expected.  */

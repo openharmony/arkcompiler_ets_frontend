@@ -19,5 +19,5 @@ flags: [module]
 ---*/
 
 import * as b from "foo"
-import {b} from "bar"
-/* @@? 22:9 Error SyntaxError: Variable 'b' has already been declared.  */
+import {/* @@ label */b} from "bar"
+/* @@@ label Error SyntaxError: Variable 'b' has already been declared.  */

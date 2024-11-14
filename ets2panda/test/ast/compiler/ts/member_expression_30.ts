@@ -16,6 +16,6 @@
 
 var a = {foo : {bar : {baz : 5}}};
 var b: boolean;
-b = a.foo?.bar.baz;
+/* @@ label */b = a.foo?.bar.baz;
 
-/* @@? 19:1 Error TypeError: Type 'number' is not assignable to type 'boolean'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'boolean'.  */

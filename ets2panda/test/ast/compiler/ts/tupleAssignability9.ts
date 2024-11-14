@@ -20,5 +20,5 @@ function b(): [string, number] {
     return ["foo", 5];
 }
 
-a = b();
-/* @@? 23:1 Error TypeError: Type '[string, number]' is not assignable to type '[number, string]'.  */
+/* @@ label */a = b();
+/* @@@ label Error TypeError: Type '[string, number]' is not assignable to type '[number, string]'.  */

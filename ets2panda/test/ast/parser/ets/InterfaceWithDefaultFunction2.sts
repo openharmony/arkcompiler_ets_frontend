@@ -15,7 +15,7 @@
 
 interface I1 { foo () {} }
 interface I2 { foo () {} }
-class C implements I1, I2 {
+class C implements I1, I2 /* @@ label */{
 }
 
 function main() {
@@ -23,4 +23,4 @@ function main() {
     c.foo();
 }
 
-/* @@? 18:27 Error TypeError: Method 'foo' is declared in I1 and I2 interfaces.  */
+/* @@@ label Error TypeError: Method 'foo' is declared in I1 and I2 interfaces.  */

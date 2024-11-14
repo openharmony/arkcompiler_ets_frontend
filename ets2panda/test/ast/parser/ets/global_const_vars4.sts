@@ -14,7 +14,7 @@
  */
 
 class ABC {
-    public readonly date: Date = new Date();
+    public readonly /* @@ label */date: Date = new Date();
 
     constructor() {
         this.init()
@@ -27,4 +27,4 @@ class ABC {
     public main(): void {}
 }
 
-/* @@? 17:21 Error TypeError: Cannot assign to a readonly variable date  */
+/* @@@ label Error TypeError: Cannot assign to a readonly variable date  */

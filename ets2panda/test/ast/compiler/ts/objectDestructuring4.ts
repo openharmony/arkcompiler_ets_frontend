@@ -14,5 +14,5 @@
  */
 
 
-var { a: [b = 5, c] } = { a: 5 };
-/* @@? 17:10 Error TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator.  */
+var { a: /* @@ label */[b = 5, c] } = { a: 5 };
+/* @@@ label Error TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator.  */

@@ -14,7 +14,7 @@
  */
 
 class A {
-  enum Color { Red, Green, Blue }
+  /* @@ label */enum Color { Red, Green, Blue }
 }
 
-/* @@? 17:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

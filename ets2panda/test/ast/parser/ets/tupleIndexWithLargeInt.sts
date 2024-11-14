@@ -17,7 +17,7 @@ const index = 2147483648;
 
 function main(): void {
   let tuple: [number, number] = [0, 0]
-  tuple[index] = 2;
+  tuple[/* @@ label */index] = 2;
 }
 
-/* @@? 20:9 Error TypeError: Element accessor value is out of tuple size bounds.  */
+/* @@@ label Error TypeError: Element accessor value is out of tuple size bounds.  */

@@ -20,6 +20,6 @@ flags: [dynamic-ast]
 import { A } from "dynamic_import_tests/modules/module"
 
 function foo(p: A): void {
-    p.f1 = 10
+    p.f1 = /* @@ label */10
 }
-/* @@? 23:12 Error TypeError: Type 'int' cannot be assigned to type 'String'  */
+/* @@@ label Error TypeError: Type 'int' cannot be assigned to type 'String'  */

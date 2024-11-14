@@ -14,9 +14,9 @@
  */
 
 class A {
-    namespace ns {
+    /* @@ label */namespace ns {
 
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Namespace not enabled in here.  */
+/* @@@ label Error SyntaxError: Namespace not enabled in here.  */

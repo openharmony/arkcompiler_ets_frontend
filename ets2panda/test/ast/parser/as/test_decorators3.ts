@@ -15,7 +15,7 @@
 
 
 class A {
-    constructor(@a a: i32) { }
+    constructor(/* @@ label */@a a: i32) { }
 }
 
-/* @@? 18:17 Error SyntaxError: Identifier expected  */
+/* @@@ label Error SyntaxError: Identifier expected  */

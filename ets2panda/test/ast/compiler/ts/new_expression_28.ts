@@ -15,6 +15,6 @@
 
 
 var foo: { new(a: number, b: string): any ;};
-var a = new foo(5,5);
+var a = new foo(5,/* @@ label */5);
 
-/* @@? 18:19 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

@@ -15,5 +15,5 @@
 
 
 var { a, ...b } = { a: 5, b: 5n, c: { a: {}, b: true } };
-b = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type '{ b: bigint; c: { a: { }; b: boolean; }; }'.  */
+/* @@ label */b = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type '{ b: bigint; c: { a: { }; b: boolean; }; }'.  */

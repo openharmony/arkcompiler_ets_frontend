@@ -16,6 +16,6 @@
 
 var a: boolean;
 a = false;
-a - false;
+/* @@ label */a - false;
 
-/* @@? 19:1 Error TypeError: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.  */
+/* @@@ label Error TypeError: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.  */

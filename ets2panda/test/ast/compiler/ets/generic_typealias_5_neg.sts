@@ -19,7 +19,7 @@ class B {}
 type type_a<T> = A<T>;
 
 function main(): void {
-    let a: A<B>;
+    let a: A/* @@ label */<B>;
 }
 
-/* @@? 22:13 Error TypeError: Type B is not assignable to constraint type Comparable<B>  */
+/* @@@ label Error TypeError: Type B is not assignable to constraint type Comparable<B>  */

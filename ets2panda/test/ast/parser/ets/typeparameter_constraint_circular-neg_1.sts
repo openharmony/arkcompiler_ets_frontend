@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
- function foo<T extends U, U extends R, R extends T>() {}
-/* @@? 16:51 Error TypeError: Type parameter 'R' has circular constraint dependency.  */
+ function foo<T extends U, U extends R, R extends /* @@ label */T>() {}
+/* @@@ label Error TypeError: Type parameter 'R' has circular constraint dependency.  */

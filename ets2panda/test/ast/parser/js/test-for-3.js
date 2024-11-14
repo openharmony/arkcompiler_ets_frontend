@@ -14,5 +14,5 @@
  */
 
 
-for (a<b in a) {}
-/* @@? 17:14 Error SyntaxError: Invalid left-hand side in 'For[In/Of]Statement'  */
+for (a<b in a/* @@ label */) {}
+/* @@@ label Error SyntaxError: Invalid left-hand side in 'For[In/Of]Statement'  */

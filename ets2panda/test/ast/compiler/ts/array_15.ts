@@ -15,6 +15,6 @@
 
 
 var a: bigint[];
-a = [5n,5];
+a = [5n,/* @@ label */5];
 
-/* @@? 18:9 Error TypeError: Type 'number' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'bigint'.  */

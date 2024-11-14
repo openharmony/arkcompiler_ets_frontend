@@ -16,5 +16,5 @@
 import * as all from "import_tests/packages/var-duplication";
 
 // Throw error: "a" is defined twice in this package.
-
-/* @@? 19:1 Error SyntaxError: Variable 'a' has already been declared.  */
+/* @@ label */
+/* @@@ label Error SyntaxError: Variable 'a' has already been declared.  */

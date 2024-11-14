@@ -14,5 +14,5 @@
  */
 
 
-function Foo(public readonly a) { }
-/* @@? 17:14 Error SyntaxError: A parameter property is only allowed in a constructor implementation.  */
+function Foo(/* @@ label */public readonly a) { }
+/* @@@ label Error SyntaxError: A parameter property is only allowed in a constructor implementation.  */

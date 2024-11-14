@@ -33,5 +33,5 @@ interface d extends a, b, c {
     d: number
 }
 
-var a: d = { a: 5, b: "foo", c: true };
-/* @@? 36:5 Error TypeError: Type '{ a: 5; b: "foo"; c: true; }' is not assignable to type 'd'.  */
+var /* @@ label */a: d = { a: 5, b: "foo", c: true };
+/* @@@ label Error TypeError: Type '{ a: 5; b: "foo"; c: true; }' is not assignable to type 'd'.  */

@@ -19,10 +19,10 @@ function bar(...numbers: number[]) {
     }
 }
 
-function foo<T>(a: T) {}
+function foo</* @@ label */T>(a: T) {}
 
 function main(): void {
     foo(bar);
 }
 
-/* @@? 22:14 Error TypeError: (...numbers: double[]) => void is not compatible with type T */
+/* @@@ label Error TypeError: (...numbers: double[]) => void is not compatible with type T */

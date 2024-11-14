@@ -15,9 +15,9 @@
 
 
 function main() {
-    let a = [
+    let a = /* @@ label */[
         2, 3, 5, 7, 11
     ] as Array<Int>
 }
 
-/* @@? 18:13 Error TypeError: Expected type for array literal should be an array type, got Array<Int>  */
+/* @@@ label Error TypeError: Expected type for array literal should be an array type, got Array<Int>  */

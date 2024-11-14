@@ -16,6 +16,6 @@
 
 var a: undefined;
 var b: any;
-a in b;
+/* @@ label */a in b;
 
-/* @@? 19:1 Error TypeError: Object is possibly 'undefined'.  */
+/* @@@ label Error TypeError: Object is possibly 'undefined'.  */

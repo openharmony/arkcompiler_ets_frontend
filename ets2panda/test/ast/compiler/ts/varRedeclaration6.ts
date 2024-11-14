@@ -15,5 +15,5 @@
 
 
 var a: [number, string, number];
-var a: [a: number, b: string, c?: number];
-/* @@? 18:5 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '[number, string, number]', but here has type '[a: number, b: string, c?: number]'.  */
+var /* @@ label */a: [a: number, b: string, c?: number];
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '[number, string, number]', but here has type '[a: number, b: string, c?: number]'.  */

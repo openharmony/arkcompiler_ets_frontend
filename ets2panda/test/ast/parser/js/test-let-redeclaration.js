@@ -16,6 +16,6 @@
 
 let a;
 let b;
-let a;
+let /* @@ label */a;
 
-/* @@? 19:5 Error SyntaxError: Variable 'a' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'a' has already been declared.  */

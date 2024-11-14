@@ -14,7 +14,7 @@
  */
 
 class A {
-    native override foo() : void;
+    native override foo/* @@ label */() : void;
 }
 
-/* @@? 17:24 Error TypeError: Method foo(): void in A not overriding any method  */
+/* @@@ label Error TypeError: Method foo(): void in A not overriding any method  */

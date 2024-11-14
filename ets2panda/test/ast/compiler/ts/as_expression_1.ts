@@ -14,6 +14,6 @@
  */
 
 
-var a = "foo" as number;
+var a = /* @@ label */"foo" as number;
 
-/* @@? 17:9 Error TypeError: Conversion of type 'string' to type 'number' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.  */
+/* @@@ label Error TypeError: Conversion of type 'string' to type 'number' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.  */

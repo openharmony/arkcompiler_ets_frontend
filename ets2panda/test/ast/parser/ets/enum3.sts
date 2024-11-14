@@ -15,6 +15,6 @@
 
 enum EmptyEnum {
 
-}
+/* @@ label */}
 
-/* @@? 18:1 Error SyntaxError: An enum must have at least one enum constant  */
+/* @@@ label Error SyntaxError: An enum must have at least one enum constant  */

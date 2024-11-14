@@ -14,5 +14,5 @@
  */
 
 
-var { a = "foo", b }: { a: number | string, b: number } = { a: 12 };
-/* @@? 17:5 Error TypeError: Type '{ a: 12; }' is not assignable to type '{ a: number | string; b: number; }'.  */
+var /* @@ label */{ a = "foo", b }: { a: number | string, b: number } = { a: 12 };
+/* @@@ label Error TypeError: Type '{ a: 12; }' is not assignable to type '{ a: number | string; b: number; }'.  */

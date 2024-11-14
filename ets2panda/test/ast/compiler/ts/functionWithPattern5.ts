@@ -18,5 +18,5 @@ function foo({ a, b: { t = "foo" } = { t: 3 }, d: [e = {}, f = 6] = [3, ["foo", 
 
 }
 
-foo({ a: 5 });
-/* @@? 21:7 Error TypeError: Type 'number' is not assignable to type 'boolean'.  */
+foo({ /* @@ label */a: 5 });
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'boolean'.  */

@@ -15,5 +15,5 @@
 
 
 var [a, ...b] = [1];
-b = [1];
-/* @@? 18:1 Error TypeError: Type '[1]' is not assignable to type '[]'.  */
+/* @@ label */b = [1];
+/* @@@ label Error TypeError: Type '[1]' is not assignable to type '[]'.  */

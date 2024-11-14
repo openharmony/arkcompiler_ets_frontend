@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-function main(i : int[]): void {
+function main(/* @@ label */i : int[]): void {
     return;
 }
 
-/* @@? 16:15 Error TypeError: Only 'string[]' type argument is allowed.  */
+/* @@@ label Error TypeError: Only 'string[]' type argument is allowed.  */

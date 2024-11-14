@@ -14,7 +14,7 @@
  */
 
 class Outer {
-    class Inner {
+    /* @@ label */class Inner {
         static {
 
         }
@@ -31,4 +31,4 @@ class Outer {
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

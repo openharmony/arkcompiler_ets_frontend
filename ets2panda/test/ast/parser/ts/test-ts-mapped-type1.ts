@@ -14,5 +14,5 @@
  */
 
 
-type Foo<T> = { + s readonly[prop in keyof T] };
-/* @@? 17:17 Error SyntaxError: Unexpected token in property key  */
+type Foo<T> = { /* @@ label */+ s readonly[prop in keyof T] };
+/* @@@ label Error SyntaxError: Unexpected token in property key  */

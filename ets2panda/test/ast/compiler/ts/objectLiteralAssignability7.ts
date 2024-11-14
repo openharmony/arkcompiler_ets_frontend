@@ -14,5 +14,5 @@
  */
 
 
-var a: { a: number } | { a: string } | { a: boolean } = { b: "foo" };
-/* @@? 17:59 Error TypeError: Object literal may only specify known properties, and "b" does not exist in type '{ a: number; } | { a: string; } | { a: boolean; }'.  */
+var a: { a: number } | { a: string } | { a: boolean } = { /* @@ label */b: "foo" };
+/* @@@ label Error TypeError: Object literal may only specify known properties, and "b" does not exist in type '{ a: number; } | { a: string; } | { a: boolean; }'.  */

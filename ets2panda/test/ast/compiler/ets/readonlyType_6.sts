@@ -22,7 +22,7 @@ class A {
 
 function foo(): void {
     let a: Readonly<A> = {fld: 3};
-    a.foo2();
+    /* @@ label */a.foo2();
 }
 
-/* @@? 25:5 Error TypeError: Cannot call readonly type methods.  */
+/* @@@ label Error TypeError: Cannot call readonly type methods.  */

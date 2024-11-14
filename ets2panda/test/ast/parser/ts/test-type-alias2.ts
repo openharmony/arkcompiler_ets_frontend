@@ -14,5 +14,5 @@
  */
 
 
-type bar number;
-/* @@? 17:10 Error SyntaxError: '=' expected  */
+type bar /* @@ label */number;
+/* @@@ label Error SyntaxError: '=' expected  */

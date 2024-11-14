@@ -24,7 +24,7 @@ class A {
 
 function main(): void {
   let instance = new A();
-  instance.cb(1);
+  instance./* @@ label */cb(1);
 }
 
-/* @@? 27:12 Error TypeError: Property cb is not visible here.  */
+/* @@@ label Error TypeError: Property cb is not visible here.  */

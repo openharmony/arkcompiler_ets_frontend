@@ -19,8 +19,8 @@ class A {
 }
 
 class B extends A {
-    public override foo(): void {
+    public override foo/* @@ label */(): void {
     }
 }
 
-/* @@? 22:24 Error TypeError: Method foo(): void in B not overriding any method  */
+/* @@@ label Error TypeError: Method foo(): void in B not overriding any method  */

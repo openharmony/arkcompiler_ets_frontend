@@ -14,6 +14,6 @@
  */
 
 
-let a: (a: i32, b) => void
+let a: (a: i32, b/* @@ label */) => void
 
-/* @@? 17:18 Error SyntaxError: ':' expected  */
+/* @@@ label Error SyntaxError: ':' expected  */

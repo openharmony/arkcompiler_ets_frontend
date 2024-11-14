@@ -18,6 +18,6 @@ interface I {
     foo()
 }
 
-let c: I = { name: "Alice" };
+let c: I = /* @@ label */{ name: "Alice" };
 
-/* @@? 21:12 Error TypeError: Interface has methods  */
+/* @@@ label Error TypeError: Interface has methods  */

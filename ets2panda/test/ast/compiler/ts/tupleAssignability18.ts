@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-var a: [a?: [a: number, b?: number], b?: [number | string], c?: typeof b] = [[2], func(5, "foo"), [[1]]];
+var a: [a?: [a: number, b?: number], b?: [number | string], c?: typeof b] = [[2], func(5, "foo"), [[/* @@ label */1]]];
 var b: [[[number]]];
 
 function func(c: number, d: string): [number] {
     return [1];
 }
-/* @@? 16:101 Error TypeError: Type 'number' is not assignable to type '[number]'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type '[number]'.  */

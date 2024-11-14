@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-import {InterfaceToAlias} from "./selective_export_interface";
+import {/* @@ label */InterfaceToAlias} from "./selective_export_interface";
 
-/* @@? 16:9 Error SyntaxError: Cannot find imported element 'InterfaceToAlias'  */
+/* @@@ label Error SyntaxError: Cannot find imported element 'InterfaceToAlias'  */

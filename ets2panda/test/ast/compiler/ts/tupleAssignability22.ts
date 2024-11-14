@@ -14,5 +14,5 @@
  */
 
 
-var a: [number, number] | string = 5;
-/* @@? 17:5 Error TypeError: Type 'number' is not assignable to type '[number, number] | string'.  */
+var /* @@ label */a: [number, number] | string = 5;
+/* @@@ label Error TypeError: Type 'number' is not assignable to type '[number, number] | string'.  */

@@ -21,5 +21,5 @@ function foo(a: string | number | bigint, b: boolean | string): [number, string]
     return [1, "foo"];
 }
 
-foo + 5;
-/* @@? 24:1 Error TypeError: operator + cannot be applied to types { (a: number, b: string): [number, string], (a: string, b: boolean): [number, string], (a: bigint, b: boolean): [number, string] } and number  */
+/* @@ label */foo + 5;
+/* @@@ label Error TypeError: operator + cannot be applied to types { (a: number, b: string): [number, string], (a: string, b: boolean): [number, string], (a: bigint, b: boolean): [number, string] } and number  */

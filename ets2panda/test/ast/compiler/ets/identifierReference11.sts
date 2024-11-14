@@ -19,8 +19,8 @@ class B {
 
 class A {
   bar(): void {
-    foo();
+    /* @@ label */foo();
   }
 }
 
-/* @@? 22:5 Error TypeError: Unresolved reference foo  */
+/* @@@ label Error TypeError: Unresolved reference foo  */

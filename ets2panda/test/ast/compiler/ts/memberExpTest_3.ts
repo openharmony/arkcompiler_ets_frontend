@@ -24,5 +24,5 @@ interface c {
     bar : b;
 }
 var a5: c;
-a5.bar.foo[0].a.bar = false;
-/* @@? 27:1 Error TypeError: Type 'boolean' is not assignable to type 'string | number'.  */
+/* @@ label */a5.bar.foo[0].a.bar = false;
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'string | number'.  */

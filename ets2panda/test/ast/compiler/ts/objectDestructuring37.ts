@@ -15,7 +15,7 @@
 
 var a = {};
 var c: string;
-({ a: { c } } = { a: { b } })
+({ a: { c } } = { a: { /* @@ label */b } })
 
 
-/* @@? 18:24 Error TypeError: Cannot find name b  */
+/* @@@ label Error TypeError: Cannot find name b  */

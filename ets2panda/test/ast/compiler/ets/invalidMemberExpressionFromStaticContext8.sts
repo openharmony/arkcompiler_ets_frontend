@@ -20,8 +20,8 @@ class A {
 
 final class B extends A {
     static bar_in_B() : void {
-        B.foo_in_A()
+        B./* @@ label */foo_in_A()
     }
 }
 
-/* @@? 23:11 Error TypeError: 'foo_in_A' is an instance property of 'B'  */
+/* @@@ label Error TypeError: 'foo_in_A' is an instance property of 'B'  */

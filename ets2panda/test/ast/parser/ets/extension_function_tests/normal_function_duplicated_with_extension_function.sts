@@ -21,8 +21,8 @@ function Fruit.name() {
     console.println("this is extension function 1");
 }
 
-function name(fruit: Fruit) {
+/* @@ label */function name(fruit: Fruit) {
     console.println("this is normal function");
 }
 
-/* @@? 24:1 Error TypeError: Function name is already declared.  */
+/* @@@ label Error TypeError: Function name is already declared.  */

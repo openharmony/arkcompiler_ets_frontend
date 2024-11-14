@@ -15,6 +15,6 @@
 
 
 var a = {
-  a(){super()}
+  a(){super/* @@ label */()}
 }
-/* @@? 18:12 Error SyntaxError: Unexpected super keyword  */
+/* @@@ label Error SyntaxError: Unexpected super keyword  */

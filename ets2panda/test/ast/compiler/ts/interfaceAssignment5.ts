@@ -26,5 +26,5 @@ interface C extends B, A, B {
     c: string
 }
 
-var c: C = { a: 2, c: "foo" };
-/* @@? 29:5 Error TypeError: Type '{ a: 2; c: "foo"; }' is not assignable to type 'C'.  */
+var /* @@ label */c: C = { a: 2, c: "foo" };
+/* @@@ label Error TypeError: Type '{ a: 2; c: "foo"; }' is not assignable to type 'C'.  */

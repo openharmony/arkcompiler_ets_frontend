@@ -18,7 +18,7 @@
     testProperty2: number
 }
 
-@MyAnno({testProperty1: "1", testProperty2: [1, 2, a]})
+@MyAnno({testProperty1: "1", testProperty2: /* @@ label */[1, 2, a]})
 class B{}
 
-/* @@? 21:45 Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */

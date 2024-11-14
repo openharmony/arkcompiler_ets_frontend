@@ -15,7 +15,7 @@
 
 
 function foo(): boolean {
-return 5;
+/* @@ label */return 5;
 }
 
-/* @@? 18:1 Error TypeError: Type 'number' is not assignable to type 'boolean'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'boolean'.  */

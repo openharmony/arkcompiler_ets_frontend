@@ -18,6 +18,6 @@ class A {
 }
 
 let b = new A();
-b.#a;
+b./* @@ label */#a;
 
-/* @@? 21:3 Error SyntaxError: Private field 'a' must be declared in an enclosing class  */
+/* @@@ label Error SyntaxError: Private field 'a' must be declared in an enclosing class  */

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-function foo(a : int = 10, b : int, c : int = 15) : int
+function foo(a : int = 10, /* @@ label */b : int, c : int = 15) : int
 {
     return a + b;
 }
 
-/* @@? 16:28 Error SyntaxError: Required parameter follows default parameter(s).  */
+/* @@@ label Error SyntaxError: Required parameter follows default parameter(s).  */

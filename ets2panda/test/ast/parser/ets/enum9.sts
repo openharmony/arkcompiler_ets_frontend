@@ -16,7 +16,7 @@
 enum Color { Red }
 
 function main(): void {
-  let red: Color = Color.Red.Red;
+  let red: Color = Color.Red./* @@ label */Red;
 }
 
-/* @@? 19:30 Error TypeError: Cannot refer to enum members through variable.  */
+/* @@@ label Error TypeError: Cannot refer to enum members through variable.  */

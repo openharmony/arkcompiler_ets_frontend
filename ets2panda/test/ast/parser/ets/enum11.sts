@@ -20,7 +20,7 @@ function main(): void {
 
   let ordinal: int = arr[0] as int;
   let red = ordinal as Color;
-  let ordinalFail: int = Color as int;
+  let ordinalFail: int = /* @@ label */Color as int;
 }
 
-/* @@? 23:26 Error TypeError: Enum name "Color" used in the wrong context  */
+/* @@@ label Error TypeError: Enum name "Color" used in the wrong context  */

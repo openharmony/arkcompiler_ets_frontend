@@ -18,10 +18,10 @@ interface A {
     a: number;
 }
 
-var a: A = { a: 5 };
+var /* @@ label */a: A = { a: 5 };
 
 interface A {
     b: string;
 }
 
-/* @@? 21:5 Error TypeError: Type '{ a: 5; }' is not assignable to type 'A'.  */
+/* @@@ label Error TypeError: Type '{ a: 5; }' is not assignable to type 'A'.  */

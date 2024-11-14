@@ -21,7 +21,7 @@ function A.price(id: int): int {
 }
 
 function main() {
-    console.log(price(new A(), 1));
+    console.log(/* @@ label */price(new A(), 1));
 }
 
-/* @@? 24:17 Error TypeError: No matching call signature  */
+/* @@@ label Error TypeError: No matching call signature  */

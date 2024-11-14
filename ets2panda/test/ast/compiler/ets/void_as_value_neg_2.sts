@@ -12,5 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let x: void
-/* @@? 15:8 Error TypeError: 'void' used as type annotation.  */
+let x: /* @@ label */void
+/* @@@ label Error TypeError: 'void' used as type annotation.  */

@@ -15,5 +15,5 @@
 
 
 var [a = 6, b, ...c] = [, "foo", true, {}];
-c = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type '[boolean, { }]'.  */
+/* @@ label */c = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type '[boolean, { }]'.  */

@@ -14,5 +14,5 @@
  */
 
 
-var a: [] = [1];
-/* @@? 17:5 Error TypeError: Type '[1]' is not assignable to type '[]'.  */
+var /* @@ label */a: [] = [1];
+/* @@@ label Error TypeError: Type '[1]' is not assignable to type '[]'.  */

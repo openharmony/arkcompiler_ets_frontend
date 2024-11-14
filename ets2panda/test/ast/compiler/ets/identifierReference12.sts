@@ -21,8 +21,8 @@ class A {
   b: B = new B();
 
   bar(): void {
-    let a = this.b.foo();
+    let a = /* @@ label */this.b.foo();
   }
 }
 
-/* @@? 24:13 Error TypeError: Type 'int' has no call signatures.  */
+/* @@@ label Error TypeError: Type 'int' has no call signatures.  */

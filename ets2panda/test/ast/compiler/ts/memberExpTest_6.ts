@@ -26,5 +26,5 @@ interface B extends A {
 var a: A | B;
 a.a;
 a.b;
-a.d;
-/* @@? 29:3 Error TypeError: Property d does not exist on this type.  */
+a./* @@ label */d;
+/* @@@ label Error TypeError: Property d does not exist on this type.  */

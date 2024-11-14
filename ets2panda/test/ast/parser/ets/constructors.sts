@@ -28,10 +28,10 @@ final class I {
   protected x: int;
 }
 
-class I1 extends I {
+class I1 extends /* @@ label */I {
   public constructor() {
     super()
   }
 }
 
-/* @@? 31:18 Error TypeError: Cannot inherit with 'final' modifier.  */
+/* @@@ label Error TypeError: Cannot inherit with 'final' modifier.  */

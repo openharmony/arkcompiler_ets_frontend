@@ -15,5 +15,5 @@
 
 
 var [a, b]: number[] | [string, number] = [1, 2];
-a = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type 'number | string'.  */
+/* @@ label */a = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'number | string'.  */

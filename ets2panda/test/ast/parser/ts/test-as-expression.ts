@@ -14,5 +14,5 @@
  */
 
 
-var a = 5 as;
-/* @@? 17:13 Error SyntaxError: Type expected  */
+var a = 5 as/* @@ label */;
+/* @@@ label Error SyntaxError: Type expected  */

@@ -18,6 +18,6 @@ function foo([a = 2, { b: [c = 6, d] = [true, [5n, "foo"]], t = { a: 3, b: { a: 
 
 }
 
-foo([3, { b: [true, []], t: 5 }, 5n], {});
+foo([3, { b: [true, []], /* @@ label */t: 5 }, 5n], {});
 
-/* @@? 21:26 Error TypeError: Type 'number' is not assignable to type '{ a: number; b: { a: number; b: bigint; }; }'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type '{ a: number; b: { a: number; b: bigint; }; }'.  */

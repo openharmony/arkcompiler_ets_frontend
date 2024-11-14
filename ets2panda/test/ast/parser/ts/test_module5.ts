@@ -15,6 +15,6 @@
 
 
 declare module "foo" {
-    import a = require(bar);
+    import a = require(/* @@ label */bar);
 }
-/* @@? 18:24 Error SyntaxError: String literal expected.  */
+/* @@@ label Error SyntaxError: String literal expected.  */

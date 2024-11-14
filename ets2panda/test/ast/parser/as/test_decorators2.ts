@@ -14,6 +14,6 @@
  */
 
 
-function foo(@a a: i32): void { }
+function foo(/* @@ label */@a a: i32): void { }
 
-/* @@? 17:14 Error SyntaxError: Identifier expected  */
+/* @@@ label Error SyntaxError: Identifier expected  */

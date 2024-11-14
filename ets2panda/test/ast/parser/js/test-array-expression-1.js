@@ -14,5 +14,5 @@
  */
 
 
-[a['b']c]
-/* @@? 17:8 Error SyntaxError: Unexpected token, expected ',' or ']'  */
+[a['b']/* @@ label */c]
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or ']'  */

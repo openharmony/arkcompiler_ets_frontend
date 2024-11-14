@@ -15,7 +15,7 @@
 
 
 interface foo {
-    [key]: externref
+    [key/* @@ label */]: externref
 }
 
-/* @@? 18:9 Error SyntaxError: ':' expected.  */
+/* @@@ label Error SyntaxError: ':' expected.  */

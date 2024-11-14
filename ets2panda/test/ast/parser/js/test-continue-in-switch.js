@@ -20,9 +20,9 @@ switch (a)
   case 1:
     break;
   case 2:
-    continue;
+    /* @@ label */continue;
   default:
     break;
 }
 
-/* @@? 23:5 Error SyntaxError: Illegal continue statement  */
+/* @@@ label Error SyntaxError: Illegal continue statement  */

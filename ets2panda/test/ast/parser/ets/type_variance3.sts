@@ -14,7 +14,7 @@
  */
 
 class C {
-  set<in T2>(t: T2): void { }
+  set</* @@ label */in T2>(t: T2): void { }
 }
 
-/* @@? 17:7 Error SyntaxError: Variance modifier is not allowed here.  */
+/* @@@ label Error SyntaxError: Variance modifier is not allowed here.  */

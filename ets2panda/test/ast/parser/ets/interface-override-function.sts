@@ -20,10 +20,10 @@ interface K {
 }
 
 interface J extends K {
-    override foo(): int {
+    /* @@ label */override foo(): int {
         return 0;
     }
 }
 
 
-/* @@? 23:5 Error SyntaxError: 'override' modifier cannot appear in interfaces  */
+/* @@@ label Error SyntaxError: 'override' modifier cannot appear in interfaces  */

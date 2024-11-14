@@ -18,5 +18,5 @@ function func(a: { a: number, b: string }, b: number): { a: number[], b: boolean
     return { a: [1, 2, 3], b: true };
 }
 
-var a: { a: string[], b: boolean } = func({ a: 5, b: "foo" }, 6);
-/* @@? 21:5 Error TypeError: Type '{ a: number[]; b: boolean; }' is not assignable to type '{ a: string[]; b: boolean; }'.  */
+var /* @@ label */a: { a: string[], b: boolean } = func({ a: 5, b: "foo" }, 6);
+/* @@@ label Error TypeError: Type '{ a: number[]; b: boolean; }' is not assignable to type '{ a: string[]; b: boolean; }'.  */

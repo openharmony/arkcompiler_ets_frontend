@@ -14,7 +14,7 @@
  */
 
 class A {
-    foo(arg1: int, arg2: this) {}
+    foo(arg1: int, arg2: /* @@ label */this) {}
 }
 
-/* @@? 17:26 Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */
+/* @@@ label Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */

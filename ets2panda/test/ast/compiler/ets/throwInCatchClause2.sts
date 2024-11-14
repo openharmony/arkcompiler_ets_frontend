@@ -17,8 +17,8 @@ function TestFunc(): void {
     try {
         throw new Exception();
     } catch (e) {
-        throw e as Exception;
+        /* @@ label */throw e as Exception;
     }
 }
 
-/* @@? 20:9 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@@ label Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */

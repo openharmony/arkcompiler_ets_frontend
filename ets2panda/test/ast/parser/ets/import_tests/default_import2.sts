@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-import default_imported from "import_tests/modules/missing_default_export";
+import default_imported from /* @@ label */"import_tests/modules/missing_default_export";
 
-/* @@? 16:30 Error SyntaxError: Cannot find default imported element in the target  */
+/* @@@ label Error SyntaxError: Cannot find default imported element in the target  */

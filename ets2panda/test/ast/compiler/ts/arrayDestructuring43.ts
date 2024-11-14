@@ -16,5 +16,5 @@
 
 var a: string[];
 
-[...a] = [2]
-/* @@? 19:5 Error TypeError: Type '[number]' is not assignable to type 'string[]'.  */
+[.../* @@ label */a] = [2]
+/* @@@ label Error TypeError: Type '[number]' is not assignable to type 'string[]'.  */

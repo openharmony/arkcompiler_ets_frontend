@@ -16,7 +16,7 @@
 class Apple {
     private _color: int;
 
-    set color(c: int): int {
+    set color/* @@ label */(c: int): int {
         this._color = 10;
     }
 }
@@ -26,4 +26,4 @@ function main(): void {
     apple.color = 10;
 }
 
-/* @@? 19:14 Error TypeError: Setter must have void return type  */
+/* @@@ label Error TypeError: Setter must have void return type  */

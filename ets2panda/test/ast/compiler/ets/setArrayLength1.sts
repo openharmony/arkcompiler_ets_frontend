@@ -19,7 +19,7 @@ class TestClass {
 
 function main(): void {
     let test_var = new TestClass();
-    test_var.test_array.length = 0;
+    /* @@ label */test_var.test_array.length = 0;
 }
 
-/* @@? 22:5 Error TypeError: Setting the length of an array is not permitted  */
+/* @@@ label Error TypeError: Setting the length of an array is not permitted  */

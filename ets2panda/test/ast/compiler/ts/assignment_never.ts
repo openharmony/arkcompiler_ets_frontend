@@ -14,6 +14,6 @@
  */
 
 
-let a: never = null;
+let /* @@ label */a: never = null;
 
-/* @@? 17:5 Error TypeError: Type 'null' is not assignable to type 'never'.  */
+/* @@@ label Error TypeError: Type 'null' is not assignable to type 'never'.  */

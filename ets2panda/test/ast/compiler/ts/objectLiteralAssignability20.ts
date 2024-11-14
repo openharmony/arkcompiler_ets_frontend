@@ -16,6 +16,6 @@
 
 var a: { new(a: number, b: string): number, (a: number, b: string): string };
 var b: { new(a: number, b: string): number, (a: string, b: string): string }
-a = b;
+/* @@ label */a = b;
 
-/* @@? 19:1 Error TypeError: Type '{ (a: string, b: string): string; new (a: number, b: string): number; }' is not assignable to type '{ (a: number, b: string): string; new (a: number, b: string): number; }'.  */
+/* @@@ label Error TypeError: Type '{ (a: string, b: string): string; new (a: number, b: string): number; }' is not assignable to type '{ (a: number, b: string): string; new (a: number, b: string): number; }'.  */

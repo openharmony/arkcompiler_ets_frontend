@@ -19,10 +19,10 @@ class A {
     }
 }
 
-class B extends A {
+class B extends A /* @@ label */{
     static instantiate<T extends A>(factory: ()=>T): T {
         return factory();
     }
 }
 
-/* @@? 22:19 Error TypeError: Static invoke method and static instantiate method both exist in class/interface B is not allowed.  */
+/* @@@ label Error TypeError: Static invoke method and static instantiate method both exist in class/interface B is not allowed.  */

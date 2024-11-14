@@ -15,7 +15,7 @@
 
 declare class A {
     f1: string = 20
-    foo(p: string): double;
+    /* @@ label */foo(p: string): double;
 }
 
-/* @@? 18:5 Error SyntaxError: Initializers are not allowed in ambient contexts.  */
+/* @@@ label Error SyntaxError: Initializers are not allowed in ambient contexts.  */

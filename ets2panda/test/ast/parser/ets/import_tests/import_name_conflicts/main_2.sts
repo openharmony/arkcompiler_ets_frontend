@@ -14,9 +14,9 @@
  */
 
 import {dbl as floatingPointNumber} from "./imported_module_1.sts";
-import {flt as floatingPointNumber} from "./imported_module_2.sts";
+import {flt as floatingPointNumber} from /* @@ label */"./imported_module_2.sts";
 
 
 function main() {}
 
-/* @@? 17:42 Error SyntaxError: Variable 'floatingPointNumber' is already defined.  */
+/* @@@ label Error SyntaxError: Variable 'floatingPointNumber' is already defined.  */

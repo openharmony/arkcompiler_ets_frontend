@@ -16,9 +16,9 @@
 class A{}
 
 function main(){
-    let a: Record<A | double, number> = {
+    let a: Record/* @@ label */<A | double, number> = {
         1: 1,
         2: 2
     } 
 }
-/* @@? 19:18 Error TypeError: Type A|Double is not assignable to constraint type Numeric|String  */
+/* @@@ label Error TypeError: Type A|Double is not assignable to constraint type Numeric|String  */

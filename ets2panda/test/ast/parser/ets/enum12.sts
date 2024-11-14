@@ -17,11 +17,11 @@ enum Color { Red }
 
 function test(c: Color): void {
   let name: String = c.toString();
-  let nameFail: int = Color.toString();
+  let nameFail: int = Color./* @@ label */toString();
 }
 
 function main(): void {
   test(Color.Red);
 }
 
-/* @@? 20:29 Error TypeError: No enum type method called 'toString'  */
+/* @@@ label Error TypeError: No enum type method called 'toString'  */

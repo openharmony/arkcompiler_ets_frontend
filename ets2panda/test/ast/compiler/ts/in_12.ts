@@ -16,6 +16,6 @@
 
 var a: any;
 var b: number;
-a in b;
+a in /* @@ label */b;
 
-/* @@? 19:6 Error TypeError: The right-hand side of an 'in' expression must not be a primitive.  */
+/* @@@ label Error TypeError: The right-hand side of an 'in' expression must not be a primitive.  */

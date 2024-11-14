@@ -15,6 +15,6 @@
 
 
 var foo: new (a: number, b: string) => any;
-var a = new foo(5);
+var a = /* @@ label */new foo(5);
 
-/* @@? 18:9 Error TypeError: Expected 2 arguments, but got 1.  */
+/* @@@ label Error TypeError: Expected 2 arguments, but got 1.  */

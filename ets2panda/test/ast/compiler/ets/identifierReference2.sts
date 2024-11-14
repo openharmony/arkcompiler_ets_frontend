@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-let a:(a: int, b: int) => void = max;
+let a:(a: int, b: int) => void = /* @@ label */max;
 
-/* @@? 16:34 Error TypeError: Type '(v: double, u: double) => double' cannot be assigned to type '(p1: Int, p2: Int) => void'  */
+/* @@@ label Error TypeError: Type '(v: double, u: double) => double' cannot be assigned to type '(p1: Int, p2: Int) => void'  */

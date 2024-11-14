@@ -18,7 +18,7 @@ function foo(callback: (x: int, y: int) => int): void {
 }
 
 function main(): void {
-    foo((y) => {});
+    /* @@ label */foo((y) => {});
 }
 
-/* @@? 21:5 Error TypeError: No matching call signature  */
+/* @@@ label Error TypeError: No matching call signature  */

@@ -14,7 +14,7 @@
  */
 
 class ReadonlyPerson {
-    readonly name: string;
+    readonly /* @@ label */name: string;
     readonly age: number;
 }
 
@@ -27,4 +27,4 @@ function main(): void {
     updatePerson(person);
 }
 
-/* @@? 17:14 Error TypeError: Cannot assign to a readonly variable name  */
+/* @@@ label Error TypeError: Cannot assign to a readonly variable name  */

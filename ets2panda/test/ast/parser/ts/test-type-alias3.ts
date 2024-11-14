@@ -14,5 +14,5 @@
  */
 
 
-type foo = ;
-/* @@? 17:12 Error SyntaxError: Type expected  */
+type foo = /* @@ label */;
+/* @@@ label Error SyntaxError: Type expected  */

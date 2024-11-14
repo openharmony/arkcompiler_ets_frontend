@@ -16,7 +16,7 @@
 var e: void;
 var u: { a: number, b: string };
 var { a: { b: [c = u, d] = [1, true] } = { b: [2n] } } = { a: { k: 2, b: ["foo", 2n] } };
-c = e;
+/* @@ label */c = e;
 
 
-/* @@? 19:1 Error TypeError: Type 'void' is not assignable to type 'string | bigint | number | { a: number; b: string; }'.  */
+/* @@@ label Error TypeError: Type 'void' is not assignable to type 'string | bigint | number | { a: number; b: string; }'.  */

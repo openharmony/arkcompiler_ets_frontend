@@ -14,5 +14,5 @@
  */
 
 
-var a: [[a: number, b?: string], [boolean | string, number[]]] = [[1], ["foo", [1, 2, "foo"]]];
-/* @@? 17:87 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+var a: [[a: number, b?: string], [boolean | string, number[]]] = [[1], ["foo", [1, 2, /* @@ label */"foo"]]];
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

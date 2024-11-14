@@ -15,5 +15,5 @@
 
 
 var [a = [1, "foo"], b] = [[true, false], ["foo", "bar"]];
-a = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type 'boolean[] | (number | string)[]'.  */
+/* @@ label */a = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'boolean[] | (number | string)[]'.  */

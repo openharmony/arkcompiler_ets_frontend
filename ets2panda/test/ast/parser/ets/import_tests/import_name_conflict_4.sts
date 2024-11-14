@@ -13,9 +13,9 @@
  * limitations under the License.
  */
  
-import {foo} from "import_tests/packages/subpackage-1";
+import {foo} from /* @@ label */"import_tests/packages/subpackage-1";
 
 let foo: int = 1;
 
 //Throw error: Variable 'foo' is already defined.
-/* @@? 16:19 Error SyntaxError: Variable 'foo' is already defined.  */
+/* @@@ label Error SyntaxError: Variable 'foo' is already defined.  */

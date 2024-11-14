@@ -14,5 +14,5 @@
  */
 
 
-var [a, [b, c] = [1]] = [1, ["foo"]];
-/* @@? 17:9 Error TypeError: Property 1 does not exist on type [string] | [number].  */
+var [a, /* @@ label */[b, c] = [1]] = [1, ["foo"]];
+/* @@@ label Error TypeError: Property 1 does not exist on type [string] | [number].  */

@@ -34,9 +34,9 @@ function foo(x: B): string {
 function main(): int {
     let a : string = foo(new A());
     let b : string = foo(new B());
-    let d : string = foo(new D());
+    let d : string = /* @@ label */foo(new D());
     return 0;
 }
 
 
-/* @@? 37:22 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(x: B): String` and `foo(x: I): String`  */
+/* @@@ label Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(x: B): String` and `foo(x: I): String`  */

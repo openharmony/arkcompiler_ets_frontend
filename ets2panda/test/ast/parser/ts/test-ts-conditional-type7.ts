@@ -14,5 +14,5 @@
  */
 
 
-type Foo = string extends number ? number : infer string;
-/* @@? 17:45 Error SyntaxError: 'infer' declarations are only permitted in the 'extends' clause of a conditional type.  */
+type Foo = string extends number ? number : /* @@ label */infer string;
+/* @@@ label Error SyntaxError: 'infer' declarations are only permitted in the 'extends' clause of a conditional type.  */

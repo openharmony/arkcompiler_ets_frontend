@@ -15,7 +15,7 @@
 
 
 function a(): [string, number] {
-    return ["foo", "bar"];
+    return ["foo", /* @@ label */"bar"];
 }
 
-/* @@? 18:20 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

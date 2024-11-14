@@ -15,7 +15,7 @@
 
 
 function main(): void {
-    let a: [number, number] = [1];
+    let a: [number, number] = /* @@ label */[1];
 }
 
-/* @@? 18:31 Error TypeError: Few elements in array initializer for tuple with size of 2  */
+/* @@@ label Error TypeError: Few elements in array initializer for tuple with size of 2  */

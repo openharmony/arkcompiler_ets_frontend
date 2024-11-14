@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-function (): void {
+function /* @@ label */(): void {
 }
 
-function (): {
+function /* @@ label1 */(): /* @@ label2 */{
     return 77;
 }
 
-/* @@? 16:10 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
-/* @@? 19:10 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
-/* @@? 19:14 Error SyntaxError: Invalid Type */
+/* @@@ label Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
+/* @@@ label2 Error SyntaxError: Invalid Type */

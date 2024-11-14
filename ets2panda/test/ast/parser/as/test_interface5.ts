@@ -15,7 +15,7 @@
 
 
 interface foo {
-    [5]: void
+    [/* @@ label */5]: void
 }
 
-/* @@? 18:6 Error SyntaxError: Identifier expected.  */
+/* @@@ label Error SyntaxError: Identifier expected.  */

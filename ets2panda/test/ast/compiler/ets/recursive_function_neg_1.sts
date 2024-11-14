@@ -17,7 +17,7 @@ function foo<T extends A<T>>(){}
 class B extends A<B>{}
 class D{}
 function main(){
-    foo<D>() 
+    /* @@ label */foo<D>() 
 }
 
-/* @@? 20:5 Error TypeError: No matching call signature  */
+/* @@@ label Error TypeError: No matching call signature  */

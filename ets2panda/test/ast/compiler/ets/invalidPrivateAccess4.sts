@@ -19,8 +19,8 @@ class A {
 
 class B extends A {
     constructor() {
-        super.a = 2;
+        super./* @@ label */a = 2;
     }
 }
 
-/* @@? 22:15 Error TypeError: Property a is not visible here.  */
+/* @@@ label Error TypeError: Property a is not visible here.  */

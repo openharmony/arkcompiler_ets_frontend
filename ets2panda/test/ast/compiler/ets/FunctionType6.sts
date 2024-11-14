@@ -20,7 +20,7 @@ class A {
 }
 
 class B extends A {
-  cb = super.foo;
+  /* @@ label */cb = super.foo;
 }
 
-/* @@? 23:3 Error TypeError: Cannot infer type for cb because method reference needs an explicit target type  */
+/* @@@ label Error TypeError: Cannot infer type for cb because method reference needs an explicit target type  */

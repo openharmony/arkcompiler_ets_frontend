@@ -16,8 +16,8 @@
 class C {
 }
 
-let c: C = {
+let c: C = /* @@ label */{
     33: 44,
 };
 
-/* @@? 19:12 Error TypeError: key in class composite should be either identifier or string literal  */
+/* @@@ label Error TypeError: key in class composite should be either identifier or string literal  */

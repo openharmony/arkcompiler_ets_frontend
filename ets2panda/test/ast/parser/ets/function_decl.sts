@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-function foo(a: int, b: float, ...c: int[]): boolean {}
-/* @@? 16:10 Error TypeError: Function with a non void return type must return a value.  */
+function /* @@ label */foo(a: int, b: float, ...c: int[]): boolean {}
+/* @@@ label Error TypeError: Function with a non void return type must return a value.  */

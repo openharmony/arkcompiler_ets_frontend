@@ -14,7 +14,7 @@
  */
 
 class C {
-  constructor<in T2>() {}
+  constructor</* @@ label */in T2>() {}
 }
 
-/* @@? 17:15 Error SyntaxError: Variance modifier is not allowed here.  */
+/* @@@ label Error SyntaxError: Variance modifier is not allowed here.  */

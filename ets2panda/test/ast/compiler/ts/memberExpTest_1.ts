@@ -20,5 +20,5 @@ bar: string
 var b: a;
 b.foo = 2;
 b.bar = "bar";
-b.foobar = 2;
-/* @@? 23:3 Error TypeError: Property foobar does not exist on this type.  */
+b./* @@ label */foobar = 2;
+/* @@@ label Error TypeError: Property foobar does not exist on this type.  */

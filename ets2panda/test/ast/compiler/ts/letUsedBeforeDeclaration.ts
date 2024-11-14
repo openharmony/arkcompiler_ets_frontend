@@ -15,6 +15,6 @@
 
 
 a = 2;
-let a: number;
+let /* @@ label */a: number;
 
-/* @@? 18:5 Error TypeError: Block-scoped variable 'a' used before its declaration  */
+/* @@@ label Error TypeError: Block-scoped variable 'a' used before its declaration  */

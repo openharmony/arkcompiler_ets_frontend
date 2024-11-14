@@ -15,6 +15,6 @@
 
 
 declare class Foo {
-    private static a = 3;
+    private static a = /* @@ label */3;
 }
-/* @@? 18:24 Error SyntaxError: Initializers are not allowed in ambient contexts.  */
+/* @@@ label Error SyntaxError: Initializers are not allowed in ambient contexts.  */

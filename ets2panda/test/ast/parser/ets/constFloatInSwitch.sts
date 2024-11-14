@@ -22,7 +22,7 @@ function main(): void {
     const aa = 1.0;
     with_param() {
         switch (switch_arg) {
-            case aa:
+            /* @@ label */case aa:
                 break
             case 2:
                 break
@@ -31,4 +31,4 @@ function main(): void {
     }
 }
 
-/* @@? 25:13 Error TypeError: Unexpected type double  */
+/* @@@ label Error TypeError: Unexpected type double  */

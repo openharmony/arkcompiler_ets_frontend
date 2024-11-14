@@ -14,5 +14,5 @@
  */
 
 
-(null ?? null || null)
-/* @@? 17:22 Error SyntaxError: Nullish coalescing operator ?? requires parens when mixing with logical operators.  */
+(null ?? null || null/* @@ label */)
+/* @@@ label Error SyntaxError: Nullish coalescing operator ?? requires parens when mixing with logical operators.  */

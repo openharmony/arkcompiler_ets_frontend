@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-type my_type<T> = Int
+type my_type</* @@ label */T> = Int
 
-/* @@? 16:14 Error TypeError: Type alias generic parameter 'T' is not used in type annotation  */
+/* @@@ label Error TypeError: Type alias generic parameter 'T' is not used in type annotation  */

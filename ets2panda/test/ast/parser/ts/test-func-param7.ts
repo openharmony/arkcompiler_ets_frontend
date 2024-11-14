@@ -14,5 +14,5 @@
  */
 
 
-function foo(...a?) { }
-/* @@? 17:18 Error SyntaxError: A rest parameter cannot be optional  */
+function foo(...a/* @@ label */?) { }
+/* @@@ label Error SyntaxError: A rest parameter cannot be optional  */

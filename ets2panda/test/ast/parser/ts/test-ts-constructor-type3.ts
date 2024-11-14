@@ -14,5 +14,5 @@
  */
 
 
-var ctor1: new abstract (a: number, b: string) => number;
-/* @@? 17:16 Error SyntaxError: '(' expected  */
+var ctor1: new /* @@ label */abstract (a: number, b: string) => number;
+/* @@@ label Error SyntaxError: '(' expected  */

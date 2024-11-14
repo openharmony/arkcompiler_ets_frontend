@@ -19,7 +19,7 @@ interface ősz{
 }
 
 class szeretettek implements ősz {
-    private field: int; 
+    private /* @@ label */field: int; 
 }
 
-/* @@? 22:13 Error TypeError: Interface property implementation cannot be generated as non-public  */
+/* @@@ label Error TypeError: Interface property implementation cannot be generated as non-public  */

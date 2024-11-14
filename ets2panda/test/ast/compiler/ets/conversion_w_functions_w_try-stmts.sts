@@ -16,7 +16,7 @@
 function getI(i : int): int {
     try { return i; } 
     catch (e) {}
-    finally { return -1; }
+    finally /* @@ label */{ return -1; }
 }
 /*
 function getD(d : double): double {
@@ -95,4 +95,4 @@ function main(): void {
   uglifruit();  */
 }
 
-/* @@? 19:13 Warning Warning: Finally clause cannot complete normally  */
+/* @@@ label Warning Warning: Finally clause cannot complete normally  */

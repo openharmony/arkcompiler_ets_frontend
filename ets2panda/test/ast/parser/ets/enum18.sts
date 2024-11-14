@@ -15,8 +15,8 @@
 
 enum InvalidInitTypeEnum {
   Red,
-  Green = 1.0,
+  Green = 1.0/* @@ label */,
   Blue
 }
 
-/* @@? 18:14 Error SyntaxError: Invalid enum initialization value  */
+/* @@@ label Error SyntaxError: Invalid enum initialization value  */

@@ -18,5 +18,5 @@ function func(a: number) : number {
     a++;
     return a < 0 ? func(a) : a;
 }
-func("foo");
-/* @@? 21:6 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+func(/* @@ label */"foo");
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

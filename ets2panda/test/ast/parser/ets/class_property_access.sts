@@ -15,7 +15,7 @@
 
 class outer {
   static foo: double = 1.0;
-  class inner {
+  /* @@ label */class inner {
     getFoo(): double {
         return outer.foo;
     }
@@ -25,4 +25,4 @@ class outer {
   }
 }
 
-/* @@? 18:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

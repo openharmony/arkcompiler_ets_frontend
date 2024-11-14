@@ -32,13 +32,13 @@ class Sqr {
 function main() {
     let a = E.H
     switch (a) {
-        case Fgr.BR:
+        case /* @@ label */Fgr.BR:
          break;
-        case Sqr.BR:
+        case /* @@ label1 */Sqr.BR:
         break;
         default: break;
     }
 }
 
-/* @@? 35:14 Error TypeError: Switch case type 'A' is not comparable to discriminant type 'E'  */
-/* @@? 37:14 Error TypeError: Switch case type 'A' is not comparable to discriminant type 'E'  */
+/* @@@ label Error TypeError: Switch case type 'A' is not comparable to discriminant type 'E'  */
+/* @@@ label1 Error TypeError: Switch case type 'A' is not comparable to discriminant type 'E'  */

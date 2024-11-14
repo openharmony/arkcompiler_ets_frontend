@@ -14,5 +14,5 @@
  */
 
 
-var { a, b }: { a: number, b: string } | { a: string } = { a: "foo" };
-/* @@? 17:5 Error TypeError: Property b does not exist on type { a: number; b: string; } | { a: string; }.  */
+var /* @@ label */{ a, b }: { a: number, b: string } | { a: string } = { a: "foo" };
+/* @@@ label Error TypeError: Property b does not exist on type { a: number; b: string; } | { a: string; }.  */

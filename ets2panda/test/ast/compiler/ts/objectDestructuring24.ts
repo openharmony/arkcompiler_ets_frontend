@@ -16,5 +16,5 @@
 
 var a: { b: number, c: { t: [string | number, boolean[]] } };
 var { b, c: { t: [d, e] } } = a;
-d = {};
-/* @@? 19:1 Error TypeError: Type '{ }' is not assignable to type 'string | number'.  */
+/* @@ label */d = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'string | number'.  */

@@ -15,6 +15,6 @@
 
 // The constant and the function have the same name
 const PI314 = 3.14
-function PI314(): double { return 3.14 }
+function /* @@ label */PI314(): double { return 3.14 }
 
-/* @@? 18:10 Error SyntaxError: Variable 'PI314' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'PI314' has already been declared.  */

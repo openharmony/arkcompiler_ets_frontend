@@ -14,5 +14,5 @@
  */
 
 
-var a: number[] | [string, number] = [true, 5];
-/* @@? 17:39 Error TypeError: Type 'boolean' is not assignable to type 'number | string'.  */
+var a: number[] | [string, number] = [/* @@ label */true, 5];
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'number | string'.  */

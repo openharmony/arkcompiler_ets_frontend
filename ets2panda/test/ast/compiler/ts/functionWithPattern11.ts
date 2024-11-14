@@ -18,6 +18,6 @@ function foo([a = 2, { b: [c = 6, d] = [true, [5n, "foo"]], t = { a: 3, b: { a: 
 
 }
 
-foo([2, { b: [true, []], t: { a: 1, z: "foo" } }, 5n], {});
+foo([2, { b: [true, []], t: { a: 1, /* @@ label */z: "foo" } }, 5n], {});
 
-/* @@? 21:37 Error TypeError: Object literal may only specify known properties, and "z" does not exist in type '{ a: number; b: { a: number; b: bigint; }; }'.  */
+/* @@@ label Error TypeError: Object literal may only specify known properties, and "z" does not exist in type '{ a: number; b: { a: number; b: bigint; }; }'.  */

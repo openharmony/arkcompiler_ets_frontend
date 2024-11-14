@@ -23,8 +23,8 @@ function main(): void {
   let testClass = new TestClass();
 
   try {
-    testClass.testMethod();
+    /* @@ label */testClass.testMethod();
   } catch (e: Exception) {}
 }
 
-/* @@? 26:5 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@@ label Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */

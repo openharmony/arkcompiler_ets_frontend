@@ -16,8 +16,8 @@
 function foo<T>(f: (i: T) => undefined) {}
 
 function main() {
-    foo((value) => {})
+    /* @@ label */foo((/* @@ label1 */value) => {})
 }
 
-/* @@? 19:10 Error TypeError: The type of parameter 'value' cannot be determined  */
-/* @@? 19:5 Error TypeError: No matching call signature  */
+/* @@@ label1 Error TypeError: The type of parameter 'value' cannot be determined  */
+/* @@@ label Error TypeError: No matching call signature  */

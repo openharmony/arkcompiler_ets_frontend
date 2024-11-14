@@ -13,11 +13,11 @@
  * limitations under the License.
  */
  
-import {Point} from "import_tests/relative_import/Point";
+import {Point} from /* @@ label */"import_tests/relative_import/Point";
 
 function Point(): int {
     return 42;
 }
 
 //Throw error: Class already declared.
-/* @@? 16:21 Error SyntaxError: Class 'Point' is already defined with different type.  */
+/* @@@ label Error SyntaxError: Class 'Point' is already defined with different type.  */

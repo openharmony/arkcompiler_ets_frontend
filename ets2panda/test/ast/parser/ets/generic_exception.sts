@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-class E<T> extends Exception {}
+class E/* @@ label */<T> extends Exception {}
 
 function main(): int {
     try {
@@ -28,4 +28,4 @@ function main(): int {
     return 0;
 }
 
-/* @@? 16:8 Error TypeError: Generics are not allowed as 'Exception' or 'Error' subclasses.  */
+/* @@@ label Error TypeError: Generics are not allowed as 'Exception' or 'Error' subclasses.  */

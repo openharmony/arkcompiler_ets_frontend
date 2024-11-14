@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-class A extends D {}
+class /* @@ label */A extends D {}
 class B extends A {}
 class C extends B {}
 class D extends C {}
 
-/* @@? 16:7 Error TypeError: Cyclic inheritance involving A.  */
+/* @@@ label Error TypeError: Cyclic inheritance involving A.  */

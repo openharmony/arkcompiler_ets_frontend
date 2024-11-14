@@ -17,8 +17,8 @@ type ArrayUnionTypeAlias = int | string
 
 class cls {
   public test_fun(): void {
-        let idx = new ArrayUnionTypeAlias[1]
+        let idx = /* @@ label */new ArrayUnionTypeAlias[1]
   }
 }
 
-/* @@? 20:19 Error TypeError: Union types in array declaration must include a nullish type.  */
+/* @@@ label Error TypeError: Union types in array declaration must include a nullish type.  */

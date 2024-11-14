@@ -17,6 +17,6 @@ class Person {
     a: number = 0
     b: number = 0
 }
-let a = [1, { a: 1, b: 2 } : Person];
+let a = [1, { a: 1, b: 2 } : /* @@ label */Person];
 
-/* @@? 20:30 Error SyntaxError: Unexpected token.  */
+/* @@@ label Error SyntaxError: Unexpected token.  */

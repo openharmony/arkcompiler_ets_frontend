@@ -20,7 +20,7 @@ function main() {
     resolve = _resolve;
   });
 
-  resolve("abc");                         // no smart cast!
+  /* @@ label */resolve("abc");                         // no smart cast!
 }
 
-/* @@? 23:3 Error TypeError: Value is possibly nullish.  */
+/* @@@ label Error TypeError: Value is possibly nullish.  */

@@ -14,5 +14,5 @@
  */
 
 
-var a: { [a:number] ?: number }
-/* @@? 17:21 Error SyntaxError: An index signature must have a type annotation.  */
+var a: { [a:number] /* @@ label */?: number }
+/* @@@ label Error SyntaxError: An index signature must have a type annotation.  */

@@ -17,8 +17,8 @@ class A {
     name: () => String
 }
 
-class B extends A {
+class B extends /* @@ label */A {
     name(): int {}
 }
 
-/* @@? 20:17 Error TypeError: Cannot inherit from class A, because method name is inherited with a different declaration type  */
+/* @@@ label Error TypeError: Cannot inherit from class A, because method name is inherited with a different declaration type  */

@@ -15,4 +15,5 @@
 
 
 ++!a
-/* @@? 19:1 Error SyntaxError: Invalid left-hand side in prefix operation  */
+/* @@@ label Error SyntaxError: Invalid left-hand side in prefix operation  */
+/* @@ label */

@@ -20,7 +20,7 @@ var o: {
         z: typeof o.b.k.t
     },
     b: {
-        c: typeof o.a.z,
+        /* @@ label */c: typeof o.a.z,
         k: {
             t: typeof o.a.t,
             r: number
@@ -28,4 +28,4 @@ var o: {
     }
 };
 
-/* @@? 23:9 Error TypeError: 'c' is referenced directly or indirectly in its own initializer ot type annotation.  */
+/* @@@ label Error TypeError: 'c' is referenced directly or indirectly in its own initializer ot type annotation.  */

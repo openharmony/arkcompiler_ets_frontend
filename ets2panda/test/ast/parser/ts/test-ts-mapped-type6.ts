@@ -14,5 +14,5 @@
  */
 
 
-type Foo<T> = { readonly [prop in keyof T]3 };
-/* @@? 17:43 Error SyntaxError: ';' expected  */
+type Foo<T> = { readonly [prop in keyof T]/* @@ label */3 };
+/* @@@ label Error SyntaxError: ';' expected  */

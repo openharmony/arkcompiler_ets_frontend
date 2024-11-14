@@ -15,7 +15,7 @@
 
 function main(): void {
     let value: byte = 0;
-    value.toString()
+    /* @@ label */value.toString()
 }
 
-/* @@? 18:5 Error TypeError: Property 'toString' does not exist on type 'byte'  */
+/* @@@ label Error TypeError: Property 'toString' does not exist on type 'byte'  */

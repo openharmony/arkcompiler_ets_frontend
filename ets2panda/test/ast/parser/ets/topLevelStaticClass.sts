@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-static class Klass {
+/* @@ label */static class Klass {
 
 }
 
-/* @@? 16:1 Error SyntaxError: Unexpected token: 'static'.  */
+/* @@@ label Error SyntaxError: Unexpected token: 'static'.  */

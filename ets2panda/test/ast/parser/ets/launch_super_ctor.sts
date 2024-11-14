@@ -18,8 +18,8 @@ class Base {
 
 class Derived extends Base {
   constructor() {
-    launch super();
+    launch /* @@ label */super();
   }
 }
 
-/* @@? 21:12 Error TypeError: Call to 'super' must be first statement in constructor  */
+/* @@@ label Error TypeError: Call to 'super' must be first statement in constructor  */

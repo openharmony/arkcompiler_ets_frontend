@@ -15,6 +15,6 @@
 
 abstract class C {}
 
-let c: C = {};
+let c: C = /* @@ label */{};
 
-/* @@? 18:12 Error TypeError: target type for class composite C is not instantiable  */
+/* @@@ label Error TypeError: target type for class composite C is not instantiable  */

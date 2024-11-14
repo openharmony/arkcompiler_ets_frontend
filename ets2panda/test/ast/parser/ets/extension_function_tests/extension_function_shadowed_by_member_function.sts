@@ -37,14 +37,14 @@ class B extends A {
 function A.sweetness() {
 }
 
-function B.sweetness1(id1: String) {
+function B.sweetness1(id1: String) /* @@ label */{
 }
 
-function B.price() {
+function B.price() /* @@ label1 */{
 }
 
 function A.xxx(id: int) {
 }
 
-/* @@? 43:20 Warning Warning: extension is shadowed by a instance member function 'price(): int' in class B  */
-/* @@? 40:36 Warning Warning: extension is shadowed by a instance member function 'sweetness1(id: String): void' in class B  */
+/* @@@ label1 Warning Warning: extension is shadowed by a instance member function 'price(): int' in class B  */
+/* @@@ label Warning Warning: extension is shadowed by a instance member function 'sweetness1(id: String): void' in class B  */

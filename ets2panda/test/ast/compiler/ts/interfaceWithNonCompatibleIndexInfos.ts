@@ -15,8 +15,8 @@
 
 
 interface A {
-    [x: number]: string,
+    /* @@ label */[x: number]: string,
     [x: string]: number,
 }
 
-/* @@? 18:5 Error TypeError: Number index info type string is not assignable to string index info type number.  */
+/* @@@ label Error TypeError: Number index info type string is not assignable to string index info type number.  */

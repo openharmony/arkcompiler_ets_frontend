@@ -15,6 +15,6 @@
 
 
 class Foo {
-    constructor(private readonly { bar }) { };
+    constructor(/* @@ label */private readonly { bar }) { };
 }
-/* @@? 18:17 Error SyntaxError: A parameter property may not be declared using a binding pattern.  */
+/* @@@ label Error SyntaxError: A parameter property may not be declared using a binding pattern.  */

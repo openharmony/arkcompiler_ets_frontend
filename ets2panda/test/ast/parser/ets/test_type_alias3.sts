@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-type foo = ;
+type foo = /* @@ label */;
 
-/* @@? 16:12 Error SyntaxError: Invalid Type  */
+/* @@@ label Error SyntaxError: Invalid Type  */

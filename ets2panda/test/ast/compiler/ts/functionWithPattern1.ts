@@ -18,5 +18,5 @@ function foo([{ x = 6 }, y = "foo", z] = [{ x: "foo" }, 2, 3]) {
 
 }
 
-foo + 5;
-/* @@? 21:1 Error TypeError: operator + cannot be applied to types ([{ x }, y, z]?: [{ x: string; }, number, number]) => void and number  */
+/* @@ label */foo + 5;
+/* @@@ label Error TypeError: operator + cannot be applied to types ([{ x }, y, z]?: [{ x: string; }, number, number]) => void and number  */

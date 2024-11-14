@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-abstract struct A {
+abstract /* @@ label */struct A {
     b:int
     constructor(b:int) {
       this.b = b
     }
 }
 
-/* @@? 16:10 Error SyntaxError: struct declaration is not allowed to use 'abstract' modifiers.  */
+/* @@@ label Error SyntaxError: struct declaration is not allowed to use 'abstract' modifiers.  */

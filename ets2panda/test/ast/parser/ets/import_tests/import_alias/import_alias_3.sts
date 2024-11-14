@@ -16,8 +16,8 @@
 import * as all from './export' 
 
 function main():void{ 
-    all.foo1();
+    all./* @@ label */foo1();
 }
 
 
-/* @@? 19:9 Error TypeError: Property 'foo1' does not exist on type 'export'  */
+/* @@@ label Error TypeError: Property 'foo1' does not exist on type 'export'  */

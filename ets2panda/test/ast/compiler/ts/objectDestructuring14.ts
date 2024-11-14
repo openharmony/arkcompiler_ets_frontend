@@ -16,5 +16,5 @@
 
 var b: void;
 var { ...a } = {};
-a = b;
-/* @@? 19:1 Error TypeError: Type 'void' is not assignable to type '{ }'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type 'void' is not assignable to type '{ }'.  */

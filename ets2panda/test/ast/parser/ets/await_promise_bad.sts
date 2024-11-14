@@ -14,9 +14,9 @@
  */
 
 async function foo(): Promise<Object> {
-    let obj: Object = await new Object();
-    return null;
+    let obj: Object = await /* @@ label */new Object();
+    return /* @@ label1 */null;
 }
 
-/* @@? 17:29 Error TypeError: 'await' expressions require Promise object as argument.  */
-/* @@? 18:12 Error TypeError: Type 'null' is not compatible with the enclosing method's return type 'Promise<Object> | Object'  */
+/* @@@ label Error TypeError: 'await' expressions require Promise object as argument.  */
+/* @@@ label1 Error TypeError: Type 'null' is not compatible with the enclosing method's return type 'Promise<Object> | Object'  */

@@ -15,9 +15,9 @@
 
 function main(){
     let a: int = 1;
-    let r: Record<int, number> = {
+    let r: Record<int, number> = /* @@ label */{
         a: 1,
         2: 2
     } 
 }
-/* @@? 18:34 Error TypeError: Object literal may only specify known properties  */
+/* @@@ label Error TypeError: Object literal may only specify known properties  */

@@ -17,5 +17,5 @@
 function func(a?: number, ...c: string[]) {
 }
 
-func("bar")
-/* @@? 20:6 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+func(/* @@ label */"bar")
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

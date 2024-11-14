@@ -16,6 +16,6 @@
 
 var a = [0, 1, 2, 3, 4];
 var b: bigint;
-b = a[5];
+/* @@ label */b = a[5];
 
-/* @@? 19:1 Error TypeError: Type 'number' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'bigint'.  */

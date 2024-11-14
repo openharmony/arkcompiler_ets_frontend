@@ -25,5 +25,5 @@ interface b {
 var c: b;
 var d: a;
 c.foobar = d;
-c.foobar.foobar = b;
-/* @@? 28:10 Error TypeError: Property foobar does not exist on this type.  */
+c.foobar./* @@ label */foobar = b;
+/* @@@ label Error TypeError: Property foobar does not exist on this type.  */

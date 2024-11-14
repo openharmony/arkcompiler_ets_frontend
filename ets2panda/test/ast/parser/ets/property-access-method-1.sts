@@ -17,8 +17,8 @@ class A {
     static foo(): void {}
 
     public callFoo(): void {
-        this.foo();
+        this./* @@ label */foo();
     }
 }
 
-/* @@? 20:14 Error TypeError: 'foo' is a static property of 'A'  */
+/* @@@ label Error TypeError: 'foo' is a static property of 'A'  */

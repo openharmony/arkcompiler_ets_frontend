@@ -16,6 +16,6 @@
 
 interface foo {
     a(b?: i32)
-}
+/* @@ label */}
 
-/* @@? 19:1 Error SyntaxError: Type expected.  */
+/* @@@ label Error SyntaxError: Type expected.  */

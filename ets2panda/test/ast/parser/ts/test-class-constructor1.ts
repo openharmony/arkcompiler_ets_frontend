@@ -17,6 +17,6 @@
 class Foo {
     constructor();
     a: string;
-    constructor() { };
+    /* @@ label */constructor() { };
 }
-/* @@? 20:5 Error SyntaxError: Multiple constructor implementations are not allowed.  */
+/* @@@ label Error SyntaxError: Multiple constructor implementations are not allowed.  */

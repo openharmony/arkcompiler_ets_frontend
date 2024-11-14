@@ -15,6 +15,6 @@
 
 
 class Foo {
-    constructor(private async readonly readonly) { };
+    constructor(private /* @@ label */async readonly readonly) { };
 }
-/* @@? 18:25 Error SyntaxError: 'async' modifier cannot appear on a parameter.  */
+/* @@@ label Error SyntaxError: 'async' modifier cannot appear on a parameter.  */

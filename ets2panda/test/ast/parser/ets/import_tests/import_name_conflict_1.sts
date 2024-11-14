@@ -14,8 +14,8 @@
  */
 
 import {dbl as floatingPointNumber} from "import_tests/packages";
-import {flt as floatingPointNumber} from "import_tests/packages";
+import {flt as floatingPointNumber} from /* @@ label */"import_tests/packages";
 
 // Throw error because floatingPointNumber is for multiple value.
 
-/* @@? 17:42 Error SyntaxError: Variable 'floatingPointNumber' is already defined.  */
+/* @@@ label Error SyntaxError: Variable 'floatingPointNumber' is already defined.  */

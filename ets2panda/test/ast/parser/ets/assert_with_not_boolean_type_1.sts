@@ -14,7 +14,7 @@
  */
 
 function main(): void {
-    assert "true"
+    assert /* @@ label */"true"
 }
 
-/* @@? 17:12 Error TypeError: Bad operand type, the type of the operand must be boolean type.  */
+/* @@@ label Error TypeError: Bad operand type, the type of the operand must be boolean type.  */

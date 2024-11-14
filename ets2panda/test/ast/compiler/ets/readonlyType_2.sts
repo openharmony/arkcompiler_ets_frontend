@@ -14,7 +14,7 @@
  */
  
 class A {
-    fld: Number = 2
+    /* @@ label */fld: Number = 2
 }
 
 function foo(a0: A) {
@@ -22,4 +22,4 @@ function foo(a0: A) {
     a.fld = 5
 }
 
-/* @@? 17:5 Error TypeError: Cannot assign to a readonly variable fld  */
+/* @@@ label Error TypeError: Cannot assign to a readonly variable fld  */

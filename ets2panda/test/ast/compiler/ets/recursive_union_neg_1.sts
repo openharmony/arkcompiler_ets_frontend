@@ -16,6 +16,6 @@ class A<T extends A<T>>{}
 class D extends A<D>{}
 class B extends A<B>{}
 class T<P extends B|D>{}
-class C extends A<B|D|C>{}//NEGATIVE
+class C extends A/* @@ label */<B|D|C>{}//NEGATIVE
 
-/* @@? 19:18 Error TypeError: Type B|D|C is not assignable to constraint type A<B|D|C>  */
+/* @@@ label Error TypeError: Type B|D|C is not assignable to constraint type A<B|D|C>  */

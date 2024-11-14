@@ -14,7 +14,7 @@
  */
 
 class Outer {
-    class Base {
+    /* @@ label */class Base {
         private a(): void {};
     }
 
@@ -27,4 +27,4 @@ class Outer {
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

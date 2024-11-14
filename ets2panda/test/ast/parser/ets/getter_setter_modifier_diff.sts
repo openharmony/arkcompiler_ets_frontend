@@ -15,7 +15,7 @@
 
 class A {
     set foo(p: int) {}
-    final get foo(): int {}
+    final get foo/* @@ label */(): int {}
 }
 
-/* @@? 18:18 Error TypeError: Getter and setter methods must have the same accessor modifiers  */
+/* @@@ label Error TypeError: Getter and setter methods must have the same accessor modifiers  */

@@ -15,6 +15,6 @@
 
 
 var a = [5, 5, 5, 5] as const;
-a[4] = 5;
+a[/* @@ label */4] = 5;
 
-/* @@? 18:3 Error TypeError: Property 4 does not exist on this type.  */
+/* @@@ label Error TypeError: Property 4 does not exist on this type.  */

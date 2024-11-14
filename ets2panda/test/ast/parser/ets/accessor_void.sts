@@ -14,7 +14,7 @@
  */
 
 class A {
-    get x(): void { }
+    get x/* @@ label */(): void { }
 }
 
-/* @@? 17:10 Error TypeError: Getter must return a value  */
+/* @@@ label Error TypeError: Getter must return a value  */

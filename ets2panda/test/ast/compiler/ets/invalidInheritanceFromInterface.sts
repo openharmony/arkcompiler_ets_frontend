@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-interface A {
+/* @@ label */interface A {
     x(): boolean {
         return true;
     }
@@ -22,7 +22,7 @@ interface A {
 class B implements A {
     public x: boolean;
     public getX(): boolean {
-       return this.x();
+       return /* @@ label1 */this.x();
     }
 }
 
@@ -30,5 +30,5 @@ function main(): void {
     let instance: B = new B();
     assert instance.getX() == true;
 }
-/* @@? 25:15 Error TypeError: Type 'boolean' has no call signatures.  */
-/* @@? 16:1 Error TypeError: Cannot inherit from interface A because field x is inherited with a different declaration type  */
+/* @@@ label1 Error TypeError: Type 'boolean' has no call signatures.  */
+/* @@@ label Error TypeError: Cannot inherit from interface A because field x is inherited with a different declaration type  */

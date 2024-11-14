@@ -17,7 +17,7 @@ type my_type<T> = T;
 
 
 function main(): void {
-    let a: my_type<Int, Double> = new Int();
+    let a: my_type/* @@ label */<Int, Double> = new Int();
 }
 
-/* @@? 20:19 Error TypeError: Wrong number of type parameters for generic type alias  */
+/* @@@ label Error TypeError: Wrong number of type parameters for generic type alias  */

@@ -16,6 +16,6 @@
 
 'use strict'
 
-with (o) {}
+/* @@ label */with (o) {}
 
-/* @@? 19:1 Error SyntaxError: 'With' is deprecated and not supported any more.  */
+/* @@@ label Error SyntaxError: 'With' is deprecated and not supported any more.  */

@@ -18,5 +18,5 @@ a = 5;
 var a: number;
 var b: typeof a;
 b = 12;
-foo = 4;
-/* @@? 21:1 Error TypeError: Cannot find name foo  */
+/* @@ label */foo = 4;
+/* @@@ label Error TypeError: Cannot find name foo  */

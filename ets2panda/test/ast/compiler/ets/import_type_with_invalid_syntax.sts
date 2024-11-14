@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-import type * from './export_type.sts'
+import type /* @@ label */* from './export_type.sts'
 
 let a = new A();
 class C implements B {};
 let c = new C()
 
-/* @@? 16:13 Error SyntaxError: Type import requires selective binding to define the required imported elements.  */
+/* @@@ label Error SyntaxError: Type import requires selective binding to define the required imported elements.  */

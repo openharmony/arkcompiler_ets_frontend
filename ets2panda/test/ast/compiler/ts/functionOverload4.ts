@@ -20,5 +20,5 @@ function foo(a: string | number, b?: string, c?: number) {
     return 12;
 }
 
-var a: string = foo(2);
-/* @@? 23:5 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+var /* @@ label */a: string = foo(2);
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

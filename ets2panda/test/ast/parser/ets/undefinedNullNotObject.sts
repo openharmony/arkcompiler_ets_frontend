@@ -15,7 +15,7 @@
 
 function main(){
     let mix : undefined | null;
-    mix = new Object();
+    mix = /* @@ label */new Object();
 }
 
-/* @@? 18:11 Error TypeError: Type 'Object' cannot be assigned to type 'undefined|null'  */
+/* @@@ label Error TypeError: Type 'Object' cannot be assigned to type 'undefined|null'  */

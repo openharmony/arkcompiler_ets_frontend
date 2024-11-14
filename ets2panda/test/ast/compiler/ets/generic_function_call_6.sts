@@ -19,7 +19,7 @@ class B {}
 function fn<T extends A>() {}
 
 function main() {
-    fn<B>()
+    /* @@ label */fn<B>()
 }
 
-/* @@? 22:5 Error TypeError: No matching call signature  */
+/* @@@ label Error TypeError: No matching call signature  */

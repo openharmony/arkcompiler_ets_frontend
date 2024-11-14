@@ -17,6 +17,6 @@
 var a: boolean;
 a = false;
 var b: any;
-a instanceof b;
+/* @@ label */a instanceof b;
 
-/* @@? 20:1 Error TypeError: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.  */
+/* @@@ label Error TypeError: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.  */

@@ -16,8 +16,8 @@
 class A {
     foo() {
         let x: (i: int, a: A) => number;
-        x = (i: int, t: this): number => { return 2.0; };
+        x = (i: int, t: /* @@ label */this): number => { return 2.0; };
     }
 }
 
-/* @@? 19:25 Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */
+/* @@@ label Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct.  */

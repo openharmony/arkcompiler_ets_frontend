@@ -15,6 +15,6 @@
 
 
 class A {
-    constructor(constructor) { }
+    constructor(constructor/* @@ label */) { }
 }
-/* @@? 18:28 Error SyntaxError: 'constructor' cannot be used as a parameter property name  */
+/* @@@ label Error SyntaxError: 'constructor' cannot be used as a parameter property name  */

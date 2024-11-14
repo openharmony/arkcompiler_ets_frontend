@@ -14,7 +14,7 @@
  */
 
 function foo(): void {
-  let a = new int[5.1]
+  let a = new int[/* @@ label */5.1]
 }
 
-/* @@? 17:19 Error TypeError: Index fractional part should be zero.  */
+/* @@@ label Error TypeError: Index fractional part should be zero.  */

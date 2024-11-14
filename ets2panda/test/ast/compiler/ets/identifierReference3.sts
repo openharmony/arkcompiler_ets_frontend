@@ -17,8 +17,8 @@ let a: int = 1;
 
 class A {
   foo(): void {
-    a = "foo";
+    a = /* @@ label */"foo";
   }
 }
 
-/* @@? 20:9 Error TypeError: Type '"foo"' cannot be assigned to type 'int'  */
+/* @@@ label Error TypeError: Type '"foo"' cannot be assigned to type 'int'  */

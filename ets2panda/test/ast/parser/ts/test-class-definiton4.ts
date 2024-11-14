@@ -15,6 +15,6 @@
 
 
 class Foo {
-    *b;
+    *b/* @@ label */;
 }
-/* @@? 18:7 Error SyntaxError: Expected '('  */
+/* @@@ label Error SyntaxError: Expected '('  */

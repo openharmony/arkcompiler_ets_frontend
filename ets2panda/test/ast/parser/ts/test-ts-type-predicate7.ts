@@ -14,8 +14,8 @@
  */
 
 
-function function1(is: number | string): (number | string) is number { return };
+function function1(is: number | string): (number | string) is /* @@ label */number /* @@ label1 */{ /* @@ label2 */return };
 
-/* @@? 17:63 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 17:70 Error SyntaxError: Unexpected token '{'.  */
-/* @@? 17:72 Error SyntaxError: return keyword should be used in function body  */
+/* @@@ label Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label2 Error SyntaxError: return keyword should be used in function body  */

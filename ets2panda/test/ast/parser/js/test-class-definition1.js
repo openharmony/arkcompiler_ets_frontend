@@ -17,7 +17,7 @@
 class A {
   constructor()
   {
-    super();
+    super/* @@ label */();
   }
 }
-/* @@? 20:10 Error SyntaxError: Unexpected super keyword  */
+/* @@@ label Error SyntaxError: Unexpected super keyword  */

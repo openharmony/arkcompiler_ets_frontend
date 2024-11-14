@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-import type {A, C} from './export_type.sts'
+import type {A, C} from /* @@ label */'./export_type.sts'
 
 let a = new A();
 let b = new C();
 
-/* @@? 16:25 Error SyntaxError: Cannot import 'C', imported type imports only exported types.  */
+/* @@@ label Error SyntaxError: Cannot import 'C', imported type imports only exported types.  */

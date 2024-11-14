@@ -15,9 +15,9 @@
 
 class A {
     static {
-        this.#a;
+        this./* @@ label */#a;
     }
 }
 
 
-/* @@? 18:14 Error SyntaxError: Private field 'a' must be declared in an enclosing class  */
+/* @@@ label Error SyntaxError: Private field 'a' must be declared in an enclosing class  */
