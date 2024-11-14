@@ -124,4 +124,20 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
     node->Check(checker);
 }
 
+// Note: run varbinder and checker on the new node generated in lowering phases
+void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+{
+    InitScopesPhaseETS::RunExternalNode(node, varBinder);
+    auto *scope = NearestScope(node);
+    varBinder->ResolveReferencesForScopeWithContext(node, scope);
+
+    auto *containingClass = ContainingClass(node);
+    auto checkerCtx = checker::SavedCheckerContext(
+        checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
+        containingClass);
+    auto scopeCtx = checker::ScopeContext(checker, scope);
+
+    node->Check(checker);
+}
+
 }  // namespace ark::es2panda::compiler
