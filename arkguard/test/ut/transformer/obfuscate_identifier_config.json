@@ -1,0 +1,49 @@
+{
+  "mCompact": true,
+  "mRemoveComments": true,
+  "mRemoveDeclarationComments": {
+      "mEnable": true,
+      "mReservedComments": [],
+      "mUniversalReservedComments": []
+  },
+  "mDisableConsole": true,
+  "mSimplify": true,
+  "mNameObfuscation": {
+      "mEnable": true,
+      "mNameGeneratorType": 3,
+      "mRenameProperties": true,
+      "mReservedNames": [],
+      "mReservedProperties": [],
+      "mUniversalReservedProperties":[],
+      "mDictionaryList": [],
+      "mKeepStringProperty": true,
+      "mTopLevel": true,
+      "mReservedToplevelNames": ["sourceFile"],
+      "mUniversalReservedToplevelNames": []
+  },
+  "mOutputDir": "",
+  "mOhSdkPath": "",
+  "mEnableSourceMap": true,
+  "mEnableNameCache": true,
+  "apiSavedDir": "",
+  "applyReservedNamePath": "",
+  "mTopLevel":true,
+  "mRenameFileName": {
+      "mEnable": true,
+      "mNameGeneratorType": 2,
+      "mReservedFileNames": ["filename"],
+      "mUniversalReservedFileNames": [],
+      "mOhmUrlStatus": ""
+  },
+  "mExportObfuscation": false,
+  "mPerformancePrinter": {
+    "mFilesPrinter": true,
+    "mSingleFilePrinter": true,
+    "mSumPrinter": true,
+    "mOutputPath": ""
+  },
+  "mUnobfuscationOption": {
+    "mPrintKeptNames": true,
+    "mPrintPath": ""
+  }
+}

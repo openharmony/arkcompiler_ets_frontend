@@ -14,13 +14,16 @@
  */
 
 import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { IOptions } from '../../../src/configs/IOptions';
-import {
+import { FileUtils } from '../../../src/utils/FileUtils';
+import { ArkObfuscatorForTest } from '../../../src/ArkObfuscatorForTest'
+import secharmony, {
   transformerPlugin,
   historyNameCache,
   clearCaches,
  } from '../../../src/transformers/rename/RenameIdentifierTransformer';
+import path from 'path';
 import * as ts from 'typescript';
 import {
   PropCollections,
@@ -110,22 +113,101 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         transformer = transformerPlugin.createTransformerFactory(option1);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[0].name as ts.Identifier).escapedText == 'para1').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[1].name as ts.Identifier).escapedText == 'para2').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[2].name as ts.Identifier).escapedText == 'para3').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[3].name as ts.Identifier).escapedText == 'para4').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[4].name as ts.Identifier).escapedText == 'a').to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[0]
+            .name as ts.Identifier)
+            .escapedText == 'para1')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[1]
+            .name as ts.Identifier)
+            .escapedText == 'para2')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[2]
+            .name as ts.Identifier)
+            .escapedText == 'para3')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[3]
+            .name as ts.Identifier)
+            .escapedText == 'para4')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[4]
+            .name as ts.Identifier)
+            .escapedText == 'a')
+            .to.be.true;
       })
 
       it('should not transform parameter property when mRenameProperties is true',function () {
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[0].name as ts.Identifier).escapedText == 'a').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[1].name as ts.Identifier).escapedText == 'b').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[2].name as ts.Identifier).escapedText == 'c').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[3].name as ts.Identifier).escapedText == 'd').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[4].name as ts.Identifier).escapedText == 'e').to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[0].name as ts.Identifier)
+            .escapedText == 'a')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[1]
+            .name as ts.Identifier)
+            .escapedText == 'b')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[2]
+            .name as ts.Identifier)
+            .escapedText == 'c')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[3]
+            .name as ts.Identifier)
+            .escapedText == 'd')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[4]
+            .name as ts.Identifier)
+            .escapedText == 'e')
+            .to.be.true;
       })
 
       it('should use historyMangledName when originName is in historyMangledTable', function () {
@@ -134,7 +216,15 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[0].name as ts.Identifier).escapedText == 'test1').to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[0]
+            .name as ts.Identifier)
+            .escapedText == 'test1')
+            .to.be.true;
         PropCollections.historyMangledTable.clear();
         PropCollections.globalMangledTable.clear();
       })
@@ -144,7 +234,15 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[0].name as ts.Identifier).escapedText == 'test2').to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[0]
+            .name as ts.Identifier)
+            .escapedText == 'test2')
+            .to.be.true;
         PropCollections.globalMangledTable.clear();
       })
 
@@ -153,7 +251,14 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[0].name as ts.Identifier).escapedText == 'para1').to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[0].name as ts.Identifier)
+            .escapedText == 'para1')
+            .to.be.true;
         PropCollections.reservedProperties.clear();
         PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
@@ -167,11 +272,51 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[0].name as ts.Identifier).escapedText == 'a').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[1].name as ts.Identifier).escapedText == 'f').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[2].name as ts.Identifier).escapedText == 'g').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[3].name as ts.Identifier).escapedText == 'h').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[4].name as ts.Identifier).escapedText == 'i').to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[0]
+            .name as ts.Identifier)
+            .escapedText == 'a')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[1]
+            .name as ts.Identifier)
+            .escapedText == 'f')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[2]
+            .name as ts.Identifier)
+            .escapedText == 'g')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[3]
+            .name as ts.Identifier)
+            .escapedText == 'h')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[4]
+            .name as ts.Identifier)
+            .escapedText == 'i')
+            .to.be.true;
         PropCollections.reservedProperties.clear();
         UnobfuscationCollections.reservedExportName.clear();
         PropCollections.newlyOccupiedMangledProps.clear();
@@ -184,14 +329,100 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent1, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[0].name as ts.Identifier).escapedText == 'b').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[1].name as ts.Identifier).escapedText == 'c').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[2].name as ts.Identifier).escapedText == 'd').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[3].name as ts.Identifier).escapedText == 'e').to.be.true;
-        expect(((((transformed.transformed[0] as ts.SourceFile).statements[0] as ts.ClassDeclaration).members[1] as ts.ConstructorDeclaration).parameters[4].name as ts.Identifier).escapedText == 'f').to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[0]
+            .name as ts.Identifier)
+            .escapedText == 'b')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[1]
+            .name as ts.Identifier)
+            .escapedText == 'c')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[2]
+            .name as ts.Identifier)
+            .escapedText == 'd')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[3]
+            .name as ts.Identifier)
+            .escapedText == 'e')
+            .to.be.true;
+        expect(
+          ((((transformed
+            .transformed[0] as ts.SourceFile)
+            .statements[0] as ts.ClassDeclaration)
+            .members[1] as ts.ConstructorDeclaration)
+            .parameters[4]
+            .name as ts.Identifier)
+            .escapedText == 'f')
+            .to.be.true;
         PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
+      })
+
+      it('Only Enable Toplevel Obfuscation Test', () => {
+        let options: IOptions = {
+          "mNameObfuscation": {
+            "mEnable": true,
+            "mRenameProperties": false,
+            "mReservedProperties": [],
+            "mTopLevel": true
+          }
+        };
+        assert.strictEqual(options !== undefined, true);
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options);
+        const fileContent = `
+          let a = 1;
+          export let b = 1;
+          import {c} from 'filePath';
+        `;
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
+        const textWriter = ts.createTextWriter('\n');
+        let arkobfuscator = new ArkObfuscatorForTest();
+        arkobfuscator.init(options);
+        arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
+        const actualContent = textWriter.getText();
+        const expectContent = `
+          let d = 1;
+          export let b = 1;
+          import {c} from 'filePath';
+        `;
+        assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
+      })
+
+      it('should return origin node if isSourceFile is false', () => {
+        let options: IOptions | undefined = FileUtils.readFileAsJson(path.join(__dirname, "obfuscate_identifier_config.json"));
+        assert.strictEqual(options !== undefined, true);
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options as IOptions);
+        const blockFile: ts.Block = ts.factory.createBlock([]);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(blockFile, [renameIdentifierFactory], {});
+        assert.strictEqual(transformedResult.transformed[0], blockFile);
       })
     })
   })
 })
+
+function compareStringsIgnoreNewlines(str1: string, str2: string): boolean {
+  const normalize = (str: string) => str.replace(/[\n\r\s]+/g, '');
+  return normalize(str1) === normalize(str2);
+}
