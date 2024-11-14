@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -109,15 +109,6 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     if (TryTransformingToStaticInvoke(ident, type)) {
         return;
-    }
-
-    if (type->IsETSUnionType()) {  // NOTE(vpukhov): #19822
-        for (auto it : type->AsETSUnionType()->ConstituentTypes()) {
-            if (it->IsETSFunctionType() || it->IsETSDynamicType() ||
-                (it->IsETSObjectType() && it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                return;
-            }
-        }
     }
 
     std::ignore = TypeError(ident->Variable(), FormatMsg({"This expression is not callable."}), ident->Start());

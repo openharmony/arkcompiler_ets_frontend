@@ -18,7 +18,8 @@ function foo(callback: (x: int, y: int) => int): void {
 }
 
 function main(): void {
-    /* @@ label */foo((y) => {});
+    foo(/* @@ label */(y) => {});
 }
 
-/* @@@ label Error TypeError: No matching call signature  */
+
+/* @@@ label Error TypeError: Type '(y: int) => int' is not compatible with type '(p1: Int, p2: Int) => Int' at index 1 */

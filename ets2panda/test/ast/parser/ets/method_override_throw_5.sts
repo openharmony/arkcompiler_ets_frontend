@@ -21,4 +21,5 @@ final class CClass extends BClass {
     override foo/* @@ label */(): void rethrows {}
 }
 
+/* @@@ label Error TypeError: Method foo(): void rethrows in CClass not overriding any method  */
 /* @@@ label Error TypeError: A rethrowing function must have a throwing function parameter  */

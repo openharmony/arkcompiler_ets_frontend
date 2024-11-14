@@ -573,8 +573,8 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
     if (sig->HasSignatureFlag(checker::SignatureFlags::THIS_RETURN_TYPE)) {
         return sig->ReturnType();
     }
-    auto *baseSig = sig->Function()->Signature();
-    if (baseSig == sig) {
+    auto *const baseSig = sig->Function() != nullptr ? sig->Function()->Signature() : nullptr;
+    if (baseSig == nullptr || baseSig == sig) {
         return nullptr;
     }
     return GuaranteedTypeForUncheckedCast(baseSig->ReturnType(), sig->ReturnType());
@@ -1208,21 +1208,27 @@ static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
     return node;
 }
 
-bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda)
+bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda, TypeRelationFlag flags)
 {
     ASSERT(param->IsETSParameterExpression());
-    ir::AstNode *typeAnn = param->AsETSParameterExpression()->Ident()->TypeAnnotation();
+    ir::AstNode *typeAnn = param->AsETSParameterExpression()->TypeAnnotation();
     if (typeAnn->IsETSTypeReference()) {
         typeAnn = DerefETSTypeReference(typeAnn);
     }
+
     if (!typeAnn->IsETSFunctionType()) {
         if (typeAnn->IsETSUnionType()) {
             return CheckLambdaAssignableUnion(typeAnn, lambda);
         }
-
         return false;
     }
+
     ir::ETSFunctionType *calleeType = typeAnn->AsETSFunctionType();
+    if ((flags & TypeRelationFlag::IN_ASSIGNMENT_CONTEXT) !=
+        static_cast<std::underlying_type_t<TypeRelationFlag>>(0U)) {
+        return lambda->Params().size() <= calleeType->Params().size();
+    }
+
     return lambda->Params().size() == calleeType->Params().size();
 }
 
@@ -1270,7 +1276,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
     ArenaVector<ir::TypeNode *> lambdaParamTypes {Allocator()->Adapter()};
     for (auto *const lambdaParam : lambda->Params()) {
-        lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->Ident()->TypeAnnotation());
+        lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->TypeAnnotation());
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
@@ -1287,9 +1293,8 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
 
         //  Restore inferring lambda types:
         for (std::size_t i = 0U; i < lambda->Params().size(); ++i) {
-            auto *const lambdaParamTypeAnnotation = lambdaParamTypes[i];
-            if (lambdaParamTypeAnnotation == nullptr) {
-                lambda->Params()[i]->AsETSParameterExpression()->Ident()->SetTsTypeAnnotation(nullptr);
+            if (lambdaParamTypes[i] == nullptr) {
+                lambda->Params()[i]->AsETSParameterExpression()->SetTsTypeAnnotation(nullptr);
             }
         }
         if (lambdaReturnTypeAnnotation == nullptr) {
@@ -1324,8 +1329,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
             continue;
         }
 
-        auto const *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
-        ir::AstNode *typeAnn = param->TypeAnnotation();
+        ir::AstNode *typeAnn = signature->Function()->Params()[index]->AsETSParameterExpression()->TypeAnnotation();
         Type *const parameterType = signature->Params()[index]->TsType();
 
         bool const rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
@@ -1351,7 +1355,7 @@ bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
     }
 
     for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
-        if (signature->Function()->IsExtensionMethod()) {
+        if (signature->Function() != nullptr && signature->Function()->IsExtensionMethod()) {
             return true;
         }
     }

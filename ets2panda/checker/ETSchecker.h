@@ -279,17 +279,16 @@ public:
     }
     ETSTypeAliasType *CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
                                              bool isRecursive = false);
+
     ETSFunctionType *CreateETSFunctionType(Signature *signature);
-    ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView name);
-    ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
-    ETSFunctionType *CreateETSFunctionType(util::StringView name);
-    ETSFunctionType *CreateETSFunctionType(ArenaVector<Signature *> &signatures);
-    ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, ArenaVector<Signature *> &&signature,
-                                           util::StringView name);
+    ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView const &name);
+    ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature,
+                                           util::StringView const &name);
+    ETSFunctionType *CreateETSFunctionType(util::StringView const &name);
+
     ETSExtensionFuncHelperType *CreateETSExtensionFuncHelperType(ETSFunctionType *classMethodType,
                                                                  ETSFunctionType *extensionFunctionType);
     ETSObjectType *FunctionTypeToFunctionalInterfaceType(Signature *signature);
-    Type *ResolveFunctionalInterfaces(ArenaVector<Signature *> &signatures);
     ETSTypeParameter *CreateTypeParameter();
     ETSObjectType *CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags);
     ETSObjectType *CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, ETSObjectFlags flags);
@@ -371,7 +370,7 @@ public:
                                    Type *parameterType, TypeRelationFlag flags);
     bool CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,
                           Type *const subParameterType);
-    bool CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda);
+    bool CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda, TypeRelationFlag flags);
     bool CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda);
     bool IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typeArgument, const Substitution *substitution);
     Substitution *NewSubstitution()
@@ -393,6 +392,8 @@ public:
                                                    Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *paramType,
                                                    Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
+                                                      Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
                                                          const Type *paramType, Substitution *substitution);
     [[nodiscard]] static bool HasTypeArgsOfObject(Type *argType, Type *paramType);
@@ -409,16 +410,13 @@ public:
         std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
         const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
         const std::vector<bool> &argTypeInferenceRequired);
-    void MaybeSubstituteLambdaArgumentsInFunctionCall(ir::CallExpression *callExpr);
-    void MaybeSubstituteLambdaArgumentsInFunctionCallHelper(ir::CallExpression *callExpr, ir::Identifier *ident);
-    void MaybeSubstituteLambdaArguments(const ArenaVector<ir::Expression *> &params, ir::CallExpression *callExpr);
     bool ValidateSignatureRequiredParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                          TypeRelationFlag flags, const std::vector<bool> &argTypeInferenceRequired,
                                          bool reportError);
-    bool ValidateSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument, const Type *targetType,
-                                            std::size_t index, TypeRelationFlag flags);
-    bool CheckInvokable(Signature *substitutedSig, ir::Expression *argument, std::size_t index, TypeRelationFlag flags);
-    bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index);
+    bool ValidateSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument, std::size_t index,
+                                            TypeRelationFlag flags);
+    bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index,
+                                     TypeRelationFlag flags);
     bool ValidateArgumentAsIdentifier(const ir::Identifier *identifier);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                      TypeRelationFlag flags, bool reportError);
@@ -448,16 +446,20 @@ public:
     Signature *ResolveConstructExpression(ETSObjectType *type, const ArenaVector<ir::Expression *> &arguments,
                                           const lexer::SourcePosition &pos);
     void CheckObjectLiteralArguments(Signature *sig, ArenaVector<ir::Expression *> const &arguments);
+
     Signature *ComposeSignature(ir::ScriptFunction *func, SignatureInfo *signatureInfo, Type *returnType,
                                 varbinder::Variable *nameVar);
+
     Type *ComposeReturnType(ir::ScriptFunction *func);
+    Type *ComposeReturnType(ir::ETSFunctionType *typeNode);
     SignatureInfo *ComposeSignatureInfo(ir::ScriptFunction *func);
-    ArenaVector<SignatureInfo *> ComposeSignatureInfosForArrowFunction(ir::ArrowFunctionExpression *arrowFuncExpr);
-    void SetParamForSignatureInfoOfArrowFunction(SignatureInfo *signatureInfo, ir::ETSParameterExpression *param);
+    SignatureInfo *ComposeSignatureInfo(ir::ETSFunctionType *typeNode);
     void ValidateMainSignature(ir::ScriptFunction *func);
     void BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig = false);
+
     checker::ETSFunctionType *BuildNamedFunctionType(ir::ScriptFunction *func);
     checker::ETSFunctionType *BuildMethodSignature(ir::MethodDefinition *method);
+
     Signature *CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *target, ETSFunctionType *source);
     static Signature *GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef);
     void CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
@@ -553,8 +555,6 @@ public:
     void CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName);
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
-    void CheckAnnotationTypeForVariableDeclaration(checker::Type *annotationType, bool isUnionFunction,
-                                                   ir::Expression *init, checker::Type *initType);
     void CheckTruthinessOfType(ir::Expression *expr);
 
     bool CheckNonNullish(ir::Expression const *expr);
@@ -641,7 +641,7 @@ public:
     bool ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
-    Type *TryGettingFunctionTypeFromInvokeFunction(Type *type);
+    Type const *TryGettingFunctionTypeFromInvokeFunction(Type const *type);
 
     ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,

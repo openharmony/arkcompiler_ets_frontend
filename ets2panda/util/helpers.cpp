@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -612,7 +612,7 @@ std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator,
             return ParamName(allocator, param->AsTSParameterProperty()->Parameter(), index);
         }
         case ir::AstNodeType::ETS_PARAMETER_EXPRESSION: {
-            return {param->AsETSParameterExpression()->Ident()->Name(), false};
+            return {param->AsETSParameterExpression()->Name(), false};
         }
         default:
             break;

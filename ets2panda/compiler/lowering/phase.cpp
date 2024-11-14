@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -148,9 +148,9 @@ std::vector<Phase *> GetETSPhaseList()
         &g_boxingForLocals,
         &g_recordLowering,
         &g_boxedTypeLowering,
-        &g_lambdaConversionPhase,
         &g_objectIndexLowering,
         &g_objectIteratorLowering,
+        &g_lambdaConversionPhase,
         &g_tupleLowering,
         &g_unionLowering,
         &g_expandBracketsPhase,

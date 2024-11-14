@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -75,24 +75,14 @@ public:
         return signature_;
     }
 
-    [[nodiscard]] FunctionSignature IrSignature() noexcept
-    {
-        return irSignature_;
-    }
-
-    [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
+    [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
     {
         return irSignature_.Params();
     }
 
-    [[nodiscard]] ArenaVector<Expression *> &Params() noexcept
+    [[nodiscard]] ArenaVector<ir::Expression *> &Params() noexcept
     {
         return irSignature_.Params();
-    }
-
-    size_t DefaultParamIndex() const noexcept
-    {
-        return this->irSignature_.DefaultParamIndex();
     }
 
     const ArenaVector<ReturnStatement *> &ReturnStatements() const
@@ -275,6 +265,11 @@ public:
     [[nodiscard]] ir::ScriptFunctionFlags Flags() const noexcept
     {
         return funcFlags_;
+    }
+
+    [[nodiscard]] bool HasReceiver() const noexcept
+    {
+        return irSignature_.HasReceiver();
     }
 
     void SetIdent(Identifier *id) noexcept;

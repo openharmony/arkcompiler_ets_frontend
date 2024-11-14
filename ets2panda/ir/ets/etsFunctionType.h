@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,10 +28,15 @@ class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
 public:
-    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags funcFlags)
+    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags const funcFlags) noexcept
         : TypeNode(AstNodeType::ETS_FUNCTION_TYPE), signature_(std::move(signature)), funcFlags_(funcFlags)
     {
     }
+
+    ETSFunctionType() = delete;
+    ~ETSFunctionType() override = default;
+    NO_COPY_SEMANTIC(ETSFunctionType);
+    NO_MOVE_SEMANTIC(ETSFunctionType);
 
     [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
@@ -53,11 +58,6 @@ public:
         scope_ = nullptr;
     }
 
-    [[nodiscard]] FunctionSignature IrSignature() noexcept
-    {
-        return signature_;
-    }
-
     const TSTypeParameterDeclaration *TypeParams() const
     {
         return signature_.TypeParams();
@@ -68,7 +68,7 @@ public:
         return signature_.TypeParams();
     }
 
-    const ArenaVector<Expression *> &Params() const
+    const ArenaVector<ir::Expression *> &Params() const
     {
         return signature_.Params();
     }
@@ -111,11 +111,6 @@ public:
     bool IsRethrowing() const
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
-    }
-
-    size_t DefaultParamIndex() const
-    {
-        return signature_.DefaultParamIndex();
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

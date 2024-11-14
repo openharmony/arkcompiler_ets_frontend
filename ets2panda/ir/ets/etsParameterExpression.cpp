@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,6 +48,11 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
     }
 }
 
+const util::StringView &ETSParameterExpression::Name() const noexcept
+{
+    return ident_->Name();
+}
+
 const Identifier *ETSParameterExpression::Ident() const noexcept
 {
     return ident_;
@@ -91,6 +96,17 @@ TypeNode const *ETSParameterExpression::TypeAnnotation() const noexcept
 TypeNode *ETSParameterExpression::TypeAnnotation() noexcept
 {
     return !IsRestParameter() ? ident_->TypeAnnotation() : spread_->TypeAnnotation();
+}
+
+void ETSParameterExpression::SetTsTypeAnnotation(TypeNode *const typeAnnotation) noexcept
+{
+    if (!IsRestParameter()) {
+        ident_->SetTsTypeAnnotation(typeAnnotation);
+        typeAnnotation->SetParent(ident_);
+    } else {
+        spread_->SetTsTypeAnnotation(typeAnnotation);
+        typeAnnotation->SetParent(spread_);
+    }
 }
 
 void ETSParameterExpression::SetVariable(varbinder::Variable *const variable) noexcept

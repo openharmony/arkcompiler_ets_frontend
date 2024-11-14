@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,5 +20,4 @@ function foo(a: { x: number | string }) {
     return 2;
 }
 
-/* @@ label */foo({ x: true });
-/* @@@ label Error TypeError: No overload matches this call.  */
+/* @@? 17:10 Error TypeError: This overload signature is not compatible with its implementation signature  */

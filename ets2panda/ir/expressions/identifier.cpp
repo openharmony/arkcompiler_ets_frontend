@@ -76,21 +76,11 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
 
 Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
-        clone->SetTsType(TsType());
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-
-        if (clone->IsReference(ScriptExtension::STS) && (clone->TypeAnnotation() != nullptr)) {
-            clone->SetTsTypeAnnotation(nullptr);
-        }
-
-        return clone;
+    auto *const clone = Clone(allocator, parent);
+    if (clone->IsReference(ScriptExtension::STS)) {
+        clone->SetTsTypeAnnotation(nullptr);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    return clone;
 }
 
 void Identifier::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)

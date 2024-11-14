@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ namespace ark::es2panda::checker {
 
 util::StringView Signature::InternalName() const
 {
-    return internalName_.Empty() ? func_->Scope()->InternalName() : internalName_;
+    return internalName_.Empty() && func_ != nullptr ? func_->Scope()->InternalName() : internalName_;
 }
 
 Signature *Signature::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -104,7 +104,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
 {
     SignatureInfo *copiedInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
 
-    for (size_t idx = 0; idx < signatureInfo_->params.size(); idx++) {
+    for (size_t idx = 0U; idx < signatureInfo_->params.size(); ++idx) {
         auto *const paramType = signatureInfo_->params[idx]->TsType();
         if (paramType->HasTypeFlag(TypeFlag::GENERIC) && paramType->IsETSObjectType()) {
             copiedInfo->params[idx]->SetTsType(paramType->Instantiate(allocator, relation, globalTypes));
@@ -123,6 +123,11 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
     copiedSignature->ownerVar_ = ownerVar_;
 
     return copiedSignature;
+}
+
+Signature *Signature::Clone(ETSChecker *checker)
+{
+    return Copy(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
 }
 
 void Signature::ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod,
@@ -177,6 +182,12 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
     }
 
     returnType_->ToString(ss, precise);
+
+    if (Throws()) {
+        ss << " throws";
+    } else if (Rethrows()) {
+        ss << " rethrows";
+    }
 }
 
 std::string Signature::ToString() const
@@ -187,7 +198,7 @@ std::string Signature::ToString() const
 }
 
 namespace {
-std::size_t GetToCheckParamCount(Signature *signature, bool isEts)
+std::size_t GetToCheckParamCount(Signature const *signature, bool isEts)
 {
     auto paramNumber = static_cast<ssize_t>(signature->Params().size());
     if (!isEts || signature->Function() == nullptr) {
@@ -202,48 +213,68 @@ std::size_t GetToCheckParamCount(Signature *signature, bool isEts)
 }
 }  // namespace
 
-bool Signature::CheckParameter(TypeRelation *relation, Type *type1, Type *type2)
+bool Signature::CheckParameter(TypeRelation *relation, Type const *type1, Type const *type2) const noexcept
 {
-    relation->IsIdenticalTo(type1, type2);
-    if (relation->IsOverridingCheck() && !relation->IsTrue()) {
-        relation->IsSupertypeOf(type1, type2);
+    if (relation->IsOverridingCheck()) {
+        return relation->IsSupertypeOf(type1, type2);
     }
-    return relation->IsTrue();
+
+    return relation->IsIdenticalTo(type1, type2);
 }
 
-bool Signature::CheckReturnType(TypeRelation *relation, Type *type1, Type *type2)
+bool Signature::CheckReturnType(TypeRelation *relation, Type const *const other) const noexcept
 {
     if (relation->NoReturnTypeCheck()) {
         return relation->Result(true);
     }
+
     if (relation->IsOverridingCheck()) {
-        relation->IsSupertypeOf(type2, type1);
-    } else {
-        relation->IsIdenticalTo(type1, type2);
+        return relation->IsSupertypeOf(other, ReturnType());
     }
 
-    return relation->IsTrue();
+    return relation->IsIdenticalTo(other, ReturnType());
+}
+
+bool Signature::CheckGeneralData(TypeRelation *relation, Signature *other) const noexcept
+{
+    bool isEts = relation->GetChecker()->IsETSChecker();
+    auto const thisToCheckParametersNumber = GetToCheckParamCount(this, isEts);
+    auto const otherToCheckParametersNumber = GetToCheckParamCount(other, isEts);
+    if ((thisToCheckParametersNumber != otherToCheckParametersNumber ||
+         this->Params().size() != other->Params().size()) &&
+        this->RestVar() == nullptr && other->RestVar() == nullptr) {
+        // skip check for ets cases only when all parameters are mandatory
+        if (!isEts || (thisToCheckParametersNumber == this->Params().size() &&
+                       otherToCheckParametersNumber == other->Params().size())) {
+            return false;
+        }
+    }
+
+    if (!Throws()) {
+        if (!Rethrows()) {
+            if (other->Throwing()) {
+                return false;
+            }
+        } else {
+            if (other->Throws()) {
+                return false;
+            }
+        }
+    }
+
+    return HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER) ==
+           other->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
 }
 
 void Signature::Compatible(TypeRelation *relation, Signature *other)
 {
     relation->Result(false);
-    bool isEts = relation->GetChecker()->IsETSChecker();
 
-    auto const thisToCheckParametersNumber = GetToCheckParamCount(this, isEts);
-    auto const otherToCheckParametersNumber = GetToCheckParamCount(other, isEts);
-    if ((thisToCheckParametersNumber != otherToCheckParametersNumber || this->MinArgCount() != other->MinArgCount()) &&
-        this->RestVar() == nullptr && other->RestVar() == nullptr) {
-        // skip check for ets cases only when all parameters are mandatory
-        if (!isEts || (thisToCheckParametersNumber == this->Params().size() &&
-                       otherToCheckParametersNumber == other->Params().size())) {
-            return;
-        }
+    if (!CheckGeneralData(relation, other)) {
+        return;
     }
 
-    if (HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER) !=
-            other->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER) ||
-        !CheckReturnType(relation, this->ReturnType(), other->ReturnType())) {
+    if (!CheckReturnType(relation, other->ReturnType())) {
         return;
     }
 
@@ -268,6 +299,9 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
         "parametersNumber" is the number of parameters that can be checked in Signature::params().
     */
     relation->Result(true);
+    bool isEts = relation->GetChecker()->IsETSChecker();
+    auto const thisToCheckParametersNumber = GetToCheckParamCount(this, isEts);
+    auto const otherToCheckParametersNumber = GetToCheckParamCount(other, isEts);
     auto const toCheckParametersNumber = std::max(thisToCheckParametersNumber, otherToCheckParametersNumber);
     auto const parametersNumber = std::min({this->Params().size(), other->Params().size(), toCheckParametersNumber});
 
@@ -311,67 +345,9 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
     }
 }
 
-bool Signature::CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target)
-{
-    if (!source->IsETSObjectType() || !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        return false;
-    }
-
-    if (!target->IsETSObjectType() || !target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        return false;
-    }
-
-    auto sourceInvokeFunc = source->AsETSObjectType()
-                                ->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD)
-                                ->TsType()
-                                ->AsETSFunctionType()
-                                ->CallSignatures()[0];
-
-    auto targetInvokeFunc = target->AsETSObjectType()
-                                ->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD)
-                                ->TsType()
-                                ->AsETSFunctionType()
-                                ->CallSignatures()[0];
-
-    relation->IsCompatibleTo(sourceInvokeFunc, targetInvokeFunc);
-    return true;
-}
-
 void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
 {
-    if (signatureInfo_->restVar == nullptr &&
-        (source->Params().size() - source->OptionalArgCount()) > signatureInfo_->params.size()) {
-        relation->Result(false);
-        return;
-    }
-
-    for (size_t i = 0; i < source->Params().size(); i++) {
-        if (signatureInfo_->restVar == nullptr && i >= Params().size()) {
-            break;
-        }
-
-        if (signatureInfo_->restVar != nullptr) {
-            relation->IsAssignableTo(source->Params()[i]->TsType(), signatureInfo_->restVar->TsType());
-
-            if (!relation->IsTrue()) {
-                return;
-            }
-
-            continue;
-        }
-
-        relation->IsAssignableTo(source->Params()[i]->TsType(), Params()[i]->TsType());
-
-        if (!relation->IsTrue()) {
-            return;
-        }
-    }
-
-    relation->IsAssignableTo(source->ReturnType(), returnType_);
-
-    if (relation->IsTrue() && signatureInfo_->restVar != nullptr && source->RestVar() != nullptr) {
-        relation->IsAssignableTo(source->RestVar()->TsType(), signatureInfo_->restVar->TsType());
-    }
+    Compatible(relation, source);
 }
 
 Signature *Signature::BoxPrimitives(ETSChecker *checker)

@@ -17,9 +17,6 @@
 #include "parserStatusContext.h"
 
 #include "varbinder/privateBinding.h"
-#include "varbinder/varbinder.h"
-#include "varbinder/ETSBinder.h"
-#include "ir/astNode.h"
 #include "ir/errorTypeNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -27,8 +24,6 @@
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
-#include "ir/ets/etsUnionType.h"
-#include "ir/expression.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
@@ -39,18 +34,15 @@
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/superExpression.h"
+#include "ir/ets/etsParameterExpression.h"
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/expressionStatement.h"
 #include "ir/statements/functionDeclaration.h"
 #include "lexer/lexer.h"
-#include "lexer/token/letters.h"
-#include "lexer/token/sourceLocation.h"
 #include "parser/ETSparser.h"
 #include "util/errorRecovery.h"
-
-#include <ir/typeNode.h>
 
 using namespace std::literals::string_literals;
 

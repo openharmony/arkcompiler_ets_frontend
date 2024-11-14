@@ -62,23 +62,6 @@ TEST_F(PluginConversionRuleUnitTest, FunctionSignatureInputParameter)
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
 
-// apiName: ScriptFunctionIrSignature
-TEST_F(PluginConversionRuleUnitTest, FunctionSignatureReturnValue)
-{
-    std::string targetCAPI {R"(
-    extern "C"  es2panda_FunctionSignature *ScriptFunctionIrSignature([[maybe_unused]] es2panda_Context *context,
-    es2panda_AstNode *classInstance/*return_args:*/)
-    {
-        auto res = reinterpret_cast< es2panda_FunctionSignature *>(reinterpret_cast<Context *>(context)->allocator->
-                   New<ir::FunctionSignature>(((reinterpret_cast< ir::ScriptFunction *>(classInstance))
-                   ->IrSignature())));
-    	return res;
-    })"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
-
 // apiName: CreateFunctionSignature
 TEST_F(PluginConversionRuleUnitTest, FunctionSignaturePtrReturnValue)
 {

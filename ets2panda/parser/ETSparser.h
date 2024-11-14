@@ -329,7 +329,7 @@ private:
     void ReportIfVarDeclaration(VariableParsingFlags flags) override;
     std::optional<lexer::SourcePosition> GetDefaultParamPosition(ArenaVector<ir::Expression *> params);
 
-    ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options, lexer::SourcePosition startLoc);
+    ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);

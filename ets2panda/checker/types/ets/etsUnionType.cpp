@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -175,25 +175,8 @@ bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
             relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybeUnboxType(target)));
     }
 
-    bool isAssignable = false;
-
-    if (!(target->IsETSObjectType() && target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-        isAssignable = std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
-                                   [relation, target](auto *t) { return relation->IsAssignableTo(t, target); });
-    } else {
-        for (auto it : constituentTypes_) {
-            if (!it->IsETSObjectType() || !it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-                isAssignable = false;
-                break;
-            }
-
-            if (relation->IsAssignableTo(it, target)) {
-                isAssignable = true;
-            }
-        }
-    }
-
-    return relation->Result(isAssignable);
+    return relation->Result(std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
+                                        [relation, target](auto *t) { return relation->IsAssignableTo(t, target); }));
 }
 
 void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)

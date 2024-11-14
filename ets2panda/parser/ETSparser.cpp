@@ -774,9 +774,9 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation) co
         std::string lambdaParams = " ";
 
         for (const auto *const param : typeAnnotation->AsETSFunctionType()->Params()) {
-            lambdaParams += param->AsETSParameterExpression()->Ident()->Name().Mutf8();
+            lambdaParams += param->AsETSParameterExpression()->Name().Mutf8();
             lambdaParams += ":";
-            lambdaParams += GetNameForTypeNode(param->AsETSParameterExpression()->Ident()->TypeAnnotation());
+            lambdaParams += GetNameForTypeNode(param->AsETSParameterExpression()->TypeAnnotation());
             lambdaParams += ",";
         }
 
@@ -1926,7 +1926,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
 
     ir::ScriptFunction *func =
         ParseFunction(newStatus | ParserStatus::FUNCTION_DECLARATION | ParserStatus::ALLOW_RECEIVER);
-    if (func->IrSignature().HasReceiver()) {
+    if (func->HasReceiver()) {
         func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
     }
     if (funcIdentNode != nullptr) {  // Error processing.

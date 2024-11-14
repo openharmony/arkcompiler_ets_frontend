@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,8 +37,10 @@ public:
         if (target->IsETSArrayType() && node->IsArrayExpression()) {
             assignable_ =
                 ValidateArrayTypeInitializerByElement(relation, node->AsArrayExpression(), target->AsETSArrayType());
+            relation->Result(assignable_);
             return;
         }
+
         // CC-OFFNXT(G.FMT.02) project code style
         flags_ |= flags;
         relation->SetNode(node);
@@ -113,10 +115,9 @@ public:
         relation->SetFlags(TypeRelationFlag::NONE);
 
         if (!relation->IsTrue()) {
+            invocable_ = false;
             if ((initialFlags & TypeRelationFlag::NO_THROW) == 0) {
                 relation->RaiseError(list, pos);
-                relation->Result(RelationResult::ERROR);
-                invocable_ = false;
             }
             return;
         }

@@ -461,32 +461,6 @@ TEST_F(PluginConversionRuleUnitTest, TSInterfaceDeclarationConstructorDataInputP
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
 }
 
-// apiName: CreateScriptFunction
-TEST_F(PluginConversionRuleUnitTest, ScriptFunctionDataInputParameter)
-{
-    std::string targetCAPI {R"(
-    extern "C" es2panda_AstNode *CreateScriptFunction([[maybe_unused]] es2panda_Context *context,
-    [[maybe_unused]] es2panda_AstNode *databody, es2panda_FunctionSignature *datasignature,
-    int datafuncFlags, int dataflags)
-    {
-        auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
-        auto *databodyE2p = reinterpret_cast<ir::AstNode *>(databody);
-        auto datasignatureE2p = (*reinterpret_cast<ir::FunctionSignature *>(datasignature));
-        auto datafuncFlagsE2p = E2pToIrScriptFunctionFlags((Es2pandaScriptFunctionFlags)datafuncFlags);
-        auto dataflagsE2p = E2pToIrModifierFlags((Es2pandaModifierFlags)dataflags);
-        ark::es2panda::Language datalang {Language::Id::ETS};
-
-        auto *ctx = reinterpret_cast<Context *>(context);
-        auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ScriptFunction>(allocatorE2p,
-               ir::ScriptFunction::ScriptFunctionData {databodyE2p, std::move(datasignatureE2p),
-               datafuncFlagsE2p, dataflagsE2p, datalang}));
-    })"};
-
-    std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
-    EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));
-}
-
 // apiName: ETSEnumTypeSetToStringMethod
 TEST_F(PluginConversionRuleUnitTest, CheckerMethodInputParameter)
 {

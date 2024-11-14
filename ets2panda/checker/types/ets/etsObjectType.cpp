@@ -969,6 +969,31 @@ void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObj
 
     copiedType->SetTypeArguments(std::move(newTypeArgs));
     copiedType->relation_ = relation;
+
+    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL) && IsPropertiesInstantiated()) {
+        auto thisFunctionType =
+            GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)->TsType();
+        if (thisFunctionType == nullptr || !thisFunctionType->IsETSFunctionType()) {
+            return;
+        }
+        auto copyFunctionType =
+            copiedType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
+                ->TsType();
+        if (copyFunctionType == nullptr || !copyFunctionType->IsETSFunctionType()) {
+            return;
+        }
+        auto const &thisSignatures = thisFunctionType->AsETSFunctionType()->CallSignatures();
+        auto const &copySignatures = copyFunctionType->AsETSFunctionType()->CallSignatures();
+        auto const numberSignatures = std::min(thisSignatures.size(), copySignatures.size());
+        for (std::size_t i = 0U; i < numberSignatures; ++i) {
+            copySignatures[i]->MinArgCount(thisSignatures[i]->MinArgCount());
+            for (std::size_t j = thisSignatures[i]->MinArgCount(); j < thisSignatures[i]->Function()->Params().size();
+                 ++j) {
+                copySignatures[i]->Function()->Params()[j]->AsETSParameterExpression()->SetInitializer(
+                    thisSignatures[i]->Function()->Params()[j]->AsETSParameterExpression()->Initializer());
+            }
+        }
+    }
 }
 
 void ETSObjectType::UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop,

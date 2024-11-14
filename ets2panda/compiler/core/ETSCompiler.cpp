@@ -23,7 +23,6 @@
 #include "compiler/function/functionBuilder.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
-#include "parser/ETSparser.h"
 
 namespace ark::es2panda::compiler {
 
@@ -224,7 +223,7 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::E
 {
     if (expr->GetSignature()->RestVar() != nullptr) {
         std::size_t const argumentCount = expr->GetArguments().size();
-        std::size_t const parameterCount = expr->GetSignature()->MinArgCount();
+        std::size_t const parameterCount = expr->GetSignature()->Params().size();
         ASSERT(argumentCount >= parameterCount);
 
         auto &arguments = const_cast<ArenaVector<ir::Expression *> &>(expr->GetArguments());
@@ -306,17 +305,6 @@ static void GetSizeInForOf(compiler::ETSGen *etsg, checker::Type const *const ex
         HandleUnionTypeInForOf(etsg, exprType, st, objReg, nullptr);
     } else {
         etsg->LoadStringLength(st);
-    }
-}
-
-static void MaybeCastUnionTypeToFunctionType(compiler::ETSGen *etsg, const ir::CallExpression *expr,
-                                             checker::Signature *signature)
-{
-    expr->Callee()->AsMemberExpression()->Object()->Compile(etsg);
-    auto objType = expr->Callee()->AsMemberExpression()->Object()->TsType();
-    if (auto propType = expr->Callee()->AsMemberExpression()->Property()->TsType();
-        propType != nullptr && propType->IsETSFunctionType() && objType->IsETSUnionType()) {
-        etsg->CastUnionToFunctionType(expr, objType->AsETSUnionType(), signature);
     }
 }
 
@@ -700,7 +688,7 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::C
 {
     if (signature->RestVar() != nullptr) {
         std::size_t const argumentCount = expr->Arguments().size();
-        std::size_t const parameterCount = signature->MinArgCount();
+        std::size_t const parameterCount = signature->Params().size();
         ASSERT(argumentCount >= parameterCount);
 
         auto &arguments = const_cast<ArenaVector<ir::Expression *> &>(expr->Arguments());
@@ -929,7 +917,7 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
         EmitCall(expr, calleeReg, signature);
     } else if (!isReference && expr->Callee()->IsMemberExpression()) {
         if (!isStatic) {
-            MaybeCastUnionTypeToFunctionType(etsg, expr, signature);
+            expr->Callee()->AsMemberExpression()->Object()->Compile(etsg);
             etsg->StoreAccumulator(expr, calleeReg);
         }
         EmitCall(expr, calleeReg, signature);

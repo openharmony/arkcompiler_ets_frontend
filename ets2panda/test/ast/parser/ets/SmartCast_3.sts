@@ -23,4 +23,4 @@ function main() {
   /* @@ label */resolve("abc");                         // no smart cast!
 }
 
-/* @@@ label Error TypeError: Value is possibly nullish.  */
+/* @@@ label Error TypeError: This expression is not callable.  */
