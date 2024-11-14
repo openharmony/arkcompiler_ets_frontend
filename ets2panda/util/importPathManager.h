@@ -75,7 +75,7 @@ public:
 private:
     bool IsRelativePath(const StringView &path) const;
     StringView GetRealPath(const StringView &path) const;
-    StringView AppendExtensionOrIndexFileIfOmitted(const StringView &path) const;
+    StringView AppendExtensionOrIndexFileIfOmitted(const StringView &basePath) const;
 #ifdef USE_UNIX_SYSCALL
     void UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, ImportFlags importFlags);
 #endif
