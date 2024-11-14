@@ -26,7 +26,7 @@ struct Context;
 
 namespace ark::es2panda::checker {
 
-class SignatureInfo {
+class SignatureInfo final {
 public:
     explicit SignatureInfo(ArenaAllocator *allocator) : typeParams {allocator->Adapter()}, params {allocator->Adapter()}
     {
@@ -51,6 +51,7 @@ public:
         }
     }
 
+    SignatureInfo() = delete;
     ~SignatureInfo() = default;
     NO_COPY_SEMANTIC(SignatureInfo);
     NO_MOVE_SEMANTIC(SignatureInfo);
@@ -101,7 +102,7 @@ struct enumbitops::IsAllowedType<ark::es2panda::checker::SignatureFlags> : std::
 
 namespace ark::es2panda::checker {
 
-class Signature {
+class Signature final {
 public:
     Signature(SignatureInfo *signatureInfo, Type *returnType) : signatureInfo_(signatureInfo), returnType_(returnType)
     {
@@ -117,71 +118,72 @@ public:
     {
     }
 
+    Signature() = delete;
     ~Signature() = default;
     NO_COPY_SEMANTIC(Signature);
     NO_MOVE_SEMANTIC(Signature);
 
-    const SignatureInfo *GetSignatureInfo() const
+    [[nodiscard]] const SignatureInfo *GetSignatureInfo() const noexcept
     {
         return signatureInfo_;
     }
 
-    SignatureInfo *GetSignatureInfo()
+    [[nodiscard]] SignatureInfo *GetSignatureInfo() noexcept
     {
         return signatureInfo_;
     }
 
-    const ArenaVector<Type *> &TypeParams() const
+    [[nodiscard]] const ArenaVector<Type *> &TypeParams() const noexcept
     {
         return signatureInfo_->typeParams;
     }
 
-    ArenaVector<Type *> &TypeParams()
+    [[nodiscard]] ArenaVector<Type *> &TypeParams() noexcept
     {
         return signatureInfo_->typeParams;
     }
 
-    const ArenaVector<varbinder::LocalVariable *> &Params() const
+    [[nodiscard]] const ArenaVector<varbinder::LocalVariable *> &Params() const noexcept
     {
         return signatureInfo_->params;
     }
 
-    ArenaVector<varbinder::LocalVariable *> &Params()
+    [[nodiscard]] ArenaVector<varbinder::LocalVariable *> &Params() noexcept
     {
         return signatureInfo_->params;
     }
 
-    const Type *ReturnType() const
+    [[nodiscard]] const Type *ReturnType() const noexcept
     {
         return returnType_;
     }
 
-    Type *ReturnType()
+    [[nodiscard]] Type *ReturnType() noexcept
     {
         return returnType_;
     }
 
-    uint32_t MinArgCount() const
+    [[nodiscard]] uint32_t MinArgCount() const noexcept
     {
         return signatureInfo_->minArgCount;
     }
 
-    uint32_t OptionalArgCount() const
+    [[nodiscard]] uint32_t OptionalArgCount() const noexcept
     {
         return signatureInfo_->params.size() - signatureInfo_->minArgCount;
     }
 
-    void SetReturnType(Type *type)
+    void SetReturnType(Type *type) noexcept
     {
         returnType_ = type;
     }
 
-    void SetOwner(ETSObjectType *owner)
+    void SetOwner(ETSObjectType *owner) noexcept
     {
         ownerObj_ = owner;
     }
 
-    void SetOwnerVar(varbinder::Variable *owner)
+    void SetOwnerVar(varbinder::Variable *owner) noexcept
     {
         ownerVar_ = owner;
     }
@@ -191,37 +193,37 @@ public:
         func_ = function;
     }
 
-    ir::ScriptFunction *Function()
+    [[nodiscard]] ir::ScriptFunction *Function() noexcept
     {
         return func_;
     }
 
-    ETSObjectType *Owner()
+    [[nodiscard]] ETSObjectType *Owner() noexcept
     {
         return ownerObj_;
     }
 
-    const ETSObjectType *Owner() const
+    [[nodiscard]] const ETSObjectType *Owner() const noexcept
     {
         return ownerObj_;
     }
 
-    varbinder::Variable *OwnerVar()
+    [[nodiscard]] varbinder::Variable *OwnerVar() noexcept
     {
         return ownerVar_;
     }
 
-    const ir::ScriptFunction *Function() const
+    [[nodiscard]] const ir::ScriptFunction *Function() const noexcept
     {
         return func_;
     }
 
-    const varbinder::LocalVariable *RestVar() const
+    [[nodiscard]] const varbinder::LocalVariable *RestVar() const noexcept
     {
         return signatureInfo_->restVar;
     }
 
-    uint8_t ProtectionFlag() const
+    [[nodiscard]] uint8_t ProtectionFlag() const noexcept
     {
         if ((flags_ & SignatureFlags::PRIVATE) != 0) {
             return 2U;
@@ -244,39 +246,34 @@ public:
         flags_ &= ~flag;
     }
 
-    bool HasSignatureFlag(SignatureFlags const flag) const noexcept
+    [[nodiscard]] bool HasSignatureFlag(SignatureFlags const flag) const noexcept
     {
         return (flags_ & flag) != 0U;
     }
 
-    [[nodiscard]] SignatureFlags GetFlags() const noexcept
-    {
-        return flags_;
-    }
-
-    bool IsFinal() const noexcept
+    [[nodiscard]] bool IsFinal() const noexcept
     {
         return HasSignatureFlag(SignatureFlags::FINAL);
     }
 
     void ToAssemblerType(std::stringstream &ss) const;
 
-    util::StringView InternalName() const;
+    [[nodiscard]] util::StringView InternalName() const;
 
-    Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
-    Signature *Substitute(TypeRelation *relation, const Substitution *substitution);
+    [[nodiscard]] Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
+    [[nodiscard]] Signature *Substitute(TypeRelation *relation, const Substitution *substitution);
 
     void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod = false,
                   bool precise = false) const;
-    std::string ToString() const;
+    [[nodiscard]] std::string ToString() const;
     void Compatible(TypeRelation *relation, Signature *other);
-    bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
+    [[nodiscard]] bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
     void AssignmentTarget(TypeRelation *relation, Signature *source);
-    Signature *BoxPrimitives(ETSChecker *checker);
+    [[nodiscard]] Signature *BoxPrimitives(ETSChecker *checker);
 
 private:
-    bool CheckParameter(TypeRelation *relation, Type *type1, Type *type2);
-    bool CheckReturnType(TypeRelation *relation, Type *type1, Type *type2);
+    [[nodiscard]] bool CheckParameter(TypeRelation *relation, Type *type1, Type *type2);
+    [[nodiscard]] bool CheckReturnType(TypeRelation *relation, Type *type1, Type *type2);
 
     checker::SignatureInfo *signatureInfo_;
     Type *returnType_;

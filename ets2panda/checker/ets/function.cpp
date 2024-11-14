@@ -487,69 +487,6 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
     return true;
 }
 
-void ETSChecker::MaybeSubstituteLambdaArgumentsInFunctionCall(ir::CallExpression *callExpr)
-{
-    ir::AstNode *expr = callExpr;
-
-    while (!expr->IsFunctionExpression()) {
-        if (expr->Parent() == nullptr || expr->Parent()->IsClassDefinition()) {
-            return;
-        }
-        expr = expr->Parent();
-    }
-
-    for (const auto it : expr->AsFunctionExpression()->Function()->Params()) {
-        if (const auto ident = it->AsETSParameterExpression()->Ident();
-            callExpr->Callee()->IsIdentifier() && ident->Name() == callExpr->Callee()->AsIdentifier()->Name() &&
-            ident->IsAnnotatedExpression()) {
-            if (ident->AsAnnotatedExpression()->TypeAnnotation()->IsETSFunctionType()) {
-                MaybeSubstituteLambdaArguments(
-                    ident->AsAnnotatedExpression()->TypeAnnotation()->AsETSFunctionType()->Params(), callExpr);
-            }
-        }
-    }
-}
-
-void ETSChecker::MaybeSubstituteLambdaArgumentsInFunctionCallHelper(ir::CallExpression *callExpr, ir::Identifier *ident)
-{
-    ir::ETSFunctionType *funcType = nullptr;
-    ir::TypeNode *typeAnnotation = ident->TypeAnnotation();
-
-    if (typeAnnotation->IsETSTypeReference()) {
-        auto typeAnnotationIdentifier = ident->TypeAnnotation()->AsETSTypeReference()->Part()->Name()->Variable();
-        typeAnnotation = typeAnnotationIdentifier->Declaration()->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
-    }
-
-    if (typeAnnotation->IsETSFunctionType()) {
-        funcType = typeAnnotation->AsETSFunctionType();
-    } else if (typeAnnotation->IsETSUnionType()) {
-        auto found = std::find_if(typeAnnotation->AsETSUnionType()->Types().begin(),
-                                  typeAnnotation->AsETSUnionType()->Types().end(),
-                                  [](ir::TypeNode *const type) { return type->IsETSFunctionType(); });
-        if (found != typeAnnotation->AsETSUnionType()->Types().end()) {
-            funcType = (*found)->AsETSFunctionType();
-        }
-    }
-
-    if (funcType == nullptr) {
-        return;
-    }
-
-    MaybeSubstituteLambdaArguments(funcType->AsETSFunctionType()->Params(), callExpr);
-}
-
-void ETSChecker::MaybeSubstituteLambdaArguments(const ArenaVector<ir::Expression *> &params,
-                                                ir::CallExpression *callExpr)
-{
-    for (size_t i = 0; i < params.size(); i++) {
-        if (params[i]->AsETSParameterExpression()->IsDefault() && callExpr->Arguments().size() <= i &&
-            params[i]->AsETSParameterExpression()->Initializer() != nullptr) {
-            callExpr->Arguments().push_back(
-                params[i]->AsETSParameterExpression()->Initializer()->Clone(Allocator(), callExpr)->AsExpression());
-        }
-    }
-}
-
 Signature *ETSChecker::ValidateSignature(
     std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
     const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
@@ -955,14 +892,6 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
 {
     Signature *sig = nullptr;
     if (callExpr->TrailingBlock() == nullptr) {
-        for (auto it : signatures) {
-            MaybeSubstituteLambdaArguments(it->Function()->Params(), callExpr);
-
-            if (callExpr->Arguments().size() != it->Function()->Params().size()) {
-                MaybeSubstituteLambdaArgumentsInFunctionCall(callExpr);
-            }
-        }
-
         sig = ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", reportFlag);
         return sig;
     }
@@ -1138,8 +1067,6 @@ Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func)
 SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
 {
     auto *signatureInfo = CreateSignatureInfo();
-    signatureInfo->restVar = nullptr;
-    signatureInfo->minArgCount = 0;
 
     if ((func->IsConstructor() || !func->IsStatic()) && !func->IsArrow()) {
         auto *thisVar = func->Scope()->ParamScope()->Params().front();
@@ -1194,67 +1121,6 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
     }
 
     return signatureInfo;
-}
-
-ArenaVector<SignatureInfo *> ETSChecker::ComposeSignatureInfosForArrowFunction(
-    ir::ArrowFunctionExpression *arrowFuncExpr)
-{
-    ArenaVector<SignatureInfo *> signatureInfos(Allocator()->Adapter());
-
-    for (size_t i = arrowFuncExpr->Function()->DefaultParamIndex(); i < arrowFuncExpr->Function()->Params().size();
-         i++) {
-        auto *signatureInfo = CreateSignatureInfo();
-        signatureInfo->restVar = nullptr;
-        signatureInfo->minArgCount = 0;
-
-        if (arrowFuncExpr->Function()->TypeParams() != nullptr) {
-            signatureInfo->typeParams =
-                CreateUnconstrainedTypeParameters(arrowFuncExpr->Function()->TypeParams()).first;
-        }
-
-        for (size_t j = 0; j < i; j++) {
-            SetParamForSignatureInfoOfArrowFunction(signatureInfo,
-                                                    arrowFuncExpr->Function()->Params()[j]->AsETSParameterExpression());
-        }
-
-        signatureInfos.push_back(signatureInfo);
-    }
-
-    return signatureInfos;
-}
-
-void ETSChecker::SetParamForSignatureInfoOfArrowFunction(SignatureInfo *signatureInfo,
-                                                         ir::ETSParameterExpression *param)
-{
-    if (param->IsRestParameter()) {
-        auto const *const restIdent = param->Ident();
-
-        ASSERT(restIdent->Variable());
-        signatureInfo->restVar = restIdent->Variable()->AsLocalVariable();
-
-        auto *const restParamTypeAnnotation = param->TypeAnnotation();
-        ASSERT(restParamTypeAnnotation);
-
-        signatureInfo->restVar->SetTsType(restParamTypeAnnotation->GetType(this));
-        auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
-        CreateBuiltinArraySignature(arrayType, arrayType->Rank());
-    } else {
-        auto *const paramIdent = param->Ident();
-
-        varbinder::Variable *const paramVar = paramIdent->Variable();
-        ASSERT(paramVar);
-
-        auto *const paramTypeAnnotation = param->TypeAnnotation();
-        if (paramIdent->TsType() == nullptr) {
-            ASSERT(paramTypeAnnotation);
-
-            paramVar->SetTsType(paramTypeAnnotation->GetType(this));
-        } else {
-            paramVar->SetTsType(paramIdent->TsType());
-        }
-        signatureInfo->params.push_back(paramVar->AsLocalVariable());
-        ++signatureInfo->minArgCount;
-    }
 }
 
 void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
@@ -1765,18 +1631,9 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     }
 
     // - If R1 is a reference type then R1, adapted to the type parameters of d2 (link to generic methods), is a
-    // subtype of R2.
+    //   subtype of R2.
     ASSERT(IsReferenceType(r1));
-
-    // Starting from this line, everything should be be restored to IsSupertypeOf check, to be reverted in #18866
-    if (Relation()->IsSupertypeOf(r2, r1)) {
-        return true;
-    }
-
-    return s2->Function()->ReturnTypeAnnotation()->IsETSTypeReference() &&
-           s2->Function()->ReturnTypeAnnotation()->GetType(this)->IsETSTypeParameter() &&
-           Relation()->IsSupertypeOf(
-               s2->Function()->ReturnTypeAnnotation()->GetType(this)->AsETSTypeParameter()->GetConstraintType(), r1);
+    return Relation()->IsSupertypeOf(r2, r1);
 }
 
 std::string ETSChecker::GetAsyncImplName(const util::StringView &name)
@@ -2155,7 +2012,7 @@ size_t &ETSChecker::ConstraintCheckScopesCount()
 
 bool ETSChecker::CmpAssemblerTypesWithRank(Signature const *const sig1, Signature const *const sig2) noexcept
 {
-    for (size_t ix = 0; ix < sig1->MinArgCount(); ix++) {
+    for (size_t ix = 0U; ix < sig1->MinArgCount(); ++ix) {
         std::stringstream s1;
         std::stringstream s2;
         sig1->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s1);

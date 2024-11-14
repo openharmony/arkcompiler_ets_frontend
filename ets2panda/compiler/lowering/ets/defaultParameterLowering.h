@@ -24,17 +24,17 @@ class DefaultParameterLowering : public Phase {
     std::pair<bool, std::size_t> HasDefaultParam(const ir::ScriptFunction *function, parser::Program *program,
                                                  util::ErrorLogger *logger);
     ir::TSTypeParameterDeclaration *CreateParameterDeclaraion(ir::MethodDefinition *method, public_lib::Context *ctx);
-    ir::FunctionSignature CreateFunctionSignature(ir::MethodDefinition *method, ArenaVector<ir::Expression *> funcParam,
-                                                  public_lib::Context *ctx);
+    ir::FunctionSignature CreateFunctionSignature(ir::MethodDefinition *method,
+                                                  ArenaVector<ir::Expression *> &&funcParam, public_lib::Context *ctx);
     ir::TSTypeParameterInstantiation *CreateTypeParameterInstantiation(ir::MethodDefinition *method,
                                                                        public_lib::Context *ctx);
     ir::BlockStatement *CreateFunctionBody(ir::MethodDefinition *method, public_lib::Context *ctx,
-                                           ArenaVector<ir::Expression *> funcCallArgs);
+                                           ArenaVector<ir::Expression *> &&funcCallArgs);
     ir::FunctionExpression *CreateFunctionExpression(ir::MethodDefinition *method, public_lib::Context *ctx,
-                                                     ArenaVector<ir::Expression *> funcDefinitionArgs,
-                                                     ArenaVector<ir::Expression *> funcCallArgs);
-    void CreateOverloadFunction(ir::MethodDefinition *method, ArenaVector<ir::Expression *> funcCallArgs,
-                                ArenaVector<ir::Expression *> funcDefinitionArgs, public_lib::Context *ctx);
+                                                     ArenaVector<ir::Expression *> &&funcDefinitionArgs,
+                                                     ArenaVector<ir::Expression *> &&funcCallArgs);
+    void CreateOverloadFunction(ir::MethodDefinition *method, ArenaVector<ir::Expression *> &&funcCallArgs,
+                                ArenaVector<ir::Expression *> &&funcDefinitionArgs, public_lib::Context *ctx);
     void RemoveInitializers(ArenaVector<ir::Expression *> params);
     void ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, public_lib::Context *ctx);
 

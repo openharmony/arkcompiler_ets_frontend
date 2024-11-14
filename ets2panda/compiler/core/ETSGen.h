@@ -507,8 +507,6 @@ public:
     void CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeFlag);
     void CastToReftype(const ir::AstNode *node, const checker::Type *targetType, bool unchecked);
     void CastDynamicToObject(const ir::AstNode *node, const checker::Type *targetType);
-    void CastUnionToFunctionType(const ir::AstNode *node, const checker::ETSUnionType *unionType,
-                                 checker::Signature *signatureTarget);
 
     void InternalIsInstance(const ir::AstNode *node, const checker::Type *target);
     void InternalCheckCast(const ir::AstNode *node, const checker::Type *target);
