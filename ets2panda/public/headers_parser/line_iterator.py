@@ -73,7 +73,7 @@ class LineIterator:  # pylint: disable=C0115
         return self.current_line.find("namespace") != -1
 
     def is_enum(self) -> bool:
-        return self.current_line.find("enum class") != -1
+        return self.current_line.find("enum ") != -1
 
     def is_struct(self) -> bool:
         return self.current_line.find("struct ") != -1

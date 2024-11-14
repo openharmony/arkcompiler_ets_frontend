@@ -49,9 +49,9 @@ void DumpEtsNodesWithTypes(es2panda_AstNode *node, void *arg)
 
 void TypeRelationTest(es2panda_Context *ctx)
 {
-    es2panda_TypeRelation *relation = impl->CreateTypeRelation0(ctx);
-    es2panda_Type *doubleType = impl->CreateDoubleType0(ctx);
-    es2panda_Type *doubleType1 = impl->CreateDoubleType0(ctx);
+    es2panda_TypeRelation *relation = impl->CreateTypeRelation(ctx);
+    es2panda_Type *doubleType = impl->CreateDoubleType(ctx);
+    es2panda_Type *doubleType1 = impl->CreateDoubleType(ctx);
 
     puts("Check assignment double to double type: ");
     if (impl->TypeRelationIsAssignableTo(ctx, relation, doubleType, doubleType1)) {

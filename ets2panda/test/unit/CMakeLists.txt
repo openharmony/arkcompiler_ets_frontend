@@ -18,6 +18,7 @@ endif()
 add_subdirectory(dynamic)
 add_subdirectory(lowerings)
 add_subdirectory(public)
+add_subdirectory(plugin)
 add_subdirectory(arktsconfig-parser)
 
 ets2panda_add_gtest(es2panda_astdumper_tests

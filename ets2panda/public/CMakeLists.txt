@@ -275,6 +275,8 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/ETSchecker.h
     ${ES2PANDA_ROOT}/checker/checkerContext.h
     ${ES2PANDA_ROOT}/checker/resolveResult.h
+    ${ES2PANDA_ROOT}/parser/ETSparser.h
+    ${ES2PANDA_ROOT}/parser/parserFlags.h
     ${ES2PANDA_ROOT}/es2panda.h
 )
 
@@ -533,6 +535,8 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/ETSchecker.yaml
     ${LIBGEN_DIR}/gen/headers/checker/checkerContext.yaml
     ${LIBGEN_DIR}/gen/headers/checker/resolveResult.yaml
+    ${LIBGEN_DIR}/gen/headers/parser/parserFlags.yaml
+    ${LIBGEN_DIR}/gen/headers/parser/ETSparser.yaml
     )
 
 

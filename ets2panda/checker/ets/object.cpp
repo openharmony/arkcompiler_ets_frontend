@@ -629,7 +629,7 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
 
     ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
     CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(interfaceType), &merged);
-    std::unordered_set<ETSObjectType *> abstractInheritanceTarget;
+    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(Allocator()->Adapter());
 
     for (auto *interface : interfaceType->Interfaces()) {
         auto found = cachedComputedAbstracts_.find(interface);
@@ -654,7 +654,7 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
     ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
     CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(classType), &merged);
 
-    std::unordered_set<ETSObjectType *> abstractInheritanceTarget;
+    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(Allocator()->Adapter());
     if (classType->SuperType() != nullptr) {
         auto base = cachedComputedAbstracts_.find(classType->SuperType());
         ASSERT(base != cachedComputedAbstracts_.end());

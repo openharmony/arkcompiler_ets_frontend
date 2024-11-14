@@ -53,9 +53,9 @@ enum es2panda_variantIndex {
 
 typedef struct es2panda_Program es2panda_Program;
 typedef struct es2panda_ExternalSource es2panda_ExternalSource;
+typedef struct es2panda_ArkTsConfig es2panda_ArkTsConfig;
 typedef struct es2panda_AstNode es2panda_AstNode;
 typedef struct es2panda_FunctionSignature es2panda_FunctionSignature;
-typedef struct es2panda_Language es2panda_Language;
 typedef struct es2panda_SourcePosition es2panda_SourcePosition;
 typedef struct es2panda_SourceRange es2panda_SourceRange;
 typedef struct es2panda_SrcDumper es2panda_SrcDumper;
@@ -66,7 +66,6 @@ typedef struct es2panda_ImportSource es2panda_ImportSource;
 typedef struct es2panda_Signature es2panda_Signature;
 typedef struct es2panda_SignatureInfo es2panda_SignatureInfo;
 typedef struct es2panda_CheckerContext es2panda_CheckerContext;
-typedef struct es2panda_CompilerOptions es2panda_CompilerOptions;
 typedef struct es2panda_ResolveResult es2panda_ResolveResult;
 typedef struct es2panda_ValidationInfo es2panda_ValidationInfo;
 typedef struct es2panda_Type es2panda_Type;
@@ -149,6 +148,13 @@ struct es2panda_Impl {
 #undef SET_NUMBER_LITERAL_DECL
 
     void *(*AllocMemory)(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement);
+    es2panda_SourcePosition *(*CreateSourcePosition)(es2panda_Context *context, size_t index, size_t line);
+    es2panda_SourceRange *(*CreateSourceRange)(es2panda_Context *context, es2panda_SourcePosition *start,
+                                               es2panda_SourcePosition *end);
+    size_t (*SourcePositionIndex)(es2panda_Context *context, es2panda_SourcePosition *position);
+    size_t (*SourcePositionLine)(es2panda_Context *context, es2panda_SourcePosition *position);
+    es2panda_SourcePosition *(*SourceRangeStart)(es2panda_Context *context, es2panda_SourceRange *range);
+    es2panda_SourcePosition *(*SourceRangeEnd)(es2panda_Context *context, es2panda_SourceRange *range);
 
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"

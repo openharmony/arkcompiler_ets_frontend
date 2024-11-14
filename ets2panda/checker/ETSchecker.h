@@ -51,7 +51,7 @@ struct Accessor {
 };
 
 using ComputedAbstracts =
-    ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, std::unordered_set<ETSObjectType *>>>;
+    ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, ArenaUnorderedSet<ETSObjectType *>>>;
 using ArrayMap = ArenaUnorderedMap<Type *, ETSArrayType *>;
 using GlobalArraySignatureMap = ArenaUnorderedMap<ETSArrayType *, Signature *>;
 using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<util::StringView, ir::ScriptFunction *>>;

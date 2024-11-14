@@ -14,18 +14,14 @@
  */
 
 #include "es2panda_lib.h"
-#include <memory>
 #include <cstring>
 #include <cstdint>
-#include <variant>
 
 #include "varbinder/varbinder.h"
 #include "varbinder/scope.h"
-#include "varbinder/variable.h"
 #include "public/public.h"
 #include "generated/signatures.h"
 #include "es2panda.h"
-#include "assembler/assembly-program.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSAnalyzer.h"
 #include "checker/ETSchecker.h"
@@ -37,7 +33,6 @@
 #include "compiler/lowering/phase.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "compiler/core/labelPair.h"
 #include "ir/astNode.h"
 #include "ir/expressions/arrowFunctionExpression.h"
 #include "ir/ts/tsAsExpression.h"
@@ -45,37 +40,17 @@
 #include "ir/expressions/binaryExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/expressions/callExpression.h"
-#include "ir/expressions/chainExpression.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/classElement.h"
-#include "ir/ts/tsClassImplements.h"
 #include "ir/base/classProperty.h"
-#include "ir/base/scriptFunctionSignature.h"
-#include "ir/statements/expressionStatement.h"
-#include "ir/statements/functionDeclaration.h"
-#include "ir/expressions/functionExpression.h"
 #include "ir/ets/etsFunctionType.h"
-#include "ir/expressions/identifier.h"
 #include "ir/statements/ifStatement.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/expressions/importExpression.h"
-#include "ir/module/importSpecifier.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsNewArrayInstanceExpression.h"
 #include "ir/ets/etsNewMultiDimArrayInstanceExpression.h"
-#include "ir/expressions/thisExpression.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
-#include "ir/statements/variableDeclaration.h"
-#include "ir/statements/variableDeclarator.h"
 #include "parser/ETSparser.h"
 #include "parser/context/parserContext.h"
 #include "parser/program/program.h"
 #include "util/generateBin.h"
-#include "util/language.h"
 #include "util/options.h"
 #include "generated/es2panda_lib/es2panda_lib_include.inc"
 
@@ -381,8 +356,6 @@ __attribute__((unused)) static Context *InitScopes(Context *ctx)
     ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
 
     try {
-        compiler::InitScopesPhaseETS scopesInit;
-        scopesInit.Perform(ctx, ctx->parserProgram);
         do {
             if (ctx->currentPhase >= ctx->phases.size()) {
                 break;
@@ -667,11 +640,52 @@ SET_NUMBER_LITERAL_IMPL(Float, float)
 
 #undef SET_NUMBER_LITERAL_IMPL
 
-void *AllocMemory(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement)
+extern "C" void *AllocMemory(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement)
 {
     auto *allocator = reinterpret_cast<Context *>(context)->allocator;
     void *ptr = allocator->Alloc(numberOfElements * sizeOfElement);
     return ptr;
+}
+
+extern "C" es2panda_SourcePosition *CreateSourcePosition(es2panda_Context *context, size_t index, size_t line)
+{
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    return reinterpret_cast<es2panda_SourcePosition *>(allocator->New<lexer::SourcePosition>(index, line));
+}
+
+extern "C" es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es2panda_SourcePosition *start,
+                                                   es2panda_SourcePosition *end)
+{
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    auto startE2p = *(reinterpret_cast<lexer::SourcePosition *>(start));
+    auto endE2p = *(reinterpret_cast<lexer::SourcePosition *>(end));
+    return reinterpret_cast<es2panda_SourceRange *>(allocator->New<lexer::SourceRange>(startE2p, endE2p));
+}
+
+extern "C" size_t SourcePositionIndex([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
+{
+    return reinterpret_cast<lexer::SourcePosition *>(position)->index;
+}
+
+extern "C" size_t SourcePositionLine([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
+{
+    return reinterpret_cast<lexer::SourcePosition *>(position)->line;
+}
+
+extern "C" es2panda_SourcePosition *SourceRangeStart([[maybe_unused]] es2panda_Context *context,
+                                                     es2panda_SourceRange *range)
+{
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    auto E2pRange = reinterpret_cast<lexer::SourceRange *>(range);
+    return reinterpret_cast<es2panda_SourcePosition *>(allocator->New<lexer::SourcePosition>(E2pRange->start));
+}
+
+extern "C" es2panda_SourcePosition *SourceRangeEnd([[maybe_unused]] es2panda_Context *context,
+                                                   es2panda_SourceRange *range)
+{
+    auto *allocator = reinterpret_cast<Context *>(context)->allocator;
+    auto E2pRange = reinterpret_cast<lexer::SourceRange *>(range);
+    return reinterpret_cast<es2panda_SourcePosition *>(allocator->New<lexer::SourcePosition>(E2pRange->end));
 }
 
 #include "generated/es2panda_lib/es2panda_lib_impl.inc"
@@ -698,6 +712,12 @@ es2panda_Impl g_impl = {
     SetNumberLiteralDouble,
     SetNumberLiteralFloat,
     AllocMemory,
+    CreateSourcePosition,
+    CreateSourceRange,
+    SourcePositionIndex,
+    SourcePositionLine,
+    SourceRangeStart,
+    SourceRangeEnd,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

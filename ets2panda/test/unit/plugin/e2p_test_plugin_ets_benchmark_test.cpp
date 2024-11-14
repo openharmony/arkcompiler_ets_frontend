@@ -43,21 +43,20 @@ es2panda_AstNode *CreateNewFunction(int num, es2panda_Context *ctx)
     char *funcName = static_cast<char *>(impl->AllocMemory(ctx, funcNameStr.length() + 1, sizeof(char)));
     std::copy_n(funcNameStr.c_str(), funcNameStr.length() + 1, funcName);
     es2panda_AstNode *key = impl->CreateIdentifier1(ctx, funcName);
-    es2panda_AstNode *body = impl->CreateBlockStatement0(ctx, nullptr, 0);
-    es2panda_AstNode *scriptFunction = impl->CreateScriptFunction0(
+    es2panda_AstNode *body = impl->CreateBlockStatement(ctx, nullptr, 0);
+    es2panda_AstNode *scriptFunction = impl->CreateScriptFunction(
         ctx, body,
-        impl->CreateFunctionSignature0(ctx, nullptr, nullptr, 0,
-                                       impl->CreateETSPrimitiveType0(ctx, PRIMITIVE_TYPE_VOID)),
+        impl->CreateFunctionSignature(ctx, nullptr, nullptr, 0, impl->CreateETSPrimitiveType(ctx, PRIMITIVE_TYPE_VOID)),
         SCRIPT_FUNCTION_FLAGS_NONE, MODIFIER_FLAGS_NONE, false);
     impl->AstNodeSetParent(ctx, body, scriptFunction);
     es2panda_AstNode *ident = impl->CreateIdentifier1(ctx, funcName);
     impl->ScriptFunctionSetIdent(ctx, scriptFunction, ident);
     impl->AstNodeSetParent(ctx, ident, scriptFunction);
-    es2panda_AstNode *value = impl->CreateFunctionExpression0(ctx, scriptFunction);
+    es2panda_AstNode *value = impl->CreateFunctionExpression(ctx, scriptFunction);
     impl->AstNodeSetParent(ctx, scriptFunction, value);
 
     es2panda_AstNode *func =
-        impl->CreateMethodDefinition0(ctx, METHOD_DEFINITION_KIND_METHOD, key, value, MODIFIER_FLAGS_NONE, false);
+        impl->CreateMethodDefinition(ctx, METHOD_DEFINITION_KIND_METHOD, key, value, MODIFIER_FLAGS_NONE, false);
     impl->AstNodeSetParent(ctx, value, func);
     impl->AstNodeSetParent(ctx, key, func);
     return func;
