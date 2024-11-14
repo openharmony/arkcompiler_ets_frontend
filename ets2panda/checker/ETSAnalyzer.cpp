@@ -172,6 +172,12 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         return ReturnTypeForStatement(node);
     }
 
+    ASSERT(!(scriptFunc->IsGetter() && scriptFunc->IsSetter()));
+    if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
+        auto status = scriptFunc->IsGetter() ? CheckerStatus::IN_GETTER : CheckerStatus::IN_SETTER;
+        checker->AddStatus(status);
+    }
+
     // NOTE: aszilagyi. make it correctly check for open function not have body
     if (!scriptFunc->HasBody() && !(node->IsAbstract() || node->IsNative() || node->IsDeclare() ||
                                     checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
@@ -949,6 +955,9 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
 
     ETSChecker *checker = GetETSChecker();
 
+    if (checker->HasStatus(CheckerStatus::IN_SETTER) && expr->Left()->IsMemberExpression()) {
+        checker->WarnForEndlessLoopInGetterSetter(expr->Left()->AsMemberExpression());
+    }
     auto const leftType = expr->Left()->Check(checker);
 
     if (IsInvalidArrayMemberAssignment(expr, checker)) {
