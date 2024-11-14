@@ -16,4 +16,3 @@ const regex = /<[^>]+>/g;
 const str = "<div>Hello</div><p>World</p>";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // <div>,</div>,<p>,</p>
-

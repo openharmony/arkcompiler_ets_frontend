@@ -15,4 +15,3 @@
 const regex = /\*{2}/;
 const str = "A**B";
 print(JSON.stringify(str.match(regex))); // **
-

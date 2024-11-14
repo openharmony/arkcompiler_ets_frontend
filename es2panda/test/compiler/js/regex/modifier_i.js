@@ -16,4 +16,3 @@ var str = "AbCaBc";
 var regex = /abc/i;
 var match = str.match(regex);
 print(JSON.stringify(match)); // AbC
-

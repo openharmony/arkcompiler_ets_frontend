@@ -15,4 +15,3 @@
 const regex = /\{2}/;
 const str = "{Hello}{World}";
 print(JSON.stringify(str.match(regex))); // null
-

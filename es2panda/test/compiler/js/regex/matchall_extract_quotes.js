@@ -16,4 +16,3 @@ const regex = /"[^"]*"|'[^']*'/g;
 const str = 'She said, "Hello" and he replied, "Hi".';
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // "Hello","Hi"
-

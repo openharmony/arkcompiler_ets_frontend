@@ -16,4 +16,3 @@ var str = "abc\f123";
 var regex = /\f/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // \f
-

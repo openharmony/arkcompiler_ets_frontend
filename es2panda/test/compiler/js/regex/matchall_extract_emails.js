@@ -16,4 +16,3 @@ const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
 const str = "Contact us at info@example.com or support@example.org.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // info@example.com,support@example.org
-

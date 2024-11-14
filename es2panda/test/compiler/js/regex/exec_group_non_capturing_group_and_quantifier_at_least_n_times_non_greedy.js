@@ -16,4 +16,3 @@ var str = "hello hello jack, you&me, Good new day goo";
 var regex = /(?:hello\s){2,}?/;
 var match = regex.exec(str);
 print(JSON.stringify(match));
-

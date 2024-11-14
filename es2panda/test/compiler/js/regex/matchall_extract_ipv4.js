@@ -16,4 +16,3 @@ const regex = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g;
 const str = "The IP address is 192.168.1.1 and the gateway is 192.168.1.254.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // 192.168.1.1,192.168.1.254
-

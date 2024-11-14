@@ -16,4 +16,3 @@ var str = "hello hello hello jack";
 var regex = /(\w+ )\1{2}/;
 var match = regex.exec(str);
 print(JSON.stringify(match));
-

@@ -16,4 +16,3 @@ const regex = /\b\d{4}-\d{4}-\d{4}-\d{4}\b/g;
 const str = "The card number is 1234-5678-9012-3456.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // 1234-5678-9012-3456
-

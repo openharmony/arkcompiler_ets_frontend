@@ -15,4 +15,3 @@
 const regex = /(\v)/;
 const str = "Line1\vLine2";
 print(JSON.stringify(str.match(regex))); // \x0B,\x0B
-

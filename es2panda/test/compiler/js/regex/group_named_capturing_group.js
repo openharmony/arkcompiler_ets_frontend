@@ -16,4 +16,3 @@ var str = "abc123";
 var regex = /(?<name>abc)/;
 var match = str.match(regex);
 print(JSON.stringify(match.groups.name)); // abc
-

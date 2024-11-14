@@ -13,4 +13,3 @@
  * limitations under the License.
  */
 print(JSON.stringify(/^\uD83D/u.test('\uD83D\uDC2A'))); // false
-

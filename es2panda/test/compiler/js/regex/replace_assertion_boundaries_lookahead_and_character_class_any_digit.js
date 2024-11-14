@@ -16,4 +16,3 @@ var str = "hello123jack";
 var regex = /\d+(?=jack)/;
 var result = str.replace(regex, "DIGIT");
 print(JSON.stringify(result)); // helloDIGITjack
-

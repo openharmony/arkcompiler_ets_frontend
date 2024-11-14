@@ -16,4 +16,3 @@ const regex = /[.,!?;:]/g;
 const str = "Hello, world! How are you?";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // ,,!,?
-

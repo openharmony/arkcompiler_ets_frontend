@@ -16,4 +16,3 @@ const regex = /#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/g;
 const str = "The color is #FF5733 and the background is #FFF.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // #FF5733,FF5733,#FFF,FFF
-

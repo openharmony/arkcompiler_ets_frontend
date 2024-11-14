@@ -15,4 +15,3 @@
 const regex = /\!/g;
 const str = "Hello! World!";
 print(JSON.stringify(str.match(regex))); // !,!
-

@@ -16,4 +16,3 @@ const regex = /https?:\/\/[^\s]+/g;
 const str = "Visit our website at https://www.example.com or http://example.org.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // https://www.example.com,http://example.org.
-

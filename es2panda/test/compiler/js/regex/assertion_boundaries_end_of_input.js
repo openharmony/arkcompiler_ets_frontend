@@ -16,4 +16,3 @@ var str = "abc def";
 var regex = /def$/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // def
-

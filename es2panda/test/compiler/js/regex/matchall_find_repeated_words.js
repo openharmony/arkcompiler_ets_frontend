@@ -16,4 +16,3 @@ const regex = /\b(\w+)\s+\1\b/ig;
 const str = "The the quick brown fox jumps over the lazy dog.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // The the,The
-

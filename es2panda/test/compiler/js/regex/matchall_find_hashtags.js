@@ -16,4 +16,3 @@ const regex = /#\w+/g;
 const str = "Trending topics are #JavaScript and #AI.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // #JavaScript,#AI
-

@@ -15,4 +15,3 @@
 const regex = /\t\d+/;
 const str = "Line1\t123Line2";
 print(JSON.stringify(str.match(regex))); // \t123
-

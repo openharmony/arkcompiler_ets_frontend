@@ -15,4 +15,3 @@
 const regex = /(\n)/;
 const str = "Line1\nLine2";
 print(JSON.stringify(str.match(regex))); // \n,\n
-

@@ -16,4 +16,3 @@ var str1 = "abc&123";
 var regex1 = /\W1/;
 var match1 = str1.match(regex1);
 print(JSON.stringify(match1)); // &1
-

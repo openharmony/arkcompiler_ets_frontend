@@ -16,4 +16,3 @@ var str = "Hello\x03World";
 var regex = /\cC/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // \u0003
-

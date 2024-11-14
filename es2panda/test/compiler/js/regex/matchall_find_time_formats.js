@@ -16,4 +16,3 @@ const regex = /\d{2}:\d{2}:\d{2}/g;
 const str = "The meeting starts at 14:30:00 and ends at 15:45:00.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // 14:30:00,15:45:00
-

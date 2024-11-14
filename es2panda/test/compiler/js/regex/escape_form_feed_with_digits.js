@@ -15,4 +15,3 @@
 const regex = /\f\d+/;
 const str = "Page1\f234Page2";
 print(JSON.stringify(str.match(regex))); // \f234
-

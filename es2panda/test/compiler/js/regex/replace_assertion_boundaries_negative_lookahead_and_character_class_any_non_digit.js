@@ -16,4 +16,3 @@ var str = "hello jack, you&me, Good new day goo";
 var regex = /\D+(?!jack)/;
 var result = str.replace(regex, "NONDIGIT");
 print(JSON.stringify(result)); // NONDIGIT
-

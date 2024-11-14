@@ -16,4 +16,3 @@ var str = "abc\uD83D\uDE00123";
 var regex = /\uD83D\uDE00/;
 var match = str.match(regex);
 print(JSON.stringify(match)); // 😀
-

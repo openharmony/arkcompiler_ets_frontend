@@ -16,4 +16,3 @@ var str = "hello\n123jack, you&me, Good new day goo";
 var regex = /^\d/m;
 var result = str.search(regex);
 print(JSON.stringify(result)); // 6
-

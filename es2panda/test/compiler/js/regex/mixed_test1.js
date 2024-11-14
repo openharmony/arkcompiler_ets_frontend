@@ -23,4 +23,3 @@ const regex = new RegExp(`([a-zA-Z]{2,6})\\s*([#$@%&*!]*?)\\s*([\\s\\S]{2,8})[\\
     `([\\u2500-\\u28FF\\p{Z}\\p{P}]{2,8})\\s*([\\s\\S]{2,8})[\\u0020]*([\\W|\\d{2,8}])\\s*([a-zA-Z]{2,8})`, 'gu');
 const matches = str.match(regex);
 print(JSON.stringify(matches, null, 2));
-

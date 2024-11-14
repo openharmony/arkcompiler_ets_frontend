@@ -16,4 +16,3 @@ var str = "hello jack, you&me, Good new day goo";
 var regex = /[^a-z]+/;
 var result = str.replace(regex, "NONLETTER");
 print(JSON.stringify(result)); // helloNONLETTERjack, you&me, Good new day goo
-

@@ -16,4 +16,3 @@ var str = "hello\uD83D\uDE00jack, you&me, Good new day goo";
 var regex = /\uD83D\uDE00{2}?/;
 var result = str.split(regex);
 print(JSON.stringify(result)); // hello😀jack, you&me, Good new day goo
-

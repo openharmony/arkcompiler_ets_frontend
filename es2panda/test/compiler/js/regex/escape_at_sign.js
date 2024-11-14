@@ -15,4 +15,3 @@
 const regex = /\@/;
 const str = "user@example.com";
 print(JSON.stringify(regex.test(str))); // true
-

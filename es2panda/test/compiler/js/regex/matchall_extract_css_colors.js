@@ -16,4 +16,3 @@ const regex = /rgb.\d{1,3}, \d{1,3}, \d{1,3}./g;
 const str = "The color is rgb(255, 0, 0) and the background is rgb(0, 0, 255).";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // rgb(255, 0, 0),rgb(0, 0, 255)
-

@@ -15,4 +15,3 @@
 const regex = /([\x00-\x1F])/g;
 const str = "Hello\x05World";
 print(JSON.stringify(str.match(regex))); // \x05
-

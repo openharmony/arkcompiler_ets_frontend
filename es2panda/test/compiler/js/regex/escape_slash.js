@@ -15,4 +15,3 @@
 const regex = /\//;
 const str = "http://example.com";
 print(JSON.stringify(regex.test(str))); // true
-

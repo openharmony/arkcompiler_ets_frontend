@@ -16,4 +16,3 @@ var str = "hello jack you & ^ me";
 var regex = /\B\W+/;
 var match = regex.exec(str);
 print(JSON.stringify(match));
-

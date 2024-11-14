@@ -15,4 +15,3 @@
 const regex = /\u{1F600}/u;
 const str = "😀Hello";
 print(JSON.stringify(str.match(regex))); // 😀
-

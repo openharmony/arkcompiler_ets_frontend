@@ -16,4 +16,3 @@ const regex = /\$\d+(\.\d{2})?/g;
 const str = "The price is $19.99 and the discount is $5.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // $19.99,.99,$5,
-

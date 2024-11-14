@@ -16,4 +16,3 @@ var str = "hello jack, you&me, Good new day goo";
 var regex = /\B\W+/;
 var result = str.replace(regex, "NONWORD");
 print(JSON.stringify(result)); // hello jack,NONWORDyou&me, Good new day goo
-

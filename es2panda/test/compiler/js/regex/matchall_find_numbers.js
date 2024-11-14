@@ -16,4 +16,3 @@ const regex = /\d+/g;
 const str = "There are 123 apples and 456 oranges.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // 123,456
-

@@ -16,4 +16,3 @@ var str = "Good day gogogo";
 var regex = /(go)+/;
 var match = regex.exec(str);
 print(JSON.stringify(match)); // gogogo,go
-

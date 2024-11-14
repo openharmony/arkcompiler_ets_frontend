@@ -16,4 +16,3 @@ const regex = /[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 const str = "Visit example.com and support.example.org.";
 const matches = [...str.matchAll(regex)];
 print(JSON.stringify(matches)); // example.com,support.example.org
-

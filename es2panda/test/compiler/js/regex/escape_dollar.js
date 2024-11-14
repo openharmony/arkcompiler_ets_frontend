@@ -15,4 +15,3 @@
 const regex = /\$/;
 const str = "Price: $10";
 print(JSON.stringify(regex.test(str))); // true
-

@@ -15,4 +15,3 @@
 const regex = /\@/g;
 const str = "user@example.com;123@abc.com";
 print(JSON.stringify(str.match(regex))); // @,@
-

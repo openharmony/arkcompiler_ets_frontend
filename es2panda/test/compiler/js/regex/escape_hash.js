@@ -15,4 +15,3 @@
 const regex = /\#/;
 const str = "Page #1";
 print(JSON.stringify(regex.test(str))); // true
-

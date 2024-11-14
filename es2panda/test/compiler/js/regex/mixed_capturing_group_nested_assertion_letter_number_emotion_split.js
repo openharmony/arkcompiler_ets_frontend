@@ -24,4 +24,3 @@ c3\rc3\r\r\r\r
 `;
 const matches = str.split(regex);
 print(JSON.stringify(matches));
-
