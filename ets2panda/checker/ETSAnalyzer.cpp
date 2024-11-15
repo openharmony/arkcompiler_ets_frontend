@@ -792,7 +792,8 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
              *           should calculated as union of types from each element,
              *           otherwise don't properly work with array from union type
              */
-            expr->preferredType_ = checker->CreateETSArrayType(expr->Elements()[0]->Check(checker));
+            expr->preferredType_ =
+                checker->CreateETSArrayType(checker->GetNonConstantType(expr->Elements()[0]->Check(checker)));
         }
 
         const bool isPreferredTuple = expr->preferredType_->IsETSTupleType();
