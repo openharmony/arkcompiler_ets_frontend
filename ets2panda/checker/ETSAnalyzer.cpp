@@ -643,28 +643,71 @@ static bool CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
     return true;
 }
 
+static bool AddSpreadElementTypes(ETSChecker *checker, ir::Expression *const element,
+                                  ArenaVector<std::pair<Type *, ir::Expression *>> &elementTypes, bool isPreferredTuple)
+{
+    Type *elementType = element->Check(checker);
+    Type *argumentType = element->AsSpreadElement()->Argument()->Check(checker);
+    if (argumentType->IsETSTupleType()) {
+        for (Type *type : argumentType->AsETSTupleType()->GetTupleTypesList()) {
+            elementTypes.push_back({type, element});
+        }
+        return true;
+    }
+    if (!argumentType->IsETSTupleType() && isPreferredTuple) {
+        checker->LogTypeError({"'", argumentType, "' cannot be spread in tuple."}, element->Start());
+        elementTypes.push_back({elementType, element});
+        return false;
+    }
+    elementTypes.push_back({elementType, element});
+    return true;
+}
+
+static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ir::ArrayExpression *expr, ETSChecker *checker,
+                                                                        bool isPreferredTuple, bool &checkResult)
+{
+    ArenaVector<std::pair<Type *, ir::Expression *>> elementTypes(checker->Allocator()->Adapter());
+    for (std::size_t idx = 0; idx < expr->Elements().size(); ++idx) {
+        ir::Expression *const element = expr->Elements()[idx];
+
+        if (element->IsArrayExpression() &&
+            !expr->HandleNestedArrayExpression(checker, element->AsArrayExpression(), isPreferredTuple, idx)) {
+            elementTypes.push_back({nullptr, element});
+            continue;
+        }
+
+        if (element->IsObjectExpression()) {
+            element->AsObjectExpression()->SetPreferredType(expr->GetPreferredType()->AsETSArrayType()->ElementType());
+        }
+
+        if (element->IsSpreadElement()) {
+            if (!AddSpreadElementTypes(checker, element, elementTypes, isPreferredTuple)) {
+                checkResult = false;
+            }
+            continue;
+        }
+
+        Type *elementType = element->Check(checker);
+        elementTypes.push_back({elementType, element});
+    }
+
+    return elementTypes;
+}
+
 static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::vector<checker::Type *> targetElementType,
                          bool isPreferredTuple)
 {
     bool isSecondaryChosen = false;
-    bool ok = true;
+    bool checkResult = true;
 
-    for (std::size_t idx = 0; idx < expr->Elements().size(); ++idx) {
-        auto *const currentElement = expr->Elements()[idx];
+    ArenaVector<std::pair<Type *, ir::Expression *>> elementTypes =
+        GetElementTypes(expr, checker, isPreferredTuple, checkResult);
 
-        if (currentElement->IsArrayExpression()) {
-            if (!expr->HandleNestedArrayExpression(checker, currentElement->AsArrayExpression(), isPreferredTuple,
-                                                   idx)) {
-                continue;
-            }
+    for (std::size_t idx = 0; idx < elementTypes.size(); ++idx) {
+        auto [elementType, currentElement] = elementTypes[idx];
+        if (elementType == nullptr) {
+            continue;
         }
-
-        if (currentElement->IsObjectExpression()) {
-            currentElement->AsObjectExpression()->SetPreferredType(
-                expr->GetPreferredType()->AsETSArrayType()->ElementType());
-        }
-
-        checker::Type *elementType = currentElement->Check(checker);
 
         if (!elementType->IsETSArrayType() && isPreferredTuple) {
             auto const *const tupleType = expr->GetPreferredType()->AsETSTupleType();
@@ -674,7 +717,7 @@ static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
                 checker->LogTypeError({"Too many elements in array initializer for tuple with size of ",
                                        static_cast<uint32_t>(tupleType->GetTupleSize())},
                                       currentElement->Start());
-                ok = false;
+                checkResult = false;
                 continue;
             }
             // clang-format off
@@ -682,7 +725,7 @@ static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
                                    currentElement->Start(), {}, TypeRelationFlag::NO_THROW).IsAssignable()) {
                 checker->LogTypeError({"Array initializer's type is not assignable to tuple type at index: ", idx},
                                       currentElement->Start());
-                                      ok=false;
+                                      checkResult=false;
                 continue;
             }
             // clang-format on
@@ -695,12 +738,12 @@ static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
         }
 
         if (!CheckArrayElement(checker, elementType, targetElementType, currentElement, isSecondaryChosen)) {
-            ok = false;
+            checkResult = false;
             continue;
         }
     }
 
-    return ok;
+    return checkResult;
 }
 
 void ETSAnalyzer::GetUnionPreferredType(ir::ArrayExpression *expr) const

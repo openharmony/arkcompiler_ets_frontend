@@ -351,12 +351,26 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
 
 bool ETSChecker::ValidateTupleMinElementSize(ir::ArrayExpression *const arrayExpr, ETSTupleType *tuple)
 {
-    if (arrayExpr->Elements().size() < static_cast<size_t>(tuple->GetMinTupleSize())) {
+    size_t size = 0;
+    for (ir::Expression *element : arrayExpr->Elements()) {
+        if (element->IsSpreadElement()) {
+            Type *argType = element->AsSpreadElement()->Argument()->Check(this);
+            if (argType->IsETSTupleType()) {
+                size += argType->AsETSTupleType()->GetTupleTypesList().size();
+                continue;
+            }
+            LogTypeError({"'", argType, "' cannot be spread in tuple."}, element->Start());
+        }
+        ++size;
+    }
+
+    if (size < static_cast<size_t>(tuple->GetMinTupleSize())) {
         LogTypeError({"Few elements in array initializer for tuple with size of ",
                       static_cast<size_t>(tuple->GetMinTupleSize())},
                      arrayExpr->Start());
         return false;
     }
+
     return true;
 }
 }  // namespace ark::es2panda::checker
