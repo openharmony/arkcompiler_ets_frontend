@@ -154,3 +154,8 @@ test262/data/test_es2021/intl402/Intl/getCanonicalLocales/transformed-ext-valid.
 test262/data/test_es2021/intl402/supportedLocalesOf-returned-array-elements-are-not-frozen.js
 test262/data/test_es2021/intl402/supportedLocalesOf-taint-Array.js
 test262/data/test_es2021/intl402/Locale/invalid-tag-throws.js
+
+#20321
+test262/data/test_es2021/intl402/DisplayNames/options-fallback-toString-abrupt-throws.js
+test262/data/test_es2021/intl402/DisplayNames/options-type-toString-abrupt-throws.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/invalid-tags.js

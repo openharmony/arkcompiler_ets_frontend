@@ -8,3 +8,6 @@ test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
 
 #19208
 test262/data/test_es2021/language/module-code/instn-iee-err-circular-as.js
+
+#20465
+test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
