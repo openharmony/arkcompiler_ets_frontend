@@ -18,3 +18,4 @@ class /* @@ label */yield{
 }
 
 /* @@@ label Error SyntaxError: Cannot be used as user-defined type.  */
+/* @@? 16:21 Error SyntaxError: Identifier expected, got 'yield'. */

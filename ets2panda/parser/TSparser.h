@@ -119,7 +119,7 @@ private:
                              ir::Expression *propName, ir::ScriptFunction *func) override;
     bool IsModifierKind(const lexer::Token &token) override;
     void CheckIfTypeParameterNameIsReserved() override;
-    void ThrowErrorIfStaticConstructor(ir::ModifierFlags flags) override;
+    void CheckIfStaticConstructor(ir::ModifierFlags flags) override;
     std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **propName) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(

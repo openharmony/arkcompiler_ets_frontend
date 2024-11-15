@@ -13,12 +13,15 @@
  * limitations under the License.
  */
 
-interface /* @@ label1 */type {
-  type: number /* @@ label2 */= /* @@ label3 */0
-/* @@ label4 */}
+class A {
+    get abc(x: number) {}
+    set abc(x: number, a: string) {}
+}
 
-/* @@@ label1 Error SyntaxError: Cannot be used as user-defined type.  */
-/* @@@ label2 Error SyntaxError: Interface member initialization is prohibited */
-/* @@@ label3 Error SyntaxError: Unexpected token, expected: ','. */
-/* @@? 17:48 Error SyntaxError: Unexpected token, expected 'private' or identifier */
-/* @@@ label4 Error SyntaxError: Identifier expected */
+function a.fun() {}
+
+class int {}
+
+/* @@? 18:5 Error SyntaxError: Getter must not have formal parameters */
+/* @@? 19:1 Error SyntaxError: Setter must have exactly one formal parameter */
+/* @@? 23:7 Error SyntaxError: Cannot be used as user-defined type. */

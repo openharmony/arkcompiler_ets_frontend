@@ -872,7 +872,7 @@ static lexer::SourcePosition GetEndLoc(ir::BlockStatement *body, ir::ScriptFunct
     }
 
     if (!func->Params().empty()) {
-        return (*func->Params().end())->End();
+        return func->Params().back()->End();
     }
 
     return lexer->GetToken().End();
