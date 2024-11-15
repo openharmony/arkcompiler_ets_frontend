@@ -151,17 +151,16 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *check
                                                                                expr->TsType());
     }
     if (sourceType != nullptr && expr->Expr()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
-        if (expr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        if (expr->TsType()->IsETSPrimitiveType()) {
             auto *const asExpr = GenAsExpression(checker, sourceType, expr->Expr(), expr);
-            asExpr->SetBoxingUnboxingFlags(
-                checker->GetUnboxingFlag(checker->ETSBuiltinTypeAsPrimitiveType(sourceType)));
+            asExpr->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(checker->MaybeUnboxInRelation(sourceType)));
             expr->Expr()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
             expr->SetExpr(asExpr);
         }
         return expr;
     }
     auto *const unboxableUnionType = sourceType != nullptr ? sourceType : unionType->FindUnboxableType();
-    auto *const unboxedUnionType = checker->ETSBuiltinTypeAsPrimitiveType(unboxableUnionType);
+    auto *const unboxedUnionType = checker->MaybeUnboxInRelation(unboxableUnionType);
     auto *const node =
         UnionCastToPrimitive(checker, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr());
     node->SetParent(expr->Parent());
@@ -195,7 +194,7 @@ bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
             if (ast->IsTSAsExpression() && ast->AsTSAsExpression()->Expr()->TsType() != nullptr &&
                 ast->AsTSAsExpression()->Expr()->TsType()->IsETSUnionType() &&
                 ast->AsTSAsExpression()->TsType() != nullptr &&
-                ast->AsTSAsExpression()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+                ast->AsTSAsExpression()->TsType()->IsETSPrimitiveType()) {
                 return HandleUnionCastToPrimitive(checker, ast->AsTSAsExpression());
             }
 

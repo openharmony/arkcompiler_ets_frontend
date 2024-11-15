@@ -82,88 +82,132 @@ bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
     return false;
 }
 
-static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, ETSFunctionType *sourceFuncType)
+static Signature *EnhanceSignatureSubstitution(TypeRelation *relation, Signature *super, Signature *sub)
 {
-    Signature *match {};
-    for (auto *it : sourceFuncType->CallSignatures()) {
-        if (target->MinArgCount() != it->MinArgCount()) {
-            continue;
-        }
+    auto checker = relation->GetChecker()->AsETSChecker();
+    auto *substitution = checker->NewSubstitution();
 
-        if ((target->RestVar() != nullptr && it->RestVar() == nullptr) ||
-            (target->RestVar() == nullptr && it->RestVar() != nullptr)) {
-            continue;
+    auto const enhance = [checker, sub, substitution](Type *param, Type *arg) {
+        return checker->EnhanceSubstitutionForType(sub->GetSignatureInfo()->typeParams, param, arg, substitution);
+    };
+    for (size_t ix = 0; ix < super->MinArgCount(); ix++) {
+        if (!enhance(sub->GetSignatureInfo()->params[ix]->TsType(), super->GetSignatureInfo()->params[ix]->TsType())) {
+            return nullptr;
         }
-
-        if (!it->GetSignatureInfo()->typeParams.empty()) {
-            auto *substitution = relation->GetChecker()->AsETSChecker()->NewSubstitution();
-            bool res = true;
-            for (size_t ix = 0; ix < target->MinArgCount(); ix++) {
-                res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
-                    it->GetSignatureInfo()->typeParams, it->GetSignatureInfo()->params[ix]->TsType(),
-                    target->GetSignatureInfo()->params[ix]->TsType(), substitution);
-            }
-            if (target->RestVar() != nullptr) {
-                res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
-                    it->GetSignatureInfo()->typeParams, it->RestVar()->TsType(), target->RestVar()->TsType(),
-                    substitution);
-            }
-            if (!res) {
-                continue;
-            }
-            it = it->Substitute(relation, substitution);
-        }
-
-        size_t idx = 0;
-        for (; idx != target->MinArgCount(); idx++) {
-            if (!relation->IsAssignableTo(target->Params()[idx]->TsType(), it->Params()[idx]->TsType())) {
-                break;
-            }
-        }
-
-        if (idx != target->MinArgCount()) {
-            continue;
-        }
-
-        if (target->RestVar() != nullptr &&
-            !relation->IsAssignableTo(target->RestVar()->TsType(), it->RestVar()->TsType())) {
-            continue;
-        }
-
-        if (!relation->IsAssignableTo(it->ReturnType(), target->ReturnType())) {
-            continue;
-        }
-
-        match = it;
-        break;
     }
-    return match;
+    if (super->RestVar() != nullptr) {
+        if (!enhance(sub->RestVar()->TsType(), super->RestVar()->TsType())) {
+            return nullptr;
+        }
+    }
+    return sub->Substitute(relation, substitution);
+}
+
+static bool IsCompatibleSignature(TypeRelation *relation, Signature *super, Signature *sub)
+{
+    if (super->MinArgCount() != sub->MinArgCount()) {
+        return false;
+    }
+    if ((super->RestVar() != nullptr && sub->RestVar() == nullptr) ||
+        (super->RestVar() == nullptr && sub->RestVar() != nullptr)) {
+        return false;
+    }
+    if (!sub->GetSignatureInfo()->typeParams.empty()) {
+        sub = EnhanceSignatureSubstitution(relation, super, sub);
+        if (sub == nullptr) {
+            return false;
+        }
+    }
+
+    for (size_t idx = 0; idx != super->MinArgCount(); idx++) {
+        if (!relation->IsSupertypeOf(sub->Params()[idx]->TsType(), super->Params()[idx]->TsType())) {
+            return false;
+        }
+    }
+    if (super->RestVar() != nullptr && !relation->IsSupertypeOf(sub->RestVar()->TsType(), super->RestVar()->TsType())) {
+        return false;
+    }
+    if (!relation->IsSupertypeOf(super->ReturnType(), sub->ReturnType())) {
+        return false;
+    }
+    return true;
+}
+
+static ETSFunctionType *CoerceToFunctionType(Type *type)
+{
+    if (type->IsETSFunctionType()) {
+        return type->AsETSFunctionType();
+    }
+    if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+        return type->AsETSObjectType()->GetFunctionalInterfaceInvokeType();
+    }
+    return nullptr;
+}
+
+void ETSFunctionType::IsSupertypeOf(TypeRelation *relation, Type *source)
+{
+    ETSFunctionType *const targetFnType = this;
+    ETSFunctionType *const sourceFnType = CoerceToFunctionType(source);
+    if (sourceFnType == nullptr) {
+        relation->Result(false);
+        return;
+    }
+
+    ASSERT(targetFnType->IsETSArrowType() && sourceFnType->IsETSArrowType());
+    Signature *const targetSig = targetFnType->CallSignatures()[0];
+    Signature *const sourceSig = sourceFnType->CallSignatures()[0];
+
+    SavedTypeRelationFlagsContext savedFlagsCtx(relation, relation->GetTypeRelationFlags() |
+                                                              TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING);
+    if (!IsCompatibleSignature(relation, targetSig, sourceSig)) {
+        relation->Result(false);
+        return;
+    }
+
+    if (!(targetSig->Function()->IsThrowing() || targetSig->HasSignatureFlag(SignatureFlags::THROWS))) {
+        if (sourceSig->Function()->IsThrowing() || sourceSig->Function()->IsRethrowing() ||
+            sourceSig->HasSignatureFlag(SignatureFlags::THROWS) ||
+            sourceSig->HasSignatureFlag(SignatureFlags::RETHROWS)) {
+            relation->Result(false);
+            return;
+        }
+    }
+
+    ASSERT(relation->GetNode() != nullptr);
+    relation->Result(true);
 }
 
 void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    if (!source->IsETSFunctionType() &&
-        (!source->IsETSObjectType() || !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+    ETSFunctionType *const targetFnType = this;
+    ETSFunctionType *const sourceFnType = CoerceToFunctionType(source);
+    if (sourceFnType == nullptr) {
+        relation->Result(false);
         return;
     }
 
-    ASSERT(callSignatures_.size() == 1 && callSignatures_[0]->HasSignatureFlag(SignatureFlags::TYPE));
-
-    Signature *target = callSignatures_[0];
-    bool sourceIsFunctional = source->IsETSObjectType();
-    auto *sourceFuncType = sourceIsFunctional ? source->AsETSObjectType()->GetFunctionalInterfaceInvokeType()
-                                              : source->AsETSFunctionType();
+    ASSERT(IsETSArrowType() && CallSignatures()[0]->HasSignatureFlag(SignatureFlags::TYPE));
+    Signature *const targetSig = targetFnType->CallSignatures()[0];
 
     SavedTypeRelationFlagsContext savedFlagsCtx(relation, relation->GetTypeRelationFlags() |
                                                               TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING);
-    Signature *match = ProcessSignatures(relation, target, sourceFuncType);
 
+    // NOTE(vpukhov): #18866 optionally-typed lambda shouldnt have mulutiple signatures
+    // CC-OFFNXT(G.FMT.14-CPP) project code style
+    Signature *const match = [relation, targetSig, sourceFnType]() -> Signature * {
+        for (auto it : sourceFnType->CallSignatures()) {
+            if (IsCompatibleSignature(relation, targetSig, it)) {
+                return it;
+            }
+        }
+        return nullptr;
+    }();
     if (match == nullptr) {
         relation->Result(false);
         return;
     }
 
-    if (!(target->Function()->IsThrowing() || target->HasSignatureFlag(SignatureFlags::THROWS))) {
+    if (!(targetSig->Function()->IsThrowing() || targetSig->HasSignatureFlag(SignatureFlags::THROWS))) {
         if (match->Function()->IsThrowing() || match->Function()->IsRethrowing() ||
             match->HasSignatureFlag(SignatureFlags::THROWS) || match->HasSignatureFlag(SignatureFlags::RETHROWS)) {
             relation->GetChecker()->LogTypeError(

@@ -110,11 +110,11 @@ checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker
     }
     // Other case - promote element types
     // NOTE(vpukhov): #15570 normalization happens or not?
-    std::for_each(typeList.begin(), typeList.end(), [checker](auto &t) { t = checker->MaybePromotedBuiltinType(t); });
+    std::for_each(typeList.begin(), typeList.end(), [checker](auto &t) { t = checker->MaybeBoxType(t); });
 
     auto ctypes = typeList;
     if (spreadType != nullptr) {
-        spreadType = checker->MaybePromotedBuiltinType(spreadType);
+        spreadType = checker->MaybeBoxType(spreadType);
         ctypes.push_back(spreadType);
     }
     return checker->CreateETSUnionType(std::move(ctypes));

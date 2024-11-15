@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,12 +25,12 @@ public:
     BoxingConverter(ETSChecker *checker, TypeRelation *relation, Type *source)
         : TypeConverter(checker, relation, nullptr, source)
     {
-        if (!source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        if (!source->IsETSPrimitiveType()) {
             Relation()->Result(false);
             return;
         }
 
-        SetResult(ETSTypeFromSource(checker, source));
+        SetResult(Convert(checker, source));
         Relation()->Result(true);
     }
 
@@ -41,17 +41,17 @@ public:
             return;
         }
 
-        if (!source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        if (!source->IsETSPrimitiveType()) {
             Relation()->Result(false);
             return;
         }
 
-        SetResult(ETSTypeFromSource(checker, source));
+        SetResult(Convert(checker, source));
 
         Relation()->Result(relation->IsAssignableTo(Result(), target));
     }
 
-    static checker::ETSObjectType *ETSTypeFromSource(ETSChecker const *checker, Type const *source);
+    static checker::ETSObjectType *Convert(ETSChecker const *checker, Type const *source);
 };
 }  // namespace ark::es2panda::checker
 

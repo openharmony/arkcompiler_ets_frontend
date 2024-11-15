@@ -33,6 +33,7 @@ enum class AstNodeFlags {
     GENERATE_VALUE_OF = 1U << 4U,
     GENERATE_GET_NAME = 1U << 5U,  // Transform the Enum[enumVar] MemberExpression to enumVar.getName() call
     RECHECK = 1U << 6U,
+    /* do not introduce new flags. all the existing to be removed */
 };
 
 enum class ModifierFlags : uint32_t {

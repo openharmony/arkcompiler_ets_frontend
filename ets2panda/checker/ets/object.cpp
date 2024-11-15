@@ -297,7 +297,7 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
     if (param->DefaultType() != nullptr) {
         traverseReferenced(param->DefaultType());
         // NOTE: #14993 ensure default matches constraint
-        paramType->SetDefaultType(MaybePromotedBuiltinType(param->DefaultType()->GetType(this)));
+        paramType->SetDefaultType(MaybeBoxType(param->DefaultType()->GetType(this)));
     }
 }
 
@@ -1374,7 +1374,7 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
 bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
     auto *const expressionType = expr->Check(this);
-    auto const *const unboxedExpressionType = ETSBuiltinTypeAsPrimitiveType(expressionType);
+    auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
 
     Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
 
@@ -1400,11 +1400,7 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 
     if (indexType == nullptr || !indexType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
         std::stringstream message("");
-        if (expressionType->IsNonPrimitiveType()) {
-            message << expressionType->Variable()->Name();
-        } else {
-            expressionType->ToString(message);
-        }
+        expressionType->ToString(message);
 
         LogTypeError(
             "Type '" + message.str() +
@@ -1448,7 +1444,7 @@ std::optional<int32_t> ETSChecker::GetTupleElementAccessValue(const Type *const 
 bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberExpression *const expr)
 {
     auto *const expressionType = expr->Property()->Check(this);
-    auto const *const unboxedExpressionType = ETSBuiltinTypeAsPrimitiveType(expressionType);
+    auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
 
     if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
         expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));

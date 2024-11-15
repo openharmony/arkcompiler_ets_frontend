@@ -309,6 +309,9 @@ void ETSWarningAnalyzer::CheckTypeOfUnboxing(const ir::AstNode *node)
             case ir::BoxingUnboxingFlags::UNBOX_TO_SHORT:
                 ETSThrowWarning("Implicit Unboxing to short" + GetBoxingUnboxingType(node), node->Start());
                 break;
+            case ir::BoxingUnboxingFlags::UNBOX_TO_ENUM:
+                ETSThrowWarning("Implicit Unboxing to enum" + GetBoxingUnboxingType(node), node->Start());
+                break;
             default:
                 break;
         }

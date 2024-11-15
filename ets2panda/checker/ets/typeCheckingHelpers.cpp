@@ -56,7 +56,7 @@ namespace ark::es2panda::checker {
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 {
     auto *const testType = expr->Check(this);
-    auto *const conditionType = ETSBuiltinTypeAsConditionalType(testType);
+    auto *const conditionType = MaybeUnboxConditionalInRelation(testType);
 
     expr->SetTsType(conditionType);
 
@@ -70,12 +70,8 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
         return;
     }
 
-    if (conditionType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (conditionType->IsETSPrimitiveType()) {
         FlagExpressionWithUnboxing(testType, conditionType, expr);
-    }
-
-    if (conditionType->IsETSEnumType()) {
-        expr->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
     }
 }
 
@@ -300,11 +296,46 @@ bool Type::PossiblyETSValueTypedExceptNullish() const
         this, [](const Type *t) { return t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()); });
 }
 
+bool Type::IsETSArrowType() const
+{
+    return IsETSFunctionType() && AsETSFunctionType()->CallSignatures().size() == 1;
+}
+
+[[maybe_unused]] static bool IsSaneETSReferenceType(Type const *type)
+{
+    static constexpr TypeFlag ETS_SANE_REFERENCE_TYPE =
+        TypeFlag::TYPE_ERROR | TypeFlag::ETS_NULL | TypeFlag::ETS_UNDEFINED | TypeFlag::ETS_OBJECT |
+        TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
+        TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION | TypeFlag::ETS_ARRAY |
+        TypeFlag::FUNCTION;
+
+    // Issues
+    if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring
+        return true;
+    }
+    if (type->IsETSTypeAliasType()) {  // NOTE(vpukhov): #20561
+        return true;
+    }
+    if (type->IsNeverType()) {  // NOTE(vpukhov): #20562 We use ets/never and ts/never simultaneously
+        return true;
+    }
+    return type->HasTypeFlag(ETS_SANE_REFERENCE_TYPE);
+}
+
+bool Type::IsETSPrimitiveType() const
+{
+    static constexpr TypeFlag ETS_PRIMITIVE =
+        TypeFlag::ETS_NUMERIC | TypeFlag::CHAR | TypeFlag::ETS_BOOLEAN | TypeFlag::ETS_ENUM;
+
+    // Do not modify
+    ASSERT(!HasTypeFlag(ETS_PRIMITIVE) == IsSaneETSReferenceType(this));
+    return HasTypeFlag(ETS_PRIMITIVE);
+}
+
 bool Type::IsETSReferenceType() const
 {
-    return IsETSObjectType() || IsETSArrayType() || IsETSNullType() || IsETSUndefinedType() || IsETSStringType() ||
-           IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType() ||
-           IsETSFunctionType() || IsETSTypeAliasType() || IsETSNeverType();
+    // Do not modify
+    return !IsETSPrimitiveType();
 }
 
 bool Type::IsETSUnboxableObject() const
@@ -331,7 +362,7 @@ Type *ETSChecker::GetNonConstantType(Type *type)
         return CreateETSUnionType(ETSUnionType::GetNonConstantTypes(this, type->AsETSUnionType()->ConstituentTypes()));
     }
 
-    if (!type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!type->IsETSPrimitiveType()) {
         return type;
     }
 
@@ -514,6 +545,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         case ir::AstNodeType::METHOD_DEFINITION:
             baseProp = node->AsMethodDefinition()->Variable();
             break;
+            // NOTE(vpukhov): should not be a case of unchecked access
         case ir::AstNodeType::CLASS_DEFINITION:
             baseProp = node->AsClassDefinition()->Ident()->Variable();
             break;
@@ -769,52 +801,29 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::
     }
 }
 
-bool ETSChecker::IsTypeBuiltinType(const Type *type) const
+Type *ETSChecker::MaybeUnboxInRelation(Type *type)
 {
-    if (!type->IsETSObjectType()) {
-        return false;
-    }
-
-    switch (type->AsETSObjectType()->BuiltInKind()) {
-        case ETSObjectFlags::BUILTIN_BOOLEAN:
-        case ETSObjectFlags::BUILTIN_BYTE:
-        case ETSObjectFlags::BUILTIN_SHORT:
-        case ETSObjectFlags::BUILTIN_CHAR:
-        case ETSObjectFlags::BUILTIN_INT:
-        case ETSObjectFlags::BUILTIN_LONG:
-        case ETSObjectFlags::BUILTIN_FLOAT:
-        case ETSObjectFlags::BUILTIN_DOUBLE: {
-            return true;
-        }
-        default:
-            return false;
-    }
-}
-
-Type *ETSChecker::ETSBuiltinTypeAsPrimitiveType(Type *objectType)
-{
-    if (objectType == nullptr) {
+    if (type == nullptr) {
         return nullptr;
     }
 
-    if (objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) || objectType->IsETSEnumType()) {
-        return objectType;
+    if (type->IsETSPrimitiveType()) {
+        return type;
     }
 
-    if (!objectType->IsETSObjectType() ||
-        !objectType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+    if (!type->IsETSUnboxableObject()) {
         return nullptr;
     }
 
     auto savedResult = Relation()->IsTrue();
     Relation()->Result(false);
 
-    UnboxingConverter converter = UnboxingConverter(AsETSChecker(), Relation(), objectType, objectType);
+    UnboxingConverter converter = UnboxingConverter(AsETSChecker(), Relation(), type, type);
     Relation()->Result(savedResult);
     return converter.Result();
 }
 
-Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *const objectType)
+Type *ETSChecker::MaybeUnboxConditionalInRelation(Type *const objectType)
 {
     if (objectType->IsTypeError()) {
         return objectType;
@@ -824,24 +833,24 @@ Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *const objectType)
         return nullptr;
     }
 
-    if (auto *unboxed = ETSBuiltinTypeAsPrimitiveType(objectType); unboxed != nullptr) {
+    if (auto *unboxed = MaybeUnboxInRelation(objectType); unboxed != nullptr) {
         return unboxed;
     }
 
     return objectType;
 }
 
-Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *objectType)
+Type *ETSChecker::MaybeBoxInRelation(Type *objectType)
 {
     if (objectType == nullptr) {
         return nullptr;
     }
 
-    if (objectType->IsETSObjectType() && objectType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+    if (objectType->IsETSUnboxableObject()) {
         return objectType;
     }
 
-    if (!objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!objectType->IsETSPrimitiveType()) {
         return nullptr;
     }
 
@@ -854,51 +863,49 @@ Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *objectType)
     return converter.Result();
 }
 
-Type *ETSChecker::MaybePromotedBuiltinType(Type *type) const
+Type *ETSChecker::MaybeBoxType(Type *type) const
 {
-    return type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && !type->IsETSVoidType()
-               ? checker::BoxingConverter::ETSTypeFromSource(this, type)
-               : type;
+    return type->IsETSPrimitiveType() ? BoxingConverter::Convert(this, type) : type;
 }
 
-Type const *ETSChecker::MaybePromotedBuiltinType(Type const *type) const
+Type *ETSChecker::MaybeUnboxType(Type *type) const
 {
-    return type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ? checker::BoxingConverter::ETSTypeFromSource(this, type) : type;
+    return type->IsETSUnboxableObject() ? UnboxingConverter::Convert(this, type->AsETSObjectType()) : type;
 }
 
-Type *ETSChecker::MaybePrimitiveBuiltinType(Type *type) const
+Type const *ETSChecker::MaybeBoxType(Type const *type) const
 {
-    return type->IsETSObjectType() ? UnboxingConverter::GlobalTypeFromSource(this, type->AsETSObjectType()) : type;
+    return MaybeBoxType(const_cast<Type *>(type));
+}
+
+Type const *ETSChecker::MaybeUnboxType(Type const *type) const
+{
+    return MaybeUnboxType(const_cast<Type *>(type));
 }
 
 ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxingType)
 {
-    auto typeKind = TypeKind(ETSBuiltinTypeAsPrimitiveType(boxingType));
+    auto typeKind = TypeKind(MaybeUnboxInRelation(boxingType));
     switch (typeKind) {
-        case TypeFlag::ETS_BOOLEAN: {
+        case TypeFlag::ETS_BOOLEAN:
             return ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN;
-        }
-        case TypeFlag::BYTE: {
+        case TypeFlag::BYTE:
             return ir::BoxingUnboxingFlags::BOX_TO_BYTE;
-        }
-        case TypeFlag::CHAR: {
+        case TypeFlag::CHAR:
             return ir::BoxingUnboxingFlags::BOX_TO_CHAR;
-        }
-        case TypeFlag::SHORT: {
+        case TypeFlag::SHORT:
             return ir::BoxingUnboxingFlags::BOX_TO_SHORT;
-        }
-        case TypeFlag::INT: {
+        case TypeFlag::INT:
             return ir::BoxingUnboxingFlags::BOX_TO_INT;
-        }
-        case TypeFlag::LONG: {
+        case TypeFlag::LONG:
             return ir::BoxingUnboxingFlags::BOX_TO_LONG;
-        }
-        case TypeFlag::FLOAT: {
+        case TypeFlag::FLOAT:
             return ir::BoxingUnboxingFlags::BOX_TO_FLOAT;
-        }
-        case TypeFlag::DOUBLE: {
+        case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::BOX_TO_DOUBLE;
-        }
+        case TypeFlag::ETS_INT_ENUM:
+        case TypeFlag::ETS_STRING_ENUM:
+            return ir::BoxingUnboxingFlags::BOX_TO_ENUM;
         default:
             UNREACHABLE();
     }
@@ -908,45 +915,40 @@ ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxingTy
 {
     auto typeKind = TypeKind(unboxingType);
     switch (typeKind) {
-        case TypeFlag::ETS_BOOLEAN: {
+        case TypeFlag::ETS_BOOLEAN:
             return ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN;
-        }
-        case TypeFlag::BYTE: {
+        case TypeFlag::BYTE:
             return ir::BoxingUnboxingFlags::UNBOX_TO_BYTE;
-        }
-        case TypeFlag::CHAR: {
+        case TypeFlag::CHAR:
             return ir::BoxingUnboxingFlags::UNBOX_TO_CHAR;
-        }
-        case TypeFlag::SHORT: {
+        case TypeFlag::SHORT:
             return ir::BoxingUnboxingFlags::UNBOX_TO_SHORT;
-        }
-        case TypeFlag::INT: {
+        case TypeFlag::INT:
             return ir::BoxingUnboxingFlags::UNBOX_TO_INT;
-        }
-        case TypeFlag::LONG: {
+        case TypeFlag::LONG:
             return ir::BoxingUnboxingFlags::UNBOX_TO_LONG;
-        }
-        case TypeFlag::FLOAT: {
+        case TypeFlag::FLOAT:
             return ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT;
-        }
-        case TypeFlag::DOUBLE: {
+        case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE;
-        }
+        case TypeFlag::ETS_INT_ENUM:
+        case TypeFlag::ETS_STRING_ENUM:
+            return ir::BoxingUnboxingFlags::UNBOX_TO_ENUM;
         default:
             UNREACHABLE();
     }
 }
 
-void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target)
+void ETSChecker::MaybeAddBoxingFlagInRelation(TypeRelation *relation, Type *target)
 {
-    auto boxingResult = PrimitiveTypeAsETSBuiltinType(target);
+    auto boxingResult = MaybeBoxInRelation(target);
     if ((boxingResult != nullptr) && !relation->OnlyCheckBoxingUnboxing()) {
         relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxingResult));
         relation->Result(true);
     }
 }
 
-void ETSChecker::AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *source, Type *self)
+void ETSChecker::MaybeAddUnboxingFlagInRelation(TypeRelation *relation, Type *source, Type *self)
 {
     auto unboxingResult = UnboxingConverter(this, relation, source, self).Result();
     if ((unboxingResult != nullptr) && relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
@@ -960,7 +962,7 @@ void ETSChecker::CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target,
         relation, TypeRelationFlag::ONLY_CHECK_WIDENING |
                       (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE));
     // NOTE: vpukhov. handle union type
-    auto unboxedType = ETSBuiltinTypeAsPrimitiveType(target);
+    auto unboxedType = MaybeUnboxInRelation(target);
     if (unboxedType == nullptr) {
         return;
     }
@@ -972,8 +974,8 @@ void ETSChecker::CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target,
 
 void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *source, Type *target)
 {
-    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(source);
-    auto *unboxedTargetType = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(source);
+    auto *unboxedTargetType = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(target);
     if (unboxedSourceType == nullptr || unboxedTargetType == nullptr) {
         return;
     }
@@ -993,14 +995,7 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
                       (relation->OnlyCheckBoxingUnboxing() ? TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING
                                                            : TypeRelationFlag::NONE));
 
-    if (source->IsETSEnumType()) {
-        if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
-            relation->Result(true);
-            return;
-        }
-    }
-
-    auto *boxedSourceType = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source);
+    auto *boxedSourceType = relation->GetChecker()->AsETSChecker()->MaybeBoxInRelation(source);
     if (boxedSourceType == nullptr) {
         return;
     }
@@ -1011,22 +1006,22 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
     }
     relation->IsAssignableTo(boxedSourceType, target);
     if (relation->IsTrue()) {
-        AddBoxingFlagToPrimitiveType(relation, boxedSourceType);
+        MaybeAddBoxingFlagInRelation(relation, boxedSourceType);
     } else {
-        auto unboxedTargetType = ETSBuiltinTypeAsPrimitiveType(target);
+        auto unboxedTargetType = MaybeUnboxInRelation(target);
         if (unboxedTargetType == nullptr) {
             return;
         }
         NarrowingWideningConverter(this, relation, unboxedTargetType, source);
         if (relation->IsTrue()) {
-            AddBoxingFlagToPrimitiveType(relation, target);
+            MaybeAddBoxingFlagInRelation(relation, target);
         }
     }
 }
 
 void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *relation, Type *source, Type *target)
 {
-    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(source);
+    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(source);
     if (unboxedSourceType == nullptr) {
         return;
     }

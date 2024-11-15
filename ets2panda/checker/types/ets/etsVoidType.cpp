@@ -25,6 +25,7 @@ void ETSVoidType::Identical(TypeRelation *relation, Type *other)
 
 bool ETSVoidType::AssignmentSource(TypeRelation *relation, Type *target)
 {
+    // NOTE(vpukhov): #19701 void refactoring
     if (!target->IsETSUndefinedType()) {
         Identical(relation, target);
     } else {
@@ -36,6 +37,7 @@ bool ETSVoidType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSVoidType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
+    // NOTE(vpukhov): #19701 void refactoring
     if (!source->IsETSUndefinedType()) {
         Identical(relation, source);
     } else {

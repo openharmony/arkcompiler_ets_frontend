@@ -89,6 +89,8 @@ public:
 
     bool IsETSStringType() const;
     bool IsETSBigIntType() const;
+    bool IsETSArrowType() const;
+    bool IsETSPrimitiveType() const;
     bool IsETSReferenceType() const;
     bool IsETSAsyncFuncReturnType() const;
     bool IsETSUnboxableObject() const;
@@ -273,23 +275,6 @@ public:
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
     [[nodiscard]] virtual Type *Clone(Checker *checker);
     virtual Type *Substitute(TypeRelation *relation, const Substitution *substitution);
-
-    const ETSEnumType *AsETSEnumType() const
-    {
-        ASSERT(IsETSEnumType());
-        return reinterpret_cast<const ETSEnumType *>(this);
-    }
-
-    ETSEnumType *AsETSEnumType()
-    {
-        ASSERT(IsETSEnumType());
-        return reinterpret_cast<ETSEnumType *>(this);
-    }
-
-    bool IsETSEnumType() const
-    {
-        return IsETSIntEnumType() || IsETSStringEnumType();
-    }
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)

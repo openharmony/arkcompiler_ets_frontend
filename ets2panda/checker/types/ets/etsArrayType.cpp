@@ -88,8 +88,8 @@ void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
         return;
     }
     if (source->IsETSArrayType()) {
-        if (AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ||
-            source->AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        if (AsETSArrayType()->ElementType()->IsETSPrimitiveType() ||
+            source->AsETSArrayType()->ElementType()->IsETSPrimitiveType()) {
             return;
         }
         relation->IsAssignableTo(source->AsETSArrayType()->ElementType(), element_);

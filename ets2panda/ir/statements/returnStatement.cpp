@@ -84,7 +84,7 @@ void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type 
             relation->SetNode(argument_);
             relation->SetFlags(checker::TypeRelationFlag::NONE);
 
-            argumentType = checker->PrimitiveTypeAsETSBuiltinType(argumentType);
+            argumentType = checker->MaybeBoxInRelation(argumentType);
             if (argumentType == nullptr) {
                 checker->LogTypeError("Invalid return statement expression", argument_->Start());
                 return;

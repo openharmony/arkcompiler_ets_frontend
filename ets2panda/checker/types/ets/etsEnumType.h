@@ -64,6 +64,8 @@ public:
 
     [[nodiscard]] const ir::TSEnumDeclaration *GetDecl() const noexcept;
 
+    [[nodiscard]] Type *BoxedType() const noexcept;
+
     [[nodiscard]] const ArenaVector<ir::AstNode *> &GetMembers() const noexcept;
 
     [[nodiscard]] varbinder::LocalVariable *GetMemberVar() const noexcept;

@@ -372,6 +372,16 @@ public:
         }
     }
 
+    void SetOrigEnumDecl(ir::TSEnumDeclaration *enumDecl)
+    {
+        origEnumDecl_ = enumDecl;
+    }
+
+    ir::TSEnumDeclaration *OrigEnumDecl() const
+    {
+        return origEnumDecl_;
+    }
+
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
     bool HasComputedInstanceField() const;
@@ -427,6 +437,7 @@ private:
     es2panda::Language lang_;
     ArenaSet<varbinder::Variable *> capturedVars_;
     ArenaSet<varbinder::Variable *> localVariableIsNeeded_;
+    TSEnumDeclaration *origEnumDecl_ {};
     static int classCounter_;
     const int localIndex_ {};
     const std::string localPrefix_ {};

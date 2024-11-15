@@ -67,9 +67,9 @@ bool IsAsyncMethod(ir::AstNode *node);
 
 ETSObjectType *CreateOptionalSignaturesForFunctionalType(ETSChecker *checker, ir::ETSFunctionType *node,
                                                          ETSObjectType *genericInterfaceType,
-                                                         Substitution *substitution, size_t optionalParameterIndex);
+                                                         size_t optionalParameterIndex);
 ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ETSFunctionType *node,
-                                                     ETSObjectType *genericInterfaceType, Substitution *substitution);
+                                                     ETSObjectType *genericInterfaceType);
 Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *params);
 
 Type *InstantiateBoxedPrimitiveType(ETSChecker *checker, ir::Expression *param, Type *paramType);

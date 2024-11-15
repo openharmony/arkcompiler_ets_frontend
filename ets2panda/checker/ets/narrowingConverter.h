@@ -23,6 +23,13 @@
 namespace ark::es2panda::checker {
 class NarrowingConverter : public TypeConverter {
 public:
+    static constexpr TypeFlag NARROWABLE_TO_FLOAT = TypeFlag::DOUBLE;
+    static constexpr TypeFlag NARROWABLE_TO_LONG = TypeFlag::FLOAT | NARROWABLE_TO_FLOAT;
+    static constexpr TypeFlag NARROWABLE_TO_INT = TypeFlag::LONG | NARROWABLE_TO_LONG;
+    static constexpr TypeFlag NARROWABLE_TO_CHAR = TypeFlag::SHORT | TypeFlag::INT | NARROWABLE_TO_INT;
+    static constexpr TypeFlag NARROWABLE_TO_SHORT = TypeFlag::CHAR | TypeFlag::INT | NARROWABLE_TO_INT;
+    static constexpr TypeFlag NARROWABLE_TO_BYTE = TypeFlag::CHAR | NARROWABLE_TO_CHAR;
+
     explicit NarrowingConverter(ETSChecker *checker, TypeRelation *relation, Type *target, Type *source)
         : TypeConverter(checker, relation, target, source)
     {
@@ -34,27 +41,27 @@ public:
 
         switch (ETSChecker::ETSChecker::ETSType(target)) {
             case TypeFlag::BYTE: {
-                ApplyNarrowing<ByteType>(TypeFlag::NARROWABLE_TO_BYTE);
+                ApplyNarrowing<ByteType>(NARROWABLE_TO_BYTE);
                 break;
             }
             case TypeFlag::CHAR: {
-                ApplyNarrowing<CharType>(TypeFlag::NARROWABLE_TO_CHAR);
+                ApplyNarrowing<CharType>(NARROWABLE_TO_CHAR);
                 break;
             }
             case TypeFlag::SHORT: {
-                ApplyNarrowing<ShortType>(TypeFlag::NARROWABLE_TO_SHORT);
+                ApplyNarrowing<ShortType>(NARROWABLE_TO_SHORT);
                 break;
             }
             case TypeFlag::INT: {
-                ApplyNarrowing<IntType>(TypeFlag::NARROWABLE_TO_INT);
+                ApplyNarrowing<IntType>(NARROWABLE_TO_INT);
                 break;
             }
             case TypeFlag::LONG: {
-                ApplyNarrowing<LongType>(TypeFlag::NARROWABLE_TO_LONG);
+                ApplyNarrowing<LongType>(NARROWABLE_TO_LONG);
                 break;
             }
             case TypeFlag::FLOAT: {
-                ApplyNarrowing<FloatType>(TypeFlag::NARROWABLE_TO_FLOAT);
+                ApplyNarrowing<FloatType>(NARROWABLE_TO_FLOAT);
                 break;
             }
 

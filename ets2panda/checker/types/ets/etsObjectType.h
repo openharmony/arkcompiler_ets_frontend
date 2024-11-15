@@ -21,6 +21,7 @@
 #include "checker/types/signature.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ts/tsEnumDeclaration.h"
 #include "varbinder/scope.h"
 #include "ir/base/classDefinition.h"
 
@@ -85,6 +86,11 @@ public:
 
     void SetTypeArguments(ArenaVector<Type *> &&typeArgs)
     {
+#ifndef NDEBUG
+        for (auto const &t : typeArgs) {
+            ASSERT(t->IsETSReferenceType());
+        }
+#endif
         typeArguments_ = std::move(typeArgs);
     }
 
@@ -140,11 +146,6 @@ public:
     }
 
     const ArenaVector<Type *> &TypeArguments() const
-    {
-        return typeArguments_;
-    }
-
-    ArenaVector<Type *> &TypeArguments()
     {
         return typeArguments_;
     }
@@ -293,6 +294,17 @@ public:
     ETSObjectFlags BuiltInKind() const
     {
         return static_cast<checker::ETSObjectFlags>(flags_ & ETSObjectFlags::BUILTIN_TYPE);
+    }
+
+    ETSObjectFlags UnboxableKind() const
+    {
+        return static_cast<checker::ETSObjectFlags>(flags_ & ETSObjectFlags::UNBOXABLE_TYPE);
+    }
+
+    ETSEnumType *GetUnboxedEnumType() const
+    {
+        ASSERT(HasObjectFlag(ETSObjectFlags::BOXED_ENUM));
+        return GetDeclNode()->AsClassDefinition()->OrigEnumDecl()->TsType()->AsETSEnumType();
     }
 
     ETSObjectType *GetInstantiatedType(util::StringView hash)

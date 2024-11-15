@@ -131,7 +131,7 @@ bool ScopedDebugInfoPlugin::InsertReturnStatement()
         return false;
     }
     auto *returnType = lastStatement->GetExpression()->TsType();
-    if (returnType == nullptr || !returnType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN)) {
+    if (returnType == nullptr || !returnType->IsETSPrimitiveType()) {
         // NOTE(dslynko): currently expression evaluation supports only primitives.
         // In future this condition might be replaced with `returnType is not void`.
         return false;

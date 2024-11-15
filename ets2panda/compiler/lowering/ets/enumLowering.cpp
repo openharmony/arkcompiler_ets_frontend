@@ -155,6 +155,7 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *cons
         classDecl->SetParent(program_->Ast());
     }
 
+    classDef->SetOrigEnumDecl(enumDecl);
     enumDecl->SetBoxedClass(classDef);
 
     CreateOrdinalField(classDef);

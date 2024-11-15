@@ -26,12 +26,12 @@ public:
     UnboxingConverter(ETSChecker *checker, TypeRelation *relation, Type *source)
         : TypeConverter(checker, relation, nullptr, source)
     {
-        if (!source->IsETSObjectType()) {
+        if (!source->IsETSUnboxableObject()) {
             relation->Result(false);
             return;
         }
 
-        SetResult(GlobalTypeFromSource(checker, source->AsETSObjectType()));
+        SetResult(Convert(checker, source->AsETSObjectType()));
         relation->Result(source != Result());
     }
 
@@ -40,16 +40,15 @@ public:
     {
         SetResult(Source());
 
-        if (!Source()->IsETSObjectType() || relation->IsTrue()) {
+        if (!Source()->IsETSUnboxableObject() || relation->IsTrue()) {
             return;
         }
 
-        SetResult(GlobalTypeFromSource(checker, source->AsETSObjectType()));
-
+        SetResult(Convert(checker, source->AsETSObjectType()));
         Relation()->Result(Result()->TypeFlags() == target->TypeFlags());
     }
 
-    static checker::Type *GlobalTypeFromSource(checker::ETSChecker const *checker, ETSObjectType *type);
+    static checker::Type *Convert(checker::ETSChecker const *checker, ETSObjectType *type);
 };
 }  // namespace ark::es2panda::checker
 
