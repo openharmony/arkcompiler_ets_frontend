@@ -116,7 +116,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(checker::ETSChecke
             auto *thisExpr = checker->AllocNode<ir::ThisExpression>();
             auto *lhs = checker->AllocNode<ir::MemberExpression>(
                 thisExpr, fieldId->Clone(allocator, nullptr), ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            auto *rhs = param->Ident()->Clone(allocator, nullptr);
+            auto *rhs = param->Ident()->CloneReference(allocator, nullptr);
 
             auto *assignment =
                 checker->AllocNode<ir::AssignmentExpression>(lhs, rhs, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);

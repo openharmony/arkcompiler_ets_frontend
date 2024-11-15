@@ -314,11 +314,10 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinit
             params.begin(), params.end() - i, [&funcCallArgs, &funcDefinitionArgs, checker](ir::Expression *expr) {
                 // NOTE: we don't need Initializer here, as overload-method will have strict list of parameters
                 //       will reset all of them once parsing loop completes
-                auto *funcArg =
-                    expr->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
-
+                auto *funcArg = expr->AsETSParameterExpression()->Ident();
+                auto clone = funcArg->CloneReference(checker->Allocator(), nullptr)->AsIdentifier();
                 // update list of functional call arguments
-                funcCallArgs.push_back(funcArg);
+                funcCallArgs.push_back(clone);
 
                 auto *ident =
                     expr->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();

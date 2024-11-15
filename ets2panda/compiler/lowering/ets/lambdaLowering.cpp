@@ -443,7 +443,7 @@ static ArenaVector<ir::Expression *> CreateArgsForOptionalCall(public_lib::Conte
             break;
         }
         auto *paramName =
-            param->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
+            param->AsETSParameterExpression()->Ident()->CloneReference(checker->Allocator(), nullptr)->AsIdentifier();
         funcCallArgs.push_back(paramName);
         i++;
     }
@@ -953,7 +953,12 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
     ArenaVector<ir::Expression *> callArgs {allocator->Adapter()};
 
     for (auto *p : func->Params()) {
-        callArgs.push_back(p->AsETSParameterExpression()->Ident()->Clone(allocator, nullptr));
+        ir::Identifier *clone = p->AsETSParameterExpression()->Ident()->Clone(allocator, nullptr);
+        if (clone->IsIdentifier() && (clone->IsReference(ScriptExtension::ETS)) &&
+            (clone->TypeAnnotation() != nullptr)) {
+            clone->SetTsTypeAnnotation(nullptr);
+        }
+        callArgs.push_back(clone);
     }
     auto *callExpr = util::NodeAllocator::ForceSetParent<ir::CallExpression>(allocator, funcRef, std::move(callArgs),
                                                                              nullptr, false);
