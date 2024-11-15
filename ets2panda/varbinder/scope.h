@@ -317,6 +317,7 @@ protected:
                        [[maybe_unused]] ScriptExtension extension);
 
     Variable *AddLocalVar(ArenaAllocator *allocator, Decl *newDecl);
+    Variable *AddLocalInterfaceVariable(ArenaAllocator *allocator, Decl *newDecl);
 
 private:
     template <

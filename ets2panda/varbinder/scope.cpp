@@ -271,6 +271,16 @@ Variable *Scope::AddLocalVar(ArenaAllocator *allocator, Decl *newDecl)
     return scope->PropagateBinding<LocalVariable>(allocator, newDecl->Name(), newDecl, varFlags);
 }
 
+Variable *Scope::AddLocalInterfaceVariable(ArenaAllocator *allocator, Decl *newDecl)
+{
+    auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)})
+                    .first->second;
+    if (newDecl->Node() != nullptr) {
+        newDecl->Node()->AsTSInterfaceDeclaration()->Id()->SetVariable(var);
+    }
+    return var;
+}
+
 Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                           [[maybe_unused]] ScriptExtension extension)
 {
@@ -290,8 +300,7 @@ Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, 
             return var;
         }
         case DeclType::INTERFACE: {
-            return bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)})
-                .first->second;
+            return AddLocalInterfaceVariable(allocator, newDecl);
         }
         case DeclType::CLASS: {
             auto isNamespaceTransformed = newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed();
