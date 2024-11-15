@@ -13,24 +13,10 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_LOWERING_SPREAD_LOWERING_H
-#define ES2PANDA_COMPILER_LOWERING_SPREAD_LOWERING_H
+function foo(gensym: int, _2: int) {
+    return gensym%_2
+}
 
-#include "compiler/lowering/phase.h"
-
-namespace ark::es2panda::compiler {
-
-class SpreadConstructionPhase : public Phase {
-public:
-    std::string_view Name() const override
-    {
-        return "SpreadConstructionPhase";
-    }
-
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
-};
-
-}  // namespace ark::es2panda::compiler
-
-#endif
+function main() {
+  assert foo(1,2) == 1;
+}
