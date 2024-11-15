@@ -333,7 +333,7 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
   }
 
   private shouldIgnoreFile(sourceFilePath: string): boolean {
-    const isIgnored = (path: string, ignoreList: string[]) => ignoreList.includes(path);
+    const isIgnored = (path: string, ignoreList: string[]): boolean => ignoreList.includes(path);
 
     // 1: Relative path of the first-level directory after '.local'
     const compilerTestFilename = this.getPathAfterDirectory(sourceFilePath, '.local', 1);
