@@ -47,6 +47,7 @@ public:
           defaultImports_(Allocator()->Adapter()),
           dynamicImports_(Allocator()->Adapter()),
           reExportImports_(Allocator()->Adapter()),
+          reexportedNames_(Allocator()->Adapter()),
           dynamicImportVars_(Allocator()->Adapter()),
           importSpecifiers_(Allocator()->Adapter()),
           selectiveExportAliasMultimap_(Allocator()->Adapter())
@@ -121,6 +122,13 @@ public:
     void BuildMethodDefinition(ir::MethodDefinition *methodDef);
     void BuildAnnotationUsage(ir::AnnotationUsage *annoUsage);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
+    void ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl);
+    void ValidateReexports();
+    bool ReexportPathMatchesImportPath(const ir::ETSReExportDeclaration *const reexport,
+                                       const ir::ETSImportDeclaration *const import) const;
+    Variable *ValidateImportSpecifier(const ir::ImportSpecifier *const specifier,
+                                      const ir::ETSImportDeclaration *const import,
+                                      std::vector<ir::ETSImportDeclaration *> viewedReExport);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
     bool DetectNameConflict(const util::StringView localName, Variable *const var, Variable *const otherVar,
                             const ir::StringLiteral *const importPath, bool overloadAllowed);
@@ -289,6 +297,7 @@ private:
     ArenaVector<ir::ETSImportDeclaration *> defaultImports_;
     ArenaVector<ir::ETSImportDeclaration *> dynamicImports_;
     ArenaVector<ir::ETSReExportDeclaration *> reExportImports_;
+    ArenaSet<util::StringView> reexportedNames_;
     DynamicImportVariables dynamicImportVars_;
     ir::Identifier *thisParam_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;

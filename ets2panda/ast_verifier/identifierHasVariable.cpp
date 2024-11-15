@@ -45,17 +45,8 @@ CheckResult IdentifierHasVariable::operator()(CheckContext &ctx, const ir::AstNo
 
 bool IdentifierHasVariable::CheckMoreAstExceptions(const ir::Identifier *ast) const
 {
-    // NOTE(kkonkuznetsov): skip reexport declarations
-    auto const *parent = ast->Parent();
-    if (parent != nullptr && parent->Parent() != nullptr) {
-        parent = ast->Parent()->Parent();
-        if (parent->IsETSReExportDeclaration()) {
-            return true;
-        }
-    }
-
     // NOTE(kkonkuznetsov): object expressions
-    parent = ast->Parent();
+    const auto *parent = ast->Parent();
     while (parent != nullptr) {
         if (parent->IsObjectExpression()) {
             return true;
