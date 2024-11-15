@@ -244,6 +244,7 @@ std::vector<Program *> ETSParser::ParseSources(bool firstSource)
             }
 
             if (GetProgram()->SourceFilePath().Is(parseList[idx].sourcePath.Mutf8())) {
+                importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
                 return programs;
             }
 
