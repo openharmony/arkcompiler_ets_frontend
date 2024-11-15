@@ -1,3 +1,1 @@
 # Known failures list for third_lib_js - release-x64-aot
-#19231
-jBox2d_test

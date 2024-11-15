@@ -1,17 +1,2 @@
 # Known failures list for test262-other - release-x64-aot-pgo-litecg
 
-#18438
-test262/data/other_tests/language/statements/class/elements/privatefield-on-proxy.js
-
-#18520
-test262/data/other_tests/language/statements/class/elements/privatefieldget-success-2.js
-test262/data/other_tests/language/statements/class/elements/privategetter-on-proxy.js
-
-
-#18521
-test262/data/other_tests/language/statements/class/elements/private-field-with-initialized-id-is-visible-in-computed-properties.js
-test262/data/other_tests/language/statements/class/elements/private-field-is-visible-in-computed-properties.js
-test262/data/other_tests/language/statements/class/elements/private-getter-brand-check-multiple-evaluations-of-class.js
-test262/data/other_tests/language/statements/class/elements/private-method-brand-check-multiple-evaluations-of-class.js
-test262/data/other_tests/language/statements/class/elements/private-setter-shadowed-by-field-on-nested-class.js
-

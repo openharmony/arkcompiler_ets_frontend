@@ -1,4 +1,2 @@
 # Known failure list for test262 - release-x64-aot-pgo
 
-# Issue #18400
-test262/data/other_tests/language/expressions/class/elements/multiple-definitions-rs-static-async-generator-method-privatename-identifier.js
