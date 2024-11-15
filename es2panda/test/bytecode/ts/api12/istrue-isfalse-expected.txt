@@ -13,7 +13,6 @@ label_1:
 	ldfalse
 label_3: 
 	callruntime.isfalse 0x1
-	ldundefined
 	returnundefined
 label_6: 
 }

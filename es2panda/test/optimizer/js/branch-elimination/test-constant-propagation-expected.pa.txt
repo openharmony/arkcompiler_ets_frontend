@@ -83,7 +83,6 @@ label_13:
 	lda v0
 	callarg1 0x21, v1
 label_15: 
-	ldundefined
 	returnundefined
 label_17: 
 }
@@ -104,7 +103,6 @@ label_0:
 	stlexvar 0x0, 0x0
 	lda v0
 	callarg0 0x1
-	ldundefined
 	returnundefined
 label_2: 
 }

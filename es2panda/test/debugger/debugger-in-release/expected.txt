@@ -24,7 +24,6 @@ label_0:
 	throw.undefinedifholewithname b
 	ldai 0xc8
 	stlexvar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -38,7 +37,6 @@ label_0:
 	definefunc 0x0, .#*#A, 0x0
 	ldai 0x0
 	stlexvar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }

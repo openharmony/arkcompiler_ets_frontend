@@ -35,7 +35,6 @@ label_7:
 	lda v0
 	callarg1 0x4, v1
 label_3: 
-	ldundefined
 	returnundefined
 label_9: 
 }

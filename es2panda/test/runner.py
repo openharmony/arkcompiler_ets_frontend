@@ -2675,6 +2675,8 @@ def add_directory_for_compiler(runners, args):
                                                 ["--module", "--branch-elimination", "--dump-assembly"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/opt-try-catch-func", "js",
                                                 ["--module", "--dump-assembly"]))
+    compiler_test_infos.append(CompilerTestInfo("optimizer/js/unused-inst-opt", "js",
+                                                ["--module", "--dump-assembly"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/debugInfo/", "js",
                                                 ["--debug-info", "--dump-debug-info", "--source-file", "debug-info.js"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/js/module-record-field-name-option.js", "js",

@@ -35,7 +35,6 @@ label_1:
 label_0: 
 	callruntime.ldsendableexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -47,7 +46,6 @@ label_1:
 label_0: 
 	callruntime.ldsendableexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -72,7 +70,6 @@ label_0:
 	sta v0
 	definemethod 0x2, .#~A>@0~B>#static_initializer, 0x0
 	callthis0 0x3, v0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -84,7 +81,6 @@ label_1:
 label_0: 
 	ldexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -115,7 +111,6 @@ label_0:
 	ldexternalmodulevar 0x0
 	throw.undefinedifholewithname a
 	definefunc 0x0, .#~A>@0~B>@0*#, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -127,7 +122,6 @@ label_1:
 label_0: 
 	ldexternalmodulevar 0x0
 	throw.undefinedifholewithname a
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -143,7 +137,6 @@ label_0:
 	sta v0
 	definemethod 0x1, .#~A>#static_initializer, 0x0
 	callthis0 0x2, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

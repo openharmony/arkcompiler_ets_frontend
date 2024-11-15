@@ -39,7 +39,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x5, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -124,7 +123,6 @@ label_6:
 label_3: 
 	lda v4
 	callthis3 0x18, v3, v5, v6, v2
-	ldundefined
 	returnundefined
 label_5: 
 }

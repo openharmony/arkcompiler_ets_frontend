@@ -7,7 +7,6 @@ label_0:
 	stmodulevar 0x0
 	ldai 0x64
 	stmodulevar 0x1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -20,7 +19,6 @@ label_1:
 label_0: 
 	ldai 0x1
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -33,7 +31,6 @@ label_1:
 label_0: 
 	ldai 0x1
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -44,7 +41,6 @@ slotNum = 0x0
 .function any &myapp/test-export-syntax&.#*#f1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -96,7 +92,6 @@ label_0:
 	stmodulevar 0x9
 	ldai 0x8
 	stmodulevar 0xa
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -231,7 +226,6 @@ label_28:
 	lda v0
 	callarg1 0x2d, v1
 label_27: 
-	ldundefined
 	returnundefined
 label_30: 
 }
@@ -264,7 +258,6 @@ label_3:
 	lda v0
 	callarg1 0x9, v1
 label_8: 
-	ldundefined
 	returnundefined
 label_11: 
 }
@@ -283,7 +276,6 @@ label_0:
 	stmodulevar 0x2
 	ldai 0x4
 	stmodulevar 0x3
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -298,7 +290,6 @@ label_0:
 	stobjbyname 0x0, a, a3
 	ldai 0x2
 	stobjbyname 0x2, b, a3
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -336,7 +327,6 @@ label_4:
 	lda v0
 	callarg1 0xa, v1
 label_7: 
-	ldundefined
 	returnundefined
 label_10: 
 }
@@ -367,7 +357,6 @@ label_3:
 	stmodulevar 0x0
 	ldai 0x2
 	stmodulevar 0x1
-	ldundefined
 	returnundefined
 label_5: 
 }

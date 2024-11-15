@@ -22,7 +22,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -38,7 +37,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -63,7 +61,6 @@ label_0:
 	callarg0 0x4
 	definefunc 0x6, .#7595881967332036965#, 0x0
 	callarg0 0x7
-	ldundefined
 	returnundefined
 label_2: 
 }

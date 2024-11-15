@@ -30,7 +30,6 @@ label_0:
 	ldobjbyname 0x6, prototype
 	lda v0
 	definepropertybyname 0x8, D, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -71,7 +70,6 @@ slotNum = 0x0
 .function any .#~B=B*#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -81,7 +79,6 @@ slotNum = 0x0
 .function any .#~B>#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -91,7 +88,6 @@ slotNum = 0x0
 .function any .#~C<#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -114,7 +110,6 @@ slotNum = 0x0
 .function any .#~C>#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -124,7 +119,6 @@ slotNum = 0x0
 .function any .#~C>#foo^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -136,7 +130,6 @@ label_1:
 label_0: 
 	definefunc 0x0, .#~C>@0*#c, 0x0
 	definepropertybyname 0x1, c, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -146,7 +139,6 @@ slotNum = 0x0
 .function any .#~C>@0*#c(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -201,7 +193,6 @@ label_12:
 	throw
 label_2: 
 	poplexenv
-	ldundefined
 	returnundefined
 label_14: 
 }

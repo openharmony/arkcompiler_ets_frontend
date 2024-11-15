@@ -27,7 +27,6 @@ label_1:
 label_0: 
 	lda a3
 	stobjbyname 0x0, prop, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -40,7 +39,6 @@ label_0:
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x0, .#~A=#A, _3, 0x0, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

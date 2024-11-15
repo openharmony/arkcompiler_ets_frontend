@@ -23,7 +23,6 @@ slotNum = 0x0
 .function any .#*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -33,7 +32,6 @@ slotNum = 0x0
 .function any .#*#foo^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -43,7 +41,6 @@ slotNum = 0x0
 .function any .#*#foo^2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -76,7 +73,6 @@ label_5:
 label_4: 
 	definefunc 0xa, .#*#foo^2, 0x0
 label_3: 
-	ldundefined
 	returnundefined
 label_7: 
 }

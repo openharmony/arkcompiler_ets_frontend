@@ -27,7 +27,6 @@ slotNum = 0x0
 .function any .#~A=A*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -37,7 +36,6 @@ slotNum = 0x0
 .function any .#~A>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -51,7 +49,6 @@ label_0:
 	sta v0
 	defineclasswithbuffer 0x0, .#~A=#A, _2, 0x0, v0
 	ldobjbyname 0x1, prototype
-	ldundefined
 	returnundefined
 label_2: 
 }

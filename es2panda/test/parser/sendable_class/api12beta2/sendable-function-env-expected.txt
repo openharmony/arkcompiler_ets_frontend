@@ -15,7 +15,6 @@ label_1:
 label_0: 
 	tryldglobalbyname 0x0, print
 	callarg1 0x1, a3
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -31,7 +30,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x0, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -53,7 +51,6 @@ label_0:
 	sta v0
 	ldobjbyname 0x4, fooA
 	callthis0 0x6, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

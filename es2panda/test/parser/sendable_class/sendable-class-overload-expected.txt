@@ -78,7 +78,6 @@ label_0:
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x0, .#~@0=#Cat, _3, 0x1, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

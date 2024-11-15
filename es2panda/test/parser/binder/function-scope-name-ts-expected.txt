@@ -3,7 +3,6 @@ slotNum = 0x0
 .function any .#*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -13,7 +12,6 @@ slotNum = 0x0
 .function any .#*#^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -50,7 +48,6 @@ slotNum = 0x1
 label_1: 
 label_0: 
 	definefunc 0x0, .#*@0*#bar, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -60,7 +57,6 @@ slotNum = 0x0
 .function any .#*#f(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -70,7 +66,6 @@ slotNum = 0x0
 .function any .#*#f^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -80,7 +75,6 @@ slotNum = 0x0
 .function any .#*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -135,7 +129,6 @@ slotNum = 0x0
 .function any .#*@0*#bar(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -152,14 +145,12 @@ label_0:
 	stlexvar 0x0, 0x1
 	definefunc 0x0, .#*#asyncFoo, 0x0
 	definefunc 0x1, .#*#bar, 0x0
-	ldundefined
 	definefunc 0x2, .#*#foo, 0x0
 	definefunc 0x3, .#*#genFoo, 0x0
 	definefunc 0x4, .#*#, 0x0
 	definefunc 0x5, .#*#^1, 0x0
 	definefunc 0x6, .#*#f, 0x0
 	definefunc 0x7, .#*#f^1, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }

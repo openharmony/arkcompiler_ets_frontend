@@ -15,7 +15,6 @@ label_0:
 	stlexvar 0x0, 0x1
 	definefunc 0x3, .#**#f6, 0x0
 	sta v2
-	ldundefined
 label_3: 
 	lda v0
 	less 0x4, v1
@@ -29,7 +28,6 @@ label_2:
 	sta v1
 	jmp label_3
 label_1: 
-	ldundefined
 	returnundefined
 label_5: 
 }
@@ -41,7 +39,6 @@ label_1:
 label_0: 
 	ldlexvar 0x0, 0x0
 	callarg0 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -51,7 +48,6 @@ slotNum = 0x0
 .function any .#**#f3(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -61,7 +57,6 @@ slotNum = 0x0
 .function any .#**#f5(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -78,7 +73,6 @@ label_0:
 	stlexvar 0x0, 0x0
 	lda v0
 	callarg0 0x1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -89,8 +83,6 @@ slotNum = 0x12
 	nop
 label_44: 
 label_0: 
-	ldundefined
-	ldundefined
 	newlexenv 0x1
 label_32: 
 label_34: 
@@ -255,7 +247,6 @@ label_43:
 	throw
 label_21: 
 	poplexenv
-	ldundefined
 	returnundefined
 label_45: 
 }
@@ -301,7 +292,6 @@ label_1:
 label_0: 
 	definefunc 0x0, .#*#, 0x0
 	callarg0 0x1
-	ldundefined
 	returnundefined
 label_2: 
 }

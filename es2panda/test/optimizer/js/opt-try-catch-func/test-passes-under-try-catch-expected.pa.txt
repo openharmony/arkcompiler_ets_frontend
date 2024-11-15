@@ -28,7 +28,6 @@ label_12:
 label_4: 
 	tryldglobalbyname 0x1, print
 	callarg1 0x2, v0
-	ldundefined
 	returnundefined
 label_10: 
 }
@@ -51,7 +50,6 @@ label_9:
 label_6: 
 	tryldglobalbyname 0x0, print
 	callarg1 0x1, v0
-	ldundefined
 	returnundefined
 label_8: 
 }
@@ -97,7 +95,6 @@ label_11:
 	sta v1
 	lda v0
 	callarg1 0x6, v1
-	ldundefined
 	returnundefined
 label_13: 
 }
@@ -146,7 +143,6 @@ label_6:
 	sta v0
 	tryldglobalbyname 0x9, print
 	callarg1 0xa, v0
-	ldundefined
 	returnundefined
 label_8: 
 }
@@ -177,7 +173,6 @@ label_0:
 	callarg0 0x8
 	lda v3
 	callarg0 0xa
-	ldundefined
 	returnundefined
 label_2: 
 }

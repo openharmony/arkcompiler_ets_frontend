@@ -3,7 +3,6 @@ slotNum = 0x0
 .function any .#*#fun(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -37,7 +36,6 @@ label_0:
 	sta v0
 	defineclasswithbuffer 0x0, .#~B>@0~C=#C, _2, 0x0, v0
 	ldobjbyname 0x1, prototype
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -64,7 +62,6 @@ label_0:
 	newobjrange 0x0, 0x1, v1
 	ldlocalmodulevar 0x1
 	callarg0 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -86,7 +83,6 @@ label_0:
 	sta v0
 	definemethod 0x3, .#~B>#static_initializer, 0x0
 	callthis0 0x4, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

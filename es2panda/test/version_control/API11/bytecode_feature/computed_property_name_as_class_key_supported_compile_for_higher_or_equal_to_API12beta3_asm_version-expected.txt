@@ -23,7 +23,6 @@ label_0:
 	throw.undefinedifholewithname a
 	lda v1
 	callruntime.definefieldbyvalue 0x0, v0, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -80,7 +79,6 @@ label_1:
 	sta v0
 	lda v1
 	callarg1 0xa, v0
-	ldundefined
 	returnundefined
 label_8: 
 }

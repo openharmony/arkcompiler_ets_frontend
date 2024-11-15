@@ -142,7 +142,6 @@ label_0:
 	ldobjbyname 0x56, prototype
 	lda v0
 	definepropertybyname 0x58, SSSS, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -353,7 +352,6 @@ label_6:
 	throw
 label_1: 
 	poplexenv
-	ldundefined
 	returnundefined
 label_8: 
 }

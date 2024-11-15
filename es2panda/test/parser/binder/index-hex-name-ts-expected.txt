@@ -324,7 +324,6 @@ label_0:
 	sta v0
 	defineclasswithbuffer 0x0, .#~A=#A, _20, 0x0, v0
 	ldobjbyname 0x1, prototype
-	ldundefined
 	returnundefined
 label_2: 
 }

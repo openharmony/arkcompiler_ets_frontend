@@ -3,7 +3,6 @@ slotNum = 0x0
 .function any .#*#fun(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -32,7 +31,6 @@ label_0:
 	throw.undefinedifholewithname B
 	mov v1, v0
 	newobjrange 0x2, 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -82,7 +80,6 @@ label_0:
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x9, .#~@0=#sendableClass, _5, 0x0, v0
-	ldundefined
 	returnundefined
 label_2: 
 }
