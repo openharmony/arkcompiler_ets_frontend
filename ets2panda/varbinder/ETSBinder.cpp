@@ -361,7 +361,12 @@ void ETSBinder::BuildAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
 
 void ETSBinder::BuildAnnotationUsage(ir::AnnotationUsage *annoUsage)
 {
-    LookupTypeReference(annoUsage->AsAnnotationUsage()->Ident(), false);
+    if (annoUsage->Expr()->IsIdentifier()) {
+        LookupTypeReference(annoUsage->AsAnnotationUsage()->Expr()->AsIdentifier(), false);
+    } else {
+        ResolveReference(annoUsage->Expr());
+    }
+
     for (auto *property : annoUsage->Properties()) {
         ResolveReference(property);
     }

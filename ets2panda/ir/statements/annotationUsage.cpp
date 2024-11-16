@@ -24,9 +24,9 @@
 namespace ark::es2panda::ir {
 void AnnotationUsage::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    if (auto *transformedNode = cb(ident_); ident_ != transformedNode) {
-        ident_->SetTransformedNode(transformationName, transformedNode);
-        ident_ = transformedNode->AsIdentifier();
+    if (auto *transformedNode = cb(expr_); expr_ != transformedNode) {
+        expr_->SetTransformedNode(transformationName, transformedNode);
+        expr_ = transformedNode->AsIdentifier();
     }
 
     for (auto *&it : properties_) {
@@ -38,8 +38,8 @@ void AnnotationUsage::TransformChildren(const NodeTransformer &cb, std::string_v
 }
 void AnnotationUsage::Iterate(const NodeTraverser &cb) const
 {
-    if (ident_ != nullptr) {
-        cb(ident_);
+    if (expr_ != nullptr) {
+        cb(expr_);
     }
 
     for (auto *it : properties_) {
@@ -49,25 +49,24 @@ void AnnotationUsage::Iterate(const NodeTraverser &cb) const
 
 void AnnotationUsage::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"identifier", ident_}, {"properties", properties_}});
+    dumper->Add({{"expr_", expr_}, {"properties", properties_}});
 }
 void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(ident_ != nullptr);
+    ASSERT(expr_ != nullptr);
     dumper->Add("@");
-    ident_->Dump(dumper);
+    expr_->Dump(dumper);
     dumper->Add(" (");
 
     if (!properties_.empty()) {
-        dumper->Add(" {");
-        dumper->IncrIndent();
-        dumper->Endl();
+        dumper->Add("{");
         for (auto elem : properties_) {
-            elem->Dump(dumper);
-            if (elem == properties_.back()) {
-                dumper->DecrIndent();
+            dumper->Add(elem->AsClassProperty()->Id()->Name().Mutf8());
+            dumper->Add(":");
+            elem->AsClassProperty()->Value()->Dump(dumper);
+            if (elem != properties_.back()) {
+                dumper->Add(",");
             }
-            dumper->Endl();
         }
         dumper->Add("}");
     }
@@ -77,12 +76,13 @@ void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
 
 AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const expr = ident_ != nullptr ? ident_->Clone(allocator, nullptr)->AsIdentifier() : nullptr;
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<AnnotationUsage>(expr, allocator); clone != nullptr) {
         if (expr != nullptr) {
             expr->SetParent(clone);
         }
+
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
@@ -114,5 +114,14 @@ checker::Type *AnnotationUsage::Check(checker::TSChecker *checker)
 checker::Type *AnnotationUsage::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
+}
+
+Identifier *AnnotationUsage::GetBaseName() const
+{
+    if (expr_->IsIdentifier()) {
+        return expr_->AsIdentifier();
+    }
+    auto *part = expr_->AsETSTypeReference()->Part();
+    return part->Name()->AsTSQualifiedName()->Right();
 }
 }  // namespace ark::es2panda::ir

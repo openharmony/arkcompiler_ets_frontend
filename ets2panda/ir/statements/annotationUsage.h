@@ -26,18 +26,18 @@
 namespace ark::es2panda::ir {
 class AnnotationUsage : public Statement {
 public:
-    explicit AnnotationUsage(Identifier *ident, ArenaAllocator *allocator)
-        : Statement(AstNodeType::ANNOTATION_USAGE), ident_(ident), properties_(allocator->Adapter())
+    explicit AnnotationUsage(Expression *expr, ArenaAllocator *allocator)
+        : Statement(AstNodeType::ANNOTATION_USAGE), expr_(expr), properties_(allocator->Adapter())
     {
     }
-    explicit AnnotationUsage(Identifier *ident, ArenaVector<AstNode *> &&properties)
-        : Statement(AstNodeType::ANNOTATION_USAGE), ident_(ident), properties_(std::move(properties))
+    explicit AnnotationUsage(Expression *expr, ArenaVector<AstNode *> &&properties)
+        : Statement(AstNodeType::ANNOTATION_USAGE), expr_(expr), properties_(std::move(properties))
     {
     }
 
-    [[nodiscard]] Identifier *Ident() noexcept
+    [[nodiscard]] Expression *Expr() noexcept
     {
-        return ident_;
+        return expr_;
     }
 
     [[nodiscard]] ArenaVector<AstNode *> &Properties() noexcept
@@ -101,8 +101,10 @@ public:
         propertiesScope_ = nullptr;
     }
 
+    Identifier *GetBaseName() const;
+
 private:
-    Identifier *ident_;
+    Expression *expr_;
     ArenaVector<ir::AstNode *> properties_;
     varbinder::AnnotationParamScope *propertiesScope_ {};
 };

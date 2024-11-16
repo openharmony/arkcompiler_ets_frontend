@@ -195,7 +195,9 @@ void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
 
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
-    DumpItems(dumper, "", annotations_);
+    for (auto *anno : annotations_) {
+        anno->Dump(dumper);
+    }
     ASSERT(ident_ != nullptr);
 
     if (IsExtern()) {
