@@ -138,3 +138,6 @@ test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-grapheme-it
 
 #20319
 test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-word-iterable.js
+
+#20285
+test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-sentence-iterable.js
