@@ -719,7 +719,6 @@ class CompilerProjectTest(Test):
         self.project = project
         self.test_paths = test_paths
         self.files_info_path = os.path.join(os.path.join(self.projects_path, self.project), 'filesInfo.txt')
-        self.protoBin_file_path = ""
         # Skip execution if --dump-assembly exists in flags
         self.requires_execution = "--dump-assembly" not in self.flags
         self.file_record_mapping = None
@@ -736,8 +735,6 @@ class CompilerProjectTest(Test):
             os.remove(self.files_info_path)
         if path.exists(self.generated_abc_inputs_path):
             shutil.rmtree(self.generated_abc_inputs_path)
-        if path.exists(self.protoBin_file_path):
-            os.remove(self.protoBin_file_path)
 
     def get_file_absolute_path_and_name(self, runner):
         sub_path = self.path[len(self.projects_path):]
@@ -854,11 +851,6 @@ class CompilerProjectTest(Test):
 
     def gen_es2abc_cmd(self, runner, input_file, output_file):
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
-        if "--cache-file" in self.flags and len(self.test_paths) == 1:
-            self.flags.remove("--cache-file")
-            protoBin_path = self.test_paths[0].rsplit('.', 1)[0] + ".protoBin"
-            self.protoBin_file_path = protoBin_path
-            es2abc_cmd.append('--cache-file=%s' % (protoBin_path))
         es2abc_cmd.extend(self.flags)
         es2abc_cmd.extend(['%s%s' % ("--output=", output_file)])
         es2abc_cmd.append(input_file)
@@ -912,26 +904,13 @@ class CompilerProjectTest(Test):
             else:
                 self.flags.append("--merge-abc")
 
-        if "--cache-file" in self.flags and len(self.test_paths) == 1:
-            es2abc_cmd = self.gen_es2abc_cmd(runner, self.test_paths[0], output_abc_name)
-        else:
-            es2abc_cmd = self.gen_es2abc_cmd(runner, '@' + self.files_info_path, output_abc_name)
+        es2abc_cmd = self.gen_es2abc_cmd(runner, '@' + self.files_info_path, output_abc_name)
         compile_context_info_path = path.join(path.join(self.projects_path, self.project), "compileContextInfo.json")
         if path.exists(compile_context_info_path):
             es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
         process = run_subprocess_with_beta3(self, es2abc_cmd)
         self.path = exec_file_path
-        out, err = [None, None]
-
-        # Check single-thread execution timeout when required
-        if "--file-threads=0" in self.flags:
-            try:
-                out, err = process.communicate(timeout=60)
-            except:
-                process.kill()
-                print("Generating the abc file timed out.")
-        else:
-            out, err = process.communicate()
+        out, err = process.communicate()
 
         # restore merge-abc flag
         if "merge_abc_consistence_check" in self.path and "--merge-abc" not in self.flags:
@@ -2362,8 +2341,6 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/js/module-record-field-name-option.js", "js",
                                                 ["--module", "--module-record-field-name=abc"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/annotations", "ts", ["--module", "--enable-annotations"]))
-    compiler_test_infos.append(CompilerTestInfo("compiler/generateCache-projects", "ts",
-                                                ["--merge-abc", "--file-threads=0", "--cache-file"]))
     # Following directories of test cases are for dump-assembly comparison only, and is not executed.
     # Check CompilerProjectTest for more details.
     compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",
