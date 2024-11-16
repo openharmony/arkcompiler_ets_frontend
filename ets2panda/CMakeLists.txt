@@ -233,6 +233,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/objectLiteralLowering.cpp
   compiler/lowering/ets/interfaceObjectLiteralLowering.cpp
   compiler/lowering/ets/stringComparison.cpp
+  compiler/lowering/ets/stringConstantsLowering.cpp
   compiler/lowering/ets/stringConstructorLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp

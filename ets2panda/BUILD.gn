@@ -226,6 +226,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/recordLowering.cpp",
   "compiler/lowering/ets/spreadLowering.cpp",
   "compiler/lowering/ets/stringComparison.cpp",
+  "compiler/lowering/ets/stringConstantsLowering.cpp",
   "compiler/lowering/ets/stringConstructorLowering.cpp",
   "compiler/lowering/ets/structLowering.cpp",
   "compiler/lowering/ets/topLevelStmts/globalClassHandler.cpp",
