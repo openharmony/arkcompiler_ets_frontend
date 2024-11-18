@@ -88,7 +88,11 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
           this.prop_5 = para4;
         }
       }
-    `;
+      `;
+      const fileContent2 = `
+      import {A as B} from './file1.ts';
+      export {C as D} from './file1.ts';
+      `;
       let transformer: ts.TransformerFactory<ts.Node>;
 
       it('should not transform parameter property when mRenameProperties is false',function () {
@@ -418,6 +422,64 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(blockFile, [renameIdentifierFactory], {});
         assert.strictEqual(transformedResult.transformed[0], blockFile);
       })
+
+      it('noSymbolIdentifierTest: enable export obfuscation', function () {
+        let option1: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: false,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false,
+        };
+        transformer = transformerPlugin.createTransformerFactory(option1);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent2, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(transformedAst === "import { A as B } from './file1.ts';\nexport { C as D } from './file1.ts';\n").to.be.true;
+      });
+
+      it('noSymbolIdentifierTest: enable export and toplevel obfuscation', function () {
+        let option1: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: true,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false,
+        };
+        transformer = transformerPlugin.createTransformerFactory(option1);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent2, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(transformedAst === "import { c as a } from './file1.ts';\nexport { e as b } from './file1.ts';\n").to.be.true;
+      });
     })
   })
 })
