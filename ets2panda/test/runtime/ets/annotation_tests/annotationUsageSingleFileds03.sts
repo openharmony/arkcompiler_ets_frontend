@@ -16,7 +16,7 @@
 @interface MyValue {
     id: number
 }
-@MyValue(1.1)
+@MyValue(-1.1)
 class A{
     @MyValue(2.3)
     foo(){}

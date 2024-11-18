@@ -87,6 +87,8 @@ public:
         if (recordClass != nullptr) {
             if (recordClass->IsClassDefinition()) {
                 recordTable->SetClassDefinition(recordClass->AsClassDefinition());
+            } else if (recordClass->IsAnnotationDeclaration()) {
+                recordTable->SetAnnotationDeclaration(recordClass->AsAnnotationDeclaration());
             } else {
                 recordTable->SetInterfaceDeclaration(recordClass->AsTSInterfaceDeclaration());
             }

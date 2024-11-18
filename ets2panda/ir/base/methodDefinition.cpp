@@ -208,7 +208,9 @@ void MethodDefinition::Dump(ir::SrcDumper *dumper) const
         value_->AsFunctionExpression()->Function()->IsImplicitSuperCallNeeded()) {
         return;
     }
-
+    for (auto *anno : value_->AsFunctionExpression()->Function()->Annotations()) {
+        anno->Dump(dumper);
+    }
     DumpPrefix(dumper);
 
     if (key_ != nullptr) {

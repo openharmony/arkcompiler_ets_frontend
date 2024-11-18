@@ -265,8 +265,8 @@ bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
         return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
     }
 
-    return MaybeUnboxType(type)->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_BOOLEAN) ||
-           type->IsETSStringType() || type->IsETSBooleanType() || type->IsETSEnumType();
+    return type->HasTypeFlag(TypeFlag::ETS_NUMERIC | TypeFlag::ETS_ENUM | TypeFlag::ETS_BOOLEAN) ||
+           type->IsETSStringType();
 }
 
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)

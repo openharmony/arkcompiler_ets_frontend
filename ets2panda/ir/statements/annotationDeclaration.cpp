@@ -50,12 +50,12 @@ void AnnotationDeclaration::Iterate(const NodeTraverser &cb) const
 
 void AnnotationDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "AnnotationDeclaration"}, {"identifier", ident_}, {"properties", properties_}});
+    dumper->Add({{"identifier", ident_}, {"properties", properties_}});
 }
 void AnnotationDeclaration::Dump(ir::SrcDumper *dumper) const
 {  // re-understand
     ASSERT(ident_ != nullptr);
-    dumper->Add("annotation ");
+    dumper->Add("@interface ");
     ident_->Dump(dumper);
     dumper->Add(" {");
 
@@ -67,7 +67,6 @@ void AnnotationDeclaration::Dump(ir::SrcDumper *dumper) const
             if (elem == properties_.back()) {
                 dumper->DecrIndent();
             }
-            dumper->Endl();
         }
     }
     dumper->Add("}");

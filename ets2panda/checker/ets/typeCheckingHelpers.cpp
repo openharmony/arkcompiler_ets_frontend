@@ -777,7 +777,7 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
 
 void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
                                                    ETSChecker *checker,
-                                                   std::unordered_map<util::StringView, ir::ClassProperty *> &fieldMap)
+                                                   ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap)
 {
     for (auto *it : st->Properties()) {
         auto *param = it->AsClassProperty();

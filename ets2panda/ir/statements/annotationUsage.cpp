@@ -49,16 +49,17 @@ void AnnotationUsage::Iterate(const NodeTraverser &cb) const
 
 void AnnotationUsage::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "Annotation"}, {"Expression", ident_}, {"properties", properties_}});
+    dumper->Add({{"identifier", ident_}, {"properties", properties_}});
 }
 void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
-{  // re-understand
+{
     ASSERT(ident_ != nullptr);
-    dumper->Add("annotation ");
+    dumper->Add("@");
     ident_->Dump(dumper);
-    dumper->Add(" {");
+    dumper->Add(" (");
 
     if (!properties_.empty()) {
+        dumper->Add(" {");
         dumper->IncrIndent();
         dumper->Endl();
         for (auto elem : properties_) {
@@ -68,8 +69,9 @@ void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
             }
             dumper->Endl();
         }
+        dumper->Add("}");
     }
-    dumper->Add("}");
+    dumper->Add(")");
     dumper->Endl();
 }
 

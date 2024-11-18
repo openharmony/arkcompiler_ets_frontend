@@ -16,7 +16,7 @@
 // Annotation declaretion:
 @interface ClassAuthor {
    authorName: string = "Jim"
-   authorAge: number = 35
+   authorAge: number = -35
    testBool: boolean = false
 }
 

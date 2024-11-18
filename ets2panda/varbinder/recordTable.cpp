@@ -60,6 +60,24 @@ BoundContext::BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration 
     }
 }
 
+BoundContext::BoundContext(RecordTable *recordTable, ir::AnnotationDeclaration *annotationDecl, bool force)
+    : prev_(recordTable->boundCtx_),
+      recordTable_(recordTable),
+      currentRecord_(annotationDecl),
+      savedRecord_(recordTable->record_)
+{
+    if (annotationDecl == nullptr || (!force && !recordTable_->annotationDeclarations_.insert(annotationDecl).second)) {
+        return;
+    }
+
+    recordTable_->boundCtx_ = this;
+    recordTable_->record_ = annotationDecl;
+    recordIdent_ = annotationDecl->Ident();
+    if (annotationDecl->InternalName() == "") {
+        annotationDecl->SetInternalName(FormRecordName());
+    }
+}
+
 BoundContext::~BoundContext()
 {
     recordTable_->record_ = savedRecord_;

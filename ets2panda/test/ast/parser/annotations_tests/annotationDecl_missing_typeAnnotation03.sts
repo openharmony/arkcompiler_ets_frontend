@@ -13,16 +13,9 @@
  * limitations under the License.
  */
 
-@interface MyValue {
-    size: int[]
-}
-@MyValue([1,2,-3])
-class A{
-    @MyValue([1,-2,3])
-    foo(){}
+@interface Anno{
+    a: @Anno
 }
 
-@MyValue([1,2,3])
-function globalFoo(){}
-
-function main(){}
+/* @@? 17:8 Error SyntaxError: Invalid Type  */
+/* @@? 17:8 Error SyntaxError: Missing type annotation for property 'a'.  */

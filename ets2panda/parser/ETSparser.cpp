@@ -611,7 +611,7 @@ bool ETSParser::ValidAnnotationValue(ir::Expression *initializer)
         return true;
     }
     return initializer->IsStringLiteral() || initializer->IsNumberLiteral() || initializer->IsMemberExpression() ||
-           initializer->IsBooleanLiteral();
+           initializer->IsBooleanLiteral() || initializer->IsUnaryExpression();
 }
 
 ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::ModifierFlags memberModifiers,
@@ -629,7 +629,6 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
     if (needTypeAnnotation && Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
         typeAnnotation = ParseTypeAnnotation(&options);
-        endLoc = typeAnnotation->End();
     }
 
     if (typeAnnotation == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0) {
@@ -639,6 +638,10 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
             logField = ".";
         }
         ThrowSyntaxError("Missing type annotation for property" + logField, Lexer()->GetToken().Start());
+    }
+
+    if (typeAnnotation != nullptr) {
+        endLoc = typeAnnotation->End();
     }
 
     ir::Expression *initializer = nullptr;

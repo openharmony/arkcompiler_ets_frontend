@@ -61,6 +61,7 @@
 #include "ir/expressions/literals/stringLiteral.h"
 #include "mem/arena_allocator.h"
 #include "os/filesystem.h"
+#include "recordTable.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
 #include "checker/ETSchecker.h"
@@ -346,6 +347,16 @@ void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
         ResolveReferences(methodDef->Function()->TypeParams());
     }
     ResolveMethodDefinition(methodDef);
+}
+
+void ETSBinder::BuildAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
+{
+    auto boundCtx = BoundContext(recordTable_, annoDecl);
+    LookupTypeReference(annoDecl->AsAnnotationDeclaration()->Ident(), false);
+    auto scopeCtx = LexicalScope<LocalScope>::Enter(this, annoDecl->Scope());
+    for (auto *property : annoDecl->Properties()) {
+        ResolveReference(property);
+    }
 }
 
 void ETSBinder::BuildAnnotationUsage(ir::AnnotationUsage *annoUsage)
@@ -957,6 +968,10 @@ void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
         }
         case ir::AstNodeType::ANNOTATION_USAGE: {
             return BuildAnnotationUsage(childNode->AsAnnotationUsage());
+        }
+        case ir::AstNodeType::ANNOTATION_DECLARATION: {
+            BuildAnnotationDeclaration(childNode->AsAnnotationDeclaration());
+            break;
         }
         default: {
             return ResolveReferences(childNode);
