@@ -171,6 +171,10 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
 
     ir::Expression *argument = ResolveArgumentUnaryExpr(flags);
 
+    if (argument == nullptr) {
+        return nullptr;
+    }
+
     if (lexer::Token::IsUpdateToken(operatorType)) {
         if (!argument->IsIdentifier() && !argument->IsMemberExpression()) {
             LogSyntaxError("Invalid left-hand side in prefix operation");
