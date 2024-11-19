@@ -1,6 +1,6 @@
 {
     "compileEntries": [
-        "&myapp/hap-file-exec&"
+        "com.inter_app.hsp&myapp/inter-app-hsp-file-exec&"
     ],
     "hspPkgNames": [
         "lib",
