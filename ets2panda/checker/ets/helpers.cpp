@@ -565,9 +565,13 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Arr
     }
 }
 
-checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags)
+checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags,
+                                                   ir::Expression *init)
 {
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
+        if (init != nullptr && bindingVar->TsType()->IsETSPrimitiveType()) {
+            init->SetBoxingUnboxingFlags(GetBoxingFlag(bindingVar->TsType()));
+        }
         bindingVar->SetTsType(CreateETSUnionType({GlobalETSUndefinedType(), bindingVar->TsType()}));
     }
     return bindingVar->TsType();
@@ -695,7 +699,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (init == nullptr) {
-        return FixOptionalVariableType(bindingVar, flags);
+        return FixOptionalVariableType(bindingVar, flags, init);
     }
 
     if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
@@ -723,7 +727,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         if (omitConstInit && ShouldPreserveConstantTypeInVariableDeclaration(annotationType, initType)) {
             bindingVar->SetTsType(init->TsType());
         }
-        return FixOptionalVariableType(bindingVar, flags);
+        return FixOptionalVariableType(bindingVar, flags, init);
     }
 
     CheckEnumType(init, initType, varName);
@@ -732,7 +736,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     auto needWidening = !omitConstInit && typeAnnotation == nullptr && NeedWideningBasedOnInitializerHeuristics(init);
     bindingVar->SetTsType(needWidening ? GetNonConstantType(initType) : initType);
 
-    return FixOptionalVariableType(bindingVar, flags);
+    return FixOptionalVariableType(bindingVar, flags, init);
 }
 
 void ETSChecker::CheckAnnotationTypeForVariableDeclaration(checker::Type *annotationType, bool isUnionFunction,
