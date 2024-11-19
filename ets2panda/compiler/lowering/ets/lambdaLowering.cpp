@@ -427,24 +427,17 @@ static ir::MethodDefinition *CreateCalleeDefault(public_lib::Context *ctx, ir::A
     return method;
 }
 
-static ArenaVector<ir::Expression *> CreateArgsForOptionalCall(public_lib::Context *ctx,
-                                                               ir::ArrowFunctionExpression *lambda,
-                                                               ir::MethodDefinition *defaultMethod)
+static void ValidateDefaultParameters(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
+                                      ir::MethodDefinition *defaultMethod)
 {
     auto *checker = ctx->checker->AsETSChecker();
 
-    ArenaVector<ir::Expression *> funcCallArgs(checker->Allocator()->Adapter());
-    funcCallArgs.reserve(defaultMethod->Function()->Params().size());
-
     size_t i = 0;
-
     for (auto *param : defaultMethod->Function()->Params()) {
         if (param->AsETSParameterExpression()->IsDefault()) {
             break;
         }
-        auto *paramName =
-            param->AsETSParameterExpression()->Ident()->CloneReference(checker->Allocator(), nullptr)->AsIdentifier();
-        funcCallArgs.push_back(paramName);
+
         i++;
     }
 
@@ -454,81 +447,7 @@ static ArenaVector<ir::Expression *> CreateArgsForOptionalCall(public_lib::Conte
             checker->LogTypeError({"Expected initializer for parameter ", param->Ident()->Name(), "."}, param->Start());
             break;
         }
-        funcCallArgs.push_back(param->Initializer());
     }
-
-    return funcCallArgs;
-}
-
-static ir::BlockStatement *CreateFunctionBody(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
-                                              ir::MethodDefinition *defaultMethod)
-{
-    auto *checker = ctx->checker->AsETSChecker();
-    ArenaVector<ir::Statement *> statements(checker->Allocator()->Adapter());
-    ir::CallExpression *callExpression = nullptr;
-    ir::Expression *id = nullptr;
-    ir::Expression *accessor = nullptr;
-    auto *const callee = checker->AllocNode<ir::Identifier>(defaultMethod->Id()->Name(), checker->Allocator());
-
-    if (defaultMethod->IsStatic() && defaultMethod->Parent()->IsClassDefinition() &&
-        (!defaultMethod->Parent()->AsClassDefinition()->IsGlobal())) {
-        id = checker->AllocNode<ir::Identifier>(defaultMethod->Parent()->AsClassDefinition()->Ident()->Name(),
-                                                checker->Allocator());
-        accessor = checker->AllocNode<ir::MemberExpression>(id, callee, ir::MemberExpressionKind::PROPERTY_ACCESS,
-                                                            false, false);
-        callee->SetParent(accessor);
-    }
-
-    callExpression = checker->AllocNode<ir::CallExpression>(accessor != nullptr ? accessor : callee,
-                                                            CreateArgsForOptionalCall(ctx, lambda, defaultMethod),
-                                                            nullptr, false, false);
-    callee->SetParent(callExpression);
-    callExpression->SetSignature(defaultMethod->Function()->Signature());
-
-    if ((defaultMethod->Function()->ReturnTypeAnnotation() != nullptr) ||
-        ((defaultMethod->Function()->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
-        statements.push_back(checker->AllocNode<ir::ReturnStatement>(callExpression));
-    } else {
-        statements.push_back(checker->AllocNode<ir::ExpressionStatement>(callExpression));
-    }
-
-    auto blockStatement = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(statements));
-    blockStatement->Statements().front()->SetParent(blockStatement);
-
-    return blockStatement;
-}
-
-static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
-                                          LambdaInfo const *info, ir::MethodDefinition *defaultMethod,
-                                          size_t limit = std::numeric_limits<size_t>::max())
-{
-    auto *allocator = ctx->allocator;
-    auto *checker = ctx->checker->AsETSChecker();
-
-    auto calleeName = lambda->Function()->IsAsyncFunc()
-                          ? (util::UString {checker::ETSChecker::GetAsyncImplName(info->name), allocator}).View()
-                          : info->name;
-    auto *forcedReturnType = lambda->Function()->IsAsyncFunc() ? checker->GlobalETSNullishObjectType() : nullptr;
-
-    CalleeMethodInfo cmInfo;
-    cmInfo.calleeName = calleeName;
-    cmInfo.body = CreateFunctionBody(ctx, lambda, defaultMethod);
-    cmInfo.forcedReturnType = forcedReturnType;
-
-    auto *method = CreateCalleeMethod(ctx, lambda, info, &cmInfo, limit, defaultMethod->Id()->Variable());
-
-    if (lambda->Function()->IsAsyncFunc()) {
-        CalleeMethodInfo cmInfoAsync;
-        cmInfoAsync.calleeName = info->name;
-        cmInfoAsync.body = nullptr;
-        cmInfoAsync.forcedReturnType = nullptr;
-        cmInfoAsync.auxModifierFlags = ir::ModifierFlags::NATIVE;
-        cmInfoAsync.auxFunctionFlags = ir::ScriptFunctionFlags::ASYNC;
-        auto *asyncMethod = CreateCalleeMethod(ctx, lambda, info, &cmInfoAsync);
-        return asyncMethod;
-    }
-
-    return method;
 }
 
 // The name "=t" used in extension methods has special meaning for the code generator;
@@ -853,7 +772,6 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
 {
     auto *allocator = ctx->allocator;
     auto *checker = ctx->checker->AsETSChecker();
-    auto firstDefaultIndex = lambda->Function()->DefaultParamIndex();
 
     LambdaInfo info;
     std::tie(info.calleeClass, info.enclosingFunction) = FindEnclosingClassAndFunction(lambda);
@@ -867,12 +785,7 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     }
     auto *callee = CreateCalleeDefault(ctx, lambda, &info);
 
-    if (firstDefaultIndex < lambda->Function()->Params().size()) {
-        for (size_t i = firstDefaultIndex; i < lambda->Function()->Params().size(); i++) {
-            auto overload = CreateCallee(ctx, lambda, &info, callee, firstDefaultIndex);
-            callee->AddOverload(overload);
-        }
-    }
+    ValidateDefaultParameters(ctx, lambda, callee);
 
     ASSERT(lambda->TsType()->IsETSFunctionType());
     auto *lambdaType = lambda->TsType()->AsETSFunctionType();

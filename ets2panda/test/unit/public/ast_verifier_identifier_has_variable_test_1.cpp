@@ -109,4 +109,29 @@ TEST_F(ASTVerifierTest, Imports)
 
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(ASTVerifierTest, OptionalLambdas)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        function main(): void {
+            let d = (c?: int) => {
+            }
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("IdentifierHasVariableForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
 }  // namespace
