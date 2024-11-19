@@ -1,0 +1,38 @@
+Hi there!
+After parse
+GoodGreeter
+name
+string
+b
+fooExample
+fooExample
+invoke
+invoke
+constructor
+constructor
+name
+b
+a
+GoodGreeter
+c
+GoodGreeter
+GoodGreeter
+main
+m
+n
+f
+c
+b
+k
+string
+c
+name
+console
+log
+m
+n
+console
+log
+k
+After check
+After lowerings

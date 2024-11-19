@@ -53,6 +53,11 @@ public:
         scope_ = nullptr;
     }
 
+    [[nodiscard]] FunctionSignature IrSignature() noexcept
+    {
+        return signature_;
+    }
+
     const TSTypeParameterDeclaration *TypeParams() const
     {
         return signature_.TypeParams();

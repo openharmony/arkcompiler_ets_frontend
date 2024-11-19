@@ -111,6 +111,7 @@ module Es2pandaLibApi
         'bool',
         'void',
         'size_t',
+        'uint8_t',
         'uint32_t',
         'uint64_t',
         'int8_t',
@@ -121,7 +122,6 @@ module Es2pandaLibApi
         'es2panda_ExternalSource',
         'es2panda_AstNode',
         'es2panda_FunctionSignature',
-        'es2panda_Language',
         'es2panda_SourcePosition',
         'es2panda_SourceRange',
         'es2panda_SrcDumper',
@@ -164,7 +164,8 @@ module Es2pandaLibApi
         'es2panda_ScopeFindResult',
         'es2panda_BindingProps',
         'es2panda_BoundContext',
-        'es2panda_ErrorLogger'
+        'es2panda_ErrorLogger',
+        'es2panda_ArkTsConfig'
       ]
       @es2panda_arg = arg_info
 
@@ -298,8 +299,9 @@ module Es2pandaLibApi
         clever_replacements = []
         template_args = []
 
-        if found_change_type&.new_args&.length && found_change_type.new_args.length > 1 &&
-           @es2panda_arg['type'].respond_to?('template_args')
+        if found_change_type&.new_args&.length && ((found_change_type.new_args.length > 1 &&
+           @es2panda_arg['type'].respond_to?('template_args')) ||
+           Es2pandaLibApi.additional_containers.include?(@es2panda_arg['type'].name))
           accessor = (@es2panda_arg['type']['ptr_depth'] || 0).zero? ? '.' : '->'
           clever_replacements += [['|accessor|', accessor]]
 
@@ -616,7 +618,15 @@ module Es2pandaLibApi
     attr_writer :class_base_namespace
 
     def class_name
-      Es2pandaLibApi.classes.find { |_name, data| data == self }[0]
+      Es2pandaLibApi.classes&.each do |namespace_name, namespace_classes|
+        if namespace_classes&.find { |_name, data| data == self }
+          return namespace_classes&.find { |_name, data| data == self }[0]
+        end
+      end
+      if Es2pandaLibApi.structs.find { |_name, data| data == self }[0]
+        return Es2pandaLibApi.structs.find { |_name, data| data == self }[0]
+      end
+      raise 'Unknown class name'
     end
 
     def call_cast
@@ -681,7 +691,17 @@ module Es2pandaLibApi
       type
     end
 
-    def error_catch_log(mode, function, err)
+    def error_catch_log(mode, function, err, func_new_name)
+      Es2pandaLibApi.stat_add_unsupported_type(err.message) if err.message.include?('Unsupported type')
+      if mode == 'struct_getter'
+        Es2pandaLibApi.log('warning', "Error: '#{err.message}'");
+        Es2pandaLibApi.log('debug', "Field name: #{function.name}\nField type:\n---\n"\
+                                                                "#{function.type.to_s}\n---\n\n")
+        Es2pandaLibApi.log('backtrace', err.backtrace.join("\n"), "\n\n")
+        Es2pandaLibApi.stat_add_method(0, class_name, class_base_namespace, func_new_name)
+        return
+      end
+
       Es2pandaLibApi.log('warning', "#{err.message}\n")
       Es2pandaLibApi.log('debug', "#{mode} name: #{function.name}\n\n"\
                                     "#{mode} raw C++ declaration:\n"\
@@ -689,12 +709,10 @@ module Es2pandaLibApi
       Es2pandaLibApi.log('backtrace', err.backtrace.join("\n"), "\n\n")
 
       if mode == 'Constructor'
-        Es2pandaLibApi.stat_add_unsupported_type(err.message) if err.message.include?('Unsupported type')
-        Es2pandaLibApi.stat_add_constructor(0)
+        Es2pandaLibApi.stat_add_constructor(0, class_name, class_base_namespace, func_new_name)
         Es2pandaLibApi.stat_add_class(0, function.name)
       elsif mode == 'Method'
-        Es2pandaLibApi.stat_add_unsupported_type(err.message) if err.message.include?('Unsupported type')
-        Es2pandaLibApi.stat_add_method(0)
+        Es2pandaLibApi.stat_add_method(0, class_name, class_base_namespace, func_new_name)
       else
         raise 'Unreachable'
       end
@@ -703,6 +721,7 @@ module Es2pandaLibApi
     def class_constructors
       res = []
       usings = usings_map
+      constructor_overload = {}
       dig(:constructors)&.each do |constructor|
         if check_no_gen_constructor(constructor)
           args = []
@@ -715,14 +734,15 @@ module Es2pandaLibApi
               args << Arg.new(arg, class_base_namespace)
             end
           rescue StandardError => e
-            error_catch_log('Constructor', constructor, e)
+            error_catch_log('Constructor', constructor, e, "Create" + class_name)
           else
-            Es2pandaLibApi.stat_add_constructor(1)
+            Es2pandaLibApi.stat_add_constructor(1, class_name, class_base_namespace, "Create" + class_name)
             Es2pandaLibApi.stat_add_class(1, class_name)
 
             Es2pandaLibApi.log('info', "Supported constructor for class '#{class_name}'\n")
 
-            res << { 'args' => args, 'raw_decl' => constructor.raw_declaration }
+            res << { 'overload' => get_new_method_name(constructor_overload, '', ''),
+            'args' => args, 'raw_decl' => constructor.raw_declaration }
           end
         else
           Es2pandaLibApi.log('info', "Banned constructor for class '#{class_name}'\n")
@@ -790,21 +810,48 @@ module Es2pandaLibApi
       !res
     end
 
-    def get_return_expr(return_type, call_cast, consts, method, args)
+    def check_no_get_field(field)
+      res = false # = Will be generated
+      Es2pandaLibApi.no_gen_method_info['name_starts_with']&.each do |name_starts_with|
+        res ||= field.name&.start_with?(name_starts_with)
+      end
+      Es2pandaLibApi.no_gen_method_info['return_type']&.each do |return_type|
+        res ||= begin
+                  field.type['name'] == return_type['name'] && (!return_type.respond_to?('namespace') ||
+        return_type['namespace'] == field.type['namespace'])
+                end
+      end
+      Es2pandaLibApi.no_gen_method_info['call_class']&.each do |call_class|
+        res ||= (call_class['name'] == class_name)
+      end
+      Es2pandaLibApi.no_gen_method_info['template_type']&.each do |template_type|
+        res ||= Es2pandaLibApi.check_fit_template_type(field.type, template_type)
+      end
+      !res
+    end
+
+    def get_return_expr(return_type, call_cast, consts, method, args, function_type)
+      raise 'Unsupported function type' unless %w[method struct_getter].include?(function_type)
       return_expr = ''
       const, const_return = consts
 
-      if return_type.raw_type['name'] != 'void' && !(return_type.return_args_to_str &&
-         !return_type.return_args_to_str.empty?)
+      if return_type.raw_type['name'] != 'void' && !((return_type.return_args_to_str &&
+         !return_type.return_args_to_str.empty?) ||
+         Es2pandaLibApi.additional_containers.include?(return_type.raw_type['name']))
         return_expr += 'auto res = '
       end
 
       return_expr += return_type.cast['start']&.gsub('?const?', const_return) if return_type.cast
 
-      return_expr += '(' + call_cast['start']&.gsub('?const?', const) + method['name'] + '('
-      return_expr += args&.map do |arg|
-        arg.lib_cast['var_name'] if arg.lib_cast
-      end&.join(', ')
+      if function_type == 'method'
+        return_expr += '(' + call_cast['start']&.gsub('?const?', const) + method['name'] + '('
+        return_expr += args&.map do |arg|
+          arg.lib_cast['var_name'] if arg.lib_cast
+        end&.join(', ')
+      elsif function_type == 'struct_getter'
+        return_expr += '(' + call_cast['start']&.gsub('?const?', const) + method['name']
+      end
+
       return_expr += ')' + (call_cast['end']&.gsub('?const?', const) || '') + ')'
 
       return_expr += return_type.cast['end']&.gsub('?const?', const_return) || '' if return_type.cast
@@ -817,8 +864,18 @@ module Es2pandaLibApi
       return_expr
     end
 
+    def check_for_same_class_name()
+      res = false
+      class_name_for_check = class_name
+      Es2pandaLibApi.classes&.each do |namespace_name, namespace_classes|
+        res |= namespace_classes&.find { |_name, data| data != self && _name == class_name_for_check }
+      end
+      return res
+    end
+
     def get_new_method_name(function_overload, name, const)
-      function_name = name + (const != '' ? 'Const' : '')
+      function_name = if check_for_same_class_name then class_base_namespace.capitalize
+      else '' end + name + (const != '' ? 'Const' : '')
       overload_name = function_name
 
       if function_overload.include?(function_name)
@@ -865,17 +922,49 @@ module Es2pandaLibApi
               args << Arg.new(arg, class_base_namespace)
             end
 
-            return_expr = get_return_expr(return_type, call_cast, [const, const_return], method, args)
+            return_expr = get_return_expr(return_type, call_cast, [const, const_return], method, args, 'method')
           rescue StandardError => e
-            error_catch_log('Method', method, e)
+            stat_function_overload = Marshal.load(Marshal.dump(function_overload))
+            error_catch_log('Method', method, e, class_name +
+            get_new_method_name(stat_function_overload, method.name, const))
           else
-            Es2pandaLibApi.stat_add_method(1)
+            stat_function_overload = Marshal.load(Marshal.dump(function_overload))
+            Es2pandaLibApi.stat_add_method(1, class_name, class_base_namespace, class_name +
+            get_new_method_name(stat_function_overload, method.name, const))
             Es2pandaLibApi.log('info', 'supported method: ', method.name, ' class: ', class_name, "\n")
 
             res << { 'name' => method.name, 'const' => const, 'return_arg_to_str' => return_type.return_args_to_str,
                      'overload_name' => get_new_method_name(function_overload, method.name, const), 'args' => args,
                      'return_type' => return_type, 'return_expr' => return_expr, 'raw_decl' => method.raw_declaration,
                      'const_return' => const_return }
+          end
+        else
+          Es2pandaLibApi.log('info', "Banned method\n")
+        end
+      end
+      res
+    end
+
+    def struct_getters
+      res = []
+      usings = usings_map
+      dig(:members)&.each do |field|
+        if check_no_get_field(field)
+          begin
+            return_type = Type.new(add_base_namespace(replace_with_usings(field.type, usings)),
+                                   class_base_namespace, 'return')
+            const = ''
+            const_return = get_const_return_modifier(return_type)
+
+            return_expr = get_return_expr(return_type, call_cast, [const, const_return], field, nil, 'struct_getter')
+          rescue StandardError => e
+            error_catch_log('struct_getter', field, e, class_name + field.name)
+          else
+            Es2pandaLibApi.stat_add_method(1, class_name, class_base_namespace, class_name + field.name)
+            Es2pandaLibApi.log('info', 'supported struct getter: ', field.name, ' struct: ', class_name, "\n")
+
+            res << { 'name' => field.name, 'return_arg_to_str' => return_type.return_args_to_str,
+                     'return_type' => return_type, 'return_expr' => return_expr, 'const_return' => const_return }
           end
         else
           Es2pandaLibApi.log('info', "Banned method\n")
@@ -890,6 +979,7 @@ module Es2pandaLibApi
   @scopes = Set.new(%w[Scope VariableScope])
   @declarations = Set.new(['Decl'])
   @classes = {}
+  @structs = {}
   @includes = Set.new
   @change_types = []
   @enums = Set.new(%w[AstNodeType ScopeType DeclType])
@@ -901,13 +991,16 @@ module Es2pandaLibApi
   @unsupported_types = {}
 
   @supported_methods = 0.0
+  @supported_method_type = {}
   @supported_constructors = 0.0
+  @supported_constructor_type = {}
 
   @info_log = false
   @debug_log = false
   @warning_log = true
   @backtrace_log = false
   @stat_log = false
+  @type_stat_log = false
 
   def log(debug_level, *args)
 
@@ -920,6 +1013,8 @@ module Es2pandaLibApi
     elsif debug_level == 'backtrace' && @backtrace_log
       print args.join('').to_s
     elsif debug_level == 'stat' && @stat_log
+      print args.join('').to_s
+    elsif debug_level == 'type_stat' && @type_stat_log
       print args.join('').to_s
     end
   end
@@ -946,11 +1041,11 @@ module Es2pandaLibApi
        { 'name' => 'VariableType', 'namespace' => 'varbinder' }, { 'name' => 'Args', 'namespace' => 'varbinder' },
        { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'auto' }, { 'name' => 'recursive_mutex' },
        { 'name' => 'ConstraintCheckRecord' }, { 'name' => 'optional', 'namespace' => 'std' },
-       { 'name' => 'WrapperDesc' }],
+       { 'name' => 'WrapperDesc' }, { 'name' => 'Args', 'namespace' => 'parser' }],
       'template_type' =>
       [{ 'name' => 'Checker' }, { 'name' => 'ETSChecker' }, { 'name' => 'Program' }, { 'name' => 'stringstream' },
        { 'name' => 'TSChecker', 'namespace' => 'checker' }, { 'name' => 'T' }, { 'name' => 'K' }, { 'name' => 'tuple' },
-       { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'Args', 'namespace' => 'varbinder' },
+       { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'Args' },
        { 'name' => 'ETSBinder' }, { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'pair' },
        { 'name' => 'SmartCastTypes' }, { 'name' => 'ConstraintCheckRecord' }, { 'name' => 'ArenaVector' },
        { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'ScopedDebugInfoPlugin' }],
@@ -958,7 +1053,7 @@ module Es2pandaLibApi
       [{ 'name' => 'AstNode' }, { 'name' => 'ClassElement' }, { 'name' => 'TypedStatement' }, { 'name' => 'Annotated' },
        { 'name' => 'Scope' }, { 'name' => 'Type' }, { 'name' => 'ObjectType' }, { 'name' => 'VarBinder' },
        { 'name' => 'ETSBinder' }, { 'name' => 'BoundContext', 'namespace' => 'varbinder' },
-       { 'name' => 'Checker' }, { 'name' => 'ETSChecker' }],
+       { 'name' => 'Checker' }, { 'name' => 'ETSChecker' }, { 'name' => 'ETSParser' }],
       'arg_name' =>
       ['[N]'] }
   end
@@ -987,8 +1082,8 @@ module Es2pandaLibApi
        { 'name' => 'Args', 'namespace' => 'varbinder' }, { 'name' => 'InsertResult', 'namespace' => 'varbinder' },
        { 'name' => 'RelationHolder', 'namespace' => 'checker' }, { 'name' => 'auto' }, { 'name' => 'recursive_mutex' },
        { 'name' => 'SmartCastArray' }, { 'name' => 'SmartCastTypes' }, { 'name' => 'SemanticAnalyzer' },
-       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'WrapperDesc' },
-       { 'name' => 'ScopedDebugInfoPlugin' }],
+       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'WrapperDesc' }, { 'name' => 'Language' },
+       { 'name' => 'ScopedDebugInfoPlugin' }, { 'name' => 'Args', 'namespace' => 'parser' }, { 'name' => 'ETSParser' }],
       'arg_type' =>
       [{ 'name' => 'Tag' }, { 'name' => 'Number', 'namespace' => 'lexer' }, { 'name' => 'K' },
        { 'name' => 'Property', 'namespace' => 'AstDumper' }, { 'name' => 'TSChecker', 'namespace' => 'checker' },
@@ -1000,11 +1095,12 @@ module Es2pandaLibApi
        { 'name' => 'VariableType', 'namespace' => 'varbinder' }, { 'name' => 'Span' }, { 'name' => 'recursive_mutex' },
        { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'auto' }, { 'name' => 'SmartCastArray' },
        { 'name' => 'SmartCastTypes' }, { 'name' => 'ConstraintCheckRecord' }, { 'name' => 'WrapperDesc' },
-       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'RelationHolder', 'namespace' => 'checker' }],
+       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'RelationHolder', 'namespace' => 'checker' },
+       { 'name' => 'Args', 'namespace' => 'parser' }],
       'template_type' =>
       [{ 'name' => 'Checker' }, { 'name' => 'ETSChecker' }, { 'name' => 'Program' }, { 'name' => 'stringstream' },
        { 'name' => 'TSChecker', 'namespace' => 'checker' }, { 'name' => 'T' }, { 'name' => 'K' },
-       { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'Args', 'namespace' => 'varbinder' },
+       { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'Args' },
        { 'name' => 'ETSBinder' }, { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'pair' },
        { 'name' => 'RelationHolder', 'namespace' => 'checker' }, { 'name' => 'recursive_mutex' }, { 'name' => 'tuple' },
        { 'name' => 'SmartCastArray' }, { 'name' => 'SmartCastTypes' }, { 'name' => 'ConstraintCheckRecord' },
@@ -1047,14 +1143,73 @@ module Es2pandaLibApi
     res
   end
 
-  def stat_add_method(support)
-    @all_methods += 1
-    @supported_methods += support
+  def check_class_type(class_name, class_base_namespace)
+    type = ''
+    if ast_nodes.include?(class_name) && class_base_namespace == "ir"
+      type = "AST manipulation"
+    elsif ast_node_additional_children.include?(class_name) && class_base_namespace == "ir"
+      type = "AST manipulation"
+    elsif class_base_namespace == "ir"
+      type = "AST manipulation"
+    elsif ast_types.include?(class_name) && class_base_namespace == "checker"
+      type = "Type manipulation"
+    elsif ast_type_additional_children.include?(class_name) && class_base_namespace == "checker"
+      type = "Type manipulation"
+    elsif class_base_namespace == "checker"
+      type = "Type check"
+    elsif ast_variables.find { |x| x[1] == class_name } && class_base_namespace == "varbinder"
+      type = "Variable manipulation"
+    elsif scopes.include?(class_name) && class_base_namespace == "varbinder"
+      type = "Scope manipulation"
+    elsif declarations.include?(class_name) && class_base_namespace == "varbinder"
+      type = "Declaration"
+    elsif class_base_namespace == "varbinder"
+      type = "Varbinder manipulation"
+    elsif class_base_namespace == "parser"
+      type = "Parser manipulation"
+    elsif class_base_namespace == "es2panda"
+      type = "Getters for compiler options"
+    else
+      raise "Unsupported class type for stats class name: \"" +
+      class_name + "\" class namespace: \"" + class_base_namespace + "\""
+    end
+    type
   end
 
-  def stat_add_constructor(support)
+  def stat_add_method_type(class_name, class_base_namespace, func_new_name)
+    type = check_class_type(class_name, class_base_namespace)
+    if @supported_method_type[type]
+      @supported_method_type[type][0] += 1
+      @supported_method_type[type][1] << func_new_name
+    else
+      @supported_method_type[type] = [1, [func_new_name]]
+    end
+  end
+
+  def stat_add_constructor_type(class_name, class_base_namespace, constructor_new_name)
+    type = check_class_type(class_name, class_base_namespace)
+    if @supported_constructor_type[type]
+      @supported_constructor_type[type][0] += 1
+      @supported_constructor_type[type][1] << constructor_new_name
+    else
+      @supported_constructor_type[type] = [1, [constructor_new_name]]
+    end
+  end
+
+  def stat_add_method(support, class_name, class_base_namespace, func_new_name)
+    @all_methods += 1
+    @supported_methods += support
+    if support == 1
+      stat_add_method_type(class_name, class_base_namespace, func_new_name)
+    end
+  end
+
+  def stat_add_constructor(support, class_name, class_base_namespace, constructor_new_name)
     @all_constructors += 1
     @supported_constructors += support
+    if support == 1
+      stat_add_constructor_type(class_name, class_base_namespace, constructor_new_name)
+    end
   end
 
   def stat_add_class(support, class_name)
@@ -1115,6 +1270,12 @@ module Es2pandaLibApi
     ]
   end
 
+  def additional_containers
+    %w[
+      shared_ptr
+    ]
+  end
+
   def additional_classes_to_generate
     %w[
       TypeRelation
@@ -1124,10 +1285,18 @@ module Es2pandaLibApi
       CheckerContext
       ResolveResult
       SignatureInfo
+      Signature
       VarBinder
       ETSBinder
       RecordTable
       BoundContext
+      ETSParser
+    ]
+  end
+
+  def structs_to_generate
+    %w[
+      CompilerOptions
     ]
   end
 
@@ -1153,6 +1322,10 @@ module Es2pandaLibApi
 
   def classes
     @classes
+  end
+
+  def structs
+    @structs
   end
 
   def includes
@@ -1203,25 +1376,43 @@ module Es2pandaLibApi
       @change_types << change_type
     end
 
+    @classes['ir'] = {} unless @classes['ir']
     data['ir']&.class_definitions&.each do |class_definition|
-      @classes[class_definition.name] = ClassData.new(class_definition&.public)
-      @classes[class_definition.name].class_base_namespace = 'ir'
+      @classes['ir'][class_definition.name] = ClassData.new(class_definition&.public)
+      @classes['ir'][class_definition.name].class_base_namespace = 'ir'
     end
 
+    @classes['checker'] = {} unless @classes['checker']
     data['checker']&.class_definitions&.each do |class_definition|
       if @ast_types.include?(class_definition.name) || ast_type_additional_children.include?(class_definition.name) ||
          additional_classes_to_generate.include?(class_definition.name)
-        @classes[class_definition.name] = ClassData.new(class_definition&.public)
-        @classes[class_definition.name].class_base_namespace = 'checker'
+        @classes['checker'][class_definition.name] = ClassData.new(class_definition&.public)
+        @classes['checker'][class_definition.name].class_base_namespace = 'checker'
       end
     end
 
+    @classes['varbinder'] = {} unless @classes['varbinder']
     data['varbinder']&.class_definitions&.each do |class_definition|
       if scopes.include?(class_definition.name) || declarations.include?(class_definition.name) ||
          ast_variables.find { |x| x[1] == class_definition.name } ||
          additional_classes_to_generate.include?(class_definition.name)
-        @classes[class_definition.name] = ClassData.new(class_definition&.public)
-        @classes[class_definition.name].class_base_namespace = 'varbinder'
+        @classes['varbinder'][class_definition.name] = ClassData.new(class_definition&.public)
+        @classes['varbinder'][class_definition.name].class_base_namespace = 'varbinder'
+      end
+    end
+
+    @classes['parser'] = {} unless @classes['parser']
+    data['parser']&.class_definitions&.each do |class_definition|
+      if additional_classes_to_generate.include?(class_definition.name)
+        @classes['parser'][class_definition.name] = ClassData.new(class_definition&.public)
+        @classes['parser'][class_definition.name].class_base_namespace = 'parser'
+      end
+    end
+
+    data['es2panda']&.structs&.each do |struct|
+      if structs_to_generate.include?(struct.name)
+        @structs[struct.name] = ClassData.new(struct)
+        @structs[struct.name].class_base_namespace = 'es2panda'
       end
     end
 
@@ -1236,7 +1427,8 @@ module Es2pandaLibApi
                   :stat_add_constructor, :stat_add_method, :print_stats, :no_gen_method_info, :no_gen_constructor_info,
                   :stat_add_class, :stat_add_unsupported_type, :ast_node_additional_children, :code_gen_children,
                   :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables,
-                  :no_usings_replace_info, :declarations, :check_fit_template_type
+                  :no_usings_replace_info, :declarations, :check_fit_template_type, :structs, :structs_to_generate,
+                  :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type
 end
 
 def Gen.on_require(data)

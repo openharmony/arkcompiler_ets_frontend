@@ -18,6 +18,8 @@ class GoodGreeter {
 
     public b: int;
 
+    fooExample() : void {}
+
     static invoke(): int {
         return 5;
     }

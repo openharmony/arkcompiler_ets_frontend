@@ -75,6 +75,11 @@ public:
         return signature_;
     }
 
+    [[nodiscard]] FunctionSignature IrSignature() noexcept
+    {
+        return irSignature_;
+    }
+
     [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
         return irSignature_.Params();

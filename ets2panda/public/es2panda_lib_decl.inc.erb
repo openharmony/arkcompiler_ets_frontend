@@ -42,14 +42,15 @@
 
     char const *(*AstNodeName)(es2panda_AstNode *ast);
 
-% Es2pandaLibApi::classes&.each do |className, classData|
+% Es2pandaLibApi::classes&.each do |namespaceName, namespaceClasses|
+% namespaceClasses&.each do |className, classData|
 % classData.class_constructors&.each_with_index do |constructor, index|
-    <%= classData.constructor_type().lib_type_to_str() %>(*Create<%= className + "#{index}" %>)(es2panda_Context *context<%=
+    <%= classData.constructor_type().lib_type_to_str() %>(*Create<%= className + constructor["overload"] %>)(es2panda_Context *context<%=
     constructor["args"]&.map { |arg| if arg.lib_args_to_str.strip() != ""
      then ", " + arg.lib_args_to_str end}&.join("") %>);
 
 % if classData.updater_allowed()
-    <%= classData.constructor_type().lib_type_to_str() %>(*Update<%= className + "#{index}" %>)(es2panda_Context *context, es2panda_AstNode *original<%=
+    <%= classData.constructor_type().lib_type_to_str() %>(*Update<%= className + constructor["overload"] %>)(es2panda_Context *context, es2panda_AstNode *original<%=
     constructor["args"]&.map { |arg| if arg.lib_args_to_str.strip() != ""
      then ", " + arg.lib_args_to_str end}&.join("") %>);
 % end   # Updater end
@@ -67,5 +68,15 @@ then ", " + classData.call_cast["call_var"] end %><%=
 % end
 
 % end
+% end
+
+% Es2pandaLibApi::structs&.each do |structName, structData|
+% structData.struct_getters&.each_with_index do |method_info, index|
+    <%= method_info["return_type"].lib_type_to_str %>(*<%= structName + method_info["name"]
+    %>)(es2panda_Context *context<%= if structData.call_cast["call_var"]
+    then structData.call_cast["call_var"] end %>/*return_args:*/<%= method_info["return_arg_to_str"] %>);
+% end   # getters end
+
+% end   # structs end
 
 // NOLINTEND(readability-identifier-naming)

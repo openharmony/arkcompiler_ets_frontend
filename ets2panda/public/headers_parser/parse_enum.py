@@ -101,8 +101,13 @@ def parse_enum_class_body(data: str) -> dict:
 def parse_enum_class(data: str, start: int = 0) -> Tuple[int, Dict]:
     res = {}
 
-    start_of_name = data.find("enum class", start)
-    start_of_name = find_first_not_restricted_character(" ", data, start_of_name + len("enum class"))
+    start_of_name = data.find("enum ", start)
+
+    if data.find("enum class", start_of_name) == start_of_name:
+        start_of_name = find_first_not_restricted_character(" ", data, start_of_name + len("enum class"))
+    else:
+        start_of_name = find_first_not_restricted_character(" ", data, start_of_name + len("enum"))
+
     end_of_name = find_first_of_characters(" ;{\n", data, start_of_name)
     enum_name = data[start_of_name:end_of_name]
 

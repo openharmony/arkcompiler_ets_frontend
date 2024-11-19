@@ -230,9 +230,14 @@ std::string AstNode::DumpEtsSrc() const
     return dumper.Str();
 }
 
-void AstNode::SetOriginalNode(AstNode *originalNode)
+void AstNode::SetOriginalNode(AstNode *originalNode) noexcept
 {
     originalNode_ = originalNode;
+}
+
+AstNode *AstNode::OriginalNode() const noexcept
+{
+    return originalNode_;
 }
 
 void AstNode::SetTransformedNode(std::string_view const transformationName, AstNode *transformedNode)

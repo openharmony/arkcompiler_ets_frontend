@@ -60,15 +60,15 @@ es2panda_AstNode *CreateNewFunction(int num, es2panda_Context *ctx, es2panda_Sco
     char *funcName = static_cast<char *>(impl->AllocMemory(ctx, funcNameStr.length() + 1, sizeof(char)));
     std::copy_n(funcNameStr.c_str(), funcNameStr.length() + 1, funcName);
 
-    es2panda_AstNode *body = impl->CreateBlockStatement0(ctx, NULL, 0);
+    es2panda_AstNode *body = impl->CreateBlockStatement(ctx, NULL, 0);
     es2panda_Scope *scope = impl->ETSCheckerCopyParams(ctx, NULL, 0, NULL, 0);
-    es2panda_AstNode *returnType = impl->CreateETSPrimitiveType0(ctx, PRIMITIVE_TYPE_VOID);
+    es2panda_AstNode *returnType = impl->CreateETSPrimitiveType(ctx, PRIMITIVE_TYPE_VOID);
     es2panda_AstNode *func = impl->ETSCheckerCreateMethod(ctx, funcName, MODIFIER_FLAGS_NONE,
                                                           SCRIPT_FUNCTION_FLAGS_NONE, NULL, 0, scope, returnType, body);
     impl->AstNodeSetParent(ctx, returnType, impl->MethodDefinitionFunction(ctx, func));
 
-    es2panda_Declaration *decl = impl->CreateFunctionDecl0(ctx, funcName, func);
-    es2panda_Variable *funcVariable = impl->CreateLocalVariable0(ctx, decl, (uint64_t)1U << 28U);
+    es2panda_Declaration *decl = impl->CreateFunctionDecl(ctx, funcName, func);
+    es2panda_Variable *funcVariable = impl->CreateLocalVariable(ctx, decl, (uint64_t)1U << 28U);
     impl->VariableAddFlag(ctx, funcVariable, (uint64_t)1U << 2U);
     impl->VariableSetScope(ctx, funcVariable, methodScope);
     impl->AstNodeSetVariable(ctx, impl->ClassElementId(ctx, func), funcVariable);
