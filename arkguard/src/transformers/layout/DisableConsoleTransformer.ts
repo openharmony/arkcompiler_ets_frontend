@@ -58,7 +58,7 @@ namespace secharmony {
     'createTransformerFactory': createDisableConsoleFactory
   };
 
-  export function createDisableConsoleFactory(option: IOptions): TransformerFactory<Node> {
+  export function createDisableConsoleFactory(option: IOptions): TransformerFactory<Node> | null {
     if (!option.mDisableConsole) {
       return null;
     }

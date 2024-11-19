@@ -74,7 +74,7 @@ namespace secharmony {
    *
    * @param option obfuscation options
    */
-  const createRenamePropertiesFactory = function (option: IOptions): TransformerFactory<Node> {
+  const createRenamePropertiesFactory = function (option: IOptions): TransformerFactory<Node> | null {
     let profile: INameObfuscationOption | undefined = option?.mNameObfuscation;
 
     if (!profile || !profile.mEnable || !profile.mRenameProperties) {

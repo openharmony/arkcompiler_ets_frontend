@@ -47,7 +47,7 @@ import {ArkObfuscator, performancePrinter} from '../../ArkObfuscator';
 import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 
 namespace secharmony {
-  const createShorthandPropertyTransformerFactory = function (option: IOptions): TransformerFactory<Node> {
+  const createShorthandPropertyTransformerFactory = function (option: IOptions): TransformerFactory<Node> | null {
     let profile: INameObfuscationOption = option.mNameObfuscation;
     if (!profile || !profile.mEnable) {
       return null;

@@ -84,7 +84,7 @@ namespace secharmony {
    *
    * @param option obfuscation options
    */
-  const createRenameFileNameFactory = function (options: IOptions): TransformerFactory<Node> {
+  const createRenameFileNameFactory = function (options: IOptions): TransformerFactory<Node> | null {
     profile = options?.mRenameFileName;
     if (!profile || !profile.mEnable) {
       return null;

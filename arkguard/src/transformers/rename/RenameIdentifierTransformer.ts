@@ -120,7 +120,7 @@ namespace secharmony {
    *
    * @param option
    */
-  const createRenameIdentifierFactory = function (option: IOptions): TransformerFactory<Node> {
+  const createRenameIdentifierFactory = function (option: IOptions): TransformerFactory<Node> | null {
     const profile: INameObfuscationOption | undefined = option?.mNameObfuscation;
     const unobfuscationOption: IUnobfuscationOption | undefined = option?.mUnobfuscationOption;
     if (!profile || !profile.mEnable) {
