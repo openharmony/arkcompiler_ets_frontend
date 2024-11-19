@@ -343,13 +343,15 @@ ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, ch
     ArenaVector<checker::Signature *> callSignatures(checker->Allocator()->Adapter());
 
     for (auto *constituentType : etsUnionType->ConstituentTypes()) {
-        if (constituentType->IsETSObjectType()) {
+        if (constituentType->IsETSObjectType() &&
+            constituentType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE)) {
             ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
-            tmpCallSignatures = constituentType->AsETSObjectType()
-                                    ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke0")
-                                    ->TsType()
-                                    ->AsETSFunctionType()
-                                    ->CallSignatures();
+            tmpCallSignatures =
+                constituentType->AsETSObjectType()
+                    ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
+                    ->TsType()
+                    ->AsETSFunctionType()
+                    ->CallSignatures();
             callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
         }
         if (constituentType->IsETSFunctionType()) {
