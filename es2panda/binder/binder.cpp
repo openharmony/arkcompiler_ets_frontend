@@ -815,6 +815,9 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             }
 
             ResolveReference(prop, prop->Key());
+            if (prop->TypeAnnotation() != nullptr) {
+                ResolveReference(prop, prop->TypeAnnotation());
+            }
             if (prop->Value() != nullptr) {
                 ASSERT(parent->IsClassDefinition());
                 const auto *classDef = parent->AsClassDefinition();

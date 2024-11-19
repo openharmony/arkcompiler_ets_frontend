@@ -77,6 +77,11 @@ public:
         return typeAnnotation_;
     }
 
+    Expression *TypeAnnotation()
+    {
+        return typeAnnotation_;
+    }
+
     ModifierFlags Modifiers() const
     {
         return modifiers_;
