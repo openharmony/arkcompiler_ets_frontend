@@ -60,6 +60,16 @@ public:
         return sv_ > rhs.sv_;
     }
 
+    bool operator<=(const StringView &rhs) const noexcept
+    {
+        return sv_ <= rhs.sv_;
+    }
+
+    bool operator>=(const StringView &rhs) const noexcept
+    {
+        return sv_ >= rhs.sv_;
+    }
+
     int Compare(const StringView &other) const noexcept
     {
         return sv_.compare(other.sv_);

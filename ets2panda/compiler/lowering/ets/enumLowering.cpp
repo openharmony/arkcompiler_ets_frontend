@@ -19,6 +19,7 @@
 #include "checker/types/type.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "util/errorHandler.h"
 #include "varbinder/ETSBinder.h"
 #include "varbinder/variable.h"
 
@@ -66,6 +67,31 @@ ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::Clas
 }
 
 }  // namespace
+
+void EnumLoweringPhase::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
+{
+    util::ErrorHandler::LogSyntaxError(context_->parser->ErrorLogger(), program_, errorMessage, pos);
+}
+
+template <typename TypeNode>
+static bool CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers)
+{
+    for (auto *member : enumMembers) {
+        auto *init = member->AsTSEnumMember()->Init();
+        if constexpr (std::is_same_v<TypeNode, ir::NumberLiteral>) {
+            if (!init->IsNumberLiteral()) {
+                return false;
+            }
+        } else if constexpr (std::is_same_v<TypeNode, ir::StringLiteral>) {
+            if (!init->IsStringLiteral()) {
+                return false;
+            }
+        } else {
+            static_assert(std::is_same_v<TypeNode, void>, "Unsupported TypeNode in CheckEnumMemberType.");
+        }
+    }
+    return true;
+}
 
 [[nodiscard]] ir::ScriptFunction *EnumLoweringPhase::MakeFunction(FunctionInfo &&functionInfo)
 {
@@ -351,6 +377,7 @@ bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *progr
         }
     }
 
+    context_ = ctx;
     checker_ = ctx->checker->AsETSChecker();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program_ = program;
@@ -359,12 +386,12 @@ bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *progr
             auto *enumDecl = ast->AsTSEnumDeclaration();
 
             if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
-                itemInit->IsNumberLiteral()) {
+                itemInit->IsNumberLiteral() && CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members())) {
                 CreateEnumIntClassFromEnumDeclaration(enumDecl);
-            } else if (itemInit->IsStringLiteral()) {
+            } else if (itemInit->IsStringLiteral() && CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members())) {
                 CreateEnumStringClassFromEnumDeclaration(enumDecl);
             } else {
-                checker_->LogTypeError("Invalid enumeration value type.", enumDecl->Start());
+                LogSyntaxError("Invalid enumeration value type.", enumDecl->Start());
                 isPerformedSuccess = false;
             }
         }

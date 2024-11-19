@@ -20,6 +20,7 @@
 #include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/stringConstantsLowering.h"
+#include "compiler/lowering/ets/constantExpressionLowering.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
@@ -62,6 +63,7 @@ static ResolveIdentifiers g_resolveIdentifiers {};
 static AmbientLowering g_ambientLowering;
 static BigIntLowering g_bigintLowering;
 static StringConstructorLowering g_stringConstructorLowering;
+static ConstantExpressionLowering g_constantExpressionLowering;
 static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
 static EnumLoweringPhase g_enumLoweringPhase;
@@ -118,6 +120,7 @@ std::vector<Phase *> GetETSPhaseList()
     return {
         &g_pluginsAfterParse,
         &g_stringConstantsLowering,
+        &g_constantExpressionLowering,
         &g_packageImplicitImport,
         &g_topLevelStatements,
         &g_defaultParameterLowering,

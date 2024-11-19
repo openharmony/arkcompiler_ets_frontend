@@ -49,6 +49,8 @@ private:
         ir::ModifierFlags flags;
     };
 
+    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+
     [[nodiscard]] ir::ScriptFunction *MakeFunction(FunctionInfo &&functionInfo);
     ir::ClassDeclaration *CreateClass(ir::TSEnumDeclaration *const enumDecl);
     ir::ClassProperty *CreateOrdinalField(ir::ClassDefinition *const enumClass);
@@ -91,6 +93,7 @@ private:
     ArenaAllocator *Allocator();
 
 private:
+    public_lib::Context *context_ {nullptr};
     checker::ETSChecker *checker_ {nullptr};
     parser::Program *program_ {nullptr};
     varbinder::ETSBinder *varbinder_ {nullptr};

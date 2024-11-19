@@ -13,10 +13,17 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */0xFFFFFFFFF,
-  Blue
+@interface MyAnno {
+    a : int
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
+@MyAnno({a = 1 / 0})
+function foo() {}
+
+enum Color {
+    Red = 1/0
+}
+
+
+/* @@? 20:14 Error SyntaxError: Division by zero are not allowed in Enum or Annotation */
+/* @@? 24:11 Error SyntaxError: Division by zero are not allowed in Enum or Annotation */

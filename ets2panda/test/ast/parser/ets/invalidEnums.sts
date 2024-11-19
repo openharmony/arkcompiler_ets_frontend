@@ -69,13 +69,19 @@ enum MissingLeftBrace
   Member2
 }
 
+
 /* @@? 16:5 Error SyntaxError: Variable declaration expected.  */
 /* @@? 22:22 Error SyntaxError: Unexpected token, expected: '{'.  */
 /* @@? 32:1 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
 /* @@? 32:1 Error SyntaxError: Unexpected token ']'.  */
-/* @@? 37:10 Error SyntaxError: Invalid enum initialization type  */
-/* @@? 43:10 Error SyntaxError: Invalid enum initialization type  */
-/* @@? 48:16 Error SyntaxError: Invalid enum initialization value  */
+/* @@? 38:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 37:10 Error SyntaxError: Invalid enum initialization value  */
+/* @@? 43:10 Error SyntaxError: Unexpected token '?'.  */
+/* @@? 43:10 Error SyntaxError: Invalid enum initialization value  */
+/* @@? 43:10 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
+/* @@? 43:10 Error SyntaxError: Unexpected token '?'.  */
+/* @@? 44:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 48:13 Error SyntaxError: Invalid enum initialization value  */
 /* @@? 56:1 Error SyntaxError: All items of string-type enumeration should be explicitly initialized.  */
 /* @@? 60:3 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
 /* @@? 61:1 Error SyntaxError: Unexpected token '}'.  */

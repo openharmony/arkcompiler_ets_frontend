@@ -15,7 +15,7 @@
 
 enum InvalidInitTypeEnum {
   Red,
-  Green = 1.0/* @@ label */,
+  Green = /* @@ label */1.0,
   Blue
 }
 
