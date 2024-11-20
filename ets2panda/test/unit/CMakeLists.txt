@@ -15,6 +15,7 @@ if(NOT PANDA_REGRESSION_TESTS)
     return()
 endif()
 
+add_subdirectory(cfg)
 add_subdirectory(dynamic)
 add_subdirectory(lowerings)
 add_subdirectory(public)

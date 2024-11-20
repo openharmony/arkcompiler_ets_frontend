@@ -36,6 +36,11 @@ public:
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
+    Statement *Body()
+    {
+        return body_;
+    }
+
     const Statement *Body() const
     {
         return body_;

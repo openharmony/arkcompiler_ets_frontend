@@ -48,9 +48,18 @@ public:
         return ident_;
     }
 
-    [[nodiscard]] const ir::AstNode *Target() const noexcept
+    [[nodiscard]] const ir::AstNode *Target() const
     {
-        return target_;
+        if (target_.has_value()) {
+            return target_.value();
+        }
+
+        return nullptr;
+    }
+
+    [[nodiscard]] bool HasTarget() const noexcept
+    {
+        return target_.has_value();
     }
 
     void SetTarget(ir::AstNode const *target) noexcept
@@ -76,7 +85,7 @@ public:
 
 private:
     Identifier *ident_ {};
-    const ir::AstNode *target_ {};
+    std::optional<const ir::AstNode *> target_ {};
 };
 }  // namespace ark::es2panda::ir
 

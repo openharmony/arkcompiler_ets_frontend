@@ -22,6 +22,7 @@
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/constantExpressionLowering.h"
 #include "compiler/lowering/ets/declareOverloadLowering.h"
+#include "compiler/lowering/ets/cfgBuilderPhase.h"
 #include "compiler/lowering/ets/defaultParametersInConstructorLowering.h"
 #include "compiler/lowering/ets/defaultParametersLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
@@ -44,6 +45,7 @@
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/recordLowering.h"
+#include "compiler/lowering/ets/setJumpTarget.h"
 #include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/stringComparison.h"
 #include "compiler/lowering/ets/stringConstantsLowering.h"
@@ -64,6 +66,8 @@
 namespace ark::es2panda::compiler {
 
 static CheckerPhase g_checkerPhase;
+static SetJumpTargetPhase g_setJumpTargetPhase;
+static CFGBuilderPhase g_cfgBuilderPhase;
 static ResolveIdentifiers g_resolveIdentifiers {};
 static AmbientLowering g_ambientLowering;
 static BigIntLowering g_bigintLowering;
@@ -135,6 +139,8 @@ std::vector<Phase *> GetETSPhaseList()
         &g_resolveIdentifiers,
         &g_pluginsAfterBind,
         &g_capturedVariables,
+        &g_setJumpTargetPhase,
+        &g_cfgBuilderPhase,
         &g_checkerPhase,        // please DO NOT change order of these two phases: checkerPhase and pluginsAfterCheck
         &g_pluginsAfterCheck,   // pluginsAfterCheck has to go right after checkerPhase, nothing should be between them
         &g_declareOverloadLowering,

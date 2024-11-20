@@ -189,6 +189,8 @@ public:
     static bool IsStdLib(const parser::Program *program);
     [[nodiscard]] static checker::Type *CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNode *const node,
                                                                checker::Type *const type);
+
+    [[nodiscard]] static util::UString EscapeHTMLString(ArenaAllocator *allocator, const std::string &str);
 };
 
 template <typename T>

@@ -34,6 +34,10 @@ namespace ark::es2panda::varbinder {
 class VarBinder;
 }  // namespace ark::es2panda::varbinder
 
+namespace ark::es2panda::compiler {
+class CFG;
+}  // namespace ark::es2panda::compiler
+
 namespace ark::es2panda::parser {
 enum class ScriptKind { SCRIPT, MODULE, STDLIB };
 enum class ModuleKind { MODULE, DECLARATION, PACKAGE };
@@ -52,15 +56,7 @@ public:
         return Program(allocator, varbinder);
     }
 
-    Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder)
-        : allocator_(allocator),
-          varbinder_(varbinder),
-          externalSources_(allocator_->Adapter()),
-          directExternalSources_(allocator_->Adapter()),
-          extension_(varbinder->Extension()),
-          etsnolintCollection_(allocator_->Adapter())
-    {
-    }
+    Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder);
 
     ~Program();
 
@@ -284,6 +280,9 @@ public:
 #endif
     }
 
+    compiler::CFG *GetCFG();
+    const compiler::CFG *GetCFG() const;
+
 private:
     struct ModuleInfo {          // NOLINT(cppcoreguidelines-pro-type-member-init)
         ModuleInfo() = default;  // NOLINT(cppcoreguidelines-pro-type-member-init)
@@ -313,6 +312,7 @@ private:
     ModuleInfo moduleInfo_;
     bool isASTchecked_ {};
     lexer::SourcePosition packageStartPosition_ {};
+    compiler::CFG *cfg_;
 
 #ifndef NDEBUG
     const static uint32_t POISON_VALUE {0x12346789};

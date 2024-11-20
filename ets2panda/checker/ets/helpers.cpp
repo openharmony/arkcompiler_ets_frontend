@@ -1910,55 +1910,6 @@ util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *sig
     return {""};
 }
 
-std::optional<const ir::AstNode *> ETSChecker::FindJumpTarget(ir::AstNode *node)
-{
-    ES2PANDA_ASSERT(node->IsBreakStatement() || node->IsContinueStatement());
-
-    bool const isContinue = node->IsContinueStatement();
-
-    // Look for label
-    auto label = isContinue ? node->AsContinueStatement()->Ident() : node->AsBreakStatement()->Ident();
-    if (label != nullptr) {
-        if (auto var = label->Variable(); var == nullptr) {
-            varbinder::LetDecl *decl;
-            std::tie(decl, var) = VarBinder()->NewVarDecl<varbinder::LetDecl>(
-                label->Start(), !label->IsErrorPlaceHolder() ? label->Name() : compiler::GenName(Allocator()).View());
-            var->SetScope(VarBinder()->GetScope());
-            label->SetVariable(var);
-            decl->BindNode(label);
-            label->SetTsType(var->SetTsType(GlobalTypeError()));
-        } else if (var->Declaration()->IsLabelDecl()) {
-            return var->Declaration()->Node();
-        }
-
-        // Failed to resolve variable for label
-        LogUnresolvedReferenceError(label);
-        return {};
-    }
-
-    // No label, find the nearest loop or switch statement
-    const auto *iter = node->Parent();
-    while (iter != nullptr) {
-        switch (iter->Type()) {
-            case ir::AstNodeType::DO_WHILE_STATEMENT:
-            case ir::AstNodeType::WHILE_STATEMENT:
-            case ir::AstNodeType::FOR_UPDATE_STATEMENT:
-            case ir::AstNodeType::FOR_OF_STATEMENT:
-            case ir::AstNodeType::SWITCH_STATEMENT: {
-                return iter;
-            }
-            default: {
-                break;
-            }
-        }
-
-        iter = iter->Parent();
-    }
-
-    LogError(diagnostic::FLOW_REDIRECTION_INVALID_CTX, {}, node->Start());
-    return nullptr;
-}
-
 varbinder::VariableFlags ETSChecker::GetAccessFlagFromNode(const ir::AstNode *node)
 {
     if (node->IsPrivate()) {
