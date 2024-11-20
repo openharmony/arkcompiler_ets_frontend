@@ -23,7 +23,8 @@
           "debug_pos_info": {
             "boundLeft": 0,
             "boundRight": 1,
-            "sourceLineNum": -1
+            "sourceLineNum": -1,
+            "wholeLine": ""
           }
         },
         {
@@ -38,7 +39,8 @@
           "debug_pos_info": {
             "boundLeft": 1,
             "boundRight": 2,
-            "sourceLineNum": -1
+            "sourceLineNum": -1,
+            "wholeLine": ""
           }
         },
         {
@@ -53,7 +55,8 @@
           "debug_pos_info": {
             "boundLeft": 2,
             "boundRight": 3,
-            "sourceLineNum": -1
+            "sourceLineNum": -1,
+            "wholeLine": ""
           }
         },
         {
@@ -67,7 +70,8 @@
           "debug_pos_info": {
             "boundLeft": 3,
             "boundRight": 8,
-            "sourceLineNum": 15
+            "sourceLineNum": 15,
+            "wholeLine": ""
           }
         },
         {
@@ -83,7 +87,8 @@
           "debug_pos_info": {
             "boundLeft": 8,
             "boundRight": 13,
-            "sourceLineNum": 15
+            "sourceLineNum": 15,
+            "wholeLine": ""
           }
         },
         {
@@ -97,7 +102,8 @@
           "debug_pos_info": {
             "boundLeft": 13,
             "boundRight": 18,
-            "sourceLineNum": 17
+            "sourceLineNum": 17,
+            "wholeLine": ""
           }
         },
         {
@@ -111,7 +117,8 @@
           "debug_pos_info": {
             "boundLeft": 18,
             "boundRight": 20,
-            "sourceLineNum": 17
+            "sourceLineNum": 17,
+            "wholeLine": ""
           }
         },
         {
@@ -125,7 +132,8 @@
           "debug_pos_info": {
             "boundLeft": 20,
             "boundRight": 23,
-            "sourceLineNum": 18
+            "sourceLineNum": 18,
+            "wholeLine": ""
           }
         },
         {
@@ -139,7 +147,8 @@
           "debug_pos_info": {
             "boundLeft": 23,
             "boundRight": 28,
-            "sourceLineNum": 22
+            "sourceLineNum": 22,
+            "wholeLine": ""
           }
         },
         {
@@ -153,7 +162,8 @@
           "debug_pos_info": {
             "boundLeft": 28,
             "boundRight": 30,
-            "sourceLineNum": 22
+            "sourceLineNum": 22,
+            "wholeLine": ""
           }
         },
         {
@@ -167,7 +177,8 @@
           "debug_pos_info": {
             "boundLeft": 30,
             "boundRight": 33,
-            "sourceLineNum": 23
+            "sourceLineNum": 23,
+            "wholeLine": ""
           }
         },
         {
@@ -181,7 +192,8 @@
           "debug_pos_info": {
             "boundLeft": 33,
             "boundRight": 38,
-            "sourceLineNum": 25
+            "sourceLineNum": 25,
+            "wholeLine": ""
           }
         },
         {
@@ -195,7 +207,8 @@
           "debug_pos_info": {
             "boundLeft": 38,
             "boundRight": 40,
-            "sourceLineNum": 25
+            "sourceLineNum": 25,
+            "wholeLine": ""
           }
         },
         {
@@ -209,7 +222,8 @@
           "debug_pos_info": {
             "boundLeft": 40,
             "boundRight": 45,
-            "sourceLineNum": 27
+            "sourceLineNum": 27,
+            "wholeLine": ""
           }
         },
         {
@@ -223,7 +237,8 @@
           "debug_pos_info": {
             "boundLeft": 45,
             "boundRight": 47,
-            "sourceLineNum": 27
+            "sourceLineNum": 27,
+            "wholeLine": ""
           }
         },
         {
@@ -235,7 +250,8 @@
           "debug_pos_info": {
             "boundLeft": 0,
             "boundRight": 0,
-            "sourceLineNum": -1
+            "sourceLineNum": -1,
+            "wholeLine": ""
           }
         },
         {
@@ -247,7 +263,8 @@
           "debug_pos_info": {
             "boundLeft": 0,
             "boundRight": 0,
-            "sourceLineNum": -1
+            "sourceLineNum": -1,
+            "wholeLine": ""
           }
         }
       ],
