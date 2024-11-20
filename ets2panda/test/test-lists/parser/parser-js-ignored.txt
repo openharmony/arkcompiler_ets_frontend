@@ -13,8 +13,3 @@ ark_tests/parser/js/identifiers/test-identifier-keyword-await-2.js
 ark_tests/parser/js/statements/debugger/test-debugger-statement-1.js
 ark_tests/parser/js/statements/loops/do-while/test-do-while-1.js
 ark_tests/parser/js/statements/switch/test-switch-6.js
-
-# Issue: #18965 (fixing ast dump)
-ark_tests/parser/js/literals/template/test-tagged-template-expression.js
-ark_tests/parser/js/literals/template/test-template-literal.js
-ark_tests/parser/js/literals/test-string-literal.js
