@@ -20,19 +20,22 @@ const TS_EXT = ".ts";
 const ETS_EXT = ".ets";
 const TSX_EXT = ".tsx";
 const STS_EXT = ".sts";
+const STSX_EXT = ".stsx";
 const D_TS_EXT = '.d.ts';
 
 class Mode {
     static DEFAULT = 1;
-    static AUTOFIX = 2
+    static AUTOFIX = 2;
+    static ARKTS2 = 3;
 }
 
 const RESULT_EXT = [];
 RESULT_EXT[Mode.DEFAULT] = '.json';
 RESULT_EXT[Mode.AUTOFIX] = '.autofix.json';
-const AUTOFIX_SKIP_EXT = '.autofix.skip';
+RESULT_EXT[Mode.ARKTS2] = '.arkts2.json';
 const DIFF_EXT = '.diff';
-const RESULTS_DIR = 'results'
+const RESULTS_DIR = 'results';
+const TEST_ARGS_EXT = '.args.json';
 
 let testDirs = [];
 
@@ -61,7 +64,7 @@ const DEFAULT_COPYRIGHT =  [
     "limitations under the License."
 ];
 
-function readTestFile(filePath) {
+function readJsonFile(filePath) {
     try {
         let resultFile = fs.readFileSync(filePath).toString();
         return JSON.parse(resultFile);
@@ -70,41 +73,51 @@ function readTestFile(filePath) {
     }
 }
 
-function updateTest(testDir, testFile, mode) {
+function updateTestFile(testDir, testFile) {
     // Temporary solution: rename '.sts' extension to '.ts'
-    if (testFile.endsWith(STS_EXT)) {
+    if (testFile.endsWith(STS_EXT) || testFile.endsWith(STSX_EXT)) {
         testFile = testFile.replace(STS_EXT, TS_EXT);
     }
 
+    let testModes = [Mode.DEFAULT];
+
+    const testArgsFile = path.join(testDir, testFile + TEST_ARGS_EXT);
+    if (fs.existsSync(testArgsFile)) {
+        const testArgs = readJsonFile(testArgsFile);
+        if (testArgs?.mode?.autofix !== undefined) testModes.push(Mode.AUTOFIX);
+        if (testArgs?.mode?.arkts2 !== undefined) testModes.push(Mode.ARKTS2);
+    }
+
+    for (const mode of testModes) {
+        updateTest(testDir, testFile, mode);
+    }
+}
+
+function updateTest(testDir, testFile, mode) {
     let resultExt = RESULT_EXT[mode];
     let resultFileWithExt = testFile + resultExt;
     let resultFilePath = path.join(testDir, resultFileWithExt);
 
-    // Do not update autofix result if test is skipped
-    if (mode === Mode.AUTOFIX && fs.existsSync(path.join(testDir, testFile + AUTOFIX_SKIP_EXT))) {
-        return;
-    }
-
     // Update test result when:
     // - '.diff' exists
-    // - expected '.json' doesn't exist 
+    // - expected '.json' for specified test mode doesn't exist
     // - 'force' option is enabled
     if (fs.existsSync(resultFilePath) && !fs.existsSync(path.join(testDir, RESULTS_DIR, resultFileWithExt + DIFF_EXT)) && !force_update) {
         return;
     }
 
-    let expectedResult = readTestFile(resultFilePath);
+    let expectedResult = readJsonFile(resultFilePath);
 
     const copyright = expectedResult?.copyright ?? DEFAULT_COPYRIGHT;
 
-    let actualResult = readTestFile(path.join(testDir, RESULTS_DIR, resultFileWithExt));
-    if (!actualResult || !actualResult.nodes) {
-        console.log(`Failed to update ${resultFileWithExt}: couldn't read ACTUAL result file.`);
+    let actualResult = readJsonFile(path.join(testDir, RESULTS_DIR, resultFileWithExt));
+    if (!actualResult || !actualResult.result) {
+        console.log(`Failed to update ${resultFileWithExt}: couldn't process ACTUAL result file.`);
         return;
     }
 
     // Write file with actual test results.
-    let newResultJSON = JSON.stringify({ copyright, nodes: actualResult.nodes }, null, 4);
+    let newResultJSON = JSON.stringify({ copyright, result: actualResult.result }, null, 4);
     fs.writeFileSync(resultFilePath, newResultJSON);
 
     console.log(`Updated ${resultFileWithExt}`);
@@ -118,14 +131,14 @@ for (let testDir of testDirs) {
         (x.trimEnd().endsWith(TS_EXT) && !x.trimEnd().endsWith(D_TS_EXT)) ||
         x.trimEnd().endsWith(TSX_EXT) ||
         x.trimEnd().endsWith(ETS_EXT) ||
-        x.trimEnd().endsWith(STS_EXT)
+        x.trimEnd().endsWith(STS_EXT) ||
+        x.trimEnd().endsWith(STSX_EXT)
     );
 
     if (!testFiles) continue;
 
-    // Update result for each test for Default and Autofix modes:
+    // Update result for each test:
     for (let testFile of testFiles) {
-        updateTest(testDir, testFile, Mode.DEFAULT);
-        updateTest(testDir, testFile, Mode.AUTOFIX);
+        updateTestFile(testDir, testFile);
     }
 }

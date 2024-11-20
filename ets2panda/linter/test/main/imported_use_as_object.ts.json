@@ -1,0 +1,198 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 25,
+            "column": 12,
+            "endLine": 25,
+            "endColumn": 18,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 26,
+            "column": 6,
+            "endLine": 26,
+            "endColumn": 12,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 27,
+            "column": 8,
+            "endLine": 27,
+            "endColumn": 14,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 29,
+            "column": 12,
+            "endLine": 29,
+            "endColumn": 18,
+            "problem": "NamespaceAsObject",
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 6,
+            "endLine": 30,
+            "endColumn": 12,
+            "problem": "NamespaceAsObject",
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 8,
+            "endLine": 31,
+            "endColumn": 14,
+            "problem": "NamespaceAsObject",
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 12,
+            "endLine": 33,
+            "endColumn": 18,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 34,
+            "column": 6,
+            "endLine": 34,
+            "endColumn": 12,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 35,
+            "column": 8,
+            "endLine": 35,
+            "endColumn": 14,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 37,
+            "column": 12,
+            "endLine": 37,
+            "endColumn": 18,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 38,
+            "column": 6,
+            "endLine": 38,
+            "endColumn": 12,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 39,
+            "column": 8,
+            "endLine": 39,
+            "endColumn": 14,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 41,
+            "column": 12,
+            "endLine": 41,
+            "endColumn": 18,
+            "problem": "NamespaceAsObject",
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 6,
+            "endLine": 42,
+            "endColumn": 12,
+            "problem": "NamespaceAsObject",
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 8,
+            "endLine": 43,
+            "endColumn": 14,
+            "problem": "NamespaceAsObject",
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 12,
+            "endLine": 45,
+            "endColumn": 18,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 46,
+            "column": 6,
+            "endLine": 46,
+            "endColumn": 12,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        },
+        {
+            "line": 47,
+            "column": 8,
+            "endLine": 47,
+            "endColumn": 14,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        }
+    ]
+}

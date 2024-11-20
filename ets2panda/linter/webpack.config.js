@@ -18,7 +18,7 @@ let path = require('path');
 module.exports = {
 	mode: 'development',
     	target: 'node',
-	entry: './build/src/main.js',
+	entry: './build/cli/main.js',
 	externalsType: 'commonjs',
 	externals: {
 		log4js: 'log4js'

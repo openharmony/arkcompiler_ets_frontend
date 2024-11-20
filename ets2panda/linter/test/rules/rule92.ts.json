@@ -1,0 +1,168 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 19,
+            "column": 5,
+            "endLine": 19,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 5,
+            "endLine": 42,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 9,
+            "endLine": 43,
+            "endColumn": 17,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 5,
+            "endLine": 51,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 5,
+            "endLine": 55,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 5,
+            "endLine": 61,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 9,
+            "endLine": 62,
+            "endColumn": 17,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 9,
+            "endLine": 66,
+            "endColumn": 17,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 74,
+            "column": 5,
+            "endLine": 74,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 5,
+            "endLine": 78,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 5,
+            "endLine": 80,
+            "endColumn": 6,
+            "problem": "GeneratorFunction",
+            "suggest": "",
+            "rule": "Generator functions are not supported (arkts-no-generators)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 14,
+            "endLine": 82,
+            "endColumn": 21,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 16,
+            "endLine": 83,
+            "endColumn": 20,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 5,
+            "endLine": 82,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 88,
+            "column": 5,
+            "endLine": 88,
+            "endColumn": 13,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        }
+    ]
+}

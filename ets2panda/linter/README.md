@@ -12,7 +12,7 @@ For development, it's recommended to use `VS Code`, as it has a full built-in su
 
 ### NodeJS and NPM
 
-Install the latest stable version of `NodeJS` and `NPM`. It is recommended using a `Node version manager` to install Node and NPM ([nvm](https://github.com/nvm-sh/nvm) for Linux; [nvm-windows](https://github.com/coreybutler/nvm-windows) for windows - v1.1.9 is the most stable). You can also follow the [official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
+Install the latest stable version of `Node` and `NPM`. It is recommended to use a `Node version manager` to install Node and NPM ([nvm](https://github.com/nvm-sh/nvm) for Linux; [nvm-windows](https://github.com/coreybutler/nvm-windows) for windows). You can also follow the [official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
 
 ## Building
 
@@ -44,7 +44,7 @@ Possible command options:
 
 `--deveco-plugin-mode` - this options defines special mode to launch from IDE and should NOT be used when running from command line.
 
-`--project-folder <path>` - defines path to folder with TypeScript sources and subfolders which linter walks recurscevely. This option may be repeated in command line with different paths.
+`-f, --project-folder <path>` - defines path to folder with TypeScript sources and subfolders which linter walks recurscevely. This option may be repeated in command line with different paths.
 
 `-p, --project <path>` - defines path to TS project configuration file (commonly known as tsconfig.json). If no input file is defined directly as command-line argument, then all source files from tsconfig.json will be processed by linter. Otherwise, linter will only process input files from command-line, that are included into project (i.e. files that belong to intersection of input files from command-line and tsconfig.json file).
 
@@ -56,8 +56,22 @@ To prevent command line buffer overflow, response file may be used. It is specif
 
 ## Running tests
 
-Run the following command:
+To run all tests, use the following command:
 
 ```bash
 npm test
 ```
+
+To run only certain tests, use the `testrunner` command with corresponding arguments:
+
+```bash
+npm run testrunner -- [args]
+```
+
+E.g., the following command:
+
+```bash
+npm run testrunner -- -d test/main -p {array,object}*
+```
+
+will run the tests in `test/main` directory that match the glob pattern `{array,object}*` (i.e. tests that start with `array` or `object`)

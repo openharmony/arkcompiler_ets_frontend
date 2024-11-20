@@ -1,0 +1,158 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 36,
+            "column": 28,
+            "endLine": 36,
+            "endColumn": 44,
+            "problem": "IndexMember",
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 41,
+            "endLine": 36,
+            "endColumn": 44,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 36,
+            "endLine": 37,
+            "endColumn": 52,
+            "problem": "IndexMember",
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 49,
+            "endLine": 37,
+            "endColumn": 52,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 34,
+            "endLine": 38,
+            "endColumn": 50,
+            "problem": "IndexMember",
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 47,
+            "endLine": 38,
+            "endColumn": 50,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 32,
+            "endLine": 39,
+            "endColumn": 48,
+            "problem": "IndexMember",
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 45,
+            "endLine": 39,
+            "endColumn": 48,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 10,
+            "endLine": 53,
+            "endColumn": 14,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 10,
+            "endLine": 63,
+            "endColumn": 14,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 12,
+            "endLine": 69,
+            "endColumn": 16,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 19,
+            "endLine": 69,
+            "endColumn": 23,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 26,
+            "endLine": 69,
+            "endColumn": 30,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 33,
+            "endLine": 69,
+            "endColumn": 37,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        }
+    ]
+}
