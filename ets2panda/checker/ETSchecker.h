@@ -519,6 +519,9 @@ public:
     void ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
                                ir::AnnotationUsage *st, ETSChecker *checker) const;
     bool CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
+    void CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl);
+    bool CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected);
+    bool CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir::Expression *expected);
     void CheckAnnotationPropertyType(ir::ClassProperty *property);
     void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl);
     void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,

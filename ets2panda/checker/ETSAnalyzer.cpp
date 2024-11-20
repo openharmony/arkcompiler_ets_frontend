@@ -2197,10 +2197,20 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDeclaration *st) const
 checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    if (!st->Expr()->IsIdentifier()) {
+        st->Expr()->Check(checker);
+    }
+
     for (auto *it : st->Properties()) {
         auto *property = it->AsClassProperty();
         property->Check(checker);
         checker->CheckAnnotationPropertyType(property);
+    }
+
+    auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    if (annoDecl != st && annoDecl->IsDeclare()) {
+        checker->CheckAmbientAnnotation(st, annoDecl);
     }
     return nullptr;
 }
@@ -2208,6 +2218,14 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
 checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    if (!st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+        checker->LogTypeError({"'", st->GetBaseName()->Name(), "' is not an annotation."}, st->GetBaseName()->Start());
+        return nullptr;
+    }
+
+    auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    annoDecl->Check(checker);
 
     if (!st->Expr()->IsIdentifier()) {
         st->Expr()->Check(checker);
@@ -2222,14 +2240,6 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
                                   property->Value()->Start());
         }
     }
-
-    if (!st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
-        checker->LogTypeError({"'", st->GetBaseName()->Name(), "' is not an annotation."}, st->GetBaseName()->Start());
-        return nullptr;
-    }
-
-    auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
-    annoDecl->Check(checker);
 
     ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->Allocator()->Adapter()};
     for (auto *it : annoDecl->Properties()) {

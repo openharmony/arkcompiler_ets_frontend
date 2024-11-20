@@ -270,8 +270,8 @@ void ScopesInitPhase::VisitClassDeclaration(ir::ClassDeclaration *classDecl)
 void ScopesInitPhase::VisitAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
 {
     // First check if there is any redefinition in the current scope
-    const auto locStart = annoDecl->Ident()->Start();
-    const auto &annoName = annoDecl->Ident()->Name();
+    const auto locStart = annoDecl->GetBaseName()->Start();
+    const auto &annoName = annoDecl->GetBaseName()->Name();
     AddOrGetDecl<varbinder::AnnotationDecl>(VarBinder(), annoName, annoDecl, locStart, annoName, annoDecl);
     // Create and enter annotation scope
     auto annoCtx = LexicalScopeCreateOrEnter<varbinder::AnnotationScope>(VarBinder(), annoDecl);
@@ -1287,7 +1287,7 @@ void InitScopesPhaseETS::AddGlobalDeclaration(ir::AstNode *node)
             break;
         }
         case ir::AstNodeType::ANNOTATION_DECLARATION: {
-            ident = node->AsAnnotationDeclaration()->Ident();
+            ident = node->AsAnnotationDeclaration()->GetBaseName();
             isBuiltin = false;
             break;
         }

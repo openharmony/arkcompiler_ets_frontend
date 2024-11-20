@@ -66,20 +66,26 @@ public:
 
     void CheckFunctionAnnotations(pandasm::Program *program)
     {
-        const std::string functionName = "ETSGLOBAL.foo:void;";
-        const AnnotationMap expectedFuncAnnotations = {{"Anno1",
-                                                        {
-                                                            {"value", "2"},
-                                                        }},
-                                                       {"Anno2",
-                                                        {
-                                                            {"value", "foo$Anno2$value$11"},
-                                                        }},
-                                                       {"Anno3",
-                                                        {
-                                                            {"param", "foo$Anno3$param$21"},
-                                                        }}};
-        AnnotationEmitTest::CheckFunctionAnnotations(program, functionName, expectedFuncAnnotations);
+        const std::string functionName1 = "ETSGLOBAL.foo:void;";
+        const std::string functionName2 = "ETSGLOBAL.foo1:void;";
+        const AnnotationMap expectedFuncAnnotations1 = {{"Anno1",
+                                                         {
+                                                             {"value", "2"},
+                                                         }},
+                                                        {"Anno2",
+                                                         {
+                                                             {"value", "foo$Anno2$value$11"},
+                                                         }},
+                                                        {"Anno3",
+                                                         {
+                                                             {"param", "foo$Anno3$param$21"},
+                                                         }}};
+        const AnnotationMap expectedFuncAnnotations2 = {{"Anno1",
+                                                         {
+                                                             {"value", "2"},
+                                                         }}};
+        AnnotationEmitTest::CheckFunctionAnnotations(program, functionName1, expectedFuncAnnotations1);
+        AnnotationEmitTest::CheckFunctionAnnotations(program, functionName2, expectedFuncAnnotations2);
     }
 
     void CheckLiteralArrayTable(pandasm::Program *program)
@@ -146,6 +152,8 @@ TEST_F(MutipleAnnotationsforFunction, mutiple_annotations_for_function)
         @Anno2([4, 5, 6, 7])
         @Anno3
         function foo() {}
+        @Anno1(2)
+        native function foo1(): void
     )";
 
     RunAnnotationEmitTest(text);

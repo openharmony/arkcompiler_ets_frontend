@@ -728,6 +728,134 @@ Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *va
     return var->TsType();
 }
 
+bool ETSChecker::CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir::Expression *expected)
+{
+    if (init->Type() != expected->Type()) {
+        return false;
+    }
+
+    switch (init->Type()) {
+        case ir::AstNodeType::NUMBER_LITERAL:
+        case ir::AstNodeType::BOOLEAN_LITERAL:
+        case ir::AstNodeType::STRING_LITERAL:
+        case ir::AstNodeType::ARRAY_EXPRESSION:
+        case ir::AstNodeType::MEMBER_EXPRESSION:
+        case ir::AstNodeType::UNARY_EXPRESSION: {
+            if (CheckAmbientAnnotationFieldInitializerValue(init, expected)) {
+                break;
+            }
+            LogTypeError({"The initial value does not match the expected value."}, init->Start());
+            return false;
+        }
+        default:
+            UNREACHABLE();
+    }
+
+    return true;
+}
+
+static bool IsValidateUnaryExpression(lexer::TokenType operatorType)
+{
+    return operatorType == lexer::TokenType::PUNCTUATOR_PLUS || operatorType == lexer::TokenType::PUNCTUATOR_MINUS;
+}
+
+bool ETSChecker::CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected)
+{
+    switch (init->Type()) {
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            return init->AsNumberLiteral()->Number().GetDouble() == expected->AsNumberLiteral()->Number().GetDouble();
+        }
+        case ir::AstNodeType::BOOLEAN_LITERAL: {
+            return init->AsBooleanLiteral()->Value() == expected->AsBooleanLiteral()->Value();
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            return init->AsStringLiteral()->Str() == expected->AsStringLiteral()->Str();
+        }
+        case ir::AstNodeType::ARRAY_EXPRESSION: {
+            const auto &elements = init->AsArrayExpression()->Elements();
+            const auto &expectedElements = expected->AsArrayExpression()->Elements();
+            if (elements.size() != expectedElements.size()) {
+                return false;
+            }
+            for (size_t i = 0; i < elements.size(); ++i) {
+                if (!CheckAmbientAnnotationFieldInitializer(elements[i], expectedElements[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        case ir::AstNodeType::MEMBER_EXPRESSION: {
+            if (!Relation()->IsIdenticalTo(init->TsType(), expected->TsType())) {
+                return false;
+            }
+            auto elem = init->AsMemberExpression()->Property()->AsIdentifier()->Name();
+            auto expectedElem = expected->AsMemberExpression()->Property()->AsIdentifier()->Name();
+            return elem == expectedElem;
+        }
+        case ir::AstNodeType::UNARY_EXPRESSION: {
+            if (!IsValidateUnaryExpression(init->AsUnaryExpression()->OperatorType()) ||
+                !IsValidateUnaryExpression(expected->AsUnaryExpression()->OperatorType())) {
+                LogTypeError("Illegal unary operator.", init->Start());
+                return false;
+            }
+            if (init->AsUnaryExpression()->OperatorType() != expected->AsUnaryExpression()->OperatorType()) {
+                return false;
+            }
+            return CheckAmbientAnnotationFieldInitializer(init->AsUnaryExpression()->Argument(),
+                                                          expected->AsUnaryExpression()->Argument());
+        }
+        default:
+            UNREACHABLE();
+    }
+}
+
+void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl)
+{
+    std::unordered_map<util::StringView, ir::ClassProperty *> fieldMap;
+
+    for (auto *prop : annoDecl->Properties()) {
+        auto *field = prop->AsClassProperty();
+        fieldMap[field->Id()->Name()] = field;
+    }
+
+    for (auto *prop : annoImpl->Properties()) {
+        auto *field = prop->AsClassProperty();
+        auto fieldName = field->Id()->Name();
+        auto fieldDeclIter = fieldMap.find(fieldName);
+        if (fieldDeclIter == fieldMap.end()) {
+            LogTypeError({"Field '", fieldName, "' is not defined in the ambient annotation '",
+                          annoDecl->GetBaseName()->Name(), "'."},
+                         field->Start());
+            continue;
+        }
+
+        auto *fieldDecl = fieldDeclIter->second;
+        if (field->TsType() != fieldDecl->TsType()) {
+            LogTypeError({"Field '", fieldName, "' has a type mismatch with the ambient annotation '",
+                          annoDecl->GetBaseName()->Name(), "'."},
+                         field->TypeAnnotation()->Start());
+        }
+
+        bool hasValueMismatch = (field->Value() == nullptr) != (fieldDecl->Value() == nullptr);
+        bool initializerInvalid = field->Value() != nullptr && fieldDecl->Value() != nullptr &&
+                                  !CheckAmbientAnnotationFieldInitializer(field->Value(), fieldDecl->Value());
+        if (hasValueMismatch || initializerInvalid) {
+            LogTypeError({"Initializer for field '", fieldName,
+                          "' does not match the expected definition in the ambient annotation '",
+                          annoDecl->GetBaseName()->Name(), "'."},
+                         field->Start());
+        }
+        fieldMap.erase(fieldDeclIter);
+    }
+
+    for (auto it : fieldMap) {
+        LogTypeError({"Field '", it.second->Key()->AsIdentifier()->Name(), "' in annotation '",
+                      annoDecl->GetBaseName()->Name(),
+                      "' is declared in the ambient declaration but missing in the implementation."},
+                     annoImpl->Start());
+    }
+}
+
 bool ETSChecker::CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations)
 {
     std::unordered_set<util::StringView> seenAnnotations;
@@ -804,7 +932,7 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::
         auto result = fieldMap.find(param->Id()->Name());
         if (result == fieldMap.end()) {
             LogTypeError({"The parameter '", param->Id()->Name(),
-                          "' does not match any declared property in the annotation '", annoDecl->Ident()->Name(),
+                          "' does not match any declared property in the annotation '", annoDecl->GetBaseName()->Name(),
                           "'."},
                          param->Start());
             continue;

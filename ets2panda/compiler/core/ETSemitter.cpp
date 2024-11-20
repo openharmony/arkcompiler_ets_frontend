@@ -113,7 +113,7 @@ static pandasm::Type PandasmTypeWithRank(checker::Type const *type, uint32_t ran
     return pandasm::Type(ss.str(), rank == 0 ? type->Rank() : rank);
 }
 
-static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc)
+static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc, ETSEmitter *emitter)
 {
     auto *funcScope = scriptFunc->Scope();
     auto *paramScope = funcScope->ParamScope();
@@ -141,19 +141,18 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc)
     }
     func.metadata->SetAccessFlags(accessFlags);
 
+    if (!scriptFunc->Annotations().empty()) {
+        auto baseName = scriptFunc->Id()->Name().Mutf8();
+        func.metadata->SetAnnotations(emitter->GenCustomAnnotations(scriptFunc->Annotations(), baseName));
+    }
     return func;
 }
 
 pandasm::Function *ETSFunctionEmitter::GenFunctionSignature()
 {
     auto *scriptFunc = Cg()->RootNode()->AsScriptFunction();
-    auto func = GenScriptFunction(scriptFunc);
-
-    if (!scriptFunc->Annotations().empty()) {
-        auto baseName = scriptFunc->Id()->Name().Mutf8();
-        auto *emitter = static_cast<ETSEmitter *>(Cg()->Context()->emitter);
-        func.metadata->SetAnnotations(emitter->GenCustomAnnotations(scriptFunc->Annotations(), baseName));
-    }
+    auto *emitter = static_cast<ETSEmitter *>(Cg()->Context()->emitter);
+    auto func = GenScriptFunction(scriptFunc, emitter);
 
     if (Cg()->RootNode()->AsScriptFunction()->IsExternal()) {
         func.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -206,8 +205,8 @@ void ETSEmitter::GenAnnotation()
     auto *globalRecordTable = varbinder->GetGlobalRecordTable();
     auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
     for (auto *annoDecl : globalRecordTable->AnnotationDeclarations()) {
-        auto newBaseName = GenerateMangledName(baseName, annoDecl->Ident()->Name().Mutf8());
-        GenCustomAnnotationRecord(annoDecl, newBaseName, false);
+        auto newBaseName = GenerateMangledName(baseName, annoDecl->GetBaseName()->Name().Mutf8());
+        GenCustomAnnotationRecord(annoDecl, newBaseName, annoDecl->IsDeclare());
     }
 
     for (auto *classDecl : globalRecordTable->ClassDefinitions()) {
@@ -220,7 +219,7 @@ void ETSEmitter::GenAnnotation()
 
     for (auto *signature : globalRecordTable->Signatures()) {
         auto *scriptFunc = signature->Node()->AsScriptFunction();
-        auto func = GenScriptFunction(scriptFunc);
+        auto func = GenScriptFunction(scriptFunc, this);
         if (scriptFunc->IsDeclare()) {
             func.metadata->SetAttribute(Signatures::EXTERNAL);
         }
@@ -253,7 +252,7 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
     const auto *varbinder = static_cast<const varbinder::ETSBinder *>(Context()->parserProgram->VarBinder());
     auto baseName = varbinder->GetRecordTable()->RecordName().Mutf8();
     for (auto *annoDecl : recordTable->AnnotationDeclarations()) {
-        auto newBaseName = GenerateMangledName(baseName, annoDecl->Ident()->Name().Mutf8());
+        auto newBaseName = GenerateMangledName(baseName, annoDecl->GetBaseName()->Name().Mutf8());
         GenCustomAnnotationRecord(annoDecl, newBaseName, !isGenStdLib);
     }
 
@@ -266,7 +265,7 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
     }
 
     for (auto *signature : recordTable->Signatures()) {
-        auto func = GenScriptFunction(signature->Node()->AsScriptFunction());
+        auto func = GenScriptFunction(signature->Node()->AsScriptFunction(), this);
 
         if (!isGenStdLib) {
             func.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -335,7 +334,7 @@ void ETSEmitter::EmitDefaultFieldValue(pandasm::Field &classField, const ir::Exp
 void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *methodDef, bool external)
 {
     auto *scriptFunc = methodDef->Function();
-    auto func = GenScriptFunction(scriptFunc);
+    auto func = GenScriptFunction(scriptFunc, this);
 
     if (external) {
         func.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -707,14 +706,12 @@ void ETSEmitter::GenCustomAnnotationProp(const ir::ClassProperty *prop, std::str
 
     if (external) {
         field.metadata->SetAttribute(Signatures::EXTERNAL);
-    }
-
-    if (type->IsETSPrimitiveType() || type->IsETSStringType()) {
+    } else if (type->IsETSEnumType()) {
+        CreateEnumProp(prop, field);
+    } else if (type->IsETSPrimitiveType() || type->IsETSStringType()) {
         EmitDefaultFieldValue(field, prop->Value());
     } else if (type->IsETSArrayType()) {
         CreateLiteralArrayProp(prop, baseName, field);
-    } else if (type->IsETSEnumType()) {
-        CreateEnumProp(prop, field);
     } else {
         UNREACHABLE();
     }
