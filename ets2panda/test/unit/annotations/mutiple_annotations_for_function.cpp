@@ -45,7 +45,7 @@ public:
                 {"param", "1"},
             },
         };
-        CheckAnnoDecl(program, annoName0, expectedAnnotation0);
+        AnnotationEmitTest::CheckAnnoDecl(program, annoName0, expectedAnnotation0);
 
         const std::string annoName1 = "Anno2";
         const std::vector<std::pair<std::string, std::string>> expectedAnnotation1 = {
@@ -53,7 +53,7 @@ public:
                 {"param", "ETSGLOBAL$Anno2$param$0"},
             },
         };
-        CheckAnnoDecl(program, annoName1, expectedAnnotation1);
+        AnnotationEmitTest::CheckAnnoDecl(program, annoName1, expectedAnnotation1);
 
         const std::string annoName2 = "Anno3";
         const std::vector<std::pair<std::string, std::string>> expectedAnnotation2 = {
@@ -61,7 +61,7 @@ public:
                 {"param", "ETSGLOBAL$Anno3$param$10"},
             },
         };
-        CheckAnnoDecl(program, annoName2, expectedAnnotation2);
+        AnnotationEmitTest::CheckAnnoDecl(program, annoName2, expectedAnnotation2);
     }
 
     void CheckFunctionAnnotations(pandasm::Program *program)

@@ -15,33 +15,9 @@
 
 #include <gtest/gtest.h>
 #include "macros.h"
-#include "public/es2panda_lib.h"
+#include "test/utils/ast_verifier_test.h"
 
-#include "test/utils/panda_executable_path_getter.h"
-
-class CheckerTest : public testing::Test {
-public:
-    CheckerTest()
-    {
-        impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-        auto argv = test::utils::PandaExecutablePathGetter::Get();
-        cfg_ = impl_->CreateConfig(argv.size(), argv.data());
-    }
-
-    ~CheckerTest() override
-    {
-        impl_->DestroyConfig(cfg_);
-    }
-
-    NO_COPY_SEMANTIC(CheckerTest);
-    NO_MOVE_SEMANTIC(CheckerTest);
-
-protected:
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    es2panda_Impl const *impl_;
-    es2panda_Config *cfg_;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
+using CheckerTest = test::utils::AstVerifierTest;
 
 TEST_F(CheckerTest, ExtendedConditionalExpressionFunctor)
 {

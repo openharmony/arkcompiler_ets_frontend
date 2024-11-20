@@ -58,7 +58,7 @@ public:
             {"testBools", "ETSGLOBAL$ClassAuthor$testBools$3"},
             {"mutiArray", "ETSGLOBAL$ClassAuthor$mutiArray$7"},
         };
-        CheckAnnoDecl(program, annoName, expectedAnnotations);
+        AnnotationEmitTest::CheckAnnoDecl(program, annoName, expectedAnnotations);
     }
 
     void CheckClassAnnotations(pandasm::Program *program)

@@ -20,7 +20,6 @@
 #include "assembler/assembly-program.h"
 #include "ir/astDump.h"
 #include "ir/expressions/literals/stringLiteral.h"
-
 #include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler/compiler_logger.h"
 #include "mem/arena_allocator.h"
@@ -28,9 +27,9 @@
 #include "es2panda.h"
 #include "util/arktsconfig.h"
 #include "util/generateBin.h"
-#include "util/options.h"
 #include "libpandabase/mem/mem.h"
 #include "test/utils/panda_executable_path_getter.h"
+#include "test/utils/asm_test.h"
 
 namespace {
 
@@ -55,7 +54,7 @@ public:
     };
     auto GetArgs() const
     {
-        return ark::Span {argsList_};
+        return argsList_;
     };
 
 private:
@@ -124,31 +123,16 @@ public:
         ark::mem::MemConfig::Finalize();
     };
 
-    static ark::pandasm::Program *GetProgram(TestParams params)
-    {
-        auto options = std::make_unique<ark::es2panda::util::Options>(params.GetExec());
-        if (!options->Parse(params.GetArgs())) {
-            std::cerr << options->ErrorMsg() << std::endl;
-            return nullptr;
-        }
-
-        ark::Logger::ComponentMask mask {};
-        mask.set(ark::Logger::Component::ES2PANDA);
-        ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
-
-        ark::es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
-        ark::es2panda::SourceFile input(params.GetFilename(), params.GetSrc(), options->IsModule());
-
-        return compiler.Compile(input, *options);
-    }
-
     NO_COPY_SEMANTIC(ASTDumperTest);
     NO_MOVE_SEMANTIC(ASTDumperTest);
 };
 
 TEST_P(ASTDumperTest, CheckJsonDump)
 {
-    auto program = std::unique_ptr<ark::pandasm::Program> {GetProgram(GetParam())};
+    auto param = GetParam();
+    auto argsList = param.GetArgs();
+    auto program = std::unique_ptr<ark::pandasm::Program> {
+        test::utils::AsmTest::GetProgram(argsList.size(), argsList.data(), param.GetFilename(), param.GetSrc())};
     ASSERT(program);
 
     auto dumpStr = program->JsonDump();
@@ -163,7 +147,11 @@ TEST_F(ASTDumperTest, CheckSrcDump)
     std::stringstream dumpStr;
     std::streambuf *prevcoutbuf = std::cout.rdbuf(dumpStr.rdbuf());
 
-    auto program = std::unique_ptr<ark::pandasm::Program> {GetProgram(DumpEtsSrcSimple())};
+    auto param = DumpEtsSrcSimple();
+    auto argsList = param.GetArgs();
+    auto program = std::unique_ptr<ark::pandasm::Program> {
+        test::utils::AsmTest::GetProgram(argsList.size(), argsList.data(), param.GetFilename(), param.GetSrc())};
+    ASSERT(program);
 
     std::cout.rdbuf(prevcoutbuf);
 

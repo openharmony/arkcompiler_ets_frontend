@@ -31,9 +31,9 @@
 #include "varbinder/ETSBinder.h"
 #include "test/utils/panda_executable_path_getter.h"
 #include "checker/types/globalTypesHolder.h"
-#include "test/unit/globalETSObjectType_test.h"
+#include "test/utils/checker_test.h"
 
-using ark::es2panda::gtests::GlobalETSObjectTypeTest;
+using GlobalETSObjectTypeTest = test::utils::CheckerTest;
 
 namespace ark::es2panda {
 TEST_F(GlobalETSObjectTypeTest, TypeDeclNodeTest)

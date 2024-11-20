@@ -90,15 +90,12 @@ TEST_F(ASTVerifierTest, ForInLoopScope)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    InvariantNameSet checks;
-    checks.insert("CheckScopeDeclarationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "CheckScopeDeclarationForAll");
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -116,15 +113,12 @@ TEST_F(ASTVerifierTest, PartialClass)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    InvariantNameSet checks;
-    checks.insert("CheckScopeDeclarationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "CheckScopeDeclarationForAll");
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -148,15 +142,12 @@ TEST_F(ASTVerifierTest, TryCatch)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    InvariantNameSet checks;
-    checks.insert("CheckScopeDeclarationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "CheckScopeDeclarationForAll");
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);

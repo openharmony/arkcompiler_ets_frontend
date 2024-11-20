@@ -42,11 +42,10 @@ TEST_F(ASTVerifierTest, CheckConstProperties)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_LOWERED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
     ast->IterateRecursively([](ark::es2panda::ir::AstNode *node) {
         if (node->IsClassProperty()) {
@@ -58,8 +57,7 @@ TEST_F(ASTVerifierTest, CheckConstProperties)
     });
 
     InvariantNameSet checks;
-    checks.insert("CheckConstPropertiesForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "CheckConstPropertiesForAll");
 
     ASSERT_EQ(messages.size(), 1);
     auto invariant = messages[0].Invariant();

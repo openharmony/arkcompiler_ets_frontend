@@ -22,44 +22,25 @@
 #include "macros.h"
 #include "mem/pool_manager.h"
 #include "util/options.h"
+#include "test/utils/asm_test.h"
 
 namespace ark::es2panda::compiler::test {
 
-class DeclareTest : public testing::Test {
+class DeclareTest : public ::test::utils::AsmTest {
 public:
-    DeclareTest()
-    {
-        const auto compilerSize = 268435456;
-
-        mem::MemConfig::Initialize(0, 0, compilerSize, 0, 0, 0);
-        PoolManager::Initialize(PoolType::MMAP);
-    }
-    ~DeclareTest() override
-    {
-        PoolManager::Finalize();
-        mem::MemConfig::Finalize();
-    }
-
-    void SetCurrentProgram(std::string_view src)
-    {
-        unsigned argc = 1;
-        const char *argv = "../../../../bin/es2panda";  // NOLINT(modernize-avoid-c-arrays)
-        static constexpr std::string_view FILE_NAME = "ets_decl_test.sts";
-
-        program_ = GetProgram({&argv, argc}, FILE_NAME, src);
-        ASSERT_NE(program_.get(), nullptr);
-    }
+    DeclareTest() = default;
+    ~DeclareTest() override = default;
 
     void CheckExternalFlag(std::string_view functionName)
     {
-        pandasm::Function *fn = GetFunction(functionName);
+        pandasm::Function *fn = GetFunction(functionName, program_);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
         ASSERT_TRUE(HasExternalFlag(fn)) << "Function '" << fn->name << "' doesn't have External flag";
     }
 
     void CheckNoExternalFlag(std::string_view functionName)
     {
-        pandasm::Function *fn = GetFunction(functionName);
+        pandasm::Function *fn = GetFunction(functionName, program_);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
         ASSERT_FALSE(HasExternalFlag(fn)) << "Function '" << fn->name << "' has External flag";
     }
@@ -72,37 +53,6 @@ private:
 
     NO_COPY_SEMANTIC(DeclareTest);
     NO_MOVE_SEMANTIC(DeclareTest);
-
-    static std::unique_ptr<pandasm::Program> GetProgram(ark::Span<const char *const> args, std::string_view fileName,
-                                                        std::string_view src)
-    {
-        auto options = std::make_unique<es2panda::util::Options>(args[0]);
-        if (!options->Parse(args)) {
-            std::cerr << options->ErrorMsg() << std::endl;
-            return nullptr;
-        }
-
-        Logger::ComponentMask mask {};
-        mask.set(Logger::Component::ES2PANDA);
-        Logger::InitializeStdLogging(options->LogLevel(), mask);
-
-        es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
-        es2panda::SourceFile input(fileName, src, options->IsModule());
-
-        return std::unique_ptr<pandasm::Program>(compiler.Compile(input, *options));
-    }
-
-    pandasm::Function *GetFunction(std::string_view functionName)
-    {
-        auto it = program_->functionTable.find(functionName.data());
-        if (it == program_->functionTable.end()) {
-            return nullptr;
-        }
-        return &it->second;
-    }
-
-private:
-    std::unique_ptr<pandasm::Program> program_ {};
 };
 
 // === Function ===
