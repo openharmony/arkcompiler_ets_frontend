@@ -15,9 +15,10 @@
 
 import {
   ScriptTarget,
+  SymbolFlags,
   createCompilerHost,
   createProgram,
-  createSourceFile,
+  createSourceFile
 } from 'typescript';
 
 import type {
@@ -25,12 +26,14 @@ import type {
   CompilerOptions,
   Program,
   SourceFile,
-  TypeChecker,
+  Symbol,
+  TypeChecker
 } from 'typescript';
 import { Extension, PathAndExtension } from '../common/type';
 import { FileUtils } from './FileUtils';
 import { EventList, performancePrinter } from '../ArkObfuscator';
 import { endSingleFileEvent, startSingleFileEvent } from './PrinterUtils';
+import { exportSymbolAliasMap } from './ScopeAnalyzer';
 
 export class TypeUtils {
   /**
@@ -100,5 +103,48 @@ export class TypeUtils {
     let typeChecker: TypeChecker = program.getTypeChecker();
     endSingleFileEvent(EventList.GET_CHECKER, performancePrinter.timeSumPrinter);
     return typeChecker;
+  }
+
+  /**
+   * Retrieves the symbol associated with the declaration site of the given symbol.
+   *
+   * This method resolves the symbol to its declaration site to ensure consistency
+   * in obfuscated naming. Obfuscation names are bound to the symbol at the declaration
+   * site. If the symbol at the declaration site differs from the symbol at the usage
+   * site, discrepancies in obfuscated names may occur. By using this method, the
+   * obfuscation name can be consistently retrieved from the declaration site symbol,
+   * ensuring uniformity between the declaration and usage sites.
+   */
+  public static getOriginalSymbol(symbol: Symbol, checker: TypeChecker): Symbol {
+    if (!(symbol.getFlags() & SymbolFlags.Alias)) {
+      return symbol;
+    }
+
+    if (exportSymbolAliasMap.has(symbol)) {
+      return exportSymbolAliasMap.get(symbol);
+    }
+
+    // This method helps determine if the original symbol obtained for a given symbol is valid and usable.
+    // Sometimes the original symbol's name may differ from the current symbol's name due to aliasing.
+    // For example:
+    // `let A = 1; export { A as B };`
+    // The `originalSymbol` for `B` refers to the symbol for `A`, but the names are different.
+    // However, for obfuscation purposes, we want to ensure that the symbol used in the declaration (i.e., `A` in this case)
+    // aligns with the current symbol (i.e., `B`), because this allows us to apply the declaration's obfuscation name to `B`.
+    // If the names don't match, we should avoid applying the declaration's obfuscation name to the current symbol.
+    const isValidOriginalSymbol = (originalSymbol: Symbol | undefined): boolean =>
+      originalSymbol !== undefined && originalSymbol.name === symbol.name;
+
+    const originalSymbol: Symbol | undefined = checker.getAliasedSymbol(symbol);
+    if (isValidOriginalSymbol(originalSymbol)) {
+      return originalSymbol!;
+    }
+
+    const immediateSymbol: Symbol | undefined = checker.getImmediateAliasedSymbol(symbol);
+    if (isValidOriginalSymbol(immediateSymbol)) {
+      return immediateSymbol!;
+    }
+
+    return symbol;
   }
 }

@@ -74,10 +74,13 @@ NO_NEED_RUN_WITH_NODE_FILES = [
     'importFile1.ts',
     'importFile2.ts',
     'importFile3.ts',
+    'namespaceexport1.ts',
     'noExistPath1.ts',
     'noExistPath2.ts',
     'noExistPath3.ts',
     'innerTest1.ts',
+    'innerTest2.ts',
+    'innerTest3.ts',
     'sameNameTest1.ts',
     'sameNameTest2.ts',
     'sameNameTest3.ts'

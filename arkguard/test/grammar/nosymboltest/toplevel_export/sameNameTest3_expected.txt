@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 declare module 'Module1' {
-    import { n } from 'module1';
+    import { p } from 'module1';
 }
-import { m } from './module2';
+import { p } from './module2';

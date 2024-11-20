@@ -418,7 +418,7 @@ describe('ScopeAnalyzer ut', function () {
             const node: Identifier = exportSpecifier.name;
 
             const scope = scopeManager.getScopeOfNode(node);
-            assert.strictEqual(scope?.name, '');
+            assert.strictEqual(scope?.name, undefined);
           });
 
           it('get no scope of node', function () {

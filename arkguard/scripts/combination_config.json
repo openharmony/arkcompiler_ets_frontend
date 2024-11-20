@@ -370,12 +370,12 @@
       },
       "strProp+top+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["Person"]
+          "mReservedToplevelNames": ["Person", "reduce"]
         }
       },
       "top+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["Person"]
+          "mReservedToplevelNames": ["Person", "reduce"]
         }
       }
     }
@@ -677,7 +677,7 @@
       "prop+export": {
         "mNameObfuscation": {
           "mReservedToplevelNames": ["A"],
-          "mReservedProperties": ["U","up","prop1","A","B"]
+          "mReservedProperties": ["U","up","prop1","A","B","A1","NS2","NS1"]
         }
       },
       "prop+strProp": {
@@ -689,7 +689,7 @@
       "prop+strProp+export": {
         "mNameObfuscation": {
           "mReservedToplevelNames": ["A"],
-          "mReservedProperties": ["U","up","prop1","A","B"]
+          "mReservedProperties": ["U","up","prop1","A","B","NS1","A1","NS2"]
         }
       },
       "prop+strProp+top": {
@@ -718,7 +718,7 @@
       },
       "strProp+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["N", "E1","A","B","C","A1","NS1","NS2","a","foo","t","C","Y","Z","M2","I","temp3","temp5"],
+          "mReservedToplevelNames": ["N", "E1","A","B","C","A1","NS1","NS2","a","foo","t","C","Y","Z","M2","I","temp3","temp5","N"],
           "mReservedProperties": []
         }
       },
@@ -730,13 +730,13 @@
       },
       "strProp+top+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["N","E1","B","C","t","A1","NS1","NS2","a","foo","Y","Z","M2","I","temp3","temp5"],
+          "mReservedToplevelNames": ["A","N","E1","B","C","t","A1","NS1","NS2","a","foo","Y","Z","M2","I","temp3","temp5"],
           "mReservedProperties": []
         }
       },
       "top+export": {
         "mNameObfuscation": {
-          "mReservedToplevelNames": ["N","E1","A1","B","NS1","NS2","t","a","foo","Y","Z","M2","I","temp3","temp5"],
+          "mReservedToplevelNames": ["A","N","E1","A1","B","NS1","NS2","t","a","foo","Y","Z","M2","I","temp3","temp5","C"],
           "mReservedProperties": []
         }
       },

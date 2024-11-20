@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 export * as default from './export_basic2';
-export function v() {
+export function u() {
     return 3;
 }

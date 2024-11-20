@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-type b = number;
-export let c = 1;
-export function a(e: b, f: number) {
-    return e - f;
+type a = number;
+export let b = 1;
+export function reduce(d: a, e: number) {
+    return d - e;
 }
-export class d {
-    age: b = 1;
+export class c {
+    age: a = 1;
     addr: string = 'xx';
     constructor() { }
-    get getAge(): b {
+    get getAge(): a {
         return this.age;
     }
 }
