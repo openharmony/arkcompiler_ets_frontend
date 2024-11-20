@@ -1,14 +1,1 @@
 # Known failures list for third_lib_js - debug-x64-jit
-
-#18153
-lodash_test
-hamcrest_test
-
-#18330
-dayjs_test
-
-#18340
-Drools_test
-
-#18383
-memory-cache_test
