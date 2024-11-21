@@ -76,20 +76,6 @@ type SystemApiContent = {
   ReservedLocalNames?: string[];
 };
 
-/* ObConfig's properties:
- *   ruleOptions: {
- *    enable: boolean
- *    rules: string[]
- *   }
- *   consumerRules: string[]
- *
- * ObfuscationConfig's properties:
- *   selfConfig: ObConfig
- *   dependencies: { libraries: ObConfig[], hars: string[] }
- *   sdkApis: string[]
- *   obfuscationCacheDir: string
- *   exportRulePath: string
- */
 class ObOptions {
   disableObfuscation: boolean = false;
   enablePropertyObfuscation: boolean = false;
@@ -200,12 +186,14 @@ export class ObConfigResolver {
   sourceObConfig: any;
   logger: any;
   isHarCompiled: boolean | undefined;
+  isHspCompiled: boolean | undefined;
   isTerser: boolean;
 
   constructor(projectConfig: any, logger: any, isTerser?: boolean) {
     this.sourceObConfig = projectConfig.obfuscationOptions;
     this.logger = logger;
     this.isHarCompiled = projectConfig.compileHar;
+    this.isHspCompiled = projectConfig.compileShared;
     this.isTerser = isTerser;
   }
 
@@ -225,7 +213,7 @@ export class ObConfigResolver {
     }
 
     let needConsumerConfigs: boolean =
-      this.isHarCompiled &&
+      (this.isHarCompiled || this.isHspCompiled) &&
       sourceObConfig.selfConfig.consumerRules &&
       sourceObConfig.selfConfig.consumerRules.length > 0;
     let needDependencyConfigs: boolean = enableObfuscation || needConsumerConfigs;
@@ -234,6 +222,8 @@ export class ObConfigResolver {
     const dependencyMaxLength: number = Math.max(
       sourceObConfig.dependencies.libraries.length,
       sourceObConfig.dependencies.hars.length,
+      sourceObConfig.dependencies.hsps?.length ?? 0,
+      sourceObConfig.dependencies.hspLibraries?.length ?? 0
     );
     if (needDependencyConfigs && dependencyMaxLength > 0) {
       dependencyConfigs = new MergedConfig();
@@ -728,14 +718,16 @@ export class ObConfigResolver {
     return arkUIReservedPropertyNames;
   }
 
-  private getDependencyConfigs(sourceObConfig: any, dependencyConfigs: MergedConfig): void {
+  private getDependencyConfigs(sourceObConfig: SourceObConfig, dependencyConfigs: MergedConfig): void {
     for (const lib of sourceObConfig.dependencies.libraries || []) {
       if (lib.consumerRules && lib.consumerRules.length > 0) {
-        for (const path of lib.consumerRules) {
-          const thisLibConfigs = new MergedConfig();
-          this.getConfigByPath(path, dependencyConfigs);
-          dependencyConfigs.merge(thisLibConfigs);
-        }
+        this.mergeDependencyConfigsByPath(lib.consumerRules, dependencyConfigs);
+      }
+    }
+
+    for (const lib of sourceObConfig.dependencies.hspLibraries || []) {
+      if(lib.consumerRules && lib.consumerRules.length > 0) {
+        this.mergeDependencyConfigsByPath(lib.consumerRules, dependencyConfigs);
       }
     }
 
@@ -744,15 +736,27 @@ export class ObConfigResolver {
       sourceObConfig.dependencies.hars &&
       sourceObConfig.dependencies.hars.length > 0
     ) {
-      for (const path of sourceObConfig.dependencies.hars) {
-        const thisHarConfigs = new MergedConfig();
-        this.getConfigByPath(path, dependencyConfigs);
-        dependencyConfigs.merge(thisHarConfigs);
-      }
+      this.mergeDependencyConfigsByPath(sourceObConfig.dependencies.hars, dependencyConfigs);
+    }
+
+    if(
+      sourceObConfig.dependencies &&
+      sourceObConfig.dependencies.hsps &&
+      sourceObConfig.dependencies.hsps.length > 0
+    ){
+      this.mergeDependencyConfigsByPath(sourceObConfig.dependencies.hsps, dependencyConfigs);
     }
   }
 
-  public getDependencyConfigsForTest(sourceObConfig: any, dependencyConfigs: MergedConfig): void {
+  private mergeDependencyConfigsByPath(paths: string[], dependencyConfigs: MergedConfig): void {
+    for (const path of paths) {
+      const thisConfig = new MergedConfig();
+      this.getConfigByPath(path, thisConfig);
+      dependencyConfigs.merge(thisConfig);
+    }
+  }
+
+  public getDependencyConfigsForTest(sourceObConfig: SourceObConfig, dependencyConfigs: MergedConfig): void {
     return this.getDependencyConfigs(sourceObConfig, dependencyConfigs);
   }
 
@@ -800,17 +804,19 @@ export class ObConfigResolver {
   }
 
   private genConsumerConfigFiles(
-    sourceObConfig: any,
+    sourceObConfig: SourceObConfig,
     selfConsumerConfig: MergedConfig,
     dependencyConfigs: MergedConfig,
   ): void {
-    selfConsumerConfig.merge(dependencyConfigs);
+    if (this.isHarCompiled) {
+      selfConsumerConfig.merge(dependencyConfigs);
+    }
     selfConsumerConfig.sortAndDeduplicate();
     this.writeConsumerConfigFile(selfConsumerConfig, sourceObConfig.exportRulePath);
   }
 
   public genConsumerConfigFilesForTest(
-    sourceObConfig: any,
+    sourceObConfig: SourceObConfig,
     selfConsumerConfig: MergedConfig,
     dependencyConfigs: MergedConfig,
   ): void {
@@ -1248,4 +1254,44 @@ export function getRelativeSourcePath(
   }
 
   return relativeFilePath;
+}
+
+/**
+ * 'rootAbsPath\\sdk\\default\\openharmony\\ets\\api',
+ * 'rootAbsPath\\sdk\\default\\openharmony\\ets\\arkts',
+ * 'rootAbsPath\\sdk\\default\\openharmony\\ets\\kits',
+ * 'rootAbsPath\\sdk\\default\\hms\\ets\\api',
+ * 'rootAbsPath\\sdk\\default\\hms\\ets\\kits',
+ * 'rootAbsPath\\sdk\\default\\openharmony\\ets\\api'
+ * obfuscationCacheDir: rootAbsPath\\moduleName\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule\\release\\obfuscation
+ * exportRulePath: rootAbsPath\\moduleName\\build\\default\\intermediates\\obfuscation\\default\\obfuscation.txt
+ * dependencies: { libraries: [], hars: [], hsps: [], hspLibraries: [] }
+ */
+
+export interface SourceObConfig {
+  selfConfig: Obfuscation;
+  sdkApis: string[];
+  obfuscationCacheDir: string;
+  exportRulePath: string;
+  dependencies: ObfuscationDependencies;
+}
+
+export interface Obfuscation {
+  ruleOptions?: RuleOptions; 
+  consumerRules?: string[]; // absolute path of consumer-rules.txt
+  consumerFiles?: string | string[]; // relative path of consumer-rules.txt
+  libDir?: string; // actual path of local module
+}
+
+export interface RuleOptions {
+  enable?: boolean;
+  files?: string | string[]; // should be relative path of obfuscation-rules.txt, but undefined now
+  rules?: string[]; // absolute path of obfuscation-rules.txt
+}
+
+export interface ObfuscationDependencies {
+  libraries: Obfuscation[];
+  hars: string[];
+  hsps?: string[];
+  hspLibraries?: Obfuscation[];
 }

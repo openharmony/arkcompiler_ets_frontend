@@ -282,7 +282,9 @@ describe('test for ConfigResolve', function() {
           obfuscationCacheDir: './test/testData/cache',
           options: {
             disableObfuscation: true
-          }
+          },
+          exportRulePath: '',
+          sdkApis: []
         };
         const isHarCompiled = true;
         let enableObfuscation = sourceObConfig.selfConfig.ruleOptions.enable;
@@ -306,19 +308,38 @@ describe('test for ConfigResolve', function() {
       });
 
       it('should handle the case when enableObfuscation is false', () => {
+        const localHarConfig = {
+          selfConfig: {
+            ruleOptions: {
+              enable: true,
+              rules: ['./test/testData/obfuscation/Configs/localHar/obfuscation-rules.txt']
+            },
+            consumerRules: [],
+            libDir: "",
+            consumerFiles: ""
+          },
+          dependencies: { libraries: [], hars: [] },
+          sdkApis: [],
+          obfuscationCacheDir: '',
+          exportRulePath: ''
+        };
+
         const sourceObConfig = {
           selfConfig: {
             options: {
               disableObfuscation: false,
               enablePropertyObfuscation: true,
               enableExportObfuscation: true,
-              enableToplevelObfuscation:true
+              enableToplevelObfuscation: true
             },
             ruleOptions: { enable: true },
             consumerRules: ['./test/testData/obfuscation/keepDts/obfuscation-template.txt'],
+            libDir: ''
           },
-          dependencies: { libraries: [1, 2, 3], hars: [] },
+          dependencies: { libraries: [localHarConfig.selfConfig], hars: [] },
           obfuscationCacheDir: './test/testData/cache',
+          sdkApis: [],
+          exportRulePath: ''
         };
         const isHarCompiled = true;
         let enableObfuscation = sourceObConfig.selfConfig.ruleOptions.enable;
@@ -375,6 +396,8 @@ describe('test for ConfigResolve', function() {
         const dependencyMaxLength = Math.max(
           testClass.sourceObConfig.dependencies.libraries.length,
           testClass.sourceObConfig.dependencies.hars.length,
+          testClass.sourceObConfig.dependencies.hsps?.length ?? 0,
+          testClass.sourceObConfig.dependencies.hspLibraries?.length ?? 0
         );
         newObConfigResolver.getDependencyConfigsForTest(testClass.sourceObConfig, dependencyConfigs);
 

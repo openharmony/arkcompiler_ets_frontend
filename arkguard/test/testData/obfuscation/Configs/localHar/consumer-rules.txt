@@ -1,0 +1,5 @@
+-enable-property-obfuscation
+-keep-global-name 
+LocalHarClass
+-keep-property-name 
+localHarMethod
