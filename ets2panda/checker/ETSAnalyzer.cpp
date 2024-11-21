@@ -243,12 +243,11 @@ void ETSAnalyzer::CheckMethodModifiers(ir::MethodDefinition *node) const
         node->SetTsType(checker->GlobalTypeError());
     }
 
-    auto const notValidInFinal = ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::STATIC | ir::ModifierFlags::NATIVE;
+    auto const notValidInFinal = ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::STATIC;
 
     if (node->IsFinal() && (node->flags_ & notValidInFinal) != 0U) {
-        checker->LogTypeError(
-            "Invalid method modifier(s): a final method can't have abstract, static or native modifier.",
-            node->Start());
+        checker->LogTypeError("Invalid method modifier(s): a final method can't have abstract or static modifier.",
+                              node->Start());
         node->SetTsType(checker->GlobalTypeError());
     }
 

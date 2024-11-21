@@ -14,8 +14,7 @@
  */
 
 class A {
-    /* @@ label */final native foo() : void /* @@ label1 */{}
+    final native foo() : void /* @@ label */{}
 }
 
-/* @@@ label Error TypeError: Invalid method modifier(s): a final method can't have abstract, static or native modifier.  */
-/* @@@ label1 Error TypeError: Native, Abstract and Declare methods cannot have body.  */
+/* @@@ label Error TypeError: Native, Abstract and Declare methods cannot have body.  */
