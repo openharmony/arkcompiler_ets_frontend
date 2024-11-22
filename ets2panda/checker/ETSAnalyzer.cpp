@@ -1585,6 +1585,23 @@ static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checke
     return true;
 }
 
+static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker::ETSObjectType *objType,
+                                       ETSChecker *checker)
+{
+    auto recordProperties = expr->Properties();
+    auto typeArguments = objType->TypeArguments();
+    auto valueType = typeArguments[1];  //  Record<K, V>  type arguments
+
+    for (auto recordProperty : recordProperties) {
+        if (!recordProperty->AsProperty()->Value()->IsObjectExpression()) {
+            continue;
+        }
+        auto recordPropertyExpr = recordProperty->AsProperty()->Value()->AsObjectExpression();
+        recordPropertyExpr->SetPreferredType(valueType);
+        recordPropertyExpr->Check(checker);
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1627,6 +1644,7 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         // Here we just set the type to pass the checker
         // See Record Lowering for details
         expr->SetTsType(objType);
+        SetTypeforRecordProperties(expr, objType, checker);
         return objType;
     }
 
