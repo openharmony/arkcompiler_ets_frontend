@@ -50,11 +50,6 @@ static ir::ClassProperty *CreateAnonClassField(ir::MethodDefinition *ifaceMethod
 
     // Field type annotation
     auto *fieldType = ifaceMethod->Function()->Signature()->ReturnType();
-    if (IsInterfaceType(fieldType)) {
-        auto *anonClass = fieldType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration()->GetAnonClass();
-        ASSERT(anonClass != nullptr);
-        fieldType = anonClass->Definition()->TsType();
-    }
     ASSERT(fieldType != nullptr);
     auto *fieldTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(fieldType);
 
@@ -93,11 +88,6 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(checker::ETSChecke
 
         // ifaceMethod is getter, so it should have return type
         auto *retType = ifaceMethod->Function()->Signature()->ReturnType();
-        if (IsInterfaceType(retType)) {
-            auto *anonClass = retType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration()->GetAnonClass();
-            ASSERT(anonClass != nullptr);
-            retType = anonClass->Definition()->TsType();
-        }
         ASSERT(retType != nullptr);
 
         // Field identifier
