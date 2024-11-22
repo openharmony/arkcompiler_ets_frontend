@@ -363,13 +363,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
         return tsType;
     }(expr->expr_->TsType());
 
-    checker::Substitution *substitution = checker->NewSubstitution();
-    auto launchPromiseType = checker->GlobalBuiltinPromiseType();
-    ASSERT(launchPromiseType->TypeArguments().size() == 1);
-    checker::ETSChecker::EmplaceSubstituted(
-        substitution, launchPromiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), exprType);
-
-    expr->SetTsType(launchPromiseType->Substitute(checker->Relation(), substitution));
+    expr->SetTsType(checker->CreatePromiseOf(exprType));
     return expr->TsType();
 }
 
@@ -1045,6 +1039,28 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
 
     Type *type = argType->AsETSObjectType()->TypeArguments().at(0);
     expr->SetTsType(UnwrapPromiseType(type));
+    return expr->TsType();
+}
+
+checker::Type *ETSAnalyzer::Check(ir::ImportExpression *expr) const
+{
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    Type *const argType = expr->Source()->Check(checker);
+    if (argType->IsTypeError()) {
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsType();
+    }
+    if (!checker->Relation()->IsSupertypeOf(checker->GlobalBuiltinETSStringType(), argType)) {
+        checker->LogTypeError("'import' expressions require string as argument.", expr->Start());
+        expr->SetTsType(checker->GlobalTypeError());
+        return expr->TsType();
+    }
+
+    expr->SetTsType(checker->CreatePromiseOf(checker->GlobalBuiltinJSValueType()));
     return expr->TsType();
 }
 

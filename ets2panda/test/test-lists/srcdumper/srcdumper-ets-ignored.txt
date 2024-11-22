@@ -133,6 +133,7 @@ runtime/ets/annotation_tests/annotationUsage_scope_check01.sts
 runtime/ets/annotation_tests/annotationUsage_scope_check02.sts
 runtime/ets/annotation_tests/annotationUsage_scope_check03.sts
 runtime/ets/conditionalExpressionGenericLUB.sts
+runtime/ets/dynmicImportUnimplemented.sts
 runtime/ets/finallyTryAbruptedByContinue.sts
 runtime/ets/float-literal.sts
 runtime/ets/funcRefWithRestArguments.sts

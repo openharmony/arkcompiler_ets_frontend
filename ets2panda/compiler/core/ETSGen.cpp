@@ -2293,28 +2293,19 @@ void ETSGen::LogicalNot(const ir::AstNode *node)
 void ETSGen::Unary(const ir::AstNode *node, lexer::TokenType op)
 {
     switch (op) {
-        case lexer::TokenType::PUNCTUATOR_PLUS: {
+        case lexer::TokenType::PUNCTUATOR_PLUS:
             break;  // NOP -> Unary numeric promotion is performed
-        }
-        case lexer::TokenType::PUNCTUATOR_MINUS: {
+        case lexer::TokenType::PUNCTUATOR_MINUS:
             UnaryMinus(node);
             break;
-        }
-        case lexer::TokenType::PUNCTUATOR_TILDE: {
+        case lexer::TokenType::PUNCTUATOR_TILDE:
             UnaryTilde(node);
             break;
-        }
-        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
+        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
             LogicalNot(node);
             break;
-        }
-        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
-            UnaryDollarDollar(node);
-            break;
-        }
-        default: {
+        default:
             UNREACHABLE();
-        }
     }
 }
 
@@ -2379,20 +2370,6 @@ void ETSGen::UnaryTilde(const ir::AstNode *node)
             UNREACHABLE();
         }
     }
-}
-
-void ETSGen::UnaryDollarDollar(const ir::AstNode *node)
-{
-    auto const vtype = GetAccumulatorType();
-    const RegScope rs(this);
-    const auto errorReg = AllocReg();
-
-    NewObject(node, Signatures::BUILTIN_ERROR, errorReg);
-    LoadAccumulatorString(node, "$$ operator can only be used with ARKUI plugin");
-    Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, 1);
-    EmitThrow(node, errorReg);
-
-    SetAccumulatorType(vtype);  // forward, code is dead anyway
 }
 
 void ETSGen::Update(const ir::AstNode *node, lexer::TokenType op)

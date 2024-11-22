@@ -678,7 +678,6 @@ private:
     util::StringView FormClassPropReference(varbinder::Variable const *var);
     void UnaryMinus(const ir::AstNode *node);
     void UnaryTilde(const ir::AstNode *node);
-    void UnaryDollarDollar(const ir::AstNode *node);
 
     util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
     void TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target);

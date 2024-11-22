@@ -147,11 +147,7 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
 
 void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
 {
-    const auto &promiseGlobal = checker->GlobalBuiltinPromiseType()->AsETSObjectType();
-    auto substitutuon = checker->NewSubstitution();
-    ETSChecker::EmplaceSubstituted(substitutuon, promiseGlobal->TypeArguments()[0]->AsETSTypeParameter(),
-                                   scriptFunc->Signature()->ReturnType());
-    auto promiseType = promiseGlobal->Substitute(checker->Relation(), substitutuon);
+    auto const promiseType = checker->CreatePromiseOf(scriptFunc->Signature()->ReturnType());
 
     auto *objectId =
         checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());

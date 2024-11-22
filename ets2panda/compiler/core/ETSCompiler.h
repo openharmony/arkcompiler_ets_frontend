@@ -47,6 +47,8 @@ private:
 
     static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr);
 
+    void UnimplementedPathError(const ir::AstNode *node, util::StringView message) const;
+
     ETSGen *GetETSGen() const;
 };
 

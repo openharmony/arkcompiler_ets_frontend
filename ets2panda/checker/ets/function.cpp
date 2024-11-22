@@ -1123,32 +1123,13 @@ Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo 
 
 Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func)
 {
-    auto *const returnTypeAnnotation = func->ReturnTypeAnnotation();
-    checker::Type *returnType {};
-
-    if (returnTypeAnnotation == nullptr) {
-        // implicit void return type
-        returnType = GlobalVoidType();
-
-        if (func->IsAsyncFunc()) {
-            auto implicitPromiseVoid = [this]() {
-                const auto &promiseGlobal = GlobalBuiltinPromiseType()->AsETSObjectType();
-                auto substitutuon = NewSubstitution();
-                ETSChecker::EmplaceSubstituted(substitutuon, promiseGlobal->TypeArguments()[0]->AsETSTypeParameter(),
-                                               GlobalVoidType());
-                return promiseGlobal->Substitute(Relation(), substitutuon);
-            };
-
-            returnType = implicitPromiseVoid();
-        }
-    } else if (func->IsEntryPoint() && returnTypeAnnotation->GetType(this) == GlobalVoidType()) {
-        returnType = GlobalVoidType();
-    } else {
-        returnType = returnTypeAnnotation->GetType(this);
-        returnTypeAnnotation->SetTsType(returnType);
+    if (auto typeAnnotation = func->ReturnTypeAnnotation(); typeAnnotation != nullptr) {
+        return typeAnnotation->GetType(this);
     }
-
-    return returnType;
+    if (func->IsAsyncFunc()) {
+        return CreatePromiseOf(GlobalVoidType());
+    }
+    return GlobalVoidType();
 }
 
 SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
