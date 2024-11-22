@@ -62,7 +62,8 @@ import {
   isPropertyAssignment,
   isModuleBlock,
   isFunctionDeclaration,
-  isEnumMember
+  isEnumMember,
+  isIndexedAccessTypeNode
 } from 'typescript';
 
 import fs from 'fs';
@@ -73,7 +74,9 @@ import {
   exportOriginalNameSet,
   getClassProperties,
   getElementAccessExpressionProperties,
-  getEnumProperties, getInterfaceProperties,
+  getEnumProperties,
+  getIndexedAccessTypeProperties,
+  getInterfaceProperties,
   getObjectExportNames,
   getObjectProperties,
   getTypeAliasProperties,
@@ -581,7 +584,9 @@ export namespace ApiExtractor {
     } else if (isTypeAliasDeclaration(astNode)) {
       getTypeAliasProperties(astNode, currentPropsSet);
     } else if (isElementAccessExpression(astNode)) {
-      getElementAccessExpressionProperties(astNode, currentPropsSet);
+      getElementAccessExpressionProperties(astNode);
+    } else if (isIndexedAccessTypeNode(astNode)) {
+      getIndexedAccessTypeProperties(astNode);
     } else if (isObjectLiteralExpression(astNode)) {
       getObjectProperties(astNode, currentPropsSet);
     } else if (isClassExpression(astNode)) {

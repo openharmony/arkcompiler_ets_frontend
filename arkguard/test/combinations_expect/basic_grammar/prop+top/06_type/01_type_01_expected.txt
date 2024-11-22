@@ -43,7 +43,9 @@ let l: number & (string | number) = 1;
 assert(l === 1);
 type m = number;
 type o = string;
-function g<m1>(n1: m1 extends m ? m : o) { return n1; }
+function g<j3>(k3: j3 extends m ? m : o) {
+    return k3;
+}
 assert(g<number>(1) === 1);
 type p<T> = T extends {
     a: infer U;
@@ -59,42 +61,146 @@ assert(q[0] === 1);
 assert(q[1] === 2);
 interface u {
     name: string;
-    j1: number;
+    g3: number;
 }
 type v = keyof u;
 let b: v = "name";
 assert(b === "name");
-type a1 = {
-    U: number;
-};
-let b1: a1['U'] = 2;
-assert(b1 === 2);
-type c1<T extends any[]> = {
+type a1<T extends any[]> = {
     [P in keyof T]: T[P];
 };
-let d: c1<number[]> = [1];
+let d: a1<number[]> = [1];
 assert(d[0] === 1);
-let d1: "cc" = "cc";
-assert(d1 === "cc");
-let e1: [
+let b1: "cc" = "cc";
+assert(b1 === "cc");
+let c1: [
     prop1: string,
     prop2: number
 ] = ["1", 2];
-assert(e1[0] === "1");
-assert(e1[1] === 2);
-type f1 = {
+assert(c1[0] === "1");
+assert(c1[1] === 2);
+type d1 = {
     description: string;
-    l1(para1: number): boolean;
+    h3(para1: number): boolean;
     (para2: number): number;
 };
-const g1: f1 = (l1: number) => l1;
-g1.description = "test";
-g1.l1 = (k1: number) => {
-    return k1 > 0 ? true : false;
+const e1: d1 = (i3: number) => i3;
+e1.description = "test";
+e1.h3 = (h3: number) => {
+    return h3 > 0 ? true : false;
 };
-assert(g1(100) === 100);
-assert(g1.description === "test");
-assert(g1.l1(-100) === false);
-type h1 = (para5: number) => number;
-const i1: h1 = (j1: number) => j1;
-assert(i1(200) === 200);
+assert(e1(100) === 100);
+assert(e1.description === "test");
+assert(e1.h3(-100) === false);
+type f1 = (para5: number) => number;
+const g1: f1 = (g3: number) => g3;
+assert(g1(200) === 200);
+// Different grammar scenarios of indexedAccessType
+type h1 = {
+    U: number;
+    V: string;
+    W: boolean;
+};
+export type T5 = {
+    X1: h1;
+};
+let i1: T5["X1"]["U"] = 2;
+assert(i1 === 2);
+let j1: h1["U"] = 3;
+let l1: h1["V"] = "test";
+let n1: h1["W"] = false;
+assert(j1 === 3);
+assert(l1 === "test");
+assert(n1 === false);
+let o1: h1["U" | "V"] = 4;
+let q1: h1["U" | "V"] = "test";
+assert(o1 === 4);
+assert(q1 === "test");
+let s1: T5["X1"]["U" | "V"] = 5;
+let t1: T5["X1"]["U" | "V"] = "test";
+assert(s1 === 5);
+assert(t1 === "test");
+let u1: h1[keyof T5["X1"]] = 6;
+assert(u1 === 6);
+const v1 = [
+    { i3: "Alice", m1: 15 },
+    { i3: "Bob", m1: 23 },
+    { i3: "Eve", m1: 38 },
+];
+type w1 = (typeof v1)[1]["m1"];
+let z1: w1 = 7;
+assert(z1 === 7);
+type a2 = [
+    string,
+    number
+];
+let b2: a2[0] = "test";
+let c2: a2[1] = 9;
+assert(b2 === "test");
+assert(c2 === 9);
+// Defination of unionType
+type d2 = "123" | "321";
+type e2 = 1234 | 4321;
+type f2 = "3124" | 4123;
+type g2 = "U1234" | 2143;
+type h2 = "U4213" | "U4132";
+type i2 = "U3412" | "3421";
+// need to add "1234" into whitelist when enable prop+strProp
+let j2: d2["1234"] = "1";
+assert(j2 === "1");
+let l2: d2[4321] = "2";
+assert(l2 === "2");
+let m2: h2[4321] = "3";
+assert(m2 === "3");
+let n2: h2["1234"] = "4";
+assert(n2 === "4");
+let o2: i2[4321] = "5";
+assert(o2 === "5");
+let q2: i2["1234"] = "6";
+assert(q2 === "6");
+// Define properties in type individually
+type s2 = {
+    j3: number;
+    l3: number;
+    "3214": number;
+    m3: number;
+    ["n3"]: number;
+    ["2314"]: number;
+};
+// Define properties in type and access them using indexedAccessType
+type t2 = {
+    prop5: number;
+    prop6: number;
+    "3412": number;
+    ["2341"]: number;
+    1432: number;
+    [1423]: number;
+    // need to add into whitelist when enable prop and prop+strProp
+    1243: number;
+    [2134]: number;
+    // need to add into whitelist when enable prop+strProp
+    "3142": number;
+    ["2314"]: number;
+};
+let u2: t2["prop5"] = 1;
+assert(u2 === 1);
+let v2: t2["prop6"] = 2;
+assert(v2 === 2);
+let w2: t2["3412"] = 3;
+assert(w2 === 3);
+let z2: t2["2341"] = 4;
+assert(z2 === 4);
+let a3: t2["1432"] = 5;
+assert(a3 === 5);
+let b3: t2["1423"] = 6;
+assert(b3 === 6);
+// need to add into whitelist when enable prop and prop+strProp
+let c3: t2[1243] = 7;
+assert(c3 === 7);
+let d3: t2[2134] = 7;
+assert(d3 === 7);
+// need to add into whitelist when enable prop+strProp
+let e3: t2[3142] = 8;
+assert(e3 === 8);
+let f3: t2[2314] = 9;
+assert(f3 === 9);
