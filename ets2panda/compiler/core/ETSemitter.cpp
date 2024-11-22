@@ -17,7 +17,6 @@
 
 #include "compiler/core/ETSGen.h"
 #include "varbinder/varbinder.h"
-#include "varbinder/variableFlags.h"
 #include "varbinder/ETSBinder.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
@@ -39,6 +38,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/types/type.h"
 #include "checker/types/ets/types.h"
+#include "checker/types/ets/etsPartialTypeParameter.h"
 #include "public/public.h"
 
 #include "assembly-program.h"
@@ -100,6 +100,9 @@ static pandasm::Type PandasmTypeWithRank(checker::Type const *type, uint32_t ran
     }
     if (type->IsETSNonNullishType()) {
         return PandasmTypeWithRank(type->AsETSNonNullishType()->GetUnderlying());
+    }
+    if (type->IsETSPartialTypeParameter()) {
+        return PandasmTypeWithRank(type->AsETSPartialTypeParameter()->GetUnderlying());
     }
     if (type->IsETSUnionType()) {
         return PandasmTypeWithRank(type->AsETSUnionType()->GetAssemblerLUB());

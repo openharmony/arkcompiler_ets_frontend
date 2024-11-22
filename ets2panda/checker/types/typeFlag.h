@@ -85,14 +85,16 @@ enum class TypeFlag : uint64_t {
     ETS_NONNULLISH = 1ULL << 56ULL,               // ETS nonnullish type parameter
     ETS_READONLY = 1ULL << 57ULL,                 // ETS readonly type parameter
     ETS_REQUIRED_TYPE_PARAMETER = 1ULL << 58ULL,  // ETS Required type parameter
-    TYPE_ERROR = 1ULL << 59ULL,                   // type error
-    ETS_TYPE_ALIAS = 1ULL << 60ULL,               // ETS Type alias
-    ETS_NEVER = 1ULL << 61ULL,                    // ETS never
+    ETS_PARTIAL_TYPE_PARAMETER = 1ULL << 59ULL,   // ETS Partial type parameter
+    TYPE_ERROR = 1ULL << 60ULL,                   // type error
+    ETS_TYPE_ALIAS = 1ULL << 61ULL,               // ETS Type alias
+    ETS_NEVER = 1ULL << 62ULL,                    // ETS never
     ETS_DYNAMIC_TYPE = ETS_OBJECT | ETS_DYNAMIC_FLAG,
     ETS_DYNAMIC_FUNCTION_TYPE = FUNCTION | ETS_DYNAMIC_FLAG,
     ETS_TYPE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_VOID | ETS_OBJECT | ETS_ARRAY |
                WILDCARD | ETS_TYPE_PARAMETER | ETS_INT_ENUM | ETS_STRING_ENUM | ETS_DYNAMIC_TYPE | ETS_UNION |
-               ETS_NULL | ETS_UNDEFINED | ETS_NONNULLISH | ETS_READONLY | ETS_NEVER,
+               ETS_NULL | ETS_UNDEFINED | ETS_NONNULLISH | ETS_READONLY | ETS_REQUIRED_TYPE_PARAMETER |
+               ETS_PARTIAL_TYPE_PARAMETER | ETS_NEVER,
     ETS_INTEGRAL_NUMERIC = BYTE | SHORT | INT | LONG,
     ETS_FLOATING_POINT = FLOAT | DOUBLE,
     ETS_NUMERIC = ETS_INTEGRAL_NUMERIC | ETS_FLOATING_POINT,

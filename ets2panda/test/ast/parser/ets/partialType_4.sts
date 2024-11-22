@@ -79,12 +79,4 @@ class A<T extends A<T>>{
     bar(initializers: Partial<T>): void {}
 }
 
-/* @@? 38:40 Error TypeError: Partial is not implemented where type parameter is generic. */
-/* @@? 38:40 Error TypeError: Partial is not implemented where type parameter is generic. */
-/* @@? 38:40 Error TypeError: Partial is not implemented where type parameter is generic. */
-/* @@? 39:25 Error TypeError: Partial is not implemented where type parameter is generic. */
-/* @@? 1:1 Error TypeError: Type 'ArkCommonStruct0$partial<T>' is generic but type argument were not provided. */
-/* @@? 1:1 Error TypeError: The super type of 'ArkMyStructComponent$partial' class is not extensible. */
-/* @@? 70:9 Error TypeError: Partial is not implemented where type parameter is generic. */
-/* @@? 75:9 Error TypeError: Partial is not implemented where type parameter is generic. */
-/* @@? 77:13 Error TypeError: Property 'baz' does not exist on type '*TYPE_ERROR*' */
+/* @@? 77:32 Error TypeError: Type 'S' cannot be assigned to type 'T|undefined'  */

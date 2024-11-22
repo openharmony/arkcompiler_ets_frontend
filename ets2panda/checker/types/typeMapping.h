@@ -68,6 +68,7 @@
     _(TypeFlag::ETS_ENUM, ETSEnumType)                                 \
     _(TypeFlag::ETS_EXTENSION_FUNC_HELPER, ETSExtensionFuncHelperType) \
     _(TypeFlag::ETS_TUPLE, ETSTupleType)                               \
+    _(TypeFlag::ETS_PARTIAL_TYPE_PARAMETER, ETSPartialTypeParameter)   \
     _(TypeFlag::TYPE_ERROR, TypeError)                                 \
     _(TypeFlag::ETS_TYPE_ALIAS, ETSTypeAliasType)
 

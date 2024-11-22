@@ -23,4 +23,4 @@ function foo(): void {
     let a_class: A = /* @@ label */partial_A;
 }
 
-/* @@@ label Error TypeError: Type 'A$partial' cannot be assigned to type 'A'  */
+/* @@@ label Error TypeError: Type 'Partial<A>' cannot be assigned to type 'A'  */

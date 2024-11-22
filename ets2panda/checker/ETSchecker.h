@@ -23,6 +23,8 @@
 #include "checker/types/ets/types.h"
 #include "checker/ets/primitiveWrappers.h"
 #include "checker/resolveResult.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "ir/visitor/AstVisitor.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::varbinder {
@@ -175,9 +177,9 @@ public:
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
-    void CheckIfOverrideIsValidInInterface(const ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func);
-    void CheckFunctionRedeclarationInInterface(const ETSObjectType *classType,
-                                               ArenaVector<Signature *> &similarSignatures, ir::ScriptFunction *func);
+    void CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func);
+    void CheckFunctionRedeclarationInInterface(ETSObjectType *classType, ArenaVector<Signature *> &similarSignatures,
+                                               ir::ScriptFunction *func);
     void ValidateAbstractMethodsToBeImplemented(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
                                                 ETSObjectType *classType,
                                                 const std::vector<Signature *> &implementedSignatures);
@@ -649,11 +651,11 @@ public:
     Type *HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstantiation *typeParams,
                                          const std::string_view &utilityType);
     // Partial
-    static constexpr auto PARTIAL_CLASS_SUFFIX = "$partial";
-    Type *HandlePartialType(Type *typeToBePartial);
-    Type *HandlePartialTypeNode(ir::TypeNode *typeParamNode);
-    Type *HandlePartialInterface(Type *typeToBePartial);
-    Type *HandlePartialClass(Type *typeToBePartial);
+    Type *CreatePartialType(Type *typeToBePartial);
+    Type *HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDecl, bool isClassDeclaredInCurrentFile,
+                                 util::StringView const &partialClassName, parser::Program *programToUse,
+                                 ETSObjectType *const typeToBePartial);
+
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *const prop,
                                              ir::TSInterfaceDeclaration *const newTSInterfaceDefinition);
@@ -667,8 +669,7 @@ public:
                                                          ir::ClassDefinition *newClassDefinition);
     ir::MethodDefinition *CreateNullishAccessor(ir::MethodDefinition *const accessor,
                                                 ir::ClassDefinition *classDefinition);
-    ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *CreatePartialClassDeclaration(
-        ir::ClassDefinition *newClassDefinition, ir::ClassDefinition *classDef, Type *superPartialType);
+    void CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition, ir::ClassDefinition *classDef);
     ir::ETSTypeReference *BuildSuperPartialTypeReference(Type *superPartialType,
                                                          ir::TSTypeParameterInstantiation *superPartialRefTypeParams);
     ir::TSInterfaceDeclaration *CreateInterfaceProto(util::StringView name, const bool isStatic,
@@ -681,18 +682,13 @@ public:
         ir::TSTypeParameterDeclaration const *const thisTypeParams,
         ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *likeSubstitution,
         ir::TSTypeParameterDeclaration *newTypeParams);
-    Type *CreatePartialTypeInterfaceDecl(util::StringView qualifiedName,
-                                         ir::TSInterfaceDeclaration *const interfaceDecl,
+    Type *CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *const interfaceDecl,
+                                         ETSObjectType *const typeToBePartial,
                                          ir::TSInterfaceDeclaration *partialInterface);
-    void CreateConstructorForPartialType(ir::ClassDefinition *partialClassDef, checker::ETSObjectType *partialType,
-                                         varbinder::RecordTable *recordTable);
     ir::ClassDefinition *CreateClassPrototype(util::StringView name, parser::Program *classDeclProgram);
     varbinder::Variable *SearchNamesInMultiplePrograms(const std::set<const parser::Program *> &programs,
                                                        const std::set<util::StringView> &classNamesToFind);
     util::StringView GetQualifiedClassName(const parser::Program *classDefProgram, util::StringView className);
-    Type *HandleUnionForPartialType(ETSUnionType *typeToBePartial);
-    Type *CreatePartialTypeClassDef(ir::ClassDefinition *partialClassDef, ir::ClassDefinition *classDef,
-                                    const Type *typeToBePartial, varbinder::RecordTable *recordTableToUse);
     std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunctionForConstructor(
         varbinder::FunctionScope *scope);
     ir::MethodDefinition *CreateNonStaticClassInitializer(varbinder::ClassScope *classScope,
@@ -900,6 +896,15 @@ private:
 
     // Static invoke
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
+
+    // Partial
+    Type *HandleUnionForPartialType(ETSUnionType *typeToBePartial);
+    Type *CreatePartialTypeParameter(ETSTypeParameter *typeToBePartial);
+    Type *CreatePartialTypeClass(ETSObjectType *typeToBePartial, ir::AstNode *typeDeclNode);
+    Type *CreatePartialTypeClassDef(ir::ClassDefinition *partialClassDef, ir::ClassDefinition *classDef,
+                                    ETSObjectType *typeToBePartial, varbinder::RecordTable *recordTableToUse);
+    void CreateConstructorForPartialType(ir::ClassDefinition *partialClassDef, checker::ETSObjectType *partialType,
+                                         varbinder::RecordTable *recordTable);
 
     // Check type alias for recursive cases
     bool IsAllowedTypeAliasRecursion(const ir::TSTypeAliasDeclaration *typeAliasNode,

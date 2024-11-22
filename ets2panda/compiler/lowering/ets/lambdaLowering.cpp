@@ -681,9 +681,7 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, ArenaVe
     auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, ctx->parserProgram->GlobalClassScope());
 
     auto lambdaClassName = util::UString {std::string_view {"LambdaObject-"}, allocator};
-    lambdaClassName.Append(info->calleeClass->Definition()->Ident()->Name());
-    lambdaClassName.Append("$");
-    lambdaClassName.Append(info->name);
+    lambdaClassName.Append(info->calleeClass->Definition()->Ident()->Name()).Append("$").Append(info->name);
 
     ArenaVector<checker::Type *> funcInterfaces(allocator->Adapter());
 
