@@ -64,11 +64,11 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 20
+            "column": 18
           },
           "end": {
             "line": 16,
-            "column": 21
+            "column": 20
           }
         }
       },

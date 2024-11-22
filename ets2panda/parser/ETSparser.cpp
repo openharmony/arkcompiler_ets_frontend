@@ -312,11 +312,11 @@ ir::Statement *ETSParser::ParseIdentKeyword()
     return nullptr;
 }
 
-ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::Identifier *className)
+ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::TypeNode *typeAnnotation)
 {
     FunctionContext functionContext(this, newStatus | ParserStatus::FUNCTION);
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    auto [signature, throwMarker] = ParseFunctionSignature(newStatus, className);
+    auto [signature, throwMarker] = ParseFunctionSignature(newStatus, typeAnnotation);
 
     ir::AstNode *body = nullptr;
     lexer::SourcePosition endLoc = startLoc;
@@ -1684,16 +1684,10 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     return ParseFunctionParameterExpression(paramIdent, defaultUndef);
 }
 
-ir::Expression *ETSParser::CreateParameterThis(const util::StringView className)
+ir::Expression *ETSParser::CreateParameterThis(ir::TypeNode *typeAnnotation)
 {
     auto *paramIdent = AllocNode<ir::Identifier>(varbinder::TypedBinder::MANDATORY_PARAM_THIS, Allocator());
     paramIdent->SetRange(Lexer()->GetToken().Loc());
-
-    ir::Expression *classTypeName = AllocNode<ir::Identifier>(className, Allocator());
-    classTypeName->SetRange(Lexer()->GetToken().Loc());
-
-    auto typeRefPart = AllocNode<ir::ETSTypeReferencePart>(classTypeName, nullptr, nullptr);
-    ir::TypeNode *typeAnnotation = AllocNode<ir::ETSTypeReference>(typeRefPart);
 
     typeAnnotation->SetParent(paramIdent);
     paramIdent->SetTsTypeAnnotation(typeAnnotation);
@@ -2129,6 +2123,27 @@ void ETSParser::CheckDeclare()
     }
 }
 
+ir::TypeNode *ETSParser::ParseExtensionFunctionsTypeAnnotation()
+{
+    const char32_t savedHead = Lexer()->Lookahead();
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
+
+    // Parse class and interface type annotation:
+    auto *typeAnnotation = ParseBaseTypeReference(&options);
+    if (typeAnnotation == nullptr) {
+        auto *typeIdent = ExpectIdentifier(true);
+        auto *typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeIdent, nullptr, nullptr);
+        typeAnnotation = AllocNode<ir::ETSTypeReference>(typeRefPart);
+    }
+
+    // Parse array type annotation:
+    if (savedHead == lexer::LEX_CHAR_LEFT_SQUARE) {
+        typeAnnotation = ParseTsArrayType(typeAnnotation, &options);
+    }
+
+    return typeAnnotation;
+}
+
 ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers)
 {
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
@@ -2140,43 +2155,46 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
         newStatus |= ParserStatus::ASYNC_FUNCTION;
     }
+
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_MULTIPLY)) {
         newStatus |= ParserStatus::GENERATOR_FUNCTION;
     }
 
-    ir::Identifier *className = nullptr;
-    ir::Identifier *identNode = nullptr;
-    if (Lexer()->Lookahead() == lexer::LEX_CHAR_DOT) {
-        className = ExpectIdentifier();
-        if (className != nullptr) {
-            newStatus |= ParserStatus::IN_EXTENSION_FUNCTION;
-        }
-        Lexer()->NextToken();
-        identNode = ExpectIdentifier();
+    ir::TypeNode *typeAnnotation = nullptr;
+    ir::Identifier *funcIdentNode = nullptr;
+
+    if (Lexer()->Lookahead() == lexer::LEX_CHAR_DOT || Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_SQUARE) {
+        // Parse extension function. Example: `function A.foo() {}` or `function A[].foo() {}`:
+        typeAnnotation = ParseExtensionFunctionsTypeAnnotation();
+        newStatus |= ParserStatus::IN_EXTENSION_FUNCTION;
+        Lexer()->NextToken();  // eat '.'
+        funcIdentNode = ExpectIdentifier();
     } else if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-        identNode = ExpectIdentifier();
+        // Parse regular function. Example: `function foo() {}`:
+        funcIdentNode = ExpectIdentifier();
     } else if (!canBeAnonymous) {
         LogSyntaxError("Unexpected token, expected identifier after 'function' keyword");
     }
-    newStatus |= ParserStatus::FUNCTION_DECLARATION;
-    if (identNode != nullptr) {
-        CheckRestrictedBinding(identNode->Name(), identNode->Start());
+
+    if (funcIdentNode != nullptr) {
+        CheckRestrictedBinding(funcIdentNode->Name(), funcIdentNode->Start());
     }
 
-    ir::ScriptFunction *func = ParseFunction(newStatus, className);
-    if (identNode != nullptr) {  // Error processing.
-        func->SetIdent(identNode);
+    ir::ScriptFunction *func = ParseFunction(newStatus | ParserStatus::FUNCTION_DECLARATION, typeAnnotation);
+    if (funcIdentNode != nullptr) {  // Error processing.
+        func->SetIdent(funcIdentNode);
     }
 
     auto *funcDecl = AllocNode<ir::FunctionDeclaration>(Allocator(), func);
     if (func->IsOverload() && Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
         Lexer()->NextToken();
     }
+
     funcDecl->SetRange(func->Range());
     func->AddModifier(modifiers);
     func->SetStart(startLoc);
 
-    if (className != nullptr) {
+    if (typeAnnotation != nullptr) {
         func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
     }
 

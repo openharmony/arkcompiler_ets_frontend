@@ -287,14 +287,14 @@ private:
     ir::ModifierFlags ParseClassMethodModifiers(bool seenStatic);
     ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
                                                      ir::Identifier *className = nullptr);
-    ir::ScriptFunction *ParseFunction(ParserStatus newStatus, ir::Identifier *className = nullptr);
+    ir::ScriptFunction *ParseFunction(ParserStatus newStatus, ir::TypeNode *typeAnnotation = nullptr);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
         const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool isRethrowsAllowed) override;
-    ir::Expression *CreateParameterThis(util::StringView className) override;
+    ir::Expression *CreateParameterThis(ir::TypeNode *typeAnnotation) override;
     ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeNode);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
@@ -309,6 +309,7 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
@@ -428,6 +429,7 @@ private:
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers);
+    ir::TypeNode *ParseExtensionFunctionsTypeAnnotation();
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement() override;
     ir::TypeNode *ParseInterfaceExtendsElement() override;
     // NOLINTNEXTLINE(google-default-arguments)

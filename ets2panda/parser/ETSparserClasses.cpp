@@ -458,13 +458,19 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
         newStatus |= ParserStatus::ALLOW_THIS_TYPE;
     }
 
-    ir::ScriptFunction *func = ParseFunction(newStatus, className);
+    ir::ETSTypeReference *typeAnnotation = nullptr;
+    if (className != nullptr) {
+        auto *typeRefPart = AllocNode<ir::ETSTypeReferencePart>(className, nullptr, nullptr);
+        typeAnnotation = AllocNode<ir::ETSTypeReference>(typeRefPart);
+    }
+
+    ir::ScriptFunction *func = ParseFunction(newStatus, typeAnnotation);
     func->SetIdent(methodName);
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     funcExpr->SetRange(func->Range());
     func->AddModifier(modifiers);
 
-    if (className != nullptr) {
+    if (typeAnnotation != nullptr) {
         func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
     }
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),

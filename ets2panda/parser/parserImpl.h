@@ -320,7 +320,7 @@ protected:
                                                      ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     ir::ClassDeclaration *ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers,
                                                 ir::ModifierFlags flags = ir::ModifierFlags::NONE);
-    FunctionSignature ParseFunctionSignature(ParserStatus status, ir::Identifier *className = nullptr);
+    FunctionSignature ParseFunctionSignature(ParserStatus status, ir::TypeNode *typeAnnotation = nullptr);
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile);
     // NOLINTNEXTLINE(google-default-arguments)
@@ -363,7 +363,7 @@ protected:
     virtual bool ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement);
     virtual ir::Statement *ParsePotentialExpressionStatement(StatementParsingFlags flags);
     virtual ArenaVector<ir::Expression *> ParseFunctionParams();
-    virtual ir::Expression *CreateParameterThis(util::StringView className);
+    virtual ir::Expression *CreateParameterThis(ir::TypeNode *typeAnnotation);
     virtual ir::Expression *ParseFunctionParameter();
     virtual void ConvertThisKeywordToIdentIfNecessary() {}
     virtual void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param);

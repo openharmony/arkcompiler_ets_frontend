@@ -90,11 +90,11 @@
                         "loc": {
                           "start": {
                             "line": 17,
-                            "column": 31
+                            "column": 29
                           },
                           "end": {
                             "line": 17,
-                            "column": 32
+                            "column": 31
                           }
                         }
                       },
@@ -106,7 +106,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 32
+                          "column": 31
                         }
                       }
                     },
@@ -117,7 +117,7 @@
                       },
                       "end": {
                         "line": 17,
-                        "column": 32
+                        "column": 31
                       }
                     }
                   },
@@ -1694,11 +1694,11 @@
                   "loc": {
                     "start": {
                       "line": 35,
-                      "column": 49
+                      "column": 46
                     },
                     "end": {
                       "line": 35,
-                      "column": 50
+                      "column": 48
                     }
                   }
                 },
@@ -1731,11 +1731,11 @@
                               "loc": {
                                 "start": {
                                   "line": 37,
-                                  "column": 24
+                                  "column": 21
                                 },
                                 "end": {
                                   "line": 37,
-                                  "column": 25
+                                  "column": 23
                                 }
                               }
                             },
@@ -2371,11 +2371,11 @@
                               "loc": {
                                 "start": {
                                   "line": 47,
-                                  "column": 23
+                                  "column": 20
                                 },
                                 "end": {
                                   "line": 47,
-                                  "column": 24
+                                  "column": 22
                                 }
                               }
                             },

@@ -2024,11 +2024,11 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 45
+                  "column": 42
                 },
                 "end": {
                   "line": 19,
-                  "column": 46
+                  "column": 44
                 }
               }
             },

@@ -2945,11 +2945,11 @@
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 48
+                            "column": 46
                           },
                           "end": {
                             "line": 20,
-                            "column": 49
+                            "column": 48
                           }
                         }
                       }
@@ -3087,11 +3087,11 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 30
+                          "column": 28
                         },
                         "end": {
                           "line": 20,
-                          "column": 31
+                          "column": 30
                         }
                       }
                     }
@@ -3559,11 +3559,11 @@
                                       "loc": {
                                         "start": {
                                           "line": 59,
-                                          "column": 29
+                                          "column": 27
                                         },
                                         "end": {
                                           "line": 59,
-                                          "column": 30
+                                          "column": 29
                                         }
                                       }
                                     }
@@ -3683,11 +3683,11 @@
                                       "loc": {
                                         "start": {
                                           "line": 59,
-                                          "column": 48
+                                          "column": 46
                                         },
                                         "end": {
                                           "line": 59,
-                                          "column": 49
+                                          "column": 48
                                         }
                                       }
                                     }

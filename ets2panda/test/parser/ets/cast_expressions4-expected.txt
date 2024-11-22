@@ -231,11 +231,11 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 19
+                                  "column": 16
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 20
+                                  "column": 18
                                 }
                               }
                             },
@@ -399,11 +399,11 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 25
+                                  "column": 22
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 26
+                                  "column": 24
                                 }
                               }
                             },
@@ -482,11 +482,11 @@
                               "loc": {
                                 "start": {
                                   "line": 18,
-                                  "column": 43
+                                  "column": 41
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 44
+                                  "column": 43
                                 }
                               }
                             },
@@ -579,11 +579,11 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 20
+                                  "column": 17
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 21
+                                  "column": 19
                                 }
                               }
                             },
@@ -662,11 +662,11 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 38
+                                  "column": 36
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 39
+                                  "column": 38
                                 }
                               }
                             },

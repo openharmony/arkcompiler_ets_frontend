@@ -2406,11 +2406,11 @@
               "loc": {
                 "start": {
                   "line": 47,
-                  "column": 22
+                  "column": 19
                 },
                 "end": {
                   "line": 47,
-                  "column": 23
+                  "column": 21
                 }
               }
             },
@@ -2423,7 +2423,7 @@
               },
               "end": {
                 "line": 47,
-                "column": 23
+                "column": 21
               }
             }
           },
@@ -2523,11 +2523,11 @@
                         "loc": {
                           "start": {
                             "line": 48,
-                            "column": 40
+                            "column": 38
                           },
                           "end": {
                             "line": 48,
-                            "column": 41
+                            "column": 40
                           }
                         }
                       },
@@ -2539,7 +2539,7 @@
                         },
                         "end": {
                           "line": 48,
-                          "column": 41
+                          "column": 40
                         }
                       }
                     },
@@ -2550,7 +2550,7 @@
                       },
                       "end": {
                         "line": 48,
-                        "column": 41
+                        "column": 40
                       }
                     }
                   }

@@ -203,11 +203,11 @@
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 21
+                                  "column": 18
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 22
+                                  "column": 20
                                 }
                               }
                             },

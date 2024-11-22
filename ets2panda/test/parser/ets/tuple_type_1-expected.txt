@@ -1729,11 +1729,11 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 36
+                    "column": 34
                   },
                   "end": {
                     "line": 24,
-                    "column": 37
+                    "column": 36
                   }
                 }
               },

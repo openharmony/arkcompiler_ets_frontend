@@ -442,11 +442,11 @@
                               "loc": {
                                 "start": {
                                   "line": 26,
-                                  "column": 25
+                                  "column": 22
                                 },
                                 "end": {
                                   "line": 26,
-                                  "column": 26
+                                  "column": 24
                                 }
                               }
                             },
@@ -581,11 +581,11 @@
                               "loc": {
                                 "start": {
                                   "line": 28,
-                                  "column": 26
+                                  "column": 23
                                 },
                                 "end": {
                                   "line": 28,
-                                  "column": 27
+                                  "column": 25
                                 }
                               }
                             },
@@ -720,11 +720,11 @@
                               "loc": {
                                 "start": {
                                   "line": 30,
-                                  "column": 26
+                                  "column": 23
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 27
+                                  "column": 25
                                 }
                               }
                             },
@@ -859,11 +859,11 @@
                               "loc": {
                                 "start": {
                                   "line": 32,
-                                  "column": 28
+                                  "column": 25
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 29
+                                  "column": 27
                                 }
                               }
                             },
