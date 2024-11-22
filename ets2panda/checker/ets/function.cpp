@@ -1865,7 +1865,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
         returnTypeAnn->SetTsType(retType);
-    }
+    }  // NOTE(vpukhov): #19874 - returnTypeAnn is not set
 
     ir::MethodDefinition *implMethod =
         CreateMethod(implName.View(), modifiers, flags, std::move(params), paramScope, returnTypeAnn, body);
@@ -1929,7 +1929,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
         }
         implMethod->Id()->SetVariable(implMethod->Function()->Id()->Variable());
     }
-    VarBinder()->AsETSBinder()->BuildProxyMethod(implMethod->Function(), classDef->InternalName(), isStatic,
+    VarBinder()->AsETSBinder()->BuildProxyMethod(implMethod->Function(), classDef->InternalName(),
                                                  asyncFunc->IsExternal());
     implMethod->SetParent(asyncMethod->Parent());
 
@@ -1960,6 +1960,13 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
     paramScope->BindNode(func);
     scope->BindParamScope(paramScope);
     paramScope->BindFunctionScope(scope);
+
+    if (!func->IsStatic()) {
+        auto classDef = VarBinder()->GetScope()->AsClassScope()->Node()->AsClassDefinition();
+        VarBinder()->AsETSBinder()->AddFunctionThisParam(func);
+        func->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable->SetTsType(classDef->TsType());
+    }
+
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *nameClone = nameId->Clone(Allocator(), nullptr);

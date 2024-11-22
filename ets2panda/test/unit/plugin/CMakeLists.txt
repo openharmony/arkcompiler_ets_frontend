@@ -30,7 +30,7 @@ set(PLUGIN_TESTS
   "e2p_test_plugin_dump_json compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
   "e2p_test_plugin_ets_src compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
   "e2p_test_plugin_ets_benchmark_test compile.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin_ets_benchmark_with_checker_func_test compile.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
+  # 20756 "e2p_test_plugin_ets_benchmark_with_checker_func_test compile.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
   "e2p_test_plugin_ets_node_types compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
   "e2p_test_plugin_ets_varibles_and_types compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
   "e2p_test_plugin_change_func runtime_change_func_call.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"

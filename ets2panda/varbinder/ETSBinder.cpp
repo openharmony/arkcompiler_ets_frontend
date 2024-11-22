@@ -469,17 +469,10 @@ void ETSBinder::AddFunctionThisParam(ir::ScriptFunction *func)
     thisParam->Declaration()->BindNode(thisParam_);
 }
 
-void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic,
-                                 bool isExternal)
+void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal)
 {
     ASSERT(!containingClassName.Empty());
     func->Scope()->BindName(containingClassName);
-
-    if (!isStatic) {
-        auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
-        auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
-        thisParam->Declaration()->BindNode(thisParam_);
-    }
 
     if (!func->IsAsyncFunc() && !isExternal) {
         Functions().push_back(func->Scope());
