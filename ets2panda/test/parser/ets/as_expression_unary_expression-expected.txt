@@ -213,23 +213,8 @@
                           "init": {
                             "type": "TSAsExpression",
                             "expression": {
-                              "type": "UnaryExpression",
-                              "operator": "-",
-                              "prefix": true,
-                              "argument": {
-                                "type": "NumberLiteral",
-                                "value": 1,
-                                "loc": {
-                                  "start": {
-                                    "line": 17,
-                                    "column": 19
-                                  },
-                                  "end": {
-                                    "line": 17,
-                                    "column": 20
-                                  }
-                                }
-                              },
+                              "type": "NumberLiteral",
+                              "value": -1,
                               "loc": {
                                 "start": {
                                   "line": 17,

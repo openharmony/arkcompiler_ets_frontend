@@ -198,23 +198,8 @@
                             }
                           },
                           "init": {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 0,
-                              "loc": {
-                                "start": {
-                                  "line": 17,
-                                  "column": 21
-                                },
-                                "end": {
-                                  "line": 17,
-                                  "column": 38
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -0,
                             "loc": {
                               "start": {
                                 "line": 17,

@@ -1038,23 +1038,8 @@
                         {
                           "type": "ReturnStatement",
                           "argument": {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 1,
-                              "loc": {
-                                "start": {
-                                  "line": 26,
-                                  "column": 11
-                                },
-                                "end": {
-                                  "line": 26,
-                                  "column": 12
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -1,
                             "loc": {
                               "start": {
                                 "line": 26,

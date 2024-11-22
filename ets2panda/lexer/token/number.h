@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,13 +16,8 @@
 #ifndef ES2PANDA_LEXER_TOKEN_NUMBER_H
 #define ES2PANDA_LEXER_TOKEN_NUMBER_H
 
-#include "macros.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
-
-#include <cstdint>
-#include <type_traits>
-#include <utility>
 
 namespace ark::es2panda::lexer {
 
@@ -66,7 +61,7 @@ public:
     explicit Number() noexcept : num_(static_cast<int32_t>(0)) {};
     explicit Number(util::StringView str) noexcept : str_(str) {}
     // NOLINTNEXTLINE(bugprone-exception-escape)
-    explicit Number(util::StringView str, const std::string &utf8, NumberFlags flags) noexcept;
+    explicit Number(util::StringView str, NumberFlags flags) noexcept;
     explicit Number(util::StringView str, double num) noexcept : str_(str), num_(num) {}
     explicit Number(uint32_t num) noexcept : Number(static_cast<int32_t>(num)) {}
     explicit Number(int32_t num) noexcept : num_(num) {}

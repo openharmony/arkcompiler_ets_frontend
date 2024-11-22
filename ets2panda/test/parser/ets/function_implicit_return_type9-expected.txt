@@ -1215,23 +1215,8 @@
                             },
                             "arguments": [
                               {
-                                "type": "UnaryExpression",
-                                "operator": "-",
-                                "prefix": true,
-                                "argument": {
-                                  "type": "NumberLiteral",
-                                  "value": 1,
-                                  "loc": {
-                                    "start": {
-                                      "line": 40,
-                                      "column": 17
-                                    },
-                                    "end": {
-                                      "line": 40,
-                                      "column": 18
-                                    }
-                                  }
-                                },
+                                "type": "NumberLiteral",
+                                "value": -1,
                                 "loc": {
                                   "start": {
                                     "line": 40,

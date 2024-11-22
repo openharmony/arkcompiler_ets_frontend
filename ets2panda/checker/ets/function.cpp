@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-#include "utils/logger.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
-#include "checker/ets/castingContext.h"
 #include "checker/ets/function_helpers.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
@@ -37,11 +35,8 @@
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
-#include "ir/expressions/thisExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/expressionStatement.h"
@@ -56,7 +51,6 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
-#include "util/language.h"
 
 namespace ark::es2panda::checker {
 
@@ -409,7 +403,9 @@ bool ETSChecker::CheckInvokable(Signature *substitutedSig, ir::Expression *argum
     if (argumentType->IsTypeError()) {
         return true;
     }
+
     auto *targetType = substitutedSig->Params()[index]->TsType();
+    flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
 
     auto const invocationCtx =
         checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
@@ -423,6 +419,8 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
                                                     const Type *targetType, std::size_t index, TypeRelationFlag flags)
 {
     Type *argumentType = argument->Check(this);
+    flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
+
     auto const invocationCtx = checker::InvocationContext(
         Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
         {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);

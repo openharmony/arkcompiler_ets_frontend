@@ -2094,22 +2094,6 @@ void ETSParser::ParseTrailingBlock(ir::CallExpression *callExpr)
     }
 }
 
-ir::Expression *ETSParser::ParseCoercedNumberLiteral()
-{
-    if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::NUMBER_FLOAT) != 0U) {
-        auto *number = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
-        number->SetRange(Lexer()->GetToken().Loc());
-        auto *floatType = AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::FLOAT);
-        floatType->SetRange(Lexer()->GetToken().Loc());
-        auto *asExpression = AllocNode<ir::TSAsExpression>(number, floatType, true);
-        asExpression->SetRange(Lexer()->GetToken().Loc());
-
-        Lexer()->NextToken();
-        return asExpression;
-    }
-    return ParseNumberLiteral();
-}
-
 void ETSParser::CheckDeclare()
 {
     ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE);

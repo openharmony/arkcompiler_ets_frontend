@@ -135,23 +135,8 @@
                           },
                           "arguments": [
                             {
-                              "type": "UnaryExpression",
-                              "operator": "-",
-                              "prefix": true,
-                              "argument": {
-                                "type": "NumberLiteral",
-                                "value": 1.1e-20,
-                                "loc": {
-                                  "start": {
-                                    "line": 16,
-                                    "column": 30
-                                  },
-                                  "end": {
-                                    "line": 16,
-                                    "column": 37
-                                  }
-                                }
-                              },
+                              "type": "NumberLiteral",
+                              "value": -1.1e-20,
                               "loc": {
                                 "start": {
                                   "line": 16,
@@ -641,23 +626,8 @@
                           }
                         },
                         "right": {
-                          "type": "UnaryExpression",
-                          "operator": "-",
-                          "prefix": true,
-                          "argument": {
-                            "type": "NumberLiteral",
-                            "value": 1.1e-20,
-                            "loc": {
-                              "start": {
-                                "line": 20,
-                                "column": 28
-                              },
-                              "end": {
-                                "line": 20,
-                                "column": 35
-                              }
-                            }
-                          },
+                          "type": "NumberLiteral",
+                          "value": -1.1e-20,
                           "loc": {
                             "start": {
                               "line": 20,

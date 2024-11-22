@@ -10964,23 +10964,8 @@
                             }
                           },
                           {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 1.16032,
-                              "loc": {
-                                "start": {
-                                  "line": 125,
-                                  "column": 51
-                                },
-                                "end": {
-                                  "line": 125,
-                                  "column": 74
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -1.16032,
                             "loc": {
                               "start": {
                                 "line": 125,
@@ -10993,23 +10978,8 @@
                             }
                           },
                           {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 0.103622,
-                              "loc": {
-                                "start": {
-                                  "line": 125,
-                                  "column": 77
-                                },
-                                "end": {
-                                  "line": 125,
-                                  "column": 100
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -0.103622,
                             "loc": {
                               "start": {
                                 "line": 125,
@@ -11171,23 +11141,8 @@
                             "type": "BinaryExpression",
                             "operator": "*",
                             "left": {
-                              "type": "UnaryExpression",
-                              "operator": "-",
-                              "prefix": true,
-                              "argument": {
-                                "type": "NumberLiteral",
-                                "value": 6.9046e-05,
-                                "loc": {
-                                  "start": {
-                                    "line": 125,
-                                    "column": 209
-                                  },
-                                  "end": {
-                                    "line": 125,
-                                    "column": 232
-                                  }
-                                }
-                              },
+                              "type": "NumberLiteral",
+                              "value": -6.9046e-05,
                               "loc": {
                                 "start": {
                                   "line": 125,
@@ -11562,23 +11517,8 @@
                             }
                           },
                           {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 0.403523,
-                              "loc": {
-                                "start": {
-                                  "line": 128,
-                                  "column": 76
-                                },
-                                "end": {
-                                  "line": 128,
-                                  "column": 99
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -0.403523,
                             "loc": {
                               "start": {
                                 "line": 128,
@@ -11594,23 +11534,8 @@
                             "type": "BinaryExpression",
                             "operator": "*",
                             "left": {
-                              "type": "UnaryExpression",
-                              "operator": "-",
-                              "prefix": true,
-                              "argument": {
-                                "type": "NumberLiteral",
-                                "value": 0.00276743,
-                                "loc": {
-                                  "start": {
-                                    "line": 128,
-                                    "column": 102
-                                  },
-                                  "end": {
-                                    "line": 128,
-                                    "column": 125
-                                  }
-                                }
-                              },
+                              "type": "NumberLiteral",
+                              "value": -0.00276743,
                               "loc": {
                                 "start": {
                                   "line": 128,
@@ -12117,23 +12042,8 @@
                             }
                           },
                           {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 15.1112,
-                              "loc": {
-                                "start": {
-                                  "line": 131,
-                                  "column": 51
-                                },
-                                "end": {
-                                  "line": 131,
-                                  "column": 74
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -15.1112,
                             "loc": {
                               "start": {
                                 "line": 131,
@@ -12146,23 +12056,8 @@
                             }
                           },
                           {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 0.223308,
-                              "loc": {
-                                "start": {
-                                  "line": 131,
-                                  "column": 77
-                                },
-                                "end": {
-                                  "line": 131,
-                                  "column": 100
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -0.223308,
                             "loc": {
                               "start": {
                                 "line": 131,
@@ -12324,23 +12219,8 @@
                             "type": "BinaryExpression",
                             "operator": "*",
                             "left": {
-                              "type": "UnaryExpression",
-                              "operator": "-",
-                              "prefix": true,
-                              "argument": {
-                                "type": "NumberLiteral",
-                                "value": 2.9659e-05,
-                                "loc": {
-                                  "start": {
-                                    "line": 131,
-                                    "column": 209
-                                  },
-                                  "end": {
-                                    "line": 131,
-                                    "column": 232
-                                  }
-                                }
-                              },
+                              "type": "NumberLiteral",
+                              "value": -2.9659e-05,
                               "loc": {
                                 "start": {
                                   "line": 131,
@@ -12701,23 +12581,8 @@
                             }
                           },
                           {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 25.9193,
-                              "loc": {
-                                "start": {
-                                  "line": 134,
-                                  "column": 51
-                                },
-                                "end": {
-                                  "line": 134,
-                                  "column": 74
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -25.9193,
                             "loc": {
                               "start": {
                                 "line": 134,
@@ -12893,23 +12758,8 @@
                             "type": "BinaryExpression",
                             "operator": "*",
                             "left": {
-                              "type": "UnaryExpression",
-                              "operator": "-",
-                              "prefix": true,
-                              "argument": {
-                                "type": "NumberLiteral",
-                                "value": 9.51592e-05,
-                                "loc": {
-                                  "start": {
-                                    "line": 134,
-                                    "column": 208
-                                  },
-                                  "end": {
-                                    "line": 134,
-                                    "column": 231
-                                  }
-                                }
-                              },
+                              "type": "NumberLiteral",
+                              "value": -9.51592e-05,
                               "loc": {
                                 "start": {
                                   "line": 134,
@@ -13472,23 +13322,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "-",
-              "prefix": true,
-              "argument": {
-                "type": "NumberLiteral",
-                "value": 1.35249,
-                "loc": {
-                  "start": {
-                    "line": 139,
-                    "column": 35
-                  },
-                  "end": {
-                    "line": 139,
-                    "column": 53
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": -1.35249,
               "loc": {
                 "start": {
                   "line": 139,

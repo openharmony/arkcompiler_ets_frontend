@@ -37,7 +37,7 @@ public:
     bool ScanCharLiteral() override;
     void ScanAsteriskPunctuator() override;
 
-    void ScanNumberLeadingZero() override
+    void ScanNumberLeadingZero(bool const leadingMinus) override
     {
         const auto savedLexerPosition = Save();
 
@@ -47,9 +47,9 @@ public:
             allowBigint = true;
         }
 
-        if (!ScanNumberLeadingZeroImpl<uint32_t, uint32_t>()) {
+        if (!ScanNumberLeadingZeroImpl<uint32_t>(leadingMinus)) {
             Rewind(savedLexerPosition);
-            if (!ScanNumberLeadingZeroImpl<uint64_t, uint64_t>()) {
+            if (!ScanNumberLeadingZeroImpl<uint64_t>(leadingMinus)) {
                 ThrowError("Number is too large");
             }
         }
@@ -63,7 +63,7 @@ public:
 
     void CheckNumberLiteralEnd() override;
     void CheckUtf16Compatible(char32_t cp) const;
-    void ConvertNumber(const std::string &utf8, NumberFlags flags) override;
+    void ConvertNumber(NumberFlags flags) override;
 
 protected:
     void ScanEqualsPunctuator() override;

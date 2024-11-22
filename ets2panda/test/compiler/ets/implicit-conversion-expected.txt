@@ -833,23 +833,8 @@
                             }
                           },
                           "init": {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 5,
-                              "loc": {
-                                "start": {
-                                  "line": 23,
-                                  "column": 27
-                                },
-                                "end": {
-                                  "line": 23,
-                                  "column": 30
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -5,
                             "loc": {
                               "start": {
                                 "line": 23,

@@ -680,23 +680,8 @@
                                 }
                               },
                               "right": {
-                                "type": "UnaryExpression",
-                                "operator": "-",
-                                "prefix": true,
-                                "argument": {
-                                  "type": "NumberLiteral",
-                                  "value": 1,
-                                  "loc": {
-                                    "start": {
-                                      "line": 23,
-                                      "column": 21
-                                    },
-                                    "end": {
-                                      "line": 23,
-                                      "column": 22
-                                    }
-                                  }
-                                },
+                                "type": "NumberLiteral",
+                                "value": -1,
                                 "loc": {
                                   "start": {
                                     "line": 23,
@@ -2254,23 +2239,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "-",
-              "prefix": true,
-              "argument": {
-                "type": "NumberLiteral",
-                "value": 1286749544853,
-                "loc": {
-                  "start": {
-                    "line": 44,
-                    "column": 37
-                  },
-                  "end": {
-                    "line": 44,
-                    "column": 50
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": -1286749544853,
               "loc": {
                 "start": {
                   "line": 44,

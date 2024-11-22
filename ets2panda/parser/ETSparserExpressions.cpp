@@ -14,107 +14,10 @@
  */
 
 #include "ETSparser.h"
-#include "ETSNolintParser.h"
-#include <utility>
 
-#include "macros.h"
-#include "parser/parserFlags.h"
-#include "parser/parserStatusContext.h"
-#include "util/helpers.h"
-#include "util/language.h"
-#include "utils/arena_containers.h"
-#include "varbinder/varbinder.h"
-#include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
-#include "lexer/ETSLexer.h"
-#include "checker/types/ets/etsEnumType.h"
-#include "ir/astNode.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/decorator.h"
-#include "ir/base/catchClause.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/classStaticBlock.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/functionExpression.h"
-#include "ir/statements/functionDeclaration.h"
-#include "ir/statements/expressionStatement.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/statements/variableDeclaration.h"
-#include "ir/expressions/dummyNode.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/thisExpression.h"
-#include "ir/expressions/typeofExpression.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/updateExpression.h"
-#include "ir/expressions/arrowFunctionExpression.h"
-#include "ir/expressions/unaryExpression.h"
-#include "ir/expressions/yieldExpression.h"
-#include "ir/expressions/awaitExpression.h"
-#include "ir/expressions/literals/nullLiteral.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/module/importDefaultSpecifier.h"
-#include "ir/module/importSpecifier.h"
-#include "ir/module/exportSpecifier.h"
-#include "ir/module/exportNamedDeclaration.h"
-#include "ir/statements/assertStatement.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/ifStatement.h"
-#include "ir/statements/labelledStatement.h"
-#include "ir/statements/switchStatement.h"
-#include "ir/statements/throwStatement.h"
-#include "ir/statements/tryStatement.h"
-#include "ir/statements/whileStatement.h"
-#include "ir/statements/forOfStatement.h"
-#include "ir/statements/doWhileStatement.h"
-#include "ir/statements/breakStatement.h"
-#include "ir/statements/debuggerStatement.h"
-#include "ir/ets/etsLaunchExpression.h"
-#include "ir/ets/etsClassLiteral.h"
-#include "ir/ets/etsPrimitiveType.h"
-#include "ir/ets/etsPackageDeclaration.h"
-#include "ir/ets/etsReExportDeclaration.h"
-#include "ir/ets/etsWildcardType.h"
-#include "ir/ets/etsNewArrayInstanceExpression.h"
 #include "ir/ets/etsTuple.h"
-#include "ir/ets/etsFunctionType.h"
-#include "ir/ets/etsNewClassInstanceExpression.h"
-#include "ir/ets/etsNewMultiDimArrayInstanceExpression.h"
-#include "ir/ets/etsScript.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsNullishTypes.h"
-#include "ir/ets/etsUnionType.h"
-#include "ir/ets/etsImportSource.h"
-#include "ir/ets/etsImportDeclaration.h"
-#include "ir/ets/etsStructDeclaration.h"
-#include "ir/ets/etsParameterExpression.h"
-#include "ir/module/importNamespaceSpecifier.h"
-#include "ir/ts/tsAsExpression.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
-#include "ir/ts/tsInterfaceBody.h"
-#include "ir/ts/tsImportEqualsDeclaration.h"
-#include "ir/ts/tsArrayType.h"
-#include "ir/ts/tsQualifiedName.h"
-#include "ir/ts/tsTypeReference.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsInterfaceHeritage.h"
-#include "ir/ts/tsFunctionType.h"
-#include "ir/ts/tsClassImplements.h"
-#include "ir/ts/tsEnumMember.h"
-#include "ir/ts/tsTypeAliasDeclaration.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-#include "ir/ts/tsNonNullExpression.h"
-#include "ir/ts/tsThisType.h"
-#include "generated/signatures.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -239,11 +142,16 @@ ir::Expression *ETSParser::ResolveArgumentUnaryExpr(ExpressionParseFlags flags)
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
 {
-    switch (Lexer()->GetToken().Type()) {
+    auto tokenFlags = lexer::NextTokenFlags::NONE;
+    lexer::TokenType operatorType = Lexer()->GetToken().Type();
+
+    switch (operatorType) {
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+            tokenFlags = lexer::NextTokenFlags::UNARY_MINUS;
+            [[fallthrough]];
         case lexer::TokenType::PUNCTUATOR_PLUS_PLUS:
         case lexer::TokenType::PUNCTUATOR_MINUS_MINUS:
         case lexer::TokenType::PUNCTUATOR_PLUS:
-        case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
         case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
@@ -258,9 +166,8 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         }
     }
 
-    lexer::TokenType operatorType = Lexer()->GetToken().Type();
     auto start = Lexer()->GetToken().Start();
-    Lexer()->NextToken();
+    Lexer()->NextToken(tokenFlags);
 
     ir::Expression *argument = ResolveArgumentUnaryExpr(flags);
 
@@ -277,6 +184,8 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         returnExpr = AllocNode<ir::UpdateExpression>(argument, operatorType, true);
     } else if (operatorType == lexer::TokenType::KEYW_TYPEOF) {
         returnExpr = AllocNode<ir::TypeofExpression>(argument);
+    } else if (operatorType == lexer::TokenType::PUNCTUATOR_MINUS) {
+        returnExpr = !argument->IsNumberLiteral() ? AllocNode<ir::UnaryExpression>(argument, operatorType) : argument;
     } else {
         returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
     }
@@ -341,7 +250,7 @@ ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFla
             return ParseUndefinedLiteral();
         }
         case lexer::TokenType::LITERAL_NUMBER: {
-            return ParseCoercedNumberLiteral();
+            return ParseNumberLiteral();
         }
         case lexer::TokenType::LITERAL_STRING: {
             return ParseStringLiteral();
@@ -431,6 +340,7 @@ bool ETSParser::IsArrowFunctionExpressionStart()
     size_t openBrackets = 1;
     bool expectIdentifier = true;
     while (tokenType != lexer::TokenType::EOS && openBrackets > 0) {
+        lexer::NextTokenFlags flag = lexer::NextTokenFlags::NONE;
         switch (tokenType) {
             case lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS:
                 --openBrackets;
@@ -440,6 +350,10 @@ bool ETSParser::IsArrowFunctionExpressionStart()
                 break;
             case lexer::TokenType::PUNCTUATOR_COMMA:
                 expectIdentifier = true;
+                break;
+            // (DZ) need for correct processing of possible number literals
+            case lexer::TokenType::PUNCTUATOR_MINUS:
+                flag = lexer::NextTokenFlags::UNARY_MINUS;
                 break;
             case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
                 Lexer()->Rewind(savedPos);
@@ -455,7 +369,7 @@ bool ETSParser::IsArrowFunctionExpressionStart()
                 }
                 expectIdentifier = false;
         }
-        Lexer()->NextToken();
+        Lexer()->NextToken(flag);
         tokenType = Lexer()->GetToken().Type();
     }
 
