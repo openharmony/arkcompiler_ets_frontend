@@ -2208,19 +2208,30 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
 checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    for (auto *it : st->Properties()) {
-        it->Check(checker);
+
+    if (!st->Expr()->IsIdentifier()) {
+        st->Expr()->Check(checker);
     }
 
-    if (!st->Ident()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
-        checker->LogTypeError({"'", st->Ident()->Name(), "' is not an annotation."}, st->Ident()->Start());
+    for (auto *it : st->Properties()) {
+        it->Check(checker);
+        auto property = it->AsClassProperty();
+        if (property->Value() != nullptr && property->Value()->IsMemberExpression() &&
+            !property->TsType()->IsETSEnumType()) {
+            checker->LogTypeError("Invalid value for annotation field, expected a constant literal.",
+                                  property->Value()->Start());
+        }
+    }
+
+    if (!st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+        checker->LogTypeError({"'", st->GetBaseName()->Name(), "' is not an annotation."}, st->GetBaseName()->Start());
         return nullptr;
     }
 
-    auto *annoDecl = st->Ident()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     annoDecl->Check(checker);
-    ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->Allocator()->Adapter()};
 
+    ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->Allocator()->Adapter()};
     for (auto *it : annoDecl->Properties()) {
         auto *field = it->AsClassProperty();
         fieldMap.insert(std::make_pair(field->Id()->Name(), field));
@@ -2234,32 +2245,14 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 
     if (st->Properties().size() == 1 &&
         st->Properties().at(0)->AsClassProperty()->Id()->Name() == compiler::Signatures::ANNOTATION_KEY_VALUE) {
-        checker->CheckSinglePropertyAnnotation(st, annoDecl, checker);
+        checker->CheckSinglePropertyAnnotation(st, annoDecl);
         fieldMap.clear();
     } else {
-        checker->CheckMultiplePropertiesAnnotation(st, annoDecl, checker, fieldMap);
+        checker->CheckMultiplePropertiesAnnotation(st, annoDecl, fieldMap);
     }
 
-    for (const auto &it : fieldMap) {
-        if (it.second->Value() == nullptr) {
-            checker->LogTypeError({"The required field '", it.first,
-                                   "' must be specified. Fields without default values cannot be omitted."},
-                                  st->Start());
-            continue;
-        }
-        auto *clone = it.second->Clone(checker->Allocator(), st);
-        clone->Check(checker);
-        st->AddProperty(clone);
-    }
+    checker->ProcessRequiredFields(fieldMap, st, checker);
 
-    for (auto *it : st->Properties()) {
-        auto property = it->AsClassProperty();
-        if (property->Value() != nullptr && property->Value()->IsMemberExpression() &&
-            !property->TsType()->IsETSEnumType()) {
-            checker->LogTypeError("Invalid value for annotation field, expected a constant literal.",
-                                  property->Value()->Start());
-        }
-    }
     return nullptr;
 }
 

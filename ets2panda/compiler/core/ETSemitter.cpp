@@ -864,7 +864,7 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
 
 pandasm::AnnotationData ETSEmitter::GenCustomAnnotation(ir::AnnotationUsage *anno, std::string &baseName)
 {
-    auto *annoDecl = anno->Ident()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    auto *annoDecl = anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     pandasm::AnnotationData annotation(annoDecl->InternalName().Mutf8());
     if (annoDecl->IsImportDeclaration()) {
         auto annoRecord = pandasm::Record(annoDecl->InternalName().Mutf8(), Program()->lang);
@@ -885,7 +885,7 @@ std::vector<pandasm::AnnotationData> ETSEmitter::GenCustomAnnotations(
 {
     std::vector<pandasm::AnnotationData> annotations;
     for (auto *anno : annotationUsages) {
-        auto newBaseName = GenerateMangledName(baseName, anno->Ident()->Name().Mutf8());
+        auto newBaseName = GenerateMangledName(baseName, anno->GetBaseName()->Name().Mutf8());
         annotations.emplace_back(GenCustomAnnotation(anno, newBaseName));
     }
     return annotations;

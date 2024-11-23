@@ -516,12 +516,12 @@ public:
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
     bool ValidateAnnotationPropertyType(checker::Type *tsType);
+    void ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
+                               ir::AnnotationUsage *st, ETSChecker *checker) const;
     bool CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
     void CheckAnnotationPropertyType(ir::ClassProperty *property);
-    void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
-                                       ETSChecker *checker);
+    void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl);
     void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
-                                           ETSChecker *checker,
                                            ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap);
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     bool TestUnionType(Type *type, TypeFlag test);

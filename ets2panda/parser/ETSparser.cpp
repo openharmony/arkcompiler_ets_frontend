@@ -545,6 +545,7 @@ ir::AnnotationDeclaration *ETSParser::ParseAnnotationDeclaration(ir::ModifierFla
 
     Lexer()->NextToken();  // eat 'interface'
     auto *ident = ExpectIdentifier(false, true);
+    ident->SetAnnotationDecl();
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
     auto properties = ParseAnnotationProperties(flags);
@@ -700,8 +701,16 @@ ArenaVector<ir::AnnotationUsage *> ETSParser::ParseAnnotations(ir::ModifierFlags
 ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
 {
     const lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    auto ident = ExpectIdentifier();
-    ident->SetAnnotationUsage();
+    ir::Expression *expr = nullptr;
+    if (Lexer()->Lookahead() == '.') {
+        auto opt = TypeAnnotationParsingOptions::NO_OPTS;
+        expr = ParseTypeReference(&opt);
+        expr->AsETSTypeReference()->Part()->Name()->AsTSQualifiedName()->Right()->SetAnnotationUsage();
+    } else {
+        expr = ExpectIdentifier();
+        expr->AsIdentifier()->SetAnnotationUsage();
+    }
+
     auto flags = ir::ModifierFlags::ANNOTATION_USAGE;
     ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
 
@@ -729,7 +738,7 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
         ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, true);  // eat ')'
     }
 
-    auto *annotationUsage = AllocNode<ir::AnnotationUsage>(ident, std::move(properties));
+    auto *annotationUsage = AllocNode<ir::AnnotationUsage>(expr, std::move(properties));
     annotationUsage->AddModifier(flags);
     annotationUsage->SetRange({startLoc, Lexer()->GetToken().End()});
     return annotationUsage;
