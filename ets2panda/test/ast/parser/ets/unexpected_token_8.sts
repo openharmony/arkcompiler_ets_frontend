@@ -15,8 +15,8 @@
 
 try {
 
-} catch (e: number {}
+} catch (e: number /* @@ label1 */{/* @@ label2 */}
 
-/* @@? 18:20 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 18:21 Error SyntaxError: Unexpected token '}', expected '{'  */
-/* @@? 18:21 Error SyntaxError: Expected a '{', got '}'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: ')'. */
+/* @@@ label2 Error SyntaxError: Unexpected token '}', expected '{'. */
+/* @@? 18:51 Error SyntaxError: Expected a '{', got '}'. */

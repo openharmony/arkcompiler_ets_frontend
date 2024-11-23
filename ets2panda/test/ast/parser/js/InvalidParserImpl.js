@@ -45,6 +45,10 @@ class A {
 
 function f(eval, arguments) {}
 
+for (var i of a) {
+    continue label;
+}
+
 /* @@? 16:7 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 16:10 Error SyntaxError: Unexpected token '{'. */
 /* @@? 22:5 Error SyntaxError: Private field has already been declared */
@@ -62,3 +66,4 @@ function f(eval, arguments) {}
 /* @@? 43:5 Error SyntaxError: Multiple constructor implementations are not allowed. */
 /* @@? 46:12 Error SyntaxError: 'eval' or 'arguments' can't be defined or assigned to in strict mode code */
 /* @@? 46:18 Error SyntaxError: 'eval' or 'arguments' can't be defined or assigned to in strict mode code */
+/* @@? 49:14 Error SyntaxError: Undefined label */

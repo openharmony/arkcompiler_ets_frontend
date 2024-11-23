@@ -411,7 +411,7 @@ ir::AstNode *ETSParser::ParseInnerTypeDeclaration(ir::ModifierFlags memberModifi
                                                   bool isStepToken, bool seenStatic)
 {
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) == 0) {
-        ThrowSyntaxError("Local type declaration (class, struct, interface and enum) support is not yet implemented.");
+        LogSyntaxError("Local type declaration (class, struct, interface and enum) support is not yet implemented.");
     }
 
     // remove saved_pos nolint
@@ -1192,10 +1192,10 @@ void ETSParser::ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir:
     }
 }
 
-void ETSParser::ThrowIfVarDeclaration(VariableParsingFlags flags)
+void ETSParser::ReportIfVarDeclaration(VariableParsingFlags flags)
 {
     if ((flags & VariableParsingFlags::VAR) != 0) {
-        ThrowUnexpectedToken(lexer::TokenType::KEYW_VAR);
+        LogUnexpectedToken(lexer::TokenType::KEYW_VAR);
     }
 }
 

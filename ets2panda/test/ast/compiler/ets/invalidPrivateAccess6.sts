@@ -18,7 +18,7 @@ class Outer {
         private a: int = 12;
     }
 
-    class B {
+    /* @@ label1 */class B {
         foo(): void {
             let a: A = new A();
             a.a = 13;
@@ -39,3 +39,4 @@ class D {
 }
 
 /* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */

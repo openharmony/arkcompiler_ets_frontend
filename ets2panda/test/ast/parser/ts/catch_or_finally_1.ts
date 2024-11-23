@@ -17,9 +17,17 @@ try {} ss (fgf) {}
 try {} sfsfsf (fgf) {} finally {}
 try {} catch (fgf) {} aaaaaaa {}
 
-/* @@? 16:8 Error SyntaxError: Missing catch or finally clause  */
-/* @@? 16:17 Error SyntaxError: Unexpected token '{'.  */
-/* @@? 17:8 Error SyntaxError: Missing catch or finally clause  */
-/* @@? 17:21 Error SyntaxError: Unexpected token '{'.  */
-/* @@? 17:24 Error SyntaxError: Unexpected token: 'finally'.  */
-/* @@? 18:31 Error SyntaxError: Unexpected token '{'.  */
+try [] finally {}
+
+/* @@? 16:8 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 16:17 Error SyntaxError: Unexpected token '{'. */
+/* @@? 17:8 Error SyntaxError: Missing catch or finally clause. */
+/* @@? 17:21 Error SyntaxError: Unexpected token '{'. */
+/* @@? 17:24 Error SyntaxError: Unexpected token: 'finally'. */
+/* @@? 18:31 Error SyntaxError: Unexpected token '{'. */
+/* @@? 20:5 Error SyntaxError: Unexpected token '[', expected '{'. */
+/* @@? 20:5 Error SyntaxError: Expected a '{', got '['. */
+/* @@? 20:8 Error SyntaxError: Unexpected token 'finally'. */
+/* @@? 20:8 Error SyntaxError: Unexpected token: 'finally'. */
+/* @@? 34:1 Error SyntaxError: Expected a '}' got 'eos'. */
+/* @@? 34:1 Error SyntaxError: Missing catch or finally clause. */

@@ -39,7 +39,7 @@ using namespace std::literals::string_literals;
 ir::NamespaceDeclaration *ETSParser::ParseNamespaceDeclaration(ir::ModifierFlags flags)
 {
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) == 0) {
-        ThrowSyntaxError("Namespace not enabled in here.");
+        LogSyntaxError("Namespace not enabled in here.");
     }
 
     const lexer::SourcePosition startLoc = Lexer()->GetToken().Start();

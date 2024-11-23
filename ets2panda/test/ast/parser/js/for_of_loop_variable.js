@@ -13,22 +13,18 @@
  * limitations under the License.
  */
 
-//import ets.util.List;
-//import ets.lang.annotation.*;
-class named_types  {
-    text : ets.lang.String ;
-    public static /* @@ label */class inner<T> {
-        public /*@@ label1 */class innertoo  {
-        }
+const iterable = [10, 20, 30];
 
-    }
-
+for (const value = 50 /* @@ label */of iterable) {
+  console.log(value);
 }
 
-class auxilliary  {
-    public  foo(): named_types.inner {
-    }
+
+const iterable2 = [10, 20, 30];
+
+for (let value of iterable2) {
+  value += 50;
+  console.log(value);
 }
 
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label Error SyntaxError: for-of loop variable declaration may not have an initializer */

@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+for (a < 10, a<b in a/* @@ label */) {}
 
-for (a<b in a/* @@ label */) {}
+function foo() {
+  return { a: 1 };
+}
+foo().a = 1;
+
 /* @@@ label Error SyntaxError: Invalid left-hand side in 'For[In/Of]Statement'  */

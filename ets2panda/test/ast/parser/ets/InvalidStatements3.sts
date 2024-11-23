@@ -34,14 +34,26 @@ function f(x: number, ... args: number[]) {
     "use strict"
 }
 
-/* @@? 19:1 Error SyntaxError: Unexpected token '}', expected '{' */
+function foo() {
+    private @annotate
+    let a: number = 10;
+}
+
+for (let i = 1 in [0, 1, 2]) {}
+
+/* @@? 19:1 Error SyntaxError: Unexpected token '}', expected '{'. */
 /* @@? 19:1 Error SyntaxError: Expected a '{', got '}'. */
 /* @@? 22:5 Error SyntaxError: Expected a '{', got 'let'. */
 /* @@? 23:11 Error SyntaxError: Expected a '{', got '('. */
 /* @@? 27:7 Error SyntaxError: Unexpected token '{', expected '(' */
-/* @@? 29:1 Error SyntaxError: Unexpected token 'while', expected ')' */
+/* @@? 29:1 Error SyntaxError: Unexpected token 'while', expected ')'. */
 /* @@? 29:7 Error SyntaxError: Unexpected token 'identification literal', expected '(' */
-/* @@? 29:13 Error SyntaxError: Unexpected token '{', expected ')' */
+/* @@? 29:13 Error SyntaxError: Unexpected token '{', expected ')'. */
 /* @@? 31:9 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 31:9 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 34:5 Error SyntaxError: Illegal 'use strict' directive in function with non-simple parameter list */
+/* @@? 38:5 Error SyntaxError: Annotation declaration can not have access modifier */
+/* @@? 38:5 Error SyntaxError: Unexpected token 'private'. */
+/* @@? 38:13 Error SyntaxError: Unexpected token '@'. */
+/* @@? 42:16 Error SyntaxError: for-in loop variable declaration may not have an initializer */
+/* @@? 42:16 Error SyntaxError: Unexpected token: 'in'. */

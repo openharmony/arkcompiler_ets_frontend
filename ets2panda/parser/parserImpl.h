@@ -395,13 +395,13 @@ protected:
                                                                        const lexer::SourcePosition &startLoc);
     virtual bool IsModifierKind(const lexer::Token &token);
     virtual void ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *nextCp);
-    virtual void ThrowPossibleOutOfBoundaryJumpError(bool allowBreak);
-    virtual void ThrowIllegalBreakError();
-    virtual void ThrowIllegalContinueError();
-    virtual void ThrowIfBodyEmptyError(ir::Statement *consequent);
-    virtual void ThrowMultipleDefaultError();
-    virtual void LogIllegalNewLineErrorAfterThrow();
-    virtual void ThrowIfVarDeclaration(VariableParsingFlags flags);
+    virtual void ReportPossibleOutOfBoundaryJumpError(bool allowBreak);
+    virtual void ReportIllegalBreakError(const lexer::SourcePosition &startLoc);
+    virtual void ReportIllegalContinueError();
+    virtual void ReportIfBodyEmptyError(ir::Statement *consequent);
+    virtual void ReportMultipleDefaultError();
+    virtual void ReportIllegalNewLineErrorAfterThrow();
+    virtual void ReportIfVarDeclaration(VariableParsingFlags flags);
     virtual ir::Expression *ParsePrefixAssertionExpression();
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(

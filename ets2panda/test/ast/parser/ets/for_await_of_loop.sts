@@ -13,22 +13,8 @@
  * limitations under the License.
  */
 
-//import ets.util.List;
-//import ets.lang.annotation.*;
-class named_types  {
-    text : ets.lang.String ;
-    public static /* @@ label */class inner<T> {
-        public /*@@ label1 */class innertoo  {
-        }
-
-    }
-
+for await (let k: int /* @@ label */= 0; k < d.length; k++) {
+    this.$_set_unsafe(k + 1, d[k])
 }
 
-class auxilliary  {
-    public  foo(): named_types.inner {
-    }
-}
-
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label Error SyntaxError: for-await-of loop variable declaration may not have an initializer  */

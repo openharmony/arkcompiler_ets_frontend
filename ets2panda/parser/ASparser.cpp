@@ -1719,12 +1719,12 @@ ir::Statement *ASParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
     return importDeclaration;
 }
 
-void ASParser::ThrowIllegalBreakError()
+void ASParser::ReportIllegalBreakError(const lexer::SourcePosition &pos)
 {
-    ThrowSyntaxError("A 'break' statement can only be used within an enclosing iteration or switch statement");
+    ThrowSyntaxError("A 'break' statement can only be used within an enclosing iteration or switch statement", pos);
 }
 
-void ASParser::ThrowIllegalContinueError()
+void ASParser::ReportIllegalContinueError()
 {
     ThrowSyntaxError("A 'continue' statement can only be used within an enclosing iteration statement");
 }
