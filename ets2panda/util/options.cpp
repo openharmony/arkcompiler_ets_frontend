@@ -549,7 +549,7 @@ static std::string GetVersion()
     ss << std::endl;
     ss << "  Es2panda Version " << ES2PANDA_VERSION << std::endl;
 
-#ifndef PANDA_PRODUCT_BUILD
+// add check for PANDA_PRODUCT_BUILD after normal version tracking will be implemented
 #ifdef ES2PANDA_DATE
     ss << std::endl;
     ss << "  Build date: ";
@@ -561,7 +561,6 @@ static std::string GetVersion()
     ss << ES2PANDA_HASH;
     ss << std::endl;
 #endif  // ES2PANDA_HASH
-#endif  // PANDA_PRODUCT_BUILD
 
     return ss.str();
 }
