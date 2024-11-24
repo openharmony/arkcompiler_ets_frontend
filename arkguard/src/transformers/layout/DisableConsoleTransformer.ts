@@ -48,8 +48,9 @@ import type {IOptions} from '../../configs/IOptions';
 import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import { NodeUtils } from '../../utils/NodeUtils';
-import { performancePrinter } from '../../ArkObfuscator';
+import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
@@ -73,10 +74,12 @@ namespace secharmony {
           return node;
         }
 
+        ArkObfuscator.recordStage(MemoryDottingDefine.REMOVE_CONSOLE);
         startSingleFileEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
         let resultAst: Node = visitAst(node);
         let parentNodes = setParentRecursive(resultAst, true);
         endSingleFileEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(MemoryDottingDefine.REMOVE_CONSOLE);
         return parentNodes;
       }
 

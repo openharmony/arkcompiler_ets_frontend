@@ -31,6 +31,7 @@ import {
   renameFileNameModule,
   separateUniversalReservedItem,
   wildcardTransformer,
+  ArkObfuscator,
 } from '../ArkObfuscator';
 
 import { isDebug, isFileExist, sortAndDeduplicateStringArr, mergeSet, convertSetToArray } from './utils';
@@ -40,6 +41,7 @@ import { LocalVariableCollections, UnobfuscationCollections } from '../utils/Com
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 import { WhitelistType } from '../utils/TransformUtil';
 import { endFilesEvent, startFilesEvent } from '../utils/PrinterUtils';
+import { MemoryDottingDefine } from '../utils/MemoryDottingDefine';
 
 enum OptionType {
   NONE,
@@ -243,9 +245,11 @@ export class ObConfigResolver {
       if (isFileExist(systemApiCachePath)) {
         this.getSystemApiConfigsByCache(systemApiCachePath);
       } else {
+        ArkObfuscator.recordStage(MemoryDottingDefine.SCAN_SYS_API);
         startFilesEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
         this.getSystemApiCache(mergedConfigs, systemApiCachePath);
         endFilesEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(MemoryDottingDefine.SCAN_SYS_API);
       }
     }
 
