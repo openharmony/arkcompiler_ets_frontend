@@ -455,7 +455,7 @@ private:
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
     void CreateImplicitConstructor(ir::MethodDefinition *&ctor, ArenaVector<ir::AstNode *> &properties,
-                                   ir::ClassDefinitionModifiers modifiers,
+                                   ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
                                    const lexer::SourcePosition &startLoc) override;
     bool ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir::Expression **returnExpression,
                                            const lexer::SourcePosition &startLoc, bool ignoreCallExpression) override;

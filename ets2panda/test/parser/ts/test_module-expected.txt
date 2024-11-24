@@ -281,7 +281,6 @@
           }
         }
       },
-      "declare": false,
       "global": false,
       "loc": {
         "start": {
@@ -430,7 +429,6 @@
           }
         }
       },
-      "declare": false,
       "global": false,
       "loc": {
         "start": {
@@ -613,7 +611,6 @@
               }
             }
           },
-          "declare": false,
           "global": false,
           "loc": {
             "start": {
@@ -626,7 +623,6 @@
             }
           }
         },
-        "declare": false,
         "global": false,
         "loc": {
           "start": {
@@ -639,7 +635,6 @@
           }
         }
       },
-      "declare": false,
       "global": false,
       "loc": {
         "start": {
@@ -822,7 +817,6 @@
               }
             }
           },
-          "declare": false,
           "global": false,
           "loc": {
             "start": {
@@ -835,7 +829,6 @@
             }
           }
         },
-        "declare": false,
         "global": false,
         "loc": {
           "start": {
@@ -848,7 +841,6 @@
           }
         }
       },
-      "declare": false,
       "global": false,
       "loc": {
         "start": {
@@ -909,7 +901,6 @@
             }
           }
         },
-        "declare": true,
         "global": false,
         "loc": {
           "start": {
@@ -922,7 +913,6 @@
           }
         }
       },
-      "declare": true,
       "global": false,
       "loc": {
         "start": {
@@ -966,7 +956,6 @@
           }
         }
       },
-      "declare": true,
       "global": true,
       "loc": {
         "start": {
@@ -995,7 +984,6 @@
           }
         }
       },
-      "declare": true,
       "global": false,
       "loc": {
         "start": {
@@ -1124,7 +1112,6 @@
                 }
               ],
               "kind": "var",
-              "declare": true,
               "loc": {
                 "start": {
                   "line": 58,
@@ -1183,7 +1170,6 @@
               }
             ],
             "kind": "var",
-            "declare": true,
             "loc": {
               "start": {
                 "line": 59,
@@ -1252,7 +1238,6 @@
           }
         }
       },
-      "declare": false,
       "global": false,
       "loc": {
         "start": {
@@ -1323,7 +1308,6 @@
                   }
                 ],
                 "kind": "var",
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 64,
@@ -1382,7 +1366,6 @@
                 }
               ],
               "kind": "var",
-              "declare": true,
               "loc": {
                 "start": {
                   "line": 65,
@@ -1451,7 +1434,6 @@
             }
           }
         },
-        "declare": false,
         "global": false,
         "loc": {
           "start": {
@@ -1531,7 +1513,6 @@
               }
             ],
             "kind": "var",
-            "declare": true,
             "loc": {
               "start": {
                 "line": 70,
@@ -1555,7 +1536,6 @@
           }
         }
       },
-      "declare": false,
       "global": false,
       "loc": {
         "start": {
@@ -1624,7 +1604,6 @@
                 }
               ],
               "kind": "var",
-              "declare": true,
               "loc": {
                 "start": {
                   "line": 74,
@@ -1648,7 +1627,6 @@
             }
           }
         },
-        "declare": false,
         "global": false,
         "loc": {
           "start": {
@@ -1861,7 +1839,6 @@
           }
         }
       },
-      "declare": false,
       "global": false,
       "loc": {
         "start": {

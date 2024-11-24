@@ -1588,8 +1588,7 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags)
     }
 
     lexer::SourcePosition endLoc = declarators.back()->End();
-    auto *declaration =
-        AllocNode<ir::VariableDeclaration>(varKind, Allocator(), std::move(declarators), InAmbientContext());
+    auto *declaration = AllocNode<ir::VariableDeclaration>(varKind, Allocator(), std::move(declarators));
     declaration->SetRange({startLoc, endLoc});
 
     return declaration;

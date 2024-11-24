@@ -70,7 +70,7 @@ inline DefaultBehaviourAstVisitor::~DefaultBehaviourAstVisitor() = default;
 }  // namespace detail
 
 /**
- * Children should declare VisitNode methods (might be virtual might be not)
+ * Children should noImpl VisitNode methods (might be virtual might be not)
  * for all classes or provide default behaviour using
  * template <T> VisitNode(T *t) {}
  */

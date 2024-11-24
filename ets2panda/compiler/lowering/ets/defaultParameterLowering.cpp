@@ -207,7 +207,7 @@ ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
     auto *funcNode = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(),
         ir::ScriptFunction::ScriptFunctionData {
-            body, std::move(signature), method->Function()->Flags(), {}, false, method->Function()->Language()});
+            body, std::move(signature), method->Function()->Flags(), {}, method->Function()->Language()});
     funcNode->AddModifier(method->Function()->Modifiers());
     funcNode->SetRange({startLoc, endLoc});
 
@@ -231,7 +231,7 @@ void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *meth
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overloadMethod->SetRange(funcExpression->Range());
 
-    if (method->Parent()->IsTSInterfaceBody()) {
+    if (!method->IsDeclare() && method->Parent()->IsTSInterfaceBody()) {
         overloadMethod->Function()->Body()->AsBlockStatement()->Statements().clear();
     }
 

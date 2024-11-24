@@ -134,7 +134,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 20,
@@ -256,7 +255,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 21,
@@ -420,7 +418,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 22,
@@ -542,7 +539,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 23,
@@ -636,7 +632,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 25,
@@ -800,7 +795,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 26,
@@ -964,7 +958,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 27,
@@ -1324,7 +1317,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 29,
@@ -1699,7 +1691,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 30,
@@ -2072,7 +2063,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 31,
@@ -2529,7 +2519,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 32,
@@ -2861,7 +2850,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 33,
@@ -3262,7 +3250,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 34,

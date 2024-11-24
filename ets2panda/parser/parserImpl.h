@@ -291,7 +291,7 @@ protected:
                                                    const lexer::SourcePosition &startLoc);
 
     virtual void CreateImplicitConstructor(ir::MethodDefinition *&ctor, ArenaVector<ir::AstNode *> &properties,
-                                           ir::ClassDefinitionModifiers modifiers,
+                                           ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
                                            const lexer::SourcePosition &startLoc);
     void CheckClassGeneratorMethod(ClassElementDescriptor *desc, char32_t *nextCp);
     void ParseClassAccessor(ClassElementDescriptor *desc, char32_t *nextCp);

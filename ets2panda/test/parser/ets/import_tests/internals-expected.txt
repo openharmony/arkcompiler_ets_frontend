@@ -230,7 +230,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 20,
@@ -369,7 +368,6 @@
                         }
                       }
                     ],
-                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 20,
@@ -533,7 +531,6 @@
                     }
                   }
                 ],
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 20,

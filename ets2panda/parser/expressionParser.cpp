@@ -369,7 +369,6 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
                         ir::FunctionSignature(typeParamDecl, std::move(desc->params), returnTypeAnnotation),
                         arrowFunctionContext->Flags(),
                         {},
-                        false,
                         context_.GetLanguage()});
     // clang-format on
     funcNode->SetRange({desc->startLoc, endLoc});

@@ -588,7 +588,7 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
             body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
             ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
-            ir::ModifierFlags::STATIC, false, context_.GetLanguage()});
+            ir::ModifierFlags::STATIC, context_.GetLanguage()});
     // clang-format on
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -682,7 +682,6 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
                                                              ir::ScriptFunctionFlags::CONSTRUCTOR |
                                                                  ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
                                                              {},
-                                                             false,
                                                              context_.GetLanguage()});
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -702,7 +701,7 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
 
 void ParserImpl::CreateImplicitConstructor(ir::MethodDefinition *&ctor,
                                            [[maybe_unused]] ArenaVector<ir::AstNode *> &properties,
-                                           ir::ClassDefinitionModifiers modifiers,
+                                           ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
                                            const lexer::SourcePosition &startLoc)
 {
     if (ctor != nullptr) {
@@ -710,6 +709,9 @@ void ParserImpl::CreateImplicitConstructor(ir::MethodDefinition *&ctor,
     }
 
     ctor = BuildImplicitConstructor(modifiers, startLoc);
+    if ((flags & ir::ModifierFlags::DECLARE) != 0) {
+        ctor->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+    }
 }
 
 ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifiers)
@@ -842,7 +844,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
     }
 
     lexer::SourcePosition endLoc = lexer_->GetToken().End();
-    CreateImplicitConstructor(ctor, properties, modifiers, endLoc);
+    CreateImplicitConstructor(ctor, properties, modifiers, flags, endLoc);
     lexer_->NextToken();
 
     return {ctor, std::move(properties), lexer::SourceRange {startLoc, endLoc}};
@@ -972,8 +974,6 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
 {
     FunctionContext functionContext(this, newStatus | ParserStatus::FUNCTION | ParserStatus::ALLOW_NEW_TARGET);
 
-    bool isDeclare = InAmbientContext();
-
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
     auto [signature, throw_marker] = ParseFunctionSignature(newStatus);
@@ -987,8 +987,12 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
     functionContext.AddFlag(throw_marker);
     auto *funcNode = AllocNode<ir::ScriptFunction>(
         Allocator(),
-        ir::ScriptFunction::ScriptFunctionData {
-            body, std::move(signature), functionContext.Flags(), {}, isDeclare && letDeclare, context_.GetLanguage()});
+        ir::ScriptFunction::ScriptFunctionData {body,
+                                                std::move(signature),      // CC-OFFNXT(G.FMT.02-CPP) project code style
+                                                functionContext.Flags(),   // CC-OFFNXT(G.FMT.02-CPP) project code style
+                                                {},                        // CC-OFFNXT(G.FMT.02-CPP) project code style
+                                                context_.GetLanguage()});  // CC-OFF(G.FMT.02-CPP) project code style
+
     funcNode->SetRange({startLoc, endLoc});
 
     return funcNode;

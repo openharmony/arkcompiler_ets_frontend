@@ -312,6 +312,7 @@
                     }
                   }
                 },
+                "declare": true,
                 "loc": {
                   "start": {
                     "line": 1,
@@ -503,6 +504,7 @@
                     }
                   }
                 },
+                "declare": true,
                 "loc": {
                   "start": {
                     "line": 1,

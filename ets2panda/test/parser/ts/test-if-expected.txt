@@ -36,6 +36,7 @@
         },
         "members": [],
         "const": true,
+        "declare": false,
         "loc": {
           "start": {
             "line": 18,
@@ -82,6 +83,7 @@
           },
           "members": [],
           "const": true,
+          "declare": false,
           "loc": {
             "start": {
               "line": 20,
@@ -112,6 +114,7 @@
           },
           "members": [],
           "const": true,
+          "declare": false,
           "loc": {
             "start": {
               "line": 22,

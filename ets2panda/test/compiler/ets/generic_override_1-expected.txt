@@ -875,7 +875,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 21,

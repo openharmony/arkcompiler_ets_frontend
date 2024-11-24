@@ -69,7 +69,7 @@ Type *TSChecker::HandleFunctionReturn(ir::ScriptFunction *func)
         return returnType;
     }
 
-    if (func->Declare()) {
+    if (func->IsDeclare()) {
         return GlobalAnyType();
     }
 
@@ -539,7 +539,7 @@ void TSChecker::ValidateSubsequentNode(const ir::Statement *const subsequentNode
                        func->Id()->Start());
     }
 
-    if (subsequentFunc->Declare() != func->Declare()) {
+    if (subsequentFunc->IsDeclare() != func->IsDeclare()) {
         ThrowTypeError("Overload signatures must all be ambient or non-ambient.", func->Id()->Start());
     }
 }

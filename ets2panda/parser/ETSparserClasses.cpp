@@ -926,7 +926,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
 
     auto *func = AllocNode<ir::ScriptFunction>(
         Allocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(signature), functionContext.Flags(), flags,
-                                                             true, GetContext().GetLanguage()});
+                                                             GetContext().GetLanguage()});
 
     if ((flags & ir::ModifierFlags::STATIC) == 0 && body == nullptr) {
         func->AddModifier(ir::ModifierFlags::ABSTRACT);
@@ -1074,7 +1074,7 @@ void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const
 void ETSParser::CreateImplicitConstructor([[maybe_unused]] ir::MethodDefinition *&ctor,
                                           ArenaVector<ir::AstNode *> &properties,
                                           [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                          const lexer::SourcePosition &startLoc)
+                                          ir::ModifierFlags flags, const lexer::SourcePosition &startLoc)
 {
     if (std::any_of(properties.cbegin(), properties.cend(), [](ir::AstNode *prop) {
             return prop->IsMethodDefinition() && prop->AsMethodDefinition()->IsConstructor();
@@ -1087,6 +1087,9 @@ void ETSParser::CreateImplicitConstructor([[maybe_unused]] ir::MethodDefinition 
     }
 
     auto *methodDef = BuildImplicitConstructor(ir::ClassDefinitionModifiers::SET_CTOR_ID, startLoc);
+    if ((flags & ir::ModifierFlags::DECLARE) != 0) {
+        methodDef->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+    }
     properties.push_back(methodDef);
 }
 

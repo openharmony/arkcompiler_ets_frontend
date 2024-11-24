@@ -47,7 +47,7 @@ es2panda_AstNode *CreateNewFunction(int num, es2panda_Context *ctx)
     es2panda_AstNode *scriptFunction = impl->CreateScriptFunction(
         ctx, body,
         impl->CreateFunctionSignature(ctx, nullptr, nullptr, 0, impl->CreateETSPrimitiveType(ctx, PRIMITIVE_TYPE_VOID)),
-        SCRIPT_FUNCTION_FLAGS_NONE, MODIFIER_FLAGS_NONE, false);
+        SCRIPT_FUNCTION_FLAGS_NONE, MODIFIER_FLAGS_NONE);
     impl->AstNodeSetParent(ctx, body, scriptFunction);
     es2panda_AstNode *ident = impl->CreateIdentifier1(ctx, funcName);
     impl->ScriptFunctionSetIdent(ctx, scriptFunction, ident);

@@ -117,7 +117,6 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
-
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         ThrowSyntaxError("Identifier expected");
     }
@@ -147,8 +146,7 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
-    auto *typeAliasDecl =
-        AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, typeParamDecl, typeAnnotation, InAmbientContext());
+    auto *typeAliasDecl = AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, typeParamDecl, typeAnnotation);
     typeAliasDecl->SetRange({typeStart, Lexer()->GetToken().End()});
 
     return typeAliasDecl;

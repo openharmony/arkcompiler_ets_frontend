@@ -64,7 +64,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "throwMarker": "throws",
                 "loc": {
                   "start": {
@@ -216,7 +215,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "throwMarker": "rethrows",
                 "loc": {
                   "start": {
@@ -311,7 +309,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 19,

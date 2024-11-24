@@ -176,28 +176,6 @@ void ETSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable 
 
 void ETSFunctionEmitter::GenFunctionAnnotations([[maybe_unused]] pandasm::Function *func) {}
 
-template <typename T>
-static pandasm::Function GenExternalFunction(T signature, bool isCtor)
-{
-    auto iter = signature.begin();
-    std::string name(*iter++);
-
-    auto func = pandasm::Function(name, EXTENSION);
-
-    while (iter != signature.end()) {
-        auto paramName = *iter++;
-        func.params.emplace_back(pandasm::Type(paramName, 0), EXTENSION);
-    }
-
-    func.returnType = pandasm::Type(Signatures::PRIMITIVE_VOID, 0);
-    if (isCtor) {
-        func.metadata->SetAttribute(Signatures::CONSTRUCTOR);
-    }
-    func.metadata->SetAttribute(Signatures::EXTERNAL);
-
-    return func;
-}
-
 static pandasm::Function GenExternalFunction(checker::Signature *signature, bool isCtor)
 {
     auto func = pandasm::Function(signature->InternalName().Mutf8(), EXTENSION);
@@ -233,17 +211,19 @@ void ETSEmitter::GenAnnotation()
     }
 
     for (auto *classDecl : globalRecordTable->ClassDefinitions()) {
-        GenClassRecord(classDecl, false);
+        GenClassRecord(classDecl, classDecl->IsDeclare());
     }
 
     for (auto *interfaceDecl : globalRecordTable->InterfaceDeclarations()) {
-        GenInterfaceRecord(interfaceDecl, false);
+        GenInterfaceRecord(interfaceDecl, interfaceDecl->IsDeclare());
     }
 
     for (auto *signature : globalRecordTable->Signatures()) {
         auto *scriptFunc = signature->Node()->AsScriptFunction();
-        auto func = scriptFunc->Declare() ? GenExternalFunction(scriptFunc->Signature(), scriptFunc->IsConstructor())
-                                          : GenScriptFunction(scriptFunc);
+        auto func = GenScriptFunction(scriptFunc);
+        if (scriptFunc->IsDeclare()) {
+            func.metadata->SetAttribute(Signatures::EXTERNAL);
+        }
         if (scriptFunc->IsAsyncFunc()) {
             std::vector<pandasm::AnnotationData> annotations;
             annotations.push_back(GenAnnotationAsync(scriptFunc));
@@ -423,7 +403,6 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
     auto *baseType = interfaceDecl->TsType()->AsETSObjectType();
 
     auto interfaceRecord = pandasm::Record(interfaceDecl->InternalName().Mutf8(), Program()->lang);
-
     if (external) {
         interfaceRecord.metadata->SetAttribute(Signatures::EXTERNAL);
     }

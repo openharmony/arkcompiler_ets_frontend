@@ -38,7 +38,7 @@ bool AmbientLowering::Postcondition(public_lib::Context *ctx, const parser::Prog
     }
 
     return !program->Ast()->IsAnyChild(
-        [](const ir::AstNode *node) -> bool { return node->IsDummyNode() && node->AsDummyNode()->IsAmbientIndexer(); });
+        [](const ir::AstNode *node) -> bool { return node->IsDummyNode() && node->AsDummyNode()->IsDeclareIndexer(); });
 }
 
 bool AmbientLowering::Perform(public_lib::Context *ctx, parser::Program *program)
@@ -86,6 +86,7 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
     methodDefinition->SetRange(node->Range());
     methodDefinition->SetParent(node->Parent());
     methodDefinition->AddModifier(ir::ModifierFlags::DECLARE);
+    methodDefinition->AsMethodDefinition()->Function()->AddModifier(ir::ModifierFlags::DECLARE);
     return methodDefinition->AsMethodDefinition();
 }
 
@@ -98,7 +99,7 @@ ir::ClassDefinition *AmbientLowering::CreateIndexerMethodIfNeeded(ir::ClassDefin
     ASSERT(std::count_if(classBody.begin(), classBody.end(), [](ir::AstNode *node) { return node->IsDummyNode(); }) <=
            1);
     while (it != classBody.end()) {
-        if ((*it)->IsDummyNode() && (*it)->AsDummyNode()->IsAmbientIndexer()) {
+        if ((*it)->IsDummyNode() && (*it)->AsDummyNode()->IsDeclareIndexer()) {
             auto setDefinition =
                 CreateMethodFunctionDefinition((*it)->AsDummyNode(), ctx, ir::MethodDefinitionKind::SET);
             auto getDefinition =

@@ -29,12 +29,11 @@ public:
     enum class VariableDeclarationKind { CONST, LET, VAR };
 
     explicit VariableDeclaration(VariableDeclarationKind kind, ArenaAllocator *allocator,
-                                 ArenaVector<VariableDeclarator *> &&declarators, bool declare)
+                                 ArenaVector<VariableDeclarator *> &&declarators)
         : Statement(AstNodeType::VARIABLE_DECLARATION),
           kind_(kind),
           decorators_(allocator->Adapter()),
-          declarators_(std::move(declarators)),
-          declare_(declare)
+          declarators_(std::move(declarators))
     {
     }
 
@@ -48,11 +47,6 @@ public:
     VariableDeclarationKind Kind() const
     {
         return kind_;
-    }
-
-    bool Declare() const
-    {
-        return declare_;
     }
 
     const ArenaVector<Decorator *> &Decorators() const
@@ -95,7 +89,6 @@ private:
     VariableDeclarationKind kind_;
     ArenaVector<Decorator *> decorators_;
     ArenaVector<VariableDeclarator *> declarators_;
-    bool declare_;
 };
 }  // namespace ark::es2panda::ir
 

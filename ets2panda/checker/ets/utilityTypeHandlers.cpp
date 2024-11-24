@@ -511,6 +511,9 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
             newClassDefinition->Body().emplace_back(newProp);
         }
     }
+    if (classDef->IsDeclare()) {
+        newClassDefinition->AddModifier(ir::ModifierFlags::DECLARE);
+    }
 
     // Run varbinder for new partial class to set scopes
     compiler::InitScopesPhaseETS::RunExternalNode(newClassDefinition, VarBinder());
@@ -675,6 +678,9 @@ void ETSChecker::CreateConstructorForPartialType(ir::ClassDefinition *const part
     // Create ctor
     auto *const ctor = CreateNonStaticClassInitializer(classCtx.GetScope(), recordTable);
     auto *const ctorFunc = ctor->Function();
+    if (partialClassDef->IsDeclare()) {
+        ctorFunc->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+    }
     auto *const ctorId = ctor->Function()->Id();
 
     // Handle bindings, create method decl for ctor

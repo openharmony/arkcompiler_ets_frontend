@@ -231,3 +231,4 @@ runtime/ets/struct-init.sts
 runtime/ets/struct-init2.sts
 runtime/ets/struct_implements.sts
 runtime/ets/top_level_03.sts
+ast/compiler/ets/DeclareIndexerTest.sts

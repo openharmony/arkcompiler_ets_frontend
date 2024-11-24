@@ -64,7 +64,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
@@ -202,7 +201,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [],
@@ -310,7 +308,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 22,

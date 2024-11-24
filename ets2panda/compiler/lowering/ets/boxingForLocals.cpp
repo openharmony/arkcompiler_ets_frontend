@@ -155,7 +155,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     scope->InsertBinding(newVar->Name(), newVar);
 
     auto *newDeclaration = util::NodeAllocator::ForceSetParent<ir::VariableDeclaration>(
-        allocator, ir::VariableDeclaration::VariableDeclarationKind::CONST, allocator, std::move(declVec), false);
+        allocator, ir::VariableDeclaration::VariableDeclarationKind::CONST, allocator, std::move(declVec));
     newDeclaration->SetParent(body);
     bodyStmts.insert(bodyStmts.begin(), newDeclaration);
 

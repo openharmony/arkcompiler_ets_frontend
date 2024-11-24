@@ -81,7 +81,7 @@ ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::Clas
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
             bodyBlock,
             ir::FunctionSignature(nullptr, std::move(functionInfo.params), functionInfo.returnTypeAnnotation),
-            ir::ScriptFunctionFlags::METHOD, functionInfo.flags, functionInfo.enumDecl->IsDeclare()});
+            ir::ScriptFunctionFlags::METHOD, functionInfo.flags});
     // clang-format on
 
     return function;
@@ -159,7 +159,9 @@ ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *cons
     enumDecl->SetBoxedClass(classDef);
 
     CreateOrdinalField(classDef);
-    CreateCCtorForEnumClass(classDef);
+    if (!enumDecl->IsDeclare()) {
+        CreateCCtorForEnumClass(classDef);
+    }
     CreateCtorForEnumClass(classDef);
 
     return classDecl;
@@ -177,7 +179,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
         Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
-                                                ir::ModifierFlags::STATIC, false, Language(Language::Id::ETS)});
+                                                ir::ModifierFlags::STATIC, Language(Language::Id::ETS)});
 
     func->SetIdent(id);
     id->SetParent(func);
@@ -204,7 +206,7 @@ ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *co
     return field;
 }
 
-void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumClass)
+ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::ClassDefinition *const enumClass)
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
@@ -216,14 +218,18 @@ void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumCl
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
     auto *body = checker_->AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+
+    auto scriptFlags = ir::ScriptFunctionFlags::CONSTRUCTOR;
+    scriptFlags |= enumClass->IsDeclare() ? ir::ScriptFunctionFlags::EXTERNAL : ir::ScriptFunctionFlags::NONE;
+
     auto *func = checker_->AllocNode<ir::ScriptFunction>(
         Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
-                                                ir::ScriptFunctionFlags::CONSTRUCTOR, ir::ModifierFlags::CONSTRUCTOR,
-                                                false, Language(Language::Id::ETS)});
+                                                scriptFlags,                     // CC-OFF(G.FMT.02) project code style
+                                                ir::ModifierFlags::CONSTRUCTOR,  // CC-OFF(G.FMT.02) project code style
+                                                Language(Language::Id::ETS)});   // CC-OFF(G.FMT.02) project code style
 
     func->SetIdent(id);
-    auto *funcExpr = checker_->AllocNode<ir::FunctionExpression>(func);
 
     auto *thisExpr = Allocator()->New<ir::ThisExpression>();
     auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
@@ -237,7 +243,15 @@ void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumCl
     initStatement->SetParent(body);
     body->Statements().push_back(initStatement);
 
-    auto *const identClone = id->Clone(Allocator(), nullptr);
+    return func;
+}
+
+void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumClass)
+{
+    auto *func = CreateFunctionForCtorOfEnumClass(enumClass);
+    auto *funcExpr = checker_->AllocNode<ir::FunctionExpression>(func);
+
+    auto *const identClone = func->Id()->Clone(Allocator(), nullptr);
     auto *const methodDef = checker_->AllocNode<ir::MethodDefinition>(
         ir::MethodDefinitionKind::CONSTRUCTOR, identClone, funcExpr, ir::ModifierFlags::PUBLIC, Allocator(), false);
     methodDef->SetParent(enumClass);
@@ -654,7 +668,7 @@ ir::VariableDeclaration *CreateForLoopInitVariableDeclaration(checker::ETSChecke
     ArenaVector<ir::VariableDeclarator *> decls(checker->Allocator()->Adapter());
     decls.push_back(decl);
     auto *const declaration = checker->AllocNode<ir::VariableDeclaration>(
-        ir::VariableDeclaration::VariableDeclarationKind::LET, checker->Allocator(), std::move(decls), false);
+        ir::VariableDeclaration::VariableDeclarationKind::LET, checker->Allocator(), std::move(decls));
     decl->SetParent(declaration);
     return declaration;
 }

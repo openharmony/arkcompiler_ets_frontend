@@ -276,8 +276,8 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
         Lexer()->NextToken();
     }
 
-    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(
-        Allocator(), name, body, ir::TSModuleDeclaration::ConstructorFlags {InAmbientContext(), isGlobal, true});
+    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(Allocator(), name, body,
+                                                          ir::TSModuleDeclaration::ConstructorFlags {isGlobal, true});
     moduleDecl->SetRange({startLoc, Lexer()->GetToken().End()});
 
     return moduleDecl;
@@ -304,8 +304,8 @@ ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const le
         body = ParseTsModuleBlock();
     }
 
-    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(
-        Allocator(), identNode, body, ir::TSModuleDeclaration::ConstructorFlags {InAmbientContext(), false, false});
+    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(Allocator(), identNode, body,
+                                                          ir::TSModuleDeclaration::ConstructorFlags {false, false});
     moduleDecl->SetRange({startLoc, Lexer()->GetToken().End()});
 
     return moduleDecl;
@@ -1111,18 +1111,18 @@ static std::pair<ir::ModifierFlags, ir::ModifierFlags> ParseActualNextStatus(lex
 {
     constexpr auto ASYNC_STATIC_READONLY =
         ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY;
-    constexpr auto ASYNC_STATIC_READONLY_DECLARE_ABSTRACT =
+    constexpr auto ASYNC_STATIC_READONLY_AMBIENT_ABSTRACT =
         ASYNC_STATIC_READONLY | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
 
     switch (keywordType) {
         case lexer::TokenType::KEYW_PUBLIC:
-            return {ir::ModifierFlags::PUBLIC, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT};
+            return {ir::ModifierFlags::PUBLIC, ASYNC_STATIC_READONLY_AMBIENT_ABSTRACT};
         case lexer::TokenType::KEYW_PRIVATE:
-            return {ir::ModifierFlags::PRIVATE, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT};
+            return {ir::ModifierFlags::PRIVATE, ASYNC_STATIC_READONLY_AMBIENT_ABSTRACT};
         case lexer::TokenType::KEYW_PROTECTED:
-            return {ir::ModifierFlags::PROTECTED, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT};
+            return {ir::ModifierFlags::PROTECTED, ASYNC_STATIC_READONLY_AMBIENT_ABSTRACT};
         case lexer::TokenType::KEYW_INTERNAL:
-            return {ir::ModifierFlags::INTERNAL, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT | ir::ModifierFlags::PROTECTED};
+            return {ir::ModifierFlags::INTERNAL, ASYNC_STATIC_READONLY_AMBIENT_ABSTRACT | ir::ModifierFlags::PROTECTED};
         case lexer::TokenType::KEYW_STATIC:
             return {ir::ModifierFlags::STATIC, ir::ModifierFlags::ASYNC | ir::ModifierFlags::READONLY |
                                                    ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT};

@@ -864,6 +864,7 @@
                         }
                       }
                     },
+                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 868,
@@ -1730,6 +1731,7 @@
                         }
                       }
                     },
+                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 659,
