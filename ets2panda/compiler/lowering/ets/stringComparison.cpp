@@ -95,13 +95,15 @@ void StringComparisonLowering::ProcessBinaryExpression(ir::BinaryExpression *exp
     expr->SetRight(zeroExpr);
 
     auto *parent = expr->Parent();
-    if (parent->IsBinaryExpression() || parent->IsConditionalExpression()) {
-        parent->AsExpression()->SetTsType(nullptr);
-    }
-
     InitScopesPhaseETS::RunExternalNode(expr, ctx->checker->VarBinder());
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(parent, NearestScope(parent));
-    parent->Check(checker);
+
+    if (parent->IsBinaryExpression() || parent->IsConditionalExpression()) {
+        parent->AsExpression()->SetTsType(nullptr);
+        parent->Check(checker);
+    } else {
+        expr->Check(checker);
+    }
 }
 
 bool StringComparisonLowering::Perform(public_lib::Context *ctx, parser::Program *program)
