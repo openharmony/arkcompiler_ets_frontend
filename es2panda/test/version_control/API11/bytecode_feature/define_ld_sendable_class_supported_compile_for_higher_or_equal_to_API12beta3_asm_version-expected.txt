@@ -15,6 +15,7 @@ label_2:
 }
 
 slotNum = 0x6
+expectedProperty = 0x2
 .function any .#&X~@0=#TestTypeA(any a0, any a1, any a2) {
 label_1: 
 label_0: 

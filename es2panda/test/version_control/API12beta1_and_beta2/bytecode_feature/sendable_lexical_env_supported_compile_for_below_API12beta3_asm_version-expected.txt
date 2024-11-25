@@ -1,6 +1,7 @@
 .language ECMAScript
 
 slotNum = 0xa
+expectedProperty = 0x2
 .function any .SendableTestClass1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -20,6 +21,7 @@ label_2:
 }
 
 slotNum = 0x2
+expectedProperty = 0x1
 .function any .TopLevelSendableClass1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
