@@ -27,3 +27,4 @@ base64_test
 
 #20257
 mathjs_test
+pdview_test
