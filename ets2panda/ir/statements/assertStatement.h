@@ -63,6 +63,8 @@ public:
         v->Accept(this);
     }
 
+    AssertStatement *Clone(ArenaAllocator *const allocator, AstNode *const parent) override;
+
 private:
     Expression *test_;
     Expression *second_;
