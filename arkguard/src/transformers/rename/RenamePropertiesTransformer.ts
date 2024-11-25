@@ -144,15 +144,13 @@ namespace secharmony {
 
         let isChanged: boolean = false;
         const elemTypes = node.types.map((elemType) => {
-          if (!elemType) {
+          if (!elemType || !NodeUtils.isStringLiteralTypeNode(elemType)) {
             return elemType;
           }
-          if (NodeUtils.isStringLiteralTypeNode(elemType)) {
-            const prop = renameProperty((elemType as LiteralTypeNode).literal, false);
-            if (prop !== (elemType as LiteralTypeNode).literal) {
-              isChanged = true;
-              return factory.createLiteralTypeNode(prop as StringLiteral);
-            }
+          const prop = renameProperty((elemType as LiteralTypeNode).literal, false);
+          if (prop !== (elemType as LiteralTypeNode).literal) {
+            isChanged = true;
+            return factory.createLiteralTypeNode(prop as StringLiteral);
           }
           return elemType;
         });
