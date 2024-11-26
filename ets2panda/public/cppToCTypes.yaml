@@ -739,7 +739,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_ArkTsConfig |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ArkTsConfig *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ArkTsConfig
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ArkTsConfig *>(ast))->
         constructor_cast:
@@ -787,7 +791,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_AstNode |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_AstNode *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_AstNode
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::Typed<ir::AstNode> *>(ast))->
         constructor_cast:
@@ -814,7 +822,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_AstNode |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_AstNode *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_AstNode
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -855,7 +867,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_AstNode |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_AstNode *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_AstNode
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -896,7 +912,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_CodeGen |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_CodeGen *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_CodeGen
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? compiler::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -923,7 +943,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_Type |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_Type *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_Type
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -966,7 +990,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_Type |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_Type *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_Type
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1025,7 +1053,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_TypeRelation |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_TypeRelation *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_TypeRelation
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::TypeRelation *>(ast))->
         constructor_cast:
@@ -1070,7 +1102,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_IndexInfo |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_IndexInfo *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_IndexInfo
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::IndexInfo *>(ast))->
         constructor_cast:
@@ -1115,7 +1151,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_GlobalTypesHolder |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_GlobalTypesHolder *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_GlobalTypesHolder
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::GlobalTypesHolder *>(ast))->
         constructor_cast:
@@ -1160,7 +1200,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_ObjectDescriptor |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ObjectDescriptor *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ObjectDescriptor
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::ObjectDescriptor *>(ast))->
         constructor_cast:
@@ -1209,7 +1253,7 @@ change_types:
       min_ptr_depth: 1
     new_args:
     - type:
-        name: 'es2panda_Variable '
+        name: 'es2panda_Variable'
         ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
       name: '|arg_name|'
       namespace: 'varbinder::'
@@ -1221,7 +1265,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_Variable |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_Variable *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_Variable
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1264,7 +1312,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_Scope |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_Scope *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_Scope
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1305,7 +1357,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_Declaration |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_Declaration *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_Declaration
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1348,7 +1404,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_RecordTable |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_RecordTable *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_RecordTable
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1393,7 +1453,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_BoundContext |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_BoundContext *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_BoundContext
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1438,7 +1502,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_ScopeFindResult |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ScopeFindResult *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ScopeFindResult
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1488,7 +1556,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_ScopeFindResult |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ScopeFindResult *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ScopeFindResult
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1538,7 +1610,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_BindingProps |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_BindingProps *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_BindingProps
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? varbinder::ClassScope::|es2panda_arg.type.name| *>(ast))->
         constructor_cast:
@@ -1746,7 +1822,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_FunctionSignature |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_FunctionSignature *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_FunctionSignature
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::FunctionSignature *>(ast))->
         constructor_cast:
@@ -1820,7 +1900,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_SourcePosition |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_SourcePosition *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_SourcePosition
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? lexer::SourcePosition *>(ast))->
         constructor_cast:
@@ -1871,7 +1955,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_SourceRange |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_SourceRange *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_SourceRange
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? lexer::SourceRange *>(ast))->
         constructor_cast:
@@ -1922,7 +2010,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_ErrorLogger |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ErrorLogger *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ErrorLogger
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? util::ErrorLogger *>(ast))->
         constructor_cast:
@@ -1968,7 +2060,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_VReg |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_VReg *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_VReg
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? compiler::VReg *>(ast))->
         constructor_cast:
@@ -2019,7 +2115,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_IRNode |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_IRNode *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_IRNode
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? compiler::IRNode *>(ast))->
         constructor_cast:
@@ -2070,7 +2170,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_SrcDumper |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_SrcDumper *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_SrcDumper
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::SrcDumper *>(ast))->
         constructor_cast:
@@ -2116,7 +2220,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_AstDumper |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_AstDumper *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_AstDumper
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::AstDumper *>(ast))->
         constructor_cast:
@@ -2160,7 +2268,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_LabelPair |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_LabelPair *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_LabelPair
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? compiler::LabelPair *>(ast))->
         constructor_cast:
@@ -2208,7 +2320,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_ImportSource |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ImportSource *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ImportSource
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::ImportSource *>(ast))->
         constructor_cast:
@@ -2237,7 +2353,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_ValidationInfo |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ValidationInfo *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ValidationInfo
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::ValidationInfo *>(ast))->
         constructor_cast:
@@ -2287,7 +2407,11 @@ change_types:
           start : >-
             reinterpret_cast<?const? es2panda_AstVisitor |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_AstVisitor *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_AstVisitor
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? ir::visitor::ASTAbstractVisitor *>(ast))->
         constructor_cast:
@@ -2316,7 +2440,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_Signature |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_Signature *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_Signature
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::Signature *>(ast))->
         constructor_cast:
@@ -2456,7 +2584,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_Signature |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_Signature *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_Signature
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::Signature *>(ast))->
         constructor_cast:
@@ -2485,7 +2617,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_SignatureInfo |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_SignatureInfo *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_SignatureInfo
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::SignatureInfo *>(ast))->
         constructor_cast:
@@ -2514,7 +2650,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_CheckerContext |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_CheckerContext *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_CheckerContext
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::CheckerContext *>(ast))->
         constructor_cast:
@@ -2594,7 +2734,11 @@ change_types:
           start: >-
             reinterpret_cast<?const? es2panda_ResolveResult |es2panda_arg.type.ptr_depth|>
         call_cast:
-          call_var: 'es2panda_ResolveResult *ast'
+          call_var:
+            name: ast
+            type:
+              name: es2panda_ResolveResult
+              ptr_depth: 1
           start: >-
             (reinterpret_cast<?const? checker::ResolveResult *>(ast))->
         constructor_cast:

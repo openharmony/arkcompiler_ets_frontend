@@ -1,0 +1,135 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+interface es2panda_Impl {
+    [ptr_1] es2panda_Config CreateConfig(int argc, [ptr_2, constant] char argv);
+    void DestroyConfig([ptr_1] es2panda_Config config);
+
+    [ptr_1] es2panda_Context CreateContextFromFile([ptr_1] es2panda_Config config, [ptr_1, constant] char source_file_name);
+    [ptr_1] es2panda_Context CreateContextFromString([ptr_1] es2panda_Config config, [ptr_1, constant] char source, [ptr_1, constant] char file_name);
+    [ptr_1] es2panda_Context ProceedToState([ptr_1] es2panda_Context context, es2panda_ContextState state);  // context is consumed
+    void DestroyContext([ptr_1] es2panda_Context context);
+
+    es2panda_ContextState ContextState([ptr_1] es2panda_Context context);
+    [ptr_1, constant] char ContextErrorMessage([ptr_1] es2panda_Context context);
+
+    [ptr_1] es2panda_Program ContextProgram([ptr_1] es2panda_Context context);
+    [ptr_1] es2panda_AstNode ProgramAst([ptr_1] es2panda_Program program);
+    [ptr_2] es2panda_ExternalSource ProgramExternalSources([ptr_1] es2panda_Program program, [ptr_1] size_t len_p);
+    [ptr_1, constant] char ExternalSourceName([ptr_1] es2panda_ExternalSource e_source);
+    [ptr_2] es2panda_Program ExternalSourcePrograms([ptr_1] es2panda_ExternalSource e_source, [ptr_1] size_t len_p);
+
+    void AstNodeForEach([ptr_1] es2panda_AstNode ast, AstNodeForEachFunction func, void_ptr arg);
+
+    bool SetNumberLiteralInt([ptr_1] es2panda_AstNode node, int32_t new_value);
+    bool SetNumberLiteralLong([ptr_1] es2panda_AstNode node, int64_t new_value);
+    bool SetNumberLiteralDouble([ptr_1] es2panda_AstNode node, double new_value);
+    bool SetNumberLiteralFloat([ptr_1] es2panda_AstNode node, float new_value);
+
+
+    void_ptr AllocMemory([ptr_1] es2panda_Context context, size_t numberOfElements, size_t sizeOfElement);
+
+
+
+% Es2pandaLibApi::ast_nodes&.each do |ast_node|
+%   if ast_node != 'AstNode' && ast_node != 'TypeNode'
+    bool Is<%= ast_node %>([ptr_1] es2panda_AstNode ast);
+%   end
+% end
+
+% Es2pandaLibApi::scopes&.each do |scope|
+%   if scope != 'Scope'
+    bool ScopeIs<%= scope %>([ptr_1] es2panda_Scope scope);
+%   end
+% end
+
+% Es2pandaLibApi::ast_types&.each do |type|
+%   if type != 'Type'
+    bool TypeIs<%= type %>([ptr_1] es2panda_Type type);
+%   end
+% end
+
+% Es2pandaLibApi::ast_variables&.each do |variable|
+%   if variable[1] != 'Variable'
+    bool VariableIs<%= variable[1] %>([ptr_1] es2panda_Variable variable);
+%   end
+% end
+
+    [ptr_1, constant] char AstNodeName([ptr_1] es2panda_AstNode ast);
+
+
+% Es2pandaLibApi::classes&.each do |namespaceName, namespaceClasses|
+
+%   namespaceClasses&.each do |className, classData|
+%     classData.class_constructors&.each_with_index do |constructor, index|
+    <%=
+    Es2pandaLibApi::Arg.type_to_idl(classData.constructor_type.lib_type)
+%>Create<%=
+    className + constructor['overload']
+%>([ptr_1] es2panda_Context context<%=
+    constructor['args']&.map { |arg| if arg.lib_args_to_str.strip != ''
+     then ', ' + arg.lib_args_to_idl end}&.join('')
+%>);
+
+%       if classData.updater_allowed
+    <%=
+    Es2pandaLibApi::Arg.type_to_idl(classData.constructor_type.lib_type)
+%>Update<%=
+    className + constructor['overload']
+%>([ptr_1] es2panda_Context context, [ptr_1] es2panda_AstNode original<%=
+    constructor['args']&.map { |arg| if arg.lib_args_to_str.strip != ''
+     then ', ' + arg.lib_args_to_idl end}&.join('')
+%>);
+%       end   # Updater
+%     end    # Constructor
+
+
+%     classData.class_methods&.each_with_index do |method_info, index|
+    <%=
+    Es2pandaLibApi::Arg.type_to_idl(method_info['return_type'].lib_type)
+%><%=
+    className + method_info['overload_name']
+%>([ptr_1] es2panda_Context context<%=
+    if classData.call_cast['call_var_str']
+        ', ' + Es2pandaLibApi::Arg.arg_to_idl(classData.call_cast['call_var'])
+    end
+%><%=
+    method_info['args']&.map { |arg| if arg.lib_args_to_str.strip != '' && arg.lib_args_to_str.strip != 'const'
+    then ', ' + arg.lib_args_to_idl end}&.join('')
+%><%=
+    method_info['return_arg_to_idl']
+%>);
+%     end    # Method
+
+%   end    # namespaceClasses
+% end    # classes
+
+% Es2pandaLibApi::structs&.each do |structName, structData|
+%   structData.struct_getters&.each_with_index do |method_info, index|
+    <%=
+    method_info['return_type'].lib_type_to_idl
+%><%=
+    structName + method_info['name']
+%>([ptr_1] es2panda_Context context<%=
+      if structData.call_cast['call_var_str']
+        Es2pandaLibApi::Arg.arg_to_idl(structData.call_cast['call'])
+      end
+%><%=
+    method_info['return_type'].return_args_to_idl
+%>);
+%   end   # getters
+% end   # structs
+
+};

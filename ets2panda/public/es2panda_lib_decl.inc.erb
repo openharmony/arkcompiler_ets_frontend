@@ -59,8 +59,8 @@
 % classData.class_methods&.each_with_index do |method_info, index|
     <%= method_info["return_type"].lib_type_to_str %>(*<%=
     className + method_info["overload_name"] %>)(
-    es2panda_Context *context<%= if classData.call_cast["call_var"]
-then ", " + classData.call_cast["call_var"] end %><%=
+    es2panda_Context *context<%= if classData.call_cast["call_var_str"]
+then ", " + classData.call_cast["call_var_str"] end %><%=
     method_info["args"]&.map { |arg| if arg.lib_args_to_str.strip() != "" && arg.lib_args_to_str.strip() != "const"
     then ", " + arg.lib_args_to_str end}&.join("")
     %><%= method_info["return_arg_to_str"] %>);
@@ -73,8 +73,8 @@ then ", " + classData.call_cast["call_var"] end %><%=
 % Es2pandaLibApi::structs&.each do |structName, structData|
 % structData.struct_getters&.each_with_index do |method_info, index|
     <%= method_info["return_type"].lib_type_to_str %>(*<%= structName + method_info["name"]
-    %>)(es2panda_Context *context<%= if structData.call_cast["call_var"]
-    then structData.call_cast["call_var"] end %>/*return_args:*/<%= method_info["return_arg_to_str"] %>);
+    %>)(es2panda_Context *context<%= if structData.call_cast["call_var_str"]
+    then structData.call_cast["call_var_str"] end %>/*return_args:*/<%= method_info["return_arg_to_str"] %>);
 % end   # getters end
 
 % end   # structs end
