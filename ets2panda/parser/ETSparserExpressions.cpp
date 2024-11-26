@@ -553,6 +553,12 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *type = ParseTypeAnnotation(&options);
 
+    if (type == nullptr) {
+        // Error processing
+        // Failed to parse type annotation for AsExpression
+        return nullptr;
+    }
+
     auto *asExpression = AllocNode<ir::TSAsExpression>(primaryExpr, type, false);
     asExpression->SetRange(primaryExpr->Range());
     return asExpression;
