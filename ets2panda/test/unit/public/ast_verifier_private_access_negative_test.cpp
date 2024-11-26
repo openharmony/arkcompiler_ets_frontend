@@ -172,3 +172,161 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
 
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        class Base {
+            public a: int = 1;
+            public privateMethod() {
+                this.a = 2;
+            }
+        }
+        function main(): void {
+            let base: Base = new Base();
+            base.privateMethod();
+        }
+    )";
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    ast->AsETSScript()
+        ->Statements()[0]
+        ->AsClassDeclaration()
+        ->Definition()
+        ->AsClassDefinition()
+        ->Body()[1]
+        ->AsClassElement()
+        ->Value()
+        ->AsFunctionExpression()
+        ->Function()
+        ->AsScriptFunction()
+        ->Body()
+        ->AsBlockStatement()
+        ->Statements()[1]
+        ->AsExpressionStatement()
+        ->GetExpression()
+        ->AsCallExpression()
+        ->Signature()
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
+
+    InvariantNameSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
+
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        class Base {
+            public a: int = 1;
+            public privateMethod() {
+                this.a = 2;
+            }
+        }
+        class Derived extends Base {}
+        function main(): void {
+            let derived: Derived = new Derived();
+            derived.privateMethod();
+        }
+    )";
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    ast->AsETSScript()
+        ->Statements()[0]
+        ->AsClassDeclaration()
+        ->Definition()
+        ->AsClassDefinition()
+        ->Body()[1]
+        ->AsClassElement()
+        ->Value()
+        ->AsFunctionExpression()
+        ->Function()
+        ->AsScriptFunction()
+        ->Body()
+        ->AsBlockStatement()
+        ->Statements()[1]
+        ->AsExpressionStatement()
+        ->GetExpression()
+        ->AsCallExpression()
+        ->Signature()
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
+
+    InvariantNameSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
+
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        class Base {
+            public a: int = 1;
+            public privateMethod() {
+                this.a = 2;
+            }
+        }
+        class Derived extends Base {}
+        function main(): void {
+            let derived: Base = new Derived();
+            derived.privateMethod();
+        }
+    )";
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    ast->AsETSScript()
+        ->Statements()[0]
+        ->AsClassDeclaration()
+        ->Definition()
+        ->AsClassDefinition()
+        ->Body()[1]
+        ->AsClassElement()
+        ->Value()
+        ->AsFunctionExpression()
+        ->Function()
+        ->AsScriptFunction()
+        ->Body()
+        ->AsBlockStatement()
+        ->Statements()[1]
+        ->AsExpressionStatement()
+        ->GetExpression()
+        ->AsCallExpression()
+        ->Signature()
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
+
+    InvariantNameSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
+
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
+
+    impl_->DestroyContext(ctx);
+}

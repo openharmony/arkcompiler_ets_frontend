@@ -56,6 +56,28 @@ INSTANTIATE_TEST_SUITE_P(,
                     } while (true)
                 }
             )",
+        },
+        TestData {
+            R"(
+                function main () {
+                    do {
+                    } while (2 > 1)
+                }
+            )",
+        },
+        TestData {
+            R"(
+                function main () {
+                    for (;;) {}
+                }
+            )",
+        },
+        TestData {
+            R"(
+                function main () {
+                    for (; 2 > 1;) {}
+                }
+            )",
         }
 ));
 // clang-format on
