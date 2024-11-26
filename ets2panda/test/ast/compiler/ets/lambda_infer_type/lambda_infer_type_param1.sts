@@ -19,5 +19,5 @@ function main() {
 
 /* @@? 17:38 Error SyntaxError: Unexpected token 'identification literal'.  */
 /* @@? 17:38 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 17:38 Error SyntaxError: Unexpected token 'identification literal'.  */
 /* @@? 17:44 Error SyntaxError: Unexpected token '=>'.  */
+/* @@? 17:44 Error SyntaxError: Unexpected token: '=>'.  */

@@ -27,3 +27,7 @@ function main(): void {
 /* @@? 24:22 Error SyntaxError: Field type annotation expected */
 /* @@? 24:22 Error SyntaxError: Unexpected token: '.'. */
 /* @@? 24:29 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 24:29 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 24:29 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 24:29 Error SyntaxError: Unexpected token: 'number literal'. */
+/* @@? 24:30 Error SyntaxError: Unexpected token: ')'. */

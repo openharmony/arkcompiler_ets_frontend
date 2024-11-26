@@ -15,7 +15,7 @@
 
 function main() : void
 {
-  let x = new /* @@ label */boolean();
+  let x = /* @@ label */new boolean();
 }
 
-/* @@@ label Error SyntaxError: Can not use 'new' on primitive types.  */
+/* @@@ label Error TypeError: This expression is not constructible. */

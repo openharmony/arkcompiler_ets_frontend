@@ -188,6 +188,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
     UNREACHABLE();
 }
 
+void ETSCompiler::Compile([[maybe_unused]] const ir::ErrorTypeNode *node) const
+{
+    UNREACHABLE();
+}
+
 void ETSCompiler::Compile([[maybe_unused]] const ir::TaggedTemplateExpression *expr) const
 {
     UNREACHABLE();

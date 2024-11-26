@@ -36,10 +36,6 @@ function main(): void {
     callAsyncLambda();
 }
 
-/* @@? 25:43 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 25:44 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 25:53 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@? 25:53 Error SyntaxError: Unexpected token, expected: '=>'.  */
-/* @@? 25:60 Error SyntaxError: Unexpected token '=>'.  */
-/* @@? 25:60 Error SyntaxError: Unexpected token: '=>'.  */
-/* @@? 25:60 Error SyntaxError: Unexpected token, arrow (=>)  */
+/* @@? 25:43 Error SyntaxError: Unexpected token, expected: '('. */
+/* @@? 25:44 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 25:60 Error SyntaxError: Unexpected token, expected ',' or ')'. */

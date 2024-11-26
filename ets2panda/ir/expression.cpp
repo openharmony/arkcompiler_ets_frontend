@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "expression.h"
 #include "typeNode.h"
+#include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
 
@@ -24,6 +25,11 @@ AnnotatedExpression::AnnotatedExpression(AnnotatedExpression const &other, Arena
     if (auto *const annotation = other.TypeAnnotation(); annotation != nullptr) {
         SetTsTypeAnnotation(annotation->Clone(allocator, this)->AsTypeNode());
     }
+}
+
+bool Expression::IsErrorExpression() const noexcept
+{
+    return IsIdentifier() && AsIdentifier()->IsErrorPlaceHolder();
 }
 
 }  // namespace ark::es2panda::ir

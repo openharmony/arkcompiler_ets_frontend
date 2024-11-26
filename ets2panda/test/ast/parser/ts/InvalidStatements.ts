@@ -127,7 +127,6 @@ module module2
 /* @@? 61:5 Error SyntaxError: Classes may not have a field named 'constructor' */
 /* @@? 61:16 Error SyntaxError: Unexpected token, expected: '('. */
 /* @@? 64:23 Error SyntaxError: Identifier expected */
-/* @@? 64:23 Error SyntaxError: Implements clause can not be empty */
 /* @@? 66:16 Error SyntaxError: Missing initializer in const declaration */
 /* @@? 68:11 Error SyntaxError: Missing initializer in destructuring declaration */
 /* @@? 71:5 Error SyntaxError: Unexpected token, expected: '{'. */
@@ -163,5 +162,5 @@ module module2
 /* @@? 105:8 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 106:5 Error SyntaxError: Unexpected token, expected: '{'. */
 /* @@? 110:5 Error SyntaxError: Unexpected token, expected: '{'. */
-/* @@? 168:1 Error SyntaxError: Unexpected token, expected: '}'. */
-/* @@? 168:1 Error SyntaxError: Expected a '}' got 'eos'. */
+/* @@? 167:1 Error SyntaxError: Unexpected token, expected: '}'. */
+/* @@? 167:1 Error SyntaxError: Expected a '}' got 'eos'. */

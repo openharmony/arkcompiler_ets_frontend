@@ -800,8 +800,9 @@ Type *ETSChecker::CreatePartialTypeClassDef(ir::ClassDefinition *const partialCl
 
     // Create partial type for super type
     if (typeToBePartial != GlobalETSObjectType()) {
-        auto *const partialSuper =
-            CreatePartialType(classDef->Super() == nullptr ? GlobalETSObjectType() : classDef->Super()->TsType());
+        auto *const partialSuper = CreatePartialType((classDef->Super() == nullptr || !classDef->Super()->IsTypeNode())
+                                                         ? GlobalETSObjectType()
+                                                         : classDef->Super()->TsType());
 
         partialType->SetSuperType(partialSuper->AsETSObjectType());
     }

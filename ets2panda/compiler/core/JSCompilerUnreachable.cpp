@@ -208,6 +208,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
     UNREACHABLE();
 }
 
+void JSCompiler::Compile([[maybe_unused]] const ir::ErrorTypeNode *node) const
+{
+    UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
 {
     UNREACHABLE();

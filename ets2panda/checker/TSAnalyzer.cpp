@@ -892,6 +892,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OpaqueTypeNode *expr) cons
     return expr->TsType();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ErrorTypeNode *expr) const
+{
+    return nullptr;
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SequenceExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();

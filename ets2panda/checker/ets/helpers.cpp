@@ -240,6 +240,9 @@ void ETSChecker::SaveCapturedVariable(varbinder::Variable *const var, ir::Identi
 
 Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
 {
+    if (ident->IsErrorPlaceHolder()) {
+        return GlobalTypeError();
+    }
     if (ident->Variable() != nullptr) {
         auto *const resolved = ident->Variable();
         SaveCapturedVariable(resolved, ident);

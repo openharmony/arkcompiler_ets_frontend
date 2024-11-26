@@ -15,8 +15,6 @@
 
 
 for () {}
-/* @@? 17:6 Error SyntaxError: Unexpected token: ')'.  */
-/* @@? 17:6 Error SyntaxError: Unexpected token: ')'.  */
-/* @@? 17:6 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 23:1 Error SyntaxError: Missing right parenthesis in 'for' statement.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token: 'eos'.  */
+
+/* @@? 17:6 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 17:6 Error SyntaxError: Invalid left-hand side in 'For[In/Of]Statement' */

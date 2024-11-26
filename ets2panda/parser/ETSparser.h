@@ -419,8 +419,7 @@ private:
     ir::AstNode *ParseAmbientSignature();
 
     ir::ClassDefinition *CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
-                                                               ir::TypeNode *typeReference,
-                                                               ir::TypeNode *baseTypeReference);
+                                                               ir::TypeNode *typeReference);
     ir::Identifier *CreateInvokeIdentifier();
 
     ir::Expression *ParseNewExpression() override;

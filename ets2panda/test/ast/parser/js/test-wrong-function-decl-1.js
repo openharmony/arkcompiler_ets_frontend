@@ -16,8 +16,8 @@
 
 function f{}
 
-/* @@? 17:11 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 17:12 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 24:1 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 24:1 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 24:1 Error SyntaxError: Expected a '}' got 'eos'.  */
+/* @@? 17:11 Error SyntaxError: Unexpected token, expected: '('. */
+/* @@? 17:12 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 17:12 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 17:12 Error SyntaxError: Unexpected token, expected: '{'. */
+/* @@? 24:1 Error SyntaxError: Expected a '}' got 'eos'. */

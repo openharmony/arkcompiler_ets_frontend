@@ -131,7 +131,7 @@ protected:
     ir::Expression *SetupChainExpr(ir::Expression *const top, lexer::SourcePosition startLoc);
     ir::MetaProperty *ParsePotentialNewTarget();
     void ValidateParenthesizedExpression(ir::Expression *lhsExpression);
-    bool ValidateGroupedExpression(ir::Expression *lhsExpression);
+    void ValidateGroupedExpression(ir::Expression *lhsExpression);
     ir::Expression *ParseImportExpression();
     ir::Expression *ParseOptionalChain(ir::Expression *leftSideExpr);
     ir::Expression *ParsePropertyKey(ExpressionParseFlags flags);
@@ -193,6 +193,9 @@ protected:
         }
         return ret;
     }
+
+    ir::Identifier *AllocErrorExpression();
+    ir::TypeNode *AllocErrorType();
 
     ArenaAllocator *Allocator() const
     {

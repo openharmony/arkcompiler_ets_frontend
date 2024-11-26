@@ -462,7 +462,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
     }
     ETSChecker *checker = GetETSChecker();
     auto *calleeType = CheckInstantiatedNewType(checker, expr);
-
     if (calleeType->IsTypeError()) {
         return checker->InvalidateType(expr);
     }
@@ -1433,6 +1432,9 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
 {
+    if (expr->IsErrorPlaceHolder()) {
+        return GetETSChecker()->GlobalTypeError();
+    }
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
@@ -1745,6 +1747,11 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
 checker::Type *ETSAnalyzer::Check(ir::OpaqueTypeNode *expr) const
 {
     return expr->TsType();
+}
+
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ErrorTypeNode *expr) const
+{
+    return GetETSChecker()->GlobalTypeError();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::SequenceExpression *expr) const

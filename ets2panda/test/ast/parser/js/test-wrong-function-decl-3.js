@@ -15,7 +15,8 @@
 
 
 function f(p1, p2, p3) {
-  a[/* @@ label */;
+  a[;
 }
 
-/* @@@ label Error SyntaxError: Unexpected token: ';'. */
+/* @@? 18:5 Error SyntaxError: Unexpected token: ';'. */
+/* @@? 18:5 Error SyntaxError: Unexpected token, expected: ']'. */
