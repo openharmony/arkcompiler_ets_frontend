@@ -141,7 +141,8 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(checker::ETSChecke
 }
 
 static void FillClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstNode *> *classBody,
-                          const ArenaVector<ir::AstNode *> &ifaceBody, ir::ObjectExpression *objExpr)
+                          const ArenaVector<ir::AstNode *> &ifaceBody, ir::ObjectExpression *objExpr,
+                          checker::ETSObjectType *currentType = nullptr)
 {
     for (auto *it : ifaceBody) {
         ASSERT(it->IsMethodDefinition());
@@ -157,14 +158,28 @@ static void FillClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstNode 
             continue;
         }
 
-        auto *field = CreateAnonClassField(ifaceMethod, checker);
+        auto copyIfaceMethod = ifaceMethod->Clone(checker->Allocator(), nullptr);
+        copyIfaceMethod->SetRange(ifaceMethod->Range());
+        copyIfaceMethod->Function()->SetSignature(ifaceMethod->Function()->Signature());
+
+        if (currentType != nullptr) {
+            auto instanProp =
+                currentType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(ifaceMethod->Id()->Name());
+            auto funcType = (instanProp != nullptr) ? instanProp->TsType() : nullptr;
+            if (funcType != nullptr) {
+                ASSERT(funcType->IsETSFunctionType() && funcType->AsETSFunctionType()->FindGetter() != nullptr);
+                copyIfaceMethod->Function()->SetSignature(funcType->AsETSFunctionType()->FindGetter());
+            }
+        }
+
+        auto *field = CreateAnonClassField(copyIfaceMethod, checker);
         classBody->push_back(field);
 
-        auto *getter = CreateAnonClassFieldGetterSetter(checker, ifaceMethod, false);
+        auto *getter = CreateAnonClassFieldGetterSetter(checker, copyIfaceMethod, false);
         classBody->push_back(getter);
 
-        if (ifaceMethod->Overloads().size() == 1 && ifaceMethod->Overloads()[0]->Function()->IsSetter()) {
-            auto *setter = CreateAnonClassFieldGetterSetter(checker, ifaceMethod, true);
+        if (copyIfaceMethod->Overloads().size() == 1 && copyIfaceMethod->Overloads()[0]->Function()->IsSetter()) {
+            auto *setter = CreateAnonClassFieldGetterSetter(checker, copyIfaceMethod, true);
             classBody->push_back(setter);
         }
     }
@@ -175,7 +190,7 @@ static void FillAnonClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstN
 {
     for (auto *extendedIface : ifaceNode->TsType()->AsETSObjectType()->Interfaces()) {
         auto extendedIfaceBody = extendedIface->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
-        FillClassBody(checker, classBody, extendedIfaceBody, objExpr);
+        FillClassBody(checker, classBody, extendedIfaceBody, objExpr, extendedIface);
     }
 
     FillClassBody(checker, classBody, ifaceNode->Body()->Body(), objExpr);
@@ -206,9 +221,13 @@ static checker::Type *GenerateAnonClassTypeFromInterface(checker::ETSChecker *ch
 
     // Class type params
     if (ifaceNode->TypeParams() != nullptr) {
-        // NOTE: to be done
-        checker->LogTypeError("Object literal cannot be of typed interface type", objExpr->Start());
-        return checker->GlobalTypeError();
+        ArenaVector<checker::Type *> typeArgs(checker->Allocator()->Adapter());
+        for (auto param : ifaceNode->TypeParams()->Params()) {
+            auto *var = param->Name()->Variable();
+            ASSERT(var && var->TsType()->IsETSTypeParameter());
+            typeArgs.push_back(var->TsType());
+        }
+        classType->SetTypeArguments(std::move(typeArgs));
     }
 
     // Class implements
@@ -229,6 +248,13 @@ static void HandleInterfaceLowering(checker::ETSChecker *checker, ir::ObjectExpr
     ASSERT(targetType->AsETSObjectType()->GetDeclNode()->IsTSInterfaceDeclaration());
     auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
     checker::Type *resultType = GenerateAnonClassTypeFromInterface(checker, ifaceNode, objExpr);
+
+    if (!targetType->AsETSObjectType()->TypeArguments().empty()) {
+        ArenaVector<checker::Type *> typeArgTypes(targetType->AsETSObjectType()->TypeArguments());
+        checker::InstantiationContext ctx(checker, resultType->AsETSObjectType(), std::move(typeArgTypes),
+                                          objExpr->Start());
+        resultType = ctx.Result();
+    }
 
     if (const auto *const parent = objExpr->Parent(); parent->IsArrayExpression()) {
         for (auto *elem : parent->AsArrayExpression()->Elements()) {
