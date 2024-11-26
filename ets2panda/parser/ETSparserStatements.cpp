@@ -358,6 +358,7 @@ ir::Statement *ETSParser::ParseTryStatement()
 ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingFlags flags,
                                                      ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
+    modFlags |= ParseClassModifiers();
     return ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
                                      ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
                                  modFlags);

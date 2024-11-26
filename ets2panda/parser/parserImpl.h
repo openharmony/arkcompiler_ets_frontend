@@ -272,6 +272,7 @@ protected:
     virtual ir::ETSStructDeclaration *ParseStructStatement(StatementParsingFlags flags,
                                                            ir::ClassDefinitionModifiers modifiers,
                                                            ir::ModifierFlags modFlags = ir::ModifierFlags::NONE);
+    ir::Statement *ParseStatementBasedOnTokenType(StatementParsingFlags flags);
     ir::Statement *ParseVarStatement();
     ir::Statement *ParseLetStatement(StatementParsingFlags flags);
     ir::BreakStatement *ParseBreakStatement();
