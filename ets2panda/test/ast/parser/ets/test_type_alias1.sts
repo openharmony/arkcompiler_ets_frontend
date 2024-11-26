@@ -15,7 +15,7 @@
 
 type 5 = number;
 
-/* @@? 16:6 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 16:6 Error SyntaxError: Identifier expected, got 'number literal'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */

@@ -15,7 +15,8 @@
 
 export type {B]
 
-/* @@? 16:15 Error SyntaxError: Unexpected token, expected identifier or '}'.  */
+/* @@? 16:15 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 16:15 Error SyntaxError: Unexpected token ']'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */

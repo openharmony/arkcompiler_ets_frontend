@@ -15,7 +15,8 @@
 
 import {^} from "./import_tests/modules/module"
 
-/* @@? 16:9 Error SyntaxError: Unexpected token, expected identifier or '}'.  */
+/* @@? 16:9 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 16:17 Error SyntaxError: Unexpected token 'string literal'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */
