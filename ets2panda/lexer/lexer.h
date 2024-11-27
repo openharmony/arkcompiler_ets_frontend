@@ -302,11 +302,11 @@ protected:
     }
 
     template <typename RadixType, typename RadixLimit = RadixType>
-    bool ScanNumberLeadingZeroImpl(bool leadingMinus);
+    bool ScanNumberLeadingZeroImpl(bool const leadingMinus);
     void ScanNumberLeadingZeroImplNonAllowedCases();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     bool ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator = true);
-    void ScanNumber(bool leadingMinus = false, bool allowBigInt = true);
+    void ScanNumber(bool const leadingMinus = false, bool allowBigInt = true);
     std::optional<std::size_t> ScanCharLex(bool parseExponent, bool &allowBigInt, NumberFlags &flags);
     std::optional<std::size_t> ScanSignOfNumber() noexcept;
     virtual void ConvertNumber(NumberFlags flags);
