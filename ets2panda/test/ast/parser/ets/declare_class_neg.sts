@@ -13,8 +13,11 @@
  * limitations under the License.
  */
 
-class Test {
-    async /* @@ label */constructor() {}
+declare class A {
+  declare constructor()
 }
-
-/* @@@ label Error SyntaxError: The modifier for a constructor should be limited to access modifiers (private, internal, protected, public),and 'native' modifiers. */
+class B {
+  declare constructor()
+}
+/* @@? 17:11 Error SyntaxError: Field type annotation expected */
+/* @@? 20:11 Error SyntaxError: Field type annotation expected */

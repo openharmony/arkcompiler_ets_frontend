@@ -113,10 +113,26 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
     }
 }
 
+static void CheckMethodBodyForNativeAbstractDeclare(ETSChecker *checker, ir::MethodDefinition *node,
+                                                    ir::ScriptFunction *scriptFunc)
+{
+    if ((node->IsNative() && !node->IsConstructor()) || node->IsAbstract() || node->IsDeclare()) {
+        checker->LogTypeError("Native, Abstract and Declare methods cannot have body.", scriptFunc->Body()->Start());
+    }
+}
+
+static void CheckNativeConstructorBody(ETSChecker *checker, ir::MethodDefinition *node, ir::ScriptFunction *scriptFunc)
+{
+    if (node->IsNative() && node->IsConstructor()) {
+        checker->LogTypeError("Native constructor declaration cannot have a body.", scriptFunc->Body()->Start());
+    }
+}
+
 void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::ScriptFunction *scriptFunc)
 {
-    if (scriptFunc->HasBody() && (node->IsNative() || node->IsAbstract() || node->IsDeclare())) {
-        checker->LogTypeError("Native, Abstract and Declare methods cannot have body.", scriptFunc->Body()->Start());
+    if (scriptFunc->HasBody()) {
+        CheckMethodBodyForNativeAbstractDeclare(checker, node, scriptFunc);
+        CheckNativeConstructorBody(checker, node, scriptFunc);
     }
 
     if (!scriptFunc->IsAsyncFunc() && scriptFunc->HasBody() &&
