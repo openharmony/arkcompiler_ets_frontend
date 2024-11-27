@@ -2352,11 +2352,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     if (exprType->IsETSStringType()) {
         elemType = checker->GetGlobalTypesHolder()->GlobalCharType();
     } else if (exprType->IsETSArrayType()) {
-        elemType = exprType->AsETSArrayType()->ElementType()->Instantiate(checker->Allocator(), checker->Relation(),
-                                                                          checker->GetGlobalTypesHolder());
-        if (elemType != nullptr) {
-            elemType->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
-        }
+        elemType = exprType->AsETSArrayType()->ElementType();
     } else if (exprType->IsETSObjectType() || exprType->IsETSUnionType() || exprType->IsETSTypeParameter()) {
         elemType = st->CheckIteratorMethod(checker);
     }

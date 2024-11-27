@@ -32,7 +32,9 @@ ets2panda_add_gtest(es2panda_union_normalization_tests_1
 ets2panda_add_gtest(es2panda_union_normalization_tests_2
     CPP_SOURCES union_normalization_test_2.cpp
 )
-
+ets2panda_add_gtest(es2panda_globalETSObjectType_tests
+    CPP_SOURCES globalETSObjectType_test.cpp
+)
 # NOTE: es2panda_rest_parameter_flag test runs a lot of time on qemu, so let's disable it
 if (NOT PANDA_QEMU_BUILD)
     ets2panda_add_gtest(es2panda_rest_parameter_flag
