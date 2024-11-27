@@ -111,6 +111,11 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
             return true;
         }
 
+        if (result_ == RelationResult::ERROR) {
+            // Return early to prevent logging same errors again
+            return false;
+        }
+
         result_ = RelationResult::FALSE;
 
         if (!source->AssignmentSource(this, target)) {
