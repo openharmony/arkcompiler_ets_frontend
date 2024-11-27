@@ -32,11 +32,11 @@ let g = 1;
 // 属性访问
 {
     class l {
-        i: number = 1;
+        t: number = 1;
     }
     let m = new l();
-    m.i = 2;
-    assert(m.i === 2);
+    m.t = 2;
+    assert(m.t === 2);
 }
 // var变量
 var x = 1;
@@ -61,9 +61,9 @@ let h;
     h = {
         width: i,
         length: j,
-        j: i * j,
-        k: (i + j) * 2
+        u: i * j,
+        v: (i + j) * 2
     };
 }
-assert(h.j === 20);
-assert(h.k === 24);
+assert(h.u === 20);
+assert(h.v === 24);

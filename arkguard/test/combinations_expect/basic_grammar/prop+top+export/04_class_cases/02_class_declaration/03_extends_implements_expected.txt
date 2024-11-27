@@ -14,26 +14,26 @@
  */
 import assert from "assert";
 class v {
-    a2: number = 0;
-    b2(): number {
+    g2: number = 0;
+    h2(): number {
         return 5;
     }
 }
-interface v1 {
-    c2: number;
-    d2(): number;
+interface d2 {
+    i2: number;
+    j2(): number;
 }
-class w1 extends v implements v1 {
-    c2: number = 1;
-    d2(): number {
+class e2 extends v implements d2 {
+    i2: number = 1;
+    j2(): number {
         return 2 * 5;
     }
 }
 let a1 = new v();
-assert(a1.a2 === 0);
-assert(a1.b2() === 5);
-let z1 = new w1();
-assert(z1.a2 === 0);
-assert(z1.b2() === 5);
-assert(z1.c2 === 1);
-assert(z1.d2() === 10);
+assert(a1.g2 === 0);
+assert(a1.h2() === 5);
+let f2 = new e2();
+assert(f2.g2 === 0);
+assert(f2.h2() === 5);
+assert(f2.i2 === 1);
+assert(f2.j2() === 10);

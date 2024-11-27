@@ -15,15 +15,15 @@
 import { m } from 'path1';
 export {};
 declare module "path1" {
-    export function q(w: string): string;
-    export function t(...v: any[]): string;
-    export var u: string;
+    export function t(x: string): string;
+    export function u(...w: any[]): string;
+    export var v: string;
     interface m {
-        o: number;
+        a1: number;
     }
 }
-declare class p implements m {
-    i: number;
-    o: number;
+declare class q implements m {
+    p: number;
+    a1: number;
     constructor();
 }

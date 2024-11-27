@@ -14,37 +14,37 @@
  */
 import assert from "assert";
 class o {
-    n1: number = 1;
-    o1(): string {
+    v1: number = 1;
+    w1(): string {
         return 'c1';
     }
 }
 class p extends o {
-    q1: number = 2;
+    z1: number = 2;
 }
-module j1 {
+module o1 {
     export class t {
-        s1: number = 3;
-        t1(): number {
+        a2: number = 3;
+        b2(): number {
             return 31;
         }
-        u1(): number {
+        c2(): number {
             return 32;
         }
     }
-    class n1 extends j1.t {
-        u1(): number {
+    class t1 extends o1.t {
+        c2(): number {
             return 42;
         }
     }
-    let o1 = new n1();
-    assert(o1.t1() === 31);
-    assert(o1.u1() === 42);
+    let u1 = new t1();
+    assert(u1.b2() === 31);
+    assert(u1.c2() === 42);
 }
-let l1 = new o();
-assert(l1.o1() === 'c1');
+let q1 = new o();
+assert(q1.w1() === 'c1');
 let q = new p();
-assert(q.q1 === 2);
-let m1 = new j1.t();
-assert(m1.t1() === 31);
-assert(m1.u1() === 32);
+assert(q.z1 === 2);
+let s1 = new o1.t();
+assert(s1.b2() === 31);
+assert(s1.c2() === 32);

@@ -14,7 +14,7 @@
  */
 export class i {
     name: string;
-    j: number;
+    t: number;
 }
 export function g(n: number, o: number) {
     const p = 1;

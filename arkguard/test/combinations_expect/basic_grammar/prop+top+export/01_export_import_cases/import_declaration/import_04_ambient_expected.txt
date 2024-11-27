@@ -14,6 +14,6 @@
  */
 declare module 'm' {
     import { Console } from 'node:console';
-    export function e2(): void;
+    export function f2(): void;
     export { Console } from 'node:console';
 }

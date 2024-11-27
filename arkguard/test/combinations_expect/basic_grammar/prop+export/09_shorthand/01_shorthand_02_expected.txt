@@ -14,22 +14,22 @@
  */
 import assert from 'assert';
 let name1 = 1;
-let obj = { g: name1 };
+let obj = { i: name1 };
 {
-    const { g: h = 2 } = obj;
+    const { i: h = 2 } = obj;
     h;
     assert(h === 1);
 }
-assert(obj.g === 1);
+assert(obj.i === 1);
 (function () {
     var g;
-    for ({ h: g = 5 } of [{ h: 1 }]) {
+    for ({ j: g = 5 } of [{ j: 1 }]) {
         assert(g === 1);
     }
 })();
 (function () {
     var f;
-    for ({ i: f = 5 } of [{ i: f }]) {
+    for ({ k: f = 5 } of [{ k: f }]) {
         assert(f === 5);
     }
 })();
@@ -42,8 +42,8 @@ assert(obj.g === 1);
     let b: string, c: {
         x: number;
     };
-    let d: any = { y2: "1", j: { x: 2 } };
-    ({ y2: b = '5', j: c = { x: 1 } } = d);
+    let d: any = { y2: "1", l: { x: 2 } };
+    ({ y2: b = '5', l: c = { x: 1 } } = d);
     assert(b === '1');
     assert(c.x === 2);
 })();

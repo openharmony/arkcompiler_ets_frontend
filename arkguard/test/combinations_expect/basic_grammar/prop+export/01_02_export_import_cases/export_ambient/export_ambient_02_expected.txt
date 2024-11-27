@@ -15,15 +15,15 @@
 import { express } from 'path1';
 export {};
 declare module "path1" {
-    export function m(r: string): string;
-    export function o(...q: any[]): string;
-    export var p: string;
+    export function o(s: string): string;
+    export function p(...r: any[]): string;
+    export var q: string;
     interface j {
-        l: number;
+        t: number;
     }
 }
 declare class ExpressClass implements express {
-    k: number;
-    l: number;
+    m: number;
+    t: number;
     constructor();
 }

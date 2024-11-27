@@ -24,14 +24,14 @@ catch (l) {
     assert.strictEqual((l as TypeError).message, 'Assignment to constant variable.');
 }
 const h: {
-    k: string;
-    l: string;
+    m: string;
+    o: string;
 } = {
-    k: 'arkguard',
-    l: '1.0.0'
+    m: 'arkguard',
+    o: '1.0.0'
 };
-assert.strictEqual(h.k, 'arkguard');
-assert.strictEqual(h.l, '1.0.0');
+assert.strictEqual(h.m, 'arkguard');
+assert.strictEqual(h.o, '1.0.0');
 try {
     // @ts-expect-error
     h = 'another';
@@ -40,12 +40,12 @@ catch (k) {
     assert.strictEqual((k as TypeError).name, 'TypeError');
     assert.strictEqual((k as TypeError).message, 'Assignment to constant variable.');
 }
-h.l = '1.0.1';
-assert.strictEqual(h.k, 'arkguard');
-assert.strictEqual(h.l, '1.0.1');
-const { k: i, l: j }: {
-    k: string;
-    l: string;
+h.o = '1.0.1';
+assert.strictEqual(h.m, 'arkguard');
+assert.strictEqual(h.o, '1.0.1');
+const { m: i, o: j }: {
+    m: string;
+    o: string;
 } = h;
 assert.strictEqual(i, 'arkguard');
 assert.strictEqual(j, '1.0.1');

@@ -8,12 +8,12 @@
     "#subtract": "g",
     "#Lesson": "i",
     "#customType": "j",
-    "#xiaoming": "t",
-    "#xiaohong": "u",
+    "#xiaoming": "v",
+    "#xiaohong": "a1",
     "#value": "value",
-    "#factor": "v",
-    "#equal": "a1",
-    "#math": "b1"
+    "#factor": "b1",
+    "#equal": "c1",
+    "#math": "d1"
   },
   "MemberMethodCache": {}
 }

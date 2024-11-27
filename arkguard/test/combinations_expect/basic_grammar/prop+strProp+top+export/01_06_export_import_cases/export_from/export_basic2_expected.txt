@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 type g = number;
-export let o = 2;
-export function m(q: g, r: number) {
-    return q + r;
+export let q = 2;
+export function p(s: g, t: number) {
+    return s + t;
 }
 export class Person {
-    p: g;
-    q: string;
-    constructor(p) {
-        this.p = p;
+    u: g;
+    v: string;
+    constructor(r) {
+        this.u = r;
     }
-    t(): g {
-        return 2 * this.p;
+    a1(): g {
+        return 2 * this.u;
     }
 }

@@ -14,16 +14,16 @@
  */
 import { m } from './virtualTest_nokeep1';
 export interface l {
-    c1: number;
-    v: number;
+    d1: number;
+    a1: number;
 }
-interface a1 {
-    d1: string;
-    e1: number;
+interface b1 {
+    e1: string;
+    f1: number;
 }
-export declare struct b1 {
-    size: m.j;
+export declare struct c1 {
+    size: m.q;
     windowSize: l;
-    parameter2: a1;
+    parameter2: b1;
     build(): void;
 }

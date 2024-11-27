@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 namespace ns_tsc {
-    function c() {
+    function d1() {
         return 1;
     }
-    c();
+    d1();
 }
 export = ns_tsc;

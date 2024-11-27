@@ -15,25 +15,25 @@
 import assert from 'assert';
 interface g {
     method(a: number): string;
-    i?(a: number): string;
-    j: string;
-    k: string;
+    k?(a: number): string;
+    l: string;
+    m: string;
 }
 class g {
-    l: string = '';
-    m(j: number): string {
+    o: string = '';
+    p(j: number): string {
         return this.method(0);
     }
 }
 class h extends g {
     method(i: number): string {
-        return this.k;
+        return this.m;
     }
 }
 let a = new h();
 assert(a.method(1) === undefined);
-assert(a.i === undefined);
-assert(a.j === undefined);
 assert(a.k === undefined);
-assert(a.l === '');
-assert(a.m(1) === undefined);
+assert(a.l === undefined);
+assert(a.m === undefined);
+assert(a.o === '');
+assert(a.p(1) === undefined);

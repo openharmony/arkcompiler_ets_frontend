@@ -14,13 +14,13 @@
  */
 import assert from "assert";
 class o {
-    m1: number = 1;
-    n1(): string {
+    o1: number = 1;
+    q1(): string {
         return 'c1';
     }
 }
 class p extends o {
-    o1: number = 2;
+    s1: number = 2;
 }
 module i1 {
     export class C3 {
@@ -42,9 +42,9 @@ module i1 {
     assert(n1.method_c32() === 42);
 }
 let j1 = new o();
-assert(j1.n1() === 'c1');
+assert(j1.q1() === 'c1');
 let q = new p();
-assert(q.o1 === 2);
+assert(q.s1 === 2);
 let l1 = new i1.C3();
 assert(l1.method_c31() === 31);
 assert(l1.method_c32() === 32);

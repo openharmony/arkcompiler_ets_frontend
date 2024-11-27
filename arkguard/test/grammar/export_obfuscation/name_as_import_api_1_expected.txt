@@ -12,40 +12,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { f2 as u2, i2 as v2, n2 } from './name_as_export_api_1';
-import { i2, m2 as g2 } from './name_as_export_api_1';
-export { m2 as f3 } from './name_as_export_api_1';
-export { h2 } from './name_as_export_api_1';
-import { e2 } from './name_as_export_api_1';
-import { t3 as w2 } from './json5';
-import { u3 as z2 } from 'json5';
-import { a3 } from './json5';
-import { b3 } from 'json5';
-e2();
-u2();
-let c3 = new v2();
-let d3 = new w2();
-let e3 = new z2();
+import { u2 as m3, z2 as n3, d3 } from './name_as_export_api_1';
+import { z2, c3 as v2 } from './name_as_export_api_1';
+export { c3 as w3 } from './name_as_export_api_1';
+export { w2 } from './name_as_export_api_1';
+import { t2 } from './name_as_export_api_1';
+import { l4 as o3 } from './json5';
+import { m4 as q3 } from 'json5';
+import { r3 } from './json5';
+import { s3 } from 'json5';
+t2();
+m3();
+let t3 = new n3();
+let u3 = new o3();
+let v3 = new q3();
 function publicFoo1() {
-    const s3 = 1;
+    const j4 = 1;
 }
 function publicFoo2() {
-    const r3 = 1;
+    const i4 = 1;
 }
 function publicFoo3() {
-    const q3 = 1;
+    const h4 = 1;
 }
 function publicFoo4() {
-    const p3 = 1;
+    const g4 = 1;
 }
-function t2() {
-    const g3 = w2;
-    const h3 = w2.u1;
-    const i3 = z2;
-    const j3 = z2.v1;
-    const k3 = a3;
-    const l3 = a3.g3;
-    const m3 = b3;
-    const n3 = b3.m1;
-    const o3 = 1;
+function l3() {
+    const x3 = o3;
+    const y3 = o3.n4;
+    const z3 = q3;
+    const a4 = q3.o4;
+    const b4 = r3;
+    const c4 = r3.q4;
+    const d4 = s3;
+    const e4 = s3.h3;
+    const f4 = 1;
 }

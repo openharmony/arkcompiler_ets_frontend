@@ -14,34 +14,34 @@
  */
 namespace ts {
     let b: {
-        j(o: c): number;
-        k(o: c, v: number): void;
+        o(o: c): number;
+        p(o: c, v: number): void;
     };
     class c {
         x: number;
         constructor(n: number) {
             this.x = n;
         }
-        j() {
+        o() {
             return this.x;
         }
-        l() {
+        q() {
             b = {
-                j(m) { return m.x; },
-                k(k, l) { k.x = l; }
+                o(m) { return m.x; },
+                p(k, l) { k.x = l; }
             };
         }
     }
     ;
     class d {
         constructor(public a: c, private g: number = 1, protected h: string = '', readonly i: number = 2) {
-            const j = b.j(a); // ok
-            b.k(a, j + 1); // ok
+            const j = b.o(a); // ok
+            b.p(a, j + 1); // ok
         }
     }
     ;
     const e = new c(41);
-    e.l();
+    e.q();
     const f = new d(e);
-    e.j();
+    e.o();
 }

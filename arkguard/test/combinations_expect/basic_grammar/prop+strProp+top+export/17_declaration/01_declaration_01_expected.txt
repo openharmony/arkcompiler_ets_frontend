@@ -18,13 +18,13 @@ declare const j: boolean;
 export const k = 1;
 declare class l {
     g: number;
-    u(): boolean;
-    v: () => {};
+    a1(): boolean;
+    b1: () => {};
 }
 declare interface m {
     g: number;
-    u(): m;
-    v: () => {};
+    a1(): m;
+    b1: () => {};
 }
 declare type o = number | string | o[];
 declare function g(w: l, x: {
@@ -40,7 +40,7 @@ declare enum p {
 declare const enum q {
     e,
     f,
-    a1,
+    c1,
     c
 }
 declare namespace t {
@@ -50,13 +50,13 @@ declare namespace t {
     export const k = 1;
     class l {
         g: number;
-        u(): boolean;
-        v: () => {};
+        a1(): boolean;
+        b1: () => {};
     }
     interface m {
         g: number;
-        u(): t.m;
-        v: () => {};
+        a1(): t.m;
+        b1: () => {};
     }
     type o = number | string | o[];
     function g(u: t.l, v: {
@@ -72,7 +72,7 @@ declare namespace t {
     const enum q {
         e = 2,
         f,
-        a1,
+        c1,
         c
     }
 }

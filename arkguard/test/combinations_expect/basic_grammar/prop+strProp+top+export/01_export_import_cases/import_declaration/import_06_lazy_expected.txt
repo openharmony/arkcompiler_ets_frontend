@@ -14,17 +14,17 @@
  */
 import assert from 'assert';
 import lazy { j } from './export_api_01';
-import lazy { j as f2 } from './export_api_01';
-import lazy { default as i1 } from './export_api_01';
+import lazy { j as g2 } from './export_api_01';
+import lazy { default as j1 } from './export_api_01';
 import lazy { k, l, } from './export_api_01';
-import lazy { k as g2, l as h2, } from './export_api_01';
+import lazy { k as h2, l as i2, } from './export_api_01';
 import lazy { type v } from './export_type_03';
-import lazy { type a1 as i2 } from './export_type_03';
-import lazy { type default as q1 } from './export_type_03';
+import lazy { type a1 as j2 } from './export_type_03';
+import lazy { type default as s1 } from './export_type_03';
 import lazy { as, type b1 } from './export_type_03';
-import lazy { c1, type f1 as j2 } from './export_type_03';
-import l2 from './export_api_01';
-import { l2 } from './export_api_01';
+import lazy { c1, type f1 as l2 } from './export_type_03';
+import m2 from './export_api_01';
+import { m2 } from './export_api_01';
 import "";
 import '';
 import './export_api_01';

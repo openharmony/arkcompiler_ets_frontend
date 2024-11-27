@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 class f1 {
-    k: number = 0;
-    l: number = 0;
+    j1: number = 0;
+    l1: number = 0;
 }
-let g1: Array<f1> = [{ k: 1, l: 2 }, { k: 3, l: 4 }];
+let g1: Array<f1> = [{ j1: 1, l1: 2 }, { j1: 3, l1: 4 }];
 function e1() {
-    for (let { k: h1, l: i1 } of g1) {
+    for (let { j1: h1, l1: i1 } of g1) {
         console.log("x = ", h1, "y = ", i1);
     }
 }

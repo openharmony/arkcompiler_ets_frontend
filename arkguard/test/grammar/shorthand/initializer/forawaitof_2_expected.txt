@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 import assert from 'assert';
-let p;
-let q = 0;
-async function o() {
-    for await ({ p: p = 1 } of [{}]) {
-        assert.strictEqual(p, 1);
-        q += 1;
-        assert.strictEqual(q, 1);
+let t;
+let u = 0;
+async function q() {
+    for await ({ t: t = 1 } of [{}]) {
+        assert.strictEqual(t, 1);
+        u += 1;
+        assert.strictEqual(u, 1);
     }
 }
 class h {
-    p = "100";
+    t = "100";
 }

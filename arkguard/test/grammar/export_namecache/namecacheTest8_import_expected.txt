@@ -1,14 +1,14 @@
 import h from './namecacheTest8_export';
-import type { c1, i, d1, j } from './namecacheTest8_export';
-function test(h1: h, i1: c1, j1: i, k1: d1, l1: j): void {
+import type { e1, i, f1, j } from './namecacheTest8_export';
+function test(n1: h, o1: e1, p1: i, q1: f1, r1: j): void {
 }
-function init(g1: c1): void {
-    g1.o = 1;
-    g1.p = 2;
+function init(m1: e1): void {
+    m1.i1 = 1;
+    m1.j1 = 2;
 }
-let q: h[];
-const b1: i = {
+let l1: h[];
+const d1: i = {
     id: 0,
-    m: "2023",
-    q: []
+    u: "2023",
+    l1: []
 };

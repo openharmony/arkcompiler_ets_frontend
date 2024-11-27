@@ -49,8 +49,6 @@ import type {
 
 import type {IOptions} from '../../configs/IOptions';
 import type { INameObfuscationOption } from '../../configs/INameObfuscationOption';
-import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGenerator';
-import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
@@ -63,6 +61,7 @@ import {
 } from '../../utils/TransformUtil';
 import {
   classInfoInMemberMethodCache,
+  globalGenerator,
   nameCache
 } from './RenameIdentifierTransformer';
 import { UpdateMemberMethodName } from '../../utils/NameCacheUtil';
@@ -84,8 +83,6 @@ namespace secharmony {
     return renamePropertiesFactory;
 
     function renamePropertiesFactory(context: TransformationContext): Transformer<Node> {
-      let options: NameGeneratorOptions = {};
-      let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
       return renamePropertiesTransformer;
 
@@ -225,20 +222,20 @@ namespace secharmony {
         const historyName: string = PropCollections.historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {
-          let tmpName = generator.getName();
+          let tmpName = globalGenerator.getName();
           if (isReservedProperty(tmpName) ||
             tmpName === original) {
             continue;
           }
 
-          if (PropCollections.newlyOccupiedMangledProps.has(tmpName) || PropCollections.mangledPropsInNameCache.has(tmpName)) {
+          // For incremental compilation, preventing generated names from conflicting with existing global name.
+          if (PropCollections.globalMangledNamesInCache.has(tmpName)) {
             continue;
           }
 
           mangledName = tmpName;
         }
         PropCollections.globalMangledTable.set(original, mangledName);
-        PropCollections.newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
       }
     }

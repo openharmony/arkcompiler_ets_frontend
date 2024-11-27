@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import { default as u5 } from './y1_export_default_value';
-import x3, { t5 } from './y1_import_alias';
-let r5 = new t5.o5;
-assert(r5.p5 === 2, 'success');
-type s5 = t5.m5;
-assert(t5.k5() === '11', 'success');
-assert(x3() === 22, 'success');
-assert(u5 === 5, 'success');
+import { default as j7 } from './y1_export_default_value';
+import t4, { i7 } from './y1_import_alias';
+let g7 = new i7.c7;
+assert(g7.e7 === 2, 'success');
+type h7 = i7.a7;
+assert(i7.y6() === '11', 'success');
+assert(t4() === 22, 'success');
+assert(j7 === 5, 'success');
