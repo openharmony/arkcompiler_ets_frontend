@@ -22,7 +22,8 @@
 namespace ark::es2panda::lexer {
 class ETSLexer final : public Lexer {
 public:
-    explicit ETSLexer(const parser::ParserContext *parserContext) : Lexer(parserContext, false)
+    explicit ETSLexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger)
+        : Lexer(parserContext, errorLogger, false)
     {
         SkipWhiteSpaces();
     }
@@ -50,19 +51,19 @@ public:
         if (!ScanNumberLeadingZeroImpl<uint32_t>(leadingMinus)) {
             Rewind(savedLexerPosition);
             if (!ScanNumberLeadingZeroImpl<uint64_t>(leadingMinus)) {
-                ThrowError("Number is too large");
+                LogSyntaxError("Number is too large");
             }
         }
 
         if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
             if (!allowBigint) {
-                ThrowError("Invalid BigInt number");
+                LogSyntaxError("Invalid BigInt number");
             }
         }
     }
 
     void CheckNumberLiteralEnd() override;
-    void CheckUtf16Compatible(char32_t cp) const;
+    bool CheckUtf16Compatible(char32_t cp) const;
     void ConvertNumber(NumberFlags flags) override;
 
 protected:

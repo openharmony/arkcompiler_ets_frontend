@@ -785,19 +785,19 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
     while (true) {
         lexer_->ResetTokenEnd();
         const auto startPos = lexer_->Save();
-
         lexer_->ScanString<lexer::LEX_CHAR_BACK_TICK>();
-        util::StringView cooked = lexer_->GetToken().String();
-
+        const util::StringView cooked = lexer_->GetToken().String();
         lexer_->Rewind(startPos);
-        auto [raw, end, scanExpression] = lexer_->ScanTemplateString();
 
-        auto *element = AllocNode<ir::TemplateElement>(raw.View(), cooked);
-        element->SetRange({lexer::SourcePosition {startPos.Iterator().Index(), startPos.Line()},
-                           lexer::SourcePosition {end, lexer_->Line()}});
-        quasis.push_back(element);
+        const auto templateStr = lexer_->ScanTemplateString();
+        if (templateStr.validSequence) {
+            auto *const element = AllocNode<ir::TemplateElement>(templateStr.str.View(), cooked);
+            element->SetRange({lexer::SourcePosition {startPos.Iterator().Index(), startPos.Line()},
+                               lexer::SourcePosition {templateStr.end, lexer_->Line()}});
+            quasis.push_back(element);
+        }
 
-        if (!scanExpression) {
+        if (!templateStr.scanExpression) {
             lexer_->ScanTemplateStringEnd();
             break;
         }

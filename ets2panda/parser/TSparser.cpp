@@ -121,7 +121,7 @@ namespace ark::es2panda::parser {
 std::unique_ptr<lexer::Lexer> TSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
-    auto lexer = std::make_unique<lexer::TSLexer>(&GetContext());
+    auto lexer = std::make_unique<lexer::TSLexer>(&GetContext(), ErrorLogger());
     SetLexer(lexer.get());
     return lexer;
 }

@@ -209,7 +209,7 @@ public:
 
         inline bool HasNext() const
         {
-            return iter_ != sv_.end();
+            return iter_ < sv_.end();
         }
 
         void SkipCp();

@@ -91,7 +91,7 @@ bool ETSParser::IsETSParser() const noexcept
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
-    auto lexer = std::make_unique<lexer::ETSLexer>(&GetContext());
+    auto lexer = std::make_unique<lexer::ETSLexer>(&GetContext(), ErrorLogger());
     SetLexer(lexer.get());
     return lexer;
 }

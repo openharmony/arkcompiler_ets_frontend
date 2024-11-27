@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-let v2 = `--- ${y + abc ${y} = ${ n*2 }!`} ---`;
+let v2 = `--- ${y + abc ${y} = ${ n*2 }!`} ---`;`
 
 /* @@? 16:25 Error SyntaxError: Unexpected token, expected: '}'.  */
 /* @@? 16:42 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 21:1 Error SyntaxError: Unterminated string  */
+/* @@? 21:1 Error SyntaxError: Invalid left-hand side in prefix operation  */
