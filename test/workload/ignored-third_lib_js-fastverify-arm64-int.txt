@@ -16,3 +16,6 @@ asn-one_test
 #20145
 rxjs_test
 cborjs_test
+
+#20257
+dayjs_test
