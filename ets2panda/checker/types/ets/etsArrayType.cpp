@@ -167,7 +167,14 @@ Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *subst
     }
 
     auto *resultElt = element_->Substitute(relation, substitution);
-    return resultElt == element_ ? this : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt);
+
+    if (resultElt == element_) {
+        return this;
+    }
+
+    ETSArrayType *result = relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt);
+    result->typeFlags_ = typeFlags_;
+    return result;
 }
 
 }  // namespace ark::es2panda::checker
