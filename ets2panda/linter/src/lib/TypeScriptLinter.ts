@@ -2323,7 +2323,8 @@ export class TypeScriptLinter {
       if (
         spreadExprType &&
         (this.options.useRtLogic || ts.isCallLikeExpression(node.parent) || ts.isArrayLiteralExpression(node.parent)) &&
-        this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)
+        (this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray) ||
+          this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isCollectionArrayType))
       ) {
         return;
       }
