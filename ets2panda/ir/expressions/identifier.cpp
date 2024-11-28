@@ -146,9 +146,9 @@ checker::Type *Identifier::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *Identifier::Check(checker::ETSChecker *checker)
+checker::VerifiedType Identifier::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 bool Identifier::IsDeclaration(ScriptExtension ext) const

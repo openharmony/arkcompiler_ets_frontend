@@ -63,9 +63,9 @@ checker::Type *Decorator::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *Decorator::Check(checker::ETSChecker *checker)
+checker::VerifiedType Decorator::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 Decorator *Decorator::Clone(ArenaAllocator *const allocator, AstNode *const parent)

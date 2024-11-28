@@ -55,9 +55,9 @@ checker::Type *RegExpLiteral::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *RegExpLiteral::Check(checker::ETSChecker *checker)
+checker::VerifiedType RegExpLiteral::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 RegExpLiteral *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)

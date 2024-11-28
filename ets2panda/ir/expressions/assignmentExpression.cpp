@@ -153,9 +153,9 @@ checker::Type *AssignmentExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 AssignmentExpression::AssignmentExpression([[maybe_unused]] Tag const tag, AssignmentExpression const &other,

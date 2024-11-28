@@ -79,9 +79,9 @@ checker::Type *ETSTuple::Check([[maybe_unused]] checker::TSChecker *const checke
     return nullptr;
 }
 
-checker::Type *ETSTuple::Check([[maybe_unused]] checker::ETSChecker *const checker)
+checker::VerifiedType ETSTuple::Check([[maybe_unused]] checker::ETSChecker *const checker)
 {
-    return GetType(checker);
+    return {this, GetType(checker)};
 }
 
 checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker,

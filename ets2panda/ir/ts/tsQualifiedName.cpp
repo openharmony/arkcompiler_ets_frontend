@@ -75,9 +75,9 @@ checker::Type *TSQualifiedName::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSQualifiedName::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSQualifiedName::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const

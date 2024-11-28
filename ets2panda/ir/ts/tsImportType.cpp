@@ -93,8 +93,8 @@ checker::Type *TSImportType::GetType([[maybe_unused]] checker::TSChecker *checke
     return nullptr;
 }
 
-checker::Type *TSImportType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSImportType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

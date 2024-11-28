@@ -64,9 +64,9 @@ checker::Type *TSUnionType::Check([[maybe_unused]] checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSUnionType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSUnionType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *TSUnionType::GetType(checker::TSChecker *checker)

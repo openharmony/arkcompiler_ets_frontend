@@ -75,8 +75,8 @@ checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::ETSChecker 
     return checker->GlobalETSObjectType();
 }
 
-checker::Type *TSIntersectionType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSIntersectionType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

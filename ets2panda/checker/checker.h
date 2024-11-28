@@ -406,6 +406,62 @@ private:
     CheckerContext prev_;
 };
 
+// VerifiedType is used to check return type from Expresssion not equal nullptr
+class VerifiedType {
+public:
+    VerifiedType() = delete;
+    ~VerifiedType() = default;
+
+    DEFAULT_MOVE_SEMANTIC(VerifiedType);
+    DEFAULT_COPY_SEMANTIC(VerifiedType);
+
+    VerifiedType([[maybe_unused]] const ir::AstNode *const node, Type *type) : type_(type)
+    {
+        ASSERT(type != nullptr || !node->IsExpression());
+    };
+
+    Type *operator*() const
+    {
+        return type_;
+    }
+
+    // NOLINTNEXTLINE(*-explicit-constructor)
+    operator Type *() const
+    {
+        return type_;
+    }
+
+    Type *operator->() const
+    {
+        return type_;
+    }
+
+    friend bool operator==(const VerifiedType &l, const std::nullptr_t &r)
+    {
+        return l.type_ == r;
+    }
+
+    friend bool operator==(const VerifiedType &l, const VerifiedType &r)
+    {
+        return l.type_ == r.type_;
+    }
+
+    friend bool operator!=(const VerifiedType &l, const std::nullptr_t &r)
+    {
+        return !(l == r);
+    }
+
+    friend bool operator!=(const VerifiedType &l, const VerifiedType &r)
+    {
+        return !(l == r);
+    }
+
+    // Other conparison is should't used with VerificationType
+
+private:
+    Type *type_ {};
+};
+
 }  // namespace ark::es2panda::checker
 
 #endif /* CHECKER_H */

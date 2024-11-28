@@ -194,7 +194,7 @@ public:
     void CompileToReg(compiler::PandaGen *pg, compiler::VReg objReg) const;
     void CompileToRegs(compiler::PandaGen *pg, compiler::VReg object, compiler::VReg property) const;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

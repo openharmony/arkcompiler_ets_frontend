@@ -60,9 +60,9 @@ checker::Type *FunctionExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *FunctionExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType FunctionExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 FunctionExpression *FunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

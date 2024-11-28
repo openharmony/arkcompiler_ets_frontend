@@ -60,7 +60,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     void CompileToReg(compiler::PandaGen *pg, compiler::VReg &objReg) const;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void Accept(ASTVisitorT *v) override
     {

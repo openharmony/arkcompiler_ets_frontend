@@ -67,9 +67,9 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType UnaryExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 UnaryExpression *UnaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

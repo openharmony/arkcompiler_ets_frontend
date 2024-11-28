@@ -85,9 +85,9 @@ checker::Type *TSAsExpression::Check([[maybe_unused]] checker::TSChecker *checke
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSAsExpression::Check(checker::ETSChecker *const checker)
+checker::VerifiedType TSAsExpression::Check(checker::ETSChecker *const checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TSAsExpression *TSAsExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

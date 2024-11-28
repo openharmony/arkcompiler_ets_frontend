@@ -61,9 +61,9 @@ checker::Type *CharLiteral::Check([[maybe_unused]] checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *CharLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType CharLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 CharLiteral *CharLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)

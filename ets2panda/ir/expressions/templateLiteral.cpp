@@ -117,8 +117,8 @@ void TemplateLiteral::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
     etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

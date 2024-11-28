@@ -237,9 +237,9 @@ checker::Type *MethodDefinition::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
+checker::VerifiedType MethodDefinition::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -116,8 +116,8 @@ checker::Type *TSTypeReference::GetType([[maybe_unused]] checker::TSChecker *che
     return TsType();
 }
 
-checker::Type *TSTypeReference::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSTypeReference::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

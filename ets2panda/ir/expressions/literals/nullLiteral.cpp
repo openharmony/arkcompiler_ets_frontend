@@ -54,9 +54,9 @@ checker::Type *NullLiteral::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *NullLiteral::Check(checker::ETSChecker *checker)
+checker::VerifiedType NullLiteral::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 NullLiteral *NullLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)

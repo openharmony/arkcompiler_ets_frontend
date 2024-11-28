@@ -69,9 +69,9 @@ checker::Type *ETSLaunchExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSLaunchExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSLaunchExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 bool ETSLaunchExpression::IsStaticCall() const

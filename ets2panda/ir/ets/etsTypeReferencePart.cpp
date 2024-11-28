@@ -90,9 +90,9 @@ checker::Type *ETSTypeReferencePart::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSTypeReferencePart::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSTypeReferencePart::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *const checker,

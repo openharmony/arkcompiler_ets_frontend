@@ -399,7 +399,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
 bool ETSChecker::CheckInvokable(Signature *substitutedSig, ir::Expression *argument, std::size_t index,
                                 TypeRelationFlag flags)
 {
-    auto *argumentType = argument->Check(this);
+    auto argumentType = argument->Check(this);
     if (argumentType->IsTypeError()) {
         return true;
     }
@@ -446,7 +446,7 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         auto &argument = arguments[index];
 
         if (!argument->IsSpreadElement()) {
-            auto *const argumentType = argument->Check(this);
+            auto const argumentType = argument->Check(this);
             const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(
                 substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType());
             const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
@@ -470,7 +470,7 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         }
 
         auto *const restArgument = argument->AsSpreadElement()->Argument();
-        auto *const argumentType = restArgument->Check(this);
+        auto const argumentType = restArgument->Check(this);
         const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(substitutedSig->RestVar()->TsType());
         const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
 

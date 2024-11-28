@@ -47,6 +47,8 @@
 #include "ir/ets/etsPrimitiveType.h"
 #include "ir/ets/etsScript.h"
 #include "ir/ets/etsStringLiteralType.h"
+#include "ir/ets/etsNeverType.h"
+#include "ir/ets/etsNullishTypes.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"

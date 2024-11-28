@@ -79,9 +79,9 @@ checker::Type *ETSNewMultiDimArrayInstanceExpression::Check(checker::TSChecker *
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewMultiDimArrayInstanceExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSNewMultiDimArrayInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(

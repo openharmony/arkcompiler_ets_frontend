@@ -77,9 +77,9 @@ checker::Type *TSArrayType::GetType([[maybe_unused]] checker::TSChecker *checker
     return checker->Allocator()->New<checker::ArrayType>(elementType_->GetType(checker));
 }
 
-checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSArrayType::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)

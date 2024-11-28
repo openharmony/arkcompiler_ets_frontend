@@ -86,9 +86,9 @@ checker::Type *SwitchStatement::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *SwitchStatement::Check(checker::ETSChecker *const checker)
+checker::VerifiedType SwitchStatement::Check(checker::ETSChecker *const checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 }  // namespace ark::es2panda::ir

@@ -57,9 +57,9 @@ checker::Type *ThisExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ThisExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ThisExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ThisExpression *ThisExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -59,9 +59,9 @@ checker::Type *ImportExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ImportExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ImportExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ImportExpression *ImportExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

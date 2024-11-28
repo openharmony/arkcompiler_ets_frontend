@@ -93,9 +93,9 @@ checker::Type *SwitchCaseStatement::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *SwitchCaseStatement::Check(checker::ETSChecker *checker)
+checker::VerifiedType SwitchCaseStatement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 // Auxilary function extracted from the 'Check' method for 'SwitchStatement' to reduce function's size.
@@ -103,7 +103,7 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
                                            checker::Type *unboxedDiscType, ir::Expression *node, bool &isDefaultCase)
 {
     if (test_ != nullptr) {
-        auto *caseType = test_->Check(checker);
+        auto caseType = test_->Check(checker);
         bool validCaseType = true;
 
         if (caseType->HasTypeFlag(checker::TypeFlag::CHAR)) {

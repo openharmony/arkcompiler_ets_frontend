@@ -70,8 +70,8 @@ checker::Type *TSImportEqualsDeclaration::Check([[maybe_unused]] checker::TSChec
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSImportEqualsDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSImportEqualsDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

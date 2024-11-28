@@ -57,7 +57,7 @@
 namespace ark::es2panda::checker {
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 {
-    auto *const testType = expr->Check(this);
+    auto const testType = expr->Check(this);
     auto *const conditionType = MaybeUnboxConditionalInRelation(testType);
 
     expr->SetTsType(conditionType);

@@ -91,8 +91,8 @@ checker::Type *LabelledStatement::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *LabelledStatement::Check(checker::ETSChecker *checker)
+checker::VerifiedType LabelledStatement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

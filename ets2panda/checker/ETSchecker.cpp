@@ -538,6 +538,13 @@ Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view messa
     return InvalidateType(node);
 }
 
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::initializer_list<TypeErrorMessageElement> list,
+                            const lexer::SourcePosition &at)
+{
+    LogTypeError(list, at);
+    return InvalidateType(node);
+}
+
 Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at)
 {
     LogTypeError(message, at);

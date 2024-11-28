@@ -93,9 +93,9 @@ checker::Type *BinaryExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *BinaryExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType BinaryExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 BinaryExpression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -59,8 +59,8 @@ checker::Type *TSObjectKeyword::GetType([[maybe_unused]] checker::TSChecker *che
     return checker->GlobalNonPrimitiveType();
 }
 
-checker::Type *TSObjectKeyword::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSObjectKeyword::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

@@ -55,9 +55,9 @@ checker::Type *BooleanLiteral::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *BooleanLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType BooleanLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 BooleanLiteral *BooleanLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -57,9 +57,9 @@ checker::Type *TemplateElement::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TemplateElement::Check(checker::ETSChecker *checker)
+checker::VerifiedType TemplateElement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TemplateElement *TemplateElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -31,6 +31,7 @@ namespace ark::es2panda::checker {
 class TSChecker;
 class ETSChecker;
 class Type;
+class VerifiedType;
 }  // namespace ark::es2panda::checker
 
 namespace ark::es2panda::varbinder {
@@ -510,7 +511,7 @@ public:
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
     virtual void Compile([[maybe_unused]] compiler::ETSGen *etsg) const {};
     virtual checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) = 0;
-    virtual checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) = 0;
+    virtual checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) = 0;
 
     void SetTransformedNode(std::string_view transformationName, AstNode *transformedNode);
 

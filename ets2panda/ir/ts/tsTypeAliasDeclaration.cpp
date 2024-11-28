@@ -117,9 +117,9 @@ checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::TSChecker
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 }  // namespace ark::es2panda::ir

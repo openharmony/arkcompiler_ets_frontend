@@ -192,9 +192,9 @@ checker::Type *ETSParameterExpression::Check(checker::TSChecker *const checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSParameterExpression::Check(checker::ETSChecker *const checker)
+checker::VerifiedType ETSParameterExpression::Check(checker::ETSChecker *const checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

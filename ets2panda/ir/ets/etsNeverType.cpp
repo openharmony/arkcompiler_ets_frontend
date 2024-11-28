@@ -46,9 +46,9 @@ checker::Type *ETSNeverType::Check([[maybe_unused]] checker::TSChecker *checker)
     UNREACHABLE();
 }
 
-checker::Type *ETSNeverType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ETSNeverType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSNeverType::GetType([[maybe_unused]] checker::ETSChecker *checker)

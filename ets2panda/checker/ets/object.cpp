@@ -1390,7 +1390,7 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
 
 bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
-    auto *const expressionType = expr->Check(this);
+    auto const expressionType = expr->Check(this);
     auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
 
     Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
@@ -1460,7 +1460,7 @@ std::optional<int32_t> ETSChecker::GetTupleElementAccessValue(const Type *const 
 
 bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberExpression *const expr)
 {
-    auto *const expressionType = expr->Property()->Check(this);
+    auto const expressionType = expr->Property()->Check(this);
     auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
 
     if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {

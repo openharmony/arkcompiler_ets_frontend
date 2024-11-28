@@ -140,7 +140,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
     checker::Type *CheckPattern(checker::TSChecker *checker);
     bool HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *currentElement,
                                      bool isPreferredTuple, std::size_t idx);

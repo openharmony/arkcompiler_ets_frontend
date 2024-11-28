@@ -63,9 +63,9 @@ checker::Type *TypeofExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TypeofExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType TypeofExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 // NOLINTNEXTLINE(default-arguments)

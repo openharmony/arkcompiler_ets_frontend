@@ -69,9 +69,9 @@ checker::Type *ReturnStatement::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ReturnStatement::Check(checker::ETSChecker *checker)
+checker::VerifiedType ReturnStatement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *type)

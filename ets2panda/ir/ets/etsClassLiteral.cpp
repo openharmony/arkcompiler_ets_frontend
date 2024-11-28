@@ -60,9 +60,9 @@ checker::Type *ETSClassLiteral::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSClassLiteral::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSClassLiteral::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSClassLiteral *ETSClassLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -63,9 +63,9 @@ checker::Type *TSNonNullExpression::Check([[maybe_unused]] checker::TSChecker *c
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSNonNullExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSNonNullExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TSNonNullExpression *TSNonNullExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
