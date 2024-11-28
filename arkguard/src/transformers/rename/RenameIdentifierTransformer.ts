@@ -393,6 +393,10 @@ namespace secharmony {
             continue;
           }
 
+          if (ApiExtractor.mEnumMemberSet?.has(tmpName)) {
+            continue;
+          }
+
           mangledName = tmpName;
         }
 
@@ -458,6 +462,10 @@ namespace secharmony {
           }
 
           if (ApiExtractor.mConstructorPropertySet?.has(mangled)) {
+            mangled = '';
+          }
+
+          if (ApiExtractor.mEnumMemberSet?.has(mangled)) {
             mangled = '';
           }
         } while (mangled === '');

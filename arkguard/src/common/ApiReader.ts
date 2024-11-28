@@ -87,13 +87,10 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   customProfiles: IOptions, isHarCompiled: boolean): ReseverdSetForArkguard {
   const apiType = ApiExtractor.ApiType;
   let scanningCommonType = undefined;
-  let scanningLibsType = undefined;
   if (needReadApiInfo(customProfiles)) {
     scanningCommonType = apiType.PROJECT;
-    scanningLibsType = apiType.PROJECT_DEPENDS;
   } else {
     scanningCommonType = apiType.CONSTRUCTOR_PROPERTY;
-    scanningLibsType = apiType.CONSTRUCTOR_PROPERTY;
   }
   // The purpose of collecting constructor properties is to avoid generating the same name as the constructor property when obfuscating identifier names.
   ApiExtractor.mConstructorPropertySet = new Set();
