@@ -1626,13 +1626,23 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
     return nullptr;
 }
 
+bool ETSChecker::NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos)
+{
+    if (signature == nullptr) {
+        LogTypeError({"Signature is not available here."}, pos);
+        return false;
+    }
+
+    return (Context().Status() & CheckerStatus::IGNORE_VISIBILITY) == 0U &&
+           (signature->HasSignatureFlag(SignatureFlags::PRIVATE) ||
+            signature->HasSignatureFlag(SignatureFlags::PROTECTED));
+}
+
 void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr,
                                                 Signature *signature, const lexer::SourcePosition &pos,
                                                 char const *errorMessage)
 {
-    if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U ||
-        (!signature->HasSignatureFlag(SignatureFlags::PRIVATE) &&
-         !signature->HasSignatureFlag(SignatureFlags::PROTECTED))) {
+    if (!NeedToVerifySignatureVisibility(signature, pos)) {
         return;
     }
     const auto *declNode = callee->GetDeclNode();

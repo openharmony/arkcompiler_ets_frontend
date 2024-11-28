@@ -715,8 +715,8 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
     checker::Type *initType = init->Check(this);
 
-    if (initType == nullptr) {
-        LogTypeError("Cannot get the expression type", init->Start());
+    // initType should not be nullptr. If an error occurs during check, set it to GlobalTypeError().
+    if (initType == nullptr || initType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
         return GlobalTypeError();
     }
 

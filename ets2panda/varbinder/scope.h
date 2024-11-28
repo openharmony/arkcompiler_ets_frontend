@@ -617,6 +617,8 @@ public:
 
     Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
+    Variable *InsertBindingIfAbsentInScope(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                                           VariableFlags flag);
 
 private:
     util::StringView name_ {};
