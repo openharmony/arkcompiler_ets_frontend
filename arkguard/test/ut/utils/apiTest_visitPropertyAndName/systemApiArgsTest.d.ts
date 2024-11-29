@@ -14,15 +14,14 @@
  */
 
 export declare class TestClass1 {
-  prop1: TestClass2;
-  foo1(param1: AbstractClass): void;
+    param1: number;
+    prop1: number;
+    constructor(param1: number, param2: number);
+    foo1(param5: number): void;
 }
-declare abstract class AbstractClass {
-  abstract abstractProp: TestClass2;
-}
-
 declare class TestClass2 {
-  prop2: string;
-  foo2(param2: string): void;
+    param3: number;
+    prop2: number;
+    constructor(param3: number, param4: number);
+    foo2(param6: number): void;
 }
-export {};
