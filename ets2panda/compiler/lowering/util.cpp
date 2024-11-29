@@ -68,10 +68,7 @@ void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
     };
 
     doNode(node);
-    node->Iterate([doNode](ir::AstNode *child) -> void {
-        doNode(child);
-        ClearTypesVariablesAndScopes(child);
-    });
+    node->IterateRecursively(doNode);
 }
 
 ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept
@@ -107,7 +104,7 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
 // Rerun varbinder and checker on the node.
 void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
-    auto *scope = NearestScope(node);
+    auto *scope = NearestScope(node->Parent());
     auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
 
     ClearTypesVariablesAndScopes(node);
