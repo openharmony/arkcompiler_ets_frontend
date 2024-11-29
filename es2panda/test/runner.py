@@ -1052,7 +1052,7 @@ class BcVersionTest(Test):
             "12_beta3": "12.0.6.0",
             13: "12.0.6.0",
             14: "12.0.6.0",
-            15: "13.0.0.0",
+            15: "12.0.6.0",
             16: "13.0.0.0"
         }
         self.es2abc_script_expect = {
@@ -1066,7 +1066,7 @@ class BcVersionTest(Test):
             "12_beta3": "12.0.6.0",
             13: "12.0.6.0",
             14: "12.0.6.0",
-            15: "13.0.0.0",
+            15: "12.0.6.0",
             16: "13.0.0.0"
         }
 
@@ -1797,7 +1797,7 @@ class TestVersionControl(Test):
         Test.__init__(self, test_path, flags)
         self.beta_version_default = 3
         self.version_with_sub_version_list = [12]
-        self.target_api_version_list = ["9", "10", "11", "12", "15"]
+        self.target_api_version_list = ["9", "10", "11", "12", "16"]
         self.target_api_sub_version_list = ["beta1", "beta2", "beta3"]
         self.specific_api_version_list = ["API11", "API12beta3"]
         self.output = None
@@ -2183,10 +2183,10 @@ def add_directory_for_version_control(runners, args):
         "version_control/API12beta3/bytecode_feature/import_target",
     )
     runner.add_directory(
-        "version_control/API15/bytecode_feature",
+        "version_control/API16/bytecode_feature",
         "js",
         [],
-        "API15",
+        "API16",
         "bytecode_feature",
     )
     runners.append(runner)

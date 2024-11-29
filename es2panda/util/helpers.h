@@ -216,7 +216,7 @@ public:
     static const int32_t SENDABLE_FUNCTION_MIN_SUPPORTED_API_VERSION = 12;
     static const int32_t LAZY_IMPORT_MIN_SUPPORTED_API_VERSION = 12;
     static const int32_t SENDABLE_LAZY_LOADING_MIN_SUPPORTED_API_VERSION = 12;
-    static const int8_t SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION = 15;
+    static const int8_t SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION = 16;
     static constexpr std::string_view SUB_API_VERSION_1 = "beta1";
     static constexpr std::string_view SUB_API_VERSION_2 = "beta2";
     static constexpr std::string_view DEFAULT_SUB_API_VERSION = SUB_API_VERSION_1;
