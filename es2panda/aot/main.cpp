@@ -120,7 +120,8 @@ static void DumpPandaFileSizePctStatistic(std::map<std::string, size_t> &stat)
 static bool GenerateProgramsByWorkers(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
     const std::unique_ptr<panda::es2panda::aot::Options> &options, std::map<std::string, size_t> *statp)
 {
-    auto queue = new panda::es2panda::aot::EmitFileQueue(options, statp, programsInfo);
+    panda::ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+    auto queue = new panda::es2panda::aot::EmitFileQueue(options, statp, programsInfo, &allocator);
 
     bool emitResult = true;
     try {
