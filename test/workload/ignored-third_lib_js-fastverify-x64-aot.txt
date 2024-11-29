@@ -7,9 +7,8 @@ jBox2d_test
 
 #20145
 Matrix_test
-
-#20145
 validator_test
+jsDiff_test
 
 #19246
 asn-one_test
