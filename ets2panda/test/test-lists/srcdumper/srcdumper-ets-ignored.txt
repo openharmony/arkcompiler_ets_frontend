@@ -1,7 +1,3 @@
-# FailKind.ABORT_FAIL (Issue #20219)
-runtime/ets/const_enum.sts
-
-
 # FailKind.INVALID_JSON (Issue #20457)
 runtime/ets/StringTemplate1.sts
 runtime/ets/StringTemplate2.sts

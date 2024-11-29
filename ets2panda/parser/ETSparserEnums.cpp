@@ -142,7 +142,10 @@ ir::Statement *ETSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
         ThrowSyntaxError("Variable declaration expected.");
     }
 
-    return ParseEnumDeclaration(true);
+    // According to the ArkTS specification:
+    // const enum is supported for source-level compatibility with TypeScript,
+    // and const is skipped as it has no impact on enum semantics in ArkTS.
+    return ParseEnumDeclaration(false);
 }
 
 // NOLINTBEGIN(cert-err58-cpp)
