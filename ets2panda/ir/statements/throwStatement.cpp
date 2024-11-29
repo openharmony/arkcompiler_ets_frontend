@@ -68,4 +68,19 @@ checker::Type *ThrowStatement::Check([[maybe_unused]] checker::ETSChecker *check
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+ThrowStatement *ThrowStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expression = argument_->Clone(allocator, nullptr)->AsExpression();
+
+    if (auto *const clone = allocator->New<ThrowStatement>(expression); clone != nullptr) {
+        expression->SetParent(clone);
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 }  // namespace ark::es2panda::ir
