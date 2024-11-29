@@ -25,7 +25,7 @@
 namespace ark::es2panda::ir {
 void TSIntersectionType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : types_) {
+    for (auto *&it : VectorIterationGuard(types_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
@@ -35,7 +35,7 @@ void TSIntersectionType::TransformChildren(const NodeTransformer &cb, std::strin
 
 void TSIntersectionType::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : types_) {
+    for (auto *it : VectorIterationGuard(types_)) {
         cb(it);
     }
 }

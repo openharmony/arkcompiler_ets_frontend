@@ -36,7 +36,7 @@ void CallExpression::TransformChildren(const NodeTransformer &cb, std::string_vi
         }
     }
 
-    for (auto *&it : arguments_) {
+    for (auto *&it : VectorIterationGuard(arguments_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
@@ -52,7 +52,7 @@ void CallExpression::Iterate(const NodeTraverser &cb) const
         cb(typeParams_);
     }
 
-    for (auto *it : arguments_) {
+    for (auto *it : VectorIterationGuard(arguments_)) {
         cb(it);
     }
 

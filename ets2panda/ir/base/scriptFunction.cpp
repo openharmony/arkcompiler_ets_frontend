@@ -110,7 +110,7 @@ void ScriptFunction::TransformChildren(const NodeTransformer &cb, std::string_vi
         }
     }
 
-    for (auto *&it : annotations_) {
+    for (auto *&it : VectorIterationGuard(annotations_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsAnnotationUsage();
@@ -127,7 +127,7 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
     if (body_ != nullptr) {
         cb(body_);
     }
-    for (auto *it : annotations_) {
+    for (auto *it : VectorIterationGuard(annotations_)) {
         cb(it);
     }
 }

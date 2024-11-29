@@ -42,7 +42,7 @@ void NamespaceDefinition::TransformChildren(const NodeTransformer &cb, std::stri
         }
     }
 
-    for (auto *&it : body_) {
+    for (auto *&it : VectorIterationGuard(body_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;

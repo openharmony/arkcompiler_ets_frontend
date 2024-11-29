@@ -44,7 +44,7 @@ void ClassProperty::TransformChildren(const NodeTransformer &cb, std::string_vie
         }
     }
 
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -64,7 +64,7 @@ void ClassProperty::Iterate(const NodeTraverser &cb) const
         cb(typeAnnotation_);
     }
 
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 }

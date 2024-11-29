@@ -24,7 +24,7 @@
 namespace ark::es2panda::ir {
 void TSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : types_) {
+    for (auto *&it : VectorIterationGuard(types_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = static_cast<TypeNode *>(transformedNode);
@@ -34,7 +34,7 @@ void TSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view 
 
 void TSUnionType::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : types_) {
+    for (auto *it : VectorIterationGuard(types_)) {
         cb(it);
     }
 }
