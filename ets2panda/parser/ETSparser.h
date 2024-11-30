@@ -390,6 +390,8 @@ private:
     void ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                 lexer::SourcePosition pos);
     ir::ModifierFlags ParseMemberAccessModifiers();
+    template <bool IS_USAGE>
+    ir::Expression *ParseAnnotationName();
     ir::AnnotationDeclaration *ParseAnnotationDeclaration(
         [[maybe_unused]] ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     ir::AstNode *ParseAnnotationProperty(ir::Identifier *fieldName,

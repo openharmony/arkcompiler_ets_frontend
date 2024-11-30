@@ -350,7 +350,11 @@ void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
 void ETSBinder::BuildAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
 {
     auto boundCtx = BoundContext(recordTable_, annoDecl);
-    LookupTypeReference(annoDecl->AsAnnotationDeclaration()->Ident(), false);
+    if (annoDecl->Expr()->IsIdentifier()) {
+        LookupTypeReference(annoDecl->AsAnnotationDeclaration()->Expr()->AsIdentifier(), false);
+    } else {
+        ResolveReference(annoDecl->Expr());
+    }
     auto scopeCtx = LexicalScope<LocalScope>::Enter(this, annoDecl->Scope());
     for (auto *property : annoDecl->Properties()) {
         ResolveReference(property);
@@ -776,6 +780,11 @@ bool ETSBinder::DetectNameConflict(const util::StringView localName, Variable *c
         return true;
     }
 
+    bool isAmbient = var->Declaration()->Node()->IsDeclare() && !otherVar->Declaration()->Node()->IsDeclare();
+    if (isAmbient) {
+        return false;
+    }
+
     ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, otherVar, localName));
 }
 
@@ -835,7 +844,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     }
 
     if (var->Declaration()->Node()->IsAnnotationDeclaration() &&
-        var->Declaration()->Node()->AsAnnotationDeclaration()->Ident()->Name() != localName) {
+        var->Declaration()->Node()->AsAnnotationDeclaration()->GetBaseName()->Name() != localName) {
         ThrowError(importPath->Start(), "Can not rename annotation '" + var->Declaration()->Name().Mutf8() +
                                             "' in export or import statements.");
     }

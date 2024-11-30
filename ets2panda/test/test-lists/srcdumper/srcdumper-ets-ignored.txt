@@ -24,6 +24,10 @@ runtime/ets/annotation_tests/annotationUsageSingleFileds07.sts
 runtime/ets/annotation_tests/annotationUsage_scope_check01.sts
 runtime/ets/annotation_tests/annotationUsage_scope_check02.sts
 runtime/ets/annotation_tests/annotationUsage_scope_check03.sts
+ast/compiler/ets/annotation_tests/ambient_annotations_bad_type01.sts
+ast/compiler/ets/annotation_tests/ambient_annotations_bad_type02.sts
+ast/compiler/ets/annotation_tests/ambient_annotations_bad_type03.sts
+ast/compiler/ets/annotation_tests/annotation_src.sts
 ast/parser/ets/interface_private_function_1.sts
 ast/compiler/ets/call_for_method_never_exist.sts
 ast/compiler/ets/import_tests/selective_export_tests/namespace_import_wrong_access_name.sts

@@ -72,7 +72,7 @@ BoundContext::BoundContext(RecordTable *recordTable, ir::AnnotationDeclaration *
 
     recordTable_->boundCtx_ = this;
     recordTable_->record_ = annotationDecl;
-    recordIdent_ = annotationDecl->Ident();
+    recordIdent_ = annotationDecl->GetBaseName();
     if (annotationDecl->InternalName() == "") {
         annotationDecl->SetInternalName(FormRecordName());
     }

@@ -197,7 +197,7 @@ void ImportExportDecls::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *
 
 void ImportExportDecls::VisitAnnotationDeclaration(ir::AnnotationDeclaration *annotationDecl)
 {
-    fieldMap_.emplace(annotationDecl->Ident()->Name(), annotationDecl);
+    fieldMap_.emplace(annotationDecl->GetBaseName()->Name(), annotationDecl);
 }
 
 void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl)

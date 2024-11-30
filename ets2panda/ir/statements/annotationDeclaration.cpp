@@ -30,17 +30,17 @@ void AnnotationDeclaration::TransformChildren(const NodeTransformer &cb, std::st
         }
     }
 
-    if (ident_ != nullptr) {
-        if (auto *transformedNode = cb(ident_); ident_ != transformedNode) {
-            ident_->SetTransformedNode(transformationName, transformedNode);
-            ident_ = transformedNode->AsIdentifier();
+    if (expr_ != nullptr) {
+        if (auto *transformedNode = cb(expr_); expr_ != transformedNode) {
+            expr_->SetTransformedNode(transformationName, transformedNode);
+            expr_ = transformedNode->AsIdentifier();
         }
     }
 }
 void AnnotationDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    if (ident_ != nullptr) {
-        cb(ident_);
+    if (expr_ != nullptr) {
+        cb(expr_);
     }
 
     for (auto *it : properties_) {
@@ -50,13 +50,13 @@ void AnnotationDeclaration::Iterate(const NodeTraverser &cb) const
 
 void AnnotationDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"identifier", ident_}, {"properties", properties_}});
+    dumper->Add({{"Expr", expr_}, {"properties", properties_}});
 }
 void AnnotationDeclaration::Dump(ir::SrcDumper *dumper) const
 {  // re-understand
-    ASSERT(ident_ != nullptr);
+    ASSERT(expr_ != nullptr);
     dumper->Add("@interface ");
-    ident_->Dump(dumper);
+    expr_->Dump(dumper);
     dumper->Add(" {");
 
     if (!properties_.empty()) {
@@ -90,5 +90,14 @@ checker::Type *AnnotationDeclaration::Check(checker::TSChecker *checker)
 checker::Type *AnnotationDeclaration::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
+}
+
+Identifier *AnnotationDeclaration::GetBaseName() const
+{
+    if (expr_->IsIdentifier()) {
+        return expr_->AsIdentifier();
+    }
+    auto *part = expr_->AsETSTypeReference()->Part();
+    return part->Name()->AsTSQualifiedName()->Right();
 }
 }  // namespace ark::es2panda::ir

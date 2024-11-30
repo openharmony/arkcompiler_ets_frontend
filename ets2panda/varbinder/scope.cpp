@@ -922,7 +922,8 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
             break;
         }
         case DeclType::ANNOTATIONDECL: {
-            props->SetBindingProps(VariableFlags::ANNOTATIONDECL, newDecl->Node()->AsAnnotationDeclaration()->Ident(),
+            props->SetBindingProps(VariableFlags::ANNOTATIONDECL,
+                                   newDecl->Node()->AsAnnotationDeclaration()->GetBaseName(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
         }
