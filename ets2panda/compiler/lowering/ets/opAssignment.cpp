@@ -114,6 +114,11 @@ static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir:
 static std::string GenFormatForExpression(ir::Expression *expr, size_t ix1, size_t ix2)
 {
     std::string res = "@@I" + std::to_string(ix1);
+
+    if (expr->IsTSNonNullExpression()) {
+        expr = expr->AsTSNonNullExpression()->Expr();
+    }
+
     if (expr->IsMemberExpression()) {
         auto const kind = expr->AsMemberExpression()->Kind();
         if (kind == ir::MemberExpressionKind::PROPERTY_ACCESS) {
@@ -229,6 +234,48 @@ ir::AstNode *HandleOpAssignment(public_lib::Context *ctx, ir::AssignmentExpressi
     return loweringResult;
 }
 
+struct ArgumentInfo {
+    std::string newAssignmentStatements {};
+    ir::Identifier *id1 = nullptr;
+    ir::Identifier *id2 = nullptr;
+    ir::Identifier *id3 = nullptr;
+    ir::Expression *object = nullptr;
+    ir::Expression *property = nullptr;
+    checker::Type *objType = nullptr;
+    checker::Type *propType = nullptr;
+};
+
+static void ParseArgument(public_lib::Context *ctx, ir::Expression *argument, ArgumentInfo &info)
+{
+    auto *allocator = ctx->allocator;
+
+    if (argument->IsTSNonNullExpression()) {
+        argument = argument->AsTSNonNullExpression()->Expr();
+    }
+
+    if (argument->IsIdentifier()) {
+        info.id1 = GetClone(allocator, argument->AsIdentifier());
+    } else if (argument->IsMemberExpression()) {
+        auto *memberExpression = argument->AsMemberExpression();
+
+        if (info.object = memberExpression->Object(); info.object != nullptr && info.object->IsIdentifier()) {
+            info.id1 = GetClone(allocator, info.object->AsIdentifier());
+        } else if (info.object != nullptr) {
+            info.id1 = Gensym(allocator);
+            info.newAssignmentStatements = "const @@I1 = (@@E2) as @@T3; ";
+            info.objType = info.object->TsType();
+        }
+
+        if (info.property = memberExpression->Property(); info.property != nullptr && info.property->IsIdentifier()) {
+            info.id2 = GetClone(allocator, info.property->AsIdentifier());
+        } else if (info.property != nullptr) {
+            info.id2 = Gensym(allocator);
+            info.newAssignmentStatements += "const @@I4 = (@@E5) as @@T6; ";
+            info.propType = info.property->TsType();
+        }
+    }
+}
+
 static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::UpdateExpression *upd)
 {
     auto *allocator = ctx->allocator;
@@ -236,64 +283,39 @@ static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::Updat
     auto *argument = upd->Argument();
     auto *checker = ctx->checker->AsETSChecker();
 
-    std::string newAssignmentStatements {};
-
-    ir::Identifier *id1;
-    ir::Identifier *id2 = nullptr;
-    ir::Identifier *id3 = nullptr;
-    ir::Expression *object = nullptr;
-    ir::Expression *property = nullptr;
-    checker::Type *objType = checker->GlobalVoidType();  // placeholder
-    checker::Type *propType = checker->GlobalVoidType();
+    ArgumentInfo argInfo {};
+    argInfo.objType = checker->GlobalVoidType();
+    argInfo.propType = checker->GlobalVoidType();
 
     // Parse ArkTS code string and create the corresponding AST node(s)
     // We have to use extra caution with types and `as` conversions because of smart types, which we cannot reproduce in
     // re-checking.
-
-    if (argument->IsIdentifier()) {
-        id1 = GetClone(allocator, argument->AsIdentifier());
-    } else if (argument->IsMemberExpression()) {
-        auto *memberExpression = argument->AsMemberExpression();
-
-        if (object = memberExpression->Object(); object != nullptr && object->IsIdentifier()) {
-            id1 = GetClone(allocator, object->AsIdentifier());
-        } else if (object != nullptr) {
-            id1 = Gensym(allocator);
-            newAssignmentStatements = "const @@I1 = (@@E2) as @@T3; ";
-            objType = object->TsType();
-        }
-
-        if (property = memberExpression->Property(); property != nullptr && property->IsIdentifier()) {
-            id2 = GetClone(allocator, property->AsIdentifier());
-        } else if (property != nullptr) {
-            id2 = Gensym(allocator);
-            newAssignmentStatements += "const @@I4 = (@@E5) as @@T6; ";
-            propType = property->TsType();
-        }
-    }
-
+    ParseArgument(ctx, argument, argInfo);
     std::string opSign = lexer::TokenToString(CombinedOpToOp(upd->OperatorType()));
 
     std::string suffix = argument->TsType()->IsETSBigIntType() ? "n" : "";
 
     // NOLINTBEGIN(readability-magic-numbers)
     if (upd->IsPrefix()) {
-        newAssignmentStatements += GenFormatForExpression(argument, 7U, 8U) + " = (" +
-                                   GenFormatForExpression(argument, 9U, 10U) + opSign + " 1" + suffix + ") as @@T11;";
+        argInfo.newAssignmentStatements += GenFormatForExpression(argument, 7U, 8U) + " = (" +
+                                           GenFormatForExpression(argument, 9U, 10U) + opSign + " 1" + suffix +
+                                           ") as @@T11;";
         return parser->CreateFormattedExpression(
-            newAssignmentStatements, id1, object, objType, id2, property, propType, GetClone(allocator, id1),
-            GetClone(allocator, id2), GetClone(allocator, id1), GetClone(allocator, id2), argument->TsType());
+            argInfo.newAssignmentStatements, argInfo.id1, argInfo.object, argInfo.objType, argInfo.id2,
+            argInfo.property, argInfo.propType, GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2),
+            GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2), argument->TsType());
     }
 
     // upd is postfix
-    id3 = Gensym(allocator);
-    newAssignmentStatements += "const @@I7 = " + GenFormatForExpression(argument, 8, 9) + " as @@T10;" +
-                               GenFormatForExpression(argument, 11U, 12U) + " = (@@I13 " + opSign + " 1" + suffix +
-                               ") as @@T14; @@I15;";
-    return parser->CreateFormattedExpression(newAssignmentStatements, id1, object, objType, id2, property, propType,
-                                             id3, GetClone(allocator, id1), GetClone(allocator, id2),
-                                             argument->TsType(), GetClone(allocator, id1), GetClone(allocator, id2),
-                                             GetClone(allocator, id3), argument->TsType(), GetClone(allocator, id3));
+    argInfo.id3 = Gensym(allocator);
+    argInfo.newAssignmentStatements += "const @@I7 = " + GenFormatForExpression(argument, 8, 9) + " as @@T10;" +
+                                       GenFormatForExpression(argument, 11U, 12U) + " = (@@I13 " + opSign + " 1" +
+                                       suffix + ") as @@T14; @@I15;";
+    return parser->CreateFormattedExpression(
+        argInfo.newAssignmentStatements, argInfo.id1, argInfo.object, argInfo.objType, argInfo.id2, argInfo.property,
+        argInfo.propType, argInfo.id3, GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2),
+        argument->TsType(), GetClone(allocator, argInfo.id1), GetClone(allocator, argInfo.id2),
+        GetClone(allocator, argInfo.id3), argument->TsType(), GetClone(allocator, argInfo.id3));
     // NOLINTEND(readability-magic-numbers)
 }
 

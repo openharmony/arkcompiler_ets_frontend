@@ -12,26 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ function main(){
+  let a:number|undefined = undefined;
+  a!++;
+ }
 
-function foo(arg: number|undefined) {
-    arg!++;
-    callMe();
-    return arg;
-}
-
-function main(): void {
-    let a = foo(1);
-    assert a == 2.0;
-}
-
-class Test {
-    n: int|undefined = 1
-}
-
-function callMe():int{
-  let v1 : int[] = [1,2,3];
-  let b = new Test();
-  b.n!++;
-  v1[0]!++;
-  return v1[0];
-}
+ /* @@? 17:3 Error TypeError: Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'. */
+ /* @@? 17:3 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
