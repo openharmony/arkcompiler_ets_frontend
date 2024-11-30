@@ -24,8 +24,8 @@ class array_type  {
     }
 }
 
-/* @@? 21:5 Error TypeError: Function with a non void return type must return a value.  */
-/* @@? 23:13 Error TypeError: Function with a non void return type must return a value.  */
+/* @@? 21:16 Error TypeError: Function with a non void return type must return a value.  */
+/* @@? 23:26 Error TypeError: Function with a non void return type must return a value.  */
 /* @@? 1:1 Error TypeError: There were errors during assign analysis (2)  */
 /* @@? 17:13 Warning Warning: Property 'a' might not have been initialized.  */
 /* @@? 18:15 Warning Warning: Property 'f' might not have been initialized.  */

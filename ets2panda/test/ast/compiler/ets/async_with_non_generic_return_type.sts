@@ -19,4 +19,4 @@ async function foo(arg: number): str {
     return "";
 }
 
-/* @@? 18:19 Error TypeError: Return type of async function must be 'Promise'.  */
+/* @@? 18:16 Error TypeError: Return type of async function must be 'Promise'.  */

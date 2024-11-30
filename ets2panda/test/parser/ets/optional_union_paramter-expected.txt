@@ -1119,7 +1119,7 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 23,
@@ -1130,7 +1130,7 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 23,

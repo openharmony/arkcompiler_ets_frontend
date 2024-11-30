@@ -275,7 +275,7 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 21
+                    "column": 17
                   },
                   "end": {
                     "line": 16,
@@ -286,7 +286,7 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 21
+                  "column": 17
                 },
                 "end": {
                   "line": 16,

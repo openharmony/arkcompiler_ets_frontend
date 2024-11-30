@@ -351,6 +351,11 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::TypeNod
         functionContext.AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
         GetContext().Status() ^= ParserStatus::FUNCTION_HAS_RETURN_STATEMENT;
     }
+    if ((GetContext().Status() & ParserStatus::FUNCTION_HAS_THROW_STATEMENT) != 0) {
+        functionContext.AddFlag(ir::ScriptFunctionFlags::HAS_THROW);
+        GetContext().Status() ^= ParserStatus::FUNCTION_HAS_THROW_STATEMENT;
+    }
+
     functionContext.AddFlag(throwMarker);
 
     bool isDeclare = InAmbientContext();

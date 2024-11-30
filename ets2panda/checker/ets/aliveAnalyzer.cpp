@@ -228,6 +228,10 @@ void AliveAnalyzer::AnalyzeClassDecl(const ir::ClassDeclaration *classDecl)
 
 void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 {
+    for (ir::MethodDefinition *overload : methodDef->Overloads()) {
+        AnalyzeNode(overload);
+    }
+
     auto *func = methodDef->Function();
 
     if (func->Body() == nullptr || func->IsProxy()) {
@@ -249,12 +253,12 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !checker_->IsAsyncImplMethod(methodDef)) {
         if (!methodDef->Function()->HasReturnStatement()) {
-            checker_->LogTypeError("Function with a non void return type must return a value.", func->Id()->Start());
+            checker_->LogTypeError("Function with a non void return type must return a value.", func->Start());
             ClearPendingExits();
             return;
         }
 
-        checker_->LogTypeError("Not all code paths return a value.", func->Id()->Start());
+        checker_->LogTypeError("Not all code paths return a value.", func->Start());
     }
 
     ClearPendingExits();

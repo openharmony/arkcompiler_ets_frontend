@@ -23,4 +23,4 @@ function foo2 (x: int, y: int = 0, ...r: int[]): int {
 }
 
 /* @@? 16:28 Error SyntaxError: Required parameter follows default parameter(s).  */
-/* @@? 21:14 Error SyntaxError: Both optional and rest parameters are not allowed in function's parameter list.  */
+/* @@? 21:10 Error SyntaxError: Both optional and rest parameters are not allowed in function's parameter list.  */

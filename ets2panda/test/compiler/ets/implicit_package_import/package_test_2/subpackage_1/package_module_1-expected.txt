@@ -652,7 +652,7 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 13
+                    "column": 10
                   },
                   "end": {
                     "line": 21,
@@ -663,7 +663,7 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 13
+                  "column": 10
                 },
                 "end": {
                   "line": 21,

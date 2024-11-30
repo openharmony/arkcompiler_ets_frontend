@@ -79,7 +79,8 @@ bool GetterSetterValidation::ValidateGetter(CheckContext &ctx, ir::MethodDefinit
     }
 
     // For non-abstract and non-ambient getters return statement should always exist
-    if (!function->HasReturnStatement() && !function->IsAbstract() && !function->IsDeclare()) {
+    if (!function->HasReturnStatement() && !function->HasThrowStatement() && !function->IsAbstract() &&
+        !function->IsDeclare()) {
         report("MISSING RETURN STATEMENT IN GETTER METHOD");
     }
 

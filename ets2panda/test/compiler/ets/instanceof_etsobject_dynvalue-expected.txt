@@ -418,7 +418,7 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 12
+                    "column": 10
                   },
                   "end": {
                     "line": 26,
@@ -429,7 +429,7 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 12
+                  "column": 10
                 },
                 "end": {
                   "line": 26,

@@ -102,6 +102,7 @@ enum class ScriptFunctionFlags : uint32_t {
     HAS_RETURN = 1U << 19U,
     ASYNC_IMPL = 1U << 20U,
     EXTERNAL_OVERLOAD = 1U << 21U,
+    HAS_THROW = 1U << 22U,
 };
 
 enum class TSOperatorType { READONLY, KEYOF, UNIQUE };

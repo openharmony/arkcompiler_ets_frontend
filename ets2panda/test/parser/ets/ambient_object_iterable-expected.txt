@@ -1936,7 +1936,7 @@
                 "loc": {
                   "start": {
                     "line": 32,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 52,
@@ -1947,7 +1947,7 @@
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 52,
