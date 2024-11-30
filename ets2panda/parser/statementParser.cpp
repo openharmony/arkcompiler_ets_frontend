@@ -155,6 +155,11 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
         return ParseStatementControlFlowTokenHelper(flags);
     }
 
+    return ParseStatementBasedOnTokenType(flags);
+}
+
+ir::Statement *ParserImpl::ParseStatementBasedOnTokenType(StatementParsingFlags flags)
+{
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_ASSERT:
             return ParseAssertStatement();
@@ -164,6 +169,8 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
             return ParseImportDeclaration(flags);
         case lexer::TokenType::KEYW_FUNCTION:
             return ParseFunctionStatement(flags);
+        case lexer::TokenType::KEYW_ABSTRACT:
+        case lexer::TokenType::KEYW_FINAL:
         case lexer::TokenType::KEYW_CLASS:
             return ParseClassStatement(flags, ir::ClassDefinitionModifiers::NONE);
         case lexer::TokenType::KEYW_VAR:
