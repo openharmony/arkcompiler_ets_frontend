@@ -1151,22 +1151,59 @@ class PatchTest(Test):
         self.target_version = target_version
         self.preserve_files = preserve_files
 
+    def is_ts_test_cases(self):
+        return 'ts_test_cases' in os.path.normpath(self.path).split(os.sep)
+
+    def need_to_merge(self):
+        # If the test case is in the 'export and import' directory, it needs to be merged.
+        if os.path.split(self.path)[-2] == 'export-and-import':
+            return True
+        else:
+            return False
+
+    def gen_files_infos(self, modified=False):
+        if not self.need_to_merge():
+            return
+
+        file_suffix = '.ts' if self.is_ts_test_cases() else '.js'
+        file_name_list = []
+        for file_name in os.listdir(self.path):
+            if file_name.endswith(file_suffix):
+                if '_mod' in file_name and modified:
+                    file_name_list.append(file_name)
+                elif not '_mod' in file_name and not modified:
+                    file_name_list.append(file_name)
+
+        files_info_txt = os.path.join(self.path, 'filesInfo.txt')
+        with open(files_info_txt, 'w', encoding='utf-8') as file:
+            for file_name in file_name_list:
+                file_path = os.path.join(self.path, file_name)
+                file_prev, file_extension = os.path.splitext(file_name)
+                abc_file_path = os.path.join(self.path, f"{file_prev}.abc")
+                file.write(f'{file_path};{file_name};{file_name};esm;{file_name};false\n')
+
     def gen_cmd(self, runner):
         symbol_table_file = os.path.join(self.path, 'base.map')
-        origin_input_file = 'base.js'
+        origin_input_file = 'base.js' if not self.is_ts_test_cases() else 'base.ts'
         origin_output_abc = os.path.join(self.path, 'base.abc')
-        modified_input_file = 'base_mod.js'
+        modified_input_file = 'base_mod.js' if not self.is_ts_test_cases() else 'base_mod.ts'
         modified_output_abc = os.path.join(self.path, 'patch.abc')
+        files_info_txt = os.path.join(self.path, 'filesInfo.txt')
         target_version_cmd = ""
         if self.target_version > 0:
             target_version_cmd = "--target-api-version=" + str(self.target_version)
 
         gen_base_cmd = runner.cmd_prefix + [runner.es2panda, '--module', target_version_cmd]
+        if self.need_to_merge():
+            gen_base_cmd = gen_base_cmd.append('--merge-abc')
         if 'record-name-with-dots' in os.path.basename(self.path):
             gen_base_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
         gen_base_cmd.extend(['--dump-symbol-table', symbol_table_file])
         gen_base_cmd.extend(['--output', origin_output_abc])
-        gen_base_cmd.extend([os.path.join(self.path, origin_input_file)])
+        if not self.need_to_merge():
+            gen_base_cmd.extend([os.path.join(self.path, origin_input_file)])
+        else:
+            gen_base_cmd.extend(['--debug-info', f'@{files_info_txt}'])
         self.log_cmd(gen_base_cmd)
 
         if self.mode == 'hotfix':
@@ -1179,10 +1216,15 @@ class PatchTest(Test):
             mode_arg = ["--cold-reload"]
 
         patch_test_cmd = runner.cmd_prefix + [runner.es2panda, '--module', target_version_cmd]
+        if self.need_to_merge():
+            patch_test_cmd = patch_test_cmd.append('--merge-abc')
         patch_test_cmd.extend(mode_arg)
         patch_test_cmd.extend(['--input-symbol-table', symbol_table_file])
         patch_test_cmd.extend(['--output', modified_output_abc])
-        patch_test_cmd.extend([os.path.join(self.path, modified_input_file)])
+        if not self.need_to_merge():
+            patch_test_cmd.extend([os.path.join(self.path, modified_input_file)])
+        else:
+            patch_test_cmd.extend(['--debug-info', f'@{files_info_txt}'])
         if 'record-name-with-dots' in os.path.basename(self.path):
             patch_test_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
         dump_assembly_testname = [
@@ -1201,6 +1243,7 @@ class PatchTest(Test):
     def run(self, runner):
         gen_base_cmd, patch_test_cmd, symbol_table_file, origin_output_abc, modified_output_abc = self.gen_cmd(runner)
 
+        self.gen_files_infos(False)
         process_base = run_subprocess_with_beta3(None, gen_base_cmd)
         stdout_base, stderr_base = process_base.communicate(timeout=runner.args.es2panda_timeout)
         if stderr_base:
@@ -1208,6 +1251,7 @@ class PatchTest(Test):
             self.error = stderr_base.decode("utf-8", errors="ignore")
             self.output = stdout_base.decode("utf-8", errors="ignore") + stderr_base.decode("utf-8", errors="ignore")
         else:
+            self.gen_files_infos(True)
             process_patch = run_subprocess_with_beta3(None, patch_test_cmd)
             process_patch = subprocess.Popen(patch_test_cmd, stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
@@ -1229,11 +1273,14 @@ class PatchTest(Test):
         if not self.passed:
             self.error = "expected output:" + os.linesep + expected + os.linesep + "actual output:" + os.linesep +\
                 self.output
+        files_info_txt = os.path.join(self.path, 'filesInfo.txt')
         if not self.preserve_files:
             os.remove(symbol_table_file)
             os.remove(origin_output_abc)
             if (os.path.exists(modified_output_abc)):
                 os.remove(modified_output_abc)
+            if (os.path.exists(files_info_txt)):
+                os.remove(files_info_txt)
         return self
 
 
@@ -1256,10 +1303,10 @@ class PatchRunner(Runner):
         for sub_path in os.listdir(name_dir):
             test_base_path = os.path.join(name_dir, sub_path)
             if name != "coldreload":
-                for test_dir in os.listdir(test_base_path):
-                    test_path = os.path.join(test_base_path, test_dir)
-                    self.tests_in_dirs.append(test_path)
-                    self.tests.append(PatchTest(test_path, name, target_version, self.preserve_files))
+                for dirpath, dirnames, filenames in os.walk(test_base_path):
+                    if not dirnames:
+                        self.tests_in_dirs.append(dirpath)
+                        self.tests.append(PatchTest(dirpath, name, target_version, self.preserve_files))
             else:
                 self.tests_in_dirs.append(test_base_path)
                 self.tests.append(PatchTest(test_base_path, name, target_version, self.preserve_files))
