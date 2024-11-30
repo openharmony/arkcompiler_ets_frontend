@@ -1,7 +1,4 @@
 {
-  "IdentifierCache": {
-    "#__ImportElement": "a",
-    "#__ExportElement": "b"
-  },
+  "IdentifierCache": {},
   "MemberMethodCache": {}
 }

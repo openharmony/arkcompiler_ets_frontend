@@ -12,5 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { __ImportElement as ownElement } from './noExistFile';
-export { __ExportElement as outElement } from './noExistFile';
+
+declare module 'Module1' {
+  import {sameNameVar} from 'module1';
+}
+import {sameNameVar} from './module2';

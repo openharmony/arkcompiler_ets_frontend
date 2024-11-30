@@ -12,5 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { __ImportElement as ownElement } from './noExistFile';
-export { __ExportElement as outElement } from './noExistFile';
+
+import {exportVar2, noExistVar2 as n2} from './exportFile2';
+let importVar2 = exportVar2;

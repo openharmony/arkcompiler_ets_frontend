@@ -12,5 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { __ImportElement as ownElement } from './noExistFile';
-export { __ExportElement as outElement } from './noExistFile';
+
+declare module 'TestModule1' {
+  import {noSymbolIdentifier1 as ni1} from 'module1';
+  export {noSymbolIdentifier2 as ni2} from 'module1'
+}

@@ -72,7 +72,10 @@ import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
 namespace secharmony {
   type ForLikeStatement = ForStatement | ForInOrOfStatement;
   type ClassLikeDeclaration = ClassDeclaration | ClassExpression;
-  export const noSymbolIdentifier: Set<string> = new Set();
+  /**
+   * A map used to track whether identifiers without symbols are in the top-level scope.
+   */
+  export const exportElementsWithoutSymbol: Map<Node, boolean> = new Map();
 
   /**
    * type of scope
@@ -463,7 +466,7 @@ namespace secharmony {
         if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
           let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
           if (!propertySymbol) {
-            noSymbolIdentifier.add(propetyNameNode.text);
+            exportElementsWithoutSymbol.set(propetyNameNode, current.kind === ScopeKind.GLOBAL);
           } else {
             current.addDefinition(propertySymbol);
           }
@@ -537,7 +540,7 @@ namespace secharmony {
       if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
         let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
         if (!propertySymbol) {
-          noSymbolIdentifier.add(propetyNameNode.text);
+          exportElementsWithoutSymbol.set(propetyNameNode, current.kind === ScopeKind.GLOBAL);
         }
       }
       forEachChild(node, analyzeScope);

@@ -63,7 +63,7 @@ import {
   isEnumScope,
   isInterfaceScope,
   isObjectLiteralScope,
-  noSymbolIdentifier,
+  exportElementsWithoutSymbol,
   getNameWithScopeLoc
 } from '../../utils/ScopeAnalyzer';
 
@@ -130,7 +130,7 @@ namespace secharmony {
     let options: NameGeneratorOptions = {};
     let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
-    const openTopLevel: boolean = option?.mNameObfuscation?.mTopLevel;
+    const enableToplevel: boolean = option?.mNameObfuscation?.mTopLevel;
     const exportObfuscation: boolean = option?.mExportObfuscation;
     let isInitializedReservedList = false;
     return renameIdentifierFactory;
@@ -142,7 +142,7 @@ namespace secharmony {
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
       let fileExportNames: Set<string> = undefined;
       let fileImportNames: Set<string> = undefined;
-      noSymbolIdentifier.clear();
+      exportElementsWithoutSymbol.clear();
 
       let historyMangledNames: Set<string> = undefined;
       if (historyNameCache && historyNameCache.size > 0) {
@@ -263,7 +263,7 @@ namespace secharmony {
           if (!Reflect.has(def, 'obfuscateAsProperty') &&
             isInLocalWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, path) ||
             (!exportObfuscation && scope.exportNames.has(def.name)) ||
-            isSkippedGlobal(openTopLevel, scope)) {
+            isSkippedGlobal(enableToplevel, scope)) {
             scope.mangledNames.add(mangled);
             mangledSymbolNames.set(def, {mangledName: mangled, originalNameWithScope: path});
             return;
@@ -684,7 +684,7 @@ namespace secharmony {
         let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
         let mangledPropertyNameOfNoSymbolImportExport = '';
         if (!sym) {
-          if (exportObfuscation && noSymbolIdentifier.has(node.text) && trySearchImportExportSpecifier(node)) {
+          if (shouldObfuscateNodeWithoutSymbol(node)) {
             mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(node.text);
           } else {
             return node;
@@ -766,6 +766,16 @@ namespace secharmony {
         while (node.parent) {
           node = node.parent;
           if ((isImportSpecifier(node) || isExportSpecifier(node)) && node.propertyName && isIdentifier(node.propertyName)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function shouldObfuscateNodeWithoutSymbol(node: Identifier): boolean {
+        if (exportObfuscation && exportElementsWithoutSymbol.has(node) && trySearchImportExportSpecifier(node)) {
+          let isGlobalNode: boolean = exportElementsWithoutSymbol.get(node);
+          if ((isGlobalNode && enableToplevel) || !isGlobalNode) {
             return true;
           }
         }
