@@ -2,4 +2,7 @@
 # 20677
 protobuf_test
 
+#18383
+memory_cache_test
+
 
