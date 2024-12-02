@@ -1,18 +1,3 @@
 # Known failures list for third_lib_js - fastverify-x64-aot
-#19070
-float-mm
-
-#19231
-jBox2d_test
-
-#20145
-Matrix_test
-validator_test
-jsDiff_test
-
-#19246
-asn-one_test
-
-#19246
-pdfview_test
-mathjs_test
+#21067
+xml_js_test
