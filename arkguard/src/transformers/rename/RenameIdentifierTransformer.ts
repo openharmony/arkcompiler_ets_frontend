@@ -108,6 +108,7 @@ import {
   LocalVariableCollections
 } from '../../utils/CommonCollections';
 import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
+import { shouldKeepCurFileParamerters, shouldKeepParameter } from '../../utils/KeepParameterUtils';
 
 namespace secharmony {
   /**
@@ -156,7 +157,7 @@ namespace secharmony {
 
       let checker: TypeChecker = undefined;
       let manager: ScopeManager = createScopeManager();
-
+      let isCurFileParamertersKept: boolean = false;
       return renameTransformer;
 
       /**
@@ -173,6 +174,7 @@ namespace secharmony {
         if (!isSourceFile(node) || ArkObfuscator.isKeptCurrentFile) {
           return node;
         }
+        isCurFileParamertersKept = shouldKeepCurFileParamerters(node, profile);
 
         const checkRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_CHECKER);
         startSingleFileEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
@@ -283,6 +285,12 @@ namespace secharmony {
           }
 
           if (mangledSymbolNames.has(def)) {
+            return;
+          }
+
+          const declarationOfSymbol: Declaration | undefined = def.declarations?.[0];
+          if (isCurFileParamertersKept && shouldKeepParameter(declarationOfSymbol, profile, mangledSymbolNames, checker)) {
+            mangledSymbolNames.set(def, {mangledName: mangled, originalNameWithScope: path});
             return;
           }
 

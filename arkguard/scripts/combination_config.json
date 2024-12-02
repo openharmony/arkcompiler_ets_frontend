@@ -1527,5 +1527,327 @@
         }
       }
     }
+  },
+  "keep_parameter": {
+    "enableOptions": {
+      "mExportObfuscation": true,
+      "mNameObfuscation": {
+        "mRenameProperties": true,
+        "mKeepStringProperty": false,
+        "mTopLevel": true,
+        "mKeepParameterNames": true
+      }
+    },
+    "inputDirs": [
+      "../test/combinations/keep_parameter/01_function_class",
+      "../test/combinations/keep_parameter/02_struct"
+    ],
+    "outputDir": "../test/local/combinations/keep_parameter",
+    "whitelist": {
+      "strProp+top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "prop+strProp+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+strProp": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "prop+strProp+top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "prop+strProp+top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "export+prop": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "export": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "export+prop+top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+strProp+top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "export+top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "export+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+prop+strProp+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+prop+strProp": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "prop+top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+prop+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "strProp+top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "prop+strProp": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "prop+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+prop+strProp+top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "prop+top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "export+strProp+top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+prop+top": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      },
+      "export+prop+strProp+top+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "foo1", "foo2", "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "method1", "method2", "method3", "method4", "field5", "method9", "manualKeepMethod1", "111", "222"
+          ]
+        }
+      },
+      "strProp": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "prop": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "manualKeepClassName",
+            "manualKeepFoo1"
+          ],
+          "mReservedProperties": [
+            "manualKeepMethod1"
+          ]
+        }
+      },
+      "export+strProp+keepPara": {
+        "mNameObfuscation": {
+          "mReservedToplevelNames": [
+            "*"
+          ],
+          "mReservedProperties": [
+            "*"
+          ]
+        }
+      }
+    }
   }
 }

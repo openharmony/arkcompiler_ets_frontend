@@ -67,6 +67,7 @@ enum OptionType {
   EXTRA_OPTIONS,
   STRIP_LANGUAGE_DEFAULT,
   STRIP_SYSTEM_API_ARGS,
+  KEEP_PARAMETER_NAMES,
 }
 export { OptionType as OptionTypeForTest };
 
@@ -92,6 +93,7 @@ class ObOptions {
   applyNameCache: string = '';
   stripLanguageDefault: boolean = false;
   stripSystemApiArgs: boolean = false;
+  keepParameterNames: boolean = false;
 
   merge(other: ObOptions): void {
     this.disableObfuscation = this.disableObfuscation || other.disableObfuscation;
@@ -106,6 +108,7 @@ class ObOptions {
     this.enableExportObfuscation = this.enableExportObfuscation || other.enableExportObfuscation;
     this.stripLanguageDefault = this.stripLanguageDefault || other.stripLanguageDefault;
     this.stripSystemApiArgs = this.stripSystemApiArgs || other.stripSystemApiArgs;
+    this.keepParameterNames = this.keepParameterNames || other.keepParameterNames;
 
     if (other.printNameCache.length > 0) {
       this.printNameCache = other.printNameCache;
@@ -328,6 +331,7 @@ export class ObConfigResolver {
   static readonly EXTRA_OPTIONS = '-extra-options';
   static readonly STRIP_LANGUAGE_DEFAULT = 'strip-language-default';
   static readonly STRIP_SYSTEM_API_ARGS = 'strip-system-api-args';
+  static readonly KEEP_PARAMETER_NAMES = '-keep-parameter-names';
 
   // renameFileName, printNameCache, applyNameCache, removeComments and keepComments won't be reserved in obfuscation.txt file.
   static exportedSwitchMap: Map<string, string> = new Map([
@@ -383,6 +387,8 @@ export class ObConfigResolver {
         return OptionType.STRIP_LANGUAGE_DEFAULT;
       case ObConfigResolver.STRIP_SYSTEM_API_ARGS:
         return OptionType.STRIP_SYSTEM_API_ARGS;
+      case ObConfigResolver.KEEP_PARAMETER_NAMES:
+        return OptionType.KEEP_PARAMETER_NAMES;
       default:
         return OptionType.NONE;
     }
@@ -457,6 +463,11 @@ export class ObConfigResolver {
         case OptionType.PRINT_KEPT_NAMES: {
           configs.options.printKeptNames = true;
           type = tokenType;
+          extraOptionType = OptionType.NONE;
+          continue;
+        }
+        case OptionType.KEEP_PARAMETER_NAMES: {
+          configs.options.keepParameterNames = true;
           extraOptionType = OptionType.NONE;
           continue;
         }

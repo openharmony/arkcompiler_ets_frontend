@@ -85,6 +85,7 @@ function initArkGuardConfig(
       mKeepStringProperty: !mergedObConfig.options.enableStringPropertyObfuscation,
       mTopLevel: mergedObConfig.options.enableToplevelObfuscation,
       mReservedToplevelNames: mergedObConfig.reservedGlobalNames,
+      mKeepParameterNames: mergedObConfig.options.keepParameterNames,
       mUniversalReservedProperties: mergedObConfig.universalReservedPropertyNames,
       mUniversalReservedToplevelNames: mergedObConfig.universalReservedGlobalNames
     },
