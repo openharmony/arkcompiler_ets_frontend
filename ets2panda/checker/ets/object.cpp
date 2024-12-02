@@ -1773,6 +1773,10 @@ void ETSChecker::ValidateGetterSetter(const ir::MemberExpression *const memberEx
 
     if ((searchFlag & PropertySearchFlags::IS_SETTER) != 0) {
         ValidateReadonlyProperty(memberExpr, propType, sourcePos);
+        if (propType->FindSetter() == nullptr) {
+            LogTypeError("Cannot assign to this property because it is readonly.", sourcePos);
+            return;
+        }
         ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindSetter(), sourcePos);
     }
 }

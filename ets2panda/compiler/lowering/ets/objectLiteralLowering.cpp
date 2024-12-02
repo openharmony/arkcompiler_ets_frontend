@@ -103,9 +103,50 @@ static void AllowRequiredTypeInstantiation(const ir::Expression *const loweringR
     }
 }
 
+static bool CheckReadonlyAndUpdateCtorArgs(const ir::Identifier *key, ir::Expression *value,
+                                           std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
+{
+    auto varType = (key->Variable() != nullptr) ? key->Variable()->TsType() : nullptr;
+    if (varType == nullptr || varType->HasTypeFlag(checker::TypeFlag::SETTER)) {
+        return false;
+    }
+
+    if (ctorArgumentsMap.find(key->Name()) == ctorArgumentsMap.end()) {
+        return false;
+    }
+
+    ctorArgumentsMap[key->Name()] = value;
+    return true;
+}
+
+static void SetInstanceArguments(ArenaVector<ir::Statement *> &statements, ArenaVector<ir::Expression *> &ctorArguments)
+{
+    if (statements.empty() || ctorArguments.empty()) {
+        return;
+    }
+
+    const auto *const firstStatement = statements.front();
+    if (!firstStatement->IsVariableDeclaration()) {
+        return;
+    }
+
+    auto declarator = firstStatement->AsVariableDeclaration()->Declarators().front();
+    auto *initExpression = declarator->Init();
+    if (initExpression == nullptr || !initExpression->IsETSNewClassInstanceExpression()) {
+        return;
+    }
+
+    auto *instance = initExpression->AsETSNewClassInstanceExpression();
+    for (auto *arg : ctorArguments) {
+        arg->SetParent(instance);
+    }
+    instance->SetArguments(std::move(ctorArguments));
+}
+
 static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpression *objExpr, std::stringstream &ss,
                                   std::vector<ir::AstNode *> &newStmts,
-                                  std::deque<ir::BlockExpression *> &nestedBlckExprs)
+                                  std::deque<ir::BlockExpression *> &nestedBlckExprs,
+                                  ArenaVector<ir::Expression *> &ctorArguments)
 {
     auto *const allocator = checker->Allocator();
 
@@ -123,6 +164,17 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
        << addNode(type->Clone(allocator, nullptr)) << "();" << std::endl;
 
     // Generating: <genSym>.key_i = value_i      ( i <= [0, object_literal.properties.size) )
+    bool isAnonymous = IsAnonymousClassType(classType);
+
+    std::map<util::StringView, ir::Expression *> ctorArgumentsMap;
+    if (isAnonymous) {
+        checker::Signature *sig = classType->ConstructSignatures().front();
+        for (auto param : sig->Params()) {
+            ASSERT(param->Declaration() != nullptr);
+            ctorArgumentsMap.emplace(param->Declaration()->Name(), nullptr);
+        }
+    }
+
     for (auto *propExpr : objExpr->Properties()) {
         ASSERT(propExpr->IsProperty());
         auto *prop = propExpr->AsProperty();
@@ -132,6 +184,10 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
         ir::Identifier *keyIdent = key->IsStringLiteral()
                                        ? checker->AllocNode<ir::Identifier>(key->AsStringLiteral()->Str(), allocator)
                                        : key->AsIdentifier();
+
+        if (isAnonymous && CheckReadonlyAndUpdateCtorArgs(keyIdent, value, ctorArgumentsMap)) {
+            continue;
+        }
 
         ss << "@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ".@@I" << addNode(keyIdent);
 
@@ -144,6 +200,12 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
             nestedBlckExprs.emplace_back(value->AsBlockExpression());
         } else {
             ss << " = @@E" << addNode(value) << ";" << std::endl;
+        }
+    }
+
+    if (!ctorArgumentsMap.empty()) {
+        for (auto param : classType->ConstructSignatures().front()->Params()) {
+            ctorArguments.push_back(ctorArgumentsMap[param->Declaration()->Name()]);
         }
     }
 
@@ -174,10 +236,14 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
     // Double-ended queue for storing nested block expressions that have already been processed earlier
     std::deque<ir::BlockExpression *> nestedBlckExprs;
     std::vector<ir::AstNode *> newStmts;
+    ArenaVector<ir::Expression *> ctorArguments(checker->Allocator()->Adapter());
 
-    GenerateNewStatements(checker, objExpr, ss, newStmts, nestedBlckExprs);
+    GenerateNewStatements(checker, objExpr, ss, newStmts, nestedBlckExprs, ctorArguments);
 
     auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
+
+    SetInstanceArguments(loweringResult->AsBlockExpression()->Statements(), ctorArguments);
+
     loweringResult->SetParent(objExpr->Parent());
 
     MaybeAllowConstAssign(objExpr->TsType(), loweringResult->AsBlockExpression()->Statements());

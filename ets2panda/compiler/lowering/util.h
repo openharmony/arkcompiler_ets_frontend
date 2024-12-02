@@ -35,6 +35,7 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
 
 // Note: run varbinder and checker on the new node generated in lowering phases
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
+bool IsAnonymousClassType(const checker::Type *type);
 }  // namespace ark::es2panda::compiler
 
 #endif  // ES2PANDA_COMPILER_LOWERING_UTIL_H
