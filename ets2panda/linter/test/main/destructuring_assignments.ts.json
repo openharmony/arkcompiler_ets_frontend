@@ -1,0 +1,638 @@
+{
+    "copyright": [
+        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 18,
+            "column": 5,
+            "endLine": 18,
+            "endColumn": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 11,
+            "endLine": 18,
+            "endColumn": 16,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 2,
+            "endLine": 19,
+            "endColumn": 44,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 16,
+            "endLine": 19,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 2,
+            "endLine": 20,
+            "endColumn": 18,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 16,
+            "endLine": 20,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 2,
+            "endLine": 21,
+            "endColumn": 33,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 7,
+            "endLine": 21,
+            "endColumn": 14,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 2,
+            "endLine": 22,
+            "endColumn": 56,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 26,
+            "endLine": 22,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 37,
+            "endLine": 22,
+            "endColumn": 38,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 2,
+            "endLine": 23,
+            "endColumn": 56,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 12,
+            "endLine": 23,
+            "endColumn": 19,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 26,
+            "endLine": 23,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 10,
+            "endLine": 26,
+            "endColumn": 11,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 2,
+            "endLine": 28,
+            "endColumn": 24,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 1,
+            "endLine": 31,
+            "endColumn": 25,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 1,
+            "endLine": 32,
+            "endColumn": 15,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 33,
+            "column": 1,
+            "endLine": 33,
+            "endColumn": 58,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 1,
+            "endLine": 34,
+            "endColumn": 16,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 1,
+            "endLine": 35,
+            "endColumn": 39,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 8,
+            "endLine": 35,
+            "endColumn": 15,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 1,
+            "endLine": 36,
+            "endColumn": 42,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 1,
+            "endLine": 37,
+            "endColumn": 46,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 12,
+            "endLine": 37,
+            "endColumn": 19,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 1,
+            "endLine": 40,
+            "endColumn": 17,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 1,
+            "endLine": 41,
+            "endColumn": 21,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 41,
+            "column": 5,
+            "endLine": 41,
+            "endColumn": 12,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 1,
+            "endLine": 44,
+            "endColumn": 20,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 1,
+            "endLine": 47,
+            "endColumn": 16,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 1,
+            "endLine": 50,
+            "endColumn": 23,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 30,
+            "endLine": 53,
+            "endColumn": 31,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 45,
+            "endLine": 53,
+            "endColumn": 46,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 1,
+            "endLine": 54,
+            "endColumn": 51,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 29,
+            "endLine": 54,
+            "endColumn": 50,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 30,
+            "endLine": 54,
+            "endColumn": 31,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 41,
+            "endLine": 54,
+            "endColumn": 42,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 1,
+            "endLine": 55,
+            "endColumn": 42,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 18,
+            "endLine": 55,
+            "endColumn": 22,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 1,
+            "endLine": 56,
+            "endColumn": 38,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 8,
+            "endLine": 56,
+            "endColumn": 19,
+            "problem": "SpreadOperator",
+            "suggest": "",
+            "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 23,
+            "endLine": 56,
+            "endColumn": 38,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 30,
+            "endLine": 56,
+            "endColumn": 31,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 2,
+            "endLine": 58,
+            "endColumn": 41,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 22,
+            "endLine": 58,
+            "endColumn": 23,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 2,
+            "endLine": 65,
+            "endColumn": 44,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 5,
+            "endLine": 65,
+            "endColumn": 6,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 17,
+            "endLine": 65,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 2,
+            "endLine": 68,
+            "endColumn": 48,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 20,
+            "endLine": 68,
+            "endColumn": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 2,
+            "endLine": 69,
+            "endColumn": 60,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 30,
+            "endLine": 69,
+            "endColumn": 31,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 69,
+            "column": 41,
+            "endLine": 69,
+            "endColumn": 42,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 2,
+            "endLine": 70,
+            "endColumn": 45,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 26,
+            "endLine": 70,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 2,
+            "endLine": 77,
+            "endColumn": 44,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 5,
+            "endLine": 77,
+            "endColumn": 6,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 77,
+            "column": 17,
+            "endLine": 77,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 2,
+            "endLine": 87,
+            "endColumn": 23,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 2,
+            "endLine": 32,
+            "endColumn": 3,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'undefined' is not assignable to type 'number'.",
+            "rule": "Type 'undefined' is not assignable to type 'number'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 5,
+            "endLine": 32,
+            "endColumn": 6,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'undefined' is not assignable to type 'number'.",
+            "rule": "Type 'undefined' is not assignable to type 'number'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 8,
+            "endLine": 32,
+            "endColumn": 9,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'undefined' is not assignable to type 'number'.",
+            "rule": "Type 'undefined' is not assignable to type 'number'.",
+            "severity": "ERROR"
+        }
+    ]
+}

@@ -1,0 +1,467 @@
+{
+    "copyright": [
+        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 16,
+            "column": 15,
+            "endLine": 16,
+            "endColumn": 16,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 610,
+                    "end": 610,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n}\n"
+                },
+                {
+                    "start": 621,
+                    "end": 621,
+                    "replacementText": ": GeneratedObjectLiteralInterface_1"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 15,
+            "endLine": 18,
+            "endColumn": 16,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 628,
+                    "end": 628,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_2 {\n    hello: string;\n}\n"
+                },
+                {
+                    "start": 639,
+                    "end": 639,
+                    "replacementText": ": GeneratedObjectLiteralInterface_2"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 11,
+            "endLine": 20,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 663,
+                    "end": 663,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n}\n"
+                },
+                {
+                    "start": 673,
+                    "end": 675,
+                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 16,
+            "endLine": 20,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 15,
+            "endLine": 22,
+            "endColumn": 16,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 683,
+                    "end": 683,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_3 {\n    field: string;\n    field1: string;\n    field2: string;\n    field3: string;\n    field4: string;\n    field5: string;\n    field6: string;\n}\n"
+                },
+                {
+                    "start": 694,
+                    "end": 694,
+                    "replacementText": ": GeneratedObjectLiteralInterface_3"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 15,
+            "endLine": 32,
+            "endColumn": 16,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 888,
+                    "end": 888,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_4 {\n    field: number;\n    field1: number;\n    field2: number;\n    field3: number;\n    field4: number;\n    field5: number;\n    field6: number;\n}\n"
+                },
+                {
+                    "start": 899,
+                    "end": 899,
+                    "replacementText": ": GeneratedObjectLiteralInterface_4"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 15,
+            "endLine": 42,
+            "endColumn": 16,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 1045,
+                    "end": 1045,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_5 {\n    field: string;\n    field1: number;\n    field2: string;\n    field3: number;\n    field4: string;\n    field5: number;\n    field6: string;\n    field7: boolean;\n    field8: boolean;\n}\n"
+                },
+                {
+                    "start": 1056,
+                    "end": 1056,
+                    "replacementText": ": GeneratedObjectLiteralInterface_5"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 86,
+            "column": 23,
+            "endLine": 86,
+            "endColumn": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 96,
+            "column": 23,
+            "endLine": 96,
+            "endColumn": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 106,
+            "column": 23,
+            "endLine": 106,
+            "endColumn": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 118,
+            "column": 23,
+            "endLine": 118,
+            "endColumn": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
+            "column": 23,
+            "endLine": 128,
+            "endColumn": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 138,
+            "column": 23,
+            "endLine": 138,
+            "endColumn": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 150,
+            "column": 12,
+            "endLine": 150,
+            "endColumn": 13,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 3096,
+                    "end": 3096,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_2 {\n    field: String;\n    field1: String;\n    field2: String;\n    field3: String;\n    field4: String;\n    field5: String;\n    field6: String;\n}\n"
+                },
+                {
+                    "start": 3107,
+                    "end": 3240,
+                    "replacementText": "GeneratedTypeLiteralInterface_2"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 157,
+            "column": 22,
+            "endLine": 157,
+            "endColumn": 23,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 167,
+            "column": 12,
+            "endLine": 167,
+            "endColumn": 13,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 3434,
+                    "end": 3434,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_3 {\n    field: number;\n    field1: number;\n    field2: number;\n    field3: number;\n    field4: number;\n    field5: number;\n    field6: number;\n}\n"
+                },
+                {
+                    "start": 3445,
+                    "end": 3578,
+                    "replacementText": "GeneratedTypeLiteralInterface_3"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 174,
+            "column": 22,
+            "endLine": 174,
+            "endColumn": 23,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 184,
+            "column": 12,
+            "endLine": 184,
+            "endColumn": 13,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 3724,
+                    "end": 3724,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_4 {\n    field: String;\n    field1: number;\n    field2: String;\n    field3: number;\n    field4: String;\n    field5: number;\n    field6: String;\n    field7: boolean;\n    field8: boolean;\n}\n"
+                },
+                {
+                    "start": 3735,
+                    "end": 3908,
+                    "replacementText": "GeneratedTypeLiteralInterface_4"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 193,
+            "column": 23,
+            "endLine": 193,
+            "endColumn": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 205,
+            "column": 39,
+            "endLine": 205,
+            "endColumn": 40,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 4174,
+                    "end": 4179,
+                    "replacementText": "\"field\""
+                },
+                {
+                    "start": 4198,
+                    "end": 4204,
+                    "replacementText": "\"field1\""
+                },
+                {
+                    "start": 4224,
+                    "end": 4230,
+                    "replacementText": "\"field2\""
+                },
+                {
+                    "start": 4250,
+                    "end": 4256,
+                    "replacementText": "\"field3\""
+                },
+                {
+                    "start": 4276,
+                    "end": 4282,
+                    "replacementText": "\"field4\""
+                },
+                {
+                    "start": 4302,
+                    "end": 4308,
+                    "replacementText": "\"field5\""
+                },
+                {
+                    "start": 4328,
+                    "end": 4334,
+                    "replacementText": "\"field6\""
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 215,
+            "column": 39,
+            "endLine": 215,
+            "endColumn": 40,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 4403,
+                    "end": 4408,
+                    "replacementText": "\"field\""
+                },
+                {
+                    "start": 4421,
+                    "end": 4427,
+                    "replacementText": "\"field1\""
+                },
+                {
+                    "start": 4440,
+                    "end": 4446,
+                    "replacementText": "\"field2\""
+                },
+                {
+                    "start": 4459,
+                    "end": 4465,
+                    "replacementText": "\"field3\""
+                },
+                {
+                    "start": 4478,
+                    "end": 4484,
+                    "replacementText": "\"field4\""
+                },
+                {
+                    "start": 4497,
+                    "end": 4503,
+                    "replacementText": "\"field5\""
+                },
+                {
+                    "start": 4516,
+                    "end": 4522,
+                    "replacementText": "\"field6\""
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 225,
+            "column": 58,
+            "endLine": 225,
+            "endColumn": 59,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 4602,
+                    "end": 4607,
+                    "replacementText": "\"field\""
+                },
+                {
+                    "start": 4626,
+                    "end": 4632,
+                    "replacementText": "\"field1\""
+                },
+                {
+                    "start": 4645,
+                    "end": 4651,
+                    "replacementText": "\"field2\""
+                },
+                {
+                    "start": 4671,
+                    "end": 4677,
+                    "replacementText": "\"field3\""
+                },
+                {
+                    "start": 4690,
+                    "end": 4696,
+                    "replacementText": "\"field4\""
+                },
+                {
+                    "start": 4716,
+                    "end": 4722,
+                    "replacementText": "\"field5\""
+                },
+                {
+                    "start": 4735,
+                    "end": 4741,
+                    "replacementText": "\"field6\""
+                },
+                {
+                    "start": 4761,
+                    "end": 4767,
+                    "replacementText": "\"field7\""
+                },
+                {
+                    "start": 4783,
+                    "end": 4789,
+                    "replacementText": "\"field8\""
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        }
+    ]
+}

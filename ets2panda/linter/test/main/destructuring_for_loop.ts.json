@@ -1,0 +1,168 @@
+{
+    "copyright": [
+        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 16,
+            "column": 16,
+            "endLine": 16,
+            "endColumn": 17,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 16,
+            "column": 45,
+            "endLine": 20,
+            "endColumn": 2,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 3,
+            "endLine": 17,
+            "endColumn": 4,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 18,
+            "column": 3,
+            "endLine": 18,
+            "endColumn": 4,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 3,
+            "endLine": 19,
+            "endColumn": 4,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 12,
+            "endLine": 21,
+            "endColumn": 20,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 12,
+            "endLine": 30,
+            "endColumn": 18,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 6,
+            "endLine": 35,
+            "endColumn": 14,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 6,
+            "endLine": 40,
+            "endColumn": 12,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 16,
+            "endLine": 53,
+            "endColumn": 2,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 3,
+            "endLine": 45,
+            "endColumn": 4,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 13,
+            "endLine": 47,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 3,
+            "endLine": 49,
+            "endColumn": 4,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 13,
+            "endLine": 51,
+            "endColumn": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 6,
+            "endLine": 58,
+            "endColumn": 2,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)",
+            "severity": "ERROR"
+        }
+    ]
+}

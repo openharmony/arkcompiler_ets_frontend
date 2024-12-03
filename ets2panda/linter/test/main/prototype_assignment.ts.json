@@ -1,0 +1,268 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 26,
+            "column": 19,
+            "endLine": 26,
+            "endColumn": 23,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 20,
+            "endLine": 22,
+            "endColumn": 4,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 21,
+            "column": 5,
+            "endLine": 21,
+            "endColumn": 9,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 30,
+            "endLine": 20,
+            "endColumn": 31,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 24,
+            "column": 12,
+            "endLine": 24,
+            "endColumn": 21,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 12,
+            "endLine": 30,
+            "endColumn": 21,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 26,
+            "endLine": 32,
+            "endColumn": 4,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 12,
+            "endLine": 31,
+            "endColumn": 16,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 36,
+            "endLine": 30,
+            "endColumn": 37,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 3,
+            "endLine": 34,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 7,
+            "endLine": 37,
+            "endColumn": 16,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 17,
+            "endLine": 38,
+            "endColumn": 26,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 7,
+            "endLine": 38,
+            "endColumn": 16,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 9,
+            "endLine": 39,
+            "endColumn": 34,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 25,
+            "endLine": 39,
+            "endColumn": 34,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 22,
+            "endLine": 42,
+            "endColumn": 27,
+            "problem": "ClassExpression",
+            "suggest": "",
+            "rule": "Class literals are not supported (arkts-no-class-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 14,
+            "endLine": 45,
+            "endColumn": 23,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 5,
+            "endLine": 54,
+            "endColumn": 14,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 5,
+            "endLine": 55,
+            "endColumn": 14,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 20,
+            "endLine": 56,
+            "endColumn": 29,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 5,
+            "endLine": 61,
+            "endColumn": 32,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 5,
+            "endLine": 64,
+            "endColumn": 34,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 5,
+            "endLine": 43,
+            "endColumn": 6,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'p' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'p' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 3,
+            "endLine": 50,
+            "endColumn": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'prototype' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'prototype' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 3,
+            "endLine": 51,
+            "endColumn": 5,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'xy' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'xy' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        }
+    ]
+}

@@ -1,0 +1,178 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 22,
+            "column": 13,
+            "endLine": 22,
+            "endColumn": 23,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 13,
+            "endLine": 23,
+            "endColumn": 23,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 12,
+            "endLine": 26,
+            "endColumn": 25,
+            "problem": "TypeAssertion",
+            "suggest": "",
+            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 18,
+            "endLine": 30,
+            "endColumn": 31,
+            "problem": "TypeAssertion",
+            "suggest": "",
+            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 14,
+            "endLine": 32,
+            "endColumn": 26,
+            "problem": "TypeAssertion",
+            "suggest": "",
+            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 19,
+            "endLine": 34,
+            "endColumn": 34,
+            "problem": "TypeAssertion",
+            "suggest": "",
+            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 15,
+            "endLine": 35,
+            "endColumn": 27,
+            "problem": "TypeAssertion",
+            "suggest": "",
+            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 14,
+            "endLine": 50,
+            "endColumn": 24,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 1,
+            "endLine": 55,
+            "endColumn": 4,
+            "problem": "VarDeclaration",
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 55,
+            "column": 32,
+            "endLine": 55,
+            "endColumn": 42,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 58,
+            "column": 39,
+            "endLine": 58,
+            "endColumn": 49,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 26,
+            "endLine": 61,
+            "endColumn": 36,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 23,
+            "endLine": 65,
+            "endColumn": 33,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 26,
+            "endLine": 70,
+            "endColumn": 36,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 29,
+            "endLine": 76,
+            "endColumn": 39,
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 19,
+            "endLine": 76,
+            "endColumn": 28,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)",
+            "severity": "WARNING"
+        }
+    ]
+}
