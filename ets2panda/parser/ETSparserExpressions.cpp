@@ -585,7 +585,11 @@ ir::ClassDefinition *ETSParser::CreateClassDefinitionForNewExpression(ArenaVecto
         ParseList(
             lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE,
             [this, &arguments]() {
-                ir::Expression *argument = ParseExpression();
+                ir::Expression *argument =
+                    Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD
+                        ? ParseSpreadElement(ExpressionParseFlags::POTENTIALLY_IN_PATTERN)
+                        : ParseExpression();
+
                 if (argument == nullptr) {
                     return false;
                 }
