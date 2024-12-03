@@ -20,8 +20,11 @@
 #include <ir/astDump.h>
 #include <ir/base/methodDefinition.h>
 #include <ir/expression.h>
+#include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
+#include <ir/expressions/memberExpression.h>
 #include <ir/statements/blockStatement.h>
+#include <ir/statements/expressionStatement.h>
 #include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 
@@ -149,4 +152,48 @@ util::StringView ScriptFunction::SourceCode(binder::Binder *binder) const
     return binder->Program()->SourceCode().Substr(startIndex, endIndex);
 }
 
+void ScriptFunction::CalculateFunctionExpectedPropertyCount()
+{
+    // Counting more or less than the actual number does not affect execution.
+    if (Body() == nullptr) {
+        return;
+    }
+
+    std::unordered_set<util::StringView> propertyNames;
+    auto addPropertyName = [this, &propertyNames](const util::StringView &name) {
+        if (propertyNames.find(name) == propertyNames.end()) {
+            propertyNames.insert(name);
+            IncreasePropertyCount();
+        }
+    };
+
+    const ir::BlockStatement *blockStat = Body()->AsBlockStatement();
+    for (const auto &stmt : blockStat->Statements()) {
+        ExtractThisPropertyFromStatement(stmt, addPropertyName);
+    }
+}
+
+void ScriptFunction::ExtractThisPropertyFromStatement(
+    const ir::Statement *stmt,
+    const std::function<void(const util::StringView&)>& addPropertyName)
+{
+    if (!stmt->IsExpressionStatement()) {
+        return;
+    }
+
+    const auto *expr = stmt->AsExpressionStatement()->GetExpression();
+    if (!expr || !expr->IsAssignmentExpression()) {
+        return;
+    }
+
+    const auto *left = expr->AsAssignmentExpression()->Left();
+    if (!left || !left->IsMemberExpression()) {
+        return;
+    }
+
+    const auto *memberExpr = left->AsMemberExpression();
+    if (memberExpr->Object()->IsThisExpression() && memberExpr->Property()->IsIdentifier()) {
+        addPropertyName(memberExpr->Property()->AsIdentifier()->Name());
+    }
+}
 }  // namespace panda::es2panda::ir

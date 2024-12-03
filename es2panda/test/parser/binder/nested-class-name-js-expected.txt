@@ -1,6 +1,7 @@
 .language ECMAScript
 
 slotNum = 0x2
+expectedProperty = 0x3
 .function any .#~C=#C(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -76,6 +77,7 @@ label_2:
 }
 
 slotNum = 0x2
+expectedProperty = 0x1
 .function any .#~C>@1~@2=#B_withPrivateField(any a0, any a1, any a2) {
 label_1: 
 label_0: 

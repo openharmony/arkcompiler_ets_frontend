@@ -35,9 +35,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1329
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1382
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1333
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1386
 {
   index: 0
     tag: 2
@@ -127,9 +127,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1383
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1436
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1387
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1440
 {
   index: 0
     tag: 2
@@ -206,6 +206,12 @@ slot &bytecodehar1/bytecodehar1-file2&2.0.0_1387
 
 .language ECMAScript
 
+
+======> literal array buffer <======
+======> strings <======
+
+.language ECMAScript
+
 slotNum = 0x3
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
@@ -229,9 +235,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1130
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1183
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1134
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1187
 {
   index: 0
     tag: 2
@@ -299,9 +305,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1170
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1223
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1174
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1227
 {
   index: 0
     tag: 2
@@ -344,6 +350,12 @@ slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1174
 },
 ======> strings <======
 "&@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test"; "bytecodehar2.file2.test"; "print"; 
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
 .language ECMAScript
 
 
@@ -619,9 +631,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1329
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1382
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1333
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1386
 {
   index: 0
     tag: 2
@@ -709,9 +721,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1130
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1183
 ------------------------------------
-slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1134
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1187
 {
   index: 0
     tag: 2

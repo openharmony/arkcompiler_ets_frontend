@@ -241,6 +241,24 @@ public:
         return isClassDecoratorPresent_;
     }
 
+    void IncreasePropertyCount()
+    {
+        ++classExpectedPropertyCount_;
+    }
+
+    size_t ExpectedPropertyCount() const
+    {
+        return classExpectedPropertyCount_;
+    }
+
+    void CalculateClassExpectedPropertyCount();
+    void ProcessClassProperty(const ClassProperty *prop,
+                              const std::function<void(const util::StringView&)>& addPropertyName);
+    void ProcessConstructorBody(const BlockStatement *body,
+                                const std::function<void(const util::StringView&)>& addPropertyName);
+    void ProcessPropertyKey(const Expression* key,
+                            const std::function<void(const util::StringView&)>& addPropertyName);
+
     const FunctionExpression *Ctor() const;
 
     util::StringView GetName() const;
@@ -291,6 +309,7 @@ private:
     bool hasPrivateElement_ {false};
     bool isSendable_ {false};
     bool isClassDecoratorPresent_ {false};
+    size_t classExpectedPropertyCount_ {0};
 };
 
 }  // namespace panda::es2panda::ir

@@ -117,6 +117,28 @@ void PandaGen::SetInSendable()
     inSendable_ = func->InSendable();
 }
 
+size_t PandaGen::GetExpectedPropertyCount() const
+{
+    if (rootNode_->IsProgram()) {
+        return 0;
+    }
+
+    auto *func = rootNode_->AsScriptFunction();
+    /**
+     * The expected property count only includes class fields and properties declared in the constructor.
+     * Properties defined in regular methods are not counted because they are only dynamically added
+     * to the instance after the method is called, and are not part of the instance during creation.
+     */
+    if (func->IsConstructor()) {
+        return util::Helpers::GetClassDefiniton(func)->ExpectedPropertyCount();
+    }
+    if (func->IsMethod()) {
+        return 0;
+    }
+
+    return func->ExpectedPropertyCount();
+}
+
 Label *PandaGen::AllocLabel()
 {
     std::string id = std::string {Label::PREFIX} + std::to_string(labelId_++);

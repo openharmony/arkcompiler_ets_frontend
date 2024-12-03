@@ -30,6 +30,7 @@ label_2:
 }
 
 slotNum = 0x0
+expectedProperty = 0x3
 .function any .#*@2~@1=#Pet(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -39,6 +40,7 @@ label_2:
 }
 
 slotNum = 0x0
+expectedProperty = 0xb
 .function any .#~@0=#Person(any a0, any a1, any a2) {
 label_1: 
 label_0: 

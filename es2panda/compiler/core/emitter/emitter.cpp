@@ -92,6 +92,7 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
     if (patchFixHelper != nullptr) {
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
     }
+    GenExpectedPropertyCountAnnotation();
 }
 
 const ArenaSet<util::StringView> &FunctionEmitter::Strings() const
@@ -584,6 +585,28 @@ void FunctionEmitter::GenConcurrentFunctionModuleRequests()
     }
 }
 
+void FunctionEmitter::GenExpectedPropertyCountAnnotation()
+{
+    auto expectedCount = pg_->GetExpectedPropertyCount();
+    if (expectedCount == 0) {
+        return;
+    }
+
+    static const std::string ANNOTATION = "_ESExpectedPropertyCountAnnotation";
+    static const std::string ELEMENT_NAME = "ExpectedPropertyCount";
+
+    pandasm::AnnotationData anno(ANNOTATION);
+
+    pandasm::AnnotationElement ele(ELEMENT_NAME, std::make_unique<pandasm::ScalarValue>(
+        pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(expectedCount)));
+    anno.AddElement(std::move(ele));
+
+    std::vector<pandasm::AnnotationData> annos;
+    annos.emplace_back(anno);
+    func_->metadata->AddAnnotations(annos);
+    func_->SetExpectedPropertyCount(pg_->GetExpectedPropertyCount());
+}
+
 // Emitter
 
 Emitter::Emitter(CompilerContext *context)
@@ -612,6 +635,7 @@ Emitter::Emitter(CompilerContext *context)
     }
     AddSharedModuleRecord(context);
     AddScopeNamesRecord(context);
+    AddExpectedPropertyCountRecord();
 }
 
 Emitter::~Emitter()
@@ -1051,6 +1075,14 @@ void Emitter::AddSharedModuleRecord(const CompilerContext *context)
     }
 }
 
+void Emitter::AddExpectedPropertyCountRecord()
+{
+    static const std::string ANNOTATION = "_ESExpectedPropertyCountAnnotation";
+    pandasm::Record record(ANNOTATION, pandasm::extensions::Language::ECMASCRIPT);
+    record.metadata->AddAccessFlags(panda::ACC_ANNOTATION);
+    prog_->record_table.emplace(ANNOTATION, std::move(record));
+}
+
 // static
 void Emitter::GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Literal>>> &literalBuffers,
                                 const LiteralBuffer *buff)
@@ -1162,6 +1194,10 @@ void Emitter::DumpAsm(const panda::pandasm::Program *prog)
 
     for (auto &[name, func] : prog->function_table) {
         ss << "slotNum = 0x" << std::hex << func.GetSlotsNum() << std::dec << std::endl;
+        auto expectedCount = func.GetExpectedPropertyCount();
+        if (expectedCount != 0) {
+            ss << "expectedProperty = 0x" << std::hex << expectedCount << std::dec << std::endl;
+        }
         ss << ".function any " << name << '(';
 
         for (uint32_t i = 0; i < func.GetParamsNum(); i++) {
