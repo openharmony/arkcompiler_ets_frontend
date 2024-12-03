@@ -1,0 +1,3568 @@
+{
+    "copyright": [
+        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 38,
+            "column": 23,
+            "endLine": 38,
+            "endColumn": 28,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 44,
+            "endLine": 45,
+            "endColumn": 59,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 28,
+            "endLine": 52,
+            "endColumn": 33,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 49,
+            "endLine": 59,
+            "endColumn": 64,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 34,
+            "endLine": 66,
+            "endColumn": 39,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 55,
+            "endLine": 73,
+            "endColumn": 70,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 36,
+            "endLine": 80,
+            "endColumn": 41,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 57,
+            "endLine": 87,
+            "endColumn": 72,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 95,
+            "column": 17,
+            "endLine": 95,
+            "endColumn": 22,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 102,
+            "column": 28,
+            "endLine": 102,
+            "endColumn": 43,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 110,
+            "column": 18,
+            "endLine": 110,
+            "endColumn": 23,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 29,
+            "endLine": 117,
+            "endColumn": 44,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 27,
+            "endLine": 125,
+            "endColumn": 32,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 132,
+            "column": 38,
+            "endLine": 132,
+            "endColumn": 53,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 140,
+            "column": 29,
+            "endLine": 140,
+            "endColumn": 34,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 147,
+            "column": 40,
+            "endLine": 147,
+            "endColumn": 55,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 5,
+            "endLine": 36,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 5,
+            "endLine": 37,
+            "endColumn": 53,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 5,
+            "endLine": 38,
+            "endColumn": 35,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 5,
+            "endLine": 39,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 14,
+            "endLine": 39,
+            "endColumn": 17,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 5,
+            "endLine": 40,
+            "endColumn": 32,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 5,
+            "endLine": 43,
+            "endColumn": 52,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 26,
+            "endLine": 43,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 45,
+            "column": 5,
+            "endLine": 45,
+            "endColumn": 62,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 5,
+            "endLine": 50,
+            "endColumn": 42,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 5,
+            "endLine": 51,
+            "endColumn": 58,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 52,
+            "column": 5,
+            "endLine": 52,
+            "endColumn": 40,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 5,
+            "endLine": 53,
+            "endColumn": 42,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 53,
+            "column": 19,
+            "endLine": 53,
+            "endColumn": 22,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 5,
+            "endLine": 54,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 5,
+            "endLine": 57,
+            "endColumn": 57,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 57,
+            "column": 31,
+            "endLine": 57,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 5,
+            "endLine": 59,
+            "endColumn": 67,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 5,
+            "endLine": 64,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 5,
+            "endLine": 65,
+            "endColumn": 64,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 5,
+            "endLine": 66,
+            "endColumn": 46,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 5,
+            "endLine": 67,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 25,
+            "endLine": 67,
+            "endColumn": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 68,
+            "column": 5,
+            "endLine": 68,
+            "endColumn": 43,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 5,
+            "endLine": 71,
+            "endColumn": 63,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 71,
+            "column": 37,
+            "endLine": 71,
+            "endColumn": 38,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 5,
+            "endLine": 73,
+            "endColumn": 73,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 78,
+            "column": 5,
+            "endLine": 78,
+            "endColumn": 50,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 79,
+            "column": 5,
+            "endLine": 79,
+            "endColumn": 66,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 80,
+            "column": 5,
+            "endLine": 80,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 5,
+            "endLine": 81,
+            "endColumn": 50,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 27,
+            "endLine": 81,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 82,
+            "column": 5,
+            "endLine": 82,
+            "endColumn": 45,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 5,
+            "endLine": 85,
+            "endColumn": 65,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 85,
+            "column": 39,
+            "endLine": 85,
+            "endColumn": 40,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 87,
+            "column": 5,
+            "endLine": 87,
+            "endColumn": 75,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 90,
+            "column": 5,
+            "endLine": 90,
+            "endColumn": 25,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 91,
+            "column": 5,
+            "endLine": 91,
+            "endColumn": 22,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 92,
+            "column": 5,
+            "endLine": 92,
+            "endColumn": 27,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 93,
+            "column": 5,
+            "endLine": 93,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 94,
+            "column": 5,
+            "endLine": 94,
+            "endColumn": 36,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 95,
+            "column": 5,
+            "endLine": 95,
+            "endColumn": 29,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 96,
+            "column": 5,
+            "endLine": 96,
+            "endColumn": 33,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 96,
+            "column": 16,
+            "endLine": 96,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 97,
+            "column": 5,
+            "endLine": 97,
+            "endColumn": 27,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 5,
+            "endLine": 98,
+            "endColumn": 22,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 99,
+            "column": 5,
+            "endLine": 99,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 100,
+            "column": 5,
+            "endLine": 100,
+            "endColumn": 45,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 100,
+            "column": 19,
+            "endLine": 100,
+            "endColumn": 20,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 101,
+            "column": 5,
+            "endLine": 101,
+            "endColumn": 42,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 102,
+            "column": 5,
+            "endLine": 102,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 105,
+            "column": 5,
+            "endLine": 105,
+            "endColumn": 26,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 106,
+            "column": 5,
+            "endLine": 106,
+            "endColumn": 23,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 107,
+            "column": 5,
+            "endLine": 107,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 108,
+            "column": 5,
+            "endLine": 108,
+            "endColumn": 29,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 109,
+            "column": 5,
+            "endLine": 109,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 110,
+            "column": 5,
+            "endLine": 110,
+            "endColumn": 30,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 111,
+            "column": 5,
+            "endLine": 111,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 111,
+            "column": 17,
+            "endLine": 111,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 112,
+            "column": 5,
+            "endLine": 112,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 113,
+            "column": 5,
+            "endLine": 113,
+            "endColumn": 23,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 114,
+            "column": 5,
+            "endLine": 114,
+            "endColumn": 33,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 115,
+            "column": 5,
+            "endLine": 115,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 115,
+            "column": 20,
+            "endLine": 115,
+            "endColumn": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 116,
+            "column": 5,
+            "endLine": 116,
+            "endColumn": 43,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 117,
+            "column": 5,
+            "endLine": 117,
+            "endColumn": 47,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 120,
+            "column": 5,
+            "endLine": 120,
+            "endColumn": 35,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 121,
+            "column": 5,
+            "endLine": 121,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 122,
+            "column": 5,
+            "endLine": 122,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 123,
+            "column": 5,
+            "endLine": 123,
+            "endColumn": 38,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 124,
+            "column": 5,
+            "endLine": 124,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 125,
+            "column": 5,
+            "endLine": 125,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 126,
+            "column": 5,
+            "endLine": 126,
+            "endColumn": 43,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 126,
+            "column": 26,
+            "endLine": 126,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 127,
+            "column": 5,
+            "endLine": 127,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
+            "column": 5,
+            "endLine": 128,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 129,
+            "column": 5,
+            "endLine": 129,
+            "endColumn": 42,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 130,
+            "column": 5,
+            "endLine": 130,
+            "endColumn": 55,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 130,
+            "column": 29,
+            "endLine": 130,
+            "endColumn": 30,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 131,
+            "column": 5,
+            "endLine": 131,
+            "endColumn": 52,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 132,
+            "column": 5,
+            "endLine": 132,
+            "endColumn": 56,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 135,
+            "column": 5,
+            "endLine": 135,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 136,
+            "column": 5,
+            "endLine": 136,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 137,
+            "column": 5,
+            "endLine": 137,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 138,
+            "column": 5,
+            "endLine": 138,
+            "endColumn": 40,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 139,
+            "column": 5,
+            "endLine": 139,
+            "endColumn": 48,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 140,
+            "column": 5,
+            "endLine": 140,
+            "endColumn": 41,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 141,
+            "column": 5,
+            "endLine": 141,
+            "endColumn": 45,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 141,
+            "column": 28,
+            "endLine": 141,
+            "endColumn": 29,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 142,
+            "column": 5,
+            "endLine": 142,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 143,
+            "column": 5,
+            "endLine": 143,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 144,
+            "column": 5,
+            "endLine": 144,
+            "endColumn": 44,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 145,
+            "column": 5,
+            "endLine": 145,
+            "endColumn": 57,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 145,
+            "column": 31,
+            "endLine": 145,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 146,
+            "column": 5,
+            "endLine": 146,
+            "endColumn": 54,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 147,
+            "column": 5,
+            "endLine": 147,
+            "endColumn": 58,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 160,
+            "column": 23,
+            "endLine": 160,
+            "endColumn": 28,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 167,
+            "column": 44,
+            "endLine": 167,
+            "endColumn": 59,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 174,
+            "column": 28,
+            "endLine": 174,
+            "endColumn": 33,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 181,
+            "column": 49,
+            "endLine": 181,
+            "endColumn": 64,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 188,
+            "column": 34,
+            "endLine": 188,
+            "endColumn": 39,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 195,
+            "column": 55,
+            "endLine": 195,
+            "endColumn": 70,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 202,
+            "column": 36,
+            "endLine": 202,
+            "endColumn": 41,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 209,
+            "column": 57,
+            "endLine": 209,
+            "endColumn": 72,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 217,
+            "column": 17,
+            "endLine": 217,
+            "endColumn": 22,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 224,
+            "column": 28,
+            "endLine": 224,
+            "endColumn": 43,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 232,
+            "column": 18,
+            "endLine": 232,
+            "endColumn": 23,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 239,
+            "column": 29,
+            "endLine": 239,
+            "endColumn": 44,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 247,
+            "column": 27,
+            "endLine": 247,
+            "endColumn": 32,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 254,
+            "column": 38,
+            "endLine": 254,
+            "endColumn": 53,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 262,
+            "column": 29,
+            "endLine": 262,
+            "endColumn": 34,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 269,
+            "column": 40,
+            "endLine": 269,
+            "endColumn": 55,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 158,
+            "column": 5,
+            "endLine": 158,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 159,
+            "column": 5,
+            "endLine": 159,
+            "endColumn": 53,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 160,
+            "column": 5,
+            "endLine": 160,
+            "endColumn": 35,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 161,
+            "column": 5,
+            "endLine": 161,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 161,
+            "column": 14,
+            "endLine": 161,
+            "endColumn": 17,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 162,
+            "column": 5,
+            "endLine": 162,
+            "endColumn": 32,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 165,
+            "column": 5,
+            "endLine": 165,
+            "endColumn": 52,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 165,
+            "column": 26,
+            "endLine": 165,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 167,
+            "column": 5,
+            "endLine": 167,
+            "endColumn": 62,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 172,
+            "column": 5,
+            "endLine": 172,
+            "endColumn": 42,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 173,
+            "column": 5,
+            "endLine": 173,
+            "endColumn": 58,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 174,
+            "column": 5,
+            "endLine": 174,
+            "endColumn": 40,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 175,
+            "column": 5,
+            "endLine": 175,
+            "endColumn": 42,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 175,
+            "column": 19,
+            "endLine": 175,
+            "endColumn": 22,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 176,
+            "column": 5,
+            "endLine": 176,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 179,
+            "column": 5,
+            "endLine": 179,
+            "endColumn": 57,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 179,
+            "column": 31,
+            "endLine": 179,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 181,
+            "column": 5,
+            "endLine": 181,
+            "endColumn": 67,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 186,
+            "column": 5,
+            "endLine": 186,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 187,
+            "column": 5,
+            "endLine": 187,
+            "endColumn": 64,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 188,
+            "column": 5,
+            "endLine": 188,
+            "endColumn": 46,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 189,
+            "column": 5,
+            "endLine": 189,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 189,
+            "column": 25,
+            "endLine": 189,
+            "endColumn": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 190,
+            "column": 5,
+            "endLine": 190,
+            "endColumn": 43,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 193,
+            "column": 5,
+            "endLine": 193,
+            "endColumn": 63,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 193,
+            "column": 37,
+            "endLine": 193,
+            "endColumn": 38,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 195,
+            "column": 5,
+            "endLine": 195,
+            "endColumn": 73,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 200,
+            "column": 5,
+            "endLine": 200,
+            "endColumn": 50,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 201,
+            "column": 5,
+            "endLine": 201,
+            "endColumn": 66,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 202,
+            "column": 5,
+            "endLine": 202,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 203,
+            "column": 5,
+            "endLine": 203,
+            "endColumn": 50,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 203,
+            "column": 27,
+            "endLine": 203,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 204,
+            "column": 5,
+            "endLine": 204,
+            "endColumn": 45,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 207,
+            "column": 5,
+            "endLine": 207,
+            "endColumn": 65,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 207,
+            "column": 39,
+            "endLine": 207,
+            "endColumn": 40,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 209,
+            "column": 5,
+            "endLine": 209,
+            "endColumn": 75,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 212,
+            "column": 5,
+            "endLine": 212,
+            "endColumn": 25,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 213,
+            "column": 5,
+            "endLine": 213,
+            "endColumn": 22,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 214,
+            "column": 5,
+            "endLine": 214,
+            "endColumn": 27,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 215,
+            "column": 5,
+            "endLine": 215,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 216,
+            "column": 5,
+            "endLine": 216,
+            "endColumn": 36,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 217,
+            "column": 5,
+            "endLine": 217,
+            "endColumn": 29,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 218,
+            "column": 5,
+            "endLine": 218,
+            "endColumn": 33,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 218,
+            "column": 16,
+            "endLine": 218,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 219,
+            "column": 5,
+            "endLine": 219,
+            "endColumn": 27,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 220,
+            "column": 5,
+            "endLine": 220,
+            "endColumn": 22,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 221,
+            "column": 5,
+            "endLine": 221,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 222,
+            "column": 5,
+            "endLine": 222,
+            "endColumn": 45,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 222,
+            "column": 19,
+            "endLine": 222,
+            "endColumn": 20,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 223,
+            "column": 5,
+            "endLine": 223,
+            "endColumn": 42,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 224,
+            "column": 5,
+            "endLine": 224,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 227,
+            "column": 5,
+            "endLine": 227,
+            "endColumn": 26,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 228,
+            "column": 5,
+            "endLine": 228,
+            "endColumn": 23,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 229,
+            "column": 5,
+            "endLine": 229,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 230,
+            "column": 5,
+            "endLine": 230,
+            "endColumn": 29,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 231,
+            "column": 5,
+            "endLine": 231,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 232,
+            "column": 5,
+            "endLine": 232,
+            "endColumn": 30,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 233,
+            "column": 5,
+            "endLine": 233,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 233,
+            "column": 17,
+            "endLine": 233,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 234,
+            "column": 5,
+            "endLine": 234,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 235,
+            "column": 5,
+            "endLine": 235,
+            "endColumn": 23,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 236,
+            "column": 5,
+            "endLine": 236,
+            "endColumn": 33,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 237,
+            "column": 5,
+            "endLine": 237,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 237,
+            "column": 20,
+            "endLine": 237,
+            "endColumn": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 238,
+            "column": 5,
+            "endLine": 238,
+            "endColumn": 43,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 239,
+            "column": 5,
+            "endLine": 239,
+            "endColumn": 47,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 242,
+            "column": 5,
+            "endLine": 242,
+            "endColumn": 35,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 243,
+            "column": 5,
+            "endLine": 243,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 244,
+            "column": 5,
+            "endLine": 244,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 245,
+            "column": 5,
+            "endLine": 245,
+            "endColumn": 38,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 246,
+            "column": 5,
+            "endLine": 246,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 247,
+            "column": 5,
+            "endLine": 247,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 248,
+            "column": 5,
+            "endLine": 248,
+            "endColumn": 43,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 248,
+            "column": 26,
+            "endLine": 248,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 249,
+            "column": 5,
+            "endLine": 249,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 250,
+            "column": 5,
+            "endLine": 250,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 251,
+            "column": 5,
+            "endLine": 251,
+            "endColumn": 42,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 252,
+            "column": 5,
+            "endLine": 252,
+            "endColumn": 55,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 252,
+            "column": 29,
+            "endLine": 252,
+            "endColumn": 30,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 253,
+            "column": 5,
+            "endLine": 253,
+            "endColumn": 52,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 254,
+            "column": 5,
+            "endLine": 254,
+            "endColumn": 56,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 257,
+            "column": 5,
+            "endLine": 257,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 258,
+            "column": 5,
+            "endLine": 258,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 259,
+            "column": 5,
+            "endLine": 259,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 260,
+            "column": 5,
+            "endLine": 260,
+            "endColumn": 40,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 261,
+            "column": 5,
+            "endLine": 261,
+            "endColumn": 48,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 262,
+            "column": 5,
+            "endLine": 262,
+            "endColumn": 41,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 263,
+            "column": 5,
+            "endLine": 263,
+            "endColumn": 45,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 263,
+            "column": 28,
+            "endLine": 263,
+            "endColumn": 29,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 264,
+            "column": 5,
+            "endLine": 264,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 265,
+            "column": 5,
+            "endLine": 265,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 266,
+            "column": 5,
+            "endLine": 266,
+            "endColumn": 44,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 267,
+            "column": 5,
+            "endLine": 267,
+            "endColumn": 57,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 267,
+            "column": 31,
+            "endLine": 267,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 268,
+            "column": 5,
+            "endLine": 268,
+            "endColumn": 54,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 269,
+            "column": 5,
+            "endLine": 269,
+            "endColumn": 58,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 279,
+            "column": 23,
+            "endLine": 279,
+            "endColumn": 28,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 286,
+            "column": 44,
+            "endLine": 286,
+            "endColumn": 59,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 293,
+            "column": 28,
+            "endLine": 293,
+            "endColumn": 33,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 300,
+            "column": 49,
+            "endLine": 300,
+            "endColumn": 64,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 307,
+            "column": 34,
+            "endLine": 307,
+            "endColumn": 39,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 314,
+            "column": 55,
+            "endLine": 314,
+            "endColumn": 70,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 321,
+            "column": 36,
+            "endLine": 321,
+            "endColumn": 41,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 328,
+            "column": 57,
+            "endLine": 328,
+            "endColumn": 72,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 336,
+            "column": 17,
+            "endLine": 336,
+            "endColumn": 22,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 343,
+            "column": 28,
+            "endLine": 343,
+            "endColumn": 43,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 351,
+            "column": 18,
+            "endLine": 351,
+            "endColumn": 23,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 358,
+            "column": 29,
+            "endLine": 358,
+            "endColumn": 44,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 366,
+            "column": 27,
+            "endLine": 366,
+            "endColumn": 32,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 373,
+            "column": 38,
+            "endLine": 373,
+            "endColumn": 53,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 381,
+            "column": 29,
+            "endLine": 381,
+            "endColumn": 34,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 388,
+            "column": 40,
+            "endLine": 388,
+            "endColumn": 55,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 277,
+            "column": 5,
+            "endLine": 277,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 278,
+            "column": 5,
+            "endLine": 278,
+            "endColumn": 53,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 279,
+            "column": 5,
+            "endLine": 279,
+            "endColumn": 35,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 280,
+            "column": 5,
+            "endLine": 280,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 280,
+            "column": 14,
+            "endLine": 280,
+            "endColumn": 17,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 281,
+            "column": 5,
+            "endLine": 281,
+            "endColumn": 32,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 284,
+            "column": 5,
+            "endLine": 284,
+            "endColumn": 52,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 284,
+            "column": 26,
+            "endLine": 284,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 286,
+            "column": 5,
+            "endLine": 286,
+            "endColumn": 62,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 291,
+            "column": 5,
+            "endLine": 291,
+            "endColumn": 42,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 292,
+            "column": 5,
+            "endLine": 292,
+            "endColumn": 58,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 293,
+            "column": 5,
+            "endLine": 293,
+            "endColumn": 40,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 294,
+            "column": 5,
+            "endLine": 294,
+            "endColumn": 42,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 294,
+            "column": 19,
+            "endLine": 294,
+            "endColumn": 22,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 295,
+            "column": 5,
+            "endLine": 295,
+            "endColumn": 37,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 298,
+            "column": 5,
+            "endLine": 298,
+            "endColumn": 57,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 298,
+            "column": 31,
+            "endLine": 298,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 300,
+            "column": 5,
+            "endLine": 300,
+            "endColumn": 67,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 305,
+            "column": 5,
+            "endLine": 305,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 306,
+            "column": 5,
+            "endLine": 306,
+            "endColumn": 64,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 307,
+            "column": 5,
+            "endLine": 307,
+            "endColumn": 46,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 308,
+            "column": 5,
+            "endLine": 308,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 308,
+            "column": 25,
+            "endLine": 308,
+            "endColumn": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 309,
+            "column": 5,
+            "endLine": 309,
+            "endColumn": 43,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 312,
+            "column": 5,
+            "endLine": 312,
+            "endColumn": 63,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 312,
+            "column": 37,
+            "endLine": 312,
+            "endColumn": 38,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 314,
+            "column": 5,
+            "endLine": 314,
+            "endColumn": 73,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 319,
+            "column": 5,
+            "endLine": 319,
+            "endColumn": 50,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 320,
+            "column": 5,
+            "endLine": 320,
+            "endColumn": 66,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 321,
+            "column": 5,
+            "endLine": 321,
+            "endColumn": 48,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 322,
+            "column": 5,
+            "endLine": 322,
+            "endColumn": 50,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 322,
+            "column": 27,
+            "endLine": 322,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 323,
+            "column": 5,
+            "endLine": 323,
+            "endColumn": 45,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 326,
+            "column": 5,
+            "endLine": 326,
+            "endColumn": 65,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 326,
+            "column": 39,
+            "endLine": 326,
+            "endColumn": 40,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 328,
+            "column": 5,
+            "endLine": 328,
+            "endColumn": 75,
+            "problem": "SendablePropType",
+            "suggest": "",
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 331,
+            "column": 5,
+            "endLine": 331,
+            "endColumn": 25,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 332,
+            "column": 5,
+            "endLine": 332,
+            "endColumn": 22,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 333,
+            "column": 5,
+            "endLine": 333,
+            "endColumn": 27,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 334,
+            "column": 5,
+            "endLine": 334,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 335,
+            "column": 5,
+            "endLine": 335,
+            "endColumn": 36,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 336,
+            "column": 5,
+            "endLine": 336,
+            "endColumn": 29,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 337,
+            "column": 5,
+            "endLine": 337,
+            "endColumn": 33,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 337,
+            "column": 16,
+            "endLine": 337,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 338,
+            "column": 5,
+            "endLine": 338,
+            "endColumn": 27,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 339,
+            "column": 5,
+            "endLine": 339,
+            "endColumn": 22,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 340,
+            "column": 5,
+            "endLine": 340,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 341,
+            "column": 5,
+            "endLine": 341,
+            "endColumn": 45,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 341,
+            "column": 19,
+            "endLine": 341,
+            "endColumn": 20,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 342,
+            "column": 5,
+            "endLine": 342,
+            "endColumn": 42,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 343,
+            "column": 5,
+            "endLine": 343,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 346,
+            "column": 5,
+            "endLine": 346,
+            "endColumn": 26,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 347,
+            "column": 5,
+            "endLine": 347,
+            "endColumn": 23,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 348,
+            "column": 5,
+            "endLine": 348,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 349,
+            "column": 5,
+            "endLine": 349,
+            "endColumn": 29,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 350,
+            "column": 5,
+            "endLine": 350,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 351,
+            "column": 5,
+            "endLine": 351,
+            "endColumn": 30,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 352,
+            "column": 5,
+            "endLine": 352,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 352,
+            "column": 17,
+            "endLine": 352,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 353,
+            "column": 5,
+            "endLine": 353,
+            "endColumn": 28,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 354,
+            "column": 5,
+            "endLine": 354,
+            "endColumn": 23,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 355,
+            "column": 5,
+            "endLine": 355,
+            "endColumn": 33,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 356,
+            "column": 5,
+            "endLine": 356,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 356,
+            "column": 20,
+            "endLine": 356,
+            "endColumn": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 357,
+            "column": 5,
+            "endLine": 357,
+            "endColumn": 43,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 358,
+            "column": 5,
+            "endLine": 358,
+            "endColumn": 47,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 361,
+            "column": 5,
+            "endLine": 361,
+            "endColumn": 35,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 362,
+            "column": 5,
+            "endLine": 362,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 363,
+            "column": 5,
+            "endLine": 363,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 364,
+            "column": 5,
+            "endLine": 364,
+            "endColumn": 38,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 365,
+            "column": 5,
+            "endLine": 365,
+            "endColumn": 46,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 366,
+            "column": 5,
+            "endLine": 366,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 367,
+            "column": 5,
+            "endLine": 367,
+            "endColumn": 43,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 367,
+            "column": 26,
+            "endLine": 367,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 368,
+            "column": 5,
+            "endLine": 368,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 369,
+            "column": 5,
+            "endLine": 369,
+            "endColumn": 32,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 370,
+            "column": 5,
+            "endLine": 370,
+            "endColumn": 42,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 371,
+            "column": 5,
+            "endLine": 371,
+            "endColumn": 55,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 371,
+            "column": 29,
+            "endLine": 371,
+            "endColumn": 30,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 372,
+            "column": 5,
+            "endLine": 372,
+            "endColumn": 52,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 373,
+            "column": 5,
+            "endLine": 373,
+            "endColumn": 56,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 376,
+            "column": 5,
+            "endLine": 376,
+            "endColumn": 37,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 377,
+            "column": 5,
+            "endLine": 377,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 378,
+            "column": 5,
+            "endLine": 378,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 379,
+            "column": 5,
+            "endLine": 379,
+            "endColumn": 40,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 380,
+            "column": 5,
+            "endLine": 380,
+            "endColumn": 48,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 381,
+            "column": 5,
+            "endLine": 381,
+            "endColumn": 41,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 382,
+            "column": 5,
+            "endLine": 382,
+            "endColumn": 45,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 382,
+            "column": 28,
+            "endLine": 382,
+            "endColumn": 29,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 383,
+            "column": 5,
+            "endLine": 383,
+            "endColumn": 39,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 384,
+            "column": 5,
+            "endLine": 384,
+            "endColumn": 34,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 385,
+            "column": 5,
+            "endLine": 385,
+            "endColumn": 44,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 386,
+            "column": 5,
+            "endLine": 386,
+            "endColumn": 57,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 386,
+            "column": 31,
+            "endLine": 386,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 387,
+            "column": 5,
+            "endLine": 387,
+            "endColumn": 54,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 388,
+            "column": 5,
+            "endLine": 388,
+            "endColumn": 58,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 398,
+            "column": 14,
+            "endLine": 398,
+            "endColumn": 17,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 402,
+            "column": 26,
+            "endLine": 402,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 412,
+            "column": 19,
+            "endLine": 412,
+            "endColumn": 22,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 416,
+            "column": 31,
+            "endLine": 416,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 426,
+            "column": 25,
+            "endLine": 426,
+            "endColumn": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 430,
+            "column": 37,
+            "endLine": 430,
+            "endColumn": 38,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 440,
+            "column": 27,
+            "endLine": 440,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 444,
+            "column": 39,
+            "endLine": 444,
+            "endColumn": 40,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 454,
+            "column": 16,
+            "endLine": 454,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 458,
+            "column": 19,
+            "endLine": 458,
+            "endColumn": 20,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 468,
+            "column": 17,
+            "endLine": 468,
+            "endColumn": 18,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 472,
+            "column": 20,
+            "endLine": 472,
+            "endColumn": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 482,
+            "column": 26,
+            "endLine": 482,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 486,
+            "column": 29,
+            "endLine": 486,
+            "endColumn": 30,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 496,
+            "column": 28,
+            "endLine": 496,
+            "endColumn": 29,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 500,
+            "column": 31,
+            "endLine": 500,
+            "endColumn": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 512,
+            "column": 14,
+            "endLine": 512,
+            "endColumn": 17,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 526,
+            "column": 19,
+            "endLine": 526,
+            "endColumn": 22,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 540,
+            "column": 27,
+            "endLine": 540,
+            "endColumn": 30,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        }
+    ]
+}

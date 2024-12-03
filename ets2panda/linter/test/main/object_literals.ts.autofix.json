@@ -1,0 +1,712 @@
+{
+    "copyright": [
+        "Copyright (c) 2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 27,
+            "column": 6,
+            "endLine": 27,
+            "endColumn": 7,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 761,
+                    "end": 761,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n    x: number;\n    y: string;\n}\n"
+                },
+                {
+                    "start": 777,
+                    "end": 801,
+                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 6,
+            "endLine": 28,
+            "endColumn": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 35,
+            "column": 12,
+            "endLine": 35,
+            "endColumn": 13,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 832,
+                    "end": 832,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 890,
+                    "end": 890,
+                    "replacementText": ": GeneratedObjectLiteralInterface_1"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 11,
+            "endLine": 36,
+            "endColumn": 14,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 11,
+            "endLine": 37,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 832,
+                    "end": 832,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_2 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 991,
+                    "end": 1015,
+                    "replacementText": "GeneratedTypeLiteralInterface_2"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 38,
+            "endLine": 37,
+            "endColumn": 39,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 16,
+            "endLine": 40,
+            "endColumn": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 42,
+            "column": 8,
+            "endLine": 42,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 8,
+            "endLine": 49,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 8,
+            "endLine": 51,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 54,
+            "column": 8,
+            "endLine": 54,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 56,
+            "column": 8,
+            "endLine": 56,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 3,
+            "endLine": 64,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 20,
+            "endLine": 64,
+            "endColumn": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 1687,
+                    "end": 1687,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_2 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 1740,
+                    "end": 1740,
+                    "replacementText": ": GeneratedObjectLiteralInterface_2"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 3,
+            "endLine": 67,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 20,
+            "endLine": 67,
+            "endColumn": 23,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 3,
+            "endLine": 70,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 20,
+            "endLine": 70,
+            "endColumn": 21,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1687,
+                    "end": 1687,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_3 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 1911,
+                    "end": 1935,
+                    "replacementText": "GeneratedTypeLiteralInterface_3"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 70,
+            "column": 47,
+            "endLine": 70,
+            "endColumn": 48,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 73,
+            "column": 3,
+            "endLine": 73,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 76,
+            "column": 3,
+            "endLine": 76,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 81,
+            "column": 7,
+            "endLine": 81,
+            "endColumn": 8,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 83,
+            "column": 8,
+            "endLine": 83,
+            "endColumn": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 89,
+            "column": 3,
+            "endLine": 89,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 90,
+            "column": 12,
+            "endLine": 90,
+            "endColumn": 13,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 2377,
+                    "end": 2377,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_3 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 2445,
+                    "end": 2462,
+                    "replacementText": "({ a: 31, b: 'a' } as GeneratedObjectLiteralInterface_3)"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 92,
+            "column": 3,
+            "endLine": 92,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 2480,
+                    "end": 2536,
+                    "replacementText": "let bar2: () => any = (): any => {\n    return { a: 32, b: 'b' };\n};"
+                }
+            ],
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 92,
+            "column": 20,
+            "endLine": 92,
+            "endColumn": 23,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 95,
+            "column": 3,
+            "endLine": 95,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 2565,
+                    "end": 2642,
+                    "replacementText": "let bar3: () => {\n    a: number;\n    b: string;\n} = (): {\n    a: number;\n    b: string;\n} => {\n    return { a: 33, b: 'c' };\n};"
+                }
+            ],
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 95,
+            "column": 20,
+            "endLine": 95,
+            "endColumn": 21,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2377,
+                    "end": 2377,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_4 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 2582,
+                    "end": 2606,
+                    "replacementText": "GeneratedTypeLiteralInterface_4"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 96,
+            "column": 12,
+            "endLine": 96,
+            "endColumn": 13,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 98,
+            "column": 3,
+            "endLine": 98,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 2655,
+                    "end": 2709,
+                    "replacementText": "let bar4: () => I = (): I => {\n    return { a: 34, b: 'd' };\n};"
+                }
+            ],
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 101,
+            "column": 3,
+            "endLine": 101,
+            "endColumn": 11,
+            "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 2718,
+                    "end": 2772,
+                    "replacementText": "let bar5: () => C = (): C => {\n    return { a: 35, b: 'e' };\n};"
+                }
+            ],
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 109,
+            "column": 26,
+            "endLine": 109,
+            "endColumn": 27,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 2782,
+                    "end": 2782,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_4 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 2893,
+                    "end": 2910,
+                    "replacementText": "({ a: 41, b: 'a' } as GeneratedObjectLiteralInterface_4)"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 109,
+            "column": 46,
+            "endLine": 109,
+            "endColumn": 47,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 2782,
+                    "end": 2782,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_5 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 2913,
+                    "end": 2930,
+                    "replacementText": "({ a: 42, b: 'b' } as GeneratedObjectLiteralInterface_5)"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 110,
+            "column": 13,
+            "endLine": 110,
+            "endColumn": 16,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 111,
+            "column": 13,
+            "endLine": 111,
+            "endColumn": 14,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2782,
+                    "end": 2782,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_5 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 3049,
+                    "end": 3073,
+                    "replacementText": "GeneratedTypeLiteralInterface_5"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 112,
+            "column": 7,
+            "endLine": 112,
+            "endColumn": 8,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 113,
+            "column": 7,
+            "endLine": 113,
+            "endColumn": 8,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 119,
+            "column": 16,
+            "endLine": 122,
+            "endColumn": 4,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 120,
+            "column": 5,
+            "endLine": 120,
+            "endColumn": 6,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 3294,
+                    "end": 3294,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_6 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 3347,
+                    "end": 3364,
+                    "replacementText": "({ a: 51, b: 'a' } as GeneratedObjectLiteralInterface_6)"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 121,
+            "column": 5,
+            "endLine": 121,
+            "endColumn": 6,
+            "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 3294,
+                    "end": 3294,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_7 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 3370,
+                    "end": 3387,
+                    "replacementText": "({ a: 52, b: 'b' } as GeneratedObjectLiteralInterface_7)"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 123,
+            "column": 15,
+            "endLine": 123,
+            "endColumn": 18,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 127,
+            "column": 15,
+            "endLine": 127,
+            "endColumn": 16,
+            "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 3294,
+                    "end": 3294,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_6 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 3519,
+                    "end": 3543,
+                    "replacementText": "GeneratedTypeLiteralInterface_6"
+                }
+            ],
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 127,
+            "column": 44,
+            "endLine": 130,
+            "endColumn": 4,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 128,
+            "column": 5,
+            "endLine": 128,
+            "endColumn": 6,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 129,
+            "column": 5,
+            "endLine": 129,
+            "endColumn": 6,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 3,
+            "endLine": 22,
+            "endColumn": 4,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'a' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'a' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 3,
+            "endLine": 23,
+            "endColumn": 4,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'b' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'b' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 3,
+            "endLine": 27,
+            "endColumn": 4,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'q' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'q' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 3,
+            "endLine": 29,
+            "endColumn": 4,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'e' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'e' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 30,
+            "column": 3,
+            "endLine": 30,
+            "endColumn": 4,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'r' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'r' has no initializer and is not definitely assigned in the constructor.",
+            "severity": "ERROR"
+        }
+    ]
+}

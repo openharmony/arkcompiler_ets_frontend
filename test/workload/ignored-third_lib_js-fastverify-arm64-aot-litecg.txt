@@ -10,3 +10,6 @@ memory-cache_test
 
 #19424
 zxing-text-encoding_test
+
+#20257
+crypto-js_test

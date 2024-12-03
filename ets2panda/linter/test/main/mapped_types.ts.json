@@ -1,0 +1,208 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 16,
+            "column": 17,
+            "endLine": 18,
+            "endColumn": 2,
+            "problem": "MappedType",
+            "suggest": "",
+            "rule": "Mapped type expression is not supported (arkts-no-mapped-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 19,
+            "column": 16,
+            "endLine": 19,
+            "endColumn": 17,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 26,
+            "endLine": 28,
+            "endColumn": 2,
+            "problem": "MappedType",
+            "suggest": "",
+            "rule": "Mapped type expression is not supported (arkts-no-mapped-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 29,
+            "endLine": 27,
+            "endColumn": 33,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 29,
+            "column": 22,
+            "endLine": 29,
+            "endColumn": 23,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 26,
+            "endLine": 38,
+            "endColumn": 2,
+            "problem": "MappedType",
+            "suggest": "",
+            "rule": "Mapped type expression is not supported (arkts-no-mapped-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 37,
+            "column": 21,
+            "endLine": 37,
+            "endColumn": 25,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 39,
+            "column": 22,
+            "endLine": 39,
+            "endColumn": 23,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 47,
+            "column": 31,
+            "endLine": 51,
+            "endColumn": 2,
+            "problem": "MappedType",
+            "suggest": "",
+            "rule": "Mapped type expression is not supported (arkts-no-mapped-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 48,
+            "column": 26,
+            "endLine": 50,
+            "endColumn": 4,
+            "problem": "UtilityType",
+            "suggest": "",
+            "rule": "Some of utility types are not supported (arkts-no-utility-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 49,
+            "column": 5,
+            "endLine": 49,
+            "endColumn": 15,
+            "problem": "IntersectionType",
+            "suggest": "",
+            "rule": "Use inheritance instead of intersection types (arkts-no-intersection-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 50,
+            "column": 15,
+            "endLine": 50,
+            "endColumn": 19,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 60,
+            "column": 22,
+            "endLine": 64,
+            "endColumn": 2,
+            "problem": "MappedType",
+            "suggest": "",
+            "rule": "Mapped type expression is not supported (arkts-no-mapped-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 22,
+            "endLine": 63,
+            "endColumn": 12,
+            "problem": "ConditionalType",
+            "suggest": "",
+            "rule": "Conditional types are not supported (arkts-no-conditional-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 22,
+            "endLine": 61,
+            "endColumn": 29,
+            "problem": "IndexedAccessType",
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 61,
+            "column": 38,
+            "endLine": 61,
+            "endColumn": 39,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 65,
+            "column": 15,
+            "endLine": 65,
+            "endColumn": 16,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 66,
+            "column": 13,
+            "endLine": 66,
+            "endColumn": 14,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 67,
+            "column": 12,
+            "endLine": 67,
+            "endColumn": 13,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        }
+    ]
+}

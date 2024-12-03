@@ -1,0 +1,148 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "result": [
+        {
+            "line": 16,
+            "column": 11,
+            "endLine": 16,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 17,
+            "column": 10,
+            "endLine": 17,
+            "endColumn": 13,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 23,
+            "endLine": 20,
+            "endColumn": 29,
+            "problem": "DeleteOperator",
+            "suggest": "",
+            "rule": "\"delete\" operator is not supported (arkts-no-delete)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 22,
+            "column": 11,
+            "endLine": 22,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 10,
+            "endLine": 23,
+            "endColumn": 17,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 26,
+            "column": 23,
+            "endLine": 26,
+            "endColumn": 29,
+            "problem": "DeleteOperator",
+            "suggest": "",
+            "rule": "\"delete\" operator is not supported (arkts-no-delete)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 28,
+            "column": 11,
+            "endLine": 28,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 32,
+            "column": 23,
+            "endLine": 32,
+            "endColumn": 29,
+            "problem": "DeleteOperator",
+            "suggest": "",
+            "rule": "\"delete\" operator is not supported (arkts-no-delete)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 34,
+            "column": 11,
+            "endLine": 34,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 23,
+            "endLine": 38,
+            "endColumn": 29,
+            "problem": "DeleteOperator",
+            "suggest": "",
+            "rule": "\"delete\" operator is not supported (arkts-no-delete)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 40,
+            "column": 11,
+            "endLine": 40,
+            "endColumn": 12,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 23,
+            "endLine": 44,
+            "endColumn": 29,
+            "problem": "DeleteOperator",
+            "suggest": "",
+            "rule": "\"delete\" operator is not supported (arkts-no-delete)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 44,
+            "column": 30,
+            "endLine": 44,
+            "endColumn": 37,
+            "problem": "StrictDiagnostic",
+            "suggest": "The operand of a 'delete' operator must be optional.",
+            "rule": "The operand of a 'delete' operator must be optional.",
+            "severity": "ERROR"
+        }
+    ]
+}
