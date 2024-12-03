@@ -33,7 +33,7 @@ void ETSStringLiteralType::Dump(ir::AstDumper *dumper) const
 
 void ETSStringLiteralType::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add(value_.Mutf8());
+    dumper->Add("\"" + value_.Mutf8() + "\"");
 }
 
 void ETSStringLiteralType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

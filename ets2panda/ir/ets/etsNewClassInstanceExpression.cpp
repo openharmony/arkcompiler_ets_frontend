@@ -69,8 +69,15 @@ void ETSNewClassInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
     if (typeReference_ != nullptr) {
+        if (typeReference_->IsETSUnionType()) {
+            dumper->Add("(");
+        }
         typeReference_->Dump(dumper);
+        if (typeReference_->IsETSUnionType()) {
+            dumper->Add(")");
+        }
     }
+
     dumper->Add("(");
     for (auto argument : arguments_) {
         argument->Dump(dumper);
