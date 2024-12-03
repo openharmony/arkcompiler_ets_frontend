@@ -83,9 +83,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2023
+slot &bytecodehar/bytecodehar-dynamic-import&_2076
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2027
+slot &bytecodehar/bytecodehar-dynamic-import&_2080
 {
   index: 0
     tag: 2
@@ -223,9 +223,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2063
+slot &bytecodehar/bytecodehar-static-import&_2116
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2067
+slot &bytecodehar/bytecodehar-static-import&_2120
 {
   index: 0
     tag: 2
@@ -408,6 +408,12 @@ slot &bytecodehar/bytecodehar-static-import&_2067
 },
 ======> strings <======
 "&bytecodehar/bytecodehar-static-import&.#*#foo"; "a"; "b"; "c"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; 
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
 .language ECMAScript
 
 
@@ -830,9 +836,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2023
+slot &bytecodehar/bytecodehar-dynamic-import&_2076
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2027
+slot &bytecodehar/bytecodehar-dynamic-import&_2080
 {
   index: 0
     tag: 2
@@ -970,9 +976,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2063
+slot &bytecodehar/bytecodehar-static-import&_2116
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2067
+slot &bytecodehar/bytecodehar-static-import&_2120
 {
   index: 0
     tag: 2
