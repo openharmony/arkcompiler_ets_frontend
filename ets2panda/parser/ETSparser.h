@@ -280,7 +280,6 @@ private:
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::ClassProperty *ParseInterfaceField();
-    ir::Expression *ParseCoercedNumberLiteral();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);
@@ -288,14 +287,14 @@ private:
     ir::ModifierFlags ParseClassMethodModifiers(bool seenStatic);
     ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
                                                      ir::Identifier *className = nullptr);
-    ir::ScriptFunction *ParseFunction(ParserStatus newStatus, ir::Identifier *className = nullptr);
+    ir::ScriptFunction *ParseFunction(ParserStatus newStatus, ir::TypeNode *typeAnnotation = nullptr);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
         const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool isRethrowsAllowed) override;
-    ir::Expression *CreateParameterThis(util::StringView className) override;
+    ir::Expression *CreateParameterThis(ir::TypeNode *typeAnnotation) override;
     ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeNode);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
@@ -310,6 +309,7 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
@@ -319,7 +319,7 @@ private:
     bool IsArrowFunctionExpressionStart();
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
 
-    void ThrowIfVarDeclaration(VariableParsingFlags flags) override;
+    void ReportIfVarDeclaration(VariableParsingFlags flags) override;
     std::optional<lexer::SourcePosition> GetDefaultParamPosition(ArenaVector<ir::Expression *> params);
 
     ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options, lexer::SourcePosition startLoc);
@@ -363,6 +363,8 @@ private:
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     // NOLINTNEXTLINE(google-default-arguments)
+    ir::Expression *ParsePropertyDefinition(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseDefaultPrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
@@ -388,6 +390,8 @@ private:
     void ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                 lexer::SourcePosition pos);
     ir::ModifierFlags ParseMemberAccessModifiers();
+    template <bool IS_USAGE>
+    ir::Expression *ParseAnnotationName();
     ir::AnnotationDeclaration *ParseAnnotationDeclaration(
         [[maybe_unused]] ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     ir::AstNode *ParseAnnotationProperty(ir::Identifier *fieldName,
@@ -413,6 +417,7 @@ private:
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
+    ir::Expression *ParseETSImportExpression();
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
 
     bool IsStringEnum();
@@ -424,10 +429,10 @@ private:
     void ParseStringEnum(ArenaVector<ir::AstNode *> &members);
 
     ir::Statement *ParseInterfaceDeclaration(bool isStatic) override;
-    ir::ThisExpression *ParseThisExpression() override;
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers);
+    ir::TypeNode *ParseExtensionFunctionsTypeAnnotation();
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement() override;
     ir::TypeNode *ParseInterfaceExtendsElement() override;
     // NOLINTNEXTLINE(google-default-arguments)
@@ -451,7 +456,7 @@ private:
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
     void CreateImplicitConstructor(ir::MethodDefinition *&ctor, ArenaVector<ir::AstNode *> &properties,
-                                   ir::ClassDefinitionModifiers modifiers,
+                                   ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
                                    const lexer::SourcePosition &startLoc) override;
     bool ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir::Expression **returnExpression,
                                            const lexer::SourcePosition &startLoc, bool ignoreCallExpression) override;

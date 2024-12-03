@@ -1007,7 +1007,7 @@ void AssignAnalyzer::AnalyzeCond(const ir::AstNode *node)
     ASSERT(node->IsExpression());
     const ir::Expression *expr = node->AsExpression();
 
-    if (auto etype = expr->TsTypeOrError();
+    if (auto etype = expr->TsType();
         etype != nullptr && etype->IsETSBooleanType() && etype->HasTypeFlag(TypeFlag::CONSTANT)) {
         const ETSBooleanType *condType = etype->AsETSBooleanType();
         if (inits_.IsReset()) {
@@ -1381,7 +1381,7 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
     }
 
     return type != nullptr &&
-           (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ||
+           (type->IsETSPrimitiveType() ||
             (type->PossiblyETSNullish() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
                                             (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
 }

@@ -16,7 +16,7 @@
 class A {
     public x: Object = new Object {
         static readonly foo: int = 12;
-        static bar(): void {}
+        /* @@ label */static bar(): void {}
     };
 }
-/* @@? 19:9 Error TypeError: Inner class cannot have static methods  */
+/* @@@ label Error TypeError: Inner class cannot have static methods  */

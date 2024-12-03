@@ -14,7 +14,7 @@
  */
 
 var a: number;
-({ a } = { a: 3, b: 4 })
+(/* @@ label */{ a } = { a: 3, b: 4 })
 
 
-/* @@? 17:2 Error TypeError: Object literal may only specify known properties, and property 'b' does not exist in the pattern.  */
+/* @@@ label Error TypeError: Object literal may only specify known properties, and property 'b' does not exist in the pattern.  */

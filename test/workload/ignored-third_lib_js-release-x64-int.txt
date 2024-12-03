@@ -1,3 +1,1 @@
 # Known failures list for third_lib_js - release-x64-int
-#18383
-memory-cache_test

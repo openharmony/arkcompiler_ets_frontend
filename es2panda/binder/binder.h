@@ -207,6 +207,7 @@ private:
     void LegacyBuildFunction(FunctionScope *funcScope, util::StringView name, const ir::ScriptFunction *func = nullptr);
     void BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *scriptFunc);
     void BuildClassDefinition(ir::ClassDefinition *classDef);
+    void ProcessNodeInStaticInitializer(ir::ClassDefinition *classDef);
     void LookupReference(const util::StringView &name);
     void InstantiateArguments();
     void BuildVarDeclarator(ir::VariableDeclarator *varDecl);

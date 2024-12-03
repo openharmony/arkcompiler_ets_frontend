@@ -305,6 +305,14 @@ void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
         std::cerr << "The input json file '" << compileContextInfoPath << "' content type is incorrect" << std::endl;
         return;
     }
+    if (compileContextInfoJson.contains("needModifyRecord") &&
+        compileContextInfoJson["needModifyRecord"].is_boolean()) {
+        compilerOptions_.compileContextInfo.needModifyRecord = compileContextInfoJson["needModifyRecord"];
+    }
+    if (compileContextInfoJson.contains("bundleName") &&
+        compileContextInfoJson["bundleName"].is_string()) {
+        compilerOptions_.compileContextInfo.bundleName = compileContextInfoJson["bundleName"];
+    }
     std::set<std::string> externalPkgNames;
     for (const auto& elem : compileContextInfoJson["hspPkgNames"]) {
         if (elem.is_string()) {
@@ -421,8 +429,8 @@ bool Options::Parse(int argc, const char **argv)
         "bc-min-version are enabled, only bc-version will take effects");
     panda::PandArg<bool> bcMinVersion("bc-min-version", false, "Print ark bytecode minimum supported version");
     // todo(huyunhui): change default api verion to 0 after refactoring
-    // The latest api version in isa.yaml is 15
-    panda::PandArg<int> targetApiVersion("target-api-version", 15,
+    // Current api version is 14
+    panda::PandArg<int> targetApiVersion("target-api-version", 14,
         "Specify the targeting api version for es2abc to generated the corresponding version of bytecode");
     panda::PandArg<bool> targetBcVersion("target-bc-version", false, "Print the corresponding ark bytecode version"\
         "for target api version. If both target-bc-version and bc-version are enabled, only target-bc-version"\

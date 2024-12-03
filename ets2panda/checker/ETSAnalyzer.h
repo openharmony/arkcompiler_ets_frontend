@@ -77,6 +77,8 @@ private:
         return calleeType;
     }
 
+    checker::Type *CheckEnumMemberExpression(ETSEnumType *const baseType, ir::MemberExpression *const expr) const;
+
     void CheckVoidTypeExpression(ETSChecker *checker, const ir::Expression *expr) const
     {
         // Existing void expression inconsistency,refer to #17762

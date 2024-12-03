@@ -275,6 +275,8 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/ETSchecker.h
     ${ES2PANDA_ROOT}/checker/checkerContext.h
     ${ES2PANDA_ROOT}/checker/resolveResult.h
+    ${ES2PANDA_ROOT}/parser/ETSparser.h
+    ${ES2PANDA_ROOT}/parser/parserFlags.h
     ${ES2PANDA_ROOT}/es2panda.h
 )
 
@@ -533,6 +535,8 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/ETSchecker.yaml
     ${LIBGEN_DIR}/gen/headers/checker/checkerContext.yaml
     ${LIBGEN_DIR}/gen/headers/checker/resolveResult.yaml
+    ${LIBGEN_DIR}/gen/headers/parser/parserFlags.yaml
+    ${LIBGEN_DIR}/gen/headers/parser/ETSparser.yaml
     )
 
 
@@ -583,7 +587,7 @@ set(HEADERS_PARSER_SOURCES
 add_custom_command(
     OUTPUT ${ES2PANDA_API_GENERATED}
     COMMAND python3 -B ${CMAKE_CURRENT_SOURCE_DIR}/headers_parser/main.py
-        "${ES2PANDA_ROOT}" "${LIBGEN_DIR}" ${HEADERS_TO_BE_PARSED}
+        --es2panda-root "${ES2PANDA_ROOT}" --lib-gen-dir "${LIBGEN_DIR}" --headers ${HEADERS_TO_BE_PARSED}
     DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES}
 )
 

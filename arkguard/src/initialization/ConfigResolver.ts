@@ -39,6 +39,7 @@ import { historyUnobfuscatedPropMap } from './Initializer';
 import { LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 import { WhitelistType } from '../utils/TransformUtil';
+import { endFilesEvent, startFilesEvent } from '../utils/PrinterUtils';
 
 enum OptionType {
   NONE,
@@ -242,9 +243,9 @@ export class ObConfigResolver {
       if (isFileExist(systemApiCachePath)) {
         this.getSystemApiConfigsByCache(systemApiCachePath);
       } else {
-        performancePrinter?.filesPrinter?.startEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
+        startFilesEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
         this.getSystemApiCache(mergedConfigs, systemApiCachePath);
-        performancePrinter?.filesPrinter?.endEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
+        endFilesEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
       }
     }
 
@@ -518,7 +519,7 @@ export class ObConfigResolver {
   private resolveDts(dtsFilePaths: string[], configs: MergedConfig): void {
     ApiExtractor.mPropertySet.clear();
     dtsFilePaths.forEach((token) => {
-      ApiExtractor.traverseApiFiles(token, ApiExtractor.ApiType.PROJECT);
+      ApiExtractor.traverseApiFiles(token, ApiExtractor.ApiType.KEEP_DTS);
     });
     configs.reservedNames = configs.reservedNames.concat([...ApiExtractor.mPropertySet]);
     configs.reservedPropertyNames = configs.reservedPropertyNames.concat([...ApiExtractor.mPropertySet]);
@@ -1142,7 +1143,7 @@ export function enableObfuscateFileName(isPackageModules: boolean, projectConfig
  */
 export function getRelativeSourcePath(
   filePath: string,
-  projectRootPath: string,
+  projectRootPath: string | undefined,
   belongProjectPath: string | undefined,
 ): string {
   filePath = FileUtils.toUnixPath(filePath);

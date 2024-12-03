@@ -18,6 +18,6 @@ function foo([a = 2, { b: [c = 6, d] = [true, [5n, "foo"]], t = { a: 3, b: { a: 
 
 }
 
-foo(["foo", {}, 5n], { r: [["foo"]] });
+foo(["foo", {}, 5n], { r: [[/* @@ label */"foo"]] });
 
-/* @@? 21:29 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

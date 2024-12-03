@@ -110,9 +110,11 @@ libes2panda_sources = [
   "checker/types/ets/etsEnumType.cpp",
   "checker/types/ets/etsExtensionFuncHelperType.cpp",
   "checker/types/ets/etsFunctionType.cpp",
+  "checker/types/ets/etsNeverType.cpp",
   "checker/types/ets/etsNonNullishType.cpp",
   "checker/types/ets/etsNullishTypes.cpp",
   "checker/types/ets/etsObjectType.cpp",
+  "checker/types/ets/etsPartialTypeParameter.cpp",
   "checker/types/ets/etsReadonlyType.cpp",
   "checker/types/ets/etsStringType.cpp",
   "checker/types/ets/etsTupleType.cpp",
@@ -225,6 +227,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/recordLowering.cpp",
   "compiler/lowering/ets/spreadLowering.cpp",
   "compiler/lowering/ets/stringComparison.cpp",
+  "compiler/lowering/ets/stringConstantsLowering.cpp",
   "compiler/lowering/ets/stringConstructorLowering.cpp",
   "compiler/lowering/ets/structLowering.cpp",
   "compiler/lowering/ets/topLevelStmts/globalClassHandler.cpp",
@@ -278,6 +281,7 @@ libes2panda_sources = [
   "ir/ets/etsFunctionType.cpp",
   "ir/ets/etsImportSource.cpp",
   "ir/ets/etsLaunchExpression.cpp",
+  "ir/ets/etsNeverType.cpp",
   "ir/ets/etsNewArrayInstanceExpression.cpp",
   "ir/ets/etsNewClassInstanceExpression.cpp",
   "ir/ets/etsNewMultiDimArrayInstanceExpression.cpp",
@@ -583,12 +587,14 @@ HEADERS_TO_BE_PARSED = [
   "checker/types/ts/typeReference.h",
   "ir/expressions/memberExpression.h",
   "checker/types/ets/etsExtensionFuncHelperType.h",
+  "ir/ets/etsNeverType.h",
   "ir/ets/etsNullishTypes.h",
   "ir/ets/etsLaunchExpression.h",
   "ir/expressions/awaitExpression.h",
   "ir/ets/etsFunctionType.h",
   "checker/types/ets/etsArrayType.h",
   "ir/expressions/binaryExpression.h",
+  "checker/types/ets/etsNeverType.h",
   "checker/types/ets/etsNullishTypes.h",
   "ir/expressions/newExpression.h",
   "ir/expressions/literals/stringLiteral.h",
@@ -732,6 +738,8 @@ HEADERS_TO_BE_PARSED = [
   "checker/ETSchecker.h",
   "checker/checkerContext.h",
   "checker/resolveResult.h",
+  "parser/ETSparser.h",
+  "parser/parserFlags.h",
   "es2panda.h",
 ]
 
@@ -990,6 +998,8 @@ ES2PANDA_API_GENERATED = [
   "$LIBGEN_DIR/gen/headers/checker/ETSchecker.yaml",
   "$LIBGEN_DIR/gen/headers/checker/checkerContext.yaml",
   "$LIBGEN_DIR/gen/headers/checker/resolveResult.yaml",
+  "$LIBGEN_DIR/gen/headers/parser/parserFlags.yaml",
+  "$LIBGEN_DIR/gen/headers/parser/ETSparser.yaml",
 ]
 
 ES2PANDA_API = [ "public/cppToCTypes.yaml" ]
@@ -1004,8 +1014,11 @@ action("libes2panda_public_parse_headers") {
   script = "./public/headers_parser/main.py"
 
   args = [
+           "--es2panda-root",
            rebase_path(".", ""),
+           "--lib-gen-dir",
            rebase_path(LIBGEN_DIR, root_build_dir),
+           "--headers",
          ] + rebase_path(HEADERS_TO_BE_PARSED, "")
 
   sources = HEADERS_TO_BE_PARSED

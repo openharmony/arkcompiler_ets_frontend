@@ -14,5 +14,5 @@
  */
 
 
-var a: [a: number string]
-/* @@? 17:19 Error SyntaxError: ',' expected.  */
+var a: [a: number /* @@ label */string]
+/* @@@ label Error SyntaxError: ',' expected.  */

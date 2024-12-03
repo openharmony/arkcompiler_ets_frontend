@@ -15,7 +15,7 @@
 
 
 function foo(): string {
-return 5;
+/* @@ label */return 5;
 }
 
-/* @@? 18:1 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

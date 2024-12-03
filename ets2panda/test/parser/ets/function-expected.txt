@@ -610,7 +610,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 19,
@@ -621,7 +621,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 19,
@@ -872,7 +872,7 @@
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 14
+                        "column": 10
                       },
                       "end": {
                         "line": 23,
@@ -883,7 +883,7 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 14
+                      "column": 10
                     },
                     "end": {
                       "line": 23,
@@ -1038,23 +1038,8 @@
                         {
                           "type": "ReturnStatement",
                           "argument": {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 1,
-                              "loc": {
-                                "start": {
-                                  "line": 26,
-                                  "column": 11
-                                },
-                                "end": {
-                                  "line": 26,
-                                  "column": 12
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -1,
                             "loc": {
                               "start": {
                                 "line": 26,
@@ -1092,7 +1077,7 @@
                     "loc": {
                       "start": {
                         "line": 25,
-                        "column": 14
+                        "column": 10
                       },
                       "end": {
                         "line": 27,
@@ -1103,7 +1088,7 @@
                   "loc": {
                     "start": {
                       "line": 25,
-                      "column": 14
+                      "column": 10
                     },
                     "end": {
                       "line": 27,
@@ -1435,7 +1420,7 @@
                     "loc": {
                       "start": {
                         "line": 29,
-                        "column": 14
+                        "column": 10
                       },
                       "end": {
                         "line": 31,
@@ -1446,7 +1431,7 @@
                   "loc": {
                     "start": {
                       "line": 29,
-                      "column": 14
+                      "column": 10
                     },
                     "end": {
                       "line": 31,

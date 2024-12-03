@@ -15,6 +15,6 @@
 
 
 a:
-a: 2;
+/* @@ label */a: 2;
 
-/* @@? 18:1 Error SyntaxError: Label already declared  */
+/* @@@ label Error SyntaxError: Label already declared  */

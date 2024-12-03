@@ -58,8 +58,8 @@ function foo5(): int {
 
     } catch (e) {
 
-    } finally {
+    } finally /* @@ label */{
         return 2;
     }
 }
-/* @@? 61:15 Warning Warning: Finally clause cannot complete normally  */
+/* @@@ label Warning Warning: Finally clause cannot complete normally  */

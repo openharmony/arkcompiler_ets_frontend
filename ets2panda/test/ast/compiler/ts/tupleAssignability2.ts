@@ -14,5 +14,5 @@
  */
 
 
-var a: [number, string] = [5, "foo", 6];
-/* @@? 17:5 Error TypeError: Type '[5, "foo", 6]' is not assignable to type '[number, string]'.  */
+var /* @@ label */a: [number, string] = [5, "foo", 6];
+/* @@@ label Error TypeError: Type '[5, "foo", 6]' is not assignable to type '[number, string]'.  */

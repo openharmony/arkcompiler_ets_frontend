@@ -20,7 +20,7 @@ class B {
 function main(): void {
     let req_b: Required<B> = {fld: 3.0};
     let b_class: B = new B();
-    b_class = req_b;
+    b_class = /* @@ label */req_b;
 }
 
-/* @@? 23:15 Error TypeError: Type 'Required<B>' cannot be assigned to type 'B'  */
+/* @@@ label Error TypeError: Type 'Required<B>' cannot be assigned to type 'B'  */

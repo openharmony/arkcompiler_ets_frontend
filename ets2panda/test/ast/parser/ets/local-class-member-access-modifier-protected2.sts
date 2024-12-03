@@ -17,7 +17,7 @@ function foo()
 {
     class LocalClass
     {
-        protected method() : void;
+        /* @@ label */protected method() : void;
     }
 }
-/* @@? 20:9 Error SyntaxError: Local class declaration members can not have access modifies  */
+/* @@@ label Error SyntaxError: Local class declaration members can not have access modifies  */

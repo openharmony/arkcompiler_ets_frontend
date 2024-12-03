@@ -18,5 +18,5 @@ function func(a: number, b: string, ...c) {
     return 5;
 }
 
-func()
-/* @@? 21:1 Error TypeError: Expected at least 2 arguments, but got 0.  */
+/* @@ label */func()
+/* @@@ label Error TypeError: Expected at least 2 arguments, but got 0.  */

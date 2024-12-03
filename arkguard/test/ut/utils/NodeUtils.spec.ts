@@ -237,6 +237,33 @@ describe('test for NodeUtils', function () {
             const node = ts.factory.createIdentifier('name');
             const parent = ts.factory.createElementAccessExpression(node, node);
             (node as Mutable<ts.Node>).parent = parent;
+            expect(NodeUtils.isElementAccessNode(node)).to.be.true;
+        })
+    })
+
+    describe('test for isIndexedAccessNode', function () {
+        it('should return false if node has no parent', function () {
+            const node = ts.factory.createIdentifier('name');
+            expect(NodeUtils.isIndexedAccessNode(node)).to.be.false;
+        })
+        it('should return false if isIndexedAccessNode but parent literalType not equals to node', function () {
+            const node1 = ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral("name"));
+            const node2 = ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(1));
+            const parent = ts.factory.createIndexedAccessTypeNode(node2, node2);
+            (node1 as Mutable<ts.Node>).parent = parent;
+            (node2 as Mutable<ts.Node>).parent = parent;
+            expect(NodeUtils.isIndexedAccessNode(node1)).to.be.false;
+            expect(NodeUtils.isIndexedAccessNode(node2)).to.be.true;
+        })
+        it('should return true if isIndexedAccessNode and parent literalType equals to node', function () {
+            const node1 = ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral("name"));
+            const node2 = ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(1));
+            const parent1 = ts.factory.createIndexedAccessTypeNode(node1, node1);
+            const parent2 = ts.factory.createIndexedAccessTypeNode(node2, node2);
+            (node1 as Mutable<ts.Node>).parent = parent1;
+            (node2 as Mutable<ts.Node>).parent = parent2;
+            expect(NodeUtils.isIndexedAccessNode(node1)).to.be.true;
+            expect(NodeUtils.isIndexedAccessNode(node2)).to.be.true;
         })
     })
 
@@ -310,6 +337,12 @@ describe('test for NodeUtils', function () {
         it('should return true when node is a PropertyDeclarationNode', function () {
             const node = ts.factory.createIdentifier('name');
             const parent = ts.factory.createPropertyAssignment(node, node);
+            (node as Mutable<ts.Node>).parent = parent;
+            expect(NodeUtils.isPropertyNode(node)).to.be.true;
+        })
+        it('should return true when node is a IndexedAccessNode', function () {
+            const node = ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral("name"));
+            const parent = ts.factory.createIndexedAccessTypeNode(node, node);
             (node as Mutable<ts.Node>).parent = parent;
             expect(NodeUtils.isPropertyNode(node)).to.be.true;
         })

@@ -23,3 +23,6 @@ abstract foo(1 > 0) {
 /* @@? 16:16 Error SyntaxError: Unexpected token, expected: ';'.  */
 /* @@? 16:19 Error SyntaxError: Unexpected token, expected: ';'.  */
 /* @@? 16:21 Error SyntaxError: Unexpected token in class property  */
+/* @@? 17:12 Error SyntaxError: Unexpected token in class property  */
+/* @@? 17:16 Error SyntaxError: Unexpected token in class property  */
+/* @@? 17:23 Error SyntaxError: Unexpected token in class property  */

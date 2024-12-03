@@ -14,6 +14,6 @@
  */
 
 
-var { a: { b: [{ r, k } = { er: 5 }] = ["foo", true] } = { z: 5, b: [2, "foo"] } } = { a: { k: 2, b: [true, 2n] }, k: 5 };
+var /* @@ label */{ a: { b: [{ r, k } = { er: 5 }] = ["foo", true] } = { z: 5, b: [2, "foo"] } } = { a: { k: 2, b: [true, 2n] }, k: 5 };
 
-/* @@? 17:5 Error TypeError: Object literal may only specify known properties, and property 'k' does not exist in the pattern.  */
+/* @@@ label Error TypeError: Object literal may only specify known properties, and property 'k' does not exist in the pattern.  */

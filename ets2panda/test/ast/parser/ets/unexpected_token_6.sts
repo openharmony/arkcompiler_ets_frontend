@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-while (true {
+while (true /* @@ label */{
     console.log("hehehehe")
 }
 
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 18:1 Error SyntaxError: Unexpected token: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token '{', expected ')'. */

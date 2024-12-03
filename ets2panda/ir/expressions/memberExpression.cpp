@@ -150,21 +150,38 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(checker::ETSChecker *checker,
-                                                                                           checker::Type *type) const
+static varbinder::LocalVariable *GetEnumMethodVariable(checker::ETSEnumType const *const enumInterface,
+                                                       const util::StringView propName)
 {
-    auto const *const enumInterface = [type]() -> checker::ETSEnumType const * {
-        if (type->IsETSIntEnumType()) {
-            return type->AsETSIntEnumType();
-        }
-        return type->AsETSStringEnumType();
-    }();
+    varbinder::LocalVariable *methodVar = nullptr;
 
-    if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
-        return {enumInterface->LookupMethod(checker, object_, property_->AsIdentifier()), nullptr};
+    const auto *const boxedClass = enumInterface->GetDecl()->BoxedClass();
+    ASSERT(boxedClass->TsType()->IsETSObjectType());
+    const auto *const obj = boxedClass->TsType()->AsETSObjectType();
+
+    std::string_view methodName = propName.Utf8();
+    if (enumInterface->IsETSStringEnumType() && (propName == checker::ETSEnumType::VALUE_OF_METHOD_NAME)) {
+        // For string enums valueOf method calls toString method
+        methodName = checker::ETSEnumType::TO_STRING_METHOD_NAME;
     }
 
-    auto *const literalType = enumInterface->LookupConstant(checker, object_, property_->AsIdentifier());
+    const auto searchFlags =
+        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
+    methodVar = obj->GetProperty(methodName, searchFlags);
+
+    return methodVar;
+}
+
+std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(
+    checker::ETSChecker *checker, checker::ETSEnumType *type) const
+{
+    if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
+        auto *const memberType = type->LookupMethod(checker, object_, property_->AsIdentifier());
+        varbinder::LocalVariable *const memberVar = GetEnumMethodVariable(type, property_->AsIdentifier()->Name());
+        return {memberType, memberVar};
+    }
+
+    auto *const literalType = type->LookupConstant(checker, object_, property_->AsIdentifier());
     if (literalType == nullptr) {
         return {nullptr, nullptr};
     }
@@ -221,8 +238,6 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
             addPropType(ResolveObjectMember(checker).first);
-        } else if (apparent->IsETSEnumType()) {
-            addPropType(ResolveEnumMember(checker, apparent).first);
         } else {
             checker->LogTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
         }
@@ -247,7 +262,7 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
     }
     SetTsType(type == nullptr ? checker->GlobalTypeError() : type);
-    return TsTypeOrError();
+    return TsType();
 }
 
 checker::Type *MemberExpression::SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType)
@@ -413,7 +428,8 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
         SetObjectType(baseType->AsETSObjectType());
         return CheckIndexAccessMethod(checker);
     }
-    if ((baseType->IsETSEnumType()) && (kind_ == MemberExpressionKind::ELEMENT_ACCESS)) {
+    // NOTE(vpukhov): #20510 lowering
+    if (baseType->IsETSEnumType()) {
         property_->Check(checker);
         if (property_->TsType()->IsETSEnumType()) {
             AddAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME);

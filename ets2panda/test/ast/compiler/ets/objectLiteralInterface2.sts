@@ -18,6 +18,6 @@ interface I <T1, T2> {
     n: T2
 }
 
-let c: I<string, number> = { s: "default", n: 10};
+let c: I<string, number> = /* @@ label */{ s: "default", n: 10};
 
-/* @@? 21:28 Error TypeError: Object literal cannot be of typed interface type  */
+/* @@@ label Error TypeError: Object literal cannot be of typed interface type  */

@@ -18,3 +18,6 @@ endif()
 ets2panda_add_gtest(scopes_initialization_test
     CPP_SOURCES scopes_initialization.cpp
 )
+ets2panda_add_gtest(string_constants_test
+    CPP_SOURCES string_constants.cpp
+)

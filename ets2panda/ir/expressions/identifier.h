@@ -197,6 +197,7 @@ public:
     }
 
     [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+    [[nodiscard]] Identifier *CloneReference(ArenaAllocator *allocator, AstNode *parent);
 
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {

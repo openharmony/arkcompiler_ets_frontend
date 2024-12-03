@@ -17,6 +17,6 @@
 var a = [0, 1, 2, 3, 4];
 var b: bigint;
 var c: number;
-b = a[c = 5];
+/* @@ label */b = a[c = 5];
 
-/* @@? 20:1 Error TypeError: Type 'number' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'bigint'.  */

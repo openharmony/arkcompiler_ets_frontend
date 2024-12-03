@@ -12,5 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { a as ownElement } from './noExistFile';
-export { b as outElement } from './noExistFile';
+import { __ImportElement as ownElement } from './noExistFile';
+export { __ExportElement as outElement } from './noExistFile';

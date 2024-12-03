@@ -49,14 +49,14 @@ public:
         return lexer_->parserContext_;
     }
 
-    [[noreturn]] void ThrowError(std::string_view msg) const
+    void LogSyntaxError(std::string_view msg) const
     {
-        lexer_->ThrowError(msg);
+        lexer_->LogSyntaxError(msg);
     }
 
-    [[noreturn]] void ThrowUnexpectedStrictModeReservedKeyword() const
+    void LogUnexpectedStrictModeReservedKeyword() const
     {
-        lexer_->ThrowUnexpectedStrictModeReservedKeyword();
+        lexer_->LogUnexpectedStrictModeReservedKeyword();
     }
 
     inline NextTokenFlags Flags() const
@@ -72,13 +72,13 @@ public:
     inline void CheckEscapedKeyword() const
     {
         if (HasEscape()) {
-            ThrowEscapedKeyword();
+            LogEscapedKeyword();
         }
     }
 
-    inline void ThrowEscapedKeyword() const
+    inline void LogEscapedKeyword() const
     {
-        ThrowError("Escape sequences are not allowed in keywords");
+        LogSyntaxError("Escape sequences are not allowed in keywords");
     }
 
     inline void SetKeyword(KeywordString kws) const

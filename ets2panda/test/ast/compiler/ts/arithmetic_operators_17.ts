@@ -16,6 +16,6 @@
 
 var a: string;
 a = "foo";
-a--;
+/* @@ label */a--;
 
-/* @@? 19:1 Error TypeError: An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.  */
+/* @@@ label Error TypeError: An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.  */

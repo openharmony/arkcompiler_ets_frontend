@@ -498,7 +498,7 @@
                                   "type": "VariableDeclarator",
                                   "id": {
                                     "type": "Identifier",
-                                    "name": "gensym$_4",
+                                    "name": "gensym%%_4",
                                     "decorators": [],
                                     "loc": {
                                       "start": {
@@ -559,7 +559,7 @@
                                   "operator": "==",
                                   "left": {
                                     "type": "Identifier",
-                                    "name": "gensym$_4",
+                                    "name": "gensym%%_4",
                                     "decorators": [],
                                     "loc": {
                                       "start": {
@@ -615,7 +615,7 @@
                                   "type": "MemberExpression",
                                   "object": {
                                     "type": "Identifier",
-                                    "name": "gensym$_4",
+                                    "name": "gensym%%_4",
                                     "decorators": [],
                                     "loc": {
                                       "start": {
@@ -830,11 +830,11 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 20
+                      "column": 17
                     },
                     "end": {
                       "line": 18,
-                      "column": 21
+                      "column": 19
                     }
                   }
                 },
@@ -855,7 +855,7 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 20
+                  "column": 17
                 },
                 "end": {
                   "line": 18,

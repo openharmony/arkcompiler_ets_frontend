@@ -14,6 +14,6 @@
  */
 
 type x = int;
-type x = double;
+type /* @@ label */x = double;
 
-/* @@? 17:6 Error SyntaxError: Variable 'x' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'x' has already been declared.  */

@@ -15,5 +15,5 @@
 
 
 var a:number;
-[a] = [];
-/* @@? 18:1 Error TypeError: Tuple type [] of length 0 has no element at index 0.  */
+/* @@ label */[a] = [];
+/* @@@ label Error TypeError: Tuple type [] of length 0 has no element at index 0.  */

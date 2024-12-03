@@ -64,7 +64,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
@@ -175,7 +174,6 @@
                         }
                       }
                     ],
-                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 17,
@@ -311,7 +309,6 @@
                     }
                   }
                 ],
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
@@ -405,7 +402,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 18,
@@ -516,7 +512,6 @@
                         }
                       }
                     ],
-                    "declare": true,
                     "loc": {
                       "start": {
                         "line": 18,
@@ -652,7 +647,6 @@
                     }
                   }
                 ],
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 18,
@@ -790,7 +784,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [
@@ -923,17 +916,17 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 10
+                  "column": 3
                 },
                 "end": {
                   "line": 23,
-                  "column": 16
+                  "column": 9
                 }
               }
             },
             "kind": "method",
             "accessibility": "public",
-            "static": true,
+            "static": false,
             "optional": false,
             "computed": false,
             "value": {
@@ -947,11 +940,11 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 10
+                      "column": 3
                     },
                     "end": {
                       "line": 23,
-                      "column": 16
+                      "column": 9
                     }
                   }
                 },
@@ -964,48 +957,47 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 20
+                      "column": 13
                     },
                     "end": {
                       "line": 23,
-                      "column": 24
+                      "column": 17
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [],
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 25
+                      "column": 18
                     },
                     "end": {
                       "line": 23,
-                      "column": 27
+                      "column": 20
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 16
+                    "column": 9
                   },
                   "end": {
                     "line": 23,
-                    "column": 27
+                    "column": 20
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 16
+                  "column": 9
                 },
                 "end": {
                   "line": 23,
-                  "column": 27
+                  "column": 20
                 }
               }
             },
@@ -1018,7 +1010,7 @@
               },
               "end": {
                 "line": 23,
-                "column": 27
+                "column": 20
               }
             }
           },
@@ -1080,7 +1072,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "body": {
                   "type": "BlockStatement",
                   "statements": [],
@@ -1471,3 +1462,4 @@
     }
   }
 }
+TypeError: 'nopnop' is an instance property of 'I0' [interfaces.sts:22:28]

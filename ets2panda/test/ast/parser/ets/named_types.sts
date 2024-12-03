@@ -17,8 +17,8 @@
 //import ets.lang.annotation.*;
 class named_types  {
     text : ets.lang.String ;
-    public static class inner<T> {
-        public class innertoo  {
+    public static /* @@ label */class inner<T> {
+        public /*@@ label1 */class innertoo  {
         }
 
     }
@@ -30,4 +30,5 @@ class auxilliary  {
     }
 }
 
-/* @@? 20:19 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */

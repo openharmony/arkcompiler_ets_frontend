@@ -15,7 +15,7 @@
 
 function main() {
     let a : boolean = true;
-    console.log(a[0])
+    console.log(/* @@ label */a[0])
 }
 
-/* @@? 18:17 Error TypeError: Indexed access is not supported for such expression type.  */
+/* @@@ label Error TypeError: Indexed access is not supported for such expression type.  */

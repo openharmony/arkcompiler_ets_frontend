@@ -16,10 +16,10 @@
 class A {
   public x: int;
 
-  public constructor() : int {
+  public constructor() /* @@ label */: int {
     this.x = 15;
     return;
   }
 }
 
-/* @@? 19:24 Error SyntaxError: Type annotation isn't allowed for constructor.  */
+/* @@@ label Error SyntaxError: Type annotation isn't allowed for constructor.  */

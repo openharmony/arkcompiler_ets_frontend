@@ -26,7 +26,7 @@ class A implements I {
 
 class B extends A {
     constructor() {
-        this.a = true;
+        this./* @@ label */a = true;
     }
 }
 
@@ -35,4 +35,4 @@ function main() {
     assert(a.a == false)
 }
 
-/* @@? 29:14 Error TypeError: Cannot assign to this property because it is readonly.  */
+/* @@@ label Error TypeError: Cannot assign to this property because it is readonly.  */

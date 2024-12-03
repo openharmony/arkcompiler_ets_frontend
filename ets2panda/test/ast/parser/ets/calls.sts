@@ -17,7 +17,7 @@ function bar(x: int, y: float): int {
   return x;
 }
 
-function foo(x: int): int {
+function /* @@ label */foo(x: int): int {
   bar(x, 30);
 }
 
@@ -26,4 +26,4 @@ function main(): void {
   foo(11);
 }
 
-/* @@? 20:10 Error TypeError: Function with a non void return type must return a value.  */
+/* @@@ label Error TypeError: Function with a non void return type must return a value.  */

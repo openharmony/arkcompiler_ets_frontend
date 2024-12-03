@@ -15,6 +15,6 @@
 
 
 var func: { (a: number, ...c): boolean, (a: any, b: string[], ...c: number[]): string, (a: number, b: boolean): number };
-func();
+/* @@ label */func();
 
-/* @@? 18:1 Error TypeError: Expected at least 1 arguments, but got 0.  */
+/* @@@ label Error TypeError: Expected at least 1 arguments, but got 0.  */

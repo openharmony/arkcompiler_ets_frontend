@@ -21,5 +21,9 @@ function main(): void {
 }
 
 /* @@? 18:25 Error SyntaxError: Unexpected token 'let'. */
-/* @@? 18:25 Error SyntaxError: Unexpected token, expected ')' */
-/* @@? 18:25 Error SyntaxError: Unexpected token, expected ';' in 'ForStatement'. */
+/* @@? 18:25 Error SyntaxError: Unexpected token, expected: ')'. */
+/* @@? 18:25 Error SyntaxError: Unexpected token, expected: ';'. */
+/* @@? 18:70 Error SyntaxError: Missing right parenthesis in 'for' statement. */
+/* @@? 19:1 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:10  Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */

@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-class var{
+class /* @@ label */var{
   a : string = "15";
 }
 
-/* @@? 16:7 Error SyntaxError: Cannot be used as user-defined type.  */
+/* @@@ label Error SyntaxError: Cannot be used as user-defined type.  */
+/* @@? 16:21 Error SyntaxError: Identifier expected, got 'var'. */

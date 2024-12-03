@@ -16,11 +16,11 @@
 package mypackage;
 
 let exist_but_checker_fails_in_file: number = 8;
-let wong_type: string = 9;
+let wong_type: string = /* @@ label */9;
 
 // If it's clear that a file belongs to a package, but contains type error, compilation is aborted
 //
 // NOTE (mmartin): error message will always mark the main compiled file, but it's not the correct place
 //                 of the error. Modify this when other error messages will be improved.
 
-/* @@? 19:25 Error TypeError: Type 'int' cannot be assigned to type 'String'  */
+/* @@@ label Error TypeError: Type 'int' cannot be assigned to type 'String'  */

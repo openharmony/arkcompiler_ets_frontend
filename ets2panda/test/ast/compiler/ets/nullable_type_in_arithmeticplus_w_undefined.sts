@@ -16,7 +16,7 @@
  function main() {
     let b: Int|undefined = undefined;
     let a: Double|null = 2.0; 
-    let result = a + b;
+    let result = /* @@ label */a + b;
 }
 
-/* @@? 19:18 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */
+/* @@@ label Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */

@@ -45,8 +45,8 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
 
     for (auto *param : signatureInfo_->params) {
         auto *newParam = param;
-        auto *newParamType = param->TsTypeOrError()->Substitute(relation, substitution);
-        if (newParamType != param->TsTypeOrError()) {
+        auto *newParamType = param->TsType()->Substitute(relation, substitution);
+        if (newParamType != param->TsType()) {
             anyChange = true;
             newParam = param->Copy(allocator, param->Declaration());
             newParam->SetTsType(newParamType);
@@ -87,7 +87,7 @@ void Signature::ToAssemblerType(std::stringstream &ss) const
     ss << compiler::Signatures::MANGLE_BEGIN;
 
     for (const auto *param : signatureInfo_->params) {
-        param->TsTypeOrError()->ToAssemblerTypeWithRank(ss);
+        param->TsType()->ToAssemblerTypeWithRank(ss);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
@@ -273,7 +273,7 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
 
     std::size_t i = 0U;
     for (; i < parametersNumber; ++i) {
-        if (!CheckParameter(relation, this->Params()[i]->TsTypeOrError(), other->Params()[i]->TsTypeOrError())) {
+        if (!CheckParameter(relation, this->Params()[i]->TsType(), other->Params()[i]->TsType())) {
             return;
         }
     }
@@ -379,13 +379,11 @@ Signature *Signature::BoxPrimitives(ETSChecker *checker)
     auto *allocator = checker->Allocator();
     auto *sigInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
     for (auto param : sigInfo->params) {
-        if (param->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-            param->SetTsType(checker->PrimitiveTypeAsETSBuiltinType(param->TsType()));
+        if (param->TsType()->IsETSPrimitiveType()) {
+            param->SetTsType(checker->MaybeBoxInRelation(param->TsType()));
         }
     }
-    auto *retType = returnType_->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)
-                        ? checker->PrimitiveTypeAsETSBuiltinType(returnType_)
-                        : returnType_;
+    auto *retType = returnType_->IsETSPrimitiveType() ? checker->MaybeBoxInRelation(returnType_) : returnType_;
 
     auto *resultSig = allocator->New<Signature>(sigInfo, retType, func_);
     resultSig->flags_ = flags_;

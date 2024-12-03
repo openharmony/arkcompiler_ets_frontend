@@ -70,7 +70,17 @@ NO_NEED_RUN_WITH_NODE_FILES = [
     "ohmurl_test_new.ts",
     "export_struct_transform_class.ts",
     "nosymbolIdentifierTest.ts",
-    '02_transformed_struct_01.ts'
+    '02_transformed_struct_01.ts',
+    'importFile1.ts',
+    'importFile2.ts',
+    'importFile3.ts',
+    'noExistPath1.ts',
+    'noExistPath2.ts',
+    'noExistPath3.ts',
+    'innerTest1.ts',
+    'sameNameTest1.ts',
+    'sameNameTest2.ts',
+    'sameNameTest3.ts'
 ]
 
 

@@ -19,6 +19,7 @@
 #include "checker/types/ets/etsDynamicType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
+#include "checker/types/ets/etsPartialTypeParameter.h"
 #include "ir/astNode.h"
 #include "ir/typeNode.h"
 #include "ir/base/classDefinition.h"
@@ -297,7 +298,7 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
     if (param->DefaultType() != nullptr) {
         traverseReferenced(param->DefaultType());
         // NOTE: #14993 ensure default matches constraint
-        paramType->SetDefaultType(MaybePromotedBuiltinType(param->DefaultType()->GetType(this)));
+        paramType->SetDefaultType(MaybeBoxType(param->DefaultType()->GetType(this)));
     }
 }
 
@@ -629,7 +630,7 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
 
     ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
     CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(interfaceType), &merged);
-    std::unordered_set<ETSObjectType *> abstractInheritanceTarget;
+    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(Allocator()->Adapter());
 
     for (auto *interface : interfaceType->Interfaces()) {
         auto found = cachedComputedAbstracts_.find(interface);
@@ -654,7 +655,7 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
     ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
     CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(classType), &merged);
 
-    std::unordered_set<ETSObjectType *> abstractInheritanceTarget;
+    ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(Allocator()->Adapter());
     if (classType->SuperType() != nullptr) {
         auto base = cachedComputedAbstracts_.find(classType->SuperType());
         ASSERT(base != cachedComputedAbstracts_.end());
@@ -708,8 +709,7 @@ static void GetInterfacesOfClass(ETSObjectType *type, ArenaVector<ETSObjectType 
     }
 }
 
-void ETSChecker::CheckIfOverrideIsValidInInterface(const ETSObjectType *classType, Signature *sig,
-                                                   ir::ScriptFunction *func)
+void ETSChecker::CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func)
 {
     if (AreOverrideEquivalent(func->Signature(), sig) && func->IsStatic() == sig->Function()->IsStatic()) {
         if (CheckIfInterfaceCanBeFoundOnDifferentPaths(classType, func->Signature()->Owner()) &&
@@ -724,7 +724,7 @@ void ETSChecker::CheckIfOverrideIsValidInInterface(const ETSObjectType *classTyp
     }
 }
 
-void ETSChecker::CheckFunctionRedeclarationInInterface(const ETSObjectType *classType,
+void ETSChecker::CheckFunctionRedeclarationInInterface(ETSObjectType *classType,
                                                        ArenaVector<Signature *> &similarSignatures,
                                                        ir::ScriptFunction *func)
 {
@@ -750,8 +750,9 @@ void ETSChecker::CheckInterfaceFunctions(ETSObjectType *classType)
 
     for (auto *const &interface : interfaces) {
         for (auto *const &prop : interface->Methods()) {
-            if (auto *const func = prop->Declaration()->Node()->AsMethodDefinition()->Function();
-                func->Body() != nullptr) {
+            ir::AstNode *node = prop->Declaration()->Node();
+            ir::ScriptFunction *func = node->AsMethodDefinition()->Function();
+            if (func->Body() != nullptr) {
                 CheckFunctionRedeclarationInInterface(classType, similarSignatures, func);
             }
         }
@@ -1019,7 +1020,7 @@ void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &c
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
     classDef->SetClassDefinitionChecked();
-    auto *classType = classDef->TsTypeOrError()->AsETSObjectType();
+    auto *classType = classDef->TsType()->AsETSObjectType();
     if (classType->SuperType() != nullptr) {
         classType->SuperType()->GetDeclNode()->Check(this);
     }
@@ -1374,7 +1375,7 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
 bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
     auto *const expressionType = expr->Check(this);
-    auto const *const unboxedExpressionType = ETSBuiltinTypeAsPrimitiveType(expressionType);
+    auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
 
     Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
 
@@ -1400,11 +1401,7 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 
     if (indexType == nullptr || !indexType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
         std::stringstream message("");
-        if (expressionType->IsNonPrimitiveType()) {
-            message << expressionType->Variable()->Name();
-        } else {
-            expressionType->ToString(message);
-        }
+        expressionType->ToString(message);
 
         LogTypeError(
             "Type '" + message.str() +
@@ -1448,7 +1445,7 @@ std::optional<int32_t> ETSChecker::GetTupleElementAccessValue(const Type *const 
 bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberExpression *const expr)
 {
     auto *const expressionType = expr->Property()->Check(this);
-    auto const *const unboxedExpressionType = ETSBuiltinTypeAsPrimitiveType(expressionType);
+    auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
 
     if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
         expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
@@ -1666,7 +1663,7 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
                 return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS | SETTER_FLAGS;
             }
 
-            auto const *targetType = assignmentExpr->Left()->TsTypeOrError();
+            auto const *targetType = assignmentExpr->Left()->TsType();
             if (targetType->IsETSObjectType() &&
                 targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
                 return FUNCTIONAL_FLAGS;
@@ -2137,6 +2134,10 @@ Type *ETSChecker::GetApparentType(Type *type)
         return cached(
             GetNonNullishType(GetApparentType(type->AsETSNonNullishType()->GetUnderlying()->GetConstraintType())));
     }
+    if (type->IsETSPartialTypeParameter()) {
+        return cached(CreatePartialType(
+            GetApparentType(type->AsETSPartialTypeParameter()->GetUnderlying()->GetConstraintType())));
+    }
     if (type->IsETSArrayType()) {
         return cached(type);
     }
@@ -2164,7 +2165,7 @@ Type const *ETSChecker::GetApparentType(Type const *type) const
     if (type->IsETSArrayType()) {
         return type;
     }
-    if (type->IsETSUnionType() || type->IsETSNonNullishType()) {
+    if (type->IsETSUnionType() || type->IsETSNonNullishType() || type->IsETSPartialTypeParameter()) {
         ASSERT_PRINT(false, std::string("Type ") + type->ToString() + " was not found in apparent_types_");
     }
     return type;

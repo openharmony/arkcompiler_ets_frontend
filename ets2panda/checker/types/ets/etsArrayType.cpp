@@ -88,8 +88,8 @@ void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
         return;
     }
     if (source->IsETSArrayType()) {
-        if (AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ||
-            source->AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        if (AsETSArrayType()->ElementType()->IsETSPrimitiveType() ||
+            source->AsETSArrayType()->ElementType()->IsETSPrimitiveType()) {
             return;
         }
         relation->IsAssignableTo(source->AsETSArrayType()->ElementType(), element_);
@@ -167,7 +167,14 @@ Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *subst
     }
 
     auto *resultElt = element_->Substitute(relation, substitution);
-    return resultElt == element_ ? this : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt);
+
+    if (resultElt == element_) {
+        return this;
+    }
+
+    ETSArrayType *result = relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt);
+    result->typeFlags_ = typeFlags_;
+    return result;
 }
 
 }  // namespace ark::es2panda::checker

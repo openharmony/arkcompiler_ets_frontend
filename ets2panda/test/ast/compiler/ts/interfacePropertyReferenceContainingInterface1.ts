@@ -25,6 +25,6 @@ interface B extends A {
 
 var foo: B;
 
-foo.a.b.b.a.c.r
+foo.a.b.b.a.c./* @@ label */r
 
-/* @@? 28:15 Error TypeError: Property r does not exist on this type.  */
+/* @@@ label Error TypeError: Property r does not exist on this type.  */

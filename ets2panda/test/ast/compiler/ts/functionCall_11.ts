@@ -15,5 +15,5 @@
 
 
 var func: { (a: number, b: string): number, (a: string, b?: number): string };
-func(1);
-/* @@? 18:6 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+func(/* @@ label */1);
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

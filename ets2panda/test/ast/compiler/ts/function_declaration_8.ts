@@ -15,7 +15,7 @@
 
 
 function foo(): bigint {
-return false;
+/* @@ label */return false;
 }
 
-/* @@? 18:1 Error TypeError: Type 'boolean' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'bigint'.  */

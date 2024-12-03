@@ -23,7 +23,7 @@ switch (a {
         console.log("bbb")
 }
 
-/* @@? 18:11 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 18:11 Error SyntaxError: Unexpected token '{', expected ')'  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */

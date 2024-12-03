@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_PARSER_CORE_LEXER_H
 #define ES2PANDA_PARSER_CORE_LEXER_H
 
-#include <ios>
 #include "lexer/regexp/regexp.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/token.h"
@@ -37,6 +36,7 @@ enum class NextTokenFlags : uint32_t {
     KEYWORD_TO_IDENT = 1U << 0U,
     NUMERIC_SEPARATOR_ALLOWED = 1U << 1U,
     BIGINT_ALLOWED = 1U << 2U,
+    UNARY_MINUS = 1U << 3U,
 };
 
 class LexerPosition {
@@ -106,6 +106,7 @@ public:
     util::UString str;
     size_t end {};
     bool scanExpression {};
+    bool validSequence {true};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -113,7 +114,7 @@ class TemplateLiteralParserContext;
 
 class Lexer {
 public:
-    explicit Lexer(const parser::ParserContext *parserContext, bool startLexer = true);
+    explicit Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger, bool startLexer = true);
     NO_COPY_SEMANTIC(Lexer);
     NO_MOVE_SEMANTIC(Lexer);
     virtual ~Lexer() = default;
@@ -134,6 +135,11 @@ public:
             return true;
         }
         return false;
+    }
+
+    const util::ErrorLogger *ErrorLogger()
+    {
+        return errorLogger_;
     }
 
     std::optional<Token> TryEatTokenKeyword(lexer::TokenType type)
@@ -157,23 +163,24 @@ public:
     RegExp ScanRegExp();
 
     void HandleNewlineHelper(util::UString *str, size_t *escapeEnd);
-    void HandleBackslashHelper(util::UString *str, size_t *escapeEnd);
+    bool HandleBackslashHelper(util::UString *str, size_t *escapeEnd);
     bool HandleDollarSignHelper(const char32_t &end);
     bool HandleDoubleQuoteHelper(const char32_t &end, const char32_t &cp);
-    void FinalizeTokenHelper(util::UString *str, const size_t &startPos, size_t escapeEnd);
+    void PrepareStringTokenHelper();
+    void FinalizeTokenHelper(util::UString *str, const size_t &startPos, size_t escapeEnd, bool finalize = true);
     template <char32_t END>
     void ScanString();
 
     void ResetTokenEnd();
-    void CheckOctalDigit(char32_t const nextCp);
+    bool CheckOctalDigit(char32_t const nextCp);
     std::tuple<bool, bool, LexerTemplateString> ScanTemplateStringCpHelper(char32_t cp,
                                                                            LexerTemplateString templateStr);
     LexerTemplateString ScanTemplateString();
     void ScanTemplateStringEnd();
     void PushTemplateContext(TemplateLiteralParserContext *ctx);
-    [[noreturn]] void ThrowUnexpectedStrictModeReservedKeyword() const
+    void LogUnexpectedStrictModeReservedKeyword() const
     {
-        ThrowError("Unexpected strict mode reserved keyword");
+        LogSyntaxError("Unexpected strict mode reserved keyword");
     }
 
     enum class ConversionResult : uint8_t {
@@ -209,9 +216,9 @@ public:
         const Tret tmp = converter(str, &endPtr, base...);
 
         bool outOfRange = false;
-        if constexpr (std::is_same_v<Ret, int>) {
-            outOfRange = tmp < static_cast<Tret>(std::numeric_limits<int>::min()) ||
-                         tmp > static_cast<Tret>(std::numeric_limits<int>::max());
+        if constexpr (!std::is_same_v<Ret, Tret>) {
+            outOfRange = tmp < static_cast<Tret>(std::numeric_limits<Ret>::min()) ||
+                         tmp > static_cast<Tret>(std::numeric_limits<Ret>::max());
         }
 
         if (endPtr == str) {
@@ -232,11 +239,12 @@ protected:
     void NextToken(Keywords *kws);
     ArenaAllocator *Allocator();
     bool IsLineTerminatorOrEos() const;
-    void ScanRegExpPattern();
+    bool ScanRegExpPattern();
     RegExpFlags ScanRegExpFlags();
 
-    [[noreturn]] void ThrowError(std::string_view message) const;
-    [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;
+    void LogSyntaxError(std::string_view const errorMessage) const;
+    void LogSyntaxError(std::string_view const errorMessage, const lexer::SourcePosition &pos) const;
+    void LogUnexpectedToken(lexer::TokenType const tokenType) const;
 
     void SetTokenStart();
     void SetTokenEnd();
@@ -290,28 +298,26 @@ protected:
     char32_t ScanHexEscape();
     char32_t ScanUnicodeCodePointEscape();
 
-    void ScanStringUnicodePart(util::UString *str);
+    bool ScanStringUnicodePart(util::UString *str);
     char32_t ScanUnicodeCharacterHelper(size_t cpSize, char32_t cp);
     char32_t ScanUnicodeCharacter();
 
     void ScanDecimalNumbers();
 
-    virtual void ScanNumberLeadingZero()
+    virtual void ScanNumberLeadingZero(bool const leadingMinus)
     {
-        ScanNumberLeadingZeroImpl<double>();
+        ScanNumberLeadingZeroImpl<double>(leadingMinus);
     }
 
-    template <typename RadixType, typename RadixLimit = void *>
-    bool ScanNumberLeadingZeroImpl();
+    template <typename RadixType, typename RadixLimit = RadixType>
+    bool ScanNumberLeadingZeroImpl(bool const leadingMinus);
     void ScanNumberLeadingZeroImplNonAllowedCases();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-    bool ScanNumberRadix(bool allowNumericSeparator = true);
-    void ScanNumber(bool allowBigInt = true);
-    std::tuple<size_t, bool, NumberFlags> ScanCharLex(bool allowBigInt, bool parseExponent, NumberFlags flags);
-    size_t ScanSignOfNumber();
-    template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-    bool ScanTooLargeNumber(RadixType number);
-    virtual void ConvertNumber(const std::string &utf8, NumberFlags flags);
+    bool ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator = true);
+    void ScanNumber(bool const leadingMinus = false, bool allowBigInt = true);
+    std::optional<std::size_t> ScanCharLex(bool parseExponent, bool &allowBigInt, NumberFlags &flags);
+    std::optional<std::size_t> ScanSignOfNumber() noexcept;
+    virtual void ConvertNumber(NumberFlags flags);
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allowNumericSeparator);
     virtual void CheckNumberLiteralEnd();
@@ -337,6 +343,7 @@ private:
     const parser::ParserContext *parserContext_;
     util::StringView source_;
     LexerPosition pos_;
+    util::ErrorLogger *const errorLogger_;
 };
 
 class TemplateLiteralParserContext {
@@ -369,32 +376,33 @@ private:
 };
 
 template <char32_t END>
+// CC-OFFNXT(huge_method,G.FUN.01) big switch-case, solid logic
 void Lexer::ScanString()
 {
     util::UString str(Allocator());
-    GetToken().type_ = TokenType::LITERAL_STRING;
-    GetToken().keywordType_ = TokenType::LITERAL_STRING;
-
+    PrepareStringTokenHelper();
     const auto startPos = Iterator().Index();
     auto escapeEnd = startPos;
+    bool validEscape = true;
 
     do {
-        char32_t cp = Iterator().Peek();
-
+        const char32_t cp = Iterator().Peek();
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
-                ThrowError("Unterminated string");
+                LogSyntaxError("Unterminated string");
+                break;
             }
             case LEX_CHAR_CR:
             case LEX_CHAR_LF: {
                 if constexpr (END != LEX_CHAR_BACK_TICK) {
-                    ThrowError("Newline is not allowed in strings");
+                    LogSyntaxError("Newline is not allowed in strings");
+                    break;
                 }
                 HandleNewlineHelper(&str, &escapeEnd);
                 continue;
             }
             case LEX_CHAR_BACKSLASH: {
-                HandleBackslashHelper(&str, &escapeEnd);
+                validEscape &= HandleBackslashHelper(&str, &escapeEnd);
                 continue;
             }
             case LEX_CHAR_BACK_TICK:
@@ -416,7 +424,8 @@ void Lexer::ScanString()
                 continue;
             }
         }
-        FinalizeTokenHelper(&str, startPos, escapeEnd);
+
+        FinalizeTokenHelper(&str, startPos, escapeEnd, validEscape);
         break;
     } while (true);
 
@@ -440,7 +449,8 @@ char32_t Lexer::ScanHexEscape()
         Iterator().Forward(1);
 
         if (!IsHexDigit(cp)) {
-            ThrowError("Invalid unicode escape sequence");
+            LogSyntaxError("Invalid unicode escape sequence");
+            return UNICODE_INVALID_CP;
         }
 
         constexpr auto MULTIPLIER = 16;
@@ -451,7 +461,7 @@ char32_t Lexer::ScanHexEscape()
 }
 
 template <typename RadixType, typename RadixLimit>
-bool Lexer::ScanNumberLeadingZeroImpl()
+bool Lexer::ScanNumberLeadingZeroImpl(bool const leadingMinus)
 {
     GetToken().type_ = TokenType::LITERAL_NUMBER;
     GetToken().keywordType_ = TokenType::LITERAL_NUMBER;
@@ -461,7 +471,7 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         case LEX_CHAR_UPPERCASE_X: {
             Iterator().Forward(1);
             constexpr auto RADIX = 16;
-            if (!ScanNumberRadix<IsHexDigit, RADIX, RadixType, RadixLimit>()) {
+            if (!ScanNumberRadix<IsHexDigit, RADIX, RadixType, RadixLimit>(leadingMinus)) {
                 return false;
             }
             CheckNumberLiteralEnd();
@@ -471,7 +481,7 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         case LEX_CHAR_UPPERCASE_B: {
             Iterator().Forward(1);
             constexpr auto RADIX = 2;
-            if (!ScanNumberRadix<IsBinaryDigit, RADIX, RadixType, RadixLimit>()) {
+            if (!ScanNumberRadix<IsBinaryDigit, RADIX, RadixType, RadixLimit>(leadingMinus)) {
                 return false;
             }
             CheckNumberLiteralEnd();
@@ -481,7 +491,7 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         case LEX_CHAR_UPPERCASE_O: {
             Iterator().Forward(1);
             constexpr auto RADIX = 8;
-            if (!ScanNumberRadix<IsOctalDigit, RADIX, RadixType, RadixLimit>()) {
+            if (!ScanNumberRadix<IsOctalDigit, RADIX, RadixType, RadixLimit>(leadingMinus)) {
                 return false;
             }
             CheckOctal();
@@ -494,15 +504,17 @@ bool Lexer::ScanNumberLeadingZeroImpl()
         }
     }
 
-    ScanNumber();
+    ScanNumber(leadingMinus);
     return true;
 }
 
-template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-bool Lexer::ScanTooLargeNumber([[maybe_unused]] RadixType number)
+template <int RADIX, typename RadixType, typename RadixLimit>
+bool ScanTooLargeNumber([[maybe_unused]] RadixType const number, [[maybe_unused]] std::uint32_t const digit)
 {
-    if constexpr (std::is_arithmetic_v<RadixLimit>) {
-        if (number > std::numeric_limits<RadixLimit>::max() / RADIX) {
+    // NOTE (DZ): probably more sophisticates check will be required for general usage
+    if constexpr (std::is_integral_v<RadixLimit>) {
+        if (static_cast<RadixType>(std::numeric_limits<RadixLimit>::max()) / RADIX < number ||
+            static_cast<RadixType>(std::numeric_limits<RadixLimit>::max()) - number * RADIX < digit) {
             return false;
         }
     }
@@ -510,13 +522,13 @@ bool Lexer::ScanTooLargeNumber([[maybe_unused]] RadixType number)
 }
 
 template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-bool Lexer::ScanNumberRadix(bool allowNumericSeparator)
+bool Lexer::ScanNumberRadix(bool leadingMinus, bool allowNumericSeparator)
 {
     RadixType number {};
 
     auto cp = Iterator().Peek();
     if (!RANGE_CHECK(cp)) {
-        ThrowError("Invalid digit");
+        LogSyntaxError("Invalid digit");
     }
 
     bool allowNumericOnNext = true;
@@ -524,13 +536,12 @@ bool Lexer::ScanNumberRadix(bool allowNumericSeparator)
     do {
         cp = Iterator().Peek();
         if (RANGE_CHECK(cp)) {
-            auto digit = HexValue(cp);
-
-            if (!ScanTooLargeNumber<RANGE_CHECK, RADIX, RadixType, RadixLimit>(number)) {
+            auto const digit = HexValue(cp);
+            if (!ScanTooLargeNumber<RADIX, RadixType, RadixLimit>(number, digit)) {
                 return false;
             }
-
             number = number * RADIX + digit;
+
             Iterator().Forward(1);
             allowNumericOnNext = true;
             continue;
@@ -538,7 +549,7 @@ bool Lexer::ScanNumberRadix(bool allowNumericSeparator)
 
         if (cp == LEX_CHAR_UNDERSCORE) {
             if (!allowNumericSeparator || !allowNumericOnNext) {
-                ThrowError("Invalid numeric separator");
+                LogSyntaxError("Invalid numeric separator");
             }
 
             GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
@@ -549,11 +560,19 @@ bool Lexer::ScanNumberRadix(bool allowNumericSeparator)
 
         if (!allowNumericOnNext) {
             Iterator().Backward(1);
-            ThrowError("Numeric separators are not allowed at the end of numeric literals");
+            LogSyntaxError("Numeric separators are not allowed at the end of numeric literals");
         }
 
         break;
     } while (true);
+
+    if (leadingMinus) {
+        if constexpr (std::is_integral_v<RadixType>) {
+            number = ~number + static_cast<RadixType>(1);
+        } else {
+            number = -number;
+        }
+    }
 
     GetToken().number_ = lexer::Number(number);
     return true;

@@ -14,7 +14,7 @@
  */
 
 abstract class Foo {
-    abstract async foo(): Promise<void>;
+    abstract async /* @@ label */foo(): Promise<void>;
 }
 
-/* @@? 17:20 Error SyntaxError: Abstract method cannot be async  */
+/* @@@ label Error SyntaxError: Abstract method cannot be async  */

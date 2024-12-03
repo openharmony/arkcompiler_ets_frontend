@@ -1,0 +1,3 @@
+# Issue: ##20531
+compiler/ets/import_tests/enum_export.sts
+parser/ets/declare_enum.sts

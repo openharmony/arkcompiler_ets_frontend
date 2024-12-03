@@ -19,7 +19,7 @@ class A{
 
   foo(n: int): void {
     let x: int[] = [1, 2, 3]
-    for (this.m of x) {
+    for (/* @@ label */this.m of x) {
       console.println(n)
     }
   }
@@ -30,4 +30,4 @@ function main(): void {
   new A().foo(n)
 }
 
-/* @@? 22:10 Error TypeError: Cannot obtain iterator type in 'for-of' statement.  */
+/* @@@ label Error TypeError: Cannot obtain iterator type in 'for-of' statement.  */

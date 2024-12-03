@@ -16,11 +16,11 @@
 interface IBase { foo () {} }
 interface I1 extends IBase { foo () {}}
 interface I2 extends IBase {}
-class C implements I1,I2 {}
+class C implements I1,I2 /* @@ label */{}
 
 function main() {
     let c = new C;
     c.foo();
 }
 
-/* @@? 19:26 Error TypeError: Method 'foo' is declared in I1 and IBase interfaces.  */
+/* @@@ label Error TypeError: Method 'foo' is declared in I1 and IBase interfaces.  */

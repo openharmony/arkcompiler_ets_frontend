@@ -20,5 +20,5 @@ function foo(a: { x: number | string }) {
     return 2;
 }
 
-foo({ x: true });
-/* @@? 23:1 Error TypeError: No overload matches this call.  */
+/* @@ label */foo({ x: true });
+/* @@@ label Error TypeError: No overload matches this call.  */

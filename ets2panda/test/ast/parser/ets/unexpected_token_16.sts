@@ -31,7 +31,7 @@ function main(): void {
     }
 }
 
-/* @@? 27:17 Error SyntaxError: Unexpected token, expected: ':'.  */
+/* @@? 26:17 Error SyntaxError: Unexpected token 'break', expected ':'  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */

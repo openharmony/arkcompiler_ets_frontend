@@ -368,11 +368,11 @@
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 22
+                                  "column": 20
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 23
+                                  "column": 22
                                 }
                               }
                             },
@@ -470,11 +470,11 @@
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 18
+                                      "column": 15
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 19
+                                      "column": 17
                                     }
                                   }
                                 },
@@ -495,7 +495,7 @@
                               "loc": {
                                 "start": {
                                   "line": 20,
-                                  "column": 18
+                                  "column": 15
                                 },
                                 "end": {
                                   "line": 20,
@@ -736,7 +736,7 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 23,
@@ -747,7 +747,7 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 23,

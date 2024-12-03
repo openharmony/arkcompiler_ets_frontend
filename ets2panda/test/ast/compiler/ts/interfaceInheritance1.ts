@@ -14,7 +14,7 @@
  */
 
 
-interface A extends C {
+interface /* @@ label */A extends C {
 
 }
 
@@ -25,4 +25,4 @@ interface B extends A {
 interface C extends B {
 
 }
-/* @@? 17:11 Error TypeError: Type A recursively references itself as a base type.  */
+/* @@@ label Error TypeError: Type A recursively references itself as a base type.  */

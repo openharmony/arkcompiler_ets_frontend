@@ -15,6 +15,6 @@
 
 
 class Foo {
-    @dec a();
+    /* @@ label */@dec a();
 }
-/* @@? 18:5 Error SyntaxError: A decorator can only decorate a method implementation, not an overload.  */
+/* @@@ label Error SyntaxError: A decorator can only decorate a method implementation, not an overload.  */

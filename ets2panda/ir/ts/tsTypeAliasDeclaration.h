@@ -30,13 +30,12 @@ class TSTypeParameterDeclaration;
 class TSTypeAliasDeclaration : public AnnotatedStatement {
 public:
     explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *typeParams,
-                                    TypeNode *typeAnnotation, bool declare)
+                                    TypeNode *typeAnnotation)
         : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation),
           decorators_(allocator->Adapter()),
           id_(id),
           typeParams_(typeParams),
-          typeParamTypes_(allocator->Adapter()),
-          declare_(declare)
+          typeParamTypes_(allocator->Adapter())
     {
     }
 
@@ -45,8 +44,7 @@ public:
           decorators_(allocator->Adapter()),
           id_(id),
           typeParams_(nullptr),
-          typeParamTypes_(allocator->Adapter()),
-          declare_(false)
+          typeParamTypes_(allocator->Adapter())
     {
     }
 
@@ -63,11 +61,6 @@ public:
     TSTypeParameterDeclaration *TypeParams() const
     {
         return typeParams_;
-    }
-
-    bool Declare() const
-    {
-        return declare_;
     }
 
     const ArenaVector<Decorator *> &Decorators() const
@@ -124,7 +117,6 @@ private:
     Identifier *id_;
     TSTypeParameterDeclaration *typeParams_;
     ArenaVector<checker::Type *> typeParamTypes_;
-    bool declare_;
 };
 }  // namespace ark::es2panda::ir
 

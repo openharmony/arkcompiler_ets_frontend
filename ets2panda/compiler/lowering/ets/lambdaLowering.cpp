@@ -427,24 +427,17 @@ static ir::MethodDefinition *CreateCalleeDefault(public_lib::Context *ctx, ir::A
     return method;
 }
 
-static ArenaVector<ir::Expression *> CreateArgsForOptionalCall(public_lib::Context *ctx,
-                                                               ir::ArrowFunctionExpression *lambda,
-                                                               ir::MethodDefinition *defaultMethod)
+static void ValidateDefaultParameters(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
+                                      ir::MethodDefinition *defaultMethod)
 {
     auto *checker = ctx->checker->AsETSChecker();
 
-    ArenaVector<ir::Expression *> funcCallArgs(checker->Allocator()->Adapter());
-    funcCallArgs.reserve(defaultMethod->Function()->Params().size());
-
     size_t i = 0;
-
     for (auto *param : defaultMethod->Function()->Params()) {
         if (param->AsETSParameterExpression()->IsDefault()) {
             break;
         }
-        auto *paramName =
-            param->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
-        funcCallArgs.push_back(paramName);
+
         i++;
     }
 
@@ -454,81 +447,7 @@ static ArenaVector<ir::Expression *> CreateArgsForOptionalCall(public_lib::Conte
             checker->LogTypeError({"Expected initializer for parameter ", param->Ident()->Name(), "."}, param->Start());
             break;
         }
-        funcCallArgs.push_back(param->Initializer());
     }
-
-    return funcCallArgs;
-}
-
-static ir::BlockStatement *CreateFunctionBody(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
-                                              ir::MethodDefinition *defaultMethod)
-{
-    auto *checker = ctx->checker->AsETSChecker();
-    ArenaVector<ir::Statement *> statements(checker->Allocator()->Adapter());
-    ir::CallExpression *callExpression = nullptr;
-    ir::Expression *id = nullptr;
-    ir::Expression *accessor = nullptr;
-    auto *const callee = checker->AllocNode<ir::Identifier>(defaultMethod->Id()->Name(), checker->Allocator());
-
-    if (defaultMethod->IsStatic() && defaultMethod->Parent()->IsClassDefinition() &&
-        (!defaultMethod->Parent()->AsClassDefinition()->IsGlobal())) {
-        id = checker->AllocNode<ir::Identifier>(defaultMethod->Parent()->AsClassDefinition()->Ident()->Name(),
-                                                checker->Allocator());
-        accessor = checker->AllocNode<ir::MemberExpression>(id, callee, ir::MemberExpressionKind::PROPERTY_ACCESS,
-                                                            false, false);
-        callee->SetParent(accessor);
-    }
-
-    callExpression = checker->AllocNode<ir::CallExpression>(accessor != nullptr ? accessor : callee,
-                                                            CreateArgsForOptionalCall(ctx, lambda, defaultMethod),
-                                                            nullptr, false, false);
-    callee->SetParent(callExpression);
-    callExpression->SetSignature(defaultMethod->Function()->Signature());
-
-    if ((defaultMethod->Function()->ReturnTypeAnnotation() != nullptr) ||
-        ((defaultMethod->Function()->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
-        statements.push_back(checker->AllocNode<ir::ReturnStatement>(callExpression));
-    } else {
-        statements.push_back(checker->AllocNode<ir::ExpressionStatement>(callExpression));
-    }
-
-    auto blockStatement = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(statements));
-    blockStatement->Statements().front()->SetParent(blockStatement);
-
-    return blockStatement;
-}
-
-static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
-                                          LambdaInfo const *info, ir::MethodDefinition *defaultMethod,
-                                          size_t limit = std::numeric_limits<size_t>::max())
-{
-    auto *allocator = ctx->allocator;
-    auto *checker = ctx->checker->AsETSChecker();
-
-    auto calleeName = lambda->Function()->IsAsyncFunc()
-                          ? (util::UString {checker::ETSChecker::GetAsyncImplName(info->name), allocator}).View()
-                          : info->name;
-    auto *forcedReturnType = lambda->Function()->IsAsyncFunc() ? checker->GlobalETSNullishObjectType() : nullptr;
-
-    CalleeMethodInfo cmInfo;
-    cmInfo.calleeName = calleeName;
-    cmInfo.body = CreateFunctionBody(ctx, lambda, defaultMethod);
-    cmInfo.forcedReturnType = forcedReturnType;
-
-    auto *method = CreateCalleeMethod(ctx, lambda, info, &cmInfo, limit, defaultMethod->Id()->Variable());
-
-    if (lambda->Function()->IsAsyncFunc()) {
-        CalleeMethodInfo cmInfoAsync;
-        cmInfoAsync.calleeName = info->name;
-        cmInfoAsync.body = nullptr;
-        cmInfoAsync.forcedReturnType = nullptr;
-        cmInfoAsync.auxModifierFlags = ir::ModifierFlags::NATIVE;
-        cmInfoAsync.auxFunctionFlags = ir::ScriptFunctionFlags::ASYNC;
-        auto *asyncMethod = CreateCalleeMethod(ctx, lambda, info, &cmInfoAsync);
-        return asyncMethod;
-    }
-
-    return method;
 }
 
 // The name "=t" used in extension methods has special meaning for the code generator;
@@ -635,7 +554,7 @@ static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *c
         auto argName = lambdaParam->Name();
         auto *type = lambdaParam->TsType()->Substitute(checker->Relation(), lciInfo->substitution);
         auto *arg = wrapToObject ? parser->CreateFormattedExpression("@@I1 as @@T2 as @@T3", argName,
-                                                                     checker->MaybePromotedBuiltinType(type), type)
+                                                                     checker->MaybeBoxType(type), type)
                                  : allocator->New<ir::Identifier>(argName, allocator);
         callArguments.push_back(arg);
     }
@@ -762,9 +681,7 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, ArenaVe
     auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, ctx->parserProgram->GlobalClassScope());
 
     auto lambdaClassName = util::UString {std::string_view {"LambdaObject-"}, allocator};
-    lambdaClassName.Append(info->calleeClass->Definition()->Ident()->Name());
-    lambdaClassName.Append("$");
-    lambdaClassName.Append(info->name);
+    lambdaClassName.Append(info->calleeClass->Definition()->Ident()->Name()).Append("$").Append(info->name);
 
     ArenaVector<checker::Type *> funcInterfaces(allocator->Adapter());
 
@@ -853,7 +770,6 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
 {
     auto *allocator = ctx->allocator;
     auto *checker = ctx->checker->AsETSChecker();
-    auto firstDefaultIndex = lambda->Function()->DefaultParamIndex();
 
     LambdaInfo info;
     std::tie(info.calleeClass, info.enclosingFunction) = FindEnclosingClassAndFunction(lambda);
@@ -867,12 +783,7 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     }
     auto *callee = CreateCalleeDefault(ctx, lambda, &info);
 
-    if (firstDefaultIndex < lambda->Function()->Params().size()) {
-        for (size_t i = firstDefaultIndex; i < lambda->Function()->Params().size(); i++) {
-            auto overload = CreateCallee(ctx, lambda, &info, callee, firstDefaultIndex);
-            callee->AddOverload(overload);
-        }
-    }
+    ValidateDefaultParameters(ctx, lambda, callee);
 
     ASSERT(lambda->TsType()->IsETSFunctionType());
     auto *lambdaType = lambda->TsType()->AsETSFunctionType();
@@ -886,7 +797,7 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
     ASSERT(ast->TsType()->IsETSFunctionType());
     auto *type = ast->TsType()->AsETSFunctionType();
 
-    if (type->CallSignatures().size() == 1) {
+    if (type->IsETSArrowType()) {
         return type->CallSignatures()[0];
     }
 
@@ -953,7 +864,12 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
     ArenaVector<ir::Expression *> callArgs {allocator->Adapter()};
 
     for (auto *p : func->Params()) {
-        callArgs.push_back(p->AsETSParameterExpression()->Ident()->Clone(allocator, nullptr));
+        ir::Identifier *clone = p->AsETSParameterExpression()->Ident()->Clone(allocator, nullptr);
+        if (clone->IsIdentifier() && (clone->IsReference(ScriptExtension::ETS)) &&
+            (clone->TypeAnnotation() != nullptr)) {
+            clone->SetTsTypeAnnotation(nullptr);
+        }
+        callArgs.push_back(clone);
     }
     auto *callExpr = util::NodeAllocator::ForceSetParent<ir::CallExpression>(allocator, funcRef, std::move(callArgs),
                                                                              nullptr, false);
@@ -1067,6 +983,7 @@ static bool IsFunctionOrMethodCall(ir::AstNode const *node)
         return true;
     }
 
+    // NOTE(vpukhov): #20510 member access pattern Enum.Const.<method>()
     if (callee->IsMemberExpression() && callee->AsMemberExpression()->Object()->TsType() != nullptr &&
         (callee->AsMemberExpression()->Object()->TsType()->IsETSEnumType())) {
         return true;
@@ -1120,10 +1037,6 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         auto boxingFlags = arg->GetBoxingUnboxingFlags();
         Recheck(varBinder, checker, arg);
         arg->SetBoxingUnboxingFlags(boxingFlags);
-        // NOTE (psiket) Temporal solution
-        if (arg->TsType()->IsETSEnumType()) {
-            arg->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
-        }
     }
 
     return call;
@@ -1139,6 +1052,18 @@ static bool IsInCalleePosition(ir::Expression *expr)
     return expr->Parent()->IsCallExpression() && expr->Parent()->AsCallExpression()->Callee() == expr;
 }
 
+static bool IsEnumFunctionCall(const ir::Identifier *const id)
+{
+    if (id->Parent() != nullptr && id->Parent()->IsMemberExpression()) {
+        const auto *const expr = id->Parent()->AsMemberExpression();
+        if (expr->Object()->TsType()->IsETSEnumType()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::AstNode *node)
 {
     if (node->IsArrowFunctionExpression()) {
@@ -1150,9 +1075,9 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         auto *var = id->Variable();
         // We are running this lowering only for ETS files
         // so it is correct to pass ETS extension here to isReference()
-        if (id->IsReference(ScriptExtension::ETS) && id->TsTypeOrError() != nullptr &&
-            id->TsTypeOrError()->IsETSFunctionType() && var != nullptr && var->Declaration()->IsFunctionDecl() &&
-            !IsInCalleePosition(id)) {
+        if (id->IsReference(ScriptExtension::ETS) && id->TsType() != nullptr && id->TsType()->IsETSFunctionType() &&
+            var != nullptr && var->Declaration()->IsFunctionDecl() && !IsInCalleePosition(id) &&
+            !IsEnumFunctionCall(id)) {
             return ConvertFunctionReference(ctx, id);
         }
     }

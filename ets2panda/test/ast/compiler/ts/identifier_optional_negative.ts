@@ -16,6 +16,6 @@
 
 // valid syntax error, note: TS 5.1.6 engine throw => expected error
 
-let b = (a?: number)
+let b = /* @@ label */(a?: number)
 
-/* @@? 19:9 Error SyntaxError: Unexpected token '?'.  */
+/* @@@ label Error SyntaxError: Unexpected token '?'.  */

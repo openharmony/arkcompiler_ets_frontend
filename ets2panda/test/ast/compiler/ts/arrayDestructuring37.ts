@@ -18,5 +18,5 @@ var a = {};
 var b: number;
 var c:string;
 var d = [];
-[a, [b, , c = "bar"] = ["foo", 5], ...d] = [{}, [42, , "foo" + 2]];
-/* @@? 21:6 Error TypeError: Type 'number | string' is not assignable to type 'number'.  */
+[a, [/* @@ label */b, , c = "bar"] = ["foo", 5], ...d] = [{}, [42, , "foo" + 2]];
+/* @@@ label Error TypeError: Type 'number | string' is not assignable to type 'number'.  */

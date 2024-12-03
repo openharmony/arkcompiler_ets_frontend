@@ -44,15 +44,9 @@ public:
         return *this;
     }
 
-    TSTypeAliasDeclarationBuilder &SetDeclare(bool declare)
-    {
-        declare_ = declare;
-        return *this;
-    }
-
     TSTypeAliasDeclaration *Build()
     {
-        auto node = AllocNode(Allocator(), id_, typeParams_, typeAnnotation_, declare_);
+        auto node = AllocNode(Allocator(), id_, typeParams_, typeAnnotation_);
         return node;
     }
 
@@ -60,7 +54,6 @@ private:
     Identifier *id_ {};
     TSTypeParameterDeclaration *typeParams_ {};
     TypeNode *typeAnnotation_ {};
-    bool declare_ = false;
 };
 
 }  // namespace ark::es2panda::ir

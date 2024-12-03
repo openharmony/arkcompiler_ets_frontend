@@ -18,7 +18,7 @@ class AClass {
 }
 
 class BClass extends AClass {
-    override bar(): void {}
+    override bar/* @@ label */(): void {}
 }
 
-/* @@? 21:17 Error TypeError: Method bar(): void in BClass not overriding any method  */
+/* @@@ label Error TypeError: Method bar(): void in BClass not overriding any method  */

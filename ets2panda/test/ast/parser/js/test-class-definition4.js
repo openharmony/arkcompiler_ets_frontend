@@ -15,7 +15,7 @@
 
 
 class B {
-  static prototype() {
+  static /* @@ label */prototype() {
   }
 }
-/* @@? 18:10 Error SyntaxError: Classes may not have static property named prototype  */
+/* @@@ label Error SyntaxError: Classes may not have static property named prototype  */

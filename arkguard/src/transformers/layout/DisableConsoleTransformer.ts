@@ -49,7 +49,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import { NodeUtils } from '../../utils/NodeUtils';
 import { performancePrinter } from '../../ArkObfuscator';
-import { EventList } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
@@ -73,10 +73,10 @@ namespace secharmony {
           return node;
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
         let resultAst: Node = visitAst(node);
         let parentNodes = setParentRecursive(resultAst, true);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
         return parentNodes;
       }
 
@@ -98,21 +98,13 @@ namespace secharmony {
 
         if (isSourceFile(node)) {
           return factory.updateSourceFile(node, deletedStatements);
-        }
-
-        if (isBlock(node)) {
+        } else if (isBlock(node)) {
           return factory.createBlock(deletedStatements, true);
-        }
-
-        if (isModuleBlock(node)) {
-          return factory.createModuleBlock(deletedStatements)
-        }
-
-        if (isCaseClause(node)) {
+        } else if (isModuleBlock(node)) {
+          return factory.createModuleBlock(deletedStatements);
+        } else if (isCaseClause(node)) {
           return factory.createCaseClause(node.expression, deletedStatements);
-        }
-
-        if (isDefaultClause(node)) {
+        } else {
           return factory.createDefaultClause(deletedStatements);
         }
       }

@@ -15,6 +15,6 @@
 
 
 declare class Foo {
-    private static get a() { return }
+    private static get a() /* @@ label */{ return }
 }
-/* @@? 18:28 Error SyntaxError: An implementation cannot be declared in ambient contexts.  */
+/* @@@ label Error SyntaxError: An implementation cannot be declared in ambient contexts.  */

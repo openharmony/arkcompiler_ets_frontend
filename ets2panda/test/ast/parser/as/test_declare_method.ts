@@ -15,7 +15,7 @@
 
 
 class A {
-    declare foo(a: i32): i32 { }
+    declare foo/* @@ label */(a: i32): i32 { }
 }
 
-/* @@? 18:16 Error SyntaxError: 'declare' modifier cannot appear on class elements of this kind  */
+/* @@@ label Error SyntaxError: 'declare' modifier cannot appear on class elements of this kind  */

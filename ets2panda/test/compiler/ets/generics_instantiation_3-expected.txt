@@ -481,11 +481,11 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 23
+                  "column": 20
                 },
                 "end": {
                   "line": 21,
-                  "column": 24
+                  "column": 22
                 }
               }
             },

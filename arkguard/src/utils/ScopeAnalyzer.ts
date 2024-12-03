@@ -72,7 +72,10 @@ import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
 namespace secharmony {
   type ForLikeStatement = ForStatement | ForInOrOfStatement;
   type ClassLikeDeclaration = ClassDeclaration | ClassExpression;
-  export const noSymbolIdentifier: Set<string> = new Set();
+  /**
+   * A map used to track whether identifiers without symbols are in the top-level scope.
+   */
+  export const exportElementsWithoutSymbol: Map<Node, boolean> = new Map();
 
   /**
    * type of scope
@@ -160,7 +163,7 @@ namespace secharmony {
       this.importNames = new Set<string>();
       this.exportNames = new Set<string>();
       this.mangledNames = new Set<string>();
-      this.loc = this.parent?.loc ? this.parent.loc + '#' + this.name : this.name;
+      this.loc = this.parent?.loc ? getNameWithScopeLoc(this.parent, this.name) : this.name;
 
       this.parent?.addChild(this);
     }
@@ -205,7 +208,7 @@ namespace secharmony {
         return '';
       }
 
-      return this.loc ? sym.name : this.loc + '#' + sym.name;
+      return this.loc ? sym.name : getNameWithScopeLoc(this, sym.name);
     }
 
     /**
@@ -219,7 +222,7 @@ namespace secharmony {
       }
 
       let index: number = this.labels.findIndex((lb: Label) => lb === label);
-      return this.loc ? label.name : this.loc + '#' + index + label.name;
+      return this.loc ? label.name : getNameWithScopeLoc(this, index + label.name);
     }
   }
 
@@ -463,7 +466,7 @@ namespace secharmony {
         if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
           let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
           if (!propertySymbol) {
-            noSymbolIdentifier.add(propetyNameNode.text);
+            exportElementsWithoutSymbol.set(propetyNameNode, current.kind === ScopeKind.GLOBAL);
           } else {
             current.addDefinition(propertySymbol);
           }
@@ -537,7 +540,7 @@ namespace secharmony {
       if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
         let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
         if (!propertySymbol) {
-          noSymbolIdentifier.add(propetyNameNode.text);
+          exportElementsWithoutSymbol.set(propetyNameNode, current.kind === ScopeKind.GLOBAL);
         }
       }
       forEachChild(node, analyzeScope);
@@ -707,7 +710,7 @@ namespace secharmony {
         return;
       }
       let scopeName: string = (node?.name as Identifier)?.text ?? '$' + current.children.length;
-      let loc: string = current?.loc ? current.loc + '#' + scopeName : scopeName;
+      let loc: string = current?.loc ? getNameWithScopeLoc(current, scopeName) : scopeName;
       let overloading: boolean = false;
       for (const sub of current.children) {
         if (sub.loc === loc) {
@@ -997,6 +1000,10 @@ namespace secharmony {
 
       noSymbolVisit(node);
     }
+  }
+  
+  export function getNameWithScopeLoc(scope: Scope, name: string): string {
+    return scope.loc + '#' + name;
   }
 }
 

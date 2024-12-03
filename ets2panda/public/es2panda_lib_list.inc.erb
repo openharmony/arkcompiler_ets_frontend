@@ -41,15 +41,23 @@
 
     AstNodeName,
 
-% Es2pandaLibApi::classes&.each do |className, classData|
+% Es2pandaLibApi::classes&.each do |namespaceName, namespaceClasses|
+% namespaceClasses&.each do |className, classData|
 % classData.class_constructors&.each_with_index do |constructor, index|
-    Create<%= className + "#{index}" %>,
+    Create<%= className + constructor["overload"] %>,
 % if classData.updater_allowed()
-    Update<%= className + "#{index}" %>,
+    Update<%= className + constructor["overload"] %>,
 % end
 % end
 
 % classData.class_methods&.each_with_index do |method_info, index|
     <%= className + method_info["overload_name"] %>,
+% end
+% end
+% end
+
+% Es2pandaLibApi::structs&.each do |structName, structData|
+% structData.struct_getters&.each_with_index do |method_info, index|
+    <%= structName + method_info["name"] %>,
 % end
 % end

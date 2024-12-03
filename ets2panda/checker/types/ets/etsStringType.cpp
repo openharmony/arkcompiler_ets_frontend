@@ -43,6 +43,9 @@ bool ETSStringType::AssignmentSource(TypeRelation *relation, Type *target)
     auto node = relation->GetNode();
     if ((relation->InAssignmentContext() || relation->ApplyStringToChar()) && IsConvertibleTo(target)) {
         node->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_CHAR);
+        if (target->IsETSObjectType()) {
+            node->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_CHAR);
+        }
         relation->Result(true);
     } else {
         relation->Result(target->IsETSStringType() && AreStringTypesAssignable(this, target));

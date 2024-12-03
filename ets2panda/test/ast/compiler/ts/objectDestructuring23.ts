@@ -15,5 +15,5 @@
 
 
 var a: { b: { c: [number, number] } };
-var { b: { c: [a, b] } } = a;
-/* @@? 18:16 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '{ b: { c: [number, number]; }; }', but here has type 'number'.  */
+var { b: { c: [/* @@ label */a, b] } } = a;
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '{ b: { c: [number, number]; }; }', but here has type 'number'.  */

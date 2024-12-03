@@ -15,5 +15,5 @@
 
 
 var a: {} | { a: number, b: string } | number;
-var a: { a: number, b: string } | string | {};
-/* @@? 18:5 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '{ } | { a: number; b: string; } | number', but here has type '{ a: number; b: string; } | string | { }'.  */
+var /* @@ label */a: { a: number, b: string } | string | {};
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type '{ } | { a: number; b: string; } | number', but here has type '{ a: number; b: string; } | string | { }'.  */

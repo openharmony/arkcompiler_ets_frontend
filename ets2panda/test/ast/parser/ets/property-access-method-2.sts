@@ -18,8 +18,8 @@ class A {
     foo(): void {}
 
     public callFoo(): void {
-        A.foo();
+        A./* @@ label */foo();
     }
 }
 
-/* @@? 21:11 Error TypeError: 'foo' is an instance property of 'A'  */
+/* @@@ label Error TypeError: 'foo' is an instance property of 'A'  */

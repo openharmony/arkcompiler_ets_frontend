@@ -18,5 +18,5 @@ function func(a: number, b: string, c?: number[]) {
 
 }
 
-func(1);
-/* @@? 21:1 Error TypeError: Expected 2-3 arguments, but got 1  */
+/* @@ label */func(1);
+/* @@@ label Error TypeError: Expected 2-3 arguments, but got 1  */

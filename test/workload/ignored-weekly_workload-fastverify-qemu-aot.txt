@@ -27,3 +27,5 @@ pdfjs
 ##19216
 wsl
 
+#20257
+regexp

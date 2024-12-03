@@ -22,6 +22,7 @@
 #include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsStringLiteralType.h"
 #include "ir/ets/etsTuple.h"
+#include "ir/ets/etsNeverType.h"
 #include "ir/ets/etsNullishTypes.h"
 #include "ir/statements/functionDeclaration.h"
 #include "ir/expressions/functionExpression.h"
@@ -69,7 +70,7 @@ inline DefaultBehaviourAstVisitor::~DefaultBehaviourAstVisitor() = default;
 }  // namespace detail
 
 /**
- * Children should declare VisitNode methods (might be virtual might be not)
+ * Children should noImpl VisitNode methods (might be virtual might be not)
  * for all classes or provide default behaviour using
  * template <T> VisitNode(T *t) {}
  */

@@ -20,7 +20,7 @@
 @Author
 function foo1(){}
 
-@Author("11")
+@Author("-11")
 function foo2(){}
 
 @Author({authorName: "22"})

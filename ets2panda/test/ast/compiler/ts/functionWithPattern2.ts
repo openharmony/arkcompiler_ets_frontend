@@ -18,5 +18,5 @@ function foo({ x = 6, y = "foo" } = { x: "foo" }) {
 
 }
 
-foo + 5;
-/* @@? 21:1 Error TypeError: operator + cannot be applied to types ({ x, y }?: { x?: string; y?: string; }) => void and number  */
+/* @@ label */foo + 5;
+/* @@@ label Error TypeError: operator + cannot be applied to types ({ x, y }?: { x?: string; y?: string; }) => void and number  */

@@ -14,5 +14,5 @@
  */
 
 
-var [a, [a, b] = [1, 2]] = [1, ["foo"]];
-/* @@? 17:10 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number', but here has type 'string | number'.  */
+var [a, [/* @@ label */a, b] = [1, 2]] = [1, ["foo"]];
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number', but here has type 'string | number'.  */

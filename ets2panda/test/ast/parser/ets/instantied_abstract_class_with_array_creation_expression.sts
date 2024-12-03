@@ -16,7 +16,7 @@
 abstract class cls {}
 
 function main(): void {
-  new cls[10];
+  /* @@ label */new cls[10];
 }
 
-/* @@? 19:3 Error TypeError: Cannot use array creation expression with abstract classes and interfaces.  */
+/* @@@ label Error TypeError: Cannot use array creation expression with abstract classes and interfaces.  */

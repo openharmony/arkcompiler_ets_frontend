@@ -19,7 +19,7 @@ import {ListUtil} from '../utils/ListUtil';
 import type {IOptions} from '../configs/IOptions';
 import { stringPropsSet, structPropsSet, enumPropsSet } from '../utils/OhsUtil';
 
-export const scanProjectConfig: {
+export let scanProjectConfig: {
   mPropertyObfuscation?: boolean,
   mKeepStringProperty?: boolean,
   mExportObfuscation?: boolean,
@@ -62,7 +62,7 @@ export function isEnabledPropertyObfuscation(customProfiles: IOptions): boolean 
     customProfiles.mNameObfuscation.mRenameProperties);
 }
 
-function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean) {
+function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean): void {
   scanProjectConfig.mPropertyObfuscation = customProfiles.mNameObfuscation?.mRenameProperties;
   scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
   scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
@@ -85,15 +85,12 @@ export interface ReseverdSetForArkguard {
  */
 export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>,
   customProfiles: IOptions, isHarCompiled: boolean): ReseverdSetForArkguard {
-  const ApiType = ApiExtractor.ApiType;
+  const apiType = ApiExtractor.ApiType;
   let scanningCommonType = undefined;
-  let scanningLibsType = undefined;
   if (needReadApiInfo(customProfiles)) {
-    scanningCommonType = ApiType.PROJECT;
-    scanningLibsType = ApiType.PROJECT_DEPENDS;
+    scanningCommonType = apiType.PROJECT;
   } else {
-    scanningCommonType = ApiType.CONSTRUCTOR_PROPERTY;
-    scanningLibsType = ApiType.CONSTRUCTOR_PROPERTY;
+    scanningCommonType = apiType.CONSTRUCTOR_PROPERTY;
   }
   // The purpose of collecting constructor properties is to avoid generating the same name as the constructor property when obfuscating identifier names.
   ApiExtractor.mConstructorPropertySet = new Set();
@@ -128,6 +125,9 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   if (scanProjectConfig.mExportObfuscation) {
     exportNameSet = new Set(exportNames);
   }
+
+  // scanProjectConfig needs to be cleared to prevent affecting incremental compilation
+  scanProjectConfig = {};
 
   return {
     structPropertySet: structPropertySet,

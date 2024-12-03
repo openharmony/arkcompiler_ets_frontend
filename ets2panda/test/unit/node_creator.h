@@ -34,13 +34,13 @@ class NodeGenerator {
 public:
     explicit NodeGenerator(ArenaAllocator *alloc) : alloc_(alloc) {}
     // x = 1
-    ir::VariableDeclaration *CreateVarDecl(bool declare, util::StringView name = "x")
+    ir::VariableDeclaration *CreateVarDecl(util::StringView name = "x")
     {
         auto varDecl = alloc_->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, CreateId(name));
         ArenaVector<ir::VariableDeclarator *> tmp {alloc_->Adapter()};
         tmp.emplace_back(varDecl);
         return alloc_->New<ir::VariableDeclaration>(ir::VariableDeclaration::VariableDeclarationKind::LET, alloc_,
-                                                    std::move(tmp), declare);
+                                                    std::move(tmp));
     }
 
     ir::Identifier *CreateId(util::StringView x)
@@ -65,7 +65,7 @@ public:
 
     ir::BlockStatement *CreateBlockWithDeclare(util::StringView name = "x")
     {
-        auto varDecl = CreateVarDecl(true, name);
+        auto varDecl = CreateVarDecl(name);
         ArenaVector<ir::Statement *> tmp {alloc_->Adapter()};
         tmp.emplace_back(varDecl);
         auto *newBlock = alloc_->New<ir::BlockStatement>(alloc_, std::move(tmp));
@@ -75,7 +75,7 @@ public:
 
     ir::ForUpdateStatement *CreateForUpdate()
     {
-        return alloc_->New<ir::ForUpdateStatement>(CreateVarDecl(true), CreateLessCmpExpr(), CreateIncrement(),
+        return alloc_->New<ir::ForUpdateStatement>(CreateVarDecl(), CreateLessCmpExpr(), CreateIncrement(),
                                                    CreateBlockWithDeclare());
     }
 

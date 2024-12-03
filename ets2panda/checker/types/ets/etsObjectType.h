@@ -21,11 +21,15 @@
 #include "checker/types/signature.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ts/tsEnumDeclaration.h"
 #include "varbinder/scope.h"
 #include "ir/base/classDefinition.h"
 
 namespace ark::es2panda::checker {
 using PropertyProcesser = std::function<varbinder::LocalVariable *(varbinder::LocalVariable *, Type *)>;
+
+inline constexpr auto *PARTIAL_CLASS_SUFFIX = "$partial";
+
 class ETSObjectType : public Type {
 public:
     using PropertyMap = ArenaUnorderedMap<util::StringView, varbinder::LocalVariable *>;
@@ -85,6 +89,11 @@ public:
 
     void SetTypeArguments(ArenaVector<Type *> &&typeArgs)
     {
+#ifndef NDEBUG
+        for (auto const &t : typeArgs) {
+            ASSERT(t->IsETSReferenceType());
+        }
+#endif
         typeArguments_ = std::move(typeArgs);
     }
 
@@ -140,11 +149,6 @@ public:
     }
 
     const ArenaVector<Type *> &TypeArguments() const
-    {
-        return typeArguments_;
-    }
-
-    ArenaVector<Type *> &TypeArguments()
     {
         return typeArguments_;
     }
@@ -295,6 +299,17 @@ public:
         return static_cast<checker::ETSObjectFlags>(flags_ & ETSObjectFlags::BUILTIN_TYPE);
     }
 
+    ETSObjectFlags UnboxableKind() const
+    {
+        return static_cast<checker::ETSObjectFlags>(flags_ & ETSObjectFlags::UNBOXABLE_TYPE);
+    }
+
+    ETSEnumType *GetUnboxedEnumType() const
+    {
+        ASSERT(HasObjectFlag(ETSObjectFlags::BOXED_ENUM));
+        return GetDeclNode()->AsClassDefinition()->OrigEnumDecl()->TsType()->AsETSEnumType();
+    }
+
     ETSObjectType *GetInstantiatedType(util::StringView hash)
     {
         auto found = instantiationMap_.find(hash);
@@ -360,6 +375,11 @@ public:
     [[nodiscard]] bool IsGeneric() const noexcept
     {
         return !typeArguments_.empty();
+    }
+
+    [[nodiscard]] bool IsPartial() const noexcept
+    {
+        return name_.EndsWith(PARTIAL_CLASS_SUFFIX);
     }
 
     std::vector<const varbinder::LocalVariable *> ForeignProperties() const;
@@ -458,6 +478,7 @@ private:
     bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
                                TypeFlag narrowingFlags);
     void IdenticalUptoTypeArguments(TypeRelation *relation, Type *other);
+    void SubstitutePartialTypes(TypeRelation *relation, Type *other);
     void IsGenericSupertypeOf(TypeRelation *relation, Type *source);
     void UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop, PropertyType fieldType,
                             PropertyProcesser const &func);

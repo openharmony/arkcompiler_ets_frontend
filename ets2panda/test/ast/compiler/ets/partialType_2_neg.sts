@@ -20,7 +20,7 @@ class A {
 function foo(): void {
     let partial_A: Partial<A> = {mmeb: 3};
     partial_A.mmeb = undefined;
-    let a_class: A = partial_A;
+    let a_class: A = /* @@ label */partial_A;
 }
 
-/* @@? 23:22 Error TypeError: Type 'A$partial' cannot be assigned to type 'A'  */
+/* @@@ label Error TypeError: Type 'Partial<A>' cannot be assigned to type 'A'  */

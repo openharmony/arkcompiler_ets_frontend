@@ -207,7 +207,7 @@ ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
     auto *funcNode = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(),
         ir::ScriptFunction::ScriptFunctionData {
-            body, std::move(signature), method->Function()->Flags(), {}, false, method->Function()->Language()});
+            body, std::move(signature), method->Function()->Flags(), {}, method->Function()->Language()});
     funcNode->AddModifier(method->Function()->Modifiers());
     funcNode->SetRange({startLoc, endLoc});
 
@@ -231,7 +231,7 @@ void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *meth
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overloadMethod->SetRange(funcExpression->Range());
 
-    if (method->Parent()->IsTSInterfaceBody()) {
+    if (!method->IsDeclare() && method->Parent()->IsTSInterfaceBody()) {
         overloadMethod->Function()->Body()->AsBlockStatement()->Statements().clear();
     }
 
@@ -314,11 +314,10 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinit
             params.begin(), params.end() - i, [&funcCallArgs, &funcDefinitionArgs, checker](ir::Expression *expr) {
                 // NOTE: we don't need Initializer here, as overload-method will have strict list of parameters
                 //       will reset all of them once parsing loop completes
-                auto *funcArg =
-                    expr->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
-
+                auto *funcArg = expr->AsETSParameterExpression()->Ident();
+                auto clone = funcArg->CloneReference(checker->Allocator(), nullptr)->AsIdentifier();
                 // update list of functional call arguments
-                funcCallArgs.push_back(funcArg);
+                funcCallArgs.push_back(clone);
 
                 auto *ident =
                     expr->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();

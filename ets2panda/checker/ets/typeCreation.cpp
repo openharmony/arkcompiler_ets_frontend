@@ -252,7 +252,7 @@ EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration co
         MakeMethod(enumDecl, ETSEnumType::BOXED_FROM_INT_METHOD_NAME, false, boxedEnumType, false);
     enumType->SetBoxedFromIntMethod(boxedFromIntMethod);
 
-    auto const unboxMethod = MakeMethod(enumDecl, ETSEnumType::UNBOX_METHOD_NAME, false, enumType, false);
+    auto const unboxMethod = MakeMethod(enumDecl, ETSEnumType::UNBOX_METHOD_NAME, false, enumType);
     enumType->SetUnboxMethod(unboxMethod);
 
     auto const toStringMethod =
@@ -287,14 +287,18 @@ EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration co
     return enumType;
 }
 
-ETSIntEnumType *ETSChecker::CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+ETSIntEnumType *ETSChecker::CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
 {
-    return CreateEnumTypeFromEnumDeclaration<ETSIntEnumType>(enumDecl);
+    auto etsEnumType = CreateEnumTypeFromEnumDeclaration<ETSIntEnumType>(enumDecl);
+    enumDecl->SetTsType(etsEnumType);
+    return etsEnumType;
 }
 
-ETSStringEnumType *ETSChecker::CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+ETSStringEnumType *ETSChecker::CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
 {
-    return CreateEnumTypeFromEnumDeclaration<ETSStringEnumType>(enumDecl);
+    auto etsEnumType = CreateEnumTypeFromEnumDeclaration<ETSStringEnumType>(enumDecl);
+    enumDecl->SetTsType(etsEnumType);
+    return etsEnumType;
 }
 
 Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
@@ -582,6 +586,9 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
             localName.Append(name);
             assemblerName = localName.View();
         }
+        if (declNode->AsClassDefinition()->OrigEnumDecl() != nullptr) {
+            flags |= ETSObjectFlags::BOXED_ENUM;
+        }
     }
 
     if (containingObjType != nullptr) {
@@ -664,7 +671,7 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
             GlobalBuiltinFunctionType(GlobalBuiltinFunctionTypeVariadicThreshold(), signature->Function()->Flags())
                 ->AsETSObjectType();
         auto *substitution = NewSubstitution();
-        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), MaybePromotedBuiltinType(retType));
+        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), MaybeBoxType(retType));
         return functionN->Substitute(Relation(), substitution);
     }
 
@@ -679,10 +686,10 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
 
     for (size_t i = 0; i < signature->Params().size(); i++) {
         substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
-                              MaybePromotedBuiltinType(signature->Params()[i]->TsType()));
+                              MaybeBoxType(signature->Params()[i]->TsType()));
     }
     substitution->emplace(funcIface->TypeArguments()[signature->Params().size()]->AsETSTypeParameter(),
-                          MaybePromotedBuiltinType(signature->ReturnType()));
+                          MaybeBoxType(signature->ReturnType()));
     return funcIface->Substitute(Relation(), substitution);
 }
 
@@ -693,6 +700,17 @@ Type *ETSChecker::ResolveFunctionalInterfaces(ArenaVector<Signature *> &signatur
         types.push_back(FunctionTypeToFunctionalInterfaceType(signature));
     }
     return CreateETSUnionType(std::move(types));
+}
+
+ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
+{
+    ETSObjectType *const promiseType = GlobalBuiltinPromiseType();
+    ASSERT(promiseType->TypeArguments().size() == 1);
+    Substitution *substitution = NewSubstitution();
+    ETSChecker::EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
+                                   type);
+
+    return promiseType->Substitute(Relation(), substitution);
 }
 
 }  // namespace ark::es2panda::checker

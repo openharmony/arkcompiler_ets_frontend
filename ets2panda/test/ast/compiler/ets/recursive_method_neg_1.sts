@@ -23,7 +23,7 @@ class E{}
 function main(){
     let x:C
     let a_obj = new A<C>()
-    a_obj.foo<E>(x)
+    /* @@ label */a_obj.foo<E>(x)
 }
 
-/* @@? 26:5 Error TypeError: No matching call signature for foo(C)  */
+/* @@@ label Error TypeError: No matching call signature for foo(C)  */

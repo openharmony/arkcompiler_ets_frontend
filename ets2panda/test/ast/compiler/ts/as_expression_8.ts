@@ -15,6 +15,6 @@
 
 
 var a = [5,5,5,5] as const;
-a = [5,5,5];
+/* @@ label */a = [5,5,5];
 
-/* @@? 18:1 Error TypeError: Type '[5, 5, 5]' is not assignable to type 'readonly [5, 5, 5, 5]'.  */
+/* @@@ label Error TypeError: Type '[5, 5, 5]' is not assignable to type 'readonly [5, 5, 5, 5]'.  */

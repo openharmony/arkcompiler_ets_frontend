@@ -16,7 +16,7 @@
 import * as all from "import_tests/modules/default_export";
 
 function main(): void {
-    all.DefaultExportedFunc();
+    all./* @@ label */DefaultExportedFunc();
 }
 
-/* @@? 19:9 Error TypeError: Property 'DefaultExportedFunc' does not exist on type 'default_export'  */
+/* @@@ label Error TypeError: Property 'DefaultExportedFunc' does not exist on type 'default_export'  */

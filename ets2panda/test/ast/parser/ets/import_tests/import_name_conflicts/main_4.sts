@@ -14,8 +14,8 @@
  */
 
 import * as foo_1 from "./imported_module_2.sts"
-import {foo_1} from "./imported_module_1.sts"
+import {foo_1} from /* @@ label */"./imported_module_1.sts"
 
 function main() : void {}
 
-/* @@? 17:21 Error SyntaxError: Function 'foo_1' is already defined with different type.  */
+/* @@@ label Error SyntaxError: Function 'foo_1' is already defined with different type.  */

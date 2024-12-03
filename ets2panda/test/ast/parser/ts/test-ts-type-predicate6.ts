@@ -16,4 +16,4 @@
 
 var var1: (is: number | string) => asserts (number | string);
 
-/* @@? 17:44 Error SyntaxError: Unexpected token '('. */
+/* @@? 17:44 Error SyntaxError: Unexpected token '('.  */

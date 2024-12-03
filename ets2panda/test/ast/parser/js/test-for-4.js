@@ -14,5 +14,5 @@
  */
 
 
-for (let d,c of {d,c});
-/* @@? 17:12 Error SyntaxError: Invalid left-hand side in 'for' statement: must have a single binding.  */
+for (let d,/* @@ label */c of {d,c});
+/* @@@ label Error SyntaxError: Invalid left-hand side in 'for' statement: must have a single binding.  */

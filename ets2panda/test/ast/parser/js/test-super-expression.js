@@ -14,5 +14,5 @@
  */
 
 
-super;
-/* @@? 17:6 Error SyntaxError: Unexpected super keyword  */
+super/* @@ label */;
+/* @@@ label Error SyntaxError: Unexpected super keyword  */

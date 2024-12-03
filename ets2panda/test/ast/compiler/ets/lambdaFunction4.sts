@@ -17,8 +17,8 @@ class A {
     b: String = "foo";
 
     a: () => void = (): void => {
-        this.b++;
+        /* @@ label */this.b++;
     }
 }
 
-/* @@? 20:9 Error TypeError: Bad operand type, the type of the operand must be numeric type.  */
+/* @@@ label Error TypeError: Bad operand type, the type of the operand must be numeric type.  */

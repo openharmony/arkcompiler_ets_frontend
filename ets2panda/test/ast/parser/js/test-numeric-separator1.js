@@ -16,3 +16,4 @@
 
 1__1
 /* @@? 17:3 Error SyntaxError: Invalid numeric separator  */
+/* @@? 17:5 Error SyntaxError: Numeric separators are not allowed at the end of numeric literals  */

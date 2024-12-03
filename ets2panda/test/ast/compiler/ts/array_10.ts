@@ -15,6 +15,6 @@
 
 
 var a: number[];
-a = [false,5];
+a = [/* @@ label */false,5];
 
-/* @@? 18:6 Error TypeError: Type 'boolean' is not assignable to type 'number'.  */
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'number'.  */

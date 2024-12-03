@@ -15,7 +15,7 @@
 
 class C {
     static foo: int = 10;
-    static foo: int = 20;
+    static /* @@ label */foo: int = 20;
 }
 
-/* @@? 18:12 Error SyntaxError: Variable 'foo' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'foo' has already been declared.  */

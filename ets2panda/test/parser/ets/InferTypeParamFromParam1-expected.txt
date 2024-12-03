@@ -1981,7 +1981,7 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 32,
@@ -1992,7 +1992,7 @@
               "loc": {
                 "start": {
                   "line": 30,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 32,
@@ -2262,7 +2262,7 @@
                 "loc": {
                   "start": {
                     "line": 34,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 36,
@@ -2273,7 +2273,7 @@
               "loc": {
                 "start": {
                   "line": 34,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 36,

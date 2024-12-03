@@ -588,7 +588,7 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 25
+                    "column": 10
                   },
                   "end": {
                     "line": 21,
@@ -599,7 +599,7 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 25
+                  "column": 10
                 },
                 "end": {
                   "line": 21,
@@ -1389,11 +1389,11 @@
                               "loc": {
                                 "start": {
                                   "line": 32,
-                                  "column": 30
+                                  "column": 27
                                 },
                                 "end": {
                                   "line": 32,
-                                  "column": 31
+                                  "column": 29
                                 }
                               }
                             },
@@ -2007,7 +2007,7 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 41,
@@ -2018,7 +2018,7 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 41,

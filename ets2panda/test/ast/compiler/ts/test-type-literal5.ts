@@ -14,5 +14,5 @@
  */
 
 
-var a: { readonly new (a:number):string };
-/* @@? 17:19 Error SyntaxError: Unexpected token in property key  */
+var a: { readonly /* @@ label */new (a:number):string };
+/* @@@ label Error SyntaxError: Unexpected token in property key  */

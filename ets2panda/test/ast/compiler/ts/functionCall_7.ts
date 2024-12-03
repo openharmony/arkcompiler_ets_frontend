@@ -18,5 +18,5 @@ function func(...a: string[]) {
     return 6;
 }
 
-func(2);
-/* @@? 21:6 Error TypeError: Argument of type 'number' is not assignable to parameter of type 'string'.  */
+func(/* @@ label */2);
+/* @@@ label Error TypeError: Argument of type 'number' is not assignable to parameter of type 'string'.  */

@@ -15,5 +15,5 @@
 
 
 var a: number;
-var [b = 6, c = 6] = a;
-/* @@? 18:5 Error TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator.  */
+var /* @@ label */[b = 6, c = 6] = a;
+/* @@@ label Error TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator.  */

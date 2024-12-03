@@ -16,11 +16,11 @@
 class A {
   a: int = 2;
 
-  static class B {
+  static /* @@ label */class B {
     foo(): void {
       this.a++;
     }
   }
 }
 
-/* @@? 19:10 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

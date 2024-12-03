@@ -16,5 +16,5 @@
 
 var a: [number, string, number];
 var [b, c] = a;
-b = {}
-/* @@? 19:1 Error TypeError: Type '{ }' is not assignable to type 'number'.  */
+/* @@ label */b = {}
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'number'.  */

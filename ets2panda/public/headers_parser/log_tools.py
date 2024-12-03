@@ -20,12 +20,14 @@ import logging
 import os
 import sys
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(levelname)s:[%(name)s]: %(message)s", force=True)
+logging.root.name = "h_parser"
 
 LOGGING = 0
 DEBUG_LOGGING = 0
 INFO_LOGGING = 1
-WARNING_LOGGING = 0
+DEBUG_LOGGING = 0
+WARNING_LOGGING = 1
 ERROR_LOGGIN = 1
 PARSING_LOGGING = 0
 
@@ -40,15 +42,18 @@ def init_log(lib_gen_folder: str) -> None:
 
 
 def info_log(msg: str) -> None:
-    line = "INFO: " + msg
     if INFO_LOGGING:
-        logging.info(line)
+        logging.info(msg)
+
+
+def debug_log(msg: str) -> None:
+    if DEBUG_LOGGING:
+        logging.debug(msg)
 
 
 def warning_log(msg: str) -> None:
-    line = "WARNING: " + msg
     if WARNING_LOGGING:
-        logging.info(line)
+        logging.warning(msg)
 
 
 def parsing_failed_msg(file: str) -> None:

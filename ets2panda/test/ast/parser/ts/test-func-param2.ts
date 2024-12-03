@@ -17,4 +17,5 @@
 function foo(a, this) {
 
 }
+
 /* @@? 17:21 Error SyntaxError: A 'this' parameter must be the first parameter  */

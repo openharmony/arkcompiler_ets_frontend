@@ -34,6 +34,11 @@ public:
         return source_;
     }
 
+    Expression const *Source() const
+    {
+        return source_;
+    }
+
     [[nodiscard]] ImportExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

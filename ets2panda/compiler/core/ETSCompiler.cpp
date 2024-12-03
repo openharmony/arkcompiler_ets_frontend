@@ -45,7 +45,7 @@ void ETSCompiler::Compile(const ir::CatchClause *st) const
 void ETSCompiler::Compile(const ir::ClassProperty *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (st->Value() == nullptr && st->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+    if (st->Value() == nullptr && st->TsType()->IsETSPrimitiveType()) {
         return;
     }
 
@@ -85,7 +85,7 @@ void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
     if (!isPrimitive) {
         literal->Compile(etsg);
     } else {
-        ASSERT(literalType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE));
+        ASSERT(literalType->IsETSPrimitiveType());
         etsg->SetAccumulatorType(literalType);
     }
 
@@ -282,8 +282,9 @@ static void HandleUnionTypeInForOf(compiler::ETSGen *etsg, checker::Type const *
                 etsg->LoadArrayElement(st, unionReg);
             } else {
                 etsg->LoadStringChar(st, unionReg, *countReg);
+                // NOTE(vpukhov): #20510 use a single unboxing convertor
                 etsg->ApplyCastToBoxingFlags(st, ir::BoxingUnboxingFlags::BOX_TO_CHAR);
-                etsg->SetAccumulatorType(etsg->EmitBoxedType(ir::BoxingUnboxingFlags::BOX_TO_CHAR, st));
+                etsg->EmitBoxingConversion(ir::BoxingUnboxingFlags::BOX_TO_CHAR, st);
                 etsg->CastToChar(st);
             }
         }
@@ -307,6 +308,7 @@ static void GetSizeInForOf(compiler::ETSGen *etsg, checker::Type const *const ex
         etsg->LoadStringLength(st);
     }
 }
+
 static void MaybeCastUnionTypeToFunctionType(compiler::ETSGen *etsg, const ir::CallExpression *expr,
                                              checker::Signature *signature)
 {
@@ -424,6 +426,9 @@ void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
 
     if (expr->Right()->IsNullLiteral()) {
         etsg->LoadAccumulatorNull(expr, exprType);
+    } else if (expr->Right()->IsUndefinedLiteral()) {
+        etsg->LoadAccumulatorUndefined(expr);
+        etsg->SetAccumulatorType(exprType);
     } else {
         expr->Right()->Compile(etsg);
         etsg->ApplyConversion(expr->Right(), exprType);
@@ -454,6 +459,29 @@ void ETSCompiler::Compile(const ir::AwaitExpression *expr) const
     etsg->CallVirtual(expr->Argument(), compiler::Signatures::BUILTIN_PROMISE_AWAIT_RESOLUTION, argumentReg);
     etsg->CastToReftype(expr->Argument(), expr->TsType(), IS_UNCHECKED_CAST);
     etsg->SetAccumulatorType(expr->TsType());
+}
+
+void ETSCompiler::UnimplementedPathError(const ir::AstNode *node, util::StringView message) const
+{
+    ETSGen *etsg = GetETSGen();
+
+    compiler::RegScope rs(etsg);
+    const auto errorReg = etsg->AllocReg();
+    const auto msgReg = etsg->AllocReg();
+    etsg->LoadAccumulatorString(node, message);
+    etsg->StoreAccumulator(node, msgReg);
+    etsg->NewObject(node, Signatures::BUILTIN_ERROR, errorReg);
+    etsg->CallExact(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, msgReg);
+    etsg->EmitThrow(node, errorReg);
+}
+
+void ETSCompiler::Compile(const ir::ImportExpression *expr) const
+{
+    ETSGen *etsg = GetETSGen();
+    expr->Source()->Compile(etsg);
+
+    UnimplementedPathError(expr, "Dynamic import is not supported");
+    etsg->SetAccumulatorType(expr->TsType());  // dead code
 }
 
 static void CompileNullishCoalescing(compiler::ETSGen *etsg, ir::BinaryExpression const *const node)
@@ -550,7 +578,10 @@ static void CompileInstanceof(compiler::ETSGen *etsg, const ir::BinaryExpression
         etsg->StoreAccumulator(expr, rhs);
         etsg->IsInstanceDynamic(expr, lhs, rhs);
     } else {
-        etsg->IsInstance(expr, lhs, expr->Right()->TsType());
+        auto target = expr->Right()->TsType();
+        // NOTE(vpukhov): #20510 lowering
+        target = target->IsETSEnumType() ? etsg->Checker()->MaybeBoxType(target) : target;
+        etsg->IsInstance(expr, lhs, target);
     }
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
@@ -719,7 +750,7 @@ void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const
         cast->SetParent(const_cast<ir::CallExpression *>(expr));
         cast->SetTsType(paramType);
 
-        if (paramType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        if (paramType->IsETSPrimitiveType()) {
             cast->AddBoxingUnboxingFlags(checker->GetBoxingFlag(paramType));
         }
 
@@ -752,13 +783,7 @@ bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *
         if (calleeType == nullptr) {
             return nullptr;
         }
-        if (calleeType->IsETSIntEnumType()) {
-            return calleeType->AsETSIntEnumType();
-        }
-        if (calleeType->IsETSStringEnumType()) {
-            return calleeType->AsETSStringEnumType();
-        }
-        return nullptr;
+        return calleeType->IsETSEnumType() ? calleeType->AsETSEnumType() : nullptr;
     }();
 
     if (enumInterface != nullptr) {
@@ -857,10 +882,10 @@ static checker::Signature *ConvertArgumentsForFunctionReference(ETSGen *etsg, co
             ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
             ->TsType()
             ->AsETSFunctionType();
-    ASSERT(funcType->CallSignatures().size() == 1);
+    ASSERT(funcType->IsETSArrowType());
     checker::Signature *signature = funcType->CallSignatures()[0];
 
-    if (signature->ReturnType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+    if (signature->ReturnType()->IsETSPrimitiveType()) {
         expr->AddBoxingUnboxingFlags(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker())
                                          ->GetUnboxingFlag(signature->ReturnType()));
     }
@@ -922,8 +947,6 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
 
     if (expr->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG | ir::BoxingUnboxingFlags::BOXING_FLAG)) {
         etsg->ApplyConversion(expr, expr->TsType());
-    } else {
-        etsg->SetAccumulatorType(expr->TsType());
     }
 }
 
@@ -952,7 +975,10 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
 {
     ETSGen *etsg = GetETSGen();
 
-    auto const *const smartType = expr->TsType();
+    auto const *smartType = expr->TsType();
+    if (smartType->IsETSTypeParameter() || smartType->IsETSPartialTypeParameter() || smartType->IsETSNonNullishType()) {
+        smartType = etsg->Checker()->GetApparentType(smartType);
+    }
     auto ttctx = compiler::TargetTypeContext(etsg, smartType);
 
     ASSERT(expr->Variable() != nullptr);
@@ -1076,6 +1102,7 @@ bool ETSCompiler::HandleArrayTypeLengthProperty(const ir::MemberExpression *expr
     return false;
 }
 
+// NOTE(vpukhov): #20510 lowering
 bool ETSCompiler::HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg) const
 {
     auto *const exprType = etsg->Checker()->GetApparentType(expr->TsType());
@@ -1098,14 +1125,6 @@ bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGe
             checker::Signature *sig = variable->TsType()->AsETSFunctionType()->FindGetter();
             etsg->CallExact(expr, sig->InternalName());
             etsg->SetAccumulatorType(expr->TsType());
-            return true;
-        }
-
-        if (expr->Object()->TsType()->IsETSEnumType() && expr->Property()->TsType()->IsETSEnumType() &&
-            expr->Property()->TsType()->AsETSEnumType()->IsLiteralType()) {
-            etsg->LoadAccumulatorInt(expr, expr->Property()->TsType()->AsETSEnumType()->GetOrdinal());
-            expr->Object()->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
-            etsg->ApplyBoxingConversion(expr->Object());
             return true;
         }
 
@@ -1222,7 +1241,12 @@ void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
     etsg->ApplyConversion(expr->Argument(), nullptr);
     etsg->ApplyCast(expr->Argument(), expr->TsType());
 
-    etsg->Unary(expr, expr->OperatorType());
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR) {
+        UnimplementedPathError(expr, "$$ operator can only be used with ARKUI plugin");
+        etsg->SetAccumulatorType(expr->TsType());  // dead code
+    } else {
+        etsg->Unary(expr, expr->OperatorType());
+    }
 
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
@@ -1577,7 +1601,6 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         st->Argument()->Compile(etsg);
     }
 
-    etsg->ApplyConversion(st->Argument(), nullptr);
     etsg->ApplyConversion(st->Argument(), st->ReturnType());
 
     if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
@@ -1686,7 +1709,7 @@ void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
     if (st->Init() != nullptr) {
         if (!etsg->TryLoadConstantExpression(st->Init())) {
             st->Init()->Compile(etsg);
-            etsg->ApplyConversion(st->Init(), st->TsType());
+            etsg->ApplyConversion(st->Init(), nullptr);
         }
     } else {
         etsg->LoadDefaultValue(st, st->Id()->AsIdentifier()->Variable()->TsType());
@@ -1740,42 +1763,33 @@ void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const
     auto *targetType = etsg->Checker()->GetApparentType(expr->TsType());
     ASSERT(targetType->IsETSObjectType());
 
-    switch (targetType->AsETSObjectType()->BuiltInKind()) {
-        case checker::ETSObjectFlags::BUILTIN_BOOLEAN: {
+    switch (targetType->AsETSObjectType()->UnboxableKind()) {
+        case checker::ETSObjectFlags::BUILTIN_BOOLEAN:
             etsg->CastToBoolean(expr);
             break;
-        }
-        case checker::ETSObjectFlags::BUILTIN_BYTE: {
+        case checker::ETSObjectFlags::BUILTIN_BYTE:
             etsg->CastToByte(expr);
             break;
-        }
-        case checker::ETSObjectFlags::BUILTIN_CHAR: {
+        case checker::ETSObjectFlags::BUILTIN_CHAR:
             etsg->CastToChar(expr);
             break;
-        }
-        case checker::ETSObjectFlags::BUILTIN_SHORT: {
+        case checker::ETSObjectFlags::BUILTIN_SHORT:
             etsg->CastToShort(expr);
             break;
-        }
-        case checker::ETSObjectFlags::BUILTIN_INT: {
+        case checker::ETSObjectFlags::BUILTIN_INT:
             etsg->CastToInt(expr);
             break;
-        }
-        case checker::ETSObjectFlags::BUILTIN_LONG: {
+        case checker::ETSObjectFlags::BUILTIN_LONG:
             etsg->CastToLong(expr);
             break;
-        }
-        case checker::ETSObjectFlags::BUILTIN_FLOAT: {
+        case checker::ETSObjectFlags::BUILTIN_FLOAT:
             etsg->CastToFloat(expr);
             break;
-        }
-        case checker::ETSObjectFlags::BUILTIN_DOUBLE: {
+        case checker::ETSObjectFlags::BUILTIN_DOUBLE:
             etsg->CastToDouble(expr);
             break;
-        }
-        default: {
+        default:
             UNREACHABLE();
-        }
     }
 }
 
@@ -1833,6 +1847,7 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NONNULLISH:
+        case checker::TypeFlag::ETS_PARTIAL_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_UNION:
         case checker::TypeFlag::ETS_NULL:
         case checker::TypeFlag::ETS_UNDEFINED: {
@@ -1843,6 +1858,7 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
             etsg->CastToDynamic(expr, targetType->AsETSDynamicType());
             break;
         }
+        // NOTE(vpukhov): #20510 lowering
         case checker::TypeFlag::ETS_STRING_ENUM:
             [[fallthrough]];
         case checker::TypeFlag::ETS_INT_ENUM: {
@@ -1850,12 +1866,12 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
             if (acuType->IsETSEnumType()) {
                 break;
             }
-            ASSERT(!acuType->IsETSObjectType());
             ASSERT(acuType->IsIntType());
             auto *const signature = expr->TsType()->AsETSEnumType()->FromIntMethod().globalSignature;
-            ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
-            arguments.push_back(expr->expression_);
-            etsg->CallExact(expr, signature, arguments);
+            compiler::RegScope rs(etsg);
+            auto arg = etsg->AllocReg();
+            etsg->StoreAccumulator(expr, arg);
+            etsg->CallExact(expr, signature->InternalName(), arg);
             etsg->SetAccumulatorType(signature->ReturnType());
             break;
         }
@@ -1876,14 +1892,14 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
     auto *targetType = etsg->Checker()->GetApparentType(expr->TsType());
 
     if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-        etsg->ApplyUnboxingConversion(expr->Expr(), targetType);
+        etsg->ApplyUnboxingConversion(expr->Expr());
     }
 
     if (targetType->IsETSObjectType() &&
         ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U ||
          (expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) &&
         checker::ETSChecker::TypeKind(etsg->GetAccumulatorType()) != checker::TypeFlag::ETS_OBJECT) {
-        if (targetType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
+        if (targetType->IsETSUnboxableObject()) {
             CompileCastUnboxable(expr);
         }
     }

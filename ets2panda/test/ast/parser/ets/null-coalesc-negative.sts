@@ -37,5 +37,5 @@ function main(): void {
   a.increment();
 }
 
-/* @@? 37:3 Error TypeError: Member type must be the same for all union objects.  */
 /* @@? 37:5 Error TypeError: Property 'increment' does not exist on type 'C'  */
+/* @@? 37:3 Error TypeError: Member type must be the same for all union objects.  */

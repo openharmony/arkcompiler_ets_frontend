@@ -100,8 +100,8 @@ private:
     ParserStatus ValidateArrowExprIdentifier(ir::Expression *expr, bool *seenOptional);
     ParserStatus ValidateArrowAssignmentExpr(ir::Expression *expr);
     ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seenOptional) override;
-    void ThrowIllegalBreakError() override;
-    void ThrowIllegalContinueError() override;
+    void ReportIllegalBreakError(const lexer::SourcePosition &pos) override;
+    void ReportIllegalContinueError() override;
 };
 }  // namespace ark::es2panda::parser
 

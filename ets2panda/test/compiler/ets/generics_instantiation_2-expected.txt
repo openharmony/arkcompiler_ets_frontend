@@ -2604,7 +2604,7 @@
                 "loc": {
                   "start": {
                     "line": 34,
-                    "column": 13
+                    "column": 10
                   },
                   "end": {
                     "line": 38,
@@ -2615,7 +2615,7 @@
               "loc": {
                 "start": {
                   "line": 34,
-                  "column": 13
+                  "column": 10
                 },
                 "end": {
                   "line": 38,

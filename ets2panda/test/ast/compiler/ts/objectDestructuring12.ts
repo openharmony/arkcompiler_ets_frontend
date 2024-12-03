@@ -15,5 +15,5 @@
 
 
 var { a: { a = 5n, b } = { b: "foo" } } = { a: { a: 5, b: true } };
-a = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type 'number | bigint'.  */
+/* @@ label */a = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'number | bigint'.  */

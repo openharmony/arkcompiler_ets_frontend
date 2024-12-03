@@ -24,4 +24,3 @@ function t(v: Object): int {
     return 4;
   }
 }
-

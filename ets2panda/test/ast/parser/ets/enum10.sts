@@ -17,7 +17,7 @@ enum Color { Red }
 
 function main(): void {
   let values: Color[] = Color.values();
-  let valuesFail: Color[] = values[0].values();
+  let valuesFail: Color[] = values[0]./* @@ label */values();
 }
 
-/* @@? 20:39 Error TypeError: No enum item method called 'values'  */
+/* @@@ label Error TypeError: No enum item method called 'values'  */

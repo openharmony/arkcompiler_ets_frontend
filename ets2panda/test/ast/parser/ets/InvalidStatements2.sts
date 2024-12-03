@@ -54,9 +54,9 @@ function g(x: int): int {
 /* @@? 26:1 Error SyntaxError: struct declaration cannot extends from other class */
 /* @@? 30:13 Error SyntaxError: Label already declared */
 /* @@? 40:1 Error SyntaxError: return keyword should be used in function body */
-/* @@? 43:12 Error SyntaxError: Unexpected token 'identification literal', expected '(' */
-/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected ')' */
-/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected '{' */
+/* @@? 43:12 Error SyntaxError: Unexpected token 'identification literal', expected '('. */
+/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected ')'. */
+/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected '{'. */
 /* @@? 46:11 Error SyntaxError: Unexpected token ':'. */
 /* @@? 46:11 Error SyntaxError: Unexpected token ':'. */
 /* @@? 46:11 Error SyntaxError: Unexpected token ':', expected 'case' or 'default'. */

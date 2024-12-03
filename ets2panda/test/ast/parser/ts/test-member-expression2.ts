@@ -15,6 +15,6 @@
 
 
 var a = [0, 1, 2, 3, 4];
-a?.[0] = a?.[0];
+a?.[0] /* @@ label */= a?.[0];
 
-/* @@? 18:8 Error SyntaxError: Invalid left-hand side in assignment expression  */
+/* @@@ label Error SyntaxError: Invalid left-hand side in assignment expression  */

@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-import * as all from "./folderWithoutIndexOrPackage"
+import * as all from /* @@ label */"./folderWithoutIndexOrPackage"
 
-/* @@? 16:22 Error SyntaxError: Cannot find index.[sts|ts] or package module in folder: ./folderWithoutIndexOrPackage  */
+/* @@@ label Error SyntaxError: Cannot find index.[sts|ts] or package module in folder: ./folderWithoutIndexOrPackage  */

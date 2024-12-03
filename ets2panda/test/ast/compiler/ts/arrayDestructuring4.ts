@@ -14,5 +14,5 @@
  */
 
 
-var [a]: [number, string] = [1];
-/* @@? 17:5 Error TypeError: Type '[1]' is not assignable to type '[number, string]'.  */
+var /* @@ label */[a]: [number, string] = [1];
+/* @@@ label Error TypeError: Type '[1]' is not assignable to type '[number, string]'.  */

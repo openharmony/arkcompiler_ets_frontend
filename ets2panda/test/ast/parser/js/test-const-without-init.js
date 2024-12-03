@@ -14,6 +14,6 @@
  */
 
 
-const c;
+const c/* @@ label */;
 
-/* @@? 17:8 Error SyntaxError: Missing initializer in const declaration  */
+/* @@@ label Error SyntaxError: Missing initializer in const declaration  */

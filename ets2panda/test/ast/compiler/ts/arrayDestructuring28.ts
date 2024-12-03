@@ -15,5 +15,5 @@
 
 
 var [a, [{ b = 6, c: foo }, [d = 6, e]]] = [1, [{ c: 2 }, [1, "foo"]]];
-e = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type 'string'.  */
+/* @@ label */e = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'string'.  */

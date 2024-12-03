@@ -38,27 +38,34 @@ public:
     }
 
 private:
+    static constexpr TypeFlag WIDENABLE_TO_SHORT = TypeFlag::BYTE;
+    static constexpr TypeFlag WIDENABLE_TO_CHAR = TypeFlag::BYTE;
+    static constexpr TypeFlag WIDENABLE_TO_INT = TypeFlag::CHAR | TypeFlag::SHORT | WIDENABLE_TO_SHORT;
+    static constexpr TypeFlag WIDENABLE_TO_LONG = TypeFlag::INT | WIDENABLE_TO_INT;
+    static constexpr TypeFlag WIDENABLE_TO_FLOAT = TypeFlag::LONG | WIDENABLE_TO_LONG;
+    static constexpr TypeFlag WIDENABLE_TO_DOUBLE = TypeFlag::FLOAT | WIDENABLE_TO_FLOAT;
+
     void ApplyConstWidening()
     {
         switch (ETSChecker::ETSChecker::ETSType(Target())) {
             case TypeFlag::SHORT: {
-                ApplyWidening<ShortType>(TypeFlag::WIDENABLE_TO_SHORT);
+                ApplyWidening<ShortType>(WIDENABLE_TO_SHORT);
                 break;
             }
             case TypeFlag::INT: {
-                ApplyWidening<IntType>(TypeFlag::WIDENABLE_TO_INT);
+                ApplyWidening<IntType>(WIDENABLE_TO_INT);
                 break;
             }
             case TypeFlag::LONG: {
-                ApplyWidening<LongType>(TypeFlag::WIDENABLE_TO_LONG);
+                ApplyWidening<LongType>(WIDENABLE_TO_LONG);
                 break;
             }
             case TypeFlag::FLOAT: {
-                ApplyWidening<FloatType>(TypeFlag::WIDENABLE_TO_FLOAT);
+                ApplyWidening<FloatType>(WIDENABLE_TO_FLOAT);
                 break;
             }
             case TypeFlag::DOUBLE: {
-                ApplyWidening<DoubleType>(TypeFlag::WIDENABLE_TO_DOUBLE);
+                ApplyWidening<DoubleType>(WIDENABLE_TO_DOUBLE);
                 break;
             }
             default: {
@@ -71,27 +78,27 @@ private:
     {
         switch (ETSChecker::ETSChecker::ETSType(Target())) {
             case TypeFlag::CHAR: {
-                ApplyGlobalWidening(TypeFlag::WIDENABLE_TO_CHAR);
+                ApplyGlobalWidening(WIDENABLE_TO_CHAR);
                 break;
             }
             case TypeFlag::SHORT: {
-                ApplyGlobalWidening(TypeFlag::WIDENABLE_TO_SHORT);
+                ApplyGlobalWidening(WIDENABLE_TO_SHORT);
                 break;
             }
             case TypeFlag::INT: {
-                ApplyGlobalWidening(TypeFlag::WIDENABLE_TO_INT);
+                ApplyGlobalWidening(WIDENABLE_TO_INT);
                 break;
             }
             case TypeFlag::LONG: {
-                ApplyGlobalWidening(TypeFlag::WIDENABLE_TO_LONG);
+                ApplyGlobalWidening(WIDENABLE_TO_LONG);
                 break;
             }
             case TypeFlag::FLOAT: {
-                ApplyGlobalWidening(TypeFlag::WIDENABLE_TO_FLOAT);
+                ApplyGlobalWidening(WIDENABLE_TO_FLOAT);
                 break;
             }
             case TypeFlag::DOUBLE: {
-                ApplyGlobalWidening(TypeFlag::WIDENABLE_TO_DOUBLE);
+                ApplyGlobalWidening(WIDENABLE_TO_DOUBLE);
                 break;
             }
             default: {

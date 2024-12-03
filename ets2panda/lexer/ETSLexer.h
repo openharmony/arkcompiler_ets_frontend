@@ -22,7 +22,8 @@
 namespace ark::es2panda::lexer {
 class ETSLexer final : public Lexer {
 public:
-    explicit ETSLexer(const parser::ParserContext *parserContext) : Lexer(parserContext, false)
+    explicit ETSLexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger)
+        : Lexer(parserContext, errorLogger, false)
     {
         SkipWhiteSpaces();
     }
@@ -37,7 +38,7 @@ public:
     bool ScanCharLiteral() override;
     void ScanAsteriskPunctuator() override;
 
-    void ScanNumberLeadingZero() override
+    void ScanNumberLeadingZero(bool const leadingMinus) override
     {
         const auto savedLexerPosition = Save();
 
@@ -47,23 +48,23 @@ public:
             allowBigint = true;
         }
 
-        if (!ScanNumberLeadingZeroImpl<uint32_t, uint32_t>()) {
+        if (!ScanNumberLeadingZeroImpl<uint32_t>(leadingMinus)) {
             Rewind(savedLexerPosition);
-            if (!ScanNumberLeadingZeroImpl<uint64_t, uint64_t>()) {
-                ThrowError("Number is too large");
+            if (!ScanNumberLeadingZeroImpl<uint64_t>(leadingMinus)) {
+                LogSyntaxError("Number is too large");
             }
         }
 
         if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
             if (!allowBigint) {
-                ThrowError("Invalid BigInt number");
+                LogSyntaxError("Invalid BigInt number");
             }
         }
     }
 
     void CheckNumberLiteralEnd() override;
-    void CheckUtf16Compatible(char32_t cp) const;
-    void ConvertNumber(const std::string &utf8, NumberFlags flags) override;
+    bool CheckUtf16Compatible(char32_t cp) const;
+    void ConvertNumber(NumberFlags flags) override;
 
 protected:
     void ScanEqualsPunctuator() override;

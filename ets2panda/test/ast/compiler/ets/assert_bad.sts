@@ -15,8 +15,8 @@
 
 function main(): int {
    let n: int = 2
-   assert n == 5 : 42
+   assert n == 5 : /* @@ label */42
    return 0;
 }
 
-/* @@? 18:20 Error TypeError: Assert message must be string  */
+/* @@@ label Error TypeError: Assert message must be string  */

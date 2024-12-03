@@ -14,7 +14,7 @@
  */
 
 var a: number;
-({a} = "foo")
+(/* @@ label */{a} = "foo")
 
 
-/* @@? 17:2 Error TypeError: Property a does not exist on type "foo".  */
+/* @@@ label Error TypeError: Property a does not exist on type "foo".  */

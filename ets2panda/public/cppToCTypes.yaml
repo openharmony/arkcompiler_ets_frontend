@@ -701,6 +701,70 @@ change_types:
             \t\t++i;\n
             \t}"
 
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: shared_ptr
+        namespace: std
+        template_args:
+        - type: '|element_type_1|'
+      max_ptr_depth: 0
+    new_args:
+    - type: '|element_type_1|'
+      name: '|arg_name|Ptr'
+      local_var_name: '|arg_name|Ptr'
+    cast:
+        reverse_cast:
+          start: "\n
+            \tauto resultPtr = "
+          end: ";\n
+            \tauto &resultRef = *resultPtr;\n
+            \tauto *res = |reverse_template_nested_expression_1_start|(resultRef)|reverse_template_nested_expression_1_end|;"
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'ArkTsConfig'
+      min_ptr_depth: 1
+    new_args:
+    - type:
+        name: 'es2panda_ArkTsConfig'
+        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
+      name: '|arg_name|'
+    cast:
+        expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<ArkTsConfig |es2panda_arg.type.ptr_depth|>(|arg_name|);
+        reverse_cast:
+          start: >-
+            reinterpret_cast<?const? es2panda_ArkTsConfig |es2panda_arg.type.ptr_depth|>
+        call_cast:
+          call_var: 'es2panda_ArkTsConfig *ast'
+          start: >-
+            (reinterpret_cast<?const? ArkTsConfig *>(ast))->
+        constructor_cast:
+          start: >-
+            ctxAllocator->New<ArkTsConfig>(
+          end: )
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'ArkTsConfig'
+      max_ptr_depth: 0
+    new_args:
+    - type:
+        name: 'es2panda_ArkTsConfig'
+        ptr_depth: 1
+      name: '|arg_name|'
+    cast:
+        reverse_cast:
+          start: >-
+            reinterpret_cast<?const? es2panda_ArkTsConfig *>(
+            reinterpret_cast<Context *>(context)->allocator->New<ArkTsConfig>(
+          end: ))
+        var_name: '|arg_name|E2p'
 
   - es2panda_arg:
       name: '|arg_name|'
@@ -1565,6 +1629,22 @@ change_types:
   - es2panda_arg:
       name: '|arg_name|'
       type:
+        name: ETSParser
+        namespace: 'parser'
+      min_ptr_depth: 1
+      max_ptr_depth: 1
+    new_args:
+    cast:
+      expression: >-
+        auto *|arg_name|E2p = reinterpret_cast<Context *>(context)->parser->AsETSParser();
+      call_cast:
+        start: >-
+            (reinterpret_cast<Context *>(context)->parser->AsETSParser())->
+      var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
         name: VarBinder
         namespace: 'varbinder'
       min_ptr_depth: 1
@@ -1702,25 +1782,11 @@ change_types:
         name: 'Language'
       min_ptr_depth: 1
     new_args:
-    - type:
-        name: "es2panda_Language"
-        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
-      name: '|arg_name|'
     cast:
         expression: >-
           auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
-          reinterpret_cast<Language |es2panda_arg.type.ptr_depth|>(|arg_name|);
-        reverse_cast:
-          start: >-
-            reinterpret_cast<?const? es2panda_Language |es2panda_arg.type.ptr_depth|>
-        call_cast:
-          call_var: 'es2panda_Language *ast'
-          start: >-
-            (reinterpret_cast<?const? Language *>(ast))->
-        constructor_cast:
-          start: >-
-            ctxAllocator->New<Language>(
-          end: )
+          reinterpret_cast<Context *>(context)->allocator->
+          New<Language |es2panda_arg.type.ptr_depth|>(Language::Id::ETS);
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -1729,18 +1795,9 @@ change_types:
         name: 'Language'
       max_ptr_depth: 0
     new_args:
-    - type:
-        name: "es2panda_Language"
-        ptr_depth: 1
-      name: '|arg_name|'
     cast:
         expression: >-
-          auto |arg_name|E2p = *reinterpret_cast<Language *>(|arg_name|);
-        reverse_cast:
-          start: >-
-            reinterpret_cast<?const? es2panda_Language *>(
-            reinterpret_cast<Context *>(context)->allocator->New<Language>(
-          end: '))'
+          ark::es2panda::Language |arg_name|E2p {Language::Id::ETS};
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -2493,17 +2550,28 @@ change_types:
       name: '|arg_name|'
       type:
         name: 'CompilerOptions'
-      max_ptr_depth: 0
+      max_ptr_depth: 1
+      min_ptr_depth: 1
     new_args:
-    - type:
-        name: "es2panda_CompilerOptions"
-        ptr_depth: 1
-      name: '|arg_name|'
-      namespace: ''
     cast:
         expression: >-
           auto |arg_name|E2p =
-          *(reinterpret_cast<CompilerOptions *>(|arg_name|));
+          &(reinterpret_cast<Context *>(context)->config->options->CompilerOptions());
+        call_cast:
+          start: >-
+            (reinterpret_cast<Context *>(context)->config->options->CompilerOptions().
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'CompilerOptions'
+      max_ptr_depth: 0
+    new_args:
+    cast:
+        expression: >-
+          auto |arg_name|E2p =
+          reinterpret_cast<Context *>(context)->config->options->CompilerOptions();
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
@@ -2847,12 +2915,9 @@ change_types:
       - name: global
         type:
           name: bool
-      - name: isExternalAmbient
-        type:
-          name: bool
     cast:
       expression: ""
-      var_name: "ir::TSModuleDeclaration::ConstructorFlags {declare, global, isExternalAmbient}"
+      var_name: "ir::TSModuleDeclaration::ConstructorFlags {declare, global}"
 
   - es2panda_arg:
       name: '|arg_name|'
@@ -2901,16 +2966,12 @@ change_types:
       - name: isExternal
         type:
           name: bool
-      - name: lang
-        type:
-          name: "es2panda_Language"
-          ptr_depth: 1
     cast:
       expression: "\
         auto es2pandaId = reinterpret_cast<ir::Identifier *>(id);\n
         auto es2pandaTypeParams = reinterpret_cast<ir::TSTypeParameterDeclaration *>(typeParams);\n
         auto es2pandaBody = reinterpret_cast<ir::TSInterfaceBody *>(body);\n
-        auto es2pandaLang = *reinterpret_cast<Language *>(lang);\n
+        ark::es2panda::Language es2pandaLang {Language::Id::ETS};\n
         "
       var_name: "ir::TSInterfaceDeclaration::ConstructorData {es2pandaId, es2pandaTypeParams, es2pandaBody, isStatic, isExternal, es2pandaLang}"
 
@@ -2937,9 +2998,6 @@ change_types:
       - name: '|arg_name|flags'
         type:
           name: int
-      - name: '|arg_name|declare'
-        type:
-          name: bool
     cast:
       expression: "
         auto *|arg_name|bodyE2p = reinterpret_cast<ir::AstNode *>(|arg_name|body);\n
@@ -2949,7 +3007,7 @@ change_types:
         ark::es2panda::Language |arg_name|lang {Language::Id::ETS};\n
         "
       var_name: "ir::ScriptFunction::ScriptFunctionData {|arg_name|bodyE2p, std::move(|arg_name|signatureE2p),
-        |arg_name|funcFlagsE2p, |arg_name|flagsE2p, |arg_name|declare, |arg_name|lang}"
+        |arg_name|funcFlagsE2p, |arg_name|flagsE2p, |arg_name|lang}"
 
   - es2panda_arg:
       name: '|arg_name|'

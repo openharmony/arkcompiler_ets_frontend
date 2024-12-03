@@ -20,11 +20,11 @@ class CommonStruct0<K> {
    }
 }
 
-struct CE<K> {
+/* @@ label */struct CE<K> {
      x: K;
 }
 
 function main(): void {
    let a: CE<Int> = new CE<Int>();
 }
-/* @@? 23:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@@ label Error SyntaxError: Struct types are not supported yet!  */

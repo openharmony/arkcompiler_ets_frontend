@@ -18,9 +18,9 @@ class A {
 }
 
 class B extends A {
-    constructor(x: int) {
+    constructor/* @@ label */(x: int) {
         // error: missing super call
     }
 }
 
-/* @@? 21:16 Error TypeError: Must call super constructor  */
+/* @@@ label Error TypeError: Must call super constructor  */

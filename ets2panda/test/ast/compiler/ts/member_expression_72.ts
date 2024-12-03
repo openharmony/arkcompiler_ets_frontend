@@ -18,6 +18,6 @@ interface foo {readonly [a:number]:number,
                [b:string]:number,}
 
 var a: foo;
-a[5] = 5;
+/* @@ label */a[5] = 5;
 
-/* @@? 21:1 Error TypeError: Cannot assign to this property because it is readonly.  */
+/* @@@ label Error TypeError: Cannot assign to this property because it is readonly.  */

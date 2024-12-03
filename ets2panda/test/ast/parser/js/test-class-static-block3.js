@@ -15,8 +15,8 @@
 
 class A {
     static {
-        super()
+        super/* @@ label */()
     }
 }
 
-/* @@? 18:14 Error SyntaxError: Unexpected super keyword  */
+/* @@@ label Error SyntaxError: Unexpected super keyword  */

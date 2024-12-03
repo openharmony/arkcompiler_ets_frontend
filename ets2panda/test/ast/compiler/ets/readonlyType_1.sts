@@ -14,7 +14,7 @@
  */
  
 class A {
-    fld: Number
+    /* @@ label */fld: Number
     constructor (fld : Number) {
         this.fld = fld
     }
@@ -26,4 +26,4 @@ function foo(a0: A) {
 }
 
 
-/* @@? 17:5 Error TypeError: Cannot assign to a readonly variable fld  */
+/* @@@ label Error TypeError: Cannot assign to a readonly variable fld  */

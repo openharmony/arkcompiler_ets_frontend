@@ -15,6 +15,6 @@
 
 
 var a: boolean[];
-a = [false,"foo"];
+a = [false,/* @@ label */"foo"];
 
-/* @@? 18:12 Error TypeError: Type 'string' is not assignable to type 'boolean'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'boolean'.  */

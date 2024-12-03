@@ -24,6 +24,7 @@
 #include "objectIndexAccess.h"
 
 #include "checker/ETSchecker.h"
+#include "compiler/lowering/util.h"
 #include "parser/ETSparser.h"
 
 namespace ark::es2panda::compiler {
@@ -42,7 +43,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
     loweringResult->SetParent(assignmentExpression->Parent());
     loweringResult->SetRange(assignmentExpression->Range());
 
-    loweringResult->Check(checker);
+    CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, loweringResult);
     return loweringResult;
 }
 
@@ -60,7 +61,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
     loweringResult->SetParent(memberExpression->Parent());
     loweringResult->SetRange(memberExpression->Range());
 
-    loweringResult->Check(checker);
+    CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, loweringResult);
     loweringResult->SetBoxingUnboxingFlags(memberExpression->GetBoxingUnboxingFlags());
     return loweringResult;
 }

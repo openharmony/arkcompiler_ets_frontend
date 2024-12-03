@@ -63,7 +63,8 @@ import {
   isEnumScope,
   isInterfaceScope,
   isObjectLiteralScope,
-  noSymbolIdentifier,
+  exportElementsWithoutSymbol,
+  getNameWithScopeLoc
 } from '../../utils/ScopeAnalyzer';
 
 import type {
@@ -97,7 +98,7 @@ import {
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
 import {performancePrinter, ArkObfuscator, cleanFileMangledNames} from '../../ArkObfuscator';
-import { EventList } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
 import {
   PropCollections,
@@ -129,7 +130,7 @@ namespace secharmony {
     let options: NameGeneratorOptions = {};
     let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
-    const openTopLevel: boolean = option?.mNameObfuscation?.mTopLevel;
+    const enableToplevel: boolean = option?.mNameObfuscation?.mTopLevel;
     const exportObfuscation: boolean = option?.mExportObfuscation;
     let isInitializedReservedList = false;
     return renameIdentifierFactory;
@@ -141,7 +142,7 @@ namespace secharmony {
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
       let fileExportNames: Set<string> = undefined;
       let fileImportNames: Set<string> = undefined;
-      noSymbolIdentifier.clear();
+      exportElementsWithoutSymbol.clear();
 
       let historyMangledNames: Set<string> = undefined;
       if (historyNameCache && historyNameCache.size > 0) {
@@ -168,13 +169,13 @@ namespace secharmony {
           return node;
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
         checker = TypeUtils.createChecker(node);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
         manager.analyze(node, checker, exportObfuscation);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
 
         let rootScope: Scope = manager.getRootScope();
         fileExportNames = rootScope.fileExportNames;
@@ -184,13 +185,13 @@ namespace secharmony {
           renameProcessors.push(renamePropertyParametersInScope);
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
         getMangledNamesInScope(rootScope, renameProcessors);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
 
         rootScope = undefined;
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         let updatedNode: Node = renameIdentifiers(node);
 
         // obfuscate property parameter declaration
@@ -199,7 +200,7 @@ namespace secharmony {
         }
 
         let parentNodes = setParentRecursive(updatedNode, true);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         return parentNodes;
       }
 
@@ -257,12 +258,12 @@ namespace secharmony {
         defs.forEach((def) => {
           const original: string = def.name;
           let mangled: string = original;
-          const path: string = scope.loc + '#' + original;
+          const path: string = getNameWithScopeLoc(scope, original);
           // No allow to rename reserved names.
           if (!Reflect.has(def, 'obfuscateAsProperty') &&
             isInLocalWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, path) ||
             (!exportObfuscation && scope.exportNames.has(def.name)) ||
-            isSkippedGlobal(openTopLevel, scope)) {
+            isSkippedGlobal(enableToplevel, scope)) {
             scope.mangledNames.add(mangled);
             mangledSymbolNames.set(def, {mangledName: mangled, originalNameWithScope: path});
             return;
@@ -302,7 +303,7 @@ namespace secharmony {
             return;
           }
           const originalName: string = def.name;
-          const path: string = scope.loc + '#' + originalName;
+          const path: string = getNameWithScopeLoc(scope, originalName);
           let mangledName: string;
           if (isInPropertyWhitelist(originalName, UnobfuscationCollections.unobfuscatedPropMap)) {
             mangledName = originalName;
@@ -326,7 +327,7 @@ namespace secharmony {
           if (isReservedLocalVariable(tmpName)) {
             continue;
           }
-          if (isReservedProperty(tmpName) || tmpName == originalName) {
+          if (isReservedProperty(tmpName) || tmpName === originalName) {
             continue;
           }
           if (historyMangledNames && historyMangledNames.has(tmpName)) {
@@ -389,6 +390,10 @@ namespace secharmony {
           }
 
           if (ApiExtractor.mConstructorPropertySet?.has(tmpName)) {
+            continue;
+          }
+
+          if (ApiExtractor.mEnumMemberSet?.has(tmpName)) {
             continue;
           }
 
@@ -457,6 +462,10 @@ namespace secharmony {
           }
 
           if (ApiExtractor.mConstructorPropertySet?.has(mangled)) {
+            mangled = '';
+          }
+
+          if (ApiExtractor.mEnumMemberSet?.has(mangled)) {
             mangled = '';
           }
         } while (mangled === '');
@@ -641,10 +650,10 @@ namespace secharmony {
           // To address the issue where method names starting with double underscores were transformed to start with triple underscores,
           // we changed the retrieval method to use gotNode.name.text instead of escapedText. However, this change introduced the possibility
           // of collecting method records when gotNode.name is a NumericLiteral or StringLiteral, which is not desired.
-          // To avoid altering the collection specifications of MemberMethodCache, we restricted the collection scenarios 
+          // To avoid altering the collection specifications of MemberMethodCache, we restricted the collection scenarios
           // to match the original cases where only identifiers and private identifiers are collected.
           valueName = gotNode.name.text;
-        } 
+        }
 
         if (valueName === '') {
           return;
@@ -675,7 +684,7 @@ namespace secharmony {
         let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
         let mangledPropertyNameOfNoSymbolImportExport = '';
         if (!sym) {
-          if (exportObfuscation && noSymbolIdentifier.has(node.text) && trySearchImportExportSpecifier(node)) {
+          if (shouldObfuscateNodeWithoutSymbol(node)) {
             mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(node.text);
           } else {
             return node;
@@ -712,7 +721,7 @@ namespace secharmony {
 
       function updatePropertyParameterNameNode(node: Identifier): Node {
         let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
-        if (!sym || sym.valueDeclaration?.kind != SyntaxKind.Parameter) {
+        if (!sym || sym.valueDeclaration?.kind !== SyntaxKind.Parameter) {
           return node;
         }
 
@@ -757,6 +766,16 @@ namespace secharmony {
         while (node.parent) {
           node = node.parent;
           if ((isImportSpecifier(node) || isExportSpecifier(node)) && node.propertyName && isIdentifier(node.propertyName)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function shouldObfuscateNodeWithoutSymbol(node: Identifier): boolean {
+        if (exportObfuscation && exportElementsWithoutSymbol.has(node) && trySearchImportExportSpecifier(node)) {
+          let isGlobalNode: boolean = exportElementsWithoutSymbol.get(node);
+          if ((isGlobalNode && enableToplevel) || !isGlobalNode) {
             return true;
           }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,44 +18,37 @@
 #include "checker/ETSchecker.h"
 #include "util/helpers.h"
 #include "checker/ets/primitiveWrappers.h"
+#include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::checker {
 
-checker::ETSObjectType *BoxingConverter::ETSTypeFromSource(ETSChecker const *checker, Type const *source)
+checker::ETSObjectType *BoxingConverter::Convert(ETSChecker const *checker, Type const *source)
 {
-    auto getSignature = [](checker::TypeFlag typeKind) {
-        switch (typeKind) {
-            case checker::TypeFlag::ETS_BOOLEAN: {
-                return compiler::Signatures::BUILTIN_BOOLEAN_CLASS;
-            }
-            case checker::TypeFlag::BYTE: {
-                return compiler::Signatures::BUILTIN_BYTE_CLASS;
-            }
-            case checker::TypeFlag::SHORT: {
-                return compiler::Signatures::BUILTIN_SHORT_CLASS;
-            }
-            case checker::TypeFlag::CHAR: {
-                return compiler::Signatures::BUILTIN_CHAR_CLASS;
-            }
-            case checker::TypeFlag::INT: {
-                return compiler::Signatures::BUILTIN_INT_CLASS;
-            }
-            case checker::TypeFlag::LONG: {
-                return compiler::Signatures::BUILTIN_LONG_CLASS;
-            }
-            case checker::TypeFlag::FLOAT: {
-                return compiler::Signatures::BUILTIN_FLOAT_CLASS;
-            }
-            case checker::TypeFlag::DOUBLE: {
-                return compiler::Signatures::BUILTIN_DOUBLE_CLASS;
-            }
-            default:
-                UNREACHABLE();
-        }
-    };
+    auto typeHolder = checker->GetGlobalTypesHolder();
 
-    auto wrapMap = checker->PrimitiveWrapper();
-    return wrapMap.find(getSignature(checker::ETSChecker::TypeKind(source)))->second.first;
+    switch (checker::ETSChecker::TypeKind(source)) {
+        case checker::TypeFlag::ETS_BOOLEAN:
+            return typeHolder->GlobalETSBooleanBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::BYTE:
+            return typeHolder->GlobalByteBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::SHORT:
+            return typeHolder->GlobalShortBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::CHAR:
+            return typeHolder->GlobalCharBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::INT:
+            return typeHolder->GlobalIntegerBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::LONG:
+            return typeHolder->GlobalLongBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::FLOAT:
+            return typeHolder->GlobalFloatBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::DOUBLE:
+            return typeHolder->GlobalDoubleBuiltinType()->AsETSObjectType();
+        case checker::TypeFlag::ETS_INT_ENUM:
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            return source->AsETSEnumType()->BoxedType()->AsETSObjectType();
+        default:
+            UNREACHABLE();
+    }
 }
 
 }  // namespace ark::es2panda::checker

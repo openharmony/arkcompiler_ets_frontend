@@ -35,9 +35,9 @@ assert(Direction[1] === 'up');
 assert(Direction[3] === 'left');
 assert(Direction[4] === 'right');
 var A2;
-(function (a) {
-    a[a["prop1"] = 1] = "prop1";
-    a[a["prop2"] = 2] = "prop2";
+(function (d) {
+    d[d["prop1"] = 1] = "prop1";
+    d[d["prop2"] = 2] = "prop2";
 })(A2 || (A2 = {}));
 assert(A2.prop1 === 1);
 assert(A2.prop2 === 2);

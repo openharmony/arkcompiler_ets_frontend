@@ -14,5 +14,5 @@
  */
 
 
-var ctor: new (a: number, b: string);
-/* @@? 17:37 Error SyntaxError: '=>' expected  */
+var ctor: new (a: number, b: string)/* @@ label */;
+/* @@@ label Error SyntaxError: '=>' expected  */

@@ -20,8 +20,8 @@ function foo<T extends "abc"| "ff">(a: T) {
 }
 
 function main(): void {
-    foo<"abc">("ff");
+    /* @@ label */foo<"abc">(/* @@ label1 */"ff");
 }
 
-/* @@? 23:16 Error TypeError: Type '"ff"' is not compatible with type '"abc"' at index 1  */
-/* @@? 23:5 Error TypeError: No matching call signature for foo("ff")  */
+/* @@@ label1 Error TypeError: Type '"ff"' is not compatible with type '"abc"' at index 1  */
+/* @@@ label Error TypeError: No matching call signature for foo("ff")  */

@@ -14,7 +14,7 @@
  */
 
 
-function foo(a: number, b: string) {
+function /* @@ label */foo(a: number, b: string) {
     var a: number = foo(1, "bar");
     return foo(2, "baz");
     return 12;
@@ -23,4 +23,4 @@ function foo(a: number, b: string) {
 var b: any;
 var b = foo(2, "bar");
 
-/* @@? 17:10 Error TypeError: foo implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.  */
+/* @@@ label Error TypeError: foo implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.  */

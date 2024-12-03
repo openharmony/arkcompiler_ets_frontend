@@ -18,9 +18,9 @@ class A {
   constructor() {
     return 42;
   }
-    constructor() {
+    /* @@ label */constructor() {
     return 42;
   }
 }
   
-/* @@? 21:5 Error SyntaxError: Multiple constructor implementations are not allowed.  */
+/* @@@ label Error SyntaxError: Multiple constructor implementations are not allowed.  */

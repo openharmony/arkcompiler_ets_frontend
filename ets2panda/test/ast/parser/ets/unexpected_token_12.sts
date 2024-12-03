@@ -17,5 +17,3 @@ import { foo, bar } kjfjf 988 from "./import_tests/modules/module"
 
 /* @@? 16:21 Error SyntaxError: Unexpected token, expected: 'from'.  */
 /* @@? 16:27 Error SyntaxError: Unexpected token, expected string literal.  */
-/* @@? 0:0 Error Error: Can't find prefix for '988'  */
-

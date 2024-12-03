@@ -50,11 +50,6 @@ static ir::ClassProperty *CreateAnonClassField(ir::MethodDefinition *ifaceMethod
 
     // Field type annotation
     auto *fieldType = ifaceMethod->Function()->Signature()->ReturnType();
-    if (IsInterfaceType(fieldType)) {
-        auto *anonClass = fieldType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration()->GetAnonClass();
-        ASSERT(anonClass != nullptr);
-        fieldType = anonClass->Definition()->TsType();
-    }
     ASSERT(fieldType != nullptr);
     auto *fieldTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(fieldType);
 
@@ -93,11 +88,6 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(checker::ETSChecke
 
         // ifaceMethod is getter, so it should have return type
         auto *retType = ifaceMethod->Function()->Signature()->ReturnType();
-        if (IsInterfaceType(retType)) {
-            auto *anonClass = retType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration()->GetAnonClass();
-            ASSERT(anonClass != nullptr);
-            retType = anonClass->Definition()->TsType();
-        }
         ASSERT(retType != nullptr);
 
         // Field identifier
@@ -116,7 +106,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(checker::ETSChecke
             auto *thisExpr = checker->AllocNode<ir::ThisExpression>();
             auto *lhs = checker->AllocNode<ir::MemberExpression>(
                 thisExpr, fieldId->Clone(allocator, nullptr), ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            auto *rhs = param->Ident()->Clone(allocator, nullptr);
+            auto *rhs = param->Ident()->CloneReference(allocator, nullptr);
 
             auto *assignment =
                 checker->AllocNode<ir::AssignmentExpression>(lhs, rhs, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
@@ -284,7 +274,7 @@ bool InterfaceObjectLiteralLowering::Postcondition(public_lib::Context *ctx, con
     }
 
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
-        return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsTypeOrError());
+        return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType());
     });
 }
 }  // namespace ark::es2panda::compiler

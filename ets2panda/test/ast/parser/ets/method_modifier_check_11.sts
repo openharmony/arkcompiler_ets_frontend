@@ -14,7 +14,7 @@
  */
 
 class A {
-    final override foo() : void {}
+    final override foo/* @@ label */() : void {}
 }
 
-/* @@? 17:23 Error TypeError: Method foo(): void in A not overriding any method  */
+/* @@@ label Error TypeError: Method foo(): void in A not overriding any method  */

@@ -18,8 +18,9 @@ endif()
 add_subdirectory(dynamic)
 add_subdirectory(lowerings)
 add_subdirectory(public)
-add_subdirectory(src_dumper)
+add_subdirectory(plugin)
 add_subdirectory(arktsconfig-parser)
+add_subdirectory(annotations)
 
 ets2panda_add_gtest(es2panda_astdumper_tests
     CPP_SOURCES ast_dumper_test.cpp
@@ -31,10 +32,16 @@ ets2panda_add_gtest(es2panda_union_normalization_tests_1
 ets2panda_add_gtest(es2panda_union_normalization_tests_2
     CPP_SOURCES union_normalization_test_2.cpp
 )
+ets2panda_add_gtest(es2panda_globalETSObjectType_tests
+    CPP_SOURCES globalETSObjectType_test.cpp
+)
 # NOTE: es2panda_rest_parameter_flag test runs a lot of time on qemu, so let's disable it
 if (NOT PANDA_QEMU_BUILD)
     ets2panda_add_gtest(es2panda_rest_parameter_flag
         CPP_SOURCES rest_parameter_flag_test.cpp
+    )
+    ets2panda_add_gtest(es2panda_extern_flag_tests
+        CPP_SOURCES extern_flag_test.cpp
     )
 endif()
 
@@ -42,6 +49,7 @@ if(NOT PANDA_WITH_ETS)
     return()
 endif()
 
+add_subdirectory(ets_specific_optimizer)
 ets2panda_add_gtest(es2panda_checker_tests
     CPP_SOURCES checker_test.cpp
 )

@@ -17,9 +17,15 @@ let v: double;
 
 function main(): void {
   let res = 0;
-  for (v: double of a) {
+  for (v/* @@ label */: /* @@ label1 */double of /* @@ label2 */a) {
     res += v;
   }
 }
 
-/* @@? 20:9 Error SyntaxError: Type annotation is not allowed when existing variable is used as loop iterator in 'for' statement.  */
+for (i in 50) {
+  a += 10
+}
+
+/* @@@ label Error SyntaxError: Type annotation is not allowed when existing variable is used as loop iterator in 'for' statement.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: ';'. */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected: ';'. */

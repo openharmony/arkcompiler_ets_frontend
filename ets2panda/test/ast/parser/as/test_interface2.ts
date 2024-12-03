@@ -15,7 +15,7 @@
 
 
 interface foo {
-    [a: i8]: v128
+    [/* @@ label */a: i8]: v128
 }
 
-/* @@? 18:6 Error SyntaxError: 'key' expected.  */
+/* @@@ label Error SyntaxError: 'key' expected.  */

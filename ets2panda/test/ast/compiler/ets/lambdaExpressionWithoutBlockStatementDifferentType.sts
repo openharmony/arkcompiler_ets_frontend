@@ -14,8 +14,8 @@
  */
 
 function main(): void {
-    let test1: () => int = (): string => "10";
+    let test1: () => int = /* @@ label */(): string => "10";
     test1();
 }
 
-/* @@? 17:28 Error TypeError: Type '() => String' cannot be assigned to type '() => Int'  */
+/* @@@ label Error TypeError: Type '() => String' cannot be assigned to type '() => Int'  */

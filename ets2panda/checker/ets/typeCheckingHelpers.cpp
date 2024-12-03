@@ -17,6 +17,8 @@
 #include "checker/ets/narrowingWideningConverter.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/types/ets/etsPartialTypeParameter.h"
+#include "checker/types/typeFlag.h"
 #include "ir/astNode.h"
 #include "ir/base/catchClause.h"
 #include "ir/expression.h"
@@ -56,7 +58,7 @@ namespace ark::es2panda::checker {
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 {
     auto *const testType = expr->Check(this);
-    auto *const conditionType = ETSBuiltinTypeAsConditionalType(testType);
+    auto *const conditionType = MaybeUnboxConditionalInRelation(testType);
 
     expr->SetTsType(conditionType);
 
@@ -70,18 +72,14 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
         return;
     }
 
-    if (conditionType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (conditionType->IsETSPrimitiveType()) {
         FlagExpressionWithUnboxing(testType, conditionType, expr);
-    }
-
-    if (conditionType->IsETSEnumType()) {
-        expr->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
     }
 }
 
 bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
 {
-    if (expr->TsTypeOrError()->PossiblyETSNullish()) {
+    if (expr->TsType()->PossiblyETSNullish()) {
         LogTypeError("Value is possibly nullish.", expr->Start());
         return false;
     }
@@ -98,7 +96,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
     }
 
     if (type->IsETSNullType() || type->IsETSUndefinedType()) {
-        return GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+        return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
     ArenaVector<Type *> copied(Allocator()->Adapter());
@@ -108,7 +106,7 @@ Type *ETSChecker::GetNonNullishType(Type *type)
         }
         copied.push_back(GetNonNullishType(t));
     }
-    return copied.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType() : CreateETSUnionType(std::move(copied));
+    return copied.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType() : CreateETSUnionType(std::move(copied));
 }
 
 Type *ETSChecker::RemoveNullType(Type *const type)
@@ -122,7 +120,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
     }
 
     if (type->IsETSNullType()) {
-        return GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+        return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
     ASSERT(type->IsETSUnionType());
@@ -134,7 +132,7 @@ Type *ETSChecker::RemoveNullType(Type *const type)
         }
     }
 
-    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                : CreateETSUnionType(std::move(copiedTypes));
 }
 
@@ -149,7 +147,7 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
     }
 
     if (type->IsETSUndefinedType()) {
-        return GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+        return GetGlobalTypesHolder()->GlobalETSNeverType();
     }
 
     ASSERT(type->IsETSUnionType());
@@ -161,14 +159,14 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
         }
     }
 
-    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    return copiedTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                : CreateETSUnionType(std::move(copiedTypes));
 }
 
 std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
 {
     if (type->DefinitelyNotETSNullish()) {
-        return {GetGlobalTypesHolder()->GlobalBuiltinNeverType(), type};
+        return {GetGlobalTypesHolder()->GlobalETSNeverType(), type};
     }
 
     if (type->IsETSTypeParameter()) {
@@ -177,7 +175,7 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
     }
 
     if (type->IsETSUndefinedType() || type->IsETSNullType()) {
-        return {type, GetGlobalTypesHolder()->GlobalBuiltinNeverType()};
+        return {type, GetGlobalTypesHolder()->GlobalETSNeverType()};
     }
 
     ASSERT(type->IsETSUnionType());
@@ -194,9 +192,9 @@ std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
         }
     }
 
-    Type *nullishType = nullishTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    Type *nullishType = nullishTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                              : CreateETSUnionType(std::move(nullishTypes));
-    Type *notNullishType = notNullishTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+    Type *notNullishType = notNullishTypes.empty() ? GetGlobalTypesHolder()->GlobalETSNeverType()
                                                    : CreateETSUnionType(std::move(notNullishTypes));
     return {nullishType, notNullishType};
 }
@@ -227,6 +225,10 @@ static bool MatchConstituentOrConstraint(const Type *type, Pred const &pred, Trv
     }
     if (type->IsETSNonNullishType()) {
         auto tparam = type->AsETSNonNullishType()->GetUnderlying();
+        return traverse(tparam->GetConstraintType());
+    }
+    if (type->IsETSPartialTypeParameter()) {
+        auto tparam = type->AsETSPartialTypeParameter()->GetUnderlying();
         return traverse(tparam->GetConstraintType());
     }
     return false;
@@ -300,11 +302,46 @@ bool Type::PossiblyETSValueTypedExceptNullish() const
         this, [](const Type *t) { return t->IsETSObjectType() && IsValueTypedObjectType(t->AsETSObjectType()); });
 }
 
+bool Type::IsETSArrowType() const
+{
+    return IsETSFunctionType() && AsETSFunctionType()->CallSignatures().size() == 1;
+}
+
+[[maybe_unused]] static bool IsSaneETSReferenceType(Type const *type)
+{
+    static constexpr TypeFlag ETS_SANE_REFERENCE_TYPE =
+        TypeFlag::TYPE_ERROR | TypeFlag::ETS_NULL | TypeFlag::ETS_UNDEFINED | TypeFlag::ETS_OBJECT |
+        TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
+        TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION | TypeFlag::ETS_ARRAY |
+        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER;
+
+    // Issues
+    if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring
+        return true;
+    }
+    if (type->IsETSTypeAliasType()) {  // NOTE(vpukhov): #20561
+        return true;
+    }
+    if (type->IsNeverType()) {  // NOTE(vpukhov): #20562 We use ets/never and ts/never simultaneously
+        return true;
+    }
+    return type->HasTypeFlag(ETS_SANE_REFERENCE_TYPE);
+}
+
+bool Type::IsETSPrimitiveType() const
+{
+    static constexpr TypeFlag ETS_PRIMITIVE =
+        TypeFlag::ETS_NUMERIC | TypeFlag::CHAR | TypeFlag::ETS_BOOLEAN | TypeFlag::ETS_ENUM;
+
+    // Do not modify
+    ASSERT(!HasTypeFlag(ETS_PRIMITIVE) == IsSaneETSReferenceType(this));
+    return HasTypeFlag(ETS_PRIMITIVE);
+}
+
 bool Type::IsETSReferenceType() const
 {
-    return IsETSObjectType() || IsETSArrayType() || IsETSNullType() || IsETSUndefinedType() || IsETSStringType() ||
-           IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType() ||
-           IsETSFunctionType() || IsETSTypeAliasType();
+    // Do not modify
+    return !IsETSPrimitiveType();
 }
 
 bool Type::IsETSUnboxableObject() const
@@ -331,7 +368,7 @@ Type *ETSChecker::GetNonConstantType(Type *type)
         return CreateETSUnionType(ETSUnionType::GetNonConstantTypes(this, type->AsETSUnionType()->ConstituentTypes()));
     }
 
-    if (!type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!type->IsETSPrimitiveType()) {
         return type;
     }
 
@@ -457,8 +494,8 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
         return GetTypeOfSetterGetter(var);
     }
 
-    if (var->TsTypeOrError() != nullptr) {
-        return var->TsTypeOrError();
+    if (var->TsType() != nullptr) {
+        return var->TsType();
     }
 
     // NOTE: kbaladurin. forbid usage of imported entities as types without declarations
@@ -514,6 +551,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         case ir::AstNodeType::METHOD_DEFINITION:
             baseProp = node->AsMethodDefinition()->Variable();
             break;
+            // NOTE(vpukhov): should not be a case of unchecked access
         case ir::AstNodeType::CLASS_DEFINITION:
             baseProp = node->AsClassDefinition()->Ident()->Variable();
             break;
@@ -666,7 +704,7 @@ Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable 
     }
 
     auto *const enumDecl = var->Declaration()->Node()->AsTSEnumDeclaration();
-    if (enumDecl->BoxedClass()->TsTypeOrError() == nullptr) {
+    if (enumDecl->BoxedClass()->TsType() == nullptr) {
         BuildBasicClassProperties(enumDecl->BoxedClass());
     }
     if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
@@ -690,11 +728,139 @@ Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *va
     return var->TsType();
 }
 
+bool ETSChecker::CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir::Expression *expected)
+{
+    if (init->Type() != expected->Type()) {
+        return false;
+    }
+
+    switch (init->Type()) {
+        case ir::AstNodeType::NUMBER_LITERAL:
+        case ir::AstNodeType::BOOLEAN_LITERAL:
+        case ir::AstNodeType::STRING_LITERAL:
+        case ir::AstNodeType::ARRAY_EXPRESSION:
+        case ir::AstNodeType::MEMBER_EXPRESSION:
+        case ir::AstNodeType::UNARY_EXPRESSION: {
+            if (CheckAmbientAnnotationFieldInitializerValue(init, expected)) {
+                break;
+            }
+            LogTypeError({"The initial value does not match the expected value."}, init->Start());
+            return false;
+        }
+        default:
+            UNREACHABLE();
+    }
+
+    return true;
+}
+
+static bool IsValidateUnaryExpression(lexer::TokenType operatorType)
+{
+    return operatorType == lexer::TokenType::PUNCTUATOR_PLUS || operatorType == lexer::TokenType::PUNCTUATOR_MINUS;
+}
+
+bool ETSChecker::CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected)
+{
+    switch (init->Type()) {
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            return init->AsNumberLiteral()->Number().GetDouble() == expected->AsNumberLiteral()->Number().GetDouble();
+        }
+        case ir::AstNodeType::BOOLEAN_LITERAL: {
+            return init->AsBooleanLiteral()->Value() == expected->AsBooleanLiteral()->Value();
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            return init->AsStringLiteral()->Str() == expected->AsStringLiteral()->Str();
+        }
+        case ir::AstNodeType::ARRAY_EXPRESSION: {
+            const auto &elements = init->AsArrayExpression()->Elements();
+            const auto &expectedElements = expected->AsArrayExpression()->Elements();
+            if (elements.size() != expectedElements.size()) {
+                return false;
+            }
+            for (size_t i = 0; i < elements.size(); ++i) {
+                if (!CheckAmbientAnnotationFieldInitializer(elements[i], expectedElements[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        case ir::AstNodeType::MEMBER_EXPRESSION: {
+            if (!Relation()->IsIdenticalTo(init->TsType(), expected->TsType())) {
+                return false;
+            }
+            auto elem = init->AsMemberExpression()->Property()->AsIdentifier()->Name();
+            auto expectedElem = expected->AsMemberExpression()->Property()->AsIdentifier()->Name();
+            return elem == expectedElem;
+        }
+        case ir::AstNodeType::UNARY_EXPRESSION: {
+            if (!IsValidateUnaryExpression(init->AsUnaryExpression()->OperatorType()) ||
+                !IsValidateUnaryExpression(expected->AsUnaryExpression()->OperatorType())) {
+                LogTypeError("Illegal unary operator.", init->Start());
+                return false;
+            }
+            if (init->AsUnaryExpression()->OperatorType() != expected->AsUnaryExpression()->OperatorType()) {
+                return false;
+            }
+            return CheckAmbientAnnotationFieldInitializer(init->AsUnaryExpression()->Argument(),
+                                                          expected->AsUnaryExpression()->Argument());
+        }
+        default:
+            UNREACHABLE();
+    }
+}
+
+void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl)
+{
+    std::unordered_map<util::StringView, ir::ClassProperty *> fieldMap;
+
+    for (auto *prop : annoDecl->Properties()) {
+        auto *field = prop->AsClassProperty();
+        fieldMap[field->Id()->Name()] = field;
+    }
+
+    for (auto *prop : annoImpl->Properties()) {
+        auto *field = prop->AsClassProperty();
+        auto fieldName = field->Id()->Name();
+        auto fieldDeclIter = fieldMap.find(fieldName);
+        if (fieldDeclIter == fieldMap.end()) {
+            LogTypeError({"Field '", fieldName, "' is not defined in the ambient annotation '",
+                          annoDecl->GetBaseName()->Name(), "'."},
+                         field->Start());
+            continue;
+        }
+
+        auto *fieldDecl = fieldDeclIter->second;
+        if (field->TsType() != fieldDecl->TsType()) {
+            LogTypeError({"Field '", fieldName, "' has a type mismatch with the ambient annotation '",
+                          annoDecl->GetBaseName()->Name(), "'."},
+                         field->TypeAnnotation()->Start());
+        }
+
+        bool hasValueMismatch = (field->Value() == nullptr) != (fieldDecl->Value() == nullptr);
+        bool initializerInvalid = field->Value() != nullptr && fieldDecl->Value() != nullptr &&
+                                  !CheckAmbientAnnotationFieldInitializer(field->Value(), fieldDecl->Value());
+        if (hasValueMismatch || initializerInvalid) {
+            LogTypeError({"Initializer for field '", fieldName,
+                          "' does not match the expected definition in the ambient annotation '",
+                          annoDecl->GetBaseName()->Name(), "'."},
+                         field->Start());
+        }
+        fieldMap.erase(fieldDeclIter);
+    }
+
+    for (auto it : fieldMap) {
+        LogTypeError({"Field '", it.second->Key()->AsIdentifier()->Name(), "' in annotation '",
+                      annoDecl->GetBaseName()->Name(),
+                      "' is declared in the ambient declaration but missing in the implementation."},
+                     annoImpl->Start());
+    }
+}
+
 bool ETSChecker::CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations)
 {
     std::unordered_set<util::StringView> seenAnnotations;
     for (const auto &anno : annotations) {
-        auto annoName = anno->Ident()->Name();
+        auto annoName = anno->GetBaseName()->Name();
         if (seenAnnotations.find(annoName) != seenAnnotations.end()) {
             LogTypeError({"Duplicate annotations are not allowed. The annotation '", annoName,
                           "' has already been applied to this element."},
@@ -724,97 +890,88 @@ void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
     }
 }
 
-void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
-                                               ETSChecker *checker)
+void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl)
 {
     auto *param = st->Properties().at(0)->AsClassProperty();
     if (annoDecl->Properties().size() > 1) {
-        checker->LogTypeError({"Annotation '", st->Ident()->Name(), "' requires multiple fields to be specified."},
-                              st->Start());
+        LogTypeError({"Annotation '", st->GetBaseName()->Name(), "' requires multiple fields to be specified."},
+                     st->Start());
     }
     auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
-    auto ctx = checker::AssignmentContext(checker->Relation(), param->Value(), param->TsType(), singleField->TsType(),
+    auto ctx = checker::AssignmentContext(Relation(), param->Value(), param->TsType(), singleField->TsType(),
                                           param->Start(), {}, TypeRelationFlag::NO_THROW);
     if (!ctx.IsAssignable()) {
-        checker->LogTypeError({"The value provided for annotation '", st->Ident()->Name(), "' field '",
-                               param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
-                               singleField->TsType(), "'."},
-                              param->Start());
+        LogTypeError({"The value provided for annotation '", st->GetBaseName()->Name(), "' field '",
+                      param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
+                      singleField->TsType(), "'."},
+                     param->Start());
+    }
+}
+
+void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
+                                       ir::AnnotationUsage *st, ETSChecker *checker) const
+{
+    for (const auto &entry : fieldMap) {
+        if (entry.second->Value() == nullptr) {
+            checker->LogTypeError({"The required field '", entry.first,
+                                   "' must be specified. Fields without default values cannot be omitted."},
+                                  st->Start());
+            continue;
+        }
+        auto *clone = entry.second->Clone(checker->Allocator(), st);
+        clone->Check(checker);
+        st->AddProperty(clone);
     }
 }
 
 void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
-                                                   ETSChecker *checker,
-                                                   std::unordered_map<util::StringView, ir::ClassProperty *> &fieldMap)
+                                                   ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap)
 {
     for (auto *it : st->Properties()) {
         auto *param = it->AsClassProperty();
         auto result = fieldMap.find(param->Id()->Name());
         if (result == fieldMap.end()) {
-            checker->LogTypeError({"The parameter '", param->Id()->Name(),
-                                   "' does not match any declared property in the annotation '",
-                                   annoDecl->Ident()->Name(), "'."},
-                                  param->Start());
+            LogTypeError({"The parameter '", param->Id()->Name(),
+                          "' does not match any declared property in the annotation '", annoDecl->GetBaseName()->Name(),
+                          "'."},
+                         param->Start());
             continue;
         }
-        auto ctx = checker::AssignmentContext(checker->Relation(), param->Value(), param->TsType(),
-                                              result->second->TsType(), param->Start(), {}, TypeRelationFlag::NO_THROW);
+        auto ctx = checker::AssignmentContext(Relation(), param->Value(), param->TsType(), result->second->TsType(),
+                                              param->Start(), {}, TypeRelationFlag::NO_THROW);
         if (!ctx.IsAssignable()) {
-            checker->LogTypeError({"The value provided for annotation '", st->Ident()->Name(), "' field '",
-                                   param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
-                                   result->second->TsType(), "'."},
-                                  param->Start());
+            LogTypeError({"The value provided for annotation '", st->GetBaseName()->Name(), "' field '",
+                          param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
+                          result->second->TsType(), "'."},
+                         param->Start());
         }
         fieldMap.erase(result);
     }
 }
 
-bool ETSChecker::IsTypeBuiltinType(const Type *type) const
+Type *ETSChecker::MaybeUnboxInRelation(Type *type)
 {
-    if (!type->IsETSObjectType()) {
-        return false;
-    }
-
-    switch (type->AsETSObjectType()->BuiltInKind()) {
-        case ETSObjectFlags::BUILTIN_BOOLEAN:
-        case ETSObjectFlags::BUILTIN_BYTE:
-        case ETSObjectFlags::BUILTIN_SHORT:
-        case ETSObjectFlags::BUILTIN_CHAR:
-        case ETSObjectFlags::BUILTIN_INT:
-        case ETSObjectFlags::BUILTIN_LONG:
-        case ETSObjectFlags::BUILTIN_FLOAT:
-        case ETSObjectFlags::BUILTIN_DOUBLE: {
-            return true;
-        }
-        default:
-            return false;
-    }
-}
-
-Type *ETSChecker::ETSBuiltinTypeAsPrimitiveType(Type *objectType)
-{
-    if (objectType == nullptr) {
+    if (type == nullptr) {
         return nullptr;
     }
 
-    if (objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) || objectType->IsETSEnumType()) {
-        return objectType;
+    if (type->IsETSPrimitiveType()) {
+        return type;
     }
 
-    if (!objectType->IsETSObjectType() ||
-        !objectType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+    if (!type->IsETSUnboxableObject()) {
         return nullptr;
     }
 
     auto savedResult = Relation()->IsTrue();
     Relation()->Result(false);
 
-    UnboxingConverter converter = UnboxingConverter(AsETSChecker(), Relation(), objectType, objectType);
+    UnboxingConverter converter = UnboxingConverter(AsETSChecker(), Relation(), type, type);
     Relation()->Result(savedResult);
     return converter.Result();
 }
 
-Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *const objectType)
+Type *ETSChecker::MaybeUnboxConditionalInRelation(Type *const objectType)
 {
     if (objectType->IsTypeError()) {
         return objectType;
@@ -824,24 +981,24 @@ Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *const objectType)
         return nullptr;
     }
 
-    if (auto *unboxed = ETSBuiltinTypeAsPrimitiveType(objectType); unboxed != nullptr) {
+    if (auto *unboxed = MaybeUnboxInRelation(objectType); unboxed != nullptr) {
         return unboxed;
     }
 
     return objectType;
 }
 
-Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *objectType)
+Type *ETSChecker::MaybeBoxInRelation(Type *objectType)
 {
     if (objectType == nullptr) {
         return nullptr;
     }
 
-    if (objectType->IsETSObjectType() && objectType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+    if (objectType->IsETSUnboxableObject()) {
         return objectType;
     }
 
-    if (!objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!objectType->IsETSPrimitiveType()) {
         return nullptr;
     }
 
@@ -854,51 +1011,49 @@ Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *objectType)
     return converter.Result();
 }
 
-Type *ETSChecker::MaybePromotedBuiltinType(Type *type) const
+Type *ETSChecker::MaybeBoxType(Type *type) const
 {
-    return type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && !type->IsETSVoidType()
-               ? checker::BoxingConverter::ETSTypeFromSource(this, type)
-               : type;
+    return type->IsETSPrimitiveType() ? BoxingConverter::Convert(this, type) : type;
 }
 
-Type const *ETSChecker::MaybePromotedBuiltinType(Type const *type) const
+Type *ETSChecker::MaybeUnboxType(Type *type) const
 {
-    return type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ? checker::BoxingConverter::ETSTypeFromSource(this, type) : type;
+    return type->IsETSUnboxableObject() ? UnboxingConverter::Convert(this, type->AsETSObjectType()) : type;
 }
 
-Type *ETSChecker::MaybePrimitiveBuiltinType(Type *type) const
+Type const *ETSChecker::MaybeBoxType(Type const *type) const
 {
-    return type->IsETSObjectType() ? UnboxingConverter::GlobalTypeFromSource(this, type->AsETSObjectType()) : type;
+    return MaybeBoxType(const_cast<Type *>(type));
+}
+
+Type const *ETSChecker::MaybeUnboxType(Type const *type) const
+{
+    return MaybeUnboxType(const_cast<Type *>(type));
 }
 
 ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxingType)
 {
-    auto typeKind = TypeKind(ETSBuiltinTypeAsPrimitiveType(boxingType));
+    auto typeKind = TypeKind(MaybeUnboxInRelation(boxingType));
     switch (typeKind) {
-        case TypeFlag::ETS_BOOLEAN: {
+        case TypeFlag::ETS_BOOLEAN:
             return ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN;
-        }
-        case TypeFlag::BYTE: {
+        case TypeFlag::BYTE:
             return ir::BoxingUnboxingFlags::BOX_TO_BYTE;
-        }
-        case TypeFlag::CHAR: {
+        case TypeFlag::CHAR:
             return ir::BoxingUnboxingFlags::BOX_TO_CHAR;
-        }
-        case TypeFlag::SHORT: {
+        case TypeFlag::SHORT:
             return ir::BoxingUnboxingFlags::BOX_TO_SHORT;
-        }
-        case TypeFlag::INT: {
+        case TypeFlag::INT:
             return ir::BoxingUnboxingFlags::BOX_TO_INT;
-        }
-        case TypeFlag::LONG: {
+        case TypeFlag::LONG:
             return ir::BoxingUnboxingFlags::BOX_TO_LONG;
-        }
-        case TypeFlag::FLOAT: {
+        case TypeFlag::FLOAT:
             return ir::BoxingUnboxingFlags::BOX_TO_FLOAT;
-        }
-        case TypeFlag::DOUBLE: {
+        case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::BOX_TO_DOUBLE;
-        }
+        case TypeFlag::ETS_INT_ENUM:
+        case TypeFlag::ETS_STRING_ENUM:
+            return ir::BoxingUnboxingFlags::BOX_TO_ENUM;
         default:
             UNREACHABLE();
     }
@@ -908,45 +1063,40 @@ ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxingTy
 {
     auto typeKind = TypeKind(unboxingType);
     switch (typeKind) {
-        case TypeFlag::ETS_BOOLEAN: {
+        case TypeFlag::ETS_BOOLEAN:
             return ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN;
-        }
-        case TypeFlag::BYTE: {
+        case TypeFlag::BYTE:
             return ir::BoxingUnboxingFlags::UNBOX_TO_BYTE;
-        }
-        case TypeFlag::CHAR: {
+        case TypeFlag::CHAR:
             return ir::BoxingUnboxingFlags::UNBOX_TO_CHAR;
-        }
-        case TypeFlag::SHORT: {
+        case TypeFlag::SHORT:
             return ir::BoxingUnboxingFlags::UNBOX_TO_SHORT;
-        }
-        case TypeFlag::INT: {
+        case TypeFlag::INT:
             return ir::BoxingUnboxingFlags::UNBOX_TO_INT;
-        }
-        case TypeFlag::LONG: {
+        case TypeFlag::LONG:
             return ir::BoxingUnboxingFlags::UNBOX_TO_LONG;
-        }
-        case TypeFlag::FLOAT: {
+        case TypeFlag::FLOAT:
             return ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT;
-        }
-        case TypeFlag::DOUBLE: {
+        case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE;
-        }
+        case TypeFlag::ETS_INT_ENUM:
+        case TypeFlag::ETS_STRING_ENUM:
+            return ir::BoxingUnboxingFlags::UNBOX_TO_ENUM;
         default:
             UNREACHABLE();
     }
 }
 
-void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target)
+void ETSChecker::MaybeAddBoxingFlagInRelation(TypeRelation *relation, Type *target)
 {
-    auto boxingResult = PrimitiveTypeAsETSBuiltinType(target);
+    auto boxingResult = MaybeBoxInRelation(target);
     if ((boxingResult != nullptr) && !relation->OnlyCheckBoxingUnboxing()) {
         relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxingResult));
         relation->Result(true);
     }
 }
 
-void ETSChecker::AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *source, Type *self)
+void ETSChecker::MaybeAddUnboxingFlagInRelation(TypeRelation *relation, Type *source, Type *self)
 {
     auto unboxingResult = UnboxingConverter(this, relation, source, self).Result();
     if ((unboxingResult != nullptr) && relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
@@ -960,7 +1110,7 @@ void ETSChecker::CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target,
         relation, TypeRelationFlag::ONLY_CHECK_WIDENING |
                       (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE));
     // NOTE: vpukhov. handle union type
-    auto unboxedType = ETSBuiltinTypeAsPrimitiveType(target);
+    auto unboxedType = MaybeUnboxInRelation(target);
     if (unboxedType == nullptr) {
         return;
     }
@@ -972,8 +1122,8 @@ void ETSChecker::CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target,
 
 void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *source, Type *target)
 {
-    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(source);
-    auto *unboxedTargetType = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(source);
+    auto *unboxedTargetType = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(target);
     if (unboxedSourceType == nullptr || unboxedTargetType == nullptr) {
         return;
     }
@@ -993,14 +1143,7 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
                       (relation->OnlyCheckBoxingUnboxing() ? TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING
                                                            : TypeRelationFlag::NONE));
 
-    if (source->IsETSEnumType()) {
-        if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
-            relation->Result(true);
-            return;
-        }
-    }
-
-    auto *boxedSourceType = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source);
+    auto *boxedSourceType = relation->GetChecker()->AsETSChecker()->MaybeBoxInRelation(source);
     if (boxedSourceType == nullptr) {
         return;
     }
@@ -1011,22 +1154,22 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
     }
     relation->IsAssignableTo(boxedSourceType, target);
     if (relation->IsTrue()) {
-        AddBoxingFlagToPrimitiveType(relation, boxedSourceType);
+        MaybeAddBoxingFlagInRelation(relation, boxedSourceType);
     } else {
-        auto unboxedTargetType = ETSBuiltinTypeAsPrimitiveType(target);
+        auto unboxedTargetType = MaybeUnboxInRelation(target);
         if (unboxedTargetType == nullptr) {
             return;
         }
         NarrowingWideningConverter(this, relation, unboxedTargetType, source);
         if (relation->IsTrue()) {
-            AddBoxingFlagToPrimitiveType(relation, target);
+            MaybeAddBoxingFlagInRelation(relation, target);
         }
     }
 }
 
 void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *relation, Type *source, Type *target)
 {
-    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(source);
+    auto *unboxedSourceType = relation->GetChecker()->AsETSChecker()->MaybeUnboxInRelation(source);
     if (unboxedSourceType == nullptr) {
         return;
     }

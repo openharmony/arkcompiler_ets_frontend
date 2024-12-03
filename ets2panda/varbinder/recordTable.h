@@ -32,6 +32,7 @@ class Signature;
 namespace ark::es2panda::ir {
 class ClassDefinition;
 class TSInterfaceDeclaration;
+class AnnotationDeclaration;
 class Identifier;
 }  // namespace ark::es2panda::ir
 
@@ -59,6 +60,7 @@ public:
     explicit RecordTable(ArenaAllocator *allocator, parser::Program *program, RecordTableFlags flags)
         : classDefinitions_(allocator->Adapter()),
           interfaceDeclarations_(allocator->Adapter()),
+          annotationDeclarations_(allocator->Adapter()),
           signatures_(allocator->Adapter()),
           program_(program),
           flags_(flags)
@@ -93,6 +95,16 @@ public:
     const ArenaSet<ir::TSInterfaceDeclaration *> &InterfaceDeclarations() const
     {
         return interfaceDeclarations_;
+    }
+
+    ArenaSet<ir::AnnotationDeclaration *> &AnnotationDeclarations()
+    {
+        return annotationDeclarations_;
+    }
+
+    const ArenaSet<ir::AnnotationDeclaration *> &AnnotationDeclarations() const
+    {
+        return annotationDeclarations_;
     }
 
     ArenaVector<FunctionScope *> &Signatures()
@@ -141,6 +153,25 @@ public:
                    : nullptr;
     }
 
+    void SetAnnotationDeclaration(ir::AnnotationDeclaration *annotationDeclaration)
+    {
+        record_ = annotationDeclaration;
+    }
+
+    ir::AnnotationDeclaration *AnnotationDeclaration()
+    {
+        return std::holds_alternative<ir::AnnotationDeclaration *>(record_)
+                   ? std::get<ir::AnnotationDeclaration *>(record_)
+                   : nullptr;
+    }
+
+    const ir::AnnotationDeclaration *AnnotationDeclaration() const
+    {
+        return std::holds_alternative<ir::AnnotationDeclaration *>(record_)
+                   ? std::get<ir::AnnotationDeclaration *>(record_)
+                   : nullptr;
+    }
+
     void SetProgram(parser::Program *program)
     {
         program_ = program;
@@ -160,10 +191,12 @@ public:
 
 private:
     friend class BoundContext;
-    using RecordHolder = std::variant<ir::ClassDefinition *, ir::TSInterfaceDeclaration *, std::nullptr_t>;
+    using RecordHolder =
+        std::variant<ir::ClassDefinition *, ir::TSInterfaceDeclaration *, ir::AnnotationDeclaration *, std::nullptr_t>;
 
     ArenaSet<ir::ClassDefinition *> classDefinitions_;
     ArenaSet<ir::TSInterfaceDeclaration *> interfaceDeclarations_;
+    ArenaSet<ir::AnnotationDeclaration *> annotationDeclarations_;
     ArenaVector<varbinder::FunctionScope *> signatures_;
     RecordHolder record_ {nullptr};
     parser::Program *program_ {};
@@ -175,6 +208,7 @@ class BoundContext {
 public:
     explicit BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef, bool force = false);
     explicit BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl, bool force = false);
+    explicit BoundContext(RecordTable *recordTable, ir::AnnotationDeclaration *annotationDecl, bool force = false);
     ~BoundContext();
 
     NO_COPY_SEMANTIC(BoundContext);

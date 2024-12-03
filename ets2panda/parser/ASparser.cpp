@@ -81,7 +81,7 @@ namespace ark::es2panda::parser {
 std::unique_ptr<lexer::Lexer> ASParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
-    auto lexer = std::make_unique<lexer::ASLexer>(&GetContext());
+    auto lexer = std::make_unique<lexer::ASLexer>(&GetContext(), ErrorLogger());
     SetLexer(lexer.get());
     return lexer;
 }
@@ -117,7 +117,6 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
-
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         ThrowSyntaxError("Identifier expected");
     }
@@ -147,8 +146,7 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
-    auto *typeAliasDecl =
-        AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, typeParamDecl, typeAnnotation, InAmbientContext());
+    auto *typeAliasDecl = AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, typeParamDecl, typeAnnotation);
     typeAliasDecl->SetRange({typeStart, Lexer()->GetToken().End()});
 
     return typeAliasDecl;
@@ -1719,12 +1717,12 @@ ir::Statement *ASParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
     return importDeclaration;
 }
 
-void ASParser::ThrowIllegalBreakError()
+void ASParser::ReportIllegalBreakError(const lexer::SourcePosition &pos)
 {
-    ThrowSyntaxError("A 'break' statement can only be used within an enclosing iteration or switch statement");
+    ThrowSyntaxError("A 'break' statement can only be used within an enclosing iteration or switch statement", pos);
 }
 
-void ASParser::ThrowIllegalContinueError()
+void ASParser::ReportIllegalContinueError()
 {
     ThrowSyntaxError("A 'continue' statement can only be used within an enclosing iteration statement");
 }

@@ -16,5 +16,5 @@
 
 var c: void;
 var { a, ...b }: { a: number } | { a: number, b: string, c: { a: number, b: boolean } } | { a: number, r: boolean } = { a: 12 };
-b = c;
-/* @@? 19:1 Error TypeError: Type 'void' is not assignable to type '{ } | { b: string; c: { a: number; b: boolean; }; } | { r: boolean; }'.  */
+/* @@ label */b = c;
+/* @@@ label Error TypeError: Type 'void' is not assignable to type '{ } | { b: string; c: { a: number; b: boolean; }; } | { r: boolean; }'.  */

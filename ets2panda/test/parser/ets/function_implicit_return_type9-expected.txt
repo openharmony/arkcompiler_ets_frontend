@@ -918,7 +918,7 @@
                 "loc": {
                   "start": {
                     "line": 23,
-                    "column": 13
+                    "column": 10
                   },
                   "end": {
                     "line": 34,
@@ -929,7 +929,7 @@
               "loc": {
                 "start": {
                   "line": 23,
-                  "column": 13
+                  "column": 10
                 },
                 "end": {
                   "line": 34,
@@ -1215,23 +1215,8 @@
                             },
                             "arguments": [
                               {
-                                "type": "UnaryExpression",
-                                "operator": "-",
-                                "prefix": true,
-                                "argument": {
-                                  "type": "NumberLiteral",
-                                  "value": 1,
-                                  "loc": {
-                                    "start": {
-                                      "line": 40,
-                                      "column": 17
-                                    },
-                                    "end": {
-                                      "line": 40,
-                                      "column": 18
-                                    }
-                                  }
-                                },
+                                "type": "NumberLiteral",
+                                "value": -1,
                                 "loc": {
                                   "start": {
                                     "line": 40,
@@ -1829,7 +1814,7 @@
                 "loc": {
                   "start": {
                     "line": 36,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 46,
@@ -1840,7 +1825,7 @@
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 46,

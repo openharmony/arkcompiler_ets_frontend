@@ -23,9 +23,9 @@ function foo() : int
     return 1;
 }
 
-function foo(a : int = 5) : int
+/* @@ label */function foo(a : int = 5) : int
 {
     return a;
 }
 
-/* @@? 26:1 Error TypeError: Function foo is already declared.  */
+/* @@@ label Error TypeError: Function foo is already declared.  */

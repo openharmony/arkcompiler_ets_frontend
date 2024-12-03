@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-let x: int = {};
-/* @@? 16:14 Error TypeError: Target type for class composite needs to be an object type, found 'int'  */
+let x: int = /* @@ label */{};
+/* @@@ label Error TypeError: Target type for class composite needs to be an object type, found 'int'  */

@@ -24,7 +24,10 @@ import {
   isStringLiteralLike,
   setParentRecursive,
   visitEachChild,
-  isSourceFile
+  isSourceFile,
+  isIndexedAccessTypeNode,
+  isLiteralTypeNode,
+  isUnionTypeNode,
 } from 'typescript';
 
 import type {
@@ -35,6 +38,13 @@ import type {
   TransformationContext,
   Transformer,
   TransformerFactory,
+  ClassDeclaration,
+  ClassExpression,
+  StructDeclaration,
+  PropertyName,
+  StringLiteral,
+  LiteralTypeNode,
+  TypeNode
 } from 'typescript';
 
 import type {IOptions} from '../../configs/IOptions';
@@ -45,7 +55,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
-import { EventList } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
 import {
   isInPropertyWhitelist,
   isReservedProperty,
@@ -84,11 +94,11 @@ namespace secharmony {
           return node;
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = renameProperties(node);
         UpdateMemberMethodName(nameCache, PropCollections.globalMangledTable, classInfoInMemberMethodCache);
         let parentNodes = setParentRecursive(ret, true);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+        endSingleFileEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         return parentNodes;
       }
 
@@ -101,6 +111,10 @@ namespace secharmony {
           return renameElementAccessProperty(node);
         }
 
+        if (isIndexedAccessTypeNode(node.parent)) {
+          return renameIndexedAccessProperty(node);
+        }
+
         if (isComputedPropertyName(node)) {
           return renameComputedProperty(node);
         }
@@ -111,6 +125,39 @@ namespace secharmony {
       function renameElementAccessProperty(node: Node): Node {
         if (isStringLiteralLike(node)) {
           return renameProperty(node, false);
+        }
+        return visitEachChild(node, renameProperties, context);
+      }
+
+      function renameIndexedAccessProperty(node: Node): Node {
+        if (NodeUtils.isStringLiteralTypeNode(node)) {
+          let prop = renameProperty((node as LiteralTypeNode).literal, false);
+          if (prop !== (node as LiteralTypeNode).literal) {
+            return factory.createLiteralTypeNode(prop as StringLiteral);
+          }
+          return visitEachChild(node, renameProperties, context);
+        }
+
+        if (!isUnionTypeNode(node)) {
+          return visitEachChild(node, renameProperties, context);
+        }
+
+        let isChanged: boolean = false;
+        const elemTypes = node.types.map((elemType) => {
+          if (!elemType) {
+            return elemType;
+          }
+          if (NodeUtils.isStringLiteralTypeNode(elemType)) {
+            const prop = renameProperty((elemType as LiteralTypeNode).literal, false);
+            if (prop !== (elemType as LiteralTypeNode).literal) {
+              isChanged = true;
+              return factory.createLiteralTypeNode(prop as StringLiteral);
+            }
+          }
+          return elemType;
+        });
+        if (isChanged) {
+          return factory.createUnionTypeNode(elemTypes);
         }
         return visitEachChild(node, renameProperties, context);
       }

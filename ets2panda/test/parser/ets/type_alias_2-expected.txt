@@ -120,22 +120,22 @@
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 24
+                              "column": 22
                             },
                             "end": {
                               "line": 18,
-                              "column": 25
+                              "column": 24
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 19,
-                            "column": 3
+                            "line": 18,
+                            "column": 24
                           },
                           "end": {
-                            "line": 19,
-                            "column": 4
+                            "line": 18,
+                            "column": 26
                           }
                         }
                       },

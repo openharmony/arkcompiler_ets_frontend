@@ -35,12 +35,6 @@ public:
         return *this;
     }
 
-    VariableDeclarationBuilder &SetDeclare(bool decl)
-    {
-        declare_ = decl;
-        return *this;
-    }
-
     VariableDeclarationBuilder &SetDeclarators(ArenaVector<VariableDeclarator *> &&declarators)
     {
         declarators_ = std::move(declarators);
@@ -55,14 +49,13 @@ public:
 
     VariableDeclaration *Build()
     {
-        auto *node = AllocNode(kind_, Allocator(), std::move(declarators_), declare_);
+        auto *node = AllocNode(kind_, Allocator(), std::move(declarators_));
         return node;
     }
 
 private:
     VariableDeclaration::VariableDeclarationKind kind_ = VariableDeclaration::VariableDeclarationKind::LET;
     ArenaVector<VariableDeclarator *> declarators_;
-    bool declare_ = true;
 };
 
 }  // namespace ark::es2panda::ir

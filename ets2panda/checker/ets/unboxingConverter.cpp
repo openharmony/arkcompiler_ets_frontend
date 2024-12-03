@@ -20,35 +20,29 @@
 
 namespace ark::es2panda::checker {
 
-checker::Type *UnboxingConverter::GlobalTypeFromSource(checker::ETSChecker const *checker, ETSObjectType *type)
+checker::Type *UnboxingConverter::Convert(checker::ETSChecker const *checker, ETSObjectType *type)
 {
-    switch (type->BuiltInKind()) {
-        case ETSObjectFlags::BUILTIN_BOOLEAN: {
+    switch (type->UnboxableKind()) {
+        case ETSObjectFlags::BUILTIN_BOOLEAN:
             return checker->GlobalETSBooleanType();
-        }
-        case ETSObjectFlags::BUILTIN_BYTE: {
+        case ETSObjectFlags::BUILTIN_BYTE:
             return checker->GlobalByteType();
-        }
-        case ETSObjectFlags::BUILTIN_SHORT: {
+        case ETSObjectFlags::BUILTIN_SHORT:
             return checker->GlobalShortType();
-        }
-        case ETSObjectFlags::BUILTIN_CHAR: {
+        case ETSObjectFlags::BUILTIN_CHAR:
             return checker->GlobalCharType();
-        }
-        case ETSObjectFlags::BUILTIN_INT: {
+        case ETSObjectFlags::BUILTIN_INT:
             return checker->GlobalIntType();
-        }
-        case ETSObjectFlags::BUILTIN_LONG: {
+        case ETSObjectFlags::BUILTIN_LONG:
             return checker->GlobalLongType();
-        }
-        case ETSObjectFlags::BUILTIN_FLOAT: {
+        case ETSObjectFlags::BUILTIN_FLOAT:
             return checker->GlobalFloatType();
-        }
-        case ETSObjectFlags::BUILTIN_DOUBLE: {
+        case ETSObjectFlags::BUILTIN_DOUBLE:
             return checker->GlobalDoubleType();
-        }
+        case ETSObjectFlags::BOXED_ENUM:
+            return type->GetDeclNode()->AsClassDefinition()->OrigEnumDecl()->TsType();
         default:
-            return type;
+            UNREACHABLE();
     }
 }
 

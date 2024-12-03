@@ -15,8 +15,8 @@
 
 class A {
     foo(): this {
-        return new A();
+        /* @@ label */return new A();
     }
 }
 
-/* @@? 18:9 Error TypeError: The only allowed return value is 'this' if the method's return type is the 'this' type  */
+/* @@@ label Error TypeError: The only allowed return value is 'this' if the method's return type is the 'this' type  */

@@ -15,7 +15,7 @@
 
 
 class Foo {
-    set 5(k) { }
+    set /* @@ label */5(k) { }
     private get 5() { return }
 }
-/* @@? 18:9 Error SyntaxError: A get accessor must be at least as accessible as the setter  */
+/* @@@ label Error SyntaxError: A get accessor must be at least as accessible as the setter  */

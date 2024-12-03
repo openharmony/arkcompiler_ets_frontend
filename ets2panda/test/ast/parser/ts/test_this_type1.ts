@@ -14,5 +14,5 @@
  */
 
 
-var a: this;
-/* @@? 17:8 Error SyntaxError: A 'this' type is available only in a non-static member of a class or interface.  */
+var a: /* @@ label */this;
+/* @@@ label Error SyntaxError: A 'this' type is available only in a non-static member of a class or interface.  */

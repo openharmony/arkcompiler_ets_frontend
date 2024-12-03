@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-struct A {
+/* @@ label */struct A {
     struct B {
         
     }
 }
 
-/* @@? 16:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@@ label Error SyntaxError: Struct types are not supported yet!  */

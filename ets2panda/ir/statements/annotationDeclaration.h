@@ -25,23 +25,33 @@
 namespace ark::es2panda::ir {
 class AnnotationDeclaration : public Statement {
 public:
-    explicit AnnotationDeclaration(Identifier *ident, ArenaAllocator *allocator)
-        : Statement(AstNodeType::ANNOTATION_DECLARATION), ident_(ident), properties_(allocator->Adapter())
+    explicit AnnotationDeclaration(Expression *expr, ArenaAllocator *allocator)
+        : Statement(AstNodeType::ANNOTATION_DECLARATION), expr_(expr), properties_(allocator->Adapter())
     {
     }
-    explicit AnnotationDeclaration(Identifier *ident, ArenaVector<AstNode *> &&properties)
-        : Statement(AstNodeType::ANNOTATION_DECLARATION), ident_(ident), properties_(std::move(properties))
+    explicit AnnotationDeclaration(Expression *expr, ArenaVector<AstNode *> &&properties)
+        : Statement(AstNodeType::ANNOTATION_DECLARATION), expr_(expr), properties_(std::move(properties))
     {
-    }
-
-    [[nodiscard]] const Identifier *Ident() const noexcept
-    {
-        return ident_;
     }
 
-    [[nodiscard]] Identifier *Ident() noexcept
+    const util::StringView &InternalName() const
     {
-        return ident_;
+        return internalName_;
+    }
+
+    void SetInternalName(util::StringView internalName)
+    {
+        internalName_ = internalName;
+    }
+
+    [[nodiscard]] const Expression *Expr() const noexcept
+    {
+        return expr_;
+    }
+
+    [[nodiscard]] Expression *Expr() noexcept
+    {
+        return expr_;
     }
 
     [[nodiscard]] ArenaVector<AstNode *> &Properties() noexcept
@@ -99,9 +109,12 @@ public:
         scope_ = nullptr;
     }
 
+    Identifier *GetBaseName() const;
+
 private:
+    util::StringView internalName_ {};
     varbinder::LocalScope *scope_ {};
-    Identifier *ident_;
+    Expression *expr_;
     ArenaVector<AstNode *> properties_;
 };
 }  // namespace ark::es2panda::ir

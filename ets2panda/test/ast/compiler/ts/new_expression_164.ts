@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-var a = 5();
+var a = /* @@ label */5();
 
-/* @@? 16:9 Error TypeError: This expression is not callable.  */
+/* @@@ label Error TypeError: This expression is not callable.  */

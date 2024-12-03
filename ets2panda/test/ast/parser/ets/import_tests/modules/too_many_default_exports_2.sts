@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export default let a = 2, b = 3;
+export default let a = 2, /* @@ label */b = 3;
 
-/* @@? 16:27 Error SyntaxError: Only one default export is allowed in a module  */
+/* @@@ label Error SyntaxError: Only one default export is allowed in a module  */

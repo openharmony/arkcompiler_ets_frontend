@@ -14,5 +14,5 @@
  */
 
 
-var { a = 5, b: foo } = { foo: 5 };
-/* @@? 17:5 Error TypeError: Object literal may only specify known properties, and property 'foo' does not exist in the pattern.  */
+var /* @@ label */{ a = 5, b: foo } = { foo: 5 };
+/* @@@ label Error TypeError: Object literal may only specify known properties, and property 'foo' does not exist in the pattern.  */

@@ -17,6 +17,10 @@
 a:
 while(true)
 {
-  break b; 
-}
-/* @@? 20:9 Error SyntaxError: Undefined label  */
+  break /* @@ label */b;
+  a+=10/* @@ label1 */!!
+/* @@ label2 */}
+
+/* @@@ label Error SyntaxError: Undefined label  */
+/* @@@ label1 Error SyntaxError: Unexpected token '!'. */
+/* @@@ label2 Error SyntaxError: Unexpected token: '}'. */

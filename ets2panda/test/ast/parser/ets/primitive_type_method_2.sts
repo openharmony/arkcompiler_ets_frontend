@@ -14,9 +14,9 @@
  */
 
 function toString1(value: number): string {
-    return value.toString(value);
+    return /* @@ label */value.toString(value);
 }
 
 function main(): void {}
 
-/* @@? 17:12 Error TypeError: Property 'toString' does not exist on type 'double'  */
+/* @@@ label Error TypeError: Property 'toString' does not exist on type 'double'  */

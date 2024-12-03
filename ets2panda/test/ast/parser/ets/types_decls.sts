@@ -42,7 +42,7 @@ let non_prim_d: Double = -0.0;
 
 // see 3.1.3 Boolean type
 
-let prim_b: bool = true;
+let /* @@ label */prim_b: bool = true;
 let non_prim_b: Bool = false;
 
 
@@ -56,4 +56,4 @@ let non_prim_c: Char = c'b';
 // see 3.1.5 Void type
 function v(): void {}
 
-/* @@? 45:5 Error SyntaxError: Variable 'prim_b' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'prim_b' has already been declared.  */

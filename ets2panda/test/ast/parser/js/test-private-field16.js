@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-class A extends function () { x = this.#foo } {
+class A extends function () { x = this./* @@ label */#foo } {
     #foo;
 }
 
-/* @@? 16:40 Error SyntaxError: Private field 'foo' must be declared in an enclosing class  */
+/* @@@ label Error SyntaxError: Private field 'foo' must be declared in an enclosing class  */

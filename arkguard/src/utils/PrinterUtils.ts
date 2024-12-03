@@ -14,6 +14,9 @@
  */
 
 import * as fs from 'fs';
+import type { IOptions } from '../configs/IOptions';
+import { performancePrinter } from '../ArkObfuscator';
+import type { IPrinterOption } from '../configs/INameObfuscationOption';
 
 export enum EventList {
   OBFUSCATION_INITIALIZATION = 'Obfuscation initialization',
@@ -103,17 +106,24 @@ abstract class BasePrinter {
     this.enablePrinter = false;
   }
 
-  constructor(outputPath: string = "") {
+  /**
+   * Only for ut
+   */
+  isEnabled(): boolean {
+    return this.enablePrinter;
+  }
+
+  constructor(outputPath: string = '') {
     this.outputPath = outputPath;
   }
 
-  setOutputPath(outputPath: string | undefined) {
+  setOutputPath(outputPath: string | undefined): void {
     this.outputPath = outputPath;
   }
 
   print(message: string): void {
-    if (this.outputPath && this.outputPath !== "") {
-      fs.appendFileSync(`${this.outputPath}`, message + "\n");
+    if (this.outputPath && this.outputPath !== '') {
+      fs.appendFileSync(`${this.outputPath}`, message + '\n');
     } else {
       console.log(message);
     }
@@ -134,7 +144,7 @@ export class TimeTracker extends BasePrinter {
   private eventStack: Map<string, TimeAndMemInfo> = new Map<string, TimeAndMemInfo>();
   private filesTimeSum: number = 0;
   private maxTimeUsage = 0;
-  private maxTimeFile = "";
+  private maxTimeFile = '';
   private maxMemoryUsage: number = 0;
   private maxMemoryFile: string = '';
 
@@ -150,7 +160,7 @@ export class TimeTracker extends BasePrinter {
     }
 
     const eventStartTime = this.eventStack.get(eventName).start;
-    const duration = (Date.now() - eventStartTime)/MILLISECOND_TO_SECOND;
+    const duration = (Date.now() - eventStartTime) / MILLISECOND_TO_SECOND;
     const eventEndMemory = process.memoryUsage().heapUsed;
     const eventStartMemory = this.eventStack.get(eventName).startMemory;
     const memoryUsage = eventEndMemory - eventStartMemory;
@@ -193,7 +203,7 @@ export class TimeTracker extends BasePrinter {
       }
       const totalTimeUsage = this.getTotalTime();
       const maxTimeUsage = this.maxTimeUsage.toFixed(SIG_FIGS);
-      const maxMemoryUsage = (this.maxMemoryUsage/BYTE_TO_MB).toFixed(SIG_FIGS);
+      const maxMemoryUsage = (this.maxMemoryUsage / BYTE_TO_MB).toFixed(SIG_FIGS);
       this.print(`Obfuscation time cost: ${totalTimeUsage} s`);
       this.print(`Max time cost of single file: ${this.maxTimeFile}: ${maxTimeUsage} s`);
       this.print(`Max memory usage of single file: ${this.maxMemoryFile}: ${maxMemoryUsage}MB\n`);
@@ -201,18 +211,18 @@ export class TimeTracker extends BasePrinter {
   }
 
   getCurrentEventData(): string {
-    let eventData = "";
+    let eventData = '';
     for (const eventName of this.eventStack.keys()) {
-      if (eventName == EventList.OBFUSCATION_INITIALIZATION) {
+      if (eventName === EventList.OBFUSCATION_INITIALIZATION) {
         const totalTimeUsage = this.getTotalTime();
         eventData += `Obfuscation time cost: ${totalTimeUsage} s\n`;
       }
       let depth = eventList.get(eventName) ?? DEFAULT_DEPTH;
       let eventInfo = this.eventStack.get(eventName);
       const duration = eventInfo.duration;
-      const startMemory = eventInfo.startMemory/BYTE_TO_MB;
-      const endMemory = eventInfo.endMemory/BYTE_TO_MB;
-      const memoryUsage = eventInfo.memoryUsage/BYTE_TO_MB;
+      const startMemory = eventInfo.startMemory / BYTE_TO_MB;
+      const endMemory = eventInfo.endMemory / BYTE_TO_MB;
+      const memoryUsage = eventInfo.memoryUsage / BYTE_TO_MB;
       if (eventInfo.filePath) {
         eventData += eventInfo.filePath + `\n`;
       }
@@ -226,9 +236,9 @@ export class TimeTracker extends BasePrinter {
     const indent = INDENT.repeat(depth);
     const formattedDuration = duration.toFixed(SIG_FIGS) + ' s';
     const formatttedStartMemory = startMemory.toFixed(SIG_FIGS) + 'MB';
-    const formatttedEndMemory  = endMemory.toFixed(SIG_FIGS) + 'MB';
-    const formatttedMemoryUsage  = memoryUsage.toFixed(SIG_FIGS) + 'MB';
-    return `${indent}${eventName}: timeCost:${formattedDuration} startMemory:${formatttedStartMemory} `+
+    const formatttedEndMemory = endMemory.toFixed(SIG_FIGS) + 'MB';
+    const formatttedMemoryUsage = memoryUsage.toFixed(SIG_FIGS) + 'MB';
+    return `${indent}${eventName}: timeCost:${formattedDuration} startMemory:${formatttedStartMemory} ` + 
     `endMemory:${formatttedEndMemory} memoryUsage:${formatttedMemoryUsage}\n`;
   }
 
@@ -281,9 +291,9 @@ export class TimeSumPrinter extends BasePrinter {
   }
 
   getCurrentEventData(): string {
-    let eventData = "";
+    let eventData = '';
     for (const eventName of this.eventSum.keys()) {
-      let depth = eventList.get(eventName)?? 0;
+      let depth = eventList.get(eventName) ?? 0;
       const duration = this.eventSum.get(eventName);
       eventData += this.formatEvent(eventName, duration, depth);
     }
@@ -299,4 +309,106 @@ export class TimeSumPrinter extends BasePrinter {
   getEventSum(): Map<string, number> {
     return this.eventSum;
   }
+}
+
+/**
+ * Initialize performance printer
+ */
+export function initPerformancePrinter(mCustomProfiles: IOptions): void {
+  const printerConfig: IPrinterOption = mCustomProfiles.mPerformancePrinter;
+
+  // If no performance printer configuration is provided, disable the printer and return.
+  if (!printerConfig) {
+    blockPrinter();
+    return;
+  }
+
+  // Disable performance printer if no specific printer types (files, single file, or summary) are enabled.
+  const isPrinterDisabled = !(
+    printerConfig.mFilesPrinter ||
+    printerConfig.mSingleFilePrinter ||
+    printerConfig.mSumPrinter
+  );
+  
+  if (isPrinterDisabled) {
+    blockPrinter();
+    return;
+  }
+
+  const outputPath: string = printerConfig.mOutputPath;
+
+  // Helper function to configure or disable a printer.
+  const configurePrinter = (printer: TimeTracker | TimeSumPrinter, isEnabled: boolean): void => {
+    if (!isEnabled) {
+      printer?.disablePrinter();
+      return;
+    }
+    printer?.setOutputPath(outputPath);
+  };
+
+  // Setup the individual printers based on configuration.
+  configurePrinter(performancePrinter.filesPrinter, printerConfig.mFilesPrinter);
+  configurePrinter(performancePrinter.singleFilePrinter, printerConfig.mSingleFilePrinter);
+  configurePrinter(performancePrinter.timeSumPrinter, printerConfig.mSumPrinter);
+}
+
+/**
+ * Disable performance printer
+ */
+export function blockPrinter(): void {
+  performancePrinter.filesPrinter = undefined;
+  performancePrinter.singleFilePrinter = undefined;
+  performancePrinter.timeSumPrinter = undefined;
+}
+
+/**
+ * Start recording singleFilePrinter event
+ */
+export function startSingleFileEvent(eventName: string, timeSumPrinter?: TimeSumPrinter, currentFile?: string): void {
+  performancePrinter.singleFilePrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+}
+
+/**
+ * End recording singleFilePrinter event
+ */
+export function endSingleFileEvent(
+  eventName: string,
+  timeSumPrinter?: TimeSumPrinter,
+  isFilesPrinter?: boolean,
+  triggerSingleFilePrinter?: boolean,
+): void {
+  performancePrinter.singleFilePrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+}
+
+/**
+ * Start recording filesPrinter event
+ */
+export function startFilesEvent(eventName: string, timeSumPrinter?: TimeSumPrinter, currentFile?: string): void {
+  performancePrinter.filesPrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+}
+
+/**
+ * End recording filesPrinter event
+ */
+export function endFilesEvent(
+  eventName: string,
+  timeSumPrinter?: TimeSumPrinter,
+  isFilesPrinter?: boolean,
+  triggerSingleFilePrinter?: boolean,
+): void {
+  performancePrinter.filesPrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+}
+
+/**
+ * Print input info for timeSumPrinter
+ */
+export function printTimeSumInfo(info: string): void {
+  performancePrinter.timeSumPrinter?.print(info);
+}
+
+/**
+ * Print data of timeSumPrinter
+ */
+export function printTimeSumData(): void {
+  performancePrinter.timeSumPrinter?.summarizeEventDuration();
 }

@@ -15,6 +15,6 @@
 
 
 var a = [5,5,5,5] as const;
-a[3] = 5;
+/* @@ label */a[3] = 5;
 
-/* @@? 18:1 Error TypeError: Cannot assign to this property because it is readonly.  */
+/* @@@ label Error TypeError: Cannot assign to this property because it is readonly.  */

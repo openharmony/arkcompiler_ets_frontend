@@ -33,6 +33,7 @@ enum class AstNodeFlags {
     GENERATE_VALUE_OF = 1U << 4U,
     GENERATE_GET_NAME = 1U << 5U,  // Transform the Enum[enumVar] MemberExpression to enumVar.getName() call
     RECHECK = 1U << 6U,
+    /* do not introduce new flags. all the existing to be removed */
 };
 
 enum class ModifierFlags : uint32_t {
@@ -101,6 +102,7 @@ enum class ScriptFunctionFlags : uint32_t {
     HAS_RETURN = 1U << 19U,
     ASYNC_IMPL = 1U << 20U,
     EXTERNAL_OVERLOAD = 1U << 21U,
+    HAS_THROW = 1U << 22U,
 };
 
 enum class TSOperatorType { READONLY, KEYOF, UNIQUE };

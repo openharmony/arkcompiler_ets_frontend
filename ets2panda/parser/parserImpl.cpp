@@ -57,7 +57,7 @@ ParserImpl::ParserImpl(Program *program, const CompilerOptions &options, ParserS
 std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const SourceFile &sourceFile)
 {
     program_->SetSource(sourceFile);
-    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&context_);
+    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&context_, &errorLogger_);
     lexer_ = lexer.get();
     return lexer;
 }
@@ -154,7 +154,7 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
 
         lexer::TokenFlags tokenFlags = lexer_->GetToken().Flags();
         if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            ThrowSyntaxError("Keyword must not contain escaped characters");
+            LogSyntaxError("Keyword must not contain escaped characters");
         }
 
         ir::ModifierFlags actualStatus = ir::ModifierFlags::NONE;
@@ -182,18 +182,15 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
             break;
         }
 
-        auto pos = lexer_->Save();
-        lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
-
         if ((prevStatus & actualStatus) == 0) {
-            lexer_->Rewind(pos);
-            ThrowSyntaxError("Unexpected modifier");
+            LogSyntaxError("Unexpected modifier");
         }
 
         if ((resultStatus & actualStatus) != 0) {
-            lexer_->Rewind(pos);
-            ThrowSyntaxError("Duplicated modifier is not allowed");
+            LogSyntaxError("Duplicated modifier is not allowed");
         }
+
+        lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
         resultStatus |= actualStatus;
         prevStatus = nextStatus;
@@ -247,7 +244,7 @@ void ParserImpl::CheckAccessorPair(const ArenaVector<ir::AstNode *> &properties,
 
         if ((setAccess == ir::ModifierFlags::NONE && getAccess > ir::ModifierFlags::PUBLIC) ||
             (setAccess != ir::ModifierFlags::NONE && getAccess > setAccess)) {
-            ThrowSyntaxError("A get accessor must be at least as accessible as the setter", key->Start());
+            LogSyntaxError("A get accessor must be at least as accessible as the setter", key->Start());
         }
     }
 }
@@ -268,10 +265,10 @@ void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *next
         return;
     }
 
-    ThrowIfPrivateIdent(desc, "Unexpected identifier");
+    LogIfPrivateIdent(desc, "Unexpected identifier");
 
     if ((lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-        ThrowSyntaxError("Keyword must not contain escaped characters");
+        LogSyntaxError("Keyword must not contain escaped characters");
     }
 
     desc->methodKind =
@@ -282,20 +279,20 @@ void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *next
     ConsumeClassPrivateIdentifier(desc, nextCp);
 }
 
-void ParserImpl::ThrowIfPrivateIdent(ClassElementDescriptor *desc, const char *msg)
+void ParserImpl::LogIfPrivateIdent(ClassElementDescriptor *desc, const char *msg)
 {
     if (desc->isPrivateIdent) {
-        ThrowSyntaxError(msg);
+        LogSyntaxError(msg);
     }
 }
 
-void ParserImpl::ThrowErrorIfStaticConstructor([[maybe_unused]] ir::ModifierFlags flags) {}
+void ParserImpl::CheckIfStaticConstructor([[maybe_unused]] ir::ModifierFlags flags) {}
 
 void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
 {
     if (((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 || desc->isGenerator) &&
         (desc->methodKind == ir::MethodDefinitionKind::GET || desc->methodKind == ir::MethodDefinitionKind::SET)) {
-        ThrowSyntaxError("Invalid accessor");
+        LogSyntaxError("Invalid accessor");
     }
 
     const util::StringView &propNameStr = lexer_->GetToken().Ident();
@@ -306,13 +303,13 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
             LogSyntaxError("Classes may not have a field named 'constructor'");
         }
 
-        ThrowIfPrivateIdent(desc, "Private identifier can not be constructor");
+        LogIfPrivateIdent(desc, "Private identifier can not be constructor");
 
         if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
             if ((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 ||
                 desc->methodKind == ir::MethodDefinitionKind::GET ||
                 desc->methodKind == ir::MethodDefinitionKind::SET || desc->isGenerator) {
-                ThrowSyntaxError("Constructor can not be special method");
+                LogSyntaxError("Constructor can not be special method");
             }
 
             desc->methodKind = ir::MethodDefinitionKind::CONSTRUCTOR;
@@ -324,9 +321,9 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
             }
         }
 
-        ThrowErrorIfStaticConstructor(desc->modifiers);
+        CheckIfStaticConstructor(desc->modifiers);
     } else if (propNameStr.Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC) != 0) {
-        ThrowSyntaxError("Classes may not have static property named prototype");
+        LogSyntaxError("Classes may not have static property named prototype");
     }
 }
 
@@ -361,14 +358,14 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         case lexer::TokenType::LITERAL_STRING: {
-            ThrowIfPrivateIdent(desc, "Private identifier name can not be string");
+            LogIfPrivateIdent(desc, "Private identifier name can not be string");
 
             if (lexer_->GetToken().Ident().Is("constructor")) {
-                ThrowSyntaxError("Classes may not have a field named 'constructor'");
+                LogSyntaxError("Classes may not have a field named 'constructor'");
             }
 
             if (lexer_->GetToken().Ident().Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC) != 0) {
-                ThrowSyntaxError("Classes may not have a static property named 'prototype'");
+                LogSyntaxError("Classes may not have a static property named 'prototype'");
             }
 
             propName = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
@@ -376,7 +373,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         case lexer::TokenType::LITERAL_NUMBER: {
-            ThrowIfPrivateIdent(desc, "Private identifier name can not be number");
+            LogIfPrivateIdent(desc, "Private identifier name can not be number");
 
             if ((lexer_->GetToken().Flags() & lexer::TokenFlags::NUMBER_BIGINT) != 0) {
                 propName = AllocNode<ir::BigIntLiteral>(lexer_->GetToken().BigInt());
@@ -388,7 +385,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            ThrowIfPrivateIdent(desc, "Unexpected character in private identifier");
+            LogIfPrivateIdent(desc, "Unexpected character in private identifier");
             std::tie(desc->isComputed, desc->invalidComputedProperty, desc->isIndexSignature) =
                 ParseComputedClassFieldOrIndexSignature(&propName);
             break;
@@ -419,15 +416,15 @@ void ParserImpl::ValidateClassMethodStart(ClassElementDescriptor *desc, [[maybe_
     }
 }
 
-void ParserImpl::ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number) const
+void ParserImpl::ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number)
 {
     if (methodDefinition == ir::MethodDefinitionKind::SET) {
         if (number != 1) {
-            ThrowSyntaxError("Setter must have exactly one formal parameter");
+            LogSyntaxError("Setter must have exactly one formal parameter");
         }
     } else if (methodDefinition == ir::MethodDefinitionKind::GET) {
         if (number != 0) {
-            ThrowSyntaxError("Getter must not have formal parameters");
+            LogSyntaxError("Getter must not have formal parameters");
         }
     }
 }
@@ -488,7 +485,7 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
 
     if (desc->classMethod) {
         if ((desc->modifiers & ir::ModifierFlags::DECLARE) != 0) {
-            ThrowSyntaxError("'declare modifier cannot appear on class elements of this kind.");
+            LogSyntaxError("'declare modifier cannot appear on class elements of this kind.");
         }
 
         property = ParseClassMethod(desc, properties, propName, &propEnd);
@@ -502,7 +499,7 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
         lexer_->NextToken();  // eat equals
 
         if (InAmbientContext() || (desc->modifiers & ir::ModifierFlags::DECLARE) != 0) {
-            ThrowSyntaxError("Initializers are not allowed in ambient contexts.");
+            LogSyntaxError("Initializers are not allowed in ambient contexts.");
         }
 
         value = ParseExpression();
@@ -555,8 +552,12 @@ void ParserImpl::ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, cha
 
 void ParserImpl::AddPrivateElement(const ir::ClassElement *elem)
 {
+    if (elem->Id() == nullptr) {  // Error processing.
+        return;
+    }
+
     if (!classPrivateContext_.AddElement(elem)) {
-        ThrowSyntaxError("Private field has already been declared");
+        LogSyntaxError("Private field has already been declared");
     }
 }
 
@@ -587,7 +588,7 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
             body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
             ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
-            ir::ModifierFlags::STATIC, false, context_.GetLanguage()});
+            ir::ModifierFlags::STATIC, context_.GetLanguage()});
     // clang-format on
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -681,7 +682,6 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
                                                              ir::ScriptFunctionFlags::CONSTRUCTOR |
                                                                  ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
                                                              {},
-                                                             false,
                                                              context_.GetLanguage()});
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -701,7 +701,7 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
 
 void ParserImpl::CreateImplicitConstructor(ir::MethodDefinition *&ctor,
                                            [[maybe_unused]] ArenaVector<ir::AstNode *> &properties,
-                                           ir::ClassDefinitionModifiers modifiers,
+                                           ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
                                            const lexer::SourcePosition &startLoc)
 {
     if (ctor != nullptr) {
@@ -709,6 +709,9 @@ void ParserImpl::CreateImplicitConstructor(ir::MethodDefinition *&ctor,
     }
 
     ctor = BuildImplicitConstructor(modifiers, startLoc);
+    if ((flags & ir::ModifierFlags::DECLARE) != 0) {
+        ctor->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+    }
 }
 
 ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifiers)
@@ -721,7 +724,7 @@ ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifie
         static_cast<ir::ClassDefinitionModifiers>(modifiers & ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED);
 
     if (idRequired == ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED) {
-        ThrowSyntaxError("Unexpected token, expected an identifier.");
+        LogSyntaxError("Unexpected token, expected an identifier.");
     }
 
     return nullptr;
@@ -740,7 +743,7 @@ bool ParserImpl::CheckClassElement(ir::AstNode *property, ir::MethodDefinition *
     }
 
     if (ctor != nullptr) {
-        ThrowSyntaxError("Multiple constructor implementations are not allowed.", property->Start());
+        LogSyntaxError("Multiple constructor implementations are not allowed.", property->Start());
     }
     ctor = def;
 
@@ -770,7 +773,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     ir::Identifier *identNode = ParseClassIdent(modifiers);
 
     if (identNode == nullptr && (modifiers & ir::ClassDefinitionModifiers::DECLARATION) != 0U) {
-        ThrowSyntaxError("Unexpected token, expected an identifier.");
+        LogSyntaxError("Unexpected token, expected an identifier.");
+        return nullptr;
     }
 
     varbinder::PrivateBinding privateBinding(Allocator(), classId_++);
@@ -813,8 +817,9 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
         lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
         properties = std::move(ParseAstNodesArrayFormatPlaceholder());
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
-            UNREACHABLE();
+            // NOTE(schernykh): add info about LoC
+            LOG(FATAL, ES2PANDA) << "Unexpected " << lexer::TokenToString(lexer_->GetToken().Type())
+                                 << ", expected '}'.";
         }
     } else {
         while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
@@ -839,7 +844,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
     }
 
     lexer::SourcePosition endLoc = lexer_->GetToken().End();
-    CreateImplicitConstructor(ctor, properties, modifiers, endLoc);
+    CreateImplicitConstructor(ctor, properties, modifiers, flags, endLoc);
     lexer_->NextToken();
 
     return {ctor, std::move(properties), lexer::SourceRange {startLoc, endLoc}};
@@ -914,9 +919,10 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
     return params;
 }
 
-ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringView className)
+ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] ir::TypeNode *typeAnnotation)
 {
-    ThrowSyntaxError({"Unexpected token: ", className.Utf8()});
+    LogSyntaxError("Unexpected token, expected function identifier");
+    return nullptr;
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
@@ -933,7 +939,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::
     return {true, body, body->End(), false};
 }
 
-FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Identifier *className)
+FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::TypeNode *typeAnnotation)
 {
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseFunctionTypeParameters();
 
@@ -944,16 +950,16 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Id
     FunctionParameterContext funcParamContext(&context_);
 
     ir::Expression *parameterThis = nullptr;
-    if (className != nullptr) {
+    if (typeAnnotation != nullptr) {
         const auto savedPos = Lexer()->Save();
         lexer_->NextToken();  // eat '('
-        parameterThis = CreateParameterThis(className->Name());
+        parameterThis = CreateParameterThis(typeAnnotation);
         Lexer()->Rewind(savedPos);
     }
 
     auto params = ParseFunctionParams();
 
-    if (className != nullptr) {
+    if (typeAnnotation != nullptr) {
         params.emplace(params.begin(), parameterThis);
     }
 
@@ -968,8 +974,6 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
 {
     FunctionContext functionContext(this, newStatus | ParserStatus::FUNCTION | ParserStatus::ALLOW_NEW_TARGET);
 
-    bool isDeclare = InAmbientContext();
-
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
     auto [signature, throw_marker] = ParseFunctionSignature(newStatus);
@@ -983,8 +987,12 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
     functionContext.AddFlag(throw_marker);
     auto *funcNode = AllocNode<ir::ScriptFunction>(
         Allocator(),
-        ir::ScriptFunction::ScriptFunctionData {
-            body, std::move(signature), functionContext.Flags(), {}, isDeclare && letDeclare, context_.GetLanguage()});
+        ir::ScriptFunction::ScriptFunctionData {body,
+                                                std::move(signature),      // CC-OFFNXT(G.FMT.02-CPP) project code style
+                                                functionContext.Flags(),   // CC-OFFNXT(G.FMT.02-CPP) project code style
+                                                {},                        // CC-OFFNXT(G.FMT.02-CPP) project code style
+                                                context_.GetLanguage()});  // CC-OFF(G.FMT.02-CPP) project code style
+
     funcNode->SetRange({startLoc, endLoc});
 
     return funcNode;
@@ -1000,8 +1008,8 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
     ir::Expression *argument {};
     if (inPattern) {
         argument = ParsePatternElement(ExpressionParseFlags::IN_REST);
-        if ((flags & ExpressionParseFlags::OBJECT_PATTERN) != 0 && !argument->IsIdentifier()) {
-            ThrowSyntaxError("RestParameter must be followed by an identifier in declaration contexts");
+        if ((flags & ExpressionParseFlags::OBJECT_PATTERN) != 0 && (argument == nullptr || !argument->IsIdentifier())) {
+            LogSyntaxError("RestParameter must be followed by an identifier in declaration contexts");
         }
     } else {
         argument = ParseExpression(flags);
@@ -1012,7 +1020,7 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
     }
 
     if (inPattern && argument->IsAssignmentExpression()) {
-        ThrowSyntaxError("RestParameter does not support an initializer");
+        LogSyntaxError("RestParameter does not support an initializer");
     }
 
     auto nodeType = inPattern ? ir::AstNodeType::REST_ELEMENT : ir::AstNodeType::SPREAD_ELEMENT;
@@ -1021,16 +1029,16 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
     return spreadElementNode;
 }
 
-void ParserImpl::CheckRestrictedBinding() const
+void ParserImpl::CheckRestrictedBinding()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     CheckRestrictedBinding(lexer_->GetToken().KeywordType());
 }
 
-void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType) const
+void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType)
 {
     if (keywordType == lexer::TokenType::KEYW_ARGUMENTS || keywordType == lexer::TokenType::KEYW_EVAL) {
-        ThrowSyntaxError(
+        LogSyntaxError(
             "'eval' or 'arguments' can't be defined or assigned to "
             "in strict mode code",
             lexer_->GetToken().Start());
@@ -1151,32 +1159,44 @@ void ParserImpl::LogParameterModifierError(ir::ModifierFlags status)
 
 ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder([[maybe_unused]] std::optional<NodeFormatType> nodeFormat)
 {
-    ThrowSyntaxError("Identifier expected.");
+    // NOTE(schernykh): add info about LoC
+    LOG(FATAL, ES2PANDA) << "Format placeholder with identifier is not supported";
+    return nullptr;
 }
 
 ir::Statement *ParserImpl::ParseStatementFormatPlaceholder()
 {
-    ThrowSyntaxError("Statement expected.");
+    // NOTE(schernykh): add info about LoC
+    LOG(FATAL, ES2PANDA) << "Statement with format placeholder is not supported";
+    return nullptr;
 }
 
 ir::AstNode *ParserImpl::ParseTypeParametersFormatPlaceholder()
 {
-    ThrowSyntaxError("Type parameter(s) expected.");
+    // NOTE(schernykh): add info about LoC
+    LOG(FATAL, ES2PANDA) << "Format placeholder with type parameter(s) is not supported";
+    return nullptr;
 }
 
 ArenaVector<ir::Statement *> &ParserImpl::ParseStatementsArrayFormatPlaceholder()
 {
-    ThrowSyntaxError("ArenaVector of ir::Statement *'s expected.");
+    // NOTE(schernykh): add info about LoC
+    LOG(FATAL, ES2PANDA) << "Format placeholder from statements array is not supported";
+    UNREACHABLE();
 }
 
 ArenaVector<ir::AstNode *> &ParserImpl::ParseAstNodesArrayFormatPlaceholder()
 {
-    ThrowSyntaxError("ArenaVector of ir::AstNode *'s expected.");
+    // NOTE(schernykh): add info about LoC
+    LOG(FATAL, ES2PANDA) << "Format placeholder from AST nodes is not supported";
+    UNREACHABLE();
 }
 
 ArenaVector<ir::Expression *> &ParserImpl::ParseExpressionsArrayFormatPlaceholder()
 {
-    ThrowSyntaxError("ArenaVector of ir::Expression *'s expected.");
+    // NOTE(schernykh): add info about LoC
+    LOG(FATAL, ES2PANDA) << "Format placeholder from expressions array is not supported";
+    UNREACHABLE();
 }
 
 util::StringView ParserImpl::ParseSymbolIteratorIdentifier() const noexcept
@@ -1219,7 +1239,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
     }
 
     if (token.IsDefinableTypeName() && isUserDefinedType) {
-        ThrowSyntaxError("Cannot be used as user-defined type.");
+        LogSyntaxError("Cannot be used as user-defined type.");
     }
 
     auto const &tokenStart = token.Start();
@@ -1364,7 +1384,7 @@ bool ParserImpl::CheckModuleAsModifier()
     }
 
     if ((lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0U) {
-        ThrowSyntaxError("Escape sequences are not allowed in 'as' keyword");
+        LogSyntaxError("Escape sequences are not allowed in 'as' keyword");
     }
 
     return true;

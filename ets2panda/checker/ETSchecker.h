@@ -23,6 +23,8 @@
 #include "checker/types/ets/types.h"
 #include "checker/ets/primitiveWrappers.h"
 #include "checker/resolveResult.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "ir/visitor/AstVisitor.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::varbinder {
@@ -51,7 +53,7 @@ struct Accessor {
 };
 
 using ComputedAbstracts =
-    ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, std::unordered_set<ETSObjectType *>>>;
+    ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, ArenaUnorderedSet<ETSObjectType *>>>;
 using ArrayMap = ArenaUnorderedMap<Type *, ETSArrayType *>;
 using GlobalArraySignatureMap = ArenaUnorderedMap<ETSArrayType *, Signature *>;
 using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<util::StringView, ir::ScriptFunction *>>;
@@ -109,6 +111,7 @@ public:
     Type *GlobalVoidType() const;
     Type *GlobalETSNullType() const;
     Type *GlobalETSUndefinedType() const;
+    Type *GlobalETSNeverType() const;
     Type *GlobalETSStringLiteralType() const;
     Type *GlobalETSBigIntType() const;
     Type *GlobalWildcardType() const;
@@ -131,8 +134,6 @@ public:
     size_t GlobalBuiltinFunctionTypeVariadicThreshold() const;
 
     ETSObjectType *GlobalBuiltinDynamicType(Language lang) const;
-
-    const checker::WrapperDesc &PrimitiveWrapper() const;
 
     GlobalArraySignatureMap &GlobalArrayTypes();
     const GlobalArraySignatureMap &GlobalArrayTypes() const;
@@ -176,9 +177,9 @@ public:
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
-    void CheckIfOverrideIsValidInInterface(const ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func);
-    void CheckFunctionRedeclarationInInterface(const ETSObjectType *classType,
-                                               ArenaVector<Signature *> &similarSignatures, ir::ScriptFunction *func);
+    void CheckIfOverrideIsValidInInterface(ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func);
+    void CheckFunctionRedeclarationInInterface(ETSObjectType *classType, ArenaVector<Signature *> &similarSignatures,
+                                               ir::ScriptFunction *func);
     void ValidateAbstractMethodsToBeImplemented(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
                                                 ETSObjectType *classType,
                                                 const std::vector<Signature *> &implementedSignatures);
@@ -254,8 +255,8 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
-    ETSIntEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
-    ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    ETSIntEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
+    ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
 
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
@@ -287,6 +288,7 @@ public:
     IntType *CreateIntTypeFromType(Type *type);
     std::tuple<Language, bool> CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName);
     ETSObjectType *CreateNewETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
+    ETSObjectType *CreatePromiseOf(Type *type);
 
     Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func);
     Signature *CreateSignature(SignatureInfo *info, Type *returnType, util::StringView internalName);
@@ -328,17 +330,6 @@ public:
     std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::TokenType operationType,
                                                               lexer::SourcePosition pos, checker::Type *leftType,
                                                               checker::Type *rightType);
-    std::optional<std::tuple<Type *, Type *>> CheckBinaryOperatorEqualError(checker::Type *const leftType,
-                                                                            checker::Type *const rightType,
-                                                                            checker::Type *tsType,
-                                                                            lexer::SourcePosition pos);
-    // CC-OFFNXT(G.FUN.01-CPP) solid logic
-    std::tuple<Type *, Type *> CheckBinaryOperatorEqual(ir::Expression *left, ir::Expression *right,
-                                                        lexer::TokenType operationType, lexer::SourcePosition pos,
-                                                        checker::Type *leftType, checker::Type *rightType,
-                                                        Type *unboxedL, Type *unboxedR);
-    std::tuple<Type *, Type *> CheckBinaryOperatorEqualDynamic(ir::Expression *left, ir::Expression *right,
-                                                               lexer::SourcePosition pos);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     std::tuple<Type *, Type *> CheckBinaryOperatorLessGreater(ir::Expression *left, ir::Expression *right,
                                                               lexer::TokenType operationType, lexer::SourcePosition pos,
@@ -525,17 +516,18 @@ public:
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
     bool ValidateAnnotationPropertyType(checker::Type *tsType);
+    void ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
+                               ir::AnnotationUsage *st, ETSChecker *checker) const;
     bool CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
+    void CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl);
+    bool CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected);
+    bool CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir::Expression *expected);
     void CheckAnnotationPropertyType(ir::ClassProperty *property);
-    void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
-                                       ETSChecker *checker);
+    void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl);
     void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
-                                           ETSChecker *checker,
-                                           std::unordered_map<util::StringView, ir::ClassProperty *> &fieldMap);
+                                           ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap);
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     bool TestUnionType(Type *type, TypeFlag test);
-    std::tuple<Type *, bool> ApplyBinaryOperatorPromotion(Type *left, Type *right, TypeFlag test,
-                                                          bool doPromotion = true);
     checker::Type *ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxedL,
                                                      checker::Type *unboxedR);
     Type *ApplyUnaryOperatorPromotion(Type *type, bool createConst = true, bool doPromotion = true,
@@ -568,7 +560,6 @@ public:
     util::StringView GetContainingObjectNameFromSignature(Signature *signature);
     bool IsFunctionContainsSignature(ETSFunctionType *funcType, Signature *signature);
     bool CheckFunctionContainsClashingSignature(const ETSFunctionType *funcType, Signature *signature);
-    bool IsTypeBuiltinType(const Type *type) const;
     static bool IsReferenceType(const Type *type)
     {
         return type->IsETSReferenceType();
@@ -577,17 +568,18 @@ public:
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);
     varbinder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
     Type *CheckSwitchDiscriminant(ir::Expression *discriminant);
-    Type *ETSBuiltinTypeAsPrimitiveType(Type *objectType);
-    Type *ETSBuiltinTypeAsConditionalType(Type *objectType);
-    Type *PrimitiveTypeAsETSBuiltinType(Type *objectType);
+    Type *MaybeUnboxInRelation(Type *objectType);
+    Type *MaybeUnboxConditionalInRelation(Type *objectType);
+    Type *MaybeBoxInRelation(Type *objectType);
     void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
     Type *MaybeBoxExpression(ir::Expression *expr);
     Type *MaybeUnboxExpression(ir::Expression *expr);
-    Type *MaybePromotedBuiltinType(Type *type) const;
-    Type const *MaybePromotedBuiltinType(Type const *type) const;
-    Type *MaybePrimitiveBuiltinType(Type *type) const;
+    Type *MaybeBoxType(Type *type) const;
+    Type *MaybeUnboxType(Type *type) const;
+    Type const *MaybeBoxType(Type const *type) const;
+    Type const *MaybeUnboxType(Type const *type) const;
     void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> const &cases);
     std::string GetStringFromIdentifierValue(checker::Type *caseType) const;
     bool CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue);
@@ -601,14 +593,14 @@ public:
     varbinder::Variable *FindVariableInGlobal(const ir::Identifier *identifier,
                                               const varbinder::ResolveBindingOptions options);
     varbinder::Variable *ExtraCheckForResolvedError(ir::Identifier *ident);
-    void ValidateResolvedIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
+    void ValidateResolvedIdentifier(ir::Identifier *ident);
     static bool IsVariableStatic(const varbinder::Variable *var);
     static bool IsVariableGetterSetter(const varbinder::Variable *var);
     bool IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare);
     void SaveCapturedVariable(varbinder::Variable *var, ir::Identifier *ident);
     bool SaveCapturedVariableInLocalClass(varbinder::Variable *var, ir::Identifier *ident);
-    void AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target);
-    void AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *source, Type *self);
+    void MaybeAddBoxingFlagInRelation(TypeRelation *relation, Type *target);
+    void MaybeAddUnboxingFlagInRelation(TypeRelation *relation, Type *source, Type *self);
     void CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target, Type *self);
     void CheckUnboxedTypesAssignable(TypeRelation *relation, Type *source, Type *target);
     void CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target);
@@ -662,11 +654,11 @@ public:
     Type *HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstantiation *typeParams,
                                          const std::string_view &utilityType);
     // Partial
-    static constexpr auto PARTIAL_CLASS_SUFFIX = "$partial";
-    Type *HandlePartialType(Type *typeToBePartial);
-    Type *HandlePartialTypeNode(ir::TypeNode *typeParamNode);
-    Type *HandlePartialInterface(Type *typeToBePartial);
-    Type *HandlePartialClass(Type *typeToBePartial);
+    Type *CreatePartialType(Type *typeToBePartial);
+    Type *HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDecl, bool isClassDeclaredInCurrentFile,
+                                 util::StringView const &partialClassName, parser::Program *programToUse,
+                                 ETSObjectType *const typeToBePartial);
+
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *const prop,
                                              ir::TSInterfaceDeclaration *const newTSInterfaceDefinition);
@@ -680,8 +672,7 @@ public:
                                                          ir::ClassDefinition *newClassDefinition);
     ir::MethodDefinition *CreateNullishAccessor(ir::MethodDefinition *const accessor,
                                                 ir::ClassDefinition *classDefinition);
-    ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *CreatePartialClassDeclaration(
-        ir::ClassDefinition *newClassDefinition, ir::ClassDefinition *classDef, Type *superPartialType);
+    void CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition, ir::ClassDefinition *classDef);
     ir::ETSTypeReference *BuildSuperPartialTypeReference(Type *superPartialType,
                                                          ir::TSTypeParameterInstantiation *superPartialRefTypeParams);
     ir::TSInterfaceDeclaration *CreateInterfaceProto(util::StringView name, const bool isStatic,
@@ -694,18 +685,13 @@ public:
         ir::TSTypeParameterDeclaration const *const thisTypeParams,
         ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *likeSubstitution,
         ir::TSTypeParameterDeclaration *newTypeParams);
-    Type *CreatePartialTypeInterfaceDecl(util::StringView qualifiedName,
-                                         ir::TSInterfaceDeclaration *const interfaceDecl,
+    Type *CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *const interfaceDecl,
+                                         ETSObjectType *const typeToBePartial,
                                          ir::TSInterfaceDeclaration *partialInterface);
-    void CreateConstructorForPartialType(ir::ClassDefinition *partialClassDef, checker::ETSObjectType *partialType,
-                                         varbinder::RecordTable *recordTable);
     ir::ClassDefinition *CreateClassPrototype(util::StringView name, parser::Program *classDeclProgram);
     varbinder::Variable *SearchNamesInMultiplePrograms(const std::set<const parser::Program *> &programs,
                                                        const std::set<util::StringView> &classNamesToFind);
     util::StringView GetQualifiedClassName(const parser::Program *classDefProgram, util::StringView className);
-    Type *HandleUnionForPartialType(ETSUnionType *typeToBePartial);
-    Type *CreatePartialTypeClassDef(ir::ClassDefinition *partialClassDef, ir::ClassDefinition *classDef,
-                                    const Type *typeToBePartial, varbinder::RecordTable *recordTableToUse);
     std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunctionForConstructor(
         varbinder::FunctionScope *scope);
     ir::MethodDefinition *CreateNonStaticClassInitializer(varbinder::ClassScope *classScope,
@@ -808,25 +794,22 @@ public:
                                             ir::ModifierFlags modifierFlags, const MethodBuilder &builder);
     ir::ClassDeclaration *BuildClass(util::StringView name, const ClassBuilder &builder);
 
+    void LogUnresolvedReferenceError(ir::Identifier *ident);
+    void WrongContextErrorClassifyByType(ir::Identifier *ident);
+
 private:
     ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
                                    bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
-    void LogUnResolvedError(ir::Identifier *ident);
-    void LogOperatorCannotBeApplied(lexer::TokenType operationType, checker::Type *const leftType,
-                                    checker::Type *const rightType, lexer::SourcePosition pos);
-    void WrongContextErrorClassifyByType(ir::Identifier *ident, varbinder::Variable *resolved);
     void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id);
     void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
                           const ETSObjectType *classType);
-    void ValidateCallExpressionIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
-                                          Type *const type);
-    void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved);
-    void ValidateMemberIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved, Type *const type);
-    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved);
-    void ValidateAssignmentIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
-                                      Type *const type);
+    void ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type);
+    void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident);
+    void ValidateMemberIdentifier(ir::Identifier *const ident);
+    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident);
+    void ValidateAssignmentIdentifier(ir::Identifier *const ident, Type *const type);
     bool ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type);
     void ValidateGetterSetter(const ir::MemberExpression *const memberExpr, const varbinder::LocalVariable *const prop,
                               PropertySearchFlags searchFlag);
@@ -916,6 +899,15 @@ private:
 
     // Static invoke
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
+
+    // Partial
+    Type *HandleUnionForPartialType(ETSUnionType *typeToBePartial);
+    Type *CreatePartialTypeParameter(ETSTypeParameter *typeToBePartial);
+    Type *CreatePartialTypeClass(ETSObjectType *typeToBePartial, ir::AstNode *typeDeclNode);
+    Type *CreatePartialTypeClassDef(ir::ClassDefinition *partialClassDef, ir::ClassDefinition *classDef,
+                                    ETSObjectType *typeToBePartial, varbinder::RecordTable *recordTableToUse);
+    void CreateConstructorForPartialType(ir::ClassDefinition *partialClassDef, checker::ETSObjectType *partialType,
+                                         varbinder::RecordTable *recordTable);
 
     // Check type alias for recursive cases
     bool IsAllowedTypeAliasRecursion(const ir::TSTypeAliasDeclaration *typeAliasNode,

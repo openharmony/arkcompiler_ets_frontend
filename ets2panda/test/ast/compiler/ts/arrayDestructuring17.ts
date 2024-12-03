@@ -18,5 +18,5 @@ function a(a: number, b: string): [number, string] {
     return [1, "foo"];
 }
 
-var [b, c, d] = a(1, "bar");
-/* @@? 21:5 Error TypeError: Tuple type [number, string] of length 2 has no element at index 2.  */
+var /* @@ label */[b, c, d] = a(1, "bar");
+/* @@@ label Error TypeError: Tuple type [number, string] of length 2 has no element at index 2.  */

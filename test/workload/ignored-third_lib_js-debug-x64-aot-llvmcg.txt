@@ -1,31 +1,3 @@
 # Known failures list for third_lib_js - debug-x64-aot-llvmcg
-#18484
-jBox2d_test
 
-#18517
-js-joda_test
-
-#18897
-splay-latency
-
-#19284
-mathjs_test
-
-#19251
-pdfview_test
-
-#19248
-pinyin4js_test
-
-#19426
-validator_test
-
-#18546
-jBox2d_test
-
-#18372
-js-joda_test
-
-#19246
-asn-one_test
 

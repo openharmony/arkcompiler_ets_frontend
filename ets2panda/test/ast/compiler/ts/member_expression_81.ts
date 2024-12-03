@@ -16,5 +16,5 @@
 
 var a = {["foo"+"bar"]:3} as const;
 
-a.baz = 3;
-/* @@? 19:1 Error TypeError: Cannot assign to this property because it is readonly.  */
+/* @@ label */a.baz = 3;
+/* @@@ label Error TypeError: Cannot assign to this property because it is readonly.  */

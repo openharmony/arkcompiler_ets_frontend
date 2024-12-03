@@ -14,7 +14,7 @@
  */
 
 class Test {
-    public async native bar(): Promise;
+    public async native /* @@ label */bar(): Promise;
 }
 
-/* @@? 17:25 Error SyntaxError: Native method cannot be async  */
+/* @@@ label Error SyntaxError: Native method cannot be async  */

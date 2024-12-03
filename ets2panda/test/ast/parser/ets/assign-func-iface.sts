@@ -17,4 +17,5 @@ interface Foo {
     async foo(): Promise<Object>;
 }
 
-/* @@? 17:5 Error SyntaxError: Unexpected token: 'async'.  */
+/* @@? 17:5 Error SyntaxError: Unexpected token, expected 'private' or identifier  */
+/* @@? 17:14 Error SyntaxError: Private interface methods must have body  */

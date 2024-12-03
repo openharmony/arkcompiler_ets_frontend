@@ -25,7 +25,7 @@
 class A {}
 
 function foo(): void {
-	let fld_1: Partial<A> = new A(); // CTE
+	let fld_1: Partial<A> = /* @@ label */new A(); // CTE
 }
 
-/* @@? 28:26 Error TypeError: Type 'A' cannot be assigned to type 'A$partial'  */
+/* @@@ label Error TypeError: Type 'A' cannot be assigned to type 'Partial<A>'  */

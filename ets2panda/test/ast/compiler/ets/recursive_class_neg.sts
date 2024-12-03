@@ -16,5 +16,5 @@ class A<T extends A<A<T>>>{}
 class C extends A<A<C>>{}
 
 /* @@? 15:20 Error TypeError: Type A<T> is not assignable to constraint type A<A<A<T>>>  */
-/* @@? 16:20 Error TypeError: Type C is not assignable to constraint type A<A<C>> */
+/* @@? 16:20 Error TypeError: Type C is not assignable to constraint type A<A<C>>  */
 /* @@? 16:18 Error TypeError: Type A<C> is not assignable to constraint type A<A<A<C>>>  */

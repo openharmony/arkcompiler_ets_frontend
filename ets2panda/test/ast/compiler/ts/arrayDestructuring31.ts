@@ -15,5 +15,5 @@
 
 
 var a:number;
-[a = "foo"] = [];
-/* @@? 18:2 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+[/* @@ label */a = "foo"] = [];
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

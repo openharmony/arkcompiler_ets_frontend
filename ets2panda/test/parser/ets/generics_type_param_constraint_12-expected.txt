@@ -92,7 +92,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
@@ -1422,7 +1421,7 @@
                 "loc": {
                   "start": {
                     "line": 32,
-                    "column": 25
+                    "column": 10
                   },
                   "end": {
                     "line": 34,
@@ -1433,7 +1432,7 @@
               "loc": {
                 "start": {
                   "line": 32,
-                  "column": 25
+                  "column": 10
                 },
                 "end": {
                   "line": 34,
@@ -1975,7 +1974,7 @@
                 "loc": {
                   "start": {
                     "line": 36,
-                    "column": 27
+                    "column": 10
                   },
                   "end": {
                     "line": 41,
@@ -1986,7 +1985,7 @@
               "loc": {
                 "start": {
                   "line": 36,
-                  "column": 27
+                  "column": 10
                 },
                 "end": {
                   "line": 41,

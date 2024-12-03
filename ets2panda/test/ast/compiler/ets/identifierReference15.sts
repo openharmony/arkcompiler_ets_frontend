@@ -22,7 +22,7 @@ class A {
 
   }
 
-  class B {
+  /* @@ label */class B {
     foo(a: int): void {
 
     }
@@ -33,4 +33,4 @@ class A {
   }
 }
 
-/* @@? 25:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

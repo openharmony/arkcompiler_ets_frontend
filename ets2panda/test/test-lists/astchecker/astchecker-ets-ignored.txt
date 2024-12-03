@@ -1,9 +1,3 @@
-# Skipped until #16329 is done. It is not properly checked and does not cause a CTE when using namespace import with alias.
-ast/parser/ets/re_export/import_5.sts
-
-# Issue: #17983
-ast/parser/ets/TypeInferFunc.sts
-
 # Issue: #19440
 ast/parser/ets/iterator_override_next.sts
 
@@ -11,33 +5,33 @@ ast/parser/ets/iterator_override_next.sts
 ast/parser/ets/switch_readonly_member_different_enum_2.sts
 ast/parser/ets/extension_function_tests/extension_function_not_for_class_type.sts
 
+# Issue: #20326
+ast/compiler/ets/readonlyType_6.sts
+ast/parser/ets/class_interface_enum_only_top_level_5.sts
+ast/parser/ets/generics_1.sts
+ast/parser/ets/global_scope_boolean.sts
+ast/parser/ets/global_scope_string.sts
+ast/parser/ets/lexer001.sts
+ast/parser/ets/lexer002.sts
+ast/parser/ets/method_override_throw_2.sts
+ast/parser/ets/method_override_throw_4.sts
+ast/parser/ets/method_override_throw_6.sts
+ast/parser/ets/TypeInferFunc.sts
 
-# Issue: #19532. About astchecker format
-ast/parser/ets/unexpected_token_1.sts
-ast/parser/ets/unexpected_token_10.sts
-ast/parser/ets/unexpected_token_12.sts
-ast/parser/ets/unexpected_token_13.sts
-ast/parser/ets/unexpected_token_5.sts
+# Issue: #20167
+ast/compiler/ets/union_string_literals_6.sts
 
-# For future multi error logging
-ast/parser/ets/unexpected_token_14.sts
+# Issue: #19700
+ast/compiler/ets/returnStatementClone.sts
 
-# Issue: #19396
-ast/parser/ets/InvalidStatements2.sts
-ast/parser/ets/AllowSequence.sts
-ets/lambda_infer_type/lambda_infer_type_param1.sts
-ast/compiler/ets/annotation_tests/annotion_using_bad01.sts
-ast/compiler/ets/annotation_tests/annotion_using_bad02.sts
-ast/compiler/ets/annotation_tests/annotion_using_bad03.sts
-ast/compiler/ets/annotation_tests/annotion_decalaration_bad01.sts
-ast/compiler/ets/annotation_tests/annotion_decalaration_bad02.sts
-ast/compiler/ets/annotation_tests/annotion_decalaration_bad03.sts
-ast/compiler/ets/annotation_tests/annotion_decalaration_bad04.sts
-ast/parser/ets/unexpected_token_29.sts
-ast/parser/ets/unexpected_token_50.sts
-ast/parser/ets/unexpected_token_30.sts
-ast/parser/ets/unexpected_token_49.sts
-ast/parser/ets/UnexpectedToken.sts
-ast/parser/ets/unexpected_token_54.sts
-ast/parser/ets/arrow_1.sts
-ast/parser/ets/unexpected_token_3.sts
+# Issue: #20639
+ast/parser/ets/extension_function_tests/extension_function_array1.sts
+ast/parser/ets/extension_function_tests/extension_function_array1_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array2.sts
+ast/parser/ets/extension_function_tests/extension_function_array2_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array3.sts
+ast/parser/ets/extension_function_tests/extension_function_array3_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array_primitive.sts
+ast/parser/ets/extension_function_tests/extension_function_array_typealias.sts
+ast/parser/ets/extension_function_tests/extension_function_class.sts
+ast/parser/ets/extension_function_tests/extension_function_class_typealias.sts

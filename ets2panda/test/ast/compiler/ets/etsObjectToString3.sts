@@ -15,9 +15,9 @@
 
 class A<T>{}
 
-let z: A<Int> = (): A<Int> => {
+let z: A<Int> = /* @@ label */(): A<Int> => {
     let b : A<Int> = new A<Int>();
     return b;
 }
 
-/* @@? 18:17 Error TypeError: Type '() => A<Int>' cannot be assigned to type 'A<Int>'  */
+/* @@@ label Error TypeError: Type '() => A<Int>' cannot be assigned to type 'A<Int>'  */

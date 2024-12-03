@@ -15,6 +15,6 @@
 
 
 class Foo {
-    readonly static a = "foo";
+    readonly /* @@ label */static a = "foo";
 }
-/* @@? 18:14 Error SyntaxError: Unexpected modifier  */
+/* @@@ label Error SyntaxError: Unexpected modifier  */

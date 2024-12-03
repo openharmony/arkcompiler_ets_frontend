@@ -14,9 +14,42 @@
  */
 
 class A {
-    namespace ns {
+    /* @@ label */namespace ns {
+        dfdfsfdf
+    /* @@ label1 */}
+    /* @@ label2 */namespace hehe {
 
+    }
+    time: number = foo();
+    private uri: string;
+
+    private routers() {
+        B.getInstance().navigation(this);
+    }
+
+    constructor(uri: string) {
+        this.uri = uri;
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Namespace not enabled in here.  */
+class B {
+    /* @@ label3 */namespace ns {
+
+    }ddddddd
+    /* @@ label4 */time: number = foo();
+    private uri: string;
+
+    private routerssdsds() {
+        B.getInstance().navigation(this);
+    }
+
+    constructor(uri: string) {
+        this.uri = uri;
+    }
+}
+
+/* @@@ label Error SyntaxError: Namespace not enabled in here.  */
+/* @@@ label1 Error SyntaxError: Field type annotation expected  */
+/* @@@ label2 Error SyntaxError: Namespace not enabled in here.  */
+/* @@@ label3 Error SyntaxError: Namespace not enabled in here.  */
+/* @@@ label4 Error SyntaxError: Field type annotation expected  */

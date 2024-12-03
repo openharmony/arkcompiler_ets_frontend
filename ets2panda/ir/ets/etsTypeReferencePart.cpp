@@ -110,6 +110,10 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
         return checker->GlobalETSNullType();
     }
 
+    if (ident->Name() == compiler::Signatures::NEVER_TYPE_NAME) {
+        return checker->GlobalETSNeverType();
+    }
+
     if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
         ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
         return checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
@@ -139,7 +143,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
             SetTsType(HandleInternalTypes(checker, name_->AsIdentifier()));
         }
 
-        if (TsTypeOrError() == nullptr) {
+        if (TsType() == nullptr) {
             checker::Type *baseType = checker->GetReferencedTypeBase(name_);
 
             ASSERT(baseType != nullptr);
@@ -154,7 +158,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
         checker::Type *baseType = prev_->GetType(checker);
         SetTsType(checker->GetReferencedTypeFromBase(baseType, name_));
     }
-    return TsTypeOrError();
+    return TsType();
 }
 
 ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)

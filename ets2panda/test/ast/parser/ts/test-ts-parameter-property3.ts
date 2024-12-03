@@ -18,3 +18,4 @@ class Foo {
     constructor(readonly readonly readonly) { };
 }
 /* @@? 18:26 Error SyntaxError: Unexpected modifier  */
+/* @@? 18:26 Error SyntaxError: Duplicated modifier is not allowed  */

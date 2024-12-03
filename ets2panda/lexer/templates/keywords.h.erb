@@ -63,7 +63,7 @@ public:
         }
         }
 
-        Util().ThrowEscapedKeyword();
+        Util().LogEscapedKeyword();
     }
 
 %   desc['all_words'].select { |kw| kw&.custom_handler&.include? extension_name}.each do |kw|

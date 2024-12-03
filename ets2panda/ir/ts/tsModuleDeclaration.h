@@ -26,7 +26,6 @@ class TSModuleDeclaration : public Statement {
 public:
     // NOLINTBEGIN(cppcoreguidelines-pro-type-member-init)
     struct ConstructorFlags {
-        bool declare;
         bool global;
         bool isExternalAmbient;
     };
@@ -37,7 +36,6 @@ public:
           decorators_(allocator->Adapter()),
           name_(name),
           body_(body),
-          declare_(flags.declare),
           global_(flags.global),
           isExternalAmbient_(flags.isExternalAmbient)
     {
@@ -72,11 +70,6 @@ public:
     const Statement *Body() const
     {
         return body_;
-    }
-
-    bool Declare() const
-    {
-        return declare_;
     }
 
     bool Global() const
@@ -118,7 +111,6 @@ private:
     varbinder::LocalScope *scope_ {nullptr};
     Expression *name_;
     Statement *body_;
-    bool declare_;
     bool global_;
     bool isExternalAmbient_;
 };

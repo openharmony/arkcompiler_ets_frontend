@@ -15,8 +15,8 @@
 
 function main() : void{
     let x : undefined | int = undefined;
-    x ??= 15;
+    x /* @@ label */??= 15;
     console.log(x)
 }
 
-/* @@? 18:7 Error SyntaxError: Unexpected token: '??='.  */
+/* @@@ label Error SyntaxError: Unexpected token: '??='.  */

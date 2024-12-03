@@ -46,7 +46,7 @@ ir::Identifier *Gensym(ArenaAllocator *const allocator)
 
 util::UString GenName(ArenaAllocator *const allocator)
 {
-    static std::string const GENSYM_CORE = "gensym$_";
+    static std::string const GENSYM_CORE = "gensym%%_";
     static std::size_t gensymCounter = 0U;
 
     return util::UString {GENSYM_CORE + std::to_string(++gensymCounter), allocator};
@@ -68,10 +68,7 @@ void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
     };
 
     doNode(node);
-    node->Iterate([doNode](ir::AstNode *child) -> void {
-        doNode(child);
-        ClearTypesVariablesAndScopes(child);
-    });
+    node->IterateRecursively(doNode);
 }
 
 ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept
@@ -107,7 +104,7 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
 // Rerun varbinder and checker on the node.
 void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
-    auto *scope = NearestScope(node);
+    auto *scope = NearestScope(node->Parent());
     auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
 
     ClearTypesVariablesAndScopes(node);
@@ -116,6 +113,22 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
 
     auto *containingClass = ContainingClass(node);
     // NOTE(gogabr: should determine checker status more finely.
+    auto checkerCtx = checker::SavedCheckerContext(
+        checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
+        containingClass);
+    auto scopeCtx = checker::ScopeContext(checker, scope);
+
+    node->Check(checker);
+}
+
+// Note: run varbinder and checker on the new node generated in lowering phases
+void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+{
+    InitScopesPhaseETS::RunExternalNode(node, varBinder);
+    auto *scope = NearestScope(node);
+    varBinder->ResolveReferencesForScopeWithContext(node, scope);
+
+    auto *containingClass = ContainingClass(node);
     auto checkerCtx = checker::SavedCheckerContext(
         checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
         containingClass);

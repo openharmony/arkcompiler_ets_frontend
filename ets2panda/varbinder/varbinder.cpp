@@ -515,7 +515,9 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
         return;
     }
 
-    AddCompilableFunction(func);
+    if (!func->IsDeclare()) {
+        AddCompilableFunction(func);
+    }
 
     auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
 

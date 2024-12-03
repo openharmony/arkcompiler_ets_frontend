@@ -19,6 +19,7 @@
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/ets/stringConstantsLowering.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
@@ -85,6 +86,7 @@ static DefaultParameterLowering g_defaultParameterLowering;
 static TopLevelStatements g_topLevelStatements;
 static LocalClassConstructionPhase g_localClassLowering;
 static StringComparisonLowering g_stringComparisonLowering;
+static StringConstantsLowering g_stringConstantsLowering;
 static PartialExportClassGen g_partialExportClassGen;
 static PackageImplicitImport g_packageImplicitImport;
 static GenericBridgesPhase g_genericBridgesLowering;
@@ -99,16 +101,22 @@ static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
 
-static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
-                                    const std::string &name);
-static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
-                                   const std::string &name);
+enum class ActionAfterCheckPhase {
+    NONE,
+    EXIT,
+};
+
+static ActionAfterCheckPhase CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
+                                                     const std::string &name);
+static ActionAfterCheckPhase CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
+                                                    const std::string &name);
 
 std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off
     return {
         &g_pluginsAfterParse,
+        &g_stringConstantsLowering,
         &g_packageImplicitImport,
         &g_topLevelStatements,
         &g_defaultParameterLowering,
@@ -197,7 +205,9 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return true;
     }
 
-    CheckOptionsBeforePhase(options, program, name);
+    if (CheckOptionsBeforePhase(options, program, name) == ActionAfterCheckPhase::EXIT) {
+        return false;
+    }
 
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
@@ -211,7 +221,9 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return false;
     }
 
-    CheckOptionsAfterPhase(options, program, name);
+    if (CheckOptionsAfterPhase(options, program, name) == ActionAfterCheckPhase::EXIT) {
+        return false;
+    }
 
 #ifndef NDEBUG
     if (!Postcondition(ctx, program)) {
@@ -224,8 +236,8 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     return !ctx->checker->ErrorLogger()->IsAnyError() && !ctx->parser->ErrorLogger()->IsAnyError();
 }
 
-static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
-                                    const std::string &name)
+static ActionAfterCheckPhase CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
+                                                     const std::string &name)
 {
     if (options.dumpBeforePhases.count(name) > 0) {
         std::cout << "Before phase " << name << ":" << std::endl;
@@ -237,10 +249,16 @@ static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }
+
+    if (options.exitBeforePhase == name) {
+        return ActionAfterCheckPhase::EXIT;
+    }
+
+    return ActionAfterCheckPhase::NONE;
 }
 
-static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
-                                   const std::string &name)
+static ActionAfterCheckPhase CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
+                                                    const std::string &name)
 {
     if (options.dumpAfterPhases.count(name) > 0) {
         std::cout << "After phase " << name << ":" << std::endl;
@@ -252,6 +270,12 @@ static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser:
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }
+
+    if (options.exitAfterPhase == name) {
+        return ActionAfterCheckPhase::EXIT;
+    }
+
+    return ActionAfterCheckPhase::NONE;
 }
 
 }  // namespace ark::es2panda::compiler

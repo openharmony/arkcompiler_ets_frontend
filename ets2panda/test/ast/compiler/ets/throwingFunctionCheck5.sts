@@ -19,8 +19,8 @@ function TestFunction(): void throws {
 
 function main(): void {
   try {
-    TestFunction();
+    /* @@ label */TestFunction();
   } catch (e: Exception) {}
 }
 
-/* @@? 22:5 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */
+/* @@@ label Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause  */

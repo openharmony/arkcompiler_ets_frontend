@@ -14,6 +14,6 @@
  */
 
 
-let a = { "foo" }
+let a = { "foo" /* @@ label */}
 
-/* @@? 17:17 Error SyntaxError: ':' expected  */
+/* @@@ label Error SyntaxError: ':' expected  */

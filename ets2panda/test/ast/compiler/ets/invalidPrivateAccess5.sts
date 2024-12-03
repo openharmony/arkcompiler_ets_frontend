@@ -14,11 +14,11 @@
  */
 
 class Outer {
-    class Base {
+    /* @@ label */class Base {
         private a(): void {};
     }
 
-    class Derived extends Base {
+    /* @@ label1 */class Derived extends Base {
         foo(): void {
             let base: Base = new Base();
             base.a();
@@ -27,4 +27,5 @@ class Outer {
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */

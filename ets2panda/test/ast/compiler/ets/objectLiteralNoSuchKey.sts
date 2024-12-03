@@ -17,7 +17,7 @@ class C {
 }
 
 let c: C = {
-    f: 44,
+    /* @@ label */f: 44,
 };
 
-/* @@? 20:5 Error TypeError: type C has no property named f  */
+/* @@@ label Error TypeError: type C has no property named f  */

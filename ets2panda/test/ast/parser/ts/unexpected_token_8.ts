@@ -18,5 +18,4 @@ class B {}
 class A extends B
 
 
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token in class property  */
+/* @@? 22:1 Error SyntaxError: Unexpected token, expected: '{'.  */

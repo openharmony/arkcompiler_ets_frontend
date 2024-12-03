@@ -15,8 +15,10 @@
 
 (...a*b+c)/(d)-e;
 
-/* @@? 16:6 Error SyntaxError: Rest parameter must be the last formal parameter. */
-/* @@? 16:6 Error SyntaxError: Unexpected token, expected: '=>'. */
-/* @@? 16:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 16:10 Error SyntaxError: Unexpected token: ')'. */
-/* @@? 16:18 Error SyntaxError: Unterminated RegExp */
+/* @@? 16:6 Error SyntaxError: Rest parameter must be the last formal parameter.  */
+/* @@? 16:6 Error SyntaxError: Unexpected token, expected: '=>'.  */
+/* @@? 16:10 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 16:10 Error SyntaxError: Unexpected token: ')'.  */
+/* @@? 16:18 Error SyntaxError: Unterminated RegExp  */
+/* @@? 16:18 Error SyntaxError: Expected an identifier  */
+/* @@? 16:18 Error SyntaxError: Unexpected token 'identification literal'.  */

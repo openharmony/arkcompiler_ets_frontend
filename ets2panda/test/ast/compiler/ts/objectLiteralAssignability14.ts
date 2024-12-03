@@ -14,5 +14,5 @@
  */
 
 
-var a: { a: { a: number, b: string[] } } | { a: { a: number[], b: number } } = { a: { a: [1, 2, 3, 4], b: 5, c: "foo" } }
-/* @@? 17:110 Error TypeError: Object literal may only specify known properties, and "c" does not exist in type '{ a: number; b: string[]; } | { a: number[]; b: number; }'.  */
+var a: { a: { a: number, b: string[] } } | { a: { a: number[], b: number } } = { a: { a: [1, 2, 3, 4], b: 5, /* @@ label */c: "foo" } }
+/* @@@ label Error TypeError: Object literal may only specify known properties, and "c" does not exist in type '{ a: number; b: string[]; } | { a: number[]; b: number; }'.  */

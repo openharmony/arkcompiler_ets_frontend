@@ -14,7 +14,7 @@
  */
 
 var a: number;
-({a = "foo"} = {a : 3})
+({/* @@ label */a = "foo"} = {a : 3})
 
 
-/* @@? 17:3 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

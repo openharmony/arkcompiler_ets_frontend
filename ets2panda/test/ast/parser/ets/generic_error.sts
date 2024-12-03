@@ -20,7 +20,7 @@ class OldMap<K extends Comparable<Object>, V> {
 }
 
 function main(): void {
-   let m = new OldMap<C, string>();
+   let m = new OldMap/* @@ label */<C, string>();
 }
 
-/* @@? 23:22 Error TypeError: Type C is not assignable to constraint type Comparable<Object>  */
+/* @@@ label Error TypeError: Type C is not assignable to constraint type Comparable<Object>  */

@@ -78,26 +78,44 @@ interface I1 {
     x: number =
 }
 
-/* @@? 17:12 Error SyntaxError: Duplicated modifier is not allowed */
-/* @@? 18:12 Error SyntaxError: Duplicated modifier is not allowed */
-/* @@? 22:12 Error SyntaxError: Access modifier must precede field and method modifiers. */
-/* @@? 26:18 Error SyntaxError: Native method cannot be async */
-/* @@? 27:20 Error SyntaxError: Abstract method cannot be async */
-/* @@? 35:5 Error SyntaxError: Only one static block is allowed */
-/* @@? 38:10 Error SyntaxError: Duplicated modifier is not allowed */
-/* @@? 41:5 Error SyntaxError: The special predefined method '$_get' cannot be asynchronous. */
-/* @@? 41:5 Error SyntaxError: The special predefined method '$_get' should have exactly one required parameter. */
-/* @@? 45:5 Error SyntaxError: The special predefined method '$_set' cannot be asynchronous. */
-/* @@? 45:5 Error SyntaxError: The special predefined method '$_set' should have exactly two required parameters. */
-/* @@? 47:5 Error SyntaxError: The special predefined method '$_iterator' cannot be asynchronous. */
-/* @@? 47:5 Error SyntaxError: The special predefined method '$_iterator' should not have parameters. */
-/* @@? 54:23 Error SyntaxError: Initializers are not allowed in ambient contexts. */
-/* @@? 58:9 Error SyntaxError: Unexpected token. */
-/* @@? 58:16 Error SyntaxError: 'native' flags must be used for functions only at top-level. */
-/* @@? 62:9 Error SyntaxError: Local class declaration members can not have access modifies */
-/* @@? 66:9 Error SyntaxError: Local interface declaration members can not have access modifiers */
-/* @@? 67:16 Error SyntaxError: Duplicated modifier is not allowed */
-/* @@? 67:24 Error SyntaxError: Private or static interface methods must have body */
-/* @@? 74:14 Error SyntaxError: Getter and setter methods must be abstracts in the interface body */
-/* @@? 78:15 Error SyntaxError: Interface member initialization is prohibited */
-/* @@? 79:1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 17:12 Error SyntaxError: Duplicated modifier is not allowed  */
+/* @@? 18:12 Error SyntaxError: Duplicated modifier is not allowed  */
+/* @@? 22:12 Error SyntaxError: Access modifier must precede field and method modifiers.  */
+/* @@? 26:18 Error SyntaxError: Native method cannot be async  */
+/* @@? 27:20 Error SyntaxError: Abstract method cannot be async  */
+/* @@? 35:5 Error SyntaxError: Only one static block is allowed  */
+/* @@? 38:10 Error SyntaxError: Duplicated modifier is not allowed  */
+/* @@? 41:5 Error SyntaxError: The special predefined method '$_get' cannot be asynchronous.  */
+/* @@? 41:5 Error SyntaxError: The special predefined method '$_get' should have exactly one required parameter.  */
+/* @@? 45:5 Error SyntaxError: The special predefined method '$_set' cannot be asynchronous.  */
+/* @@? 45:5 Error SyntaxError: The special predefined method '$_set' should have exactly two required parameters.  */
+/* @@? 47:5 Error SyntaxError: The special predefined method '$_iterator' cannot be asynchronous.  */
+/* @@? 47:5 Error SyntaxError: The special predefined method '$_iterator' should not have parameters.  */
+/* @@? 54:23 Error SyntaxError: Initializers are not allowed in ambient contexts.  */
+/* @@? 58:9 Error SyntaxError: Unexpected token.  */
+/* @@? 58:16 Error SyntaxError: 'native' flags must be used for functions only at top-level.  */
+/* @@? 58:24 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@? 58:25 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 60:1 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 60:11 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 60:11 Error SyntaxError: Invalid token: ',' or ')' expected.  */
+/* @@? 60:12 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 60:13 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 60:20 Error SyntaxError: Unexpected token '{'.  */
+/* @@? 66:18 Error SyntaxError: Private interface methods must have body  */
+/* @@? 67:9 Error SyntaxError: Unexpected token, expected 'private' or identifier  */
+/* @@? 67:16 Error SyntaxError: Identifier expected  */
+/* @@? 67:16 Error SyntaxError: Unexpected token, expected 'private' or identifier  */
+/* @@? 67:24 Error SyntaxError: Private interface methods must have body  */
+/* @@? 72:5 Error SyntaxError: Unexpected token, expected 'private' or identifier  */
+/* @@? 72:13 Error SyntaxError: Interface fields must have type annotation.  */
+/* @@? 72:14 Error SyntaxError: Invalid Type  */
+/* @@? 72:14 Error SyntaxError: Unexpected token: '}'.  */
+/* @@? 74:9 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 74:16 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 74:16 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 74:25 Error SyntaxError: Unexpected token '{'.  */
+/* @@? 75:9 Error SyntaxError: return keyword should be used in function body  */
+/* @@? 78:8 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 79:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 79:1 Error SyntaxError: Unexpected token '}'.  */

@@ -21,4 +21,4 @@ function foo (tuple: readonly [number, string, boolean], arr: readonly int[]) {
 
 }
 
-/* @@? 20:1 Error TypeError: Function foo is already declared. */
+/* @@? 20:1 Error TypeError: Function foo is already declared.  */

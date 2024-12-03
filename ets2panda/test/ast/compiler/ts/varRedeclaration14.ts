@@ -27,6 +27,6 @@ interface c {
 }
 
 var a: c;
-var a: b;
+var /* @@ label */a: b;
 
-/* @@? 30:5 Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'c', but here has type 'b'.  */
+/* @@@ label Error TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'c', but here has type 'b'.  */

@@ -19,5 +19,5 @@ NOTE: this test is disabled because it is not comaptible with the current implem
 var a: { a: number, b?: string };
 var a: { a: number, b: string };
 */
-a;
-/* @@? 22:1 Error TypeError: Cannot find name a  */
+/* @@ label */a;
+/* @@@ label Error TypeError: Cannot find name a  */

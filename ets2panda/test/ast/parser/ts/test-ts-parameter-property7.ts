@@ -15,6 +15,6 @@
 
 
 class Foo {
-    constructor(private readonly readonly, private readonly readonly) { };
+    constructor(private readonly readonly, /* @@ label */private readonly readonly) { };
 }
-/* @@? 18:44 Error SyntaxError: Variable 'readonly' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'readonly' has already been declared.  */

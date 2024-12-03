@@ -14,7 +14,7 @@
  */
 
 
-@bar
+/* @@ label */@bar
 export function foo() {
 }
-/* @@? 17:1 Error SyntaxError: Decorators are not valid here  */
+/* @@@ label Error SyntaxError: Decorators are not valid here  */

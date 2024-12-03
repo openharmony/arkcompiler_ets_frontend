@@ -21,5 +21,5 @@ function func1(a : number) : void {
 function func2(a : number) : string{
     return "foo";
 }
-func1(func2(5));
-/* @@? 24:7 Error TypeError: Type 'string' is not assignable to type 'number'.  */
+func1(/* @@ label */func2(5));
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'number'.  */

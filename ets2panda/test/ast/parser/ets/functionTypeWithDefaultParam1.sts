@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function foo(a: (b: int = 0) => int): void {
+function foo(a: (b: int = /* @@ label */0) => int): void {
 }
 
-/* @@? 16:27 Error SyntaxError: Default value is allowed only for optional parameters  */
+/* @@@ label Error SyntaxError: Default value is allowed only for optional parameters  */

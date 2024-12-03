@@ -64,7 +64,6 @@ void TSModuleDeclaration::Dump(ir::AstDumper *dumper) const
                  {"decorators", AstDumper::Optional(decorators_)},
                  {"id", name_},
                  {"body", AstDumper::Optional(body_)},
-                 {"declare", declare_},
                  {"global", global_}});
 }
 

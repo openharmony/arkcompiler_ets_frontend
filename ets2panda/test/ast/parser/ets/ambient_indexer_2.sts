@@ -21,6 +21,5 @@ function main() {
     let a : A = new A();
 }
 
-/* @@? 17:6 Error SyntaxError: Identifier expected, got '['. */
-/* @@? 17:12 Error SyntaxError: Identifier expected, got ':'. */
-/* @@? 17:20 Error SyntaxError: Field type annotation expected */
+/* @@? 17:6 Error SyntaxError: Identifier expected, got '['.  */
+/* @@? 17:20 Error SyntaxError: Identifier expected, got ']'.  */

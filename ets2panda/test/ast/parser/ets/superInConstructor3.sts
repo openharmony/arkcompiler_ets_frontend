@@ -26,7 +26,7 @@ class A {
 
 class alma extends A {
     public constructor() {
-        this([(((typeof ((new A(((new A(foo(foo({x: super.x})).x == 5)).x + 5 as int) == 3)) instanceof A ? 1 : 2)) == "number" ? 10 : null)!) ?? 10]);
+        this([(((typeof ((new A(((new A(foo(foo({x: /* @@ label */super.x})).x == 5)).x + 5 as int) == 3)) instanceof A ? 1 : 2)) == "number" ? 10 : null)!) ?? 10]);
     }
     public constructor(arg : A) {
     }
@@ -40,4 +40,4 @@ function foo(arg : A) {
     return arg;
 }
 
-/* @@? 29:53 Error TypeError: Using super is not allowed in constructor  */
+/* @@@ label Error TypeError: Using super is not allowed in constructor  */

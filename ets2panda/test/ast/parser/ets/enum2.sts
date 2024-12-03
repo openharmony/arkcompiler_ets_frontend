@@ -14,23 +14,23 @@
  */
 
 class NestedEnums  {
-    private enum Colors {
+    private /* @@ label */enum Colors {
         RED,
         GREEN,
         BLUE
     }
-    protected enum Size {
+    protected /* @@ label1 */enum Size {
         SMALL,
         MEDIUM,
         LARGE
     }
-    public enum Direction {
+    public /* @@ label2 */enum Direction {
         NORTH,
         EAST,
         SOUTH,
         WEST
     }
-    enum Operator {
+    /* @@ label3 */enum Operator {
         PLUS,
         MINUS,
         MULTIPLY,
@@ -38,4 +38,7 @@ class NestedEnums  {
     }
 }
 
-/* @@? 17:13 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label2 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */

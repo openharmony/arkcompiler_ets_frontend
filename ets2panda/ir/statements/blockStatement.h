@@ -65,6 +65,15 @@ public:
         return statements_;
     }
 
+    void SetStatements(ArenaVector<Statement *> &&statementList)
+    {
+        statements_ = std::move(statementList);
+
+        for (auto *statement : statements_) {
+            statement->SetParent(this);
+        }
+    }
+
     void AddTrailingBlock(AstNode *stmt, BlockStatement *trailingBlock)
     {
         trailingBlocks_.emplace(stmt, trailingBlock);

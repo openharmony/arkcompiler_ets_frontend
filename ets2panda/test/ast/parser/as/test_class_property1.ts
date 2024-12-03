@@ -15,7 +15,7 @@
 
 
 class A {
-    a = 1;
+    a /* @@ label */= 1;
 }
 
-/* @@? 18:7 Error SyntaxError: Type expected  */
+/* @@@ label Error SyntaxError: Type expected  */

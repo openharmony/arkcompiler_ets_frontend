@@ -23,8 +23,8 @@ class C {
   readonly static e = 30;
   static readonly f = 3.0;
   public static readonly g = 30;
-  private static readonly f = 30;
+  private static readonly /* @@ label */f = 30;
   protected static readonly h = 30;
 }
 
-/* @@? 26:27 Error SyntaxError: Variable 'f' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'f' has already been declared.  */

@@ -14,5 +14,5 @@
  */
 
 
-var ctor: abstract new (a: number, b: string);
-/* @@? 17:46 Error SyntaxError: '=>' expected  */
+var ctor: abstract new (a: number, b: string)/* @@ label */;
+/* @@@ label Error SyntaxError: '=>' expected  */

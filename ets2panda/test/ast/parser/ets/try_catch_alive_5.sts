@@ -18,10 +18,10 @@ function foo(): int {
         return 0;
     } catch (e: ArithmeticError) {
         return 1;
-        let a = 2; // unreachable statement
+        /* @@ label */let a = 2; // unreachable statement
     } catch (e: ClassCastError) {
         return 2;
     }
 }
 
-/* @@? 21:9 Error TypeError: Unreachable statement.  */
+/* @@@ label Error TypeError: Unreachable statement.  */

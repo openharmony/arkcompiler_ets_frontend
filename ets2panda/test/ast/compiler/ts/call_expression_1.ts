@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-let a = new 5;
+let a = /* @@ label */new 5;
 
-/* @@? 16:9 Error TypeError: This expression is not callable.  */
+/* @@@ label Error TypeError: This expression is not callable.  */

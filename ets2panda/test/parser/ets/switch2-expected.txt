@@ -588,23 +588,8 @@
                                   }
                                 },
                                 "right": {
-                                  "type": "UnaryExpression",
-                                  "operator": "-",
-                                  "prefix": true,
-                                  "argument": {
-                                    "type": "NumberLiteral",
-                                    "value": 1,
-                                    "loc": {
-                                      "start": {
-                                        "line": 29,
-                                        "column": 14
-                                      },
-                                      "end": {
-                                        "line": 29,
-                                        "column": 15
-                                      }
-                                    }
-                                  },
+                                  "type": "NumberLiteral",
+                                  "value": -1,
                                   "loc": {
                                     "start": {
                                       "line": 29,
@@ -677,7 +662,7 @@
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 31,
@@ -688,7 +673,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 31,

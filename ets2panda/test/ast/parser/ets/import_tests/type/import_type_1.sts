@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import {A} from "./type"
+import {/* @@ label */A} from "./type"
 
 let aa:A;
 
-/* @@? 16:9 Error SyntaxError: Cannot find imported element 'A'  */
+/* @@@ label Error SyntaxError: Cannot find imported element 'A'  */

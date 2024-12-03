@@ -16,6 +16,6 @@
 
 var a: boolean;
 var b: any;
-a in b;
+/* @@ label */a in b;
 
-/* @@? 19:1 Error TypeError: The left-hand side of an 'in' expression must be of type 'any', 'string', 'number', or 'symbol'.  */
+/* @@@ label Error TypeError: The left-hand side of an 'in' expression must be of type 'any', 'string', 'number', or 'symbol'.  */

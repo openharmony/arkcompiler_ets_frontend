@@ -147,6 +147,7 @@
         }
       ],
       "const": false,
+      "declare": false,
       "loc": {
         "start": {
           "line": 20,
@@ -718,7 +719,7 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 34,
@@ -729,7 +730,7 @@
               "loc": {
                 "start": {
                   "line": 24,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 34,

@@ -15,5 +15,5 @@
 
 
 var { a = { a: 5, b: true } } = { a: 3n };
-a = { a: 1, b: false, c: 6 };
-/* @@? 18:23 Error TypeError: Object literal may only specify known properties, and "c" does not exist in type 'bigint | { a: number; b: boolean; }'.  */
+a = { a: 1, b: false, /* @@ label */c: 6 };
+/* @@@ label Error TypeError: Object literal may only specify known properties, and "c" does not exist in type 'bigint | { a: number; b: boolean; }'.  */

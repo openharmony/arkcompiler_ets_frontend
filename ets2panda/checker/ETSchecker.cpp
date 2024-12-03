@@ -55,7 +55,7 @@ static void SetupFunctionalInterface(ETSObjectType *type)
     type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
     auto *invoke = type->GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
     auto *invokeType = invoke->TsType()->AsETSFunctionType();
-    ASSERT(invokeType->CallSignatures().size() == 1);
+    ASSERT(invokeType->IsETSArrowType());
     auto *signature = invokeType->CallSignatures()[0];
     signature->AddSignatureFlag(SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
 }
@@ -385,6 +385,11 @@ Type *ETSChecker::GlobalETSUndefinedType() const
     return GetGlobalTypesHolder()->GlobalETSUndefinedType();
 }
 
+Type *ETSChecker::GlobalETSNeverType() const
+{
+    return GetGlobalTypesHolder()->GlobalETSNeverType();
+}
+
 Type *ETSChecker::GlobalETSStringLiteralType() const
 {
     return GetGlobalTypesHolder()->GlobalETSStringLiteralType();
@@ -508,11 +513,6 @@ ETSObjectType *ETSChecker::GlobalBuiltinBoxType(Type *contents)
     }
 }
 
-const checker::WrapperDesc &ETSChecker::PrimitiveWrapper() const
-{
-    return primitiveWrappers_.Wrappers();
-}
-
 GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes()
 {
     return globalArraySignatures_;
@@ -531,7 +531,7 @@ Type *ETSChecker::GlobalTypeError() const
 Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
 {
     node->SetTsType(GlobalTypeError());
-    return node->TsTypeOrError();
+    return node->TsType();
 }
 
 Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)
@@ -544,7 +544,7 @@ Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, 
 {
     LogTypeError(message, at);
     var->SetTsType(GlobalTypeError());
-    return var->TsTypeOrError();
+    return var->TsType();
 }
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)

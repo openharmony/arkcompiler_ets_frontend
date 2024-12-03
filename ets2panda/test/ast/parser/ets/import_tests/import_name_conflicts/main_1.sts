@@ -14,9 +14,9 @@
  */
 
 import {foo_1 as foo} from "./imported_module_1.sts"
-import {foo_2_1param as foo} from "./imported_module_2.sts"
+import {foo_2_1param as foo} from /* @@ label */"./imported_module_2.sts"
 
 
 function main() : void {}
 
-/* @@? 17:35 Error SyntaxError: Function 'foo' is already defined.  */
+/* @@@ label Error SyntaxError: Function 'foo' is already defined.  */

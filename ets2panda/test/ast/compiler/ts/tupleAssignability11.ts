@@ -16,5 +16,5 @@
 
 var a: [];
 var b: [[]];
-a = b;
-/* @@? 19:1 Error TypeError: Type '[[]]' is not assignable to type '[]'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type '[[]]' is not assignable to type '[]'.  */

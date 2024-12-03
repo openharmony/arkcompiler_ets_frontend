@@ -17,3 +17,5 @@
 
 /* @@? 16:3 Error SyntaxError: Unexpected token, expected: '=>'.  */
 /* @@? 16:11 Error SyntaxError: Unterminated RegExp  */
+/* @@? 16:11 Error SyntaxError: Expected an identifier  */
+/* @@? 16:11 Error SyntaxError: Unexpected token 'identification literal'.  */

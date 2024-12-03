@@ -15,6 +15,6 @@
 
 
 var foo: { new(a: boolean, b: bigint): any ;};
-var a = new foo(false,false);
+var a = new foo(false,/* @@ label */false);
 
-/* @@? 18:23 Error TypeError: Type 'boolean' is not assignable to type 'bigint'.  */
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'bigint'.  */

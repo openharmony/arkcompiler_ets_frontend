@@ -22,7 +22,7 @@ function foo<T>(v:T):void {
 }
 
 function bar(value:A){
-    const x = foo<A>(value)
+    const x = /* @@ label */foo<A>(value)
 }
 
-/* @@? 25:15 Error TypeError: Cannot use type 'void' as value.   */
+/* @@@ label Error TypeError: Cannot use type 'void' as value.   */

@@ -15,6 +15,6 @@
 
 
 var a: {[a:number]:number, readonly [b:string]:number};
-a["foo"] = 5;
+/* @@ label */a["foo"] = 5;
 
-/* @@? 18:1 Error TypeError: Cannot assign to this property because it is readonly.  */
+/* @@@ label Error TypeError: Cannot assign to this property because it is readonly.  */

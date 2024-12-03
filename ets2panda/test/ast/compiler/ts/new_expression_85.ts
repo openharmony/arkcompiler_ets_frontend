@@ -15,6 +15,6 @@
 
 
 var foo: { new(a: boolean, b: bigint): any ;};
-var a = new foo(false);
+var a = /* @@ label */new foo(false);
 
-/* @@? 18:9 Error TypeError: Expected 2 arguments, but got 1.  */
+/* @@@ label Error TypeError: Expected 2 arguments, but got 1.  */

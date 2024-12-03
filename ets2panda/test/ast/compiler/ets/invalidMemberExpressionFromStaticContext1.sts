@@ -18,8 +18,8 @@ class A {
     static static_foo_in_A() : void {}
 
     static bar_in_A(arg: A) : void {
-        this.foo_in_A()
+        /* @@ label */this.foo_in_A()
     }
 }
 
-/* @@? 21:9 Error TypeError: 'this' cannot be referenced from a static context  */
+/* @@@ label Error TypeError: 'this' cannot be referenced from a static context  */

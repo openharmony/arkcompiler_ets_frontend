@@ -38,6 +38,7 @@ import {
   isEnumMember,
   isGetAccessor,
   isIdentifier,
+  isIndexedAccessTypeNode,
   isMetaProperty,
   isMethodDeclaration,
   isMethodSignature,
@@ -50,7 +51,9 @@ import {
   isQualifiedName,
   isSetAccessor,
   isVariableDeclaration,
-  visitEachChild
+  visitEachChild,
+  isLiteralTypeNode,
+  isStringLiteralLike
 } from 'typescript';
 import {
   getViewPUClassProperties,
@@ -145,7 +148,7 @@ export class NodeUtils {
 
     return NodeUtils.isInClassDeclaration(node.parent);
   }
-  
+
   public static isInClassDeclarationForTest(node: Node | undefined): boolean {
     return NodeUtils.isInClassDeclaration(node);
   }
@@ -173,6 +176,19 @@ export class NodeUtils {
     }
 
     return isElementAccessExpression(parent) && parent.argumentExpression === node;
+  }
+
+  public static isIndexedAccessNode(node: Node): boolean {
+    let parent: Node | undefined = node.parent;
+    if (!parent) {
+      return false;
+    }
+
+    return isIndexedAccessTypeNode(parent) && parent.indexType === node;
+  }
+
+  public static isStringLiteralTypeNode(node: Node) {
+    return isLiteralTypeNode(node) && isStringLiteralLike(node.literal);
   }
 
   public static isClassPropertyInConstructorParams(node: Node): boolean {
@@ -212,6 +228,10 @@ export class NodeUtils {
 
   public static isPropertyNode(node: Node): boolean {
     if (this.isPropertyOrElementAccessNode(node)) {
+      return true;
+    }
+
+    if (this.isIndexedAccessNode(node)) {
       return true;
     }
 

@@ -20,6 +20,5 @@ switch (alma) {
     alma +=10;
 }
 
-/* @@? 18:3 Error SyntaxError: Unexpected token 'function', expected 'case' or 'default'. */
-/* @@? 18:3 Error SyntaxError: Unexpected token 'function', expected ':' */
-/* @@? 18:12 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
+/* @@? 18:3 Error SyntaxError: Unexpected token 'identification literal', expected 'case' or 'default'. */
+/* @@? 18:3 Error SyntaxError: Unexpected token 'identification literal', expected ':'. */

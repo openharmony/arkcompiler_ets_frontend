@@ -15,8 +15,8 @@
 
 class A<T>{}
 
-let g:((y:A<int>) => A<int>|null)|null = (y:A<String>): A<String>|null => {
+let g:((y:A<int>) => A<int>|null)|null = /* @@ label */(y:A<String>): A<String>|null => {
     return y;
 }
 
-/* @@? 18:42 Error TypeError: Type '(y: A<String>) => A<String>|null' cannot be assigned to type '(p1: A<Int>) => A<Int>|null|null'  */
+/* @@@ label Error TypeError: Type '(y: A<String>) => A<String>|null' cannot be assigned to type '(p1: A<Int>) => A<Int>|null|null'  */

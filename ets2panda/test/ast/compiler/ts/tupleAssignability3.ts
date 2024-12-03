@@ -14,5 +14,5 @@
  */
 
 
-var a: [number, number, number] = [1, 2];
-/* @@? 17:5 Error TypeError: Type '[1, 2]' is not assignable to type '[number, number, number]'.  */
+var /* @@ label */a: [number, number, number] = [1, 2];
+/* @@@ label Error TypeError: Type '[1, 2]' is not assignable to type '[number, number, number]'.  */

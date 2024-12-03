@@ -14,8 +14,8 @@
  */
 
 
-@bar;
+/* @@ label */@bar;
 class Foo {
 
 }
-/* @@? 17:1 Error SyntaxError: Decorators are not valid here  */
+/* @@@ label Error SyntaxError: Decorators are not valid here  */

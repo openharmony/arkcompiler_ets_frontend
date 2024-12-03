@@ -23,5 +23,4 @@ function test():string {
     return;
 }
 /* @@? 19:12 Error TypeError: Type 'String' is not compatible with the enclosing method's return type 'int'  */
-/* @@? 23:5 Error TypeError: Missing return value. */
-
+/* @@? 23:5 Error TypeError: Missing return value.  */

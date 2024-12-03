@@ -15,8 +15,8 @@
 
 export class Test {
   private static fn(u: double[], i: double): void {
-     u[i] = 0.0
+     u[/* @@ label */i] = 0.0
   }
 }
 
-/* @@? 18:8 Error TypeError: Type 'double' cannot be used as an index type. Only primitive or unboxable integral types can be used as index.  */
+/* @@@ label Error TypeError: Type 'double' cannot be used as an index type. Only primitive or unboxable integral types can be used as index.  */

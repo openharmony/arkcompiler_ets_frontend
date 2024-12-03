@@ -53,6 +53,7 @@
     _(TypeFlag::ETS_VOID, ETSVoidType)                                 \
     _(TypeFlag::ETS_NULL, ETSNullType)                                 \
     _(TypeFlag::ETS_UNDEFINED, ETSUndefinedType)                       \
+    _(TypeFlag::ETS_NEVER, ETSNeverType)                               \
     _(TypeFlag::FUNCTION, ETSFunctionType)                             \
     _(TypeFlag::ETS_OBJECT, ETSObjectType)                             \
     _(TypeFlag::ETS_ARRAY, ETSArrayType)                               \
@@ -64,8 +65,10 @@
     _(TypeFlag::ETS_READONLY, ETSReadonlyType)                         \
     _(TypeFlag::ETS_INT_ENUM, ETSIntEnumType)                          \
     _(TypeFlag::ETS_STRING_ENUM, ETSStringEnumType)                    \
+    _(TypeFlag::ETS_ENUM, ETSEnumType)                                 \
     _(TypeFlag::ETS_EXTENSION_FUNC_HELPER, ETSExtensionFuncHelperType) \
     _(TypeFlag::ETS_TUPLE, ETSTupleType)                               \
+    _(TypeFlag::ETS_PARTIAL_TYPE_PARAMETER, ETSPartialTypeParameter)   \
     _(TypeFlag::TYPE_ERROR, TypeError)                                 \
     _(TypeFlag::ETS_TYPE_ALIAS, ETSTypeAliasType)
 

@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-class C1 <T1, T2 = number, T3> {}
+class C1 <T1, T2 = number, T3/* @@ label */> {}
 
-/* @@? 16:30 Error SyntaxError: Required type parameters may not follow optional type parameters.  */
+/* @@@ label Error SyntaxError: Required type parameters may not follow optional type parameters.  */

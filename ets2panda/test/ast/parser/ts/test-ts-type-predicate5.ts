@@ -14,7 +14,7 @@
  */
 
 
-function function1(is: number | string): asserts (number | string) { return };
+function function1(is: number | string): asserts (number | string) /* @@ label */{ /* @@ label1 */return };
 
-/* @@? 17:68 Error SyntaxError: Unexpected token '{'. */
-/* @@? 17:70 Error SyntaxError: return keyword should be used in function body */
+/* @@@ label Error SyntaxError: Unexpected token '{'. */
+/* @@@ label1 Error SyntaxError: return keyword should be used in function body */

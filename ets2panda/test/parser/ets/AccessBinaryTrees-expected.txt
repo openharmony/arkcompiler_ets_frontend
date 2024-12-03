@@ -1563,23 +1563,8 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "-",
-              "prefix": true,
-              "argument": {
-                "type": "NumberLiteral",
-                "value": 4,
-                "loc": {
-                  "start": {
-                    "line": 38,
-                    "column": 31
-                  },
-                  "end": {
-                    "line": 38,
-                    "column": 32
-                  }
-                }
-              },
+              "type": "NumberLiteral",
+              "value": -4,
               "loc": {
                 "start": {
                   "line": 38,
@@ -5120,7 +5105,7 @@
                 "loc": {
                   "start": {
                     "line": 79,
-                    "column": 14
+                    "column": 10
                   },
                   "end": {
                     "line": 82,
@@ -5131,7 +5116,7 @@
               "loc": {
                 "start": {
                   "line": 79,
-                  "column": 14
+                  "column": 10
                 },
                 "end": {
                   "line": 82,

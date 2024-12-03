@@ -142,6 +142,8 @@ defines:
     ref: REQUIRED_TYPE_NAME
   - name: '<property>'
     ref: PROPERTY
+  - name: 'never'
+    ref: NEVER_TYPE_NAME
 
 packages:
   - name: 'std.core'

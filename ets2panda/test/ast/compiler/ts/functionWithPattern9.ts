@@ -18,6 +18,6 @@ function foo([a = 2, { b: [c = 6, d] = [true, [5n, "foo"]], t = { a: 3, b: { a: 
 
 }
 
-foo([1, { b: [] }, 5n], {});
+foo([1, { /* @@ label */b: [] }, 5n], {});
 
-/* @@? 21:11 Error TypeError: Type '[]' is not assignable to type '[boolean, (bigint | string)[]]'.  */
+/* @@@ label Error TypeError: Type '[]' is not assignable to type '[boolean, (bigint | string)[]]'.  */

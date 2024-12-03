@@ -37,4 +37,4 @@ function labeledTest01(): int {
 }
 
 /* @@? 27:26 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 27:27 Error SyntaxError: Unexpected token  */
+/* @@? 27:27 Error SyntaxError: Unexpected token 'identification literal'.  */

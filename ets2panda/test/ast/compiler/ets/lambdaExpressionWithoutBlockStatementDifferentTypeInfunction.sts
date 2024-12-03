@@ -18,8 +18,8 @@ function test2():string {
 }
 
 function main(): void {
-    let test1: () => int = (): int => test2();
+    let test1: () => int = (): int => /* @@ label */test2();
     test1()
 }
 
-/* @@? 21:39 Error TypeError: Type 'String' is not compatible with the enclosing method's return type 'int'  */
+/* @@@ label Error TypeError: Type 'String' is not compatible with the enclosing method's return type 'int'  */

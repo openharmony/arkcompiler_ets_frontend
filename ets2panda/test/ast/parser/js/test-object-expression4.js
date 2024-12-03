@@ -18,4 +18,4 @@ a = {
   if,
 }
 
-/* @@? 18:3 Error SyntaxError: Expected an identifier  */
+/* @@? 18:3 Error SyntaxError: Unexpected token, expected an identifier.  */

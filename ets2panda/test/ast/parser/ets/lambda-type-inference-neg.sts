@@ -16,14 +16,14 @@
 function foo(callback: (x: boolean) => void): void {
 }
 
-function foo(callback: (x: int) => void): void {
+/* @@ label */function foo(callback: (x: int) => void): void {
 }
 
 function main(): void {
-    foo((x) => {
+    /* @@ label1 */foo((x) => {
     });
 }
 
 
-/* @@? 19:1 Error TypeError: Function foo with this assembly signature already declared.  */
-/* @@? 23:5 Error TypeError: Reference to foo is ambiguous  */
+/* @@@ label Error TypeError: Function foo with this assembly signature already declared.  */
+/* @@@ label1 Error TypeError: Reference to foo is ambiguous  */

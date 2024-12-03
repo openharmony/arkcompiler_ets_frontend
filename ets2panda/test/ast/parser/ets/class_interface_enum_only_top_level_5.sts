@@ -15,7 +15,7 @@
 
 function main() : void
 {
-  enum Color { Red, Green, Blue }
+  /* @@ label */enum Color { Red, Green, Blue }
 }
 
-/* @@? 18:3 Error SyntaxError: Local enum declaration support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local enum declaration support is not yet implemented.  */

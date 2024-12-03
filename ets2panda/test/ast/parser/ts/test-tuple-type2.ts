@@ -14,5 +14,5 @@
  */
 
 
-var a: [number, a: string]
-/* @@? 17:17 Error SyntaxError: Tuple members must all have names or all not have names  */
+var a: [number, /* @@ label */a: string]
+/* @@@ label Error SyntaxError: Tuple members must all have names or all not have names  */

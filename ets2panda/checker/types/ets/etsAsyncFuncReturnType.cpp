@@ -48,7 +48,7 @@ void ETSAsyncFuncReturnType::AssignmentTarget(TypeRelation *relation, Type *sour
 {
     relation->IsAssignableTo(source, promiseType_) || relation->IsAssignableTo(source, GetPromiseTypeArg());
     if (relation->IsTrue() && !source->IsETSObjectType() && relation->ApplyBoxing()) {
-        relation->GetChecker()->AsETSChecker()->AddBoxingFlagToPrimitiveType(relation, source);
+        relation->GetChecker()->AsETSChecker()->MaybeAddBoxingFlagInRelation(relation, source);
     }
 }
 }  // namespace ark::es2panda::checker

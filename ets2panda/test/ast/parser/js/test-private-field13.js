@@ -19,8 +19,8 @@ class A {
 
 class B extends A {
     foo() {
-        return this.#a;
+        return this./* @@ label */#a;
     }
 }
 
-/* @@? 22:21 Error SyntaxError: Private field 'a' must be declared in an enclosing class  */
+/* @@@ label Error SyntaxError: Private field 'a' must be declared in an enclosing class  */

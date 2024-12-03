@@ -56,7 +56,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
     auto addStaticBlock = [this](ir::AstNode *node) {
-        if (node->IsClassDefinition()) {
+        if (node->IsClassDefinition() && !node->AsClassDefinition()->IsDeclare()) {
             auto classDef = node->AsClassDefinition();
             if (auto staticBlock = CreateStaticBlock(classDef); staticBlock != nullptr) {
                 classDef->Body().emplace_back(staticBlock);  // NOTE(vpukhov): inserted to end for some reason
@@ -111,7 +111,7 @@ ir::MethodDefinition *GlobalClassHandler::CreateGlobalMethod(const std::string_v
     auto *func = NodeAllocator::Alloc<ir::ScriptFunction>(
         allocator_, allocator_,
         ir::ScriptFunction::ScriptFunctionData {
-            body, std::move(funcSignature), functionFlags, {}, false, Language(Language::Id::ETS)});
+            body, std::move(funcSignature), functionFlags, {}, Language(Language::Id::ETS)});
 
     func->SetIdent(ident);
     func->AddModifier(functionModifiers);
@@ -272,7 +272,7 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
         allocator_, allocator_,
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
                                                 ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
-                                                ir::ModifierFlags::STATIC, false, Language(Language::Id::ETS)});
+                                                ir::ModifierFlags::STATIC, Language(Language::Id::ETS)});
 
     func->SetIdent(id);
 

@@ -16,7 +16,7 @@
 
 class X <K extends Comparable<T>,T> {}
 function main(){
-    const myCharClass = new X<Char,String>();
+    const myCharClass = new X/* @@ label */<Char,String>();
 }
 
-/* @@? 19:30 Error TypeError: Type Char is not assignable to constraint type Comparable<String>  */
+/* @@@ label Error TypeError: Type Char is not assignable to constraint type Comparable<String>  */

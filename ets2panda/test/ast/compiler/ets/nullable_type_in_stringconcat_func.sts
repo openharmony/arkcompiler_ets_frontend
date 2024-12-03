@@ -14,11 +14,11 @@
  */
  
  function foo(a: String|null, b: Int|null): String {
-    return a + b;
+    return /* @@ label */a + b;
 }
 
 function foo2(a: String|null, b: String|null): String {
-    return a + b;
+    return /* @@ label1 */a + b;
 }
 
 function main() {
@@ -26,5 +26,5 @@ function main() {
     let result2 = foo2(null, null);
 }
 
-/* @@? 17:12 Error TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality.  */
-/* @@? 21:12 Error TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality.  */
+/* @@@ label Error TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality.  */
+/* @@@ label1 Error TypeError: Bad operand type: multiple types left in the normalized union type (String|null). Unions are not allowed in binary expressions except equality.  */

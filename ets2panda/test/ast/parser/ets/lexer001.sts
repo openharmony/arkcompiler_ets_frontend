@@ -13,5 +13,5 @@
  * limitations under the License.
  */
 
-1
-/* @@? 16:1 Error SyntaxError: Unexpected token: 'number literal'.  */
+/* @@ label */1
+/* @@@ label Error SyntaxError: Unexpected token: 'number literal'.  */

@@ -14,13 +14,13 @@
  */
 
 import { ApiExtractor } from '../../../src/common/ApiExtractor';
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
 import { readProjectPropertiesByCollectedPaths } from '../../../src/common/ApiReader';
 import { NameGeneratorType } from '../../../src/generator/NameFactory';
 
-function collectApi(apiPath: string): void {
+function collectApi(apiPath: string, apiType: ApiExtractor.ApiType): void {
   clearAll();
-  ApiExtractor.traverseApiFiles(apiPath, ApiExtractor.ApiType.API);
+  ApiExtractor.traverseApiFiles(apiPath, apiType);
 }
 
 function clearAll(): void {
@@ -32,7 +32,7 @@ describe('test for ApiExtractor', function () {
   describe('test for visitExport', function () {
     it('export {ExportDeclarationClass1, ExportDeclarationClass2}', function () {
       let exportDeclarationAst: string = 'test/ut/utils/apiTest_visitExport/exportDeclarationAst.d.ts';
-      collectApi(exportDeclarationAst);
+      collectApi(exportDeclarationAst, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ExportDeclarationClass1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ExportDeclarationClass2'), true);
       clearAll();
@@ -41,7 +41,7 @@ describe('test for ApiExtractor', function () {
     it('export {ExportDeclarationClass1 as class1, ExportDeclarationClass2} from `./exportDeclarationFrom`',
      function () {
       let exportDeclarationFromAst: string = 'test/ut/utils/apiTest_visitExport/exportDeclarationFrom.d.ts';
-      collectApi(exportDeclarationFromAst);
+      collectApi(exportDeclarationFromAst, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ExportDeclarationClass1'), false);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('class1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ExportDeclarationClass2'), true);
@@ -51,7 +51,7 @@ describe('test for ApiExtractor', function () {
     it('export {default as name1, ExportDeclarationClass2, exportName} from `./exportDefaultDeclarationAst`',
      function () {
       let exportDeclarationDefault: string = 'test/ut/utils/apiTest_visitExport/exportDeclarationDefault.d.ts';
-      collectApi(exportDeclarationDefault);
+      collectApi(exportDeclarationDefault, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('default'), false);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('name1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ExportDeclarationClass2'), true);
@@ -62,7 +62,7 @@ describe('test for ApiExtractor', function () {
     it('export {ExportDeclarationClass1 as exportName, ExportDeclarationClass2, ExportDeclarationClass3 as default}',
      function () {
       let exportDefaultDeclarationAst: string = 'test/ut/utils/apiTest_visitExport/exportDefaultDeclarationAst.d.ts';
-      collectApi(exportDefaultDeclarationAst);
+      collectApi(exportDefaultDeclarationAst, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ExportDeclarationClass1'), false);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('exportName'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ExportDeclarationClass2'), true);
@@ -73,14 +73,14 @@ describe('test for ApiExtractor', function () {
 
     it('export * as name1', function () {
       let exportAllAst: string = 'test/ut/utils/apiTest_visitExport/exportAll.d.ts';
-      collectApi(exportAllAst);
+      collectApi(exportAllAst, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('name1'), true);
       clearAll();
     });
 
     it('export * from `export*.ts`', function () {
       let exportFile: string = 'test/ut/utils/apiTest_visitExport/export.d.ts';
-      collectApi(exportFile);
+      collectApi(exportFile, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.size === 0, true);
       assert.strictEqual(ApiExtractor.mPropertySet.size === 0, true);
       clearAll();
@@ -88,7 +88,7 @@ describe('test for ApiExtractor', function () {
 
     it('doubleUnderscoreTest', function () {
       let doubleUnderscoreTestAst: string = 'test/ut/utils/apiTest_visitExport/doubleUnderscoreTest.d.ts';
-      collectApi(doubleUnderscoreTestAst);
+      collectApi(doubleUnderscoreTestAst, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mPropertySet.has('__Admin'), true);
       assert.strictEqual(ApiExtractor.mPropertySet.has('___Admin'), false);
       assert.strictEqual(ApiExtractor.mPropertySet.has('__Moderator'), true);
@@ -122,7 +122,7 @@ describe('test for ApiExtractor', function () {
   describe('test for visitPropertyAndName', function () {
     it('Class Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/classTest.d.ts';
-      collectApi(filePath);
+      collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestClass2'), false);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('AbstractClass'), false);
@@ -138,7 +138,7 @@ describe('test for ApiExtractor', function () {
 
     it('Interface Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/interfaceTest.d.ts';
-      collectApi(filePath);
+      collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestInterface1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestInterface2'), false);
       assert.strictEqual(ApiExtractor.mPropertySet.has('prop1'), true);
@@ -152,7 +152,7 @@ describe('test for ApiExtractor', function () {
 
     it('TypeLiteral Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/typeLiteralTest.d.ts';
-      collectApi(filePath);
+      collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestType1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestType2'), false);
       assert.strictEqual(ApiExtractor.mPropertySet.has('collectProp1'), true);
@@ -166,7 +166,7 @@ describe('test for ApiExtractor', function () {
 
     it('Enum Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/enumTest.d.ts';
-      collectApi(filePath);
+      collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestEnum1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('TestEnum2'), false);
       assert.strictEqual(ApiExtractor.mPropertySet.has('PARAM1'), true);
@@ -176,7 +176,7 @@ describe('test for ApiExtractor', function () {
 
     it('ObjectLiteral Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/objectLiteral.d.ts';
-      collectApi(filePath);
+      collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('obj1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('obj2'), false);
       assert.strictEqual(ApiExtractor.mPropertySet.has('prop1'), true);
@@ -192,7 +192,7 @@ describe('test for ApiExtractor', function () {
 
     it('Module Test', function () {
       let filePath: string = 'test/ut/utils/apiTest_visitPropertyAndName/moduleTest.d.ts';
-      collectApi(filePath);
+      collectApi(filePath, ApiExtractor.ApiType.API);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ns1'), true);
       assert.strictEqual(ApiExtractor.mSystemExportSet.has('ns2'), false);
       assert.strictEqual(ApiExtractor.mPropertySet.has('TestClass1'), true);
@@ -565,4 +565,41 @@ describe('test for ApiExtractor', function () {
       assert.strictEqual(reservedExportNames.has('ohIndirectProp7'), false);
     });
   });
+
+  describe('test for visitNodeForConstructorProperty', function () {
+    it('should collect constructor properties', function () {
+      ApiExtractor.mConstructorPropertySet = new Set();
+      let constructorPropertyAst: string = 'test/ut/utils/apiTest_visitConstructorProperty/constructorProperty.ts';
+      collectApi(constructorPropertyAst, ApiExtractor.ApiType.CONSTRUCTOR_PROPERTY);
+      expect(ApiExtractor.mConstructorPropertySet.has('para1')).to.be.true;
+      expect(ApiExtractor.mConstructorPropertySet.has('para2')).to.be.true;
+      expect(ApiExtractor.mConstructorPropertySet.has('para3')).to.be.true;
+      expect(ApiExtractor.mConstructorPropertySet.has('para4')).to.be.true;
+      clearAll();
+      ApiExtractor.mConstructorPropertySet.clear();
+    })
+  })
+
+  describe('test for visitEnumMembers', function () {
+    it('should collect enum members', function () {
+      let enumMembersAst: string = 'test/ut/utils/apiTest_visitEnumMembers/enumMembers.ts';
+      collectApi(enumMembersAst, ApiExtractor.ApiType.PROJECT);
+      expect(ApiExtractor.mEnumMemberSet.has('A1')).to.be.false;
+      expect(ApiExtractor.mEnumMemberSet.has('A2')).to.be.false;
+      expect(ApiExtractor.mEnumMemberSet.has('A3')).to.be.false;
+      expect(ApiExtractor.mEnumMemberSet.has('B1')).to.be.true;
+      expect(ApiExtractor.mEnumMemberSet.has('B2')).to.be.true;
+      expect(ApiExtractor.mEnumMemberSet.has('B3')).to.be.true;
+      expect(ApiExtractor.mEnumMemberSet.has('C1')).to.be.true;
+      expect(ApiExtractor.mEnumMemberSet.has('C2')).to.be.true;
+      expect(ApiExtractor.mEnumMemberSet.has('C3')).to.be.true;
+      clearAll();
+      ApiExtractor.mEnumMemberSet.clear();
+    })
+    it('should not collect enum members of js file', function () {
+      let enumMembersAst: string = 'test/ut/utils/apiTest_visitEnumMembers/enumMembers.js';
+      collectApi(enumMembersAst, ApiExtractor.ApiType.PROJECT);
+      expect(ApiExtractor.mEnumMemberSet.size === 0).to.be.true;
+    })
+  })
 });

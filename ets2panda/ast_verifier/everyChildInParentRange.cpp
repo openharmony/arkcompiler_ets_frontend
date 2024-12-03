@@ -17,6 +17,23 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
+static bool IsInParentsRange(const ir::AstNode *ast, ir::AstNode const *node)
+{
+    if (ast != node->Parent()) {
+        return false;
+    }
+    if (ast->Start().line > node->Start().line || ast->End().line < node->End().line) {
+        return false;
+    }
+    if (ast->Start().line == node->Start().line && ast->Start().index > node->Start().index) {
+        return false;
+    }
+    if (ast->End().line == node->End().line && ast->End().index < node->End().index) {
+        return false;
+    }
+    return true;
+}
+
 CheckResult EveryChildInParentRange::operator()(CheckContext &ctx, const ir::AstNode *ast)
 {
     auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
@@ -24,19 +41,10 @@ CheckResult EveryChildInParentRange::operator()(CheckContext &ctx, const ir::Ast
         return result;
     }
     ast->Iterate([&](const ir::AstNode *node) {
-        if (ast != node->Parent()) {
+        if (!IsInParentsRange(ast, node)) {
+            ctx.AddCheckMessage("INCORRECT_CHILD_RANGE", *node, node->Start());
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
-        if (ast->Start().line > node->Start().line || ast->End().line < node->End().line) {
-            result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
-        }
-        if (ast->Start().line == node->Start().line && ast->Start().index > node->Start().index) {
-            result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
-        }
-        if (ast->End().line == node->End().line && ast->End().index < node->End().index) {
-            result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
-        }
-        ctx.AddCheckMessage("INCORRECT_CHILD_RANGE", *node, node->Start());
     });
     return result;
 }

@@ -16,9 +16,9 @@
 @interface MyValue {
     size: int[]
 }
-@MyValue([1,2,3])
+@MyValue([1,2,-3])
 class A{
-    @MyValue([1,2,3])
+    @MyValue([1,-2,3])
     foo(){}
 }
 

@@ -670,11 +670,11 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 20
+                  "column": 17
                 },
                 "end": {
                   "line": 18,
-                  "column": 21
+                  "column": 19
                 }
               }
             },

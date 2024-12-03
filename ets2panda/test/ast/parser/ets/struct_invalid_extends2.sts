@@ -17,8 +17,8 @@ class A {
 
 }
 
-struct B extends A {
+/* @@ label */struct B extends A {
     
 }
 
-/* @@? 20:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@@ label Error SyntaxError: Struct types are not supported yet!  */

@@ -77,10 +77,12 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
         if (t->IsTypeError()) {
             return checker->GlobalTypeError();
         }
+        // NOTE(vpukhov): #19701 void refactoring
         ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
         if (t->IsETSNullType() || lub == t) {
             continue;
         }
+        // NOTE(vpukhov): #19701 void refactoring
         if (t->IsETSUndefinedType() || t->IsETSVoidType()) {
             return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
         }
@@ -126,7 +128,7 @@ template <typename RelFN>
 void ETSUnionType::RelationTarget(TypeRelation *relation, Type *source, RelFN const &relFn)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const refsource = checker->MaybePromotedBuiltinType(source);
+    auto *const refsource = checker->MaybeBoxType(source);
 
     relation->Result(false);
 
@@ -150,7 +152,7 @@ void ETSUnionType::RelationTarget(TypeRelation *relation, Type *source, RelFN co
 
     bool related = false;
     for (auto *ct : ConstituentTypes()) {
-        if (relFn(relation, source, checker->MaybePrimitiveBuiltinType(ct))) {
+        if (relFn(relation, source, checker->MaybeUnboxType(ct))) {
             if (related) {
                 AmbiguousUnionOperation(relation);
             }
@@ -170,7 +172,7 @@ bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
             return relation->Result(false);
         }
         relation->GetNode()->SetBoxingUnboxingFlags(
-            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybePrimitiveBuiltinType(target)));
+            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybeUnboxType(target)));
     }
 
     bool isAssignable = false;
@@ -213,7 +215,7 @@ void ETSUnionType::Cast(TypeRelation *relation, Type *target)
         }
 
         relation->GetNode()->SetBoxingUnboxingFlags(
-            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybePrimitiveBuiltinType(target)));
+            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybeUnboxType(target)));
     }
 
     if (relation->InCastingContext()) {
@@ -254,7 +256,7 @@ static Type *LargestNumeric(Type *t1, Type *t2)
 static std::optional<Type *> TryMergeTypes(TypeRelation *relation, Type *const t1, Type *const t2)
 {
     auto checker = relation->GetChecker()->AsETSChecker();
-    auto never = checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+    auto never = checker->GetGlobalTypesHolder()->GlobalETSNeverType();
     if (relation->IsSupertypeOf(t1, t2) || t2 == never) {
         return t1;
     }
@@ -272,11 +274,7 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
     // Linearize
     size_t const initialSz = types.size();
     for (size_t i = 0; i < initialSz; ++i) {
-        auto *ct = types[i];
-        if (ct->IsETSFunctionType()) {
-            ASSERT(ct->AsETSFunctionType()->CallSignatures().size() == 1);
-            ct = checker->FunctionTypeToFunctionalInterfaceType(ct->AsETSFunctionType()->CallSignatures()[0]);
-        }
+        auto ct = types[i];
         if (ct->IsETSUnionType()) {
             auto const &otherTypes = ct->AsETSUnionType()->ConstituentTypes();
             types.insert(types.end(), otherTypes.begin(), otherTypes.end());
@@ -294,14 +292,9 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
     }
     types.resize(insPos);
 
-    // Promote primitives, enums and literal types
+    // Promote primitives
     for (auto &ct : types) {
-        if (ct->IsETSEnumType()) {
-            ct->AsETSEnumType()->GetDecl()->BoxedClass()->Check(checker);
-            ct = ct->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
-        } else {
-            ct = checker->MaybePromotedBuiltinType(ct);
-        }
+        ct = checker->MaybeBoxType(ct);
     }
     // Reduce subtypes
     for (auto cmpIt = types.begin(); cmpIt != types.end(); ++cmpIt) {
@@ -394,11 +387,6 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
 {
     if (IsAssignableType(sourceType)) {
         return sourceType;
-    }
-
-    if (sourceType->IsETSEnumType()) {
-        sourceType->AsETSEnumType()->GetDecl()->BoxedClass()->Check(checker);
-        return sourceType->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
     }
 
     auto *objectType = sourceType->IsETSObjectType() ? sourceType->AsETSObjectType() : nullptr;
@@ -579,8 +567,9 @@ std::pair<checker::Type *, checker::Type *> ETSUnionType::GetComplimentaryType(E
     } else if (sourceType->IsETSArrayType()) {
         ok = ExtractType(checker, sourceType->AsETSArrayType(), unionTypes);
     } else {
-        if (sourceType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && !sourceType->IsETSVoidType()) {
-            sourceType = checker->PrimitiveTypeAsETSBuiltinType(sourceType);
+        // NOTE(vpukhov): #19701 void refactoring
+        if (sourceType->IsETSPrimitiveType() && !sourceType->IsETSVoidType()) {
+            sourceType = checker->MaybeBoxInRelation(sourceType);
         } else if (sourceType->HasTypeFlag(checker::TypeFlag::GENERIC)) {
             //  Because 'instanceof' expression does not check for type parameters, then for generic types we should
             //  consider that expressions like 'SomeType<U>' and 'SomeType<T>' are identical for smart casting.
@@ -686,7 +675,7 @@ Type *ETSUnionType::FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelat
 Type *ETSUnionType::FindUnboxableType() const
 {
     auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(),
-                           [](Type *t) { return t->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE); });
+                           [](Type *t) { return t->IsETSUnboxableObject(); });
     if (it != constituentTypes_.end()) {
         return *it;
     }
@@ -704,8 +693,8 @@ bool ETSUnionType::HasObjectType(ETSObjectFlags flag) const
 Type *ETSUnionType::FindExactOrBoxedType(ETSChecker *checker, Type *const type) const
 {
     auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [checker, type](Type *ct) {
-        if (ct->IsETSObjectType() && ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
-            auto *const unboxedCt = checker->ETSBuiltinTypeAsPrimitiveType(ct);
+        if (ct->IsETSUnboxableObject()) {
+            auto *const unboxedCt = checker->MaybeUnboxInRelation(ct);
             return unboxedCt == type;
         }
         return ct == type;

@@ -14,7 +14,7 @@
  */
 
 function main() : void {
-    let e: Float = new Float(6,"3");
+    let e: Float = /* @@ label */new Float(6,"3");
 }
 
-/* @@? 17:20 Error TypeError: No matching construct signature for std.core.Float(int, "3")  */
+/* @@@ label Error TypeError: No matching construct signature for std.core.Float(int, "3")  */

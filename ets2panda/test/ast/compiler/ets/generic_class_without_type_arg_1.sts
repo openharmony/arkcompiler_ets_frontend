@@ -16,7 +16,7 @@
 class A<T> {}
 
 function main(): void {
-    let i: A = undefined;
+    let i: /* @@ label */A = undefined;
 }
 
-/* @@? 19:12 Error TypeError: Type 'A<T>' is generic but type argument were not provided.  */
+/* @@@ label Error TypeError: Type 'A<T>' is generic but type argument were not provided.  */

@@ -60,7 +60,7 @@ public:
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TYPE_IS_CHECKS(typeFlag, typeName)                                                  \
-    bool Is##typeName() const                                                               \
+    bool Is##typeName() const noexcept                                                      \
     {                                                                                       \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return HasTypeFlag(typeFlag);                                                       \
@@ -89,6 +89,8 @@ public:
 
     bool IsETSStringType() const;
     bool IsETSBigIntType() const;
+    bool IsETSArrowType() const;
+    bool IsETSPrimitiveType() const;
     bool IsETSReferenceType() const;
     bool IsETSAsyncFuncReturnType() const;
     bool IsETSUnboxableObject() const;
@@ -274,23 +276,6 @@ public:
     [[nodiscard]] virtual Type *Clone(Checker *checker);
     virtual Type *Substitute(TypeRelation *relation, const Substitution *substitution);
 
-    const ETSEnumType *AsETSEnumType() const
-    {
-        ASSERT(IsETSEnumType());
-        return reinterpret_cast<const ETSEnumType *>(this);
-    }
-
-    ETSEnumType *AsETSEnumType()
-    {
-        ASSERT(IsETSEnumType());
-        return reinterpret_cast<ETSEnumType *>(this);
-    }
-
-    bool IsETSEnumType() const
-    {
-        return IsETSIntEnumType() || IsETSStringEnumType();
-    }
-
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     TypeFlag typeFlags_;
@@ -302,8 +287,6 @@ protected:
 // NOLINTBEGIN(readability-redundant-declaration)
 // To avoid including type.h from variable.h, astNode.h
 bool IsTypeError(Type const *tp);
-// Use this in order to avoid crashes where TypeError is not expected
-[[noreturn]] void ThrowEmptyError();
 // NOLINTEND(readability-redundant-declaration)
 
 }  // namespace ark::es2panda::checker

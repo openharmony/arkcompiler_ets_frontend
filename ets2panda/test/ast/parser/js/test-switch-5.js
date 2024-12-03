@@ -16,7 +16,7 @@
 
 switch (alma) {
   default:
-  default:
+  /* @@ label */default:
 }
 
-/* @@? 19:3 Error SyntaxError: Multiple default clauses.  */
+/* @@@ label Error SyntaxError: Multiple default clauses.  */

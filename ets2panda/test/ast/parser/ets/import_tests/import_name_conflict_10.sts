@@ -13,11 +13,11 @@
  * limitations under the License.
  */
  
-import {foo} from "import_tests/packages/subpackage-1";
+import {foo} from /* @@ label */"import_tests/packages/subpackage-1";
 
 function foo(): int {
     return 42;
 }
 
 //Throw error: Variable 'foo' is already defined.
-/* @@? 16:19 Error SyntaxError: Variable 'foo' is already defined with different type.  */
+/* @@@ label Error SyntaxError: Variable 'foo' is already defined with different type.  */

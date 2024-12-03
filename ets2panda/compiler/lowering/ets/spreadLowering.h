@@ -29,11 +29,6 @@ public:
 
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
-
-protected:
-    std::string CreateETSCode(ir::ArrayExpression *array, std::vector<ir::AstNode *> &node, public_lib::Context *ctx);
-    std::string CreateLengthString(ir::ArrayExpression *array, const std::string_view spreadArrayName,
-                                   const std::string_view lengthOfNewArray);
 };
 
 }  // namespace ark::es2panda::compiler

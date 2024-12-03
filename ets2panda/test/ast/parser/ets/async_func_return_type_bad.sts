@@ -14,7 +14,7 @@
  */
 
 async function foo(): Promise<int> {
-    return "abc";
+    return /* @@ label */"abc";
 }
 
-/* @@? 17:12 Error TypeError: Type '"abc"' is not compatible with the enclosing method's return type 'Promise<Int> | Int'  */
+/* @@@ label Error TypeError: Type '"abc"' is not compatible with the enclosing method's return type 'Promise<Int> | Int'  */

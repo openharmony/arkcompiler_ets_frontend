@@ -16,9 +16,9 @@
 class SomeType {}
 class OtherType {}
 
-function foo<T, T>() {}
+function foo<T, /* @@ label */T>() {}
 
 function main(): int {
     return 0
 }
-/* @@? 19:17 Error TypeError: Duplicate type parameter 'T'.  */
+/* @@@ label Error TypeError: Duplicate type parameter 'T'.  */

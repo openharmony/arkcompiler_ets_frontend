@@ -162,7 +162,6 @@
                     }
                   }
                 },
-                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
@@ -799,23 +798,8 @@
                             }
                           },
                           "alternate": {
-                            "type": "UnaryExpression",
-                            "operator": "-",
-                            "prefix": true,
-                            "argument": {
-                              "type": "NumberLiteral",
-                              "value": 1,
-                              "loc": {
-                                "start": {
-                                  "line": 21,
-                                  "column": 42
-                                },
-                                "end": {
-                                  "line": 21,
-                                  "column": 43
-                                }
-                              }
-                            },
+                            "type": "NumberLiteral",
+                            "value": -1,
                             "loc": {
                               "start": {
                                 "line": 21,
@@ -1049,7 +1033,7 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 17
+                    "column": 10
                   },
                   "end": {
                     "line": 24,
@@ -1060,7 +1044,7 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 17
+                  "column": 10
                 },
                 "end": {
                   "line": 24,

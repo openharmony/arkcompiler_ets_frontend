@@ -16,5 +16,5 @@
 
 var a: { a: number, b: string };
 var b: { a: typeof a, b: string };
-a = b;
-/* @@? 19:1 Error TypeError: Type '{ a: { a: number; b: string; }; b: string; }' is not assignable to type '{ a: number; b: string; }'.  */
+/* @@ label */a = b;
+/* @@@ label Error TypeError: Type '{ a: { a: number; b: string; }; b: string; }' is not assignable to type '{ a: number; b: string; }'.  */

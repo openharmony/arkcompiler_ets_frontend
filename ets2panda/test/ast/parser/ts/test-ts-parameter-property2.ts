@@ -16,6 +16,6 @@
 
 class Foo {
     constructor() { };
-    a(public a) { };
+    a(/* @@ label */public a) { };
 }
-/* @@? 19:7 Error SyntaxError: A parameter property is only allowed in a constructor implementation.  */
+/* @@@ label Error SyntaxError: A parameter property is only allowed in a constructor implementation.  */

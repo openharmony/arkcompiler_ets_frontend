@@ -19,5 +19,5 @@ interface A {
     b: (boolean | string)[];
 }
 
-var a: A = { a: 1, b: [true, "foo", 2] };
-/* @@? 22:37 Error TypeError: Type 'number' is not assignable to type 'boolean | string'.  */
+var a: A = { a: 1, b: [true, "foo", /* @@ label */2] };
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'boolean | string'.  */

@@ -333,6 +333,7 @@
         }
       ],
       "const": false,
+      "declare": false,
       "loc": {
         "start": {
           "line": 17,

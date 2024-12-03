@@ -14,6 +14,6 @@
  */
 
 const n = null;
-let o : Object = n;
+let o : Object = /* @@ label */n;
 
-/* @@? 17:18 Error TypeError: Type 'null' cannot be assigned to type 'Object'  */
+/* @@@ label Error TypeError: Type 'null' cannot be assigned to type 'Object'  */

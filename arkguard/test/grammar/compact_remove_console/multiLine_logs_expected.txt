@@ -1,0 +1,5 @@
+const str1 = `这是第一行
+这是第二行
+这是第三行`;class ClassTest {prop1: string = '1'; prop2: number = 2; myprop: number = 3; aaaaaaaa: number = 4; h: number = 5;functionkeep() {return `function name should be kept.`;}}const str2 = `这是第四行
+ 这是第五行
+ 这是第六行`;function foo() {let a = 1;let b = 2;}

@@ -16,7 +16,7 @@
 
 
 from typing import Tuple, List
-from log_tools import warning_log
+from log_tools import debug_log
 from text_tools import find_first_of_characters, find_scope_borders
 
 
@@ -32,7 +32,7 @@ def remove_comments(data: str) -> str:
 
         if end_of_line == -1:
             end_of_line = len(data)
-            warning_log(f"Removing single-line comment at end of file:\n'{data[double_slash_pos:end_of_line]}'")
+            debug_log(f"Removing single-line comment at end of file:\n'{data[double_slash_pos:end_of_line]}'")
 
         data = data[:double_slash_pos] + data[end_of_line:]
         double_slash_pos = data.find("//")

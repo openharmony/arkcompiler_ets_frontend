@@ -26,7 +26,7 @@ static void GeneratePartialDeclForExported(const public_lib::Context *const ctx,
     // NOTE (mmartin): handle interfaces
 
     if (node->IsClassDeclaration()) {
-        ctx->checker->AsETSChecker()->HandlePartialType(node->AsClassDeclaration()->Definition()->TsType());
+        ctx->checker->AsETSChecker()->CreatePartialType(node->AsClassDeclaration()->Definition()->TsType());
     }
 }
 

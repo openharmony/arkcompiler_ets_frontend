@@ -32,7 +32,7 @@ static bool CheckSourceConsistency(util::StringView name, ArenaVector<parser::Pr
     std::for_each(programs.begin(), programs.end(), [&ss](parser::Program *p) {
         ss << std::endl << "  at " << p->SourceFilePath().Mutf8();
     });
-    std::cerr << ss.str() << std::endl;
+    // NOTE(vpukhov): silent compilation failure
     return false;
 }
 

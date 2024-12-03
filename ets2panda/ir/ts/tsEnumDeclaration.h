@@ -43,8 +43,7 @@ public:
           decorators_(allocator->Adapter()),
           key_(key),
           members_(std::move(members)),
-          isConst_(flags.isConst),
-          isDeclare_(flags.isDeclare)
+          isConst_(flags.isConst)
     {
         if (flags.isStatic) {
             AddModifier(ModifierFlags::STATIC);
@@ -115,11 +114,6 @@ public:
         return isConst_;
     }
 
-    bool IsDeclare() const
-    {
-        return isDeclare_;
-    }
-
     const ArenaVector<Decorator *> &Decorators() const
     {
         return decorators_;
@@ -164,7 +158,6 @@ private:
     util::StringView internalName_;
     ir::ClassDefinition *boxedClass_ {nullptr};
     bool isConst_;
-    bool isDeclare_;
 };
 }  // namespace ark::es2panda::ir
 

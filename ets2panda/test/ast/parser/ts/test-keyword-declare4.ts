@@ -14,5 +14,5 @@
  */
 
 
-declare function a() { };
-/* @@? 17:22 Error SyntaxError: An implementation cannot be declared in ambient contexts.  */
+declare function a() /* @@ label */{ };
+/* @@@ label Error SyntaxError: An implementation cannot be declared in ambient contexts.  */

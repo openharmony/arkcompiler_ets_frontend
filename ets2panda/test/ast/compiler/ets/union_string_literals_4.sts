@@ -18,4 +18,4 @@ let map: Record<"aa" | "bb" | int, number> = {
     42 : 33,
 }
 
-/* @@? 16:46 Error TypeError: All variants of literals listed in the union type must be listed in the object literal */
+/* @@? 16:46 Error TypeError: All variants of literals listed in the union type must be listed in the object literal  */

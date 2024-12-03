@@ -14,7 +14,7 @@
  */
 
 
-function foo(a, b?, c) {
+function foo(a, b?, c/* @@ label */) {
 
 }
-/* @@? 17:22 Error SyntaxError: A required parameter cannot follow an optional parameter  */
+/* @@@ label Error SyntaxError: A required parameter cannot follow an optional parameter  */

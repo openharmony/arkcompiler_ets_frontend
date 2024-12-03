@@ -18,9 +18,9 @@ function main() {
     switch (a) {
         case c'a':
             break;
-        case 97:
+        /* @@ label */case 97:
             break;
     }
 }
 
-/* @@? 21:9 Error TypeError: Case duplicate  */
+/* @@@ label Error TypeError: Case duplicate  */

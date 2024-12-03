@@ -20,4 +20,4 @@ function main() {
 }
 
 /* @@? 19:9 Error TypeError: Type '(a: int, b: String, c: String) => String' is not compatible with type '(p1: Int, p2: String, p3: Int) => String' at index 1  */
-/* @@? 19:9 Error TypeError: Type '(a: int, b: String, c: String) => String' is not compatible with type '(p1: Int, p2: String, p3: Int) => String' at index 1  */
+/* @@? 19:5 Error TypeError: No matching call signature  */

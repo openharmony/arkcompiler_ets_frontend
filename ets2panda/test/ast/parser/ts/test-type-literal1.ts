@@ -14,5 +14,5 @@
  */
 
 
-var a: { [a }
-/* @@? 17:13 Error SyntaxError: Unexpected token, expected ']'  */
+var a: { [a /* @@ label */}
+/* @@@ label Error SyntaxError: Unexpected token, expected ']'  */

@@ -16,6 +16,6 @@
 
 var a: null;
 var b: any;
-a in b;
+/* @@ label */a in b;
 
-/* @@? 19:1 Error TypeError: Object is possibly 'null'.  */
+/* @@@ label Error TypeError: Object is possibly 'null'.  */

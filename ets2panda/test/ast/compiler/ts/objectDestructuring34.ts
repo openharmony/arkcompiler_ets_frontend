@@ -15,7 +15,7 @@
 
 var a: number;
 var b: string;
-({a} = b)
+(/* @@ label */{a} = b)
 
 
-/* @@? 18:2 Error TypeError: Property a does not exist on type string.  */
+/* @@@ label Error TypeError: Property a does not exist on type string.  */

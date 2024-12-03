@@ -19,9 +19,9 @@ function id<T>(v: Object): T {
 
 function main() {
     let s = id<"a"|"b"|"c">("d")
-    if (s == "d") {
+    if (/* @@ label */s == "d") {
         console.log(s)
     }
 }
 
-/* @@? 22:9 Error TypeError: Operator '==' cannot be applied to types '"a"|"b"|"c"' and '"d"'. */
+/* @@@ label Error TypeError: Operator '==' cannot be applied to types '"a"|"b"|"c"' and '"d"'. */

@@ -18,4 +18,3 @@ function main(): void {
 }
 
 /* @@? 17:12 Error TypeError: Unresolved reference foo  */
-/* @@? 0:0 Error TypeError:   */

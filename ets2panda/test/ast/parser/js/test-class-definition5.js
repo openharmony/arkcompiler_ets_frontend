@@ -15,7 +15,7 @@
 
 
 class A {
-  get constructor() {
+  get /* @@ label */constructor() {
   }
 }
-/* @@? 18:7 Error SyntaxError: Constructor can not be special method  */
+/* @@@ label Error SyntaxError: Constructor can not be special method  */

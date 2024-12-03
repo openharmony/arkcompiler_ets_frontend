@@ -31,5 +31,5 @@ function foa(b: B): void {
 	foo(b);
 }
 
-/* @@? 31:6 Error TypeError: Type 'B' is not compatible with type 'inter$partial' at index 1 */
+/* @@? 31:6 Error TypeError: Type 'B' is not compatible with type 'Partial<inter>' at index 1 */
 /* @@? 31:2 Error TypeError: No matching call signature for foo(B) */

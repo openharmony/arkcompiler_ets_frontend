@@ -14,7 +14,12 @@
 * @gavin1012_hw @zhuoli72
 /arkguard/ @zhangchen168
 /es2panda/ @gavin1012_hw
-/ets2panda/ @igelhaus @semenovaleksandr
+/ets2panda/ @igelhaus @Prof1983
+/ets2panda/ast_verifier @mbolshov @igelhaus @Prof1983
+/ets2panda/lexer @chernykhsergey @isharonov @igelhaus @zelentsovdmitry @Prof1983
+/ets2panda/parser @chernykhsergey @isharonov @igelhaus @Prof1983
+/ets2panda/public @mbolshov @igelhaus @Prof1983
+/ets2panda/test @isharonov @igelhaus @Prof1983
 /legacy_bin/ @ctw-ian
 /merge_abc/ @gavin1012_hw
 /test/ @gavin1012_hw
@@ -23,5 +28,35 @@
 /test262/*.py			@shirunova_viktoria @gavin1012_hw @zhuheng27
 /test262/ignored*.txt		@shirunova_viktoria @gavin1012_hw @kuchkovairina @zhuheng27
 /test_ecma_bcopt/ @gavin1012_hw
+/ets2panda/checker/ETS*.* @zelentsovdmitry
+/ets2panda/checker/ETSAnalyzer.cpp @akmaevaleksey @vpukhov @igelhaus @Prof1983
 /ets2panda/linter/              @ragnvald
+/ets2panda/parser/ETSparser*.* @zelentsovdmitry
+/ets2panda/parser/expressionParser.cpp @zelentsovdmitry
+/ets2panda/parser/parser*.* @zelentsovdmitry
+/ets2panda/parser/statementParser.cpp @zelentsovdmitry
 /test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27
+/ets2panda/checker/ets/dynamic.cpp @vpukhov @igelhaus @Prof1983
+/ets2panda/checker/ets/function.cpp @vpukhov @gogabr @igelhaus @Prof1983
+/ets2panda/checker/ets/helpers.cpp @zelentsovdmitry @igelhaus @Prof1983
+/ets2panda/checker/ets/object.cpp @zelentsovdmitry @vpukhov @igelhaus @Prof1983
+/ets2panda/checker/types/ets @gogabr @igelhaus @Prof1983 @zelentsovdmitry
+/ets2panda/checker/types/signature.* @vpukhov @trubachevilya @igelhaus @Prof1983 @zelentsovdmitry
+/ets2panda/checker/types/typeFlag.h @vpukhov @trubachevilya @igelhaus @Prof1983  @zelentsovdmitry
+/ets2panda/checker/types/typeRelation.* @vpukhov @trubachevilya @igelhaus @Prof1983  @zelentsovdmitry
+/ets2panda/compiler/core/ETSCompiler.cpp @vpukhov @isharonov @igelhaus @Prof1983 @zelentsovdmitry
+/ets2panda/compiler/core/ETSGen.* @zelentsovdmitry @igelhaus @Prof1983 @zelentsovdmitry
+/ets2panda/test/test-lists/astchecker @chernykhsergey @isharonov @igelhaus @Prof1983
+/ets2panda/test/test-lists/parser @chernykhsergey @isharonov @igelhaus @Prof1983
+/ets2panda/checker/types/ets/Nullish.* @vpukhov @gogabr @igelhaus @Prof1983
+/ets2panda/checker/types/ets/etsDynamicType.* @vpukhov @gogabr @igelhaus @Prof1983
+/ets2panda/checker/types/ets/etsFunctionType.* @vpukhov @gogabr @igelhaus @Prof1983
+/ets2panda/checker/types/ets/etsTypeParameter.* @vpukhov @gogabr @igelhaus @Prof1983
+/ets2panda/checker/types/ets/etsUnionType.* @akmaevaleksey @vpukhov @gogabr @igelhaus @Prof1983
+/ets2panda/checker/types/ets/wildcardType.* @vpukhov @gogabr @igelhaus @Prof1983
+/ets2panda/compiler/lowering/ets/ @akmaevaleksey @igelhaus @Prof1983 @zelentsovdmitry
+/ets2panda/compiler/lowering/ets/lambdaLowering.cpp @vpukhov @akmaevaleksey @gogabr @igelhaus @Prof1983
+/ets2panda/compiler/lowering/ets/localClassLowering.cpp  @gogabr @isharonov @igelhaus @Prof1983
+/ets2panda/compiler/lowering/ets/optionalLowering.cpp @vpukhov @akmaevaleksey @igelhaus @Prof1983
+/ets2panda/compiler/lowering/ets/unionLowering.cpp @vpukhov @akmaevaleksey @igelhaus @Prof1983
+/ets2panda/compiler/lowering/ets/topLevelStmts/.* @vpukhov @akmaevaleksey @igelhaus @Prof1983

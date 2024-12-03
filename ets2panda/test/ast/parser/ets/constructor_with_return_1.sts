@@ -18,8 +18,8 @@ class A {
 
   public constructor() {
     this.x = 15;
-    return this;
+    /* @@ label */return this;
   }
 }
 
-/* @@? 21:5 Error TypeError: Return statement with expression isn't allowed in constructor.  */
+/* @@@ label Error TypeError: Return statement with expression isn't allowed in constructor.  */

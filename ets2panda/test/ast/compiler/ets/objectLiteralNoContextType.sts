@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-let x = {};
+let /* @@ label */x = /* @@ label1 */{};
 
-/* @@? 16:5 Error TypeError: Cannot infer type for x because class composite needs an explicit target type  */
-/* @@? 16:9 Error TypeError: Target type for class composite needs to be an object type, found '*TYPE_ERROR*'  */
+/* @@@ label Error TypeError: Cannot infer type for x because class composite needs an explicit target type  */
+/* @@@ label1 Error TypeError: Target type for class composite needs to be an object type, found '*TYPE_ERROR*'  */

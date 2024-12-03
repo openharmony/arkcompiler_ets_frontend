@@ -19,8 +19,8 @@ function f(c: ()=>void) {
 
 function main() {
     f() {
-        return 1
+        return /* @@ label */1
     }
 }
 
-/* @@? 22:16 Error TypeError: Unexpected return value, enclosing method return type is void.  */
+/* @@@ label Error TypeError: Unexpected return value, enclosing method return type is void.  */

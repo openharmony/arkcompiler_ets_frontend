@@ -20,13 +20,12 @@ Description: Parse c++ headers to yaml files.
 """
 
 import os.path
-import sys
 import traceback
-from typing import List
+from arg_parser import parse_arguments, check_arguments
 
 # pylint: disable=W0401,W0614
 from cpp_parser import CppParser
-from log_tools import init_log, error_log, info_log, parsing_failed_msg
+from log_tools import init_log, error_log, parsing_failed_msg, warning_log
 from prepare_header import remove_comments, extract_and_remove_includes
 from file_tools import print_to_yaml
 from runtime_collections import (
@@ -38,9 +37,9 @@ from runtime_collections import (
 )
 
 
-def parse_file(src_path: str, dest_path: str) -> None:
+def parse_header(src_path: str, dest_path: str) -> None:
     """
-    Parse one file.
+    Parse one .h file to .yaml.
     """
     with open(src_path, "r", encoding="utf-8") as file:
         data = file.read()
@@ -66,44 +65,23 @@ def parse_file(src_path: str, dest_path: str) -> None:
         except Exception:  # pylint: disable=W0718
             os.fdopen(os.open(dest_path, os.O_CREAT, mode=511), "w", encoding="utf-8").close()
 
+            warning_log(f"Can't parse '{src_path}'")
             error_log(f"Error! Can't parse '{src_path}'\n{traceback.format_exc()}\n")
             parsing_failed_msg(src_path)
 
 
-def parse_files_in_list(paths_list: List[str], result_folder: str) -> None:
-    """
-    Parse all headers from paths_list. Elements of list can be file's or dir's paths.
-    """
-    os.makedirs(result_folder, exist_ok=True)
-
-    for path in paths_list:
-        if os.path.isdir(path):
-
-            if path.rstrip("/") == result_folder.rstrip("/"):
-                continue
-
-            nested_paths = [os.path.join(path, dir_file) for dir_file in os.listdir(path)]
-            parse_files_in_list(nested_paths, result_folder)
-
-        elif os.path.isfile(path) and os.path.splitext(path)[1] == ".h":
-            dst = os.path.join(result_folder, f"{os.path.splitext(os.path.relpath(path, sys.argv[1]))[0]}.yaml")
-            parse_file(path, dst)
-
-        else:
-            info_log(f"File does not fit for parsing or does not exist: '{path}'")
-
-
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        raise RuntimeError("Wrong arguments!")
+    args = check_arguments(parse_arguments())
 
-    lib_gen_dir = sys.argv[2]
-    if not os.path.exists(lib_gen_dir) or not os.path.isdir(lib_gen_dir):
-        raise RuntimeError(f"Please change lib_gen_dir to correct path.\n'{lib_gen_dir}'")
-    init_collections(lib_gen_dir)
-    init_log(lib_gen_dir)
+    init_collections(args.lib_gen_dir)
+    init_log(args.lib_gen_dir)
 
-    files_list = list(sys.argv[3:])
-    parse_files_in_list(files_list, os.path.join(lib_gen_dir, "gen/headers"))
+    result_dir = os.path.join(args.lib_gen_dir, "gen/headers")
+    os.makedirs(result_dir, exist_ok=True)
+
+    for header in args.headers:
+        dst = os.path.join(result_dir, f"{os.path.splitext(os.path.relpath(header, args.es2panda_root))[0]}.yaml")
+        parse_header(header, dst)
+
     save_custom_yamls()
     save_statistics()

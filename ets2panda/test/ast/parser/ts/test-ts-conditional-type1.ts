@@ -14,5 +14,5 @@
  */
 
 
-type Foo = string extends number extends string ?number: string;
-/* @@? 17:34 Error SyntaxError: '?' expected.  */
+type Foo = string extends number /* @@ label */extends string ?number: string;
+/* @@@ label Error SyntaxError: '?' expected.  */

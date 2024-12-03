@@ -15,6 +15,6 @@
 
 
 var func: { (a?: number, ...c): boolean, (a: any, b: string[], ...c: number[]): string, (a: number, b: boolean): number };
-var a: string = func(1);
+var /* @@ label */a: string = func(1);
 
-/* @@? 18:5 Error TypeError: Type 'boolean' is not assignable to type 'string'.  */
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'string'.  */

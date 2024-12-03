@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function main(): int {
+function /* @@ label */main(): int {
 	let a: int = 2;
 	switch (a) {
 		case 1:
@@ -24,4 +24,4 @@ function main(): int {
 	}
 }
 
-/* @@? 16:10 Error TypeError: Not all code paths return a value.  */
+/* @@@ label Error TypeError: Not all code paths return a value.  */

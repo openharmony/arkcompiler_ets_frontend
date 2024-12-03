@@ -19,6 +19,6 @@ interface foo {
 }
 
 var a: {readonly b: foo};
-a.b.c = 5;
+/* @@ label */a.b.c = 5;
 
-/* @@? 22:1 Error TypeError: Cannot assign to this property because it is readonly.  */
+/* @@@ label Error TypeError: Cannot assign to this property because it is readonly.  */

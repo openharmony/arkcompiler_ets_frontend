@@ -15,6 +15,6 @@
 
 
 class Foo {
-    @dec constructor() { };
+    /* @@ label */@dec constructor() { };
 }
-/* @@? 18:5 Error SyntaxError: Decorators are not valid here.  */
+/* @@@ label Error SyntaxError: Decorators are not valid here.  */

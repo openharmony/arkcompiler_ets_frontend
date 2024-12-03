@@ -15,6 +15,6 @@
 
 
 var foo: new (a: number, b: boolean) => any;
-var a = new foo(5,"foo");
+var a = new foo(5,/* @@ label */"foo");
 
-/* @@? 18:19 Error TypeError: Type 'string' is not assignable to type 'boolean'.  */
+/* @@@ label Error TypeError: Type 'string' is not assignable to type 'boolean'.  */

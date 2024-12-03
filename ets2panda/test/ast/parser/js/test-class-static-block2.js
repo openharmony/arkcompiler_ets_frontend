@@ -15,8 +15,8 @@
 
 class A {
     static {
-        return;
+        /* @@ label */return;
     }
 }
 
-/* @@? 18:9 Error SyntaxError: return keyword should be used in function body  */
+/* @@@ label Error SyntaxError: return keyword should be used in function body  */

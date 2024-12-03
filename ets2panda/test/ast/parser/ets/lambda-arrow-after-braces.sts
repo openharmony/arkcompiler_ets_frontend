@@ -19,3 +19,5 @@ function main() : void{
 }
 
 /* @@? 18:8 Error SyntaxError: Unexpected token: '=>'.  */
+/* @@? 19:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 24:1 Error SyntaxError: Expected a '}' got 'eos'.  */

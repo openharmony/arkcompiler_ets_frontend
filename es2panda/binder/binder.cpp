@@ -575,6 +575,19 @@ void Binder::BuildVarDeclarator(ir::VariableDeclarator *varDecl)
     BuildVarDeclaratorId(varDecl, varDecl->Id());
 }
 
+void Binder::ProcessNodeInStaticInitializer(ir::ClassDefinition *classDef)
+{
+    if (classDef->NeedStaticInitializer()) {
+        ResolveReference(classDef, classDef->StaticInitializer());
+    }
+
+    for (auto *stmt : classDef->Body()) {
+        if (stmt->IsClassStaticBlock() || (stmt->IsClassProperty() && stmt->AsClassProperty()->IsStatic())) {
+            ResolveReference(classDef, stmt);
+        }
+    }
+}
+
 void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 {
     if (classDef->Parent()->IsClassDeclaration()) {
@@ -619,14 +632,15 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 
         classDef->Ident()->SetParent(classDef);
     }
-    bool previousInSendableClass = inSendableClass_;
+    util::SaveValue<bool> saveInSendableClass {inSendableClass_};
+    
+    // Static initializer in sendable class should not be marked as sendable.
+    // By processing static initializer before constructor, in which class is marked sendable,
+    // the static initializer and functions inside it will not be marked as sendable.
+    ProcessNodeInStaticInitializer(classDef);
 
     if (!(classDef->Parent()->IsClassDeclaration() && classDef->Parent()->AsClassDeclaration()->IsAnnotationDecl())) {
         ResolveReference(classDef, classDef->Ctor());
-    }
-
-    if (classDef->NeedStaticInitializer()) {
-        ResolveReference(classDef, classDef->StaticInitializer());
     }
 
     if (classDef->NeedInstanceInitializer()) {
@@ -634,13 +648,14 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
     }
 
     for (auto *stmt : classDef->Body()) {
-        ResolveReference(classDef, stmt);
+        if (!stmt->IsClassStaticBlock() && !(stmt->IsClassProperty() && stmt->AsClassProperty()->IsStatic())) {
+            ResolveReference(classDef, stmt);
+        }
     }
 
     for (auto *iter : classDef->IndexSignatures()) {
         ResolveReference(classDef, iter);
     }
-    inSendableClass_ = previousInSendableClass;
 }
 
 void Binder::BuildForUpdateLoop(ir::ForUpdateStatement *forUpdateStmt)
@@ -758,10 +773,9 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::SCRIPT_FUNCTION: {
-            bool previousInSendableFunction = inSendableFunction_;
+            util::SaveValue<bool> saveInSendableFunction {inSendableFunction_};
             auto *scriptFunc = childNode->AsScriptFunction();
-            // Static initializer only be executed once. Treat it as unshared method.
-            if ((inSendableClass_ && !scriptFunc->IsStaticInitializer()) || inSendableFunction_) {
+            if (inSendableClass_ || inSendableFunction_) {
                 scriptFunc->SetInSendable();
             }
             bool enableSendableClass = program_->TargetApiVersion() >=
@@ -818,7 +832,6 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             BuildScriptFunction(outerScope, scriptFunc);
 
             ResolveReference(scriptFunc, scriptFunc->Body());
-            inSendableFunction_ = previousInSendableFunction;
             break;
         }
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
@@ -846,6 +859,9 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             }
 
             ResolveReference(prop, prop->Key());
+            if (prop->TypeAnnotation() != nullptr) {
+                ResolveReference(prop, prop->TypeAnnotation());
+            }
             if (prop->Value() != nullptr) {
                 ASSERT(parent->IsClassDefinition());
                 const auto *classDef = parent->AsClassDefinition();

@@ -18,6 +18,6 @@ function foo([a = 2, { b: [c = 6, d] = [true, [5n, "foo"]], t = { a: 3, b: { a: 
 
 }
 
-foo + 5;
+/* @@ label */foo + 5;
 
-/* @@? 21:1 Error TypeError: operator + cannot be applied to types ([a, { b: [c, d], t }]: [number, { b?: [boolean, (bigint | string)[]]; t?: { a: number; b: { a: number; b: bigint; }; }; }], { r: [[r, z]] }: { r?: [[number, string]]; }) => void and number  */
+/* @@@ label Error TypeError: operator + cannot be applied to types ([a, { b: [c, d], t }]: [number, { b?: [boolean, (bigint | string)[]]; t?: { a: number; b: { a: number; b: bigint; }; }; }], { r: [[r, z]] }: { r?: [[number, string]]; }) => void and number  */

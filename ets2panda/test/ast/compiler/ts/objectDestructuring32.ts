@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-({a} = {a : 3})
+({/* @@ label */a} = {a : 3})
 
 
-/* @@? 16:3 Error TypeError: Cannot find name 'a'.  */
+/* @@@ label Error TypeError: Cannot find name 'a'.  */

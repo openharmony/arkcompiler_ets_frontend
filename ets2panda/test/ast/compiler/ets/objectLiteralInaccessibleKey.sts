@@ -18,7 +18,7 @@ class C {
 }
 
 let c: C = {
-    f: 44,
+    /* @@ label */f: 44,
 };
 
-/* @@? 21:5 Error TypeError: Property f is not visible here.  */
+/* @@@ label Error TypeError: Property f is not visible here.  */

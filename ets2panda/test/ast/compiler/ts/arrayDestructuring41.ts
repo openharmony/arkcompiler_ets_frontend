@@ -16,5 +16,5 @@
 
 var a: number;
 var b = 5;
-[[a]] = [b];
-/* @@? 19:2 Error TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator.  */
+[/* @@ label */[a]] = [b];
+/* @@@ label Error TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator.  */

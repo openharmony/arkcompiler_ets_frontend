@@ -15,8 +15,8 @@
 
 function foo(): void {
     let a = 1;
-    let lambda: (b: String) => void = (b: int): void => {
+    let lambda: (b: String) => void = /* @@ label */(b: int): void => {
     }
 }
 
-/* @@? 18:39 Error TypeError: Type '(b: int) => void' cannot be assigned to type '(p1: String) => void'  */
+/* @@@ label Error TypeError: Type '(b: int) => void' cannot be assigned to type '(p1: String) => void'  */

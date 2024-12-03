@@ -15,6 +15,6 @@
 
 
 class A {
-    static a: number | this;
+    static a: number | /* @@ label */this;
 }
-/* @@? 18:24 Error SyntaxError: A 'this' type is available only in a non-static member of a class or interface.  */
+/* @@@ label Error SyntaxError: A 'this' type is available only in a non-static member of a class or interface.  */

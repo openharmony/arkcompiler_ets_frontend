@@ -22,6 +22,15 @@ set(ES2PANDA_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(ES2PANDA_BINARY_ROOT ${CMAKE_CURRENT_BINARY_DIR})
 
 set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+if(PANDA_TARGET_WINDOWS)
+    set(DELIM "\\\\")
+    string(REPLACE "/" "\\\\" STATIC_CORE ${PANDA_ROOT})
+else()
+    set(STATIC_CORE ${PANDA_ROOT})
+    set(DELIM "/")
+endif()
+
 set(GENERATED_DIR ${OUTPUT_DIR}/generated)
 set(GENERATED_STAMP ${OUTPUT_DIR}/gen_dir.stamp)
 if(CMAKE_CROSSCOMPILING)
@@ -37,8 +46,8 @@ if(PANDA_WITH_ETS)
       "  \"compilerOptions\": {\n"
       "    \"baseUrl\": \"${PANDA_ROOT}\",\n"
       "    \"paths\": {\n"
-      "      \"std\": [\"${PANDA_ROOT}/plugins/ets/stdlib/std\"],\n"
-      "      \"escompat\": [\"${PANDA_ROOT}/plugins/ets/stdlib/escompat\"],\n"
+      "      \"std\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}stdlib${DELIM}std\"],\n"
+      "      \"escompat\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}stdlib${DELIM}escompat\"],\n"
       "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"],\n"
       "      \"dynamic_import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\"]\n"
       "    },\n"
@@ -54,24 +63,22 @@ if(PANDA_WITH_ETS)
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin")
 endif()
 
-if(NOT PANDA_PRODUCT_BUILD)
-  execute_process(
-    COMMAND date "+%Y-%m-%d_%H:%M:%S"
-    OUTPUT_VARIABLE CURRENT_DATE
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-  execute_process(
-    COMMAND git rev-parse HEAD
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    OUTPUT_VARIABLE LAST_COMMIT_HASH
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
+# add check for PANDA_PRODUCT_BUILD after normal version tracking will be implemented
+execute_process(
+  COMMAND date "+%Y-%m-%d_%H:%M:%S"
+  OUTPUT_VARIABLE CURRENT_DATE
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(
+  COMMAND git rev-parse HEAD
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  OUTPUT_VARIABLE LAST_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
-  set_source_files_properties(
-    util/options.cpp
-    PROPERTIES COMPILE_DEFINITIONS "ES2PANDA_DATE=\"${CURRENT_DATE}\";ES2PANDA_HASH=\"${LAST_COMMIT_HASH}\""
-  )
-endif()
+add_definitions(-DES2PANDA_DATE="${CURRENT_DATE}")
+add_definitions(-DES2PANDA_HASH="${LAST_COMMIT_HASH}")
+
 
 add_custom_command(
   OUTPUT ${GENERATED_STAMP}
@@ -225,6 +232,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/objectLiteralLowering.cpp
   compiler/lowering/ets/interfaceObjectLiteralLowering.cpp
   compiler/lowering/ets/stringComparison.cpp
+  compiler/lowering/ets/stringConstantsLowering.cpp
   compiler/lowering/ets/stringConstructorLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   compiler/lowering/ets/enumPostCheckLowering.cpp
@@ -340,6 +348,7 @@ set(ES2PANDA_LIB_SRC
   ir/ets/etsParameterExpression.cpp
   ir/ets/etsPrimitiveType.cpp
   ir/ets/etsNullishTypes.cpp
+  ir/ets/etsNeverType.cpp
   ir/ets/etsScript.cpp
   ir/ets/etsStringLiteralType.cpp
   ir/ets/etsTuple.cpp
@@ -492,6 +501,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsExtensionFuncHelperType.cpp
   checker/types/ets/etsFunctionType.cpp
   checker/types/ets/etsNonNullishType.cpp
+  checker/types/ets/etsNeverType.cpp
   checker/types/ets/etsReadonlyType.cpp
   checker/types/ets/etsNullishTypes.cpp
   checker/types/ets/etsObjectType.cpp
@@ -500,6 +510,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsTupleType.cpp
   checker/types/ets/etsTypeAliasType.cpp
   checker/types/ets/etsTypeParameter.cpp
+  checker/types/ets/etsPartialTypeParameter.cpp
   checker/types/ets/etsUnionType.cpp
   checker/types/ets/etsVoidType.cpp
   checker/types/ets/wildcardType.cpp

@@ -18,7 +18,7 @@ class C {
 }
 
 let c: C = {
-    f: "ouch"
+    f: /* @@ label */"ouch"
 };
 
-/* @@? 21:8 Error TypeError: Type '"ouch"' is not compatible with type 'int' at property 'f'  */
+/* @@@ label Error TypeError: Type '"ouch"' is not compatible with type 'int' at property 'f'  */

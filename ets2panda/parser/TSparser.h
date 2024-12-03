@@ -119,7 +119,7 @@ private:
                              ir::Expression *propName, ir::ScriptFunction *func) override;
     bool IsModifierKind(const lexer::Token &token) override;
     void CheckIfTypeParameterNameIsReserved() override;
-    void ThrowErrorIfStaticConstructor(ir::ModifierFlags flags) override;
+    void CheckIfStaticConstructor(ir::ModifierFlags flags) override;
     std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **propName) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
@@ -135,12 +135,12 @@ private:
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
     void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
-    void ThrowPossibleOutOfBoundaryJumpError(bool allowBreak) override;
-    void ThrowIllegalBreakError() override;
-    void ThrowIllegalContinueError() override;
-    void ThrowIfBodyEmptyError(ir::Statement *consequent) override;
-    void ThrowMultipleDefaultError() override;
-    void LogIllegalNewLineErrorAfterThrow() override;
+    void ReportPossibleOutOfBoundaryJumpError(bool allowBreak) override;
+    void ReportIllegalBreakError(const lexer::SourcePosition &pos) override;
+    void ReportIllegalContinueError() override;
+    void ReportIfBodyEmptyError(ir::Statement *consequent) override;
+    void ReportMultipleDefaultError() override;
+    void ReportIllegalNewLineErrorAfterThrow() override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                 bool isExportEquals = false) override;

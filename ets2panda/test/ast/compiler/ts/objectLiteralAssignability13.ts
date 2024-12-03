@@ -14,5 +14,5 @@
  */
 
 
-var a: { a: { a: number, b: string[] } } | { a: { a: number[], b: number } } = { a: { a: [1, 2, 3, 4], b: true } }
-/* @@? 17:104 Error TypeError: Type 'boolean' is not assignable to type 'number'.  */
+var a: { a: { a: number, b: string[] } } | { a: { a: number[], b: number } } = { a: { a: [1, 2, 3, 4], /* @@ label */b: true } }
+/* @@@ label Error TypeError: Type 'boolean' is not assignable to type 'number'.  */

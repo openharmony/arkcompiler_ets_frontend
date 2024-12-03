@@ -115,6 +115,8 @@ public:
         if (!relation->IsTrue()) {
             if ((initialFlags & TypeRelationFlag::NO_THROW) == 0) {
                 relation->RaiseError(list, pos);
+                relation->Result(RelationResult::ERROR);
+                invocable_ = false;
             }
             return;
         }

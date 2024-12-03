@@ -28,7 +28,6 @@ ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&d
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),
-      declare_(data.declare),
       lang_(data.lang),
       returnStatements_(allocator->Adapter()),
       annotations_(allocator->Adapter())
@@ -87,7 +86,7 @@ ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent
                 std::move(params),
                 ReturnTypeAnnotation() != nullptr ? ReturnTypeAnnotation()->Clone(allocator, nullptr)->AsTypeNode()
                                                   : nullptr},
-            funcFlags_, flags_, declare_, lang_});
+            funcFlags_, flags_, lang_});
     res->SetParent(parent);
     res->SetAnnotations(std::move(annotationUsages));
     return res;
@@ -157,7 +156,7 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"params", irSignature_.Params()},
                  {"returnType", AstDumper::Optional(irSignature_.ReturnType())},
                  {"typeParameters", AstDumper::Optional(irSignature_.TypeParams())},
-                 {"declare", AstDumper::Optional(declare_)},
+                 {"declare", AstDumper::Optional(IsDeclare())},
                  {"body", AstDumper::Optional(body_)},
                  {"annotations", AstDumper::Optional(annotations_)},
                  {"throwMarker", AstDumper::Optional(throwMarker)}});
@@ -189,6 +188,8 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
 
     if (IsThrowing()) {
         dumper->Add(" throws");
+    } else if (IsRethrowing()) {
+        dumper->Add(" rethrows");
     }
 
     if (HasBody()) {

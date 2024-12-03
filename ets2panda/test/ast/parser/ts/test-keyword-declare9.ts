@@ -15,6 +15,6 @@
 
 
 declare class Foo {
-    public async g()
+    public async g/* @@ label */()
 }
-/* @@? 18:19 Error SyntaxError: 'async' modifier cannot be used in an ambient context.  */
+/* @@@ label Error SyntaxError: 'async' modifier cannot be used in an ambient context.  */

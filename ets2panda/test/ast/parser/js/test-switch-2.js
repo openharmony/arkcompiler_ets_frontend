@@ -18,6 +18,6 @@ switch {
 
 }
 
-/* @@? 17:8 Error SyntaxError: Unexpected token '{', expected '(' */
-/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected ')' */
-/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected '{' */
+/* @@? 17:8 Error SyntaxError: Unexpected token '{', expected '('. */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected ')'. */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected '{'. */

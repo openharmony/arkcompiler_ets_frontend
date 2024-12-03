@@ -14,7 +14,7 @@
  */
 
 function main(): char {
-    return c'a';
+    /* @@ label */return c'a';
 }
 
-/* @@? 17:5 Error TypeError: Bad return type, main enable only void or int type.  */
+/* @@@ label Error TypeError: Bad return type, main enable only void or int type.  */

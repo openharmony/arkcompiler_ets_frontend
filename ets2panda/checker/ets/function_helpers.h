@@ -57,13 +57,13 @@ namespace ark::es2panda::checker {
 
 static Type *MaybeBoxedType(ETSChecker *checker, Type *type, ir::Expression *expr)
 {
-    if (!type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!type->IsETSPrimitiveType()) {
         return type;
     }
     auto *relation = checker->Relation();
     auto *oldNode = relation->GetNode();
     relation->SetNode(expr);
-    auto *res = checker->PrimitiveTypeAsETSBuiltinType(type);
+    auto *res = checker->MaybeBoxInRelation(type);
     relation->SetNode(oldNode);
     return res;
 }
@@ -227,6 +227,9 @@ static varbinder::Scope *NodeScope(ir::AstNode *ast)
 {
     if (ast->IsBlockStatement()) {
         return ast->AsBlockStatement()->Scope();
+    }
+    if (ast->IsBlockExpression()) {
+        return ast->AsBlockExpression()->Scope();
     }
     if (ast->IsDoWhileStatement()) {
         return ast->AsDoWhileStatement()->Scope();

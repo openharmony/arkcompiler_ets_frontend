@@ -20,5 +20,5 @@ function b(c: typeof a) {
 
 }
 
-b([1, 2, 3]);
-/* @@? 23:10 Error TypeError: Type 'number' is not assignable to type 'string'.  */
+b([1, 2, /* @@ label */3]);
+/* @@@ label Error TypeError: Type 'number' is not assignable to type 'string'.  */

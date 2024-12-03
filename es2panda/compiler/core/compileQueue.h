@@ -114,9 +114,9 @@ public:
           allocator_(allocator), abcPkgName_(abcPkgName),
           pkgVersionUpdateRequiredInAbc_(pkgVersionUpdateRequiredInAbc) {};
 
-    void SetHasUpdatedVersion(bool hasUpdatedVersion)
+    void SetOhmurlBeenChanged(bool hasOhmurlBeenChanged)
     {
-        hasUpdatedVersion_ = hasUpdatedVersion;
+        hasOhmurlBeenChanged_ = hasOhmurlBeenChanged;
     }
 
     NO_COPY_SEMANTIC(CompileAbcClassJob);
@@ -126,11 +126,12 @@ public:
     void Run() override;
 
 private:
-    void UpdatePackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
-    void UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
+    void UpdateImportOhmurl(panda::pandasm::Program *prog, const CompilerOptions &options);
+    void UpdateDynamicImport(panda::pandasm::Program *prog,
         const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
-    void UpdateStaticImportPackageVersion(panda::pandasm::Program *prog,
+    void UpdateStaticImport(panda::pandasm::Program *prog,
         const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
+    void UpdateBundleNameOfOhmurl(std::string &ohmurl);
 
     const uint32_t classId_;
     const es2panda::CompilerOptions &options_;
@@ -139,7 +140,7 @@ private:
     panda::ArenaAllocator *allocator_;
     std::string abcPkgName_;
     bool pkgVersionUpdateRequiredInAbc_;
-    bool hasUpdatedVersion_ {false};
+    bool hasOhmurlBeenChanged_ {false};
 };
 
 class PostAnalysisOptimizeFileJob : public util::WorkerJob {

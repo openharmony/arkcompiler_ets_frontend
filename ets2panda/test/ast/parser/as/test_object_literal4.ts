@@ -14,6 +14,6 @@
  */
 
 
-let a = { ...k }
+let a = { /* @@ label */...k }
 
-/* @@? 17:11 Error SyntaxError: Identifier expected  */
+/* @@@ label Error SyntaxError: Identifier expected  */

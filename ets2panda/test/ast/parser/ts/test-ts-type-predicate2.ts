@@ -14,5 +14,5 @@
  */
 
 
-var var1: (is: number | string) => asserts is;
-/* @@? 17:46 Error SyntaxError: Type expected  */
+var var1: (is: number | string) => asserts is/* @@ label */;
+/* @@@ label Error SyntaxError: Type expected  */

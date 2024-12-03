@@ -98,7 +98,7 @@ protected:
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
     static ExpressionParseFlags CarryPatternFlags(ExpressionParseFlags flags);
 
-    void ThrowIfPrivateIdent(ClassElementDescriptor *desc, const char *msg);
+    void LogIfPrivateIdent(ClassElementDescriptor *desc, const char *msg);
     void ValidateClassKey(ClassElementDescriptor *desc);
     bool ValidatePrivateIdentifier();
 
@@ -272,6 +272,7 @@ protected:
     virtual ir::ETSStructDeclaration *ParseStructStatement(StatementParsingFlags flags,
                                                            ir::ClassDefinitionModifiers modifiers,
                                                            ir::ModifierFlags modFlags = ir::ModifierFlags::NONE);
+    ir::Statement *ParseStatementBasedOnTokenType(StatementParsingFlags flags);
     ir::Statement *ParseVarStatement();
     ir::Statement *ParseLetStatement(StatementParsingFlags flags);
     ir::BreakStatement *ParseBreakStatement();
@@ -291,7 +292,7 @@ protected:
                                                    const lexer::SourcePosition &startLoc);
 
     virtual void CreateImplicitConstructor(ir::MethodDefinition *&ctor, ArenaVector<ir::AstNode *> &properties,
-                                           ir::ClassDefinitionModifiers modifiers,
+                                           ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
                                            const lexer::SourcePosition &startLoc);
     void CheckClassGeneratorMethod(ClassElementDescriptor *desc, char32_t *nextCp);
     void ParseClassAccessor(ClassElementDescriptor *desc, char32_t *nextCp);
@@ -309,8 +310,8 @@ protected:
     ir::ExportNamedDeclaration *ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc);
     ir::Statement *ParseVariableDeclaration(VariableParsingFlags flags = VariableParsingFlags::NO_OPTS);
     void ValidateDeclaratorId();
-    void CheckRestrictedBinding() const;
-    void CheckRestrictedBinding(lexer::TokenType keywordType) const;
+    void CheckRestrictedBinding();
+    void CheckRestrictedBinding(lexer::TokenType keywordType);
     void CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos);
 
     ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags);
@@ -320,7 +321,7 @@ protected:
                                                      ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     ir::ClassDeclaration *ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers,
                                                 ir::ModifierFlags flags = ir::ModifierFlags::NONE);
-    FunctionSignature ParseFunctionSignature(ParserStatus status, ir::Identifier *className = nullptr);
+    FunctionSignature ParseFunctionSignature(ParserStatus status, ir::TypeNode *typeAnnotation = nullptr);
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile);
     // NOLINTNEXTLINE(google-default-arguments)
@@ -363,7 +364,7 @@ protected:
     virtual bool ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement);
     virtual ir::Statement *ParsePotentialExpressionStatement(StatementParsingFlags flags);
     virtual ArenaVector<ir::Expression *> ParseFunctionParams();
-    virtual ir::Expression *CreateParameterThis(util::StringView className);
+    virtual ir::Expression *CreateParameterThis(ir::TypeNode *typeAnnotation);
     virtual ir::Expression *ParseFunctionParameter();
     virtual void ConvertThisKeywordToIdentIfNecessary() {}
     virtual void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param);
@@ -380,7 +381,7 @@ protected:
     virtual ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc,
                                                    const ArenaVector<ir::AstNode *> &properties,
                                                    ir::Expression *propName, lexer::SourcePosition *propEnd);
-    void ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number) const;
+    void ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition, size_t number);
     virtual void ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                      ir::Expression *propName, ir::ScriptFunction *func);
     virtual void ValidateClassGetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
@@ -395,18 +396,18 @@ protected:
                                                                        const lexer::SourcePosition &startLoc);
     virtual bool IsModifierKind(const lexer::Token &token);
     virtual void ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *nextCp);
-    virtual void ThrowPossibleOutOfBoundaryJumpError(bool allowBreak);
-    virtual void ThrowIllegalBreakError();
-    virtual void ThrowIllegalContinueError();
-    virtual void ThrowIfBodyEmptyError(ir::Statement *consequent);
-    virtual void ThrowMultipleDefaultError();
-    virtual void LogIllegalNewLineErrorAfterThrow();
-    virtual void ThrowIfVarDeclaration(VariableParsingFlags flags);
+    virtual void ReportPossibleOutOfBoundaryJumpError(bool allowBreak);
+    virtual void ReportIllegalBreakError(const lexer::SourcePosition &startLoc);
+    virtual void ReportIllegalContinueError();
+    virtual void ReportIfBodyEmptyError(ir::Statement *consequent);
+    virtual void ReportMultipleDefaultError();
+    virtual void ReportIllegalNewLineErrorAfterThrow();
+    virtual void ReportIfVarDeclaration(VariableParsingFlags flags);
     virtual ir::Expression *ParsePrefixAssertionExpression();
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
-    virtual void ThrowErrorIfStaticConstructor(ir::ModifierFlags flags);
+    virtual void CheckIfStaticConstructor(ir::ModifierFlags flags);
     virtual std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **propName);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Expression *ParseUnaryOrPrefixUpdateExpression(

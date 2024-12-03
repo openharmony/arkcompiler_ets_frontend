@@ -24,3 +24,9 @@ class LabeledTest  {
 }
 
 /* @@? 19:13 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 20:13 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 20:17 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 21:13 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 21:17 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 21:21 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 22:13 Error SyntaxError: Label must be followed by a loop statement  */

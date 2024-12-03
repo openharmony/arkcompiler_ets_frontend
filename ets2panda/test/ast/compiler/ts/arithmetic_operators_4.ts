@@ -16,6 +16,6 @@
 
 var a: string;
 a = "foo";
-a * "foo";
+/* @@ label */a * "foo";
 
-/* @@? 19:1 Error TypeError: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.  */
+/* @@@ label Error TypeError: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.  */

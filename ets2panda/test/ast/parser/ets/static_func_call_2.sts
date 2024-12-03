@@ -15,7 +15,7 @@
 
 class A {
     static bar() {}
-    foo() { this.bar(); }
+    foo() { this./* @@ label */bar(); }
 }
 
-/* @@? 18:18 Error TypeError: 'bar' is a static property of 'A'  */
+/* @@@ label Error TypeError: 'bar' is a static property of 'A'  */

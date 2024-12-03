@@ -18,5 +18,5 @@ function foo({ a, b: { t = "foo" } = { t: 3 }, d: [e = {}, f = 6] = [3, ["foo", 
 
 }
 
-foo({ a: false, b: { r: "foo " } });
-/* @@? 21:22 Error TypeError: Object literal may only specify known properties, and "r" does not exist in type '{ t: number; }'.  */
+foo({ a: false, b: { /* @@ label */r: "foo " } });
+/* @@@ label Error TypeError: Object literal may only specify known properties, and "r" does not exist in type '{ t: number; }'.  */

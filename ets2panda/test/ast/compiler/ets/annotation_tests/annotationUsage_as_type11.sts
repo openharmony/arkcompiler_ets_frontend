@@ -19,8 +19,6 @@
 let a = MyAnno.a
 
 /* @@? 19:9 Error TypeError: Annotation missing '@' symbol before annotation name.  */
-/* @@? 19:9 Error TypeError: Unresolved reference MyAnno  */
 /* @@? 19:9 Error TypeError: Property 'a' does not exist on type '*TYPE_ERROR*'  */
 /* @@? 19:9 Error TypeError: Annotation missing '@' symbol before annotation name.  */
-/* @@? 19:9 Error TypeError: Unresolved reference MyAnno  */
 /* @@? 19:9 Error TypeError: Property 'a' does not exist on type '*TYPE_ERROR*'  */

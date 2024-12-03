@@ -38,7 +38,7 @@ export class StringFasta  {
         HomoSap.put(c'g', 0.1975473066391);
         HomoSap.put(c't', 0.3015094502008);
     }
-    static class Random  {
+    static /* @@ label */class Random  {
         static last : int = 42;
         static A : int = 3877;
         static C : int = 29573;
@@ -122,4 +122,4 @@ function main(): void {
   a.run();
 }
 
-/* @@? 41:12 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

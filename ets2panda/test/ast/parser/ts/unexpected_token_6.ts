@@ -17,4 +17,4 @@
 import foo frm from
 
 
-/* @@? 21:1 Error SyntaxError: SyntaxError: Unexpected token, expected string literal.  */
+/* @@? 21:1 Error SyntaxError: Unexpected token, expected string literal.  */

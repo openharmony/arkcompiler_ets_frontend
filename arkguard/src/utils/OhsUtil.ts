@@ -42,7 +42,9 @@ import {
   isMethodDeclaration,
   isGetAccessorDeclaration,
   isAccessor,
-  isTypeNode
+  isTypeNode,
+  isLiteralTypeNode,
+  isUnionTypeNode,
 } from 'typescript';
 
 import type {
@@ -54,7 +56,9 @@ import type {
   GetAccessorDeclaration,
   HeritageClause,
   Identifier,
+  IndexedAccessTypeNode,
   InterfaceDeclaration,
+  LiteralTypeNode,
   MethodDeclaration,
   Modifier,
   Node,
@@ -65,6 +69,7 @@ import type {
   SetAccessorDeclaration,
   ShorthandPropertyAssignment,
   Statement,
+  StringLiteral,
   StructDeclaration,
   TypeAliasDeclaration
 } from 'typescript';
@@ -152,13 +157,42 @@ export function collectPropertyNamesAndStrings(memberName: PropertyName, propert
   }
 }
 
-export function getElementAccessExpressionProperties(elementAccessExpressionNode: ElementAccessExpression, propertySet: Set<string>): void {
+export function getElementAccessExpressionProperties(elementAccessExpressionNode: ElementAccessExpression): void {
   if (!elementAccessExpressionNode || !elementAccessExpressionNode.argumentExpression) {
     return;
   }
 
   if (isStringLiteral(elementAccessExpressionNode.argumentExpression)) {
     stringPropsSet.add(elementAccessExpressionNode.argumentExpression.text);
+  }
+}
+
+function addStringLiteralToSet(node: Node, stringSet: Set<string>): void {
+  if (NodeUtils.isStringLiteralTypeNode(node)) {
+    const indexType = node as LiteralTypeNode;
+    const stringLiteral = indexType.literal as StringLiteral;
+    stringSet.add(stringLiteral.text);
+  }
+}
+
+/**
+ * Process the IndexedAccessTypeNode and add the stringLiteral in its indexType to the stringPropsSet
+ * @param indexedAccessTypeNode
+ */
+export function getIndexedAccessTypeProperties(indexedAccessTypeNode: IndexedAccessTypeNode): void {
+  if (!indexedAccessTypeNode || !indexedAccessTypeNode.indexType) {
+    return;
+  }
+
+  addStringLiteralToSet(indexedAccessTypeNode.indexType, stringPropsSet);
+
+  if (isUnionTypeNode(indexedAccessTypeNode.indexType)) {
+    indexedAccessTypeNode.indexType.types.forEach((elemType) => {
+      if (!elemType) {
+        return;
+      }
+      addStringLiteralToSet(elemType, stringPropsSet);
+    });
   }
 }
 

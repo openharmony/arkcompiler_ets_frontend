@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-struct type {
+/* @@ label */struct type {
   type: number = 0
 }
 
-/* @@? 16:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@@ label Error SyntaxError: Struct types are not supported yet!  */

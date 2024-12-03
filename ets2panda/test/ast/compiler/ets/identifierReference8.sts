@@ -25,5 +25,5 @@ class A {
   }
 }
 
-/* @@? 24:5 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */
 /* @@? 24:10 Error TypeError: Method used in wrong context  */
+/* @@? 24:5 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */

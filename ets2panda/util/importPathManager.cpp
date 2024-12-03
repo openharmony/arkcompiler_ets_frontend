@@ -46,7 +46,7 @@ StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, c
     }
 
     if (IsRelativePath(importPath)) {
-        const size_t pos = currentModulePath.Mutf8().find_last_of(pathDelimiter_);
+        const size_t pos = currentModulePath.Mutf8().find_last_of("/\\");
         ASSERT(pos != std::string::npos);
 
         auto currentDirectory = currentModulePath.Mutf8().substr(0, pos);
@@ -69,7 +69,7 @@ StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, c
         return AppendExtensionOrIndexFileIfOmitted(importPath);
     }
 
-    const size_t pos = importPath.Mutf8().find(pathDelimiter_);
+    const size_t pos = importPath.Mutf8().find_first_of("/\\");
     bool containsDelim = (pos != std::string::npos);
     auto rootPart = containsDelim ? importPath.Substr(0, pos) : importPath;
     if (!stdLib_.empty() &&
@@ -179,7 +179,7 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, const Imp
 
     // 'Object.sts' must be the first in the parse list
     // NOTE (mmartin): still must be the first?
-    const std::size_t position = resolvedPath.Mutf8().find_last_of(pathDelimiter_);
+    const std::size_t position = resolvedPath.Mutf8().find_last_of("/\\");
     if (isDefaultImport && resolvedPath.Substr(position + 1, resolvedPath.Length()).Is("Object.sts")) {
         parseList_.emplace(parseList_.begin(), parseInfo);
     } else {
@@ -225,13 +225,14 @@ void ImportPathManager::MarkAsParsed(const StringView &path)
 
 bool ImportPathManager::IsRelativePath(const StringView &path) const
 {
-    std::string currentDirReference = ".";
-    std::string parentDirReference = "..";
+    std::string currentDirReferenceLinux = "./";
+    std::string parentDirReferenceLinux = "../";
+    std::string currentDirReferenceWindows = ".\\";
+    std::string parentDirReferenceWindows = "..\\";
 
-    currentDirReference.append(pathDelimiter_);
-    parentDirReference.append(pathDelimiter_);
-
-    return ((path.Mutf8().find(currentDirReference) == 0) || (path.Mutf8().find(parentDirReference) == 0));
+    return ((path.Mutf8().find(currentDirReferenceLinux) == 0) || (path.Mutf8().find(parentDirReferenceLinux) == 0) ||
+            (path.Mutf8().find(currentDirReferenceWindows) == 0) ||
+            (path.Mutf8().find(parentDirReferenceWindows) == 0));
 }
 
 StringView ImportPathManager::GetRealPath(const StringView &path) const
@@ -244,8 +245,14 @@ StringView ImportPathManager::GetRealPath(const StringView &path) const
     return UString(realPath, allocator_).View();
 }
 
-StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringView &path) const
+StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringView &basePath) const
 {
+    std::string fixedPath = std::string(basePath.Utf8());
+    char delim = pathDelimiter_.at(0);
+    std::replace_if(
+        fixedPath.begin(), fixedPath.end(), [&](auto &c) { return ((delim != c) && ((c == '\\') || (c == '/'))); },
+        delim);
+    auto path = UString(fixedPath, allocator_).View();
     StringView realPath = GetRealPath(path);
     if (ark::os::file::File::IsRegularFile(realPath.Mutf8())) {
         return realPath;

@@ -524,7 +524,8 @@ public:
      *      ASTVisitorT::accept(this, v);
      *  }
      */
-    void SetOriginalNode(AstNode *originalNode);
+    void SetOriginalNode(AstNode *originalNode) noexcept;
+    AstNode *OriginalNode() const noexcept;
 
 protected:
     AstNode(AstNode const &other);

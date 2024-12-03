@@ -15,5 +15,5 @@
 
 
 var [a = 1] = ["foo"];
-a = {};
-/* @@? 18:1 Error TypeError: Type '{ }' is not assignable to type 'string | number'.  */
+/* @@ label */a = {};
+/* @@@ label Error TypeError: Type '{ }' is not assignable to type 'string | number'.  */

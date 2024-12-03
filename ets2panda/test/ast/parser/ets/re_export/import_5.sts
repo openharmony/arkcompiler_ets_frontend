@@ -20,4 +20,4 @@ function main() : void
     all.foo();
 }
 
-/* @@? 16:13 Error TypeError: Function foo is already declared.  */
+/* @@? 20:5 Error TypeError: Ambiguous reference to 'foo'  */

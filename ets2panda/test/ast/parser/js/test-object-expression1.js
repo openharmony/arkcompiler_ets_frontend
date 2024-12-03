@@ -16,6 +16,6 @@
 
 a = {
   set a(b,c){}
-}
+/* @@ label */}
 
-/* @@? 19:1 Error SyntaxError: Setter must have exactly one formal parameter  */
+/* @@@ label Error SyntaxError: Setter must have exactly one formal parameter  */

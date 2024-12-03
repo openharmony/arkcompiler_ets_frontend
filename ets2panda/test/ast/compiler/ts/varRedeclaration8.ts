@@ -21,5 +21,5 @@ var obj = { a: 1, [b]: 2 };
 var a = { a: "foo", ...obj };
 var a: { a: number, 5: string };
 */
-a;
-/* @@? 24:1 Error TypeError: Cannot find name a  */
+/* @@ label */a;
+/* @@@ label Error TypeError: Cannot find name a  */

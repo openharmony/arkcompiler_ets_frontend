@@ -18,10 +18,10 @@ enum Enum {e1 = "A", e2 = "B", e3 = "C"}
 function main() {
   let v = Enum.e3
   switch (v) {
-    case Enum.e1: break;
+    case /* @@ label */Enum.e1: break;
     case Enum.e1: break;
     case Enum.e3: break;
   }
 }
 
-/* @@? 21:10 Error TypeError: Case duplicate  */
+/* @@@ label Error TypeError: Case duplicate  */

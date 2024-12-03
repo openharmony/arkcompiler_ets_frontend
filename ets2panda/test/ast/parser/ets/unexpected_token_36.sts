@@ -34,3 +34,7 @@ export class AccessNSieve {
 
 /* @@? 29:13 Error SyntaxError: Unexpected token, expected: ';'.  */
 /* @@? 29:14 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 29:14 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 29:23 Error SyntaxError: Missing right parenthesis in 'for' statement.  */
+/* @@? 29:36 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 29:36 Error SyntaxError: Unexpected token ')'.  */

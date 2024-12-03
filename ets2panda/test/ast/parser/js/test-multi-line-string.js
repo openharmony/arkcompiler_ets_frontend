@@ -20,3 +20,4 @@
 "
 
 /* @@? 17:5 Error SyntaxError: Newline is not allowed in strings  */
+/* @@? 19:1 Error SyntaxError: Newline is not allowed in strings  */

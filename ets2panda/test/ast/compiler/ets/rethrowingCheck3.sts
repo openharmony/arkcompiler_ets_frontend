@@ -20,7 +20,7 @@ function foo(x: int) throws {
 function foo() {}
 
 function bar(a: () => void throws) rethrows {
-    foo(15);
+    /* @@ label */foo(15);
 }
 
-/* @@? 23:5 Error TypeError: This statement can cause an exception, re-throwing functions can throw exception only by their parameters.  */
+/* @@@ label Error TypeError: This statement can cause an exception, re-throwing functions can throw exception only by their parameters.  */

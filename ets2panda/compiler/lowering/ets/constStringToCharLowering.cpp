@@ -43,7 +43,7 @@ ir::AstNode *TryConvertToCharLiteral(checker::ETSChecker *checker, ir::AstNode *
     auto newValue = checker->Allocator()->New<ir::CharLiteral>(value);
     newValue->SetParent(parent);
     newValue->SetRange(ast->Range());
-    if (parent->IsCallExpression() && parent->AsCallExpression()->Callee()->IsArrowFunctionExpression()) {
+    if (ast->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_CHAR)) {
         newValue->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_CHAR);
     }
 

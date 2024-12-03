@@ -15,12 +15,30 @@
 
 import * as fs from 'fs';
 import mocha from 'mocha';
-import { TimeTracker, TimeSumPrinter } from '../../../src/utils/PrinterUtils';
+import { TimeAndMemInfo, TimeSumPrinter, TimeTracker, initPerformancePrinter } from '../../../src/utils/PrinterUtils';
 import { assert, expect } from 'chai';
 import { isFileExist } from '../../../src/initialization/utils';
+import {
+  blockPrinter,
+  endFilesEvent,
+  endSingleFileEvent,
+  performancePrinter,
+  printTimeSumData,
+  printTimeSumInfo,
+  startFilesEvent,
+  startSingleFileEvent
+} from '../../../src/ArkObfuscator';
+import type { IOptions } from '../../../src/configs/IOptions';
 const sinon = require('sinon');
+const DEFAULT_DURATION = 1; // Default time duration
 
 describe('test Cases for <PrinterUtils>.', function () {
+  beforeEach(() => {
+    performancePrinter.filesPrinter = new TimeTracker();
+    performancePrinter.singleFilePrinter = new TimeTracker();
+    performancePrinter.timeSumPrinter = new TimeSumPrinter();
+  });
+
   describe('Tester Cases for <TimeTracker>.', function () {
     let printer: TimeTracker;
 
@@ -283,6 +301,184 @@ describe('test Cases for <PrinterUtils>.', function () {
         expect(eventSum).to.have.keys(['test event']);
         expect(eventSum.get('test event')).to.equal(10);
       });
+    });
+  });
+
+  describe('Tester Cases for <initPerformancePrinter>', () => {
+    it('Printer config is not set', () => {
+      let mCustomProfiles: IOptions = {};
+      initPerformancePrinter(mCustomProfiles);
+      expect(performancePrinter.filesPrinter === undefined).to.be.true;
+      expect(performancePrinter.singleFilePrinter === undefined).to.be.true;
+      expect(performancePrinter.timeSumPrinter === undefined).to.be.true;
+    });
+
+    it('None of printers is enabled', () => {
+      let mCustomProfiles: IOptions = {
+        mPerformancePrinter: {
+          mFilesPrinter: false,
+          mSingleFilePrinter: false,
+          mSumPrinter: false
+        }
+      };
+      initPerformancePrinter(mCustomProfiles);
+      expect(performancePrinter.filesPrinter === undefined).to.be.true;
+      expect(performancePrinter.singleFilePrinter === undefined).to.be.true;
+      expect(performancePrinter.timeSumPrinter === undefined).to.be.true;
+    });
+
+    it('disable mFilesPrinter', () => {
+      let mCustomProfiles: IOptions = {
+        mPerformancePrinter: {
+          mFilesPrinter: false,
+          mSingleFilePrinter: true,
+          mSumPrinter: true,
+          mOutputPath: './log.txt'
+        }
+      };
+      initPerformancePrinter(mCustomProfiles);
+      expect(performancePrinter.filesPrinter?.isEnabled()).to.be.false;
+      expect(performancePrinter.singleFilePrinter?.isEnabled()).to.be.true;
+      expect(performancePrinter.timeSumPrinter?.isEnabled()).to.be.true;
+    });
+
+    it('disable mSingleFilePrinter', () => {
+      let mCustomProfiles: IOptions = {
+        mPerformancePrinter: {
+          mFilesPrinter: true,
+          mSingleFilePrinter: false,
+          mSumPrinter: true,
+          mOutputPath: './log.txt'
+        }
+      };
+      initPerformancePrinter(mCustomProfiles);
+      expect(performancePrinter.filesPrinter?.isEnabled()).to.be.true;
+      expect(performancePrinter.singleFilePrinter?.isEnabled()).to.be.false;
+      expect(performancePrinter.timeSumPrinter?.isEnabled()).to.be.true;
+    });
+
+    it('disable mSumPrinter', () => {
+      let mCustomProfiles: IOptions = {
+        mPerformancePrinter: {
+          mFilesPrinter: true,
+          mSingleFilePrinter: true,
+          mSumPrinter: false,
+          mOutputPath: './log.txt'
+        }
+      };
+      initPerformancePrinter(mCustomProfiles);
+      expect(performancePrinter.filesPrinter?.isEnabled()).to.be.true;
+      expect(performancePrinter.singleFilePrinter?.isEnabled()).to.be.true;
+      expect(performancePrinter.timeSumPrinter?.isEnabled()).to.be.false;
+    });
+  });
+
+  describe('Tester Cases for <blockPrinter>', () => {
+    it('should disable all printers', () => {
+      blockPrinter();
+      expect(performancePrinter.filesPrinter === undefined).to.be.true;
+      expect(performancePrinter.singleFilePrinter === undefined).to.be.true;
+      expect(performancePrinter.timeSumPrinter === undefined).to.be.true;
+    });
+  });
+
+  describe('Tester Cases for <startSingleFileEvent>', () => {
+    it('start a singleFile event', () => {
+      let eventName: string = 'newEvent';
+      let filePath: string = 'currentFile.ts';
+      startSingleFileEvent(eventName, undefined, filePath);
+      const eventStack: Map<string, TimeAndMemInfo> | undefined = performancePrinter.singleFilePrinter?.getEventStack();
+      let targetFilePath: string | undefined = eventStack?.get(eventName)?.filePath;
+      expect(targetFilePath === filePath).to.be.true;
+    });
+  });
+
+  describe('Tester Cases for <endSingleFileEvent>', () => {
+    it('end a singleFile event', () => {
+      let eventName: string = 'newEvent';
+      let filePath: string = 'currentFile.ts';
+      startSingleFileEvent(eventName, undefined, filePath);
+      endSingleFileEvent(eventName, undefined, false, false);
+      const eventStack: Map<string, TimeAndMemInfo> | undefined = performancePrinter.singleFilePrinter?.getEventStack();
+      let targetFilePath: string | undefined = eventStack?.get(eventName)?.filePath;
+      let memoryUsage: number | undefined = eventStack?.get(eventName)?.memoryUsage;
+      expect(targetFilePath === filePath).to.be.true;
+      expect(memoryUsage !== 0).to.be.true;
+    });
+  });
+
+  describe('Tester Cases for <startFilesEvent>', () => {
+    it('start a files event', () => {
+      let eventName: string = 'filesEvent';
+      let filePath: string = 'currentFile.ts';
+      startFilesEvent(eventName, undefined, filePath);
+      const eventStack: Map<string, TimeAndMemInfo> | undefined = performancePrinter.filesPrinter?.getEventStack();
+      let targetFilePath: string | undefined = eventStack?.get(eventName)?.filePath;
+      let startTime: number | undefined = eventStack?.get(eventName)?.start;
+      expect(targetFilePath === filePath).to.be.true;
+      expect(startTime !== 0).to.be.true;
+    });
+  });
+
+  describe('Tester Cases for <endFilesEvent>', () => {
+    it('end a files event', () => {
+      let eventName: string = 'filesEvent';
+      let filePath: string = 'currentFile.ts';
+      startFilesEvent(eventName, undefined, filePath);
+      endFilesEvent(eventName, undefined, false, false);
+      const eventStack: Map<string, TimeAndMemInfo> | undefined = performancePrinter.filesPrinter?.getEventStack();
+      let targetFilePath: string | undefined = eventStack?.get(eventName)?.filePath;
+      let memoryUsage: number | undefined = eventStack?.get(eventName)?.memoryUsage;
+      expect(targetFilePath === filePath).to.be.true;
+      expect(memoryUsage !== 0).to.be.true;
+    });
+  });
+
+  describe('Tester Cases for <printTimeSumInfo>', () => {
+    it('print input info of timeSumPrinter', () => {
+      let info: string = 'Info of timeSumPrinter';
+      let outputPath: string = 'test/ut/utils/outPutFile.txt';
+      performancePrinter.timeSumPrinter?.setOutputPath(outputPath);
+      printTimeSumInfo(info);
+      let content: string = fs.readFileSync(outputPath, 'utf-8');
+      expect(content === info + '\n').to.be.true;
+      fs.unlinkSync(outputPath);
+    });
+
+    it('timeSumPrinter is undefined', () => {
+      let info: string = 'Info of timeSumPrinter';
+      let outputPath: string = 'test/ut/utils/outPutFile.txt';
+      performancePrinter.timeSumPrinter?.setOutputPath(outputPath);
+      performancePrinter.timeSumPrinter = undefined;
+      printTimeSumInfo(info);
+      expect(fs.existsSync(outputPath)).to.be.false;
+    });
+  });
+
+  describe('Tester Cases for <printTimeSumData>', () => {
+    it('print data of timeSumPrinter', () => {
+      let outputPath: string = 'test/ut/utils/outPutFile.txt';
+      performancePrinter.timeSumPrinter?.setOutputPath(outputPath);
+      performancePrinter.timeSumPrinter?.addEventDuration('event1', DEFAULT_DURATION);
+      performancePrinter.timeSumPrinter?.addEventDuration('event1', DEFAULT_DURATION);
+      performancePrinter.timeSumPrinter?.addEventDuration('event2', DEFAULT_DURATION);
+      performancePrinter.timeSumPrinter?.addEventDuration('event2', DEFAULT_DURATION);
+      printTimeSumData();
+      let content: string = fs.readFileSync(outputPath, 'utf-8');
+      expect(content === 'event1: 2.000 s\nevent2: 2.000 s\n\n').to.be.true;
+      fs.unlinkSync(outputPath);
+    });
+
+    it('timeSumPrinter is undefined', () => {
+      let outputPath: string = 'test/ut/utils/outPutFile.txt';
+      performancePrinter.timeSumPrinter?.setOutputPath(outputPath);
+      performancePrinter.timeSumPrinter?.addEventDuration('event1', DEFAULT_DURATION);
+      performancePrinter.timeSumPrinter?.addEventDuration('event1', DEFAULT_DURATION);
+      performancePrinter.timeSumPrinter?.addEventDuration('event2', DEFAULT_DURATION);
+      performancePrinter.timeSumPrinter?.addEventDuration('event2', DEFAULT_DURATION);
+      performancePrinter.timeSumPrinter = undefined;
+      printTimeSumData();
+      expect(fs.existsSync(outputPath)).to.be.false;
     });
   });
 });
