@@ -151,13 +151,17 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *check
         sourceType = unionType->AsETSUnionType()->FindTypeIsCastableToSomeType(expr->Expr(), checker->Relation(),
                                                                                expr->TsType());
     }
+
     if (sourceType != nullptr && expr->Expr()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
-        if (expr->TsType()->IsETSPrimitiveType()) {
+        auto *maybeUnboxingType = checker->MaybeUnboxInRelation(sourceType);
+        // when sourceType get `object`, it could cast to any primitive type but can't be unboxed;
+        if (maybeUnboxingType != nullptr && expr->TsType()->IsETSPrimitiveType()) {
             auto *const asExpr = GenAsExpression(checker, sourceType, expr->Expr(), expr);
-            asExpr->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(checker->MaybeUnboxInRelation(sourceType)));
+            asExpr->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(maybeUnboxingType));
             expr->Expr()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
             expr->SetExpr(asExpr);
         }
+
         return expr;
     }
     auto *const unboxableUnionType = sourceType != nullptr ? sourceType : unionType->FindUnboxableType();
