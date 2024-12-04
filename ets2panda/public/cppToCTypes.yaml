@@ -1017,6 +1017,56 @@ change_types:
         expression: ""
         var_name: '*reinterpret_cast<checker::|es2panda_arg.type.name| *>(|arg_name|)'
 
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'AnnotationAllowed'
+        namespace: 'ir'
+      min_ptr_depth: 1
+    new_args:
+    - type:
+        name: "es2panda_AstNode"
+        ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
+      name: '|arg_name|'
+      namespace: 'ir::'
+    cast:
+        expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<ir::AnnotationAllowed<ir::AstNode> |es2panda_arg.type.ptr_depth|>(|arg_name|);
+        reverse_cast:
+          start : >-
+            reinterpret_cast<?const? es2panda_AstNode |es2panda_arg.type.ptr_depth|>
+        call_cast:
+          call_var:
+            name: classInstance
+            type:
+              name: es2panda_AstNode
+              ptr_depth: 1
+          start: >-
+            (reinterpret_cast<?const? ir::AnnotationAllowed<ir::AstNode> *>(classInstance))->
+        constructor_cast:
+          start: >-
+            ctxAllocator->New<ir::AnnotationAllowed<ir::AstNode>>(
+          end: )
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'AnnotationAllowed'
+        namespace: 'ir'
+      max_ptr_depth: 0
+    new_args:
+    - type:
+        name: "es2panda_AstNode"
+        ptr_depth: 1
+      name: '|arg_name|'
+      namespace: 'ir::'
+    cast:
+        expression: ""
+        var_name: '*reinterpret_cast<ir::AnnotationAllowed<ir::AstNode> *>(|arg_name|)'
+
   - es2panda_arg:
       name: '|arg_name|'
       type:
@@ -1878,6 +1928,30 @@ change_types:
     cast:
         expression: >-
           ark::es2panda::Language |arg_name|E2p {Language::Id::ETS};
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'ScriptExtension'
+      min_ptr_depth: 1
+    new_args:
+    cast:
+        expression: >-
+          auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
+          reinterpret_cast<Context *>(context)->allocator->
+          New<ScriptExtension |es2panda_arg.type.ptr_depth|>(ScriptExtension::STS);
+        var_name: '|arg_name|E2p'
+
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'ScriptExtension'
+      max_ptr_depth: 0
+    new_args:
+    cast:
+        expression: >-
+          ark::es2panda::ScriptExtension |arg_name|E2p {ScriptExtension::STS};
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:

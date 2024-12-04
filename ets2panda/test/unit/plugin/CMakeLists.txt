@@ -42,6 +42,7 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_update_statements_lambda compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_change_func runtime_change_func_call.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_change_call_lambda compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_test_annotation_change compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
 
 set(RUNTIME_ARGUMENTS
