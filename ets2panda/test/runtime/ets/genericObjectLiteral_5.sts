@@ -13,11 +13,15 @@
  * limitations under the License.
  */
 
-interface I <T1, T2> {
-    s: T1,
-    n: T2
+interface Value1<T>{
+    Value1Field:T
+}
+interface Value2{
+    Value2Field:Value1<String>
 }
 
-let c: I<string, number> = /* @@ label */{ s: "default", n: 10};
-
-/* @@@ label Error TypeError: Object literal cannot be of typed interface type  */
+function main(){
+    let subValue1:Value1<String> = {Value1Field:"Me"}
+    let subValue2:Value2 = {Value2Field:subValue1}
+    let subValue3:Value2 = {Value2Field:{Value1Field:"Me"}}
+}
