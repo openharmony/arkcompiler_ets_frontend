@@ -12,3 +12,6 @@ jsDiff_test
 #18546
 jBox2d_test
 
+#20840
+mathjs_test
+
