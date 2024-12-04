@@ -91,4 +91,22 @@ checker::Type *AssertStatement::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+AssertStatement *AssertStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    ir::AssertStatement *clone = allocator->New<ir::AssertStatement>(test_, second_);
+    if (clone == nullptr) {
+        LOG(FATAL, ES2PANDA) << "Failed to allocate memory for AssertStatement node";
+    }
+
+    clone->SetParent(parent);
+    if (test_ != nullptr) {
+        clone->test_ = test_->Clone(allocator, clone)->AsExpression();
+    }
+    if (second_ != nullptr) {
+        clone->second_ = second_->Clone(allocator, clone)->AsExpression();
+    }
+    clone->SetRange(Range());
+    return clone;
+}
 }  // namespace ark::es2panda::ir
