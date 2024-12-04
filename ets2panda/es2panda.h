@@ -20,6 +20,7 @@
 #include "util/arktsconfig.h"
 #include "util/plugin.h"
 #include "util/ustring.h"
+#include "generated/options.h"
 
 #include <string>
 #include <functional>
@@ -31,6 +32,9 @@ struct Program;
 }  // namespace ark::pandasm
 
 namespace ark::es2panda {
+using ETSWarnings = util::gen::ets_warnings::Enum;
+using EvalMode = util::gen::eval_mode::Enum;
+using ScriptExtension = util::gen::extension::Enum;
 
 constexpr std::string_view ES2PANDA_VERSION = "0.1";
 namespace util {
@@ -48,14 +52,6 @@ namespace varbinder {
 class VarBinder;
 }  // namespace varbinder
 
-enum class ScriptExtension {
-    JS,
-    TS,
-    AS,
-    ETS,
-    INVALID,
-};
-
 enum class CompilationMode {
     GEN_STD_LIB,
     PROJECT,
@@ -71,7 +67,7 @@ inline Language ToLanguage(ScriptExtension ext)
             return Language(Language::Id::TS);
         case ScriptExtension::AS:
             return Language(Language::Id::AS);
-        case ScriptExtension::ETS:
+        case ScriptExtension::STS:
             return Language(Language::Id::ETS);
         default:
             UNREACHABLE();
@@ -91,70 +87,6 @@ struct SourceFile {
     std::string_view resolvedPath {};
     bool isModule {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
-
-enum ETSWarnings {
-    NONE,
-    IMPLICIT_BOXING_UNBOXING,
-    PROHIBIT_TOP_LEVEL_STATEMENTS,
-    BOOST_EQUALITY_STATEMENT,
-    REMOVE_LAMBDA,
-    SUGGEST_FINAL,
-    REMOVE_ASYNC_FUNCTIONS,
-};
-
-struct CompilerOptions {
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    bool isDebug {};
-    bool isEtsModule {};
-    bool isEval {};
-    bool isDirectEval {};
-    bool isFunctionEval {};
-    bool dumpAst {};
-    bool opDumpAstOnlySilent {};
-    bool dumpCheckedAst {};
-    bool dumpAsm {};
-    bool dumpDebugInfo {};
-    bool parseOnly {};
-    bool verifierAllChecks {};
-    bool verifierFullProgram {};
-    bool debuggerEvalMode {};
-    uint64_t debuggerEvalLine {};
-    std::string debuggerEvalSource {};
-    std::string stdLib {};
-    std::vector<std::string> plugins {};
-    std::vector<std::string> debuggerEvalPandaFiles {};
-    std::unordered_set<std::string> skipPhases {};
-    std::unordered_set<std::string> verifierWarnings {};
-    std::unordered_set<std::string> verifierErrors {};
-    std::unordered_set<std::string> dumpBeforePhases {};
-    std::unordered_set<std::string> dumpEtsSrcBeforePhases {};
-    std::string exitBeforePhase {};
-    std::unordered_set<std::string> dumpAfterPhases {};
-    std::unordered_set<std::string> dumpEtsSrcAfterPhases {};
-    std::string exitAfterPhase {};
-    std::shared_ptr<ArkTsConfig> arktsConfig {};
-    CompilationMode compilationMode {};
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-
-    // ETS Warning Groups
-    bool etsEnableAll {};          // Enable all ETS-warnings for System ArkTS
-    bool etsSubsetWarnings {};     // Enable only ETS-warnings that keep you in subset
-    bool etsNonsubsetWarnings {};  // Enable only ETS-warnings that do not keep you in subset
-    bool etsHasWarnings = false;
-
-    // Subset ETS-Warnings
-    bool etsProhibitTopLevelStatements {};
-    bool etsBoostEqualityStatement {};
-    bool etsRemoveLambda {};
-    bool etsImplicitBoxingUnboxing {};
-
-    // Non-subset ETS-Warnings
-    bool etsSuggestFinal {};
-    bool etsRemoveAsync {};
-
-    bool etsWerror {};  // Treat all enabled ETS-warnings as errors
-    std::vector<ETSWarnings> etsWarningCollection = {};
 };
 
 enum class ErrorType {

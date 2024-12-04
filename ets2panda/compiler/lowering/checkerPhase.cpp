@@ -19,8 +19,7 @@
 namespace ark::es2panda::compiler {
 bool CheckerPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
-    auto checkerResult =
-        ctx->checker->StartChecker(ctx->parserProgram->VarBinder(), ctx->config->options->CompilerOptions());
+    auto checkerResult = ctx->checker->StartChecker(ctx->parserProgram->VarBinder(), *ctx->config->options);
     return checkerResult;
 }
 

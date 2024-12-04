@@ -23,10 +23,8 @@ public:
     Es2PandaLibTest()
     {
         impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-        auto es2pandaPath = test::utils::PandaExecutablePathGetter {}.Get();
-        // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-        char const *argv[] = {es2pandaPath.c_str()};
-        cfg_ = impl_->CreateConfig(1, argv);
+        auto argv = test::utils::PandaExecutablePathGetter::Get();
+        cfg_ = impl_->CreateConfig(argv.size(), argv.data());
     }
 
     ~Es2PandaLibTest() override

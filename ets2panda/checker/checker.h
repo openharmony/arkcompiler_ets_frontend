@@ -16,11 +16,13 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_H
 #define ES2PANDA_CHECKER_CHECKER_H
 
-#include "es2panda.h"
-
 #include "checker/checkerContext.h"
 #include "checker/SemanticAnalyzer.h"
 #include "util/errorLogger.h"
+
+namespace ark::es2panda::util {
+class Options;
+}  // namespace ark::es2panda::util
 
 namespace ark::es2panda::parser {
 class Program;
@@ -158,7 +160,7 @@ public:
         return reinterpret_cast<const ETSChecker *>(this);
     }
 
-    virtual bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) = 0;
+    virtual bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options) = 0;
     virtual Type *CheckTypeCached(ir::Expression *expr) = 0;
     virtual Type *GetTypeOfVariable(varbinder::Variable *var) = 0;
     virtual void ResolveStructuredTypeMembers(Type *type) = 0;

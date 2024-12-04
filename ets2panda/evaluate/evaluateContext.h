@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_EVALUATE_EVALUATE_CONTEXT_H
 #define ES2PANDA_EVALUATE_EVALUATE_CONTEXT_H
 
-#include "es2panda.h"
 #include "util/ustring.h"
+#include "util/options.h"
 
 #include "libpandabase/utils/arena_containers.h"
 #include "libpandafile/debug_info_extractor.h"
@@ -41,8 +41,8 @@ class ScriptFunction;
 namespace ark::es2panda::evaluate {
 
 struct EvaluateContext {
-    explicit EvaluateContext(const CompilerOptions &options)
-        : sourceFilePath(options.debuggerEvalSource), lineNumber(options.debuggerEvalLine)
+    explicit EvaluateContext(const util::Options &options)
+        : sourceFilePath(options.GetDebuggerEvalSource()), lineNumber(options.GetDebuggerEvalLine())
     {
     }
 

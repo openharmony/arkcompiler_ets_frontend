@@ -61,7 +61,7 @@ public:
 
     ScriptExtension Extension() const override
     {
-        return ScriptExtension::ETS;
+        return ScriptExtension::STS;
     }
 
     ResolveBindingOptions BindingOptions() const override

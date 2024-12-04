@@ -120,11 +120,11 @@ typedef enum es2panda_ContextState es2panda_ContextState;
 struct es2panda_Impl {
     int version;
 
-    es2panda_Config *(*CreateConfig)(int argc, char const **argv);
+    es2panda_Config *(*CreateConfig)(int argc, char const *const *argv);
     void (*DestroyConfig)(es2panda_Config *config);
 
     es2panda_Context *(*CreateContextFromFile)(es2panda_Config *config, char const *source_file_name);
-    es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, char const *source, char const *file_name);
+    es2panda_Context *(*CreateContextFromString)(es2panda_Config *config, const char *source, char const *file_name);
     es2panda_Context *(*ProceedToState)(es2panda_Context *context, es2panda_ContextState state);  // context is consumed
     void (*DestroyContext)(es2panda_Context *context);
 

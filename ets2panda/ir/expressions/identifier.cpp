@@ -59,7 +59,7 @@ Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode 
 
         clone->SetRange(Range());
 
-        if (clone->IsReference(ScriptExtension::ETS) && (clone->TypeAnnotation() != nullptr)) {
+        if (clone->IsReference(ScriptExtension::STS) && (clone->TypeAnnotation() != nullptr)) {
             clone->SetTsTypeAnnotation(nullptr);
         }
 

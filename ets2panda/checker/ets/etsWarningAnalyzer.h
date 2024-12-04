@@ -29,22 +29,22 @@ public:
         }
 
         switch (warning) {
-            case ETSWarnings::SUGGEST_FINAL:
+            case ETSWarnings::ETS_SUGGEST_FINAL:
                 ETSWarningSuggestFinal(node);
                 break;
-            case ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS:
+            case ETSWarnings::ETS_PROHIBIT_TOP_LEVEL_STATEMENTS:
                 ETSWarningsProhibitTopLevelStatements(node);
                 break;
-            case ETSWarnings::BOOST_EQUALITY_STATEMENT:
+            case ETSWarnings::ETS_BOOST_EQUALITY_STATEMENT:
                 ETSWarningBoostEqualityStatement(node);
                 break;
-            case ETSWarnings::REMOVE_ASYNC_FUNCTIONS:
+            case ETSWarnings::ETS_REMOVE_ASYNC:
                 ETSWarningRemoveAsync(node);
                 break;
-            case ETSWarnings::REMOVE_LAMBDA:
+            case ETSWarnings::ETS_REMOVE_LAMBDA:
                 ETSWarningRemoveLambda(node);
                 break;
-            case ETSWarnings::IMPLICIT_BOXING_UNBOXING:
+            case ETSWarnings::ETS_IMPLICIT_BOXING_UNBOXING:
                 ETSWarningImplicitBoxingUnboxing(node);
                 break;
             default:

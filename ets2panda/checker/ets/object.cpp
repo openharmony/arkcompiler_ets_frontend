@@ -856,7 +856,7 @@ void ETSChecker::ValidateNonOverriddenFunction(ETSObjectType *classType, ArenaVe
                                        ->Scope()
                                        ->AsClassScope()
                                        ->InstanceFieldScope()
-                                       ->AddDecl(Allocator(), newFieldDecl, ScriptExtension::ETS)
+                                       ->AddDecl(Allocator(), newFieldDecl, ScriptExtension::STS)
                                        ->AsLocalVariable();
                 newFieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
                 newFieldVar->AddFlag(varbinder::VariableFlags::PUBLIC);

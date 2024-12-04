@@ -17,6 +17,7 @@
 
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -344,7 +345,7 @@ bool BoxingForLocals::Perform(public_lib::Context *ctx, parser::Program *program
 {
     parser::SavedFormattingFileName savedFormattingName(ctx->parser->AsETSParser(), "boxing-for-lambdas");
 
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : ext_programs) {

@@ -26,6 +26,7 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/util.h"
 #include "parser/ETSparser.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
@@ -68,7 +69,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
 
 bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {
@@ -126,7 +127,7 @@ bool ObjectIndexLowering::Postcondition(public_lib::Context *ctx, const parser::
         return true;
     };
 
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             if (!checkExternalPrograms(extPrograms)) {

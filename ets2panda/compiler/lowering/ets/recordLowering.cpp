@@ -25,6 +25,7 @@
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "utils/arena_containers.h"
+#include "util/options.h"
 #include "varbinder/ETSBinder.h"
 #include "compiler/lowering/util.h"
 
@@ -72,7 +73,7 @@ RecordLowering::KeyType RecordLowering::TypeToKey(checker::Type *type) const
 
 bool RecordLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {

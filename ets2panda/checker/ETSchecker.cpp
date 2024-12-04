@@ -212,11 +212,11 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
     GetGlobalTypesHolder()->InitializeBuiltin(name, type);
 }
 
-bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOptions &options)
+bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Options &options)
 {
     Initialize(varbinder);
 
-    if (options.parseOnly) {
+    if (options.IsParseOnly()) {
         return false;
     }
 
@@ -249,13 +249,11 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
     }
 #endif
 
-    if (options.dumpCheckedAst) {
+    if (options.IsDumpDynamicAst()) {
         std::cout << Program()->Dump() << std::endl;
     }
 
-    if (options.etsHasWarnings) {
-        CheckWarnings(Program(), options);
-    }
+    CheckWarnings(Program(), options);
 
     return !ErrorLogger()->IsAnyError();
 }
@@ -306,11 +304,11 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
     SetProgram(savedProgram);
 }
 
-void ETSChecker::CheckWarnings(parser::Program *program, const CompilerOptions &options)
+void ETSChecker::CheckWarnings(parser::Program *program, const util::Options &options)
 {
-    const auto etsWarningCollection = options.etsWarningCollection;
+    const auto &etsWarningCollection = options.GetEtsWarningCollection();
     for (const auto warning : etsWarningCollection) {
-        ETSWarningAnalyzer(Program()->Ast(), program, warning, options.etsWerror);
+        ETSWarningAnalyzer(Program()->Ast(), program, warning, options.IsEtsWarningsWerror());
     }
 }
 

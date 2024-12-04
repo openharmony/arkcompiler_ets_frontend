@@ -18,6 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -281,7 +282,7 @@ bool GenericBridgesPhase::Perform(public_lib::Context *ctx, parser::Program *pro
         context_ = ctx;
     }
 
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : ext_programs) {

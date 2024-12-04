@@ -142,12 +142,12 @@ public:
 
     bool IsETSBinder() const
     {
-        return Extension() == ScriptExtension::ETS;
+        return Extension() == ScriptExtension::STS;
     }
 
     ETSBinder *AsETSBinder()
     {
-        ASSERT(Extension() == ScriptExtension::ETS);
+        ASSERT(Extension() == ScriptExtension::STS);
         return reinterpret_cast<ETSBinder *>(this);
     }
 

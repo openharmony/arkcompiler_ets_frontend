@@ -21,12 +21,14 @@
 #include "assembler/assembly-program.h"
 #include "libpandabase/mem/arena_allocator.h"
 
-#include "es2panda.h"
 #include "compiler/core/compileQueue.h"
 #include "parser/ETSparser.h"
 #include "checker/checker.h"
 #include "compiler/core/emitter.h"
-#include "util/options.h"
+
+namespace ark::es2panda::util {
+class Options;
+}  // namespace ark::es2panda::util
 
 namespace ark::es2panda::compiler {
 class Phase;

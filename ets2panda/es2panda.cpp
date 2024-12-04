@@ -13,16 +13,17 @@
  * limitations under the License.
  */
 
-#include "es2panda.h"
-
 #include "compiler/core/compilerImpl.h"
-#include "util/options.h"
 
 #include <iostream>
 #include <thread>
 
 namespace ark::es2panda {
 constexpr size_t DEFAULT_THREAD_COUNT = 2;
+
+namespace util {
+class Options;
+}  // namespace util
 
 template <class T>
 T DirName(T const &path, T const &delims = ark::os::file::File::GetPathDelim())

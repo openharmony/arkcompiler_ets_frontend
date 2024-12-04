@@ -35,6 +35,7 @@
 #include "ir/expressions/blockExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/expressionStatement.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -354,7 +355,7 @@ static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression 
 
 bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : ext_programs) {
@@ -391,7 +392,7 @@ bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser:
         return true;
     };
 
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             if (!checkExternalPrograms(extPrograms)) {

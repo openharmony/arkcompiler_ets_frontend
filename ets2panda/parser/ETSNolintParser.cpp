@@ -23,15 +23,6 @@ namespace ark::es2panda::parser {
 ETSNolintParser::ETSNolintParser(const ParserImpl *mainParser) : parser_(mainParser)
 {
     line_ = parser_->Lexer()->Line();
-
-    warningsMap_ = {
-        {std::u32string(U"ets-implicit-boxing-unboxing"), ETSWarnings::IMPLICIT_BOXING_UNBOXING},
-        {std::u32string(U"ets-prohibit-top-level-statements"), ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS},
-        {std::u32string(U"ets-boost-equality-statement"), ETSWarnings::BOOST_EQUALITY_STATEMENT},
-        {std::u32string(U"ets-remove-lambda"), ETSWarnings::REMOVE_LAMBDA},
-        {std::u32string(U"ets-suggest-final"), ETSWarnings::SUGGEST_FINAL},
-        {std::u32string(U"ets-remove-async"), ETSWarnings::REMOVE_ASYNC_FUNCTIONS},
-    };
 }
 
 void ETSNolintParser::SetStartPos()
@@ -212,17 +203,14 @@ bool ETSNolintParser::IsEnd()
     return TryPeekU32String(END_CHAR32T);
 }
 
-ETSWarnings ETSNolintParser::MapETSNolintArg(const std::u32string &warningName) const
+ETSWarnings ETSNolintParser::MapETSNolintArg(const std::string &warningName) const
 {
-    const auto search = warningsMap_.find(warningName);
-    ASSERT(search != warningsMap_.end());
-
-    return search->second;
+    return util::gen::ets_warnings::FromString(warningName);
 }
 
-bool ETSNolintParser::ValidETSNolintArg(const std::u32string &warningName) const
+bool ETSNolintParser::ValidETSNolintArg(const std::string &warningName) const
 {
-    return warningsMap_.find(warningName) != warningsMap_.end();
+    return util::gen::ets_warnings::FromString(warningName) != ETSWarnings::INVALID;
 }
 
 std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
@@ -230,16 +218,15 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
     std::set<ETSWarnings> warningsCollection;
 
     if (PeekSymbol() != lexer::LEX_CHAR_LEFT_PAREN) {
-        for (const auto &it : warningsMap_) {
-            warningsCollection.insert(it.second);
+        for (std::underlying_type_t<ETSWarnings> wid = ETSWarnings::FIRST; wid <= ETSWarnings::LAST; wid++) {
+            warningsCollection.insert(ETSWarnings {wid});
         }
-
         return warningsCollection;
     }
 
     NextSymbol();
     char32_t cp = 0;
-    std::u32string warningName;
+    std::string warningName;
 
     while (cp != lexer::LEX_CHAR_SP && cp != lexer::LEX_CHAR_LF && cp != lexer::LEX_CHAR_EOS) {
         cp = PeekSymbol();
@@ -256,6 +243,7 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
             warningsCollection.insert(MapETSNolintArg(warningName));
             warningName.clear();
         } else {
+            ASSERT(cp <= std::numeric_limits<unsigned char>::max());
             warningName += cp;
         }
         if (cp == lexer::LEX_CHAR_RIGHT_PAREN) {

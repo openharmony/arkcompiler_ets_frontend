@@ -53,6 +53,7 @@
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "public/es2panda_lib.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -106,9 +107,9 @@ enum class ActionAfterCheckPhase {
     EXIT,
 };
 
-static ActionAfterCheckPhase CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
+static ActionAfterCheckPhase CheckOptionsBeforePhase(const util::Options &options, const parser::Program *program,
                                                      const std::string &name);
-static ActionAfterCheckPhase CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
+static ActionAfterCheckPhase CheckOptionsAfterPhase(const util::Options &options, const parser::Program *program,
                                                     const std::string &name);
 
 std::vector<Phase *> GetETSPhaseList()
@@ -184,7 +185,7 @@ std::vector<Phase *> GetJSPhaseList()
 std::vector<Phase *> GetPhaseList(ScriptExtension ext)
 {
     switch (ext) {
-        case ScriptExtension::ETS:
+        case ScriptExtension::STS:
             return GetETSPhaseList();
         case ScriptExtension::AS:
             return GetASPhaseList();
@@ -199,9 +200,9 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
 
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
-    const auto &options = ctx->config->options->CompilerOptions();
+    const auto &options = *ctx->config->options;
     const auto name = std::string {Name()};
-    if (options.skipPhases.count(name) > 0) {
+    if (options.GetSkipPhases().count(name) > 0) {
         return true;
     }
 
@@ -236,42 +237,42 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     return !ctx->checker->ErrorLogger()->IsAnyError() && !ctx->parser->ErrorLogger()->IsAnyError();
 }
 
-static ActionAfterCheckPhase CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
+static ActionAfterCheckPhase CheckOptionsBeforePhase(const util::Options &options, const parser::Program *program,
                                                      const std::string &name)
 {
-    if (options.dumpBeforePhases.count(name) > 0) {
+    if (options.GetDumpBeforePhases().count(name) > 0) {
         std::cout << "Before phase " << name << ":" << std::endl;
         std::cout << program->Dump() << std::endl;
     }
 
-    if (options.dumpEtsSrcBeforePhases.count(name) > 0) {
+    if (options.GetDumpEtsSrcBeforePhases().count(name) > 0) {
         std::cout << "Before phase " << name << " ets source"
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }
 
-    if (options.exitBeforePhase == name) {
+    if (options.GetExitBeforePhase() == name) {
         return ActionAfterCheckPhase::EXIT;
     }
 
     return ActionAfterCheckPhase::NONE;
 }
 
-static ActionAfterCheckPhase CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
+static ActionAfterCheckPhase CheckOptionsAfterPhase(const util::Options &options, const parser::Program *program,
                                                     const std::string &name)
 {
-    if (options.dumpAfterPhases.count(name) > 0) {
+    if (options.GetDumpAfterPhases().count(name) > 0) {
         std::cout << "After phase " << name << ":" << std::endl;
         std::cout << program->Dump() << std::endl;
     }
 
-    if (options.dumpEtsSrcAfterPhases.count(name) > 0) {
+    if (options.GetDumpEtsSrcAfterPhases().count(name) > 0) {
         std::cout << "After phase " << name << " ets source"
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }
 
-    if (options.exitAfterPhase == name) {
+    if (options.GetExitAfterPhase() == name) {
         return ActionAfterCheckPhase::EXIT;
     }
 

@@ -146,7 +146,7 @@ public:
 
     void InitializeBuiltins(varbinder::ETSBinder *varbinder);
     void InitializeBuiltin(varbinder::Variable *var, const util::StringView &name);
-    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
+    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options) override;
     Type *CheckTypeCached(ir::Expression *expr) override;
     void ResolveStructuredTypeMembers([[maybe_unused]] Type *type) override {};
     Type *GetTypeFromVariableDeclaration(varbinder::Variable *const var);
@@ -870,7 +870,7 @@ private:
     ETSObjectType *UpdateBoxedGlobalType(ETSObjectType *objType, util::StringView name);
     ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     void CheckProgram(parser::Program *program, bool runAnalysis = false);
-    void CheckWarnings(parser::Program *program, const CompilerOptions &options);
+    void CheckWarnings(parser::Program *program, const util::Options &options);
 
     bool ComputeSuperType(ETSObjectType *type);
 

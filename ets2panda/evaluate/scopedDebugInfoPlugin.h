@@ -41,7 +41,7 @@ namespace ark::es2panda::evaluate {
 class ScopedDebugInfoPlugin final {
 public:
     explicit ScopedDebugInfoPlugin(parser::Program *globalProgram, checker::ETSChecker *checker,
-                                   const CompilerOptions &options);
+                                   const util::Options &options);
 
     NO_COPY_SEMANTIC(ScopedDebugInfoPlugin);
     NO_MOVE_SEMANTIC(ScopedDebugInfoPlugin);
@@ -155,7 +155,7 @@ private:
     /**
      * @brief Asserts correctness of input options.
      */
-    void ValidateEvaluationOptions(const CompilerOptions &options);
+    void ValidateEvaluationOptions(const util::Options &options);
 
     /**
      * @brief Creates `Program` instances for each input context .abc file.

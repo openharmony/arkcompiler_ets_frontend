@@ -15,17 +15,14 @@
 
 #include "ast_verifier_test.h"
 #include "checker/ETSchecker.h"
+#include "es2panda.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/booleanLiteral.h"
 #include "macros.h"
-#include "parser/ETSparser.h"
 #include "varbinder/ETSBinder.h"
 
-#include <gtest/gtest.h>
-
-using ark::es2panda::CompilerOptions;
 using ark::es2panda::ScriptExtension;
 using ark::es2panda::checker::ETSChecker;
 using ark::es2panda::compiler::ast_verifier::ASTVerifier;
@@ -39,10 +36,7 @@ using ark::es2panda::ir::SequenceExpression;
 using ark::es2panda::ir::StringLiteral;
 using ark::es2panda::lexer::Number;
 using ark::es2panda::lexer::TokenType;
-using ark::es2panda::parser::ETSParser;
-using ark::es2panda::parser::Program;
 using ark::es2panda::util::StringView;
-using ark::es2panda::varbinder::ETSBinder;
 using ark::es2panda::varbinder::FunctionScope;
 using ark::es2panda::varbinder::LetDecl;
 using ark::es2panda::varbinder::LocalScope;
@@ -120,7 +114,7 @@ TEST_F(ASTVerifierTest, ScopeTest)
     LocalScope scope(Allocator(), nullptr);
     FunctionScope parentScope(Allocator(), nullptr);
     scope.SetParent(&parentScope);
-    scope.AddDecl(Allocator(), &decl, ScriptExtension::ETS);
+    scope.AddDecl(Allocator(), &decl, ScriptExtension::STS);
     scope.BindNode(&ident);
 
     local.SetScope(&scope);
@@ -143,7 +137,7 @@ TEST_F(ASTVerifierTest, ScopeNodeTest)
     LocalScope scope(Allocator(), nullptr);
     FunctionScope parentScope(Allocator(), nullptr);
     scope.SetParent(&parentScope);
-    scope.AddDecl(Allocator(), &decl, ScriptExtension::ETS);
+    scope.AddDecl(Allocator(), &decl, ScriptExtension::STS);
     scope.BindNode(&ident);
     parentScope.BindNode(&ident);
 
@@ -160,8 +154,6 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
 {
     ETSChecker etschecker {};
     ASTVerifier verifier {Allocator()};
-    auto program = Program::NewProgram<ETSBinder>(Allocator());
-    auto parser = ETSParser(&program, CompilerOptions {});
 
     auto left = NumberLiteral(Number {1});
     auto right = NumberLiteral(Number {6});
@@ -180,8 +172,6 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
 {
     ETSChecker etschecker {};
     ASTVerifier verifier {Allocator()};
-    auto program = Program::NewProgram<ETSBinder>(Allocator());
-    auto parser = ETSParser(&program, CompilerOptions {});
 
     constexpr uint32_t LEFT1_PARAM = 1;
     constexpr uint32_t LEFT2_PARAM = 12;
@@ -207,8 +197,6 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
 {
     ETSChecker etschecker {};
     ASTVerifier verifier {Allocator()};
-    auto program = Program::NewProgram<ETSBinder>(Allocator());
-    auto parser = ETSParser(&program, CompilerOptions {});
 
     const StringView leftParam("1");
     constexpr uint32_t RIGHT_PARAM = 1;
@@ -230,8 +218,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
 {
     ETSChecker etschecker {};
     ASTVerifier verifier {Allocator()};
-    auto program = Program::NewProgram<ETSBinder>(Allocator());
-    auto parser = ETSParser(&program, CompilerOptions {});
+
     auto left = BooleanLiteral(true);
     auto right = NumberLiteral(Number {1});
     auto arithmeticExpression = BinaryExpression(&left, &right, TokenType::PUNCTUATOR_DIVIDE);

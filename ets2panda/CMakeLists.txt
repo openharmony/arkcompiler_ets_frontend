@@ -100,6 +100,15 @@ panda_isa_gen(
 )
 
 panda_gen(
+    DATA ${CMAKE_CURRENT_SOURCE_DIR}/util/options.yaml
+    TARGET_NAME es2panda_options_gen
+    TEMPLATES options.h.erb
+    SOURCE ${PANDA_ROOT}/templates/options
+    DESTINATION ${GENERATED_DIR}
+    API ${PANDA_ROOT}/templates/common.rb
+)
+
+panda_gen(
     DATA ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.yaml
     TARGET_NAME es2panda_keywords
     TEMPLATES keywords.h.erb
@@ -571,7 +580,7 @@ set(ES2PANDA_LIB_SRC
 # libes2panda does not include bytecode optimizer, because it is used in
 # libarkruntime, and conflict with JIT setup ensues
 panda_add_library(es2panda-lib ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_LIB_SRC})
-add_dependencies(es2panda-lib isa_gen_es2panda es2panda_keywords es2panda_signatures)
+add_dependencies(es2panda-lib isa_gen_es2panda es2panda_options_gen es2panda_keywords es2panda_signatures)
 
 set(ICU_INCLUDE_DIRS
     ${PANDA_THIRD_PARTY_SOURCES_DIR}/icu/icu4c/source/common

@@ -2253,8 +2253,7 @@ ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(varbinder::LocalVaria
     implicitInstantiateArgument.append("}");
 
     parser::Program program(Allocator(), VarBinder());
-    es2panda::CompilerOptions options;
-    auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
+    auto parser = parser::ETSParser(&program, nullptr);
     auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
     compiler::InitScopesPhaseETS::RunExternalNode(argExpr, &program);
 
@@ -2272,7 +2271,7 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
     auto *fieldDecl = Allocator()->New<varbinder::LetDecl>(classProp->Key()->AsIdentifier()->Name());
     fieldDecl->BindNode(classProp);
 
-    auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::ETS);
+    auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::STS);
     fieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
 
     classProp->Key()->SetVariable(fieldVar);
@@ -2481,7 +2480,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 
     auto *const methodScope = scope->InstanceMethodScope();
     auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
-    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
+    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::STS);
 
     if (var == nullptr) {
         auto *const prevDecl = methodScope->FindDecl(name);

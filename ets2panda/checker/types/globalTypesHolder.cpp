@@ -716,7 +716,7 @@ void GlobalTypesHolder::InitializeBuiltin(const util::StringView name, Type *typ
 {
     const auto typeId = builtinNameMappings_.find(name);
     if (typeId == builtinNameMappings_.end()) {
-        util::Helpers::LogDebug("Did not find '", name, "' builtin in GlobalTypesHolder, it should be added.");
+        LOG(DEBUG, ES2PANDA) << "Did not find '" << name << "' builtin in GlobalTypesHolder, it should be added.";
         return;
     }
     globalTypes_.at(static_cast<size_t>(typeId->second)) = type;

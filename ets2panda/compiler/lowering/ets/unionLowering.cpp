@@ -38,6 +38,7 @@
 #include "ir/ts/tsAsExpression.h"
 #include "type_helper.h"
 #include "public/public.h"
+#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 static ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
@@ -220,7 +221,7 @@ bool UnionLowering::Postcondition(public_lib::Context *ctx, const parser::Progra
         }
         return objType->IsETSUnionType() && ast->AsMemberExpression()->PropVar() == nullptr;
     });
-    if (!current || ctx->config->options->CompilerOptions().compilationMode != CompilationMode::GEN_STD_LIB) {
+    if (!current || ctx->config->options->GetCompilationMode() != CompilationMode::GEN_STD_LIB) {
         return current;
     }
 

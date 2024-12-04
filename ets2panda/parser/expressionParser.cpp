@@ -71,6 +71,7 @@
 #include "lexer/token/token.h"
 #include "macros.h"
 #include "util/errorRecovery.h"
+#include "util/options.h"
 
 #include <memory>
 
@@ -2476,7 +2477,7 @@ ir::Expression *ParserImpl::ParseImportExpression()
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
         if (!context_.IsModule()) {
             LogSyntaxError("'import.Meta' may appear only with 'sourceType: module'");
-        } else if (GetOptions().isDirectEval) {
+        } else if (GetOptions().IsDirectEval()) {
             LogSyntaxError("'import.Meta' is not allowed in direct eval in module code.");
         }
 

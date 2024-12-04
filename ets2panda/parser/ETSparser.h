@@ -32,7 +32,8 @@ namespace ark::es2panda::parser {
 
 class ETSParser final : public TypedParser {
 public:
-    ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS);
+    ETSParser(Program *program, const util::Options &options, ParserStatus status);
+    ETSParser(Program *program, std::nullptr_t options);
 
     ETSParser() = delete;
     NO_COPY_SEMANTIC(ETSParser);
@@ -464,15 +465,7 @@ private:
 
     std::pair<ir::ModifierFlags, lexer::SourcePosition> ParseMemberModifiers();
 
-    std::shared_ptr<ArkTsConfig> ArkTSConfig() const
-    {
-        return GetOptions().arktsConfig;
-    }
-
-    bool IsETSModule() const
-    {
-        return GetOptions().isEtsModule;
-    }
+    bool IsETSModule() const;
 
     bool IsStructKeyword() const;
 

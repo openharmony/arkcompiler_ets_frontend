@@ -56,14 +56,6 @@ enum class AstNodeType;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::util {
-enum class LogLevel : std::uint8_t {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL,
-    INVALID,
-};
 
 class NodeAllocator {
 public:
@@ -189,27 +181,12 @@ public:
     static std::string UTF16toUTF8(const char16_t c);
 
     template <typename... Elements>
-    static void LogDebug(Elements &&...elems);
-    template <typename... Elements>
-    static void LogInfo(Elements &&...elems);
-    template <typename... Elements>
-    static void LogWarning(Elements &&...elems);
-    template <typename... Elements>
-    static void LogError(Elements &&...elems);
-    template <typename... Elements>
-    static void LogFatal(Elements &&...elems);
-
-    template <typename... Elements>
     static std::string AppendAll(Elements &&...elems);
 
     static std::pair<std::string_view, std::string_view> SplitSignature(std::string_view signature);
 
     static std::vector<std::string> &StdLib();
     static bool IsStdLib(const parser::Program *program);
-
-private:
-    template <LogLevel LOG_L, typename... Elements>
-    static void Log(Elements &&...elems);
 };
 
 template <typename T>
@@ -224,75 +201,6 @@ bool Helpers::IsInteger(double number)
     }
 
     return false;
-}
-
-template <LogLevel LOG_L, typename... Elements>
-void Helpers::Log(Elements &&...elems)
-{
-    constexpr auto ES2PANDA = ark::Logger::Component::ES2PANDA;
-    constexpr auto LOG_LEVEL = []() {
-        switch (LOG_L) {
-            case LogLevel::DEBUG: {
-                return ark::Logger::Level::DEBUG;
-            }
-            case LogLevel::INFO: {
-                return ark::Logger::Level::INFO;
-            }
-            case LogLevel::WARNING: {
-                return ark::Logger::Level::WARNING;
-            }
-            case LogLevel::ERROR: {
-                return ark::Logger::Level::ERROR;
-            }
-            case LogLevel::FATAL: {
-                return ark::Logger::Level::FATAL;
-            }
-            default: {
-                UNREACHABLE_CONSTEXPR();
-            }
-        }
-    }();
-
-#ifndef NDEBUG
-    const bool isMessageSuppressed = ark::Logger::IsMessageSuppressed(LOG_LEVEL, ES2PANDA);
-#else
-    const bool isMessageSuppressed = false;
-#endif
-    if (!ark::Logger::IsLoggingOnOrAbort(LOG_LEVEL, ES2PANDA) || isMessageSuppressed) {
-        return;
-    }
-
-    (ark::Logger::Message(LOG_LEVEL, ES2PANDA, false).GetStream() << ... << std::forward<Elements>(elems));
-}
-
-template <typename... Elements>
-void Helpers::LogDebug(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::DEBUG>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogInfo(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::INFO>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogWarning(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::WARNING>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogError(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::ERROR>(std::forward<Elements>(elems)...);
-}
-
-template <typename... Elements>
-void Helpers::LogFatal(Elements &&...elems)
-{
-    Helpers::Log<LogLevel::FATAL>(std::forward<Elements>(elems)...);
 }
 
 template <typename... Elements>

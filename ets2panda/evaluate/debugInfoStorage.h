@@ -30,6 +30,10 @@
 #include <unordered_map>
 #include <utility>
 
+namespace ark::es2panda::util {
+class Options;
+}  // namespace ark::es2panda::util
+
 namespace ark::es2panda::evaluate {
 
 struct FileDebugInfo final {
@@ -57,7 +61,7 @@ struct FileDebugInfo final {
 // All "find" methods must accept paths to source files.
 class DebugInfoStorage final {
 public:
-    explicit DebugInfoStorage(const CompilerOptions &options, ArenaAllocator *allocator);
+    explicit DebugInfoStorage(const util::Options &options, ArenaAllocator *allocator);
 
     NO_COPY_SEMANTIC(DebugInfoStorage);
     NO_MOVE_SEMANTIC(DebugInfoStorage);

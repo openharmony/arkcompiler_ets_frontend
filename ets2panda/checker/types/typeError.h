@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_CHECKER_TYPES_ERROR_TYPE_ERROR_H
 #define ES2PANDA_CHECKER_TYPES_ERROR_TYPE_ERROR_H
 
-#include "es2panda.h"
 #include "checker/types/type.h"
 
 namespace ark::es2panda::checker {

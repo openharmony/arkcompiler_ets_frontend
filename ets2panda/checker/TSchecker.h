@@ -253,7 +253,7 @@ public:
         return bigintLiteralMap_;
     }
 
-    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
+    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const util::Options &options) override;
     Type *CheckTypeCached(ir::Expression *expr) override;
 
     // Util

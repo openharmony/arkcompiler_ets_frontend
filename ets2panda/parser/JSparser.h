@@ -21,8 +21,8 @@
 namespace ark::es2panda::parser {
 class JSParser : public ParserImpl {
 public:
-    JSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : ParserImpl(program, options, status)
+    JSParser(Program *program, const util::Options &options, ParserStatus status = ParserStatus::NO_OPTS)
+        : ParserImpl(program, &options, status)
     {
     }
 };

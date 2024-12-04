@@ -16,6 +16,8 @@
 #ifndef PANDA_UNION_NORMALISATION_TEST_H
 #define PANDA_UNION_NORMALISATION_TEST_H
 
+#include "util/options.h"
+
 namespace ark::es2panda::gtests {
 
 class UnionNormalizationTest : public testing::Test {
@@ -23,8 +25,7 @@ public:
     UnionNormalizationTest()
         : allocator_(std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER)),
           publicContext_ {std::make_unique<public_lib::Context>()},
-          program_ {parser::Program::NewProgram<varbinder::ETSBinder>(Allocator())},
-          es2pandaPath_ {test::utils::PandaExecutablePathGetter {}.Get()}
+          program_ {parser::Program::NewProgram<varbinder::ETSBinder>(Allocator())}
     {
     }
 
@@ -54,13 +55,10 @@ public:
 
     void InitializeChecker(std::string_view fileName, std::string_view src)
     {
-        auto es2pandaPathPtr = es2pandaPath_.c_str();
-        ASSERT(es2pandaPathPtr);
-
         InitializeChecker<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                           compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
-                          compiler::ETSFunctionEmitter, compiler::ETSEmitter>(&es2pandaPathPtr, fileName, src,
-                                                                              &checker_, &program_);
+                          compiler::ETSFunctionEmitter, compiler::ETSEmitter>(
+            Span(test::utils::PandaExecutablePathGetter::Get()), fileName, src, &checker_, &program_);
     }
 
     template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
@@ -78,27 +76,26 @@ public:
 
     template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
               typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-    void InitializeChecker(const char **argv, std::string_view fileName, std::string_view src,
+    void InitializeChecker(Span<const char *const> args, std::string_view fileName, std::string_view src,
                            checker::ETSChecker *checker, parser::Program *program)
     {
-        auto options = std::make_unique<ark::es2panda::util::Options>();
-        if (!options->Parse(1, argv)) {
+        auto options = std::make_unique<ark::es2panda::util::Options>(args[0]);
+        if (!options->Parse(args)) {
             std::cerr << options->ErrorMsg() << std::endl;
             return;
         }
 
         ark::Logger::ComponentMask mask {};
         mask.set(ark::Logger::Component::ES2PANDA);
-        ark::Logger::InitializeStdLogging(ark::Logger::LevelFromString(options->LogLevel()), mask);
+        ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
 
-        Compiler compiler(options->Extension(), options->ThreadCount());
-        SourceFile input(fileName, src, options->ParseModule());
-        compiler::CompilationUnit unit {input, *options, 0, options->Extension()};
-        auto getPhases = compiler::GetPhaseList(ScriptExtension::ETS);
+        Compiler compiler(options->GetExtension(), options->GetThread());
+        SourceFile input(fileName, src, options->IsModule());
+        compiler::CompilationUnit unit {input, *options, 0, options->GetExtension()};
+        auto getPhases = compiler::GetPhaseList(ScriptExtension::STS);
 
         program->MarkEntry();
-        auto parser =
-            Parser(program, unit.options.CompilerOptions(), static_cast<parser::ParserStatus>(unit.rawParserStatus));
+        auto parser = Parser(program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
         auto analyzer = Analyzer(checker);
         checker->SetAnalyzer(&analyzer);
 
@@ -120,7 +117,7 @@ public:
         publicContext_->emitter = &emitter;
         publicContext_->parserProgram = program;
 
-        parser.ParseScript(unit.input, unit.options.CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB);
+        parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
         for (auto *phase : getPhases) {
             if (!phase->Apply(publicContext_.get(), program)) {
                 return;
@@ -164,7 +161,6 @@ private:
     std::unique_ptr<ArenaAllocator> allocator_;
     std::unique_ptr<public_lib::Context> publicContext_;
     parser::Program program_;
-    std::string es2pandaPath_;
     checker::ETSChecker checker_;
 };
 

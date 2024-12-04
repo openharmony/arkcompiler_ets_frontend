@@ -40,8 +40,8 @@ private:
     bool IsEnd();
 
     std::set<ETSWarnings> ParseETSNolintArgs();
-    bool ValidETSNolintArg(const std::u32string &warningName) const;
-    ETSWarnings MapETSNolintArg(const std::u32string &warningName) const;
+    bool ValidETSNolintArg(const std::string &warningName) const;
+    ETSWarnings MapETSNolintArg(const std::string &warningName) const;
 
     void AddToETSNolintLinesCollection(std::size_t line, const std::set<ETSWarnings> &collection);
     bool IsLineWithETSNolint(const std::size_t line) const;
@@ -55,7 +55,6 @@ private:
     std::size_t line_ = 0;
     std::set<ETSWarnings> applyingCollection_;
     std::map<size_t, std::set<ETSWarnings>> linesCollection_;
-    std::map<std::u32string, ETSWarnings> warningsMap_;
 };
 }  // namespace ark::es2panda::parser
 #endif

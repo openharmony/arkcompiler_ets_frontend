@@ -42,11 +42,11 @@ public:
 
     void SetCurrentProgram(std::string_view src)
     {
-        int argc = 1;
+        unsigned argc = 1;
         const char *argv = "../../../../bin/es2panda";  // NOLINT(modernize-avoid-c-arrays)
         static constexpr std::string_view FILE_NAME = "ets_decl_test.sts";
 
-        program_ = GetProgram(argc, &argv, FILE_NAME, src);
+        program_ = GetProgram({&argv, argc}, FILE_NAME, src);
         ASSERT_NE(program_.get(), nullptr);
     }
 
@@ -73,21 +73,21 @@ private:
     NO_COPY_SEMANTIC(DeclareTest);
     NO_MOVE_SEMANTIC(DeclareTest);
 
-    static std::unique_ptr<pandasm::Program> GetProgram(int argc, const char **argv, std::string_view fileName,
+    static std::unique_ptr<pandasm::Program> GetProgram(ark::Span<const char *const> args, std::string_view fileName,
                                                         std::string_view src)
     {
-        auto options = std::make_unique<es2panda::util::Options>();
-        if (!options->Parse(argc, argv)) {
+        auto options = std::make_unique<es2panda::util::Options>(args[0]);
+        if (!options->Parse(args)) {
             std::cerr << options->ErrorMsg() << std::endl;
             return nullptr;
         }
 
         Logger::ComponentMask mask {};
         mask.set(Logger::Component::ES2PANDA);
-        Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), mask);
+        Logger::InitializeStdLogging(options->LogLevel(), mask);
 
-        es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
-        es2panda::SourceFile input(fileName, src, options->ParseModule());
+        es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
+        es2panda::SourceFile input(fileName, src, options->IsModule());
 
         return std::unique_ptr<pandasm::Program>(compiler.Compile(input, *options));
     }

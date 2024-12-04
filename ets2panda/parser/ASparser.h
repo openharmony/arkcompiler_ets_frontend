@@ -22,8 +22,8 @@
 namespace ark::es2panda::parser {
 class ASParser : public TypedParser {
 public:
-    ASParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : TypedParser(program, options, status)
+    ASParser(Program *program, const util::Options &options, ParserStatus status = ParserStatus::NO_OPTS)
+        : TypedParser(program, &options, status)
     {
     }
 

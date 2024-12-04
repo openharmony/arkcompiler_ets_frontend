@@ -8,17 +8,7 @@ es2panda [OPTIONS] [input file] -- [arguments]
 ```
 
 ## Optional arguments
- - `--debug-info`: Compile with debug info
- - `--dump-assembly`: Dump pandasm
- - `--dump-ast`: Dump the parsed AST
- - `--dump-debug-info`: Dump debug info
- - `--dump-size-stat`: Dump binary size statistics
- - `--extension`: Parse the input as the given extension (options: js | ts | as)
- - `--module`: Parse the input as module
- - `--opt-level`: Compiler optimization level (options: 0 | 1 | 2)
- - `--output`: Compiler binary output (.abc)
- - `--parse-only`: Parse the input only
- - `--strict`: Parse the input in strict mode
+[util/options.yaml](util/options.yaml)
 
 ## Tail arguments
  - `input`: input file
