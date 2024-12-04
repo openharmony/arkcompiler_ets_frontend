@@ -18,6 +18,7 @@
 #include "lexer/lexer.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/ets/etsTuple.h"
+#include "util/errorRecovery.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -556,7 +557,6 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *type = ParseTypeAnnotation(&options);
-
     if (type == nullptr) {
         // Error processing
         // Failed to parse type annotation for AsExpression
@@ -582,9 +582,13 @@ ir::ClassDefinition *ETSParser::CreateClassDefinitionForNewExpression(ArenaVecto
 
         Lexer()->NextToken();
 
-        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            ir::Expression *argument = ParseExpression();
-            arguments.push_back(argument);
+        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS &&
+               Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+            util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
+            ir::Expression *const argument = ParseExpression();
+            if (argument != nullptr) {
+                arguments.push_back(argument);
+            }
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
                 Lexer()->NextToken();
@@ -690,6 +694,9 @@ ir::Expression *ETSParser::ParseAsyncExpression()
 
     auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ARROW_FUNCTION | ParserStatus::ASYNC_FUNCTION;
     auto *func = ParseFunction(newStatus);
+    if (func == nullptr) {  // Error processing.
+        return nullptr;
+    }
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func);
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;

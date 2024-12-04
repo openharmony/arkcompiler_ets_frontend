@@ -24,3 +24,4 @@
 }
 
 /* @@? 21:2 Error SyntaxError: Annotations cannot be applied to an annotation declaration.  */
+/* @@? 21:2 Error SyntaxError: Annotations are not allowed on this type of declaration.  */

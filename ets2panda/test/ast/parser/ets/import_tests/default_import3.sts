@@ -16,3 +16,5 @@
 import {default} from "./modules/class_default_module.sts";
 
 /* @@? 16:16 Error SyntaxError: Unexpected token, expected: 'as'.  */
+/* @@? 16:16 Error SyntaxError: Unexpected token, expected identifier or '}'.  */
+/* @@? 16:23 Error SyntaxError: Unexpected token 'string literal'.  */

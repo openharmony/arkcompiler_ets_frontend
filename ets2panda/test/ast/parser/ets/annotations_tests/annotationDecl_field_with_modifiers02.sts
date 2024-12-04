@@ -19,3 +19,5 @@
 
 
 /* @@? 16:5 Error SyntaxError: Annotation property can not have access modifiers  */
+/* @@? 16:5 Error SyntaxError: Identifier expected, got 'static'.  */
+/* @@? 16:12 Error SyntaxError: Missing type annotation for property.  */

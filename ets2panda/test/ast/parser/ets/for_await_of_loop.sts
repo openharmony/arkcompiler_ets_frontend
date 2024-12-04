@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-for await (let k: int /* @@ label */= 0; k < d.length; k++) {
+for await (let k: int /* @@ label1 */= 0; /* @@ label2 */k < d.length; k++) {
     this.$_set_unsafe(k + 1, d[k])
 }
 
-/* @@@ label Error SyntaxError: for-await-of loop variable declaration may not have an initializer  */
+/* @@@ label1 Error SyntaxError: for-await-of loop variable declaration may not have an initializer  */
+/* @@@ label2 Error SyntaxError: Unexpected token 'identification literal'.  */

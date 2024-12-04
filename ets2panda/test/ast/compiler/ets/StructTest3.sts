@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-/* @@ label */struct MyStruct {
+struct MyStruct {
 }
 
-/* @@@ label Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Illegal start of STRUCT expression  */

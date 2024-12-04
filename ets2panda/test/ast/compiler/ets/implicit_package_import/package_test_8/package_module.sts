@@ -20,4 +20,5 @@ package subpackage_a;
 export let myvar: number = 8;
 export let myvar2: number = 9;
 
-/* @@? import_multi_error.sts:20:21 Error SyntaxError: Please compile `package_module.sts` with `--ets-module` option. It is being imported by another file. */
+/* @@? import_multi_error.sts:20:21 Error Error: Please compile `package_module.sts` with `--ets-module` option. It is being imported by another file.  */
+/* @@? import_multi_error.sts:21:22 Error Error: Please compile `package_module.sts` with `--ets-module` option. It is being imported by another file.  */

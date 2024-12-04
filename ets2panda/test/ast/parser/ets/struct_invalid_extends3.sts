@@ -19,8 +19,9 @@ enum Color {
   Blue
 }
 
-/* @@ label */struct B extends Color {
+struct B extends Color {
     
 }
 
-/* @@@ label Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 22:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 22:1 Error SyntaxError: Illegal start of STRUCT expression  */

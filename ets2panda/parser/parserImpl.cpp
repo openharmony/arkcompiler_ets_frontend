@@ -1335,13 +1335,17 @@ void ParserImpl::LogExpectedToken(lexer::TokenType tokenType)
     lexer_->GetToken().SetTokenType(tokenType);
 }
 
-void ParserImpl::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos)
+void ParserImpl::LogError(ErrorType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos)
 {
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    errorLogger_.WriteLog(
-        Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col});
+    errorLogger_.WriteLog(Error {errorType, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col});
+}
+
+void ParserImpl::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos)
+{
+    LogError(ErrorType::SYNTAX, errorMessage, pos);
 }
 
 void ParserImpl::LogSyntaxError(std::string_view const errorMessage)
@@ -1365,6 +1369,11 @@ void ParserImpl::LogSyntaxError(std::initializer_list<std::string_view> list, co
     std::string err = ss.str();
 
     LogSyntaxError(std::string_view {err}, pos);
+}
+
+void ParserImpl::LogGenericError(std::string_view errorMessage)
+{
+    LogError(ErrorType::GENERIC, errorMessage, lexer_->GetToken().Start());
 }
 
 void ParserImpl::ThrowAllocationError(std::string_view message) const

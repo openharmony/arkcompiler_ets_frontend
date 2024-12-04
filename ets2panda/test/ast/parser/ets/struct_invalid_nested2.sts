@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-/* @@ label */struct A {
+struct A {
     class B {
         
     }
 }
 
-/* @@@ label Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Struct types are not supported yet!  */
+/* @@? 16:1 Error SyntaxError: Illegal start of STRUCT expression  */
+/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
