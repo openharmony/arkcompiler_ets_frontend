@@ -46,26 +46,31 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
         return GlobalTypeError();
     }
 
-    Type *bareType = possiblyTypeParam.value()->Check(this);
-    if (!bareType->IsETSReferenceType()) {
+    Type *baseType = possiblyTypeParam.value()->Check(this);
+
+    if (baseType->IsTypeError()) {
+        return baseType;
+    }
+
+    if (!baseType->IsETSReferenceType()) {
         LogTypeError("Only reference types can be converted to utility types.", typeParams->Start());
         return GlobalTypeError();
     }
 
     if (utilityType == compiler::Signatures::PARTIAL_TYPE_NAME) {
-        return CreatePartialType(bareType);
+        return CreatePartialType(baseType);
     }
 
     if (utilityType == compiler::Signatures::READONLY_TYPE_NAME) {
-        return GetReadonlyType(bareType);
+        return GetReadonlyType(baseType);
     }
 
     if (utilityType == compiler::Signatures::REQUIRED_TYPE_NAME) {
-        return HandleRequiredType(bareType);
+        return HandleRequiredType(baseType);
     }
 
     LogTypeError("This utility type is not yet implemented.", typeParams->Start());
-    return bareType;
+    return baseType;
 }
 
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -89,7 +94,7 @@ static std::pair<util::StringView, util::StringView> GetPartialClassName(ETSChec
 static std::pair<parser::Program *, varbinder::RecordTable *> GetPartialClassProgram(ETSChecker *checker,
                                                                                      ir::AstNode *typeNode)
 {
-    auto classDefProgram = typeNode->GetTopStatement()->AsETSScript()->Program();
+    auto classDefProgram = typeNode->GetTopStatement()->AsETSModule()->Program();
     if (classDefProgram == checker->VarBinder()->Program()) {
         return {classDefProgram, checker->VarBinder()->AsETSBinder()->GetGlobalRecordTable()};
     }

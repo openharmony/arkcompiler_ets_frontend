@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,7 +58,9 @@ void TSQualifiedName::Dump(ir::AstDumper *dumper) const
 
 void TSQualifiedName::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("TSQualifiedName");
+    left_->Dump(dumper);
+    dumper->Add(".");
+    right_->Dump(dumper);
 }
 
 void TSQualifiedName::Compile([[maybe_unused]] compiler::PandaGen *pg) const

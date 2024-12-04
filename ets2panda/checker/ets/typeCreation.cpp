@@ -26,7 +26,7 @@
 #include "generated/signatures.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/scriptFunction.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsEnumMember.h"

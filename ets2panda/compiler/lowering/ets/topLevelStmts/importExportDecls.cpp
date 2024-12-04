@@ -31,6 +31,21 @@ void ImportExportDecls::ParseDefaultSources()
     varbinder_->SetDefaultImports(std::move(imports));
 }
 
+void ImportExportDecls::ProcessProgramStatements(parser::Program *program,
+                                                 const ArenaVector<ir::Statement *> &statements,
+                                                 GlobalClassHandler::ModuleDependencies &moduleDependencies)
+{
+    for (auto stmt : statements) {
+        if (stmt->IsETSModule()) {
+            ProcessProgramStatements(program, stmt->AsETSModule()->Statements(), moduleDependencies);
+        }
+        stmt->Accept(this);
+        if (stmt->IsExportNamedDeclaration()) {
+            PopulateAliasMap(stmt->AsExportNamedDeclaration(), program->SourceFilePath());
+        }
+    }
+}
+
 GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(ArenaVector<parser::Program *> &programs)
 {
     VerifySingleExportDefault(programs);
@@ -43,12 +58,7 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
         fieldMap_.clear();
         exportNameMap_.clear();
         exportedTypes_.clear();
-        for (auto stmt : program->Ast()->Statements()) {
-            stmt->Accept(this);
-            if (stmt->IsExportNamedDeclaration()) {
-                PopulateAliasMap(stmt->AsExportNamedDeclaration(), program->SourceFilePath());
-            }
-        }
+        ProcessProgramStatements(program, program->Ast()->Statements(), moduleDependencies);
         for (auto const &[exportName, startLoc] : exportNameMap_) {
             const bool isType = exportedTypes_.find(exportName) != exportedTypes_.end();
             util::StringView originalName = varbinder_->FindNameInAliasMap(program->SourceFilePath(), exportName);
@@ -151,6 +161,14 @@ void ImportExportDecls::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *
 void ImportExportDecls::VisitAnnotationDeclaration(ir::AnnotationDeclaration *annotationDecl)
 {
     fieldMap_.emplace(annotationDecl->GetBaseName()->Name(), annotationDecl);
+}
+
+void ImportExportDecls::VisitETSModule(ir::ETSModule *etsModule)
+{
+    if (etsModule->IsETSScript()) {
+        return;
+    }
+    fieldMap_.emplace(etsModule->Ident()->Name(), etsModule);
 }
 
 void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl)

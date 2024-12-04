@@ -34,7 +34,6 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/spreadElement.h"
-#include "ir/statements/namespaceDeclaration.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/dummyNode.h"
@@ -49,7 +48,7 @@
 #include "ir/ets/etsWildcardType.h"
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsFunctionType.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNullishTypes.h"
@@ -81,12 +80,14 @@ using namespace std::literals::string_literals;
 ETSParser::ETSParser(Program *program, const util::Options &options, ParserStatus status)
     : TypedParser(program, &options, status), globalProgram_(GetProgram())
 {
+    namespaceNestedRank_ = 0;
     importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), options);
 }
 
 ETSParser::ETSParser(Program *program, std::nullptr_t)
     : TypedParser(program, nullptr, ParserStatus::NO_OPTS), globalProgram_(GetProgram())
 {
+    namespaceNestedRank_ = 0;
 }
 
 bool ETSParser::IsETSParser() const noexcept
@@ -126,7 +127,7 @@ void ETSParser::ParseProgram(ScriptKind kind)
     GetProgram()->SetAst(script);
 }
 
-ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
+ir::ETSModule *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
 {
     ETSNolintParser etsnolintParser(this);
     etsnolintParser.CollectETSNolints();
@@ -139,9 +140,11 @@ ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
 
     etsnolintParser.ApplyETSNolintsToStatements(statements);
 
-    auto *etsScript = AllocNode<ir::ETSScript>(Allocator(), std::move(statements), GetProgram());
-    etsScript->SetRange({startLoc, Lexer()->GetToken().End()});
-    return etsScript;
+    auto ident = AllocNode<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, Allocator());
+    auto *etsModule =
+        AllocNode<ir::ETSModule>(Allocator(), std::move(statements), ident, ir::ModuleFlag::ETSSCRIPT, GetProgram());
+    etsModule->SetRange({startLoc, Lexer()->GetToken().End()});
+    return etsModule;
 }
 
 void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
@@ -449,10 +452,6 @@ ir::AstNode *ETSParser::ParseInnerTypeDeclaration(ir::ModifierFlags memberModifi
 ir::AstNode *ETSParser::ParseInnerConstructorDeclaration(ir::ModifierFlags memberModifiers,
                                                          const lexer::SourcePosition &startLoc)
 {
-    if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
-        LogSyntaxError({"Namespaces should not have a constructor"});
-    }
-
     if ((memberModifiers & (~(ir::ModifierFlags::ACCESS | ir::ModifierFlags::DECLARE | ir::ModifierFlags::NATIVE))) !=
         0) {
         LogSyntaxError(
@@ -601,15 +600,6 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
         }
         case lexer::TokenType::KEYW_INTERFACE: {
             return ParseInterfaceDeclaration(false);
-        }
-        case lexer::TokenType::KEYW_NAMESPACE: {
-            if (!InAmbientContext()) {
-                LogSyntaxError("Namespaces are declare only");
-            }
-            GetContext().Status() |= ParserStatus::IN_NAMESPACE;
-            auto *ns = ParseNamespaceDeclaration(ir::ModifierFlags::DECLARE | ir::ModifierFlags::EXPORT);
-            GetContext().Status() &= ~ParserStatus::IN_NAMESPACE;
-            return ns;
         }
         case lexer::TokenType::KEYW_CLASS: {
             return ParseClassDeclaration(modifiers);
@@ -977,6 +967,9 @@ void ETSParser::ReportIfVarDeclaration(VariableParsingFlags flags)
 
 ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers)
 {
+    if (!InAmbientContext() && (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
+        LogSyntaxError("Export declarations are not permitted in a namespace.");
+    }
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
            Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);

@@ -49,7 +49,6 @@
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/ifStatement.h"
 #include "ir/statements/labelledStatement.h"
-#include "ir/statements/namespaceDeclaration.h"
 #include "ir/statements/switchStatement.h"
 #include "ir/statements/throwStatement.h"
 #include "ir/statements/tryStatement.h"
@@ -69,7 +68,7 @@
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsNewMultiDimArrayInstanceExpression.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNullishTypes.h"
@@ -550,7 +549,7 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
             result = ParseInnerConstructorDeclaration(memberModifiers, startLoc);
             break;
         case lexer::TokenType::KEYW_NAMESPACE:
-            result = ParseNamespaceDeclaration(memberModifiers);
+            result = ParseNamespace(memberModifiers);
             break;
         case lexer::TokenType::KEYW_PUBLIC:
         case lexer::TokenType::KEYW_PRIVATE:

@@ -24,12 +24,18 @@ namespace ark::es2panda::compiler {
 
 class GlobalDeclTransformer : public ir::visitor::CustomAstVisitor {
     const std::unordered_set<ir::AstNodeType> typeDecl_ = {
-        ir::AstNodeType::CLASS_DECLARATION,         ir::AstNodeType::STRUCT_DECLARATION,
-        ir::AstNodeType::TS_ENUM_DECLARATION,       ir::AstNodeType::TS_INTERFACE_DECLARATION,
-        ir::AstNodeType::ETS_PACKAGE_DECLARATION,   ir::AstNodeType::ETS_IMPORT_DECLARATION,
-        ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION, ir::AstNodeType::EXPORT_ALL_DECLARATION,
-        ir::AstNodeType::EXPORT_NAMED_DECLARATION,  ir::AstNodeType::REEXPORT_STATEMENT,
-        ir::AstNodeType::NAMESPACE_DECLARATION,     ir::AstNodeType::ANNOTATION_DECLARATION,
+        ir::AstNodeType::CLASS_DECLARATION,
+        ir::AstNodeType::STRUCT_DECLARATION,
+        ir::AstNodeType::TS_ENUM_DECLARATION,
+        ir::AstNodeType::TS_INTERFACE_DECLARATION,
+        ir::AstNodeType::ETS_PACKAGE_DECLARATION,
+        ir::AstNodeType::ETS_IMPORT_DECLARATION,
+        ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION,
+        ir::AstNodeType::EXPORT_ALL_DECLARATION,
+        ir::AstNodeType::EXPORT_NAMED_DECLARATION,
+        ir::AstNodeType::REEXPORT_STATEMENT,
+        ir::AstNodeType::ETS_MODULE,
+        ir::AstNodeType::ANNOTATION_DECLARATION,
     };
 
     const std::unordered_set<ir::AstNodeType> propertiesDecl_ = {

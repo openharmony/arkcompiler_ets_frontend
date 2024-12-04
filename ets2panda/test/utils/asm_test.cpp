@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,16 @@ ark::pandasm::Function *AsmTest::GetFunction(std::string_view functionName,
 {
     auto it = program->functionTable.find(functionName.data());
     if (it == program->functionTable.end()) {
+        return nullptr;
+    }
+    return &it->second;
+}
+
+ark::pandasm::Record *AsmTest::GetRecord(std::string_view recordName,
+                                         const std::unique_ptr<ark::pandasm::Program> &program)
+{
+    auto it = program->recordTable.find(recordName.data());
+    if (it == program->recordTable.end()) {
         return nullptr;
     }
     return &it->second;

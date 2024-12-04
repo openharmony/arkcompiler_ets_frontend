@@ -47,6 +47,15 @@ private:
      * @param init_statements statements which should be executed
      */
     void SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&statements);
+    void AddStaticBlockToClass(ir::AstNode *node);
+    void CollectProgramGlobalClasses(parser::Program *program, ArenaVector<ir::ETSModule *> namespaces);
+    ir::ClassDeclaration *TransformNamespace(ir::ETSModule *ns, parser::Program *program);
+    ir::ClassDeclaration *CreateTransformedClass(ir::ETSModule *ns);
+    void SetupGlobalMethods(ir::ClassDefinition *globalClass, ArenaVector<ir::Statement *> &&initStatements,
+                            bool isDeclare);
+    ArenaVector<ir::ClassDeclaration *> TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
+                                                            parser::Program *program);
+    void MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::ETSParser *parser);
 
     ir::ClassDeclaration *CreateGlobalClass();
     ir::ClassStaticBlock *CreateStaticBlock(ir::ClassDefinition *classDef);
@@ -60,14 +69,7 @@ private:
     void FormDependentInitTriggers(ArenaVector<ir::Statement *> &statements,
                                    const ModuleDependencies *moduleDependencies);
 
-    /**
-     *
-     * @param program leave only declarations here
-     * @param class_def add new properties such as methods and fields
-     * @param addInitializer $init$ should contain global variable initializers
-     * @return Statements, which should be executed before the start
-     */
-    ArenaVector<ir::Statement *> CollectProgramGlobalStatements(parser::Program *program,
+    ArenaVector<ir::Statement *> CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
                                                                 ir::ClassDefinition *classDef);
 
     ir::Identifier *RefIdent(const util::StringView &name);

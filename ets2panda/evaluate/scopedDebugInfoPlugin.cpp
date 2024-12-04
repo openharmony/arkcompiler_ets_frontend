@@ -406,9 +406,10 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
     parser::Program *program = allocator->New<parser::Program>(allocator, GetETSBinder());
     program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), true});
     program->SetPackageInfo(moduleName, parser::ModuleKind::MODULE);
-    auto *etsScript =
-        allocator->New<ir::ETSScript>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()), program);
-    program->SetAst(etsScript);
+    auto *emptyIdent = allocator->New<ir::Identifier>("", allocator);
+    auto *etsModule = allocator->New<ir::ETSModule>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()),
+                                                    emptyIdent, ir::ModuleFlag::ETSSCRIPT, program);
+    program->SetAst(etsModule);
 
     helpers::AddExternalProgram(globalProgram_, program, moduleName);
     proxyProgramsCache_.AddProgram(program);

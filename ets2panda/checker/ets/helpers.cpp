@@ -81,6 +81,10 @@ void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)
             identCategoryName = "Class";
             break;
         }
+        case varbinder::VariableFlags::NAMESPACE: {
+            identCategoryName = "Namespace";
+            break;
+        }
         case varbinder::VariableFlags::METHOD: {
             identCategoryName = "Function";
             break;
@@ -1393,51 +1397,53 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
 
     ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() != nullptr);
 
-    // NOTE: kbaladurin. forbid usage imported entities as types without declarations
-    auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(name->AsIdentifier()->Variable());
-    if (importData != nullptr && importData->import->IsPureDynamic()) {
-        name->SetTsType(GlobalBuiltinDynamicType(importData->import->Language()));
+    if (HandleDynamicImport(name)) {
         return name->TsType();
     }
 
     auto *refVar = name->AsIdentifier()->Variable()->AsLocalVariable();
+    auto *tsType = ResolveReferencedType(refVar, name);
 
-    checker::Type *tsType = nullptr;
-    switch (refVar->Declaration()->Node()->Type()) {
-        case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
-            tsType = GetTypeFromInterfaceReference(refVar);
-            break;
-        }
-        case ir::AstNodeType::CLASS_DECLARATION:
-        case ir::AstNodeType::STRUCT_DECLARATION:
-        case ir::AstNodeType::CLASS_DEFINITION: {
-            tsType = GetTypeFromClassReference(refVar);
-            break;
-        }
-        case ir::AstNodeType::TS_ENUM_DECLARATION: {
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            tsType = GetTypeFromEnumReference(refVar);
-            break;
-        }
-        case ir::AstNodeType::TS_TYPE_PARAMETER: {
-            tsType = GetTypeFromTypeParameterReference(refVar, name->Start());
-            break;
-        }
-        case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION: {
-            tsType = GetTypeFromTypeAliasReference(refVar);
-            break;
-        }
-        case ir::AstNodeType::ANNOTATION_DECLARATION: {
-            LogTypeError("Annotations cannot be used as a type.", name->Start());
-            tsType = GlobalTypeError();
-            break;
-        }
-        default: {
-            UNREACHABLE();
-        }
-    }
     name->SetTsType(tsType);
     return tsType;
+}
+
+bool ETSChecker::HandleDynamicImport(ir::Expression *name)
+{
+    auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(name->AsIdentifier()->Variable());
+    if (importData != nullptr && importData->import->IsPureDynamic()) {
+        name->SetTsType(GlobalBuiltinDynamicType(importData->import->Language()));
+        return true;
+    }
+    return false;
+}
+
+Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const ir::Expression *name)
+{
+    switch (refVar->Declaration()->Node()->Type()) {
+        case ir::AstNodeType::TS_INTERFACE_DECLARATION:
+            return GetTypeFromInterfaceReference(refVar);
+        case ir::AstNodeType::CLASS_DECLARATION:
+        case ir::AstNodeType::STRUCT_DECLARATION:
+        case ir::AstNodeType::CLASS_DEFINITION:
+            if (refVar->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
+                LogTypeError({"Namespace '", refVar->Name(), "' cannot be used as a type."}, name->Start());
+                return GlobalTypeError();
+            }
+            return GetTypeFromClassReference(refVar);
+        case ir::AstNodeType::TS_ENUM_DECLARATION:
+            return GetTypeFromEnumReference(refVar);
+        case ir::AstNodeType::TS_TYPE_PARAMETER:
+            return GetTypeFromTypeParameterReference(refVar, name->Start());
+        case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
+            return GetTypeFromTypeAliasReference(refVar);
+        case ir::AstNodeType::ANNOTATION_DECLARATION:
+            LogTypeError("Annotations cannot be used as a type.", name->Start());
+            return GlobalTypeError();
+
+        default:
+            UNREACHABLE();
+    }
 }
 
 void ETSChecker::ConcatConstantString(util::UString &target, Type *type)

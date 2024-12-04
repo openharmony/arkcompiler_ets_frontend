@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -222,10 +222,10 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSameNegative)
 
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
 
-    auto ast = GetAstFromContext<ark::es2panda::ir::ETSScript>(impl_, ctx);
+    auto ast = GetAstFromContext<ark::es2panda::ir::ETSModule>(impl_, ctx);
 
     // Note(@kirillbychkov): Change Identifier name in variable lambda2
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -269,7 +269,7 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSame)
 
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
 
-    auto ast = GetAstFromContext<ark::es2panda::ir::ETSScript>(impl_, ctx);
+    auto ast = GetAstFromContext<ark::es2panda::ir::ETSModule>(impl_, ctx);
     const auto &messages = verifier_.Verify<VariableNameIdentifierNameSame>(ast);
     ASSERT_EQ(messages.size(), 0);
     impl_->DestroyContext(ctx);

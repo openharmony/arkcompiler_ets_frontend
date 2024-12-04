@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,7 +69,7 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TemplateElement *expr) con
 }
 
 // from ets folder
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSScript *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSModule *expr) const
 {
     UNREACHABLE();
 }
@@ -406,16 +406,6 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypePredicate *node) con
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DummyNode *node) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NamespaceDeclaration *expr) const
-{
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NamespaceDefinition *expr) const
 {
     UNREACHABLE();
 }

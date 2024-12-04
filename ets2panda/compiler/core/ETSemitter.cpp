@@ -536,7 +536,7 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
 
     std::vector<pandasm::AnnotationData> annotations = GenAnnotations(classDef);
     if (!annotations.empty()) {
-        classRecord.metadata->SetAnnotations(std::move(annotations));
+        classRecord.metadata->AddAnnotations(annotations);
     }
 
     Program()->recordTable.emplace(classRecord.name, std::move(classRecord));

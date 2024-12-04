@@ -249,3 +249,19 @@ runtime/ets/interfacePropertyFunctionType.sts
 #Issue 21065
 runtime/ets/implementsClassPropertyUnionType1.sts
 runtime/ets/implementsClassPropertyUnionType2.sts
+
+#New failures at #FailKind.SRC_DUMPER_FAI
+ast/compiler/ets/ambient_namesapce01.sts
+ast/compiler/ets/ambient_namesapce03.sts
+ast/compiler/ets/ambient_namesapce04.sts
+ast/compiler/ets/ambient_namesapce06.sts
+ast/compiler/ets/namespace_tests/namespace_access_violation.sts
+ast/compiler/ets/namespace_tests/namespace_access_violation_import_conflicts.sts
+ast/compiler/ets/namespace_tests/namespace_access_violation_nested_scopes.sts
+runtime/ets/namespace_tests/namespace_execution_statements_test02.sts
+ast/compiler/ets/namespace_tests/namespace_access_violation_merge_conflicts.sts
+ast/compiler/ets/namespace_tests/src01.sts
+ast/compiler/ets/namespace_tests/namespace.sts
+ast/compiler/ets/namespace_tests/namespace_ambient_export01.sts
+ast/compiler/ets/namespace_tests/namespace_ambient_export02.sts
+ast/compiler/ets/namespace_tests/namespace_ambient_export03.sts

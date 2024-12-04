@@ -153,7 +153,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/type.h
     ${ES2PANDA_ROOT}/checker/types/ts/booleanLiteralType.h
     ${ES2PANDA_ROOT}/checker/types/ts/anyType.h
-    ${ES2PANDA_ROOT}/ir/ets/etsScript.h
+    ${ES2PANDA_ROOT}/ir/ets/etsModule.h
     ${ES2PANDA_ROOT}/ir/ts/tsInferType.h
     ${ES2PANDA_ROOT}/ir/ts/tsMappedType.h
     ${ES2PANDA_ROOT}/ir/statements/debuggerStatement.h
@@ -393,7 +393,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/voidType.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/doubleType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/expressionStatement.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/ets/etsScript.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/ets/etsModule.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/metaProperty.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsArrayType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/base/tsSignatureDeclaration.yaml

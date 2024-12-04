@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -114,6 +114,8 @@ public:
     bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;
     void AddCompilableFunction(ir::ScriptFunction *func) override;
 
+    bool HandleDynamicVariables(ir::Identifier *ident, Variable *variable, bool allowDynamicNamespaces);
+    bool LookupInDebugInfoPlugin(ir::Identifier *ident);
     void LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces);
     void LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef);
     void BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);

@@ -52,7 +52,7 @@ void ProcessCheckerNode(ETSChecker *checker, ir::AstNode *node)
     auto scope = compiler::NearestScope(node);
     if (scope->IsGlobalScope()) {
         // NOTE(aleksisch): All classes are contained in ETSGlobal class scope (not just Global scope),
-        // however it's parent is ETSScript. It should be fixed
+        // however it's parent is ETSModule. It should be fixed
         scope = checker->VarBinder()->Program()->GlobalClassScope();
     }
 
@@ -75,7 +75,7 @@ void ProcessScopesNode(ETSChecker *checker, ir::AstNode *node)
     auto *scope = compiler::NearestScope(node);
     if (scope->IsGlobalScope()) {
         // NOTE(aleksisch): All classes are contained in ETSGlobal scope,
-        // however it's parent is ETSScript (not ETSGlobal). It should be fixed
+        // however it's parent is ETSModule (not ETSGlobal). It should be fixed
         scope = checker->VarBinder()->Program()->GlobalClassScope();
     }
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);

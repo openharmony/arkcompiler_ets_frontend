@@ -47,7 +47,7 @@
 #include "ir/ets/etsWildcardType.h"
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsFunctionType.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsStringLiteralType.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"

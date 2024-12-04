@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,7 +42,7 @@
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNeverType.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
@@ -100,29 +100,59 @@ void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef)
     }
 }
 
+static bool IsSpecialName(const util::StringView &name)
+{
+    return name == compiler::Signatures::UNDEFINED || name == compiler::Signatures::NULL_LITERAL ||
+           name == compiler::Signatures::READONLY_TYPE_NAME || name == compiler::Signatures::PARTIAL_TYPE_NAME ||
+           name == compiler::Signatures::REQUIRED_TYPE_NAME;
+}
+
+bool ETSBinder::HandleDynamicVariables(ir::Identifier *ident, Variable *variable, bool allowDynamicNamespaces)
+{
+    if (IsDynamicModuleVariable(variable)) {
+        ident->SetVariable(variable);
+        return true;
+    }
+
+    if (allowDynamicNamespaces && IsDynamicNamespaceVariable(variable)) {
+        ident->SetVariable(variable);
+        return true;
+    }
+    return false;
+}
+
+bool ETSBinder::LookupInDebugInfoPlugin(ir::Identifier *ident)
+{
+    auto *checker = GetContext()->checker->AsETSChecker();
+    auto *debugInfoPlugin = checker->GetDebugInfoPlugin();
+    if (UNLIKELY(debugInfoPlugin)) {
+        auto *var = debugInfoPlugin->FindClass(ident);
+        if (var != nullptr) {
+            ident->SetVariable(var);
+            return true;
+        }
+    }
+    // NOTE: search an imported module's name in case of 'import "file" as xxx'.
+    return false;
+}
+
 void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces)
 {
     const auto &name = ident->Name();
-    if (name == compiler::Signatures::UNDEFINED || name == compiler::Signatures::NULL_LITERAL ||
-        name == compiler::Signatures::READONLY_TYPE_NAME || name == compiler::Signatures::PARTIAL_TYPE_NAME ||
-        name == compiler::Signatures::REQUIRED_TYPE_NAME) {
+    if (IsSpecialName(name)) {
         return;
     }
     auto *iter = GetScope();
 
     while (iter != nullptr) {
-        auto res = iter->Find(name, ResolveBindingOptions::DECLARATION | ResolveBindingOptions::TYPE_ALIASES);
+        auto options = ResolveBindingOptions::DECLARATION | ResolveBindingOptions::TYPE_ALIASES |
+                       ResolveBindingOptions::STATIC_DECLARATION;
+        auto res = iter->Find(name, options);
         if (res.variable == nullptr) {
             break;
         }
 
-        if (IsDynamicModuleVariable(res.variable)) {
-            ident->SetVariable(res.variable);
-            return;
-        }
-
-        if (allowDynamicNamespaces && IsDynamicNamespaceVariable(res.variable)) {
-            ident->SetVariable(res.variable);
+        if (HandleDynamicVariables(ident, res.variable, allowDynamicNamespaces)) {
             return;
         }
 
@@ -145,15 +175,8 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
         }
     }
 
-    auto *checker = GetContext()->checker->AsETSChecker();
-    auto *debugInfoPlugin = checker->GetDebugInfoPlugin();
-    if (UNLIKELY(debugInfoPlugin)) {
-        auto *var = debugInfoPlugin->FindClass(ident);
-        if (var != nullptr) {
-            ident->SetVariable(var);
-            return;
-        }
-        // NOTE: search an imported module's name in case of 'import "file" as xxx'.
+    if (LookupInDebugInfoPlugin(ident)) {
+        return;
     }
 
     ThrowUnresolvableType(ident->Start(), name);
@@ -525,9 +548,12 @@ void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETS
 std::string RedeclarationErrorMessageAssembler(const Variable *const var, const Variable *const variable,
                                                util::StringView localName)
 {
-    auto type = var->Declaration()->Node()->IsClassDefinition() ? "Class '"
-                : var->Declaration()->IsFunctionDecl()          ? "Function '"
-                                                                : "Variable '";
+    bool isNamespace = var->Declaration()->Node()->IsClassDefinition() &&
+                       var->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed();
+    auto type = isNamespace                                       ? "Namespace '"
+                : var->Declaration()->Node()->IsClassDefinition() ? "Class '"
+                : var->Declaration()->IsFunctionDecl()            ? "Function '"
+                                                                  : "Variable '";
     auto str = util::Helpers::AppendAll(type, localName.Utf8(), "'");
     str += variable->Declaration()->Type() == var->Declaration()->Type() ? " is already defined."
                                                                          : " is already defined with different type.";
@@ -543,7 +569,7 @@ void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variab
 
     // Necessary because stdlib and escompat handled as same package, it can be removed after fixing package handling
     auto const getPackageName = [](Variable *var) {
-        return var->GetScope()->Node()->GetTopStatement()->AsETSScript()->Program()->ModuleName();
+        return var->GetScope()->Node()->GetTopStatement()->AsETSModule()->Program()->ModuleName();
     };
     if (isStdLib && (getPackageName(importedVar) != getPackageName(variable))) {
         return;

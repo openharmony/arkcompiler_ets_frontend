@@ -23,7 +23,6 @@
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
-#include "ir/statements/namespaceDeclaration.h"
 #include "compiler/lowering/util.h"
 
 #include <ir/ets/etsUnionType.h>
@@ -2068,19 +2067,6 @@ checker::Type *ETSAnalyzer::Check(ir::NullLiteral *expr) const
     return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::NamespaceDeclaration *st) const
-{
-    ETSChecker *checker = GetETSChecker();
-    st->Definition()->Check(checker);
-    return ReturnTypeForStatement(st);
-}
-
-checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::NamespaceDefinition *st) const
-{
-    // NOTE It is Typed node, but not a Statement and not a Expression
-    return nullptr;
-}
-
 checker::Type *ETSAnalyzer::Check(ir::NumberLiteral *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -2977,6 +2963,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
             checker->LogTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());
             return checker->GlobalTypeError();
         }
+
+        checker->ValidateNamespaceProperty(prop, baseType->AsETSObjectType(), expr->Right());
 
         if (expr->Right()->Name().Is(searchName.Mutf8()) && prop->Declaration()->Node()->HasExportAlias()) {
             checker->LogTypeError({"Cannot find imported element '", searchName, "' exported with alias"},

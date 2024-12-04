@@ -16,8 +16,8 @@
 class A {
     /* @@ label */namespace ns {
         dfdfsfdf
-    /* @@ label1 */}
-    /* @@ label2 */namespace hehe {
+    }
+    /* @@ label1 */namespace hehe {
 
     }
     time: number = foo();
@@ -33,10 +33,10 @@ class A {
 }
 
 class B {
-    /* @@ label3 */namespace ns {
+    /* @@ label2 */namespace ns {
 
     }ddddddd
-    /* @@ label4 */time: number = foo();
+    /* @@ label3 */time: number = foo();
     private uri: string;
 
     private routerssdsds() {
@@ -48,8 +48,8 @@ class B {
     }
 }
 
-/* @@@ label Error SyntaxError: Namespace not enabled in here.  */
-/* @@@ label1 Error SyntaxError: Field type annotation expected  */
-/* @@@ label2 Error SyntaxError: Namespace not enabled in here.  */
-/* @@@ label3 Error SyntaxError: Namespace not enabled in here.  */
-/* @@@ label4 Error SyntaxError: Field type annotation expected  */
+/* @@@ label Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
+/* @@@ label1 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
+/* @@@ label2 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
+/* @@@ label3 Error SyntaxError: Field type annotation expected  */
+

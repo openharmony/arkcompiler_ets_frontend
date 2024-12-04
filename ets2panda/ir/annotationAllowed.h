@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -74,6 +74,11 @@ protected:
     explicit AnnotationAllowed(AstNodeType const type, Expression *const key, Expression *const value,
                                ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
         : T(type, key, value, modifiers, allocator, isComputed), annotations_(allocator->Adapter())
+    {
+    }
+
+    explicit AnnotationAllowed(ArenaAllocator *const allocator, ArenaVector<Statement *> &&statementList)
+        : T(allocator, std::move(statementList)), annotations_(allocator->Adapter())
     {
     }
 
