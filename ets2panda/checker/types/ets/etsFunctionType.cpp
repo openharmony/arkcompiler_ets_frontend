@@ -18,11 +18,11 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 #include "ir/base/scriptFunction.h"
-#include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::checker {
 
-ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView name, ArenaVector<Signature *> &&signatures)
+ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView const &name,
+                                 ArenaVector<Signature *> &&signatures)
     : Type(TypeFlag::FUNCTION),
       callSignatures_(std::move(signatures)),
       name_(name),
@@ -30,15 +30,28 @@ ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView name, Are
 {
 }
 
-Signature *ETSFunctionType::FirstAbstractSignature()
+ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView const &name, Signature *const signature)
+    : Type(TypeFlag::FUNCTION),
+      callSignatures_(checker->Allocator()->Adapter()),
+      name_(name),
+      funcInterface_(checker->FunctionTypeToFunctionalInterfaceType(signature))
 {
-    for (auto *it : callSignatures_) {
-        if (it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
-            return it;
-        }
-    }
+    callSignatures_.push_back(signature);
+}
 
-    return nullptr;
+ETSFunctionType::ETSFunctionType(util::StringView const &name, ArenaAllocator *allocator)
+    : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name), funcInterface_(nullptr)
+{
+}
+
+void ETSFunctionType::AddCallSignature(Signature *signature)
+{
+    if (signature->Function()->IsGetter()) {
+        AddTypeFlag(TypeFlag::GETTER);
+    } else if (signature->Function()->IsSetter()) {
+        AddTypeFlag(TypeFlag::SETTER);
+    }
+    callSignatures_.emplace_back(signature);
 }
 
 void ETSFunctionType::ToString(std::stringstream &ss, bool precise) const
@@ -222,41 +235,42 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
     relation->Result(true);
 }
 
-Type *ETSFunctionType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                                   [[maybe_unused]] GlobalTypesHolder *globalTypes)
+ETSFunctionType *ETSFunctionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation,
+                                              GlobalTypesHolder *globalTypes)
 {
-    auto *copiedType = relation->GetChecker()->AsETSChecker()->CreateETSFunctionType(name_);
-
-    for (auto *it : callSignatures_) {
-        copiedType->AddCallSignature(it->Copy(allocator, relation, globalTypes));
+    auto signatures = ArenaVector<Signature *>(allocator->Adapter());
+    for (auto *const signature : callSignatures_) {
+        signatures.emplace_back(signature->Copy(allocator, relation, globalTypes));
     }
 
-    return copiedType;
+    return allocator->New<ETSFunctionType>(relation->GetChecker()->AsETSChecker(), name_, std::move(signatures));
 }
 
 ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Substitution *substitution)
 {
-    if (substitution == nullptr || substitution->empty()) {
-        return this;
-    }
+    if (substitution != nullptr && !substitution->empty()) {
+        auto *const checker = relation->GetChecker()->AsETSChecker();
+        auto *const allocator = checker->Allocator();
 
-    auto *checker = relation->GetChecker()->AsETSChecker();
+        auto signatures = ArenaVector<Signature *>(allocator->Adapter());
+        bool anyChange = false;
 
-    auto *copiedType = checker->CreateETSFunctionType(name_);
-    bool anyChange = false;
+        for (auto *const signature : callSignatures_) {
+            auto *newSignature = signature->Substitute(relation, substitution);
+            anyChange |= newSignature != signature;
+            signatures.emplace_back(newSignature);
+        }
 
-    for (auto *sig : callSignatures_) {
-        auto *newSig = sig->Substitute(relation, substitution);
-        copiedType->AddCallSignature(newSig);
-        if (newSig != sig) {
-            anyChange = true;
+        if (anyChange) {
+            return allocator->New<ETSFunctionType>(checker, name_, std::move(signatures));
         }
     }
 
-    return anyChange ? copiedType : this;
+    return this;
 }
 
-checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relation, Signature *targetInvokeSig)
+checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relation,
+                                                            Signature *targetInvokeSig) const noexcept
 {
     auto *ourSig = callSignatures_[0];
     auto &ourParams = ourSig->Params();
@@ -316,13 +330,15 @@ void ETSFunctionType::IsSubtypeOf(TypeRelation *relation, Type *target)
     relation->Result(false);
 }
 
-ETSFunctionType *ETSFunctionType::BoxPrimitives(ETSChecker *checker)
+ETSFunctionType *ETSFunctionType::BoxPrimitives(ETSChecker *checker) const
 {
     auto *allocator = checker->Allocator();
-    auto *ret = allocator->New<ETSFunctionType>(name_, allocator);
-    for (auto *sig : callSignatures_) {
-        ret->AddCallSignature(sig->BoxPrimitives(checker));
+
+    auto signatures = ArenaVector<Signature *>(allocator->Adapter());
+    for (auto *const signature : callSignatures_) {
+        signatures.emplace_back(signature->BoxPrimitives(checker));
     }
-    return ret;
+
+    return allocator->New<ETSFunctionType>(checker, name_, std::move(signatures));
 }
 }  // namespace ark::es2panda::checker

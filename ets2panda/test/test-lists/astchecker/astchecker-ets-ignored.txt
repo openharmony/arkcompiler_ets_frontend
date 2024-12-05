@@ -35,3 +35,9 @@ ast/parser/ets/extension_function_tests/extension_function_array_primitive.sts
 ast/parser/ets/extension_function_tests/extension_function_array_typealias.sts
 ast/parser/ets/extension_function_tests/extension_function_class.sts
 ast/parser/ets/extension_function_tests/extension_function_class_typealias.sts
+
+#Issue: #18866
+ast/compiler/ets/annotation_tests/annotationDecl_bad_initializer08.sts
+ast/parser/ets/SmartCast_3.sts
+ast/parser/ets/lambdaWithWrongOptionalParameter.sts
+ast/parser/ets/lambda_optional_param_2.sts

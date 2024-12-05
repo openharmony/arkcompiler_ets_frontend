@@ -88,7 +88,7 @@ public:
         return signature_.TypeParams();
     }
 
-    [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
+    [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
     {
         return signature_.Params();
     }

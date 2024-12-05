@@ -1010,9 +1010,9 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation) co
         std::string lambdaParams = " ";
 
         for (const auto *const param : typeAnnotation->AsETSFunctionType()->Params()) {
-            lambdaParams += param->AsETSParameterExpression()->Ident()->Name().Mutf8();
+            lambdaParams += param->AsETSParameterExpression()->Name().Mutf8();
             lambdaParams += ":";
-            lambdaParams += GetNameForTypeNode(param->AsETSParameterExpression()->Ident()->TypeAnnotation());
+            lambdaParams += GetNameForTypeNode(param->AsETSParameterExpression()->TypeAnnotation());
             lambdaParams += ",";
         }
 

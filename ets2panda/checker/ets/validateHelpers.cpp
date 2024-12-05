@@ -111,15 +111,6 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
         return;
     }
 
-    if (type->IsETSUnionType()) {  // NOTE(vpukhov): #19822
-        for (auto it : type->AsETSUnionType()->ConstituentTypes()) {
-            if (it->IsETSFunctionType() || it->IsETSDynamicType() ||
-                (it->IsETSObjectType() && it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                return;
-            }
-        }
-    }
-
     std::ignore = TypeError(ident->Variable(), FormatMsg({"This expression is not callable."}), ident->Start());
 }
 

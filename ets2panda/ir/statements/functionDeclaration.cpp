@@ -84,23 +84,21 @@ void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
 
     if (func_->IsExtensionMethod()) {
         for (const auto *param : func_->Params()) {
-            if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->Ident() != nullptr &&
-                param->AsETSParameterExpression()->Ident()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation() != nullptr &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->IsETSTypeReference() &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part() != nullptr &&
-                param->AsETSParameterExpression()->Ident()->TypeAnnotation()->AsETSTypeReference()->Part()->Name() !=
+            if (param->IsETSParameterExpression() &&
+                param->AsETSParameterExpression()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS &&
+                param->AsETSParameterExpression()->TypeAnnotation() != nullptr &&
+                param->AsETSParameterExpression()->TypeAnnotation()->IsETSTypeReference() &&
+                param->AsETSParameterExpression()->TypeAnnotation()->AsETSTypeReference()->Part() != nullptr &&
+                param->AsETSParameterExpression()->TypeAnnotation()->AsETSTypeReference()->Part()->Name() !=
                     // CC-OFFNXT(G.FMT.02-CPP) project code style
                     nullptr &&
                 param->AsETSParameterExpression()
-                    ->Ident()
                     ->TypeAnnotation()
                     ->AsETSTypeReference()
                     ->Part()
                     ->Name()
                     ->IsIdentifier()) {
                 dumper->Add(std::string(param->AsETSParameterExpression()
-                                            ->Ident()
                                             ->TypeAnnotation()
                                             ->AsETSTypeReference()
                                             ->Part()

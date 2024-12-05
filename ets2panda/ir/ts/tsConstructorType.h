@@ -16,8 +16,6 @@
 #ifndef ES2PANDA_IR_TS_CONSTRUCTOR_TYPE_H
 #define ES2PANDA_IR_TS_CONSTRUCTOR_TYPE_H
 
-#include <utility>
-
 #include "ir/typeNode.h"
 #include "ir/base/scriptFunctionSignature.h"
 
@@ -66,7 +64,7 @@ public:
         return signature_.TypeParams();
     }
 
-    const ArenaVector<Expression *> &Params() const
+    const ArenaVector<ir::Expression *> &Params() const
     {
         return signature_.Params();
     }

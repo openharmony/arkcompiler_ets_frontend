@@ -317,32 +317,22 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
 {
-    if (node->TsType() != nullptr) {
-        return node->TsType();
-    }
-    ETSChecker *checker = GetETSChecker();
+    if (node->TsType() == nullptr) {
+        ETSChecker *checker = GetETSChecker();
 
-    size_t optionalParameterIndex = node->DefaultParamIndex();
-    auto *genericInterfaceType = checker->GlobalBuiltinFunctionType(node->Params().size(), node->Flags());
-    node->SetFunctionalInterface(genericInterfaceType->GetDeclNode()->AsTSInterfaceDeclaration());
+        auto *interfaceType = CreateInterfaceTypeForETSFunctionType(checker, node);
 
-    auto *tsType = checker->GetCachedFunctionalInterface(node);
-    node->SetTsType(tsType);
-    if (tsType != nullptr) {
-        return tsType;
-    }
+        auto *signatureInfo = checker->ComposeSignatureInfo(node);
+        auto *returnType = checker->ComposeReturnType(node);
 
-    ETSObjectType *interfaceType;
+        auto *const signature = checker->CreateSignature(signatureInfo, returnType, nullptr);
+        signature->AddSignatureFlag(checker::SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
+        signature->SetOwner(checker->Context().ContainingClass());
 
-    if (optionalParameterIndex == node->Params().size()) {
-        interfaceType = CreateInterfaceTypeForETSFunctionType(checker, node, genericInterfaceType);
-    } else {
-        interfaceType =
-            CreateOptionalSignaturesForFunctionalType(checker, node, genericInterfaceType, optionalParameterIndex);
+        node->SetTsType(interfaceType);
     }
 
-    node->SetTsType(interfaceType);
-    return interfaceType;
+    return node->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
@@ -514,17 +504,19 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSPackageDeclaration *st
 checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
+
     if (expr->TsType() == nullptr) {
         checker::Type *paramType;
 
-        if (expr->Ident()->TsType() != nullptr) {
-            paramType = expr->Ident()->TsType();
+        if (!expr->IsRestParameter()) {
+            paramType = expr->Ident()->Check(checker);
         } else {
-            paramType = !expr->IsRestParameter() ? expr->Ident()->Check(checker) : expr->spread_->Check(checker);
-            if (expr->IsDefault()) {
-                std::cout << __LINE__ << std::endl;
-                [[maybe_unused]] auto *const initType = expr->Initializer()->Check(checker);
-            }
+            paramType = expr->RestParameter()->Check(checker);
+            expr->Ident()->SetTsType(paramType);
+        }
+
+        if (expr->IsDefault()) {
+            expr->Initializer()->Check(checker);
         }
 
         expr->SetTsType(paramType);
@@ -852,15 +844,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     checker->Context().SetContainingSignature(signature);
     expr->Function()->Body()->Check(checker);
 
-    ArenaVector<Signature *> signatures(checker->Allocator()->Adapter());
-    signatures.push_back(signature);
-    for (auto &sigInfo : checker->ComposeSignatureInfosForArrowFunction(expr)) {
-        auto sig = checker->ComposeSignature(expr->Function(), sigInfo, signature->ReturnType(), nullptr);
-        sig->AddSignatureFlag(signature->GetFlags());
-        signatures.push_back(sig);
-    }
-
-    auto *funcType = checker->CreateETSFunctionType(expr->Function(), std::move(signatures), nullptr);
+    auto *funcType = checker->CreateETSFunctionType(signature, "");
     checker->Context().SetContainingSignature(nullptr);
 
     if (expr->Function()->IsAsyncFunc()) {

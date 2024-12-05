@@ -14,14 +14,7 @@
  */
 
 #include "defaultParameterLowering.h"
-#include <iostream>
 #include "checker/ETSchecker.h"
-#include "parser/ETSparser.h"
-#include "parser/parserImpl.h"
-#include "lexer.h"
-#include "utils/arena_containers.h"
-#include "ir/statement.h"
-#include "varbinder/ETSBinder.h"
 #include "util/errorHandler.h"
 
 namespace ark::es2panda::compiler {
@@ -95,7 +88,7 @@ ir::TSTypeParameterDeclaration *DefaultParameterLowering::CreateParameterDeclara
 }
 
 ir::FunctionSignature DefaultParameterLowering::CreateFunctionSignature(ir::MethodDefinition *method,
-                                                                        ArenaVector<ir::Expression *> funcParam,
+                                                                        ArenaVector<ir::Expression *> &&funcParam,
                                                                         public_lib::Context *ctx)
 {
     auto *checker = ctx->checker->AsETSChecker();
@@ -136,7 +129,7 @@ ir::TSTypeParameterInstantiation *DefaultParameterLowering::CreateTypeParameterI
 }
 
 ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefinition *method, public_lib::Context *ctx,
-                                                                 ArenaVector<ir::Expression *> funcCallArgs)
+                                                                 ArenaVector<ir::Expression *> &&funcCallArgs)
 {
     auto *checker = ctx->checker->AsETSChecker();
     ArenaVector<ir::Statement *> funcStatements(checker->Allocator()->Adapter());
@@ -190,8 +183,8 @@ ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefin
 }
 
 ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
-    ir::MethodDefinition *method, public_lib::Context *ctx, ArenaVector<ir::Expression *> funcDefinitionArgs,
-    ArenaVector<ir::Expression *> funcCallArgs)
+    ir::MethodDefinition *method, public_lib::Context *ctx, ArenaVector<ir::Expression *> &&funcDefinitionArgs,
+    ArenaVector<ir::Expression *> &&funcCallArgs)
 {
     lexer::SourcePosition startLoc(method->Start().line, method->Start().index);
     lexer::SourcePosition endLoc = startLoc;
@@ -217,8 +210,8 @@ ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
 }
 
 void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *method,
-                                                      ArenaVector<ir::Expression *> funcCallArgs,
-                                                      ArenaVector<ir::Expression *> funcDefinitionArgs,
+                                                      ArenaVector<ir::Expression *> &&funcCallArgs,
+                                                      ArenaVector<ir::Expression *> &&funcDefinitionArgs,
                                                       public_lib::Context *ctx)
 {
     auto *checker = ctx->checker->AsETSChecker();
@@ -314,16 +307,21 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinit
             params.begin(), params.end() - i, [&funcCallArgs, &funcDefinitionArgs, checker](ir::Expression *expr) {
                 // NOTE: we don't need Initializer here, as overload-method will have strict list of parameters
                 //       will reset all of them once parsing loop completes
-                auto *funcArg = expr->AsETSParameterExpression()->Ident();
-                auto clone = funcArg->CloneReference(checker->Allocator(), nullptr)->AsIdentifier();
                 // update list of functional call arguments
-                funcCallArgs.push_back(clone);
+                funcCallArgs.push_back(
+                    expr->AsETSParameterExpression()->Ident()->CloneReference(checker->Allocator(), nullptr));
 
-                auto *ident =
-                    expr->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
+                ir::Expression *ident = !expr->AsETSParameterExpression()->IsRestParameter()
+                                            ? expr->AsETSParameterExpression()
+                                                  ->Ident()
+                                                  ->Clone(checker->Allocator(), nullptr)
+                                                  ->AsExpression()
+                                            : expr->AsETSParameterExpression()
+                                                  ->RestParameter()
+                                                  ->Clone(checker->Allocator(), nullptr)
+                                                  ->AsExpression();
                 auto *funcParam = checker->AllocNode<ir::ETSParameterExpression>(ident->AsIdentifier(), nullptr);
 
-                ASSERT(ident->TypeAnnotation()->Parent() == ident);
                 // prepare args list for overloade method definition
                 funcDefinitionArgs.push_back(funcParam);
             });

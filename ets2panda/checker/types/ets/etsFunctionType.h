@@ -24,87 +24,73 @@ namespace ark::es2panda::checker {
 
 class ETSFunctionType : public Type {
 public:
-    explicit ETSFunctionType(ETSChecker *checker, util::StringView name, ArenaVector<Signature *> &&signatures);
+    explicit ETSFunctionType(ETSChecker *checker, util::StringView const &name, ArenaVector<Signature *> &&signatures);
+    explicit ETSFunctionType(ETSChecker *checker, util::StringView const &name, Signature *signature);
+    explicit ETSFunctionType(util::StringView const &name, ArenaAllocator *allocator);
 
-    explicit ETSFunctionType(util::StringView name, Signature *signature, ArenaAllocator *allocator)
-        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name), funcInterface_(nullptr)
-    {
-        callSignatures_.push_back(signature);
-    }
-    explicit ETSFunctionType(util::StringView name, ArenaAllocator *allocator)
-        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name), funcInterface_(nullptr)
-    {
-    }
+    ETSFunctionType() = delete;
+    ~ETSFunctionType() override = default;
+    NO_COPY_SEMANTIC(ETSFunctionType);
+    NO_MOVE_SEMANTIC(ETSFunctionType);
 
-    ArenaVector<Signature *> &CallSignatures()
+    [[nodiscard]] ArenaVector<Signature *> &CallSignatures() noexcept
     {
         return callSignatures_;
     }
 
-    const ArenaVector<Signature *> &CallSignatures() const
+    [[nodiscard]] const ArenaVector<Signature *> &CallSignatures() const noexcept
     {
         return callSignatures_;
     }
 
-    util::StringView Name() const
+    [[nodiscard]] util::StringView const &Name() const noexcept
     {
         return name_;
     }
 
-    Type *FunctionalInterface() const
+    [[nodiscard]] Type *FunctionalInterface() const noexcept
     {
         return funcInterface_;
     }
 
-    void AddCallSignature(Signature *signature)
-    {
-        if (signature->Function()->IsGetter()) {
-            AddTypeFlag(TypeFlag::GETTER);
-        } else if (signature->Function()->IsSetter()) {
-            AddTypeFlag(TypeFlag::SETTER);
-        }
-        callSignatures_.push_back(signature);
-    }
+    void AddCallSignature(Signature *signature);
 
-    void SetReferencedSignature(Signature *refSignature)
+    void SetReferencedSignature(Signature *refSignature) noexcept
     {
         refSignature_ = refSignature;
     }
 
-    Signature *GetReferencedSignature() const
+    [[nodiscard]] Signature *GetReferencedSignature() const noexcept
     {
         return refSignature_;
     }
 
-    Signature *FindSignature(const ir::ScriptFunction *func) const
+    template <class UnaryPredicate>
+    Signature *FindSpecificSignature(UnaryPredicate predicate) const noexcept
     {
-        for (auto *it : callSignatures_) {
-            if (it->Function() == func) {
-                return it;
-            }
-        }
-
-        return nullptr;
+        auto const it = std::find_if(callSignatures_.cbegin(), callSignatures_.cend(), predicate);
+        return it != callSignatures_.cend() ? *it : nullptr;
     }
 
-    Signature *FindGetter() const
+    [[nodiscard]] Signature *FindSignature(const ir::ScriptFunction *func) const noexcept
     {
-        for (auto *sig : callSignatures_) {
-            if (sig->Function()->IsGetter()) {
-                return sig;
-            }
-        }
-        return nullptr;
+        return FindSpecificSignature([func](auto const *const sig) -> bool { return sig->Function() == func; });
     }
 
-    Signature *FindSetter() const
+    [[nodiscard]] Signature *FindGetter() const noexcept
     {
-        for (auto *sig : callSignatures_) {
-            if (sig->Function()->IsSetter()) {
-                return sig;
-            }
-        }
-        return nullptr;
+        return FindSpecificSignature([](auto const *const sig) -> bool { return sig->Function()->IsGetter(); });
+    }
+
+    [[nodiscard]] Signature *FindSetter() const noexcept
+    {
+        return FindSpecificSignature([](auto const *const sig) -> bool { return sig->Function()->IsSetter(); });
+    }
+
+    [[nodiscard]] Signature *FirstAbstractSignature() const noexcept
+    {
+        return FindSpecificSignature(
+            [](auto const *const sig) -> bool { return sig->HasSignatureFlag(SignatureFlags::ABSTRACT); });
     }
 
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
@@ -117,18 +103,20 @@ public:
         UNREACHABLE();
     }
 
-    Signature *FirstAbstractSignature();
     void ToString(std::stringstream &ss, bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
-    ETSFunctionType *Substitute(TypeRelation *relation, const Substitution *substitution) override;
-    void Cast(TypeRelation *relation, Type *target) override;
-    checker::RelationResult CastFunctionParams(TypeRelation *relation, Signature *targetInvokeSig);
-    ETSFunctionType *BoxPrimitives(ETSChecker *checker);
     void IsSubtypeOf(TypeRelation *relation, Type *target) override;
+    void Cast(TypeRelation *relation, Type *target) override;
+
+    ETSFunctionType *Instantiate(ArenaAllocator *allocator, TypeRelation *relation,
+                                 GlobalTypesHolder *globalTypes) override;
+    ETSFunctionType *Substitute(TypeRelation *relation, const Substitution *substitution) override;
+
+    checker::RelationResult CastFunctionParams(TypeRelation *relation, Signature *targetInvokeSig) const noexcept;
+    ETSFunctionType *BoxPrimitives(ETSChecker *checker) const;
 
 private:
     ArenaVector<Signature *> callSignatures_;

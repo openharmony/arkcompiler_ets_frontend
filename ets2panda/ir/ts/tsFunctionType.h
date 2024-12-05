@@ -65,7 +65,7 @@ public:
         return signature_.TypeParams();
     }
 
-    const ArenaVector<Expression *> &Params() const
+    const ArenaVector<ir::Expression *> &Params() const
     {
         return signature_.Params();
     }

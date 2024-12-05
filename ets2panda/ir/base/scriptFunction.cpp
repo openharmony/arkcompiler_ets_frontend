@@ -68,7 +68,7 @@ void ScriptFunction::SetIdent(Identifier *id) noexcept
 
 ScriptFunction *ScriptFunction::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    ArenaVector<Expression *> params {allocator->Adapter()};
+    ArenaVector<ir::Expression *> params {allocator->Adapter()};
     ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
     for (auto *param : Params()) {
         params.push_back(param->Clone(allocator, nullptr)->AsExpression());
@@ -171,8 +171,8 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
     }
     dumper->Add("(");
     for (auto param : Params()) {
-        if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->Ident() != nullptr &&
-            param->AsETSParameterExpression()->Ident()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS) {
+        if (param->IsETSParameterExpression() &&
+            param->AsETSParameterExpression()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS) {
             continue;
         }
         param->Dump(dumper);
