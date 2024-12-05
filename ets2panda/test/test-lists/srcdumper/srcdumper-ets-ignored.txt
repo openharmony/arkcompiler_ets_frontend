@@ -232,3 +232,7 @@ runtime/ets/struct-init2.sts
 runtime/ets/struct_implements.sts
 runtime/ets/top_level_03.sts
 ast/compiler/ets/DeclareIndexerTest.sts
+
+
+# issue20682
+runtime/ets/SpreadExpressionsforFunctionCall_primitive_type.sts

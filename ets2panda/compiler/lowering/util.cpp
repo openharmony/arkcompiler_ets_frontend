@@ -101,7 +101,7 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
     return result;
 }
 
-// Rerun varbinder and checker on the node.
+// Rerun varbinder and checker on the node. (First clear typesVariables and scopes)
 void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
     auto *scope = NearestScope(node->Parent());
@@ -121,7 +121,7 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
     node->Check(checker);
 }
 
-// Note: run varbinder and checker on the new node generated in lowering phases
+// Note: run varbinder and checker on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {
     InitScopesPhaseETS::RunExternalNode(node, varBinder);

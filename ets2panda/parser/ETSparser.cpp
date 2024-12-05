@@ -859,10 +859,6 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
 
-    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
-    }
-
     if (Lexer()->GetToken().IsReservedTypeName()) {
         std::string errMsg("Type alias name cannot be '");
         errMsg.append(TokenToString(Lexer()->GetToken().KeywordType()));
@@ -870,13 +866,9 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
         LogSyntaxError(errMsg.c_str());
     }
 
-    const util::StringView ident = Lexer()->GetToken().Ident();
-    auto *id = AllocNode<ir::Identifier>(ident, Allocator());
-    id->SetRange(Lexer()->GetToken().Loc());
+    ir::Identifier *id = ExpectIdentifier();
 
     auto *typeAliasDecl = AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id);
-
-    Lexer()->NextToken();  // eat alias name
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options =
