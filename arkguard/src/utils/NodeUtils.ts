@@ -187,7 +187,7 @@ export class NodeUtils {
     return isIndexedAccessTypeNode(parent) && parent.indexType === node;
   }
 
-  public static isStringLiteralTypeNode(node: Node) {
+  public static isStringLiteralTypeNode(node: Node): boolean {
     return isLiteralTypeNode(node) && isStringLiteralLike(node.literal);
   }
 
