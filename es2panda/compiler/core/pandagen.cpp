@@ -41,6 +41,7 @@
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/newExpression.h>
 #include <ir/module/importSpecifier.h>
+#include <ir/module/importDefaultSpecifier.h>
 #include <ir/statement.h>
 #include <util/concurrent.h>
 #include <util/helpers.h>
@@ -1814,6 +1815,11 @@ void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder:
     auto targetApiVersion = Binder()->Program()->TargetApiVersion();
     bool isLazy = variable->Declaration()->Node()->IsImportSpecifier() ?
         variable->Declaration()->Node()->AsImportSpecifier()->IsLazy() : false;
+    if (!isLazy) {
+        isLazy = variable->Declaration()->Node()->IsImportDefaultSpecifier() ?
+            variable->Declaration()->Node()->AsImportDefaultSpecifier()->IsLazy() : false;
+    }
+
     if (isLazy) {
         // Change the behavior of using imported object in sendable class since api12
         if (inSendable_ && targetApiVersion >= util::Helpers::SENDABLE_LAZY_LOADING_MIN_SUPPORTED_API_VERSION) {

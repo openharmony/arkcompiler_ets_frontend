@@ -996,4 +996,9 @@ bool Helpers::IsSupportLazyImportVersion(int apiVersion, std::string subApiVersi
            (subApiVersion == SUB_API_VERSION_1 || subApiVersion == SUB_API_VERSION_2)));
 }
 
+bool Helpers::IsSupportLazyImportDefaultVersion(int apiVersion)
+{
+    return !(apiVersion < LAZY_IMPORT_DEFAULT_MIN_SUPPORTED_API_VERSION);
+}
+
 }  // namespace panda::es2panda::util
