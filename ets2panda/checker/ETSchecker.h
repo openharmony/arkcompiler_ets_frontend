@@ -52,9 +52,17 @@ struct Accessor {
     bool isExternal {false};
 };
 
+struct PairHash {
+    size_t operator()(const std::pair<Type *, bool> &p) const
+    {
+        size_t hash1 = std::hash<Type *> {}(p.first);
+        size_t hash2 = std::hash<bool> {}(p.second);
+        return hash1 ^ (hash2 << 1ULL);
+    }
+};
 using ComputedAbstracts =
     ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, ArenaUnorderedSet<ETSObjectType *>>>;
-using ArrayMap = ArenaUnorderedMap<Type *, ETSArrayType *>;
+using ArrayMap = ArenaUnorderedMap<std::pair<Type *, bool>, ETSArrayType *, PairHash>;
 using GlobalArraySignatureMap = ArenaUnorderedMap<ETSArrayType *, Signature *>;
 using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<util::StringView, ir::ScriptFunction *>>;
 using DynamicClassIntrinsicsMap = ArenaUnorderedMap<Language, ir::ClassDeclaration *>;
@@ -256,7 +264,7 @@ public:
     CharType *CreateCharType(char16_t value);
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
-    ETSArrayType *CreateETSArrayType(Type *elementType);
+    ETSArrayType *CreateETSArrayType(Type *elementType, bool isCachePolluting = false);
     ETSIntEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
     ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
 

@@ -153,9 +153,10 @@ void ETSArrayType::IsSupertypeOf(TypeRelation *const relation, Type *source)
 Type *ETSArrayType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
     auto *elementType = element_->Instantiate(allocator, relation, globalTypes);
-    bool needAllocator = HasTypeFlag(TypeFlag::READONLY);
-    ETSArrayType *arrayType = needAllocator ? relation->GetChecker()->Allocator()->New<ETSArrayType>(elementType)
-                                            : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(elementType);
+
+    // Some TypeFlag such as READONLY may pollute the ETSArrayType in the cache
+    ETSArrayType *arrayType =
+        relation->GetChecker()->AsETSChecker()->CreateETSArrayType(elementType, HasTypeFlag(TypeFlag::READONLY));
     arrayType->typeFlags_ = typeFlags_;
     return arrayType;
 }
@@ -172,7 +173,9 @@ Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *subst
         return this;
     }
 
-    ETSArrayType *result = relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt);
+    // Some TypeFlag such as READONLY may pollute the ETSArrayType in the cache
+    ETSArrayType *result =
+        relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt, HasTypeFlag(TypeFlag::READONLY));
     result->typeFlags_ = typeFlags_;
     return result;
 }
