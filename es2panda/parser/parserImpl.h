@@ -457,7 +457,7 @@ private:
     void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy);
     bool HandleTypeImportOrExportSpecifier();
     ir::Expression *ParseModuleReference();
-    ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType);
+    ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy);
     ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy);
     void ValidateAssignmentTarget(ExpressionParseFlags flags, ir::Expression *node);
     void ValidateLvalueAssignmentTarget(ir::Expression *node) const;
@@ -499,11 +499,13 @@ private:
     bool IsLabelFollowedByIterationStatement();
 
     void AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers, bool isType,
-        bool isLazy);
+                            bool isLazy);
     void AddImportEntryItemForImportSpecifier(const ir::StringLiteral *source, const ir::AstNode *specifier,
-        bool isLazy);
-    void AddImportEntryItemForImportDefaultOrNamespaceSpecifier(const ir::StringLiteral *source,
-                                                                const ir::AstNode *specifier, bool isType);
+                                              bool isLazy);
+    void AddImportEntryItemForImportDefaultSpecifier(const ir::StringLiteral *source, const ir::AstNode *specifier,
+                                                     bool isType, bool isLazy);
+    void AddImportEntryItemForNamespaceSpecifier(const ir::StringLiteral *source,
+                                                 const ir::AstNode *specifier, bool isType);
     void AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers,
                                  const ir::StringLiteral *source, bool isType);
     void AddExportStarEntryItem(const lexer::SourcePosition &startLoc, const ir::StringLiteral *source,
@@ -598,7 +600,7 @@ private:
     ir::VariableDeclaration *ParseContextualLet(VariableParsingFlags flags,
                                                 StatementParsingFlags stmFlags = StatementParsingFlags::ALLOW_LEXICAL,
                                                 bool isDeclare = false);
-    void VerifySupportLazyImportVersion();
+    void VerifySupportLazyImportVersion(bool isNamedImport);
 
     util::StringView GetNamespaceExportInternalName()
     {

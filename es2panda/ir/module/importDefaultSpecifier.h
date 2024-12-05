@@ -33,13 +33,19 @@ class Identifier;
 
 class ImportDefaultSpecifier : public Statement {
 public:
-    explicit ImportDefaultSpecifier(Identifier *local) : Statement(AstNodeType::IMPORT_DEFAULT_SPECIFIER), local_(local)
+    explicit ImportDefaultSpecifier(Identifier *local, bool isLazy)
+        : Statement(AstNodeType::IMPORT_DEFAULT_SPECIFIER), local_(local), isLazy_(isLazy)
     {
     }
 
     const Identifier *Local() const
     {
         return local_;
+    }
+
+    bool IsLazy() const
+    {
+        return isLazy_;
     }
 
     void Iterate(const NodeTraverser &cb) const override;
@@ -50,6 +56,7 @@ public:
 
 private:
     Identifier *local_;
+    bool isLazy_ { false };
 };
 
 }  // namespace panda::es2panda::ir

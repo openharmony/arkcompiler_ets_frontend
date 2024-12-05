@@ -180,6 +180,7 @@ public:
         const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation);
     static bool IsDefaultApiVersion(int apiVersion, std::string subApiVersion);
     static bool IsSupportLazyImportVersion(int apiVersion, std::string subApiVersion);
+    static bool IsSupportLazyImportDefaultVersion(int apiVersion);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;
@@ -215,6 +216,7 @@ public:
         ABC_TO_PROGRAM_MIN_SUPPORTED_BYTECODE_VERSION {12, 0, 2, 0};
     static const int32_t SENDABLE_FUNCTION_MIN_SUPPORTED_API_VERSION = 12;
     static const int32_t LAZY_IMPORT_MIN_SUPPORTED_API_VERSION = 12;
+    static const int32_t LAZY_IMPORT_DEFAULT_MIN_SUPPORTED_API_VERSION = 16;
     static const int32_t SENDABLE_LAZY_LOADING_MIN_SUPPORTED_API_VERSION = 12;
     static const int8_t SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION = 16;
     static constexpr std::string_view SUB_API_VERSION_1 = "beta1";

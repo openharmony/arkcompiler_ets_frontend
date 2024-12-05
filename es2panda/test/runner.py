@@ -2436,12 +2436,14 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
     runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
-    runner.add_directory("parser/js/language/import/syntax", "js",
-                         ["--parse-only", "--module", "--target-api-sub-version=beta3"])
-    runner.add_directory("parser/js/language/import/syntax/beta2", "js",
+    runner.add_directory("parser/js/language/import/syntax/api16", "js",
+                         ["--parse-only", "--module", "--target-api-version=16"])
+    runner.add_directory("parser/js/language/import/syntax/api12/beta3", "js",
+                         ["--parse-only", "--module", "--target-api-version=12", "--target-api-sub-version=beta3"])
+    runner.add_directory("parser/js/language/import/syntax/api12/beta2", "js",
                          ["--parse-only", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/js/language/import", "ts",
-                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
+                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=16"])
     runner.add_directory("parser/sendable_class", "ts",
                          ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class/api12beta2", "ts",
