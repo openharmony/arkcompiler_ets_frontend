@@ -68,9 +68,12 @@ static std::pair<ir::ClassDeclaration *, ir::ScriptFunction *> FindEnclosingClas
     UNREACHABLE();
 }
 
-static bool CheckIfNeedThis(ir::ArrowFunctionExpression const *lambda)
+static bool CheckIfNeedThis(ir::ArrowFunctionExpression *lambda, checker::ETSChecker *checker)
 {
-    return lambda->IsAnyChild([](ir::AstNode *ast) { return ast->IsThisExpression(); });
+    auto *lambdaClass = ContainingClass(lambda);
+    return lambda->IsAnyChild([&checker, &lambdaClass](ir::AstNode *ast) {
+        return ast->IsThisExpression() && checker->Relation()->IsIdenticalTo(lambdaClass, ContainingClass(ast));
+    });
 }
 
 static size_t g_calleeCount = 0;
@@ -779,7 +782,7 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     info.name = CreateCalleeName(allocator);
     auto capturedVars = FindCaptured(allocator, lambda);
     info.capturedVars = &capturedVars;
-    info.callReceiver = CheckIfNeedThis(lambda) ? allocator->New<ir::ThisExpression>() : nullptr;
+    info.callReceiver = CheckIfNeedThis(lambda, checker) ? allocator->New<ir::ThisExpression>() : nullptr;
 
     if (lambda->Function()->Signature() == nullptr) {
         lambda->Check(checker);
