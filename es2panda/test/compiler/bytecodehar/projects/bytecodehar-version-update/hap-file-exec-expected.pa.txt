@@ -83,9 +83,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2059
+slot &bytecodehar/bytecodehar-dynamic-import&_2043
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2063
+slot &bytecodehar/bytecodehar-dynamic-import&_2047
 {
   index: 0
     tag: 2
@@ -223,9 +223,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2099
+slot &bytecodehar/bytecodehar-static-import&_2083
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2103
+slot &bytecodehar/bytecodehar-static-import&_2087
 {
   index: 0
     tag: 2
@@ -836,9 +836,9 @@ slotNum = 0x4
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2059
+slot &bytecodehar/bytecodehar-dynamic-import&_2043
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_2063
+slot &bytecodehar/bytecodehar-dynamic-import&_2047
 {
   index: 0
     tag: 2
@@ -976,9 +976,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2099
+slot &bytecodehar/bytecodehar-static-import&_2083
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2103
+slot &bytecodehar/bytecodehar-static-import&_2087
 {
   index: 0
     tag: 2

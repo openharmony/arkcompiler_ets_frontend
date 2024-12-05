@@ -1178,7 +1178,7 @@ class BcVersionTest(Test):
         # To avoid problems when api version is upgraded abruptly,
         # the corresponding bytecode version of the api version not written in isa.yaml is alaways the newest version.
         self.bc_version_expect = {
-            8: "13.0.0.0",
+            8: "13.0.1.0",
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
@@ -1189,7 +1189,7 @@ class BcVersionTest(Test):
             13: "12.0.6.0",
             14: "12.0.6.0",
             15: "13.0.0.0",
-            16: "13.0.0.0"
+            16: "13.0.1.0"
         }
         self.es2abc_script_expect = {
             8: "0.0.0.2",
@@ -1203,7 +1203,7 @@ class BcVersionTest(Test):
             13: "12.0.6.0",
             14: "12.0.6.0",
             15: "13.0.0.0",
-            16: "13.0.0.0"
+            16: "13.0.1.0"
         }
 
     def run(self):
@@ -1933,7 +1933,7 @@ class TestVersionControl(Test):
         Test.__init__(self, test_path, flags)
         self.beta_version_default = 3
         self.version_with_sub_version_list = [12]
-        self.target_api_version_list = ["9", "10", "11", "12", "15"]
+        self.target_api_version_list = ["9", "10", "11", "12", "15", "16"]
         self.target_api_sub_version_list = ["beta1", "beta2", "beta3"]
         self.specific_api_version_list = ["API11", "API12beta3"]
         self.output = None
@@ -2325,6 +2325,13 @@ def add_directory_for_version_control(runners, args):
         "API15",
         "bytecode_feature",
     )
+    runner.add_directory(
+        "version_control/API16/bytecode_feature",
+        "ts",
+        ["--module"],
+        "API16",
+        "bytecode_feature",
+    )
     runners.append(runner)
 
     abc_tests_prepare = AbcTestCasesPrepare(args)
@@ -2521,6 +2528,7 @@ def add_directory_for_bytecode(runners, args):
     runner.add_directory("bytecode/ts/ic", "ts", ["--dump-assembly"])
     runner.add_directory("bytecode/ts/api11", "ts", ["--dump-assembly", "--module", "--target-api-version=11"])
     runner.add_directory("bytecode/ts/api12", "ts", ["--dump-assembly", "--module", "--target-api-version=12"])
+    runner.add_directory("bytecode/ts/api16", "ts", ["--dump-assembly", "--module", "--target-api-version=16"])
     runner.add_directory("bytecode/watch-expression", "js", ["--debugger-evaluate-expression", "--dump-assembly"])
 
     runners.append(runner)
