@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -685,7 +685,10 @@ private:
                                    checker::Type const *target, bool acceptUndefined);
     void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
 
-    void HandleLooseNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue);
+    template <bool IS_SRTICT = false>
+    void HandleDefinitelyNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
+    template <bool IS_SRTICT = false>
+    void HandlePossiblyNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue);
 
     void EmitIsUndefined([[maybe_unused]] const ir::AstNode *node)
     {
@@ -696,11 +699,16 @@ private:
 #endif  // PANDA_WITH_ETS
     }
 
+    template <bool IS_SRTICT = false>
     void EmitEtsEquals([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const VReg lhs,
                        [[maybe_unused]] const VReg rhs)
     {
 #ifdef PANDA_WITH_ETS
-        Ra().Emit<EtsEquals>(node, lhs, rhs);
+        if constexpr (IS_SRTICT) {
+            Ra().Emit<EtsStrictequals>(node, lhs, rhs);
+        } else {
+            Ra().Emit<EtsEquals>(node, lhs, rhs);
+        }
 #else
         UNREACHABLE();
 #endif  // PANDA_WITH_ETS
@@ -775,7 +783,9 @@ private:
         SetLabel(node, loc);
     }
 
+    template <bool IS_SRTICT = false>
     void RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
+    template <bool IS_SRTICT = false>
     void RefEqualityLooseDynamic(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
 
     template <typename Compare, typename Cond>
@@ -785,24 +795,15 @@ private:
         Sa().Emit<Cond>(node, ifFalse);
     }
 
-    template <typename DynCompare>
-    void RefEqualityStrictDynamic(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        ASSERT(GetAccumulatorType()->IsETSDynamicType() && GetVRegType(lhs)->IsETSDynamicType());
-        RegScope scope(this);
-        Ra().Emit<CallShort, 2U>(node, Signatures::BUILTIN_JSRUNTIME_STRICT_EQUAL, lhs, MoveAccToReg(node));
-        Ra().Emit<DynCompare>(node, ifFalse);
-    }
-
-    template <typename ObjCompare, typename IntCompare, typename CondCompare, typename DynCompare>
+    template <typename IntCompare, typename CondCompare, typename DynCompare, bool IS_STRICT = false>
     void BinaryEquality(const ir::AstNode *node, VReg lhs, Label *ifFalse)
     {
-        BinaryEqualityCondition<ObjCompare, IntCompare, CondCompare>(node, lhs, ifFalse);
+        BinaryEqualityCondition<IntCompare, CondCompare, IS_STRICT>(node, lhs, ifFalse);
         ToBinaryResult(node, ifFalse);
         SetAccumulatorType(Checker()->GlobalETSBooleanType());
     }
 
-    template <typename ObjCompare, typename IntCompare, typename CondCompare>
+    template <typename IntCompare, typename CondCompare, bool IS_STRICT = false>
     void BinaryEqualityCondition(const ir::AstNode *node, VReg lhs, Label *ifFalse)
     {
         if (targetType_->IsETSReferenceType()) {
@@ -810,8 +811,8 @@ private:
             VReg arg0 = AllocReg();
             StoreAccumulator(node, arg0);
             InverseCondition(
-                node, [this, node, lhs, arg0](Label *tgt) { RefEqualityLoose(node, lhs, arg0, tgt); }, ifFalse,
-                std::is_same_v<CondCompare, Jeqz>);
+                node, [this, node, lhs, arg0](Label *tgt) { RefEqualityLoose<IS_STRICT>(node, lhs, arg0, tgt); },
+                ifFalse, std::is_same_v<CondCompare, Jeqz>);
             SetAccumulatorType(Checker()->GlobalETSBooleanType());
             return;
         }
@@ -846,19 +847,6 @@ private:
             }
         }
 
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-    }
-
-    template <typename ObjCompare, typename DynCompare>
-    void RefEqualityStrict(const ir::AstNode *node, VReg lhs, Label *ifFalse)
-    {
-        if (GetAccumulatorType()->IsETSDynamicType() || GetVRegType(lhs)->IsETSDynamicType()) {
-            RefEqualityStrictDynamic<DynCompare>(node, lhs, ifFalse);
-        } else {
-            Ra().Emit<ObjCompare>(node, lhs, ifFalse);
-        }
-
-        ToBinaryResult(node, ifFalse);
         SetAccumulatorType(Checker()->GlobalETSBooleanType());
     }
 

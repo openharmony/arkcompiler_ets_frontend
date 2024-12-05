@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -889,9 +889,7 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
             break;
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            return checker->CheckBinaryOperatorStrictEqual(left, binaryParams.operationType, pos, leftType, rightType);
-        }
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
             if (Type *res = CheckBinaryOperatorEqual(checker, opsRepaired); res != nullptr) {
