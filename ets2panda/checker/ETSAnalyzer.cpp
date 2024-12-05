@@ -1200,7 +1200,7 @@ static bool ShouldRemoveStaticSignature(ir::CallExpression *expr)
         if (object->IsMemberExpression()) {
             object = object->AsMemberExpression()->Property();
         }
-        if (!object->IsIdentifier() ||
+        if (!object->IsIdentifier() || object->AsIdentifier()->Variable() == nullptr ||
             object->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
             return true;
         }
