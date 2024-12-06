@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,7 +34,7 @@ funct\u{0069}on
 /* @@? 20:5 Error SyntaxError: Unexpected token 'identification literal'.  */
 /* @@? 22:1 Error SyntaxError: Unexpected strict mode reserved keyword  */
 /* @@? 24:1 Error SyntaxError: Escape sequences are not allowed in keywords  */
-/* @@? 40:67 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@? 40:67 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
 /* @@? 40:67 Error SyntaxError: Unterminated string  */
 /* @@? 40:67 Error SyntaxError: Unexpected token, expected '${' or '`'  */
 /* @@? 40:67 Error SyntaxError: Unexpected token, expected '`'  */

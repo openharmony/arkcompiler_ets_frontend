@@ -337,12 +337,8 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus)
     }
 
     if (isArrow) {
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-            LogExpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
-        }
-
+        ExpectToken(lexer::TokenType::PUNCTUATOR_ARROW);
         functionContext.AddFlag(ir::ScriptFunctionFlags::ARROW);
-        Lexer()->NextToken();
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
@@ -403,12 +399,10 @@ ir::ScriptFunctionFlags ETSParser::ParseFunctionThrowMarker(bool isRethrowsAllow
     ir::ScriptFunctionFlags throwMarker = ir::ScriptFunctionFlags::NONE;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-        if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_THROWS) {
-            Lexer()->NextToken();  // eat 'throws'
+        if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_THROWS)) {
             throwMarker = ir::ScriptFunctionFlags::THROWS;
-        } else if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_RETHROWS) {
+        } else if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_RETHROWS)) {
             if (isRethrowsAllowed) {
-                Lexer()->NextToken();  // eat 'rethrows'
                 throwMarker = ir::ScriptFunctionFlags::RETHROWS;
             } else {
                 LogSyntaxError("Only 'throws' can be used with function types");
@@ -643,10 +637,7 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
         params->SetParent(typeAliasDecl);
     }
 
-    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SUBSTITUTION)) {
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-        Lexer()->NextToken();  // eat '='
-    }
+    ExpectToken(lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
@@ -876,11 +867,9 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
         typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeName, typeParams, typeRefPart);
         typeRefPart->SetRange({partPos, Lexer()->GetToken().End()});
 
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_PERIOD) {
+        if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_PERIOD)) {
             break;
         }
-
-        Lexer()->NextToken();
 
         if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
             (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
@@ -944,7 +933,7 @@ ir::TypeNode *ETSParser::ParseLiteralIdent(TypeAnnotationParsingOptions *options
 void ETSParser::ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
                                       lexer::LexerPosition savedPos)
 {
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS)) {
         if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
             LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
             Lexer()->NextToken();  // eat ')'
@@ -953,8 +942,6 @@ void ETSParser::ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir:
 
         Lexer()->Rewind(savedPos);
         typeAnnotation = nullptr;
-    } else {
-        Lexer()->NextToken();  // eat ')'
     }
 }
 
@@ -1018,15 +1005,13 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
 {
     auto startLoc = Lexer()->GetToken().Start();
 
-    if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PACKAGE) {
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::KEYW_PACKAGE)) {
         // NOTE(vpukhov): the *unnamed* modules are to be removed entirely
         bool isUnnamed = GetOptions().IsEtsUnnamed() && GetProgram() == globalProgram_;
         util::StringView moduleName = isUnnamed ? "" : importPathManager_->FormModuleName(GetProgram()->SourceFile());
         GetProgram()->SetPackageInfo(moduleName, ModuleKind::MODULE);
         return nullptr;
     }
-
-    Lexer()->NextToken();
 
     ir::Expression *name = ParseQualifiedName();
     auto *packageDeclaration = AllocNode<ir::ETSPackageDeclaration>(name);
@@ -1164,10 +1149,8 @@ ir::ExportNamedDeclaration *ETSParser::ParseSingleExport(ir::ModifierFlags modif
 
 bool ETSParser::IsDefaultImport()
 {
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DEFAULT) {
-        Lexer()->NextToken();
-        if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
-            Lexer()->NextToken();
+    if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_DEFAULT)) {
+        if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_AS)) {
             return true;
         }
         LogSyntaxError("Unexpected token, expected: 'as'.");
@@ -1534,13 +1517,8 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclarator(ir::Expression *init,
 
 ir::Expression *ETSParser::ParseCatchParam()
 {
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
-    }
-
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     ir::AnnotatedExpression *param = nullptr;
-
-    Lexer()->NextToken();  // eat left paren
 
     bool checkRestrictedBinding = true;
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
@@ -1554,7 +1532,7 @@ ir::Expression *ETSParser::ParseCatchParam()
         }
     }
     if (!checkRestrictedBinding) {
-        Lexer()->NextToken();  // eat right paren
+        ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
         return nullptr;
     }
 
@@ -1562,20 +1540,13 @@ ir::Expression *ETSParser::ParseCatchParam()
     param = ExpectIdentifier();
     ParseCatchParamTypeAnnotation(param);
 
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-    }
-
-    Lexer()->NextToken();  // eat right paren
-
+    ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     return param;
 }
 
 void ETSParser::ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpression *param)
 {
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        Lexer()->NextToken();  // eat ':'
-
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         if (auto *typeAnnotation = ParseTypeAnnotation(&options); typeAnnotation != nullptr) {
             typeAnnotation->SetParent(param);

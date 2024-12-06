@@ -316,16 +316,10 @@ ir::TSModuleBlock *TypedParser::ParseTsModuleBlock()
     Lexer()->NextToken();
     auto statements = ParseStatementList();
 
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        // redundant check -> we have it in parse statements
-        // we even do not do lexer_->NextToken() trying to eat '}' after
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
-    }
-
     auto *blockNode = AllocNode<ir::TSModuleBlock>(std::move(statements));
     blockNode->SetRange({startLoc, Lexer()->GetToken().End()});
 
-    Lexer()->NextToken();
+    ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
     return blockNode;
 }
 
@@ -623,53 +617,49 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
 ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,
                                                      bool isConst, [[maybe_unused]] bool isStatic)
 {
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        // test exists for ts extension only
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
-    }
-
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
 
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        ir::Expression *memberKey = nullptr;
+    lexer::SourcePosition endLoc;
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
+        [this, &members]() {
+            ir::Expression *memberKey = nullptr;
 
-        if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-            memberKey = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            memberKey->SetRange(Lexer()->GetToken().Loc());
-        } else if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
-            memberKey = AllocNode<ir::StringLiteral>(Lexer()->GetToken().String());
-            memberKey->SetRange(Lexer()->GetToken().Loc());
-        } else {
-            LogSyntaxError("Unexpected token in enum member");
-            memberKey = AllocErrorExpression();
-            // Consider that the current token is a memberKey and skip it.
-        }
+            if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+                memberKey = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+                memberKey->SetRange(Lexer()->GetToken().Loc());
+            } else if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
+                memberKey = AllocNode<ir::StringLiteral>(Lexer()->GetToken().String());
+                memberKey->SetRange(Lexer()->GetToken().Loc());
+            } else {
+                LogSyntaxError("Unexpected token in enum member");
+                memberKey = AllocErrorExpression();
+                // Consider that the current token is a memberKey and skip it.
+            }
 
-        Lexer()->NextToken();  // eat memberKey
+            Lexer()->NextToken();  // eat memberKey
 
-        ir::Expression *memberInit = nullptr;
-        lexer::SourcePosition initStart = Lexer()->GetToken().Start();
+            ir::Expression *memberInit = nullptr;
+            lexer::SourcePosition initStart = Lexer()->GetToken().Start();
 
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-            Lexer()->NextToken();  // eat '='
-            initStart = Lexer()->GetToken().Start();
-            memberInit = ParseExpression();
-        }
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+                Lexer()->NextToken();  // eat '='
+                initStart = Lexer()->GetToken().Start();
+                memberInit = ParseExpression();
+            }
 
-        auto *member = AllocNode<ir::TSEnumMember>(memberKey, memberInit);
-        member->SetRange({initStart, Lexer()->GetToken().End()});
-        members.push_back(member);
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-        }
-    }
+            auto *member = AllocNode<ir::TSEnumMember>(memberKey, memberInit);
+            member->SetRange({initStart, Lexer()->GetToken().End()});
+            members.push_back(member);
+            return true;
+        },
+        &endLoc, true);
 
     auto *enumDeclaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members),
                                                              ir::TSEnumDeclaration::ConstructorFlags {isConst});
-    enumDeclaration->SetRange({enumStart, Lexer()->GetToken().End()});
-    Lexer()->NextToken();  // eat '}'
+    enumDeclaration->SetRange({enumStart, endLoc});
 
     return enumDeclaration;
 }

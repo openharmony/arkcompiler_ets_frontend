@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-class A 
-/* @@ label */}
+function foo(a: int) {}
 
-/* @@@ label Error SyntaxError: Unexpected token '}', expected: '{'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label1 */
+foo(1,
+
+/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: ')'.  */
+/* @@ label */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -166,75 +166,75 @@ function main(): void {
     f();
 }
 
-/* @@? 18:14 Error SyntaxError: Optional variable is not allowed in for of statements */
-/* @@? 28:12 Error SyntaxError: Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override'). */
-/* @@? 34:14 Error SyntaxError: The modifier for a constructor should be limited to access modifiers (private, internal, protected, public),and 'native' modifiers. */
-/* @@? 37:33 Error SyntaxError: Only 'throws' can be used with function types */
-/* @@? 37:33 Error SyntaxError: Unexpected token 'identification literal'. */
-/* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 39:14 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 39:14 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 39:24 Error SyntaxError: Unexpected token 'identification literal'. */
-/* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
-/* @@? 39:27 Error SyntaxError: Unexpected token ')'. */
-/* @@? 39:31 Error SyntaxError: return keyword should be used in function body */
-/* @@? 41:6 Error SyntaxError: Identifier expected, got 'number literal'. */
-/* @@? 43:6 Error SyntaxError: Identifier expected, got 'null'. */
-/* @@? 45:6 Error SyntaxError: Identifier expected, got 'this'. */
-/* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared */
-/* @@? 47:8 Error SyntaxError: Missing initializer in const declaration */
-/* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared */
-/* @@? 49:13 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 51:25 Error SyntaxError: Rest parameter must be the last formal parameter. */
-/* @@? 51:27 Error SyntaxError: Unexpected token '...'. */
-/* @@? 51:33 Error SyntaxError: Label must be followed by a loop statement */
-/* @@? 51:38 Error SyntaxError: Unexpected token ')'. */
-/* @@? 51:38 Error SyntaxError: Unexpected token ')'. */
-/* @@? 51:39 Error SyntaxError: Unexpected token ':'. */
-/* @@? 51:45 Error SyntaxError: Unexpected token '{'. */
-/* @@? 52:5 Error SyntaxError: return keyword should be used in function body */
-/* @@? 55:26 Error SyntaxError: Rest parameter should be of an array type. */
-/* @@? 59:23 Error SyntaxError: Rest parameter should be of an array type. */
-/* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 68:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
-/* @@? 74:11 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
-/* @@? 84:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
-/* @@? 93:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
-/* @@? 103:25 Error SyntaxError: Rest parameter should be of an array type. */
-/* @@? 104:32 Error SyntaxError: Rest parameter should be of an array type. */
-/* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */
-/* @@? 115:30 Error SyntaxError: Unexpected token ':'. */
-/* @@? 115:33 Error SyntaxError: Unexpected token ')'. */
-/* @@? 115:33 Error SyntaxError: Unexpected token ')'. */
-/* @@? 115:34 Error SyntaxError: Unexpected token ':'. */
-/* @@? 115:38 Error SyntaxError: Unexpected token '{'. */
-/* @@? 116:5 Error SyntaxError: return keyword should be used in function body */
-/* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 119:26 Error SyntaxError: Unexpected token 'case'. */
-/* @@? 119:30 Error SyntaxError: Unexpected token ':'. */
-/* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
-/* @@? 119:33 Error SyntaxError: Unexpected token ')'. */
-/* @@? 119:34 Error SyntaxError: Unexpected token ':'. */
-/* @@? 119:38 Error SyntaxError: Unexpected token '{'. */
-/* @@? 120:5 Error SyntaxError: return keyword should be used in function body */
-/* @@? 123:5 Error SyntaxError: Identifier expected, got ','. */
-/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared */
-/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared */
-/* @@? 123:6 Error SyntaxError: Unexpected token 'identification literal'. */
-/* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context. */
-/* @@? 132:14 Error SyntaxError: Unexpected token in catch parameter, expected an identifier */
-/* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer */
-/* @@? 137:16 Error SyntaxError: Unexpected token, expected: ')'. */
-/* @@? 137:18 Error SyntaxError: Unexpected token 'number literal', expected '{'. */
-/* @@? 137:18 Error SyntaxError: Expected a '{', got 'number literal'. */
-/* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
-/* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
-/* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
-/* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
-/* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */
-/* @@? 241:1 Error SyntaxError: Expected a '}' got 'eos'. */
+/* @@? 18:14 Error SyntaxError: Optional variable is not allowed in for of statements  */
+/* @@? 28:12 Error SyntaxError: Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override').  */
+/* @@? 34:14 Error SyntaxError: The modifier for a constructor should be limited to access modifiers (private, internal, protected, public),and 'native' modifiers.  */
+/* @@? 37:41 Error SyntaxError: Only 'throws' can be used with function types  */
+/* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 39:14 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 39:14 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 39:24 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 39:27 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 39:27 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 39:31 Error SyntaxError: return keyword should be used in function body  */
+/* @@? 41:6 Error SyntaxError: Identifier expected, got 'number literal'.  */
+/* @@? 43:6 Error SyntaxError: Identifier expected, got 'null'.  */
+/* @@? 45:6 Error SyntaxError: Identifier expected, got 'this'.  */
+/* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared  */
+/* @@? 47:8 Error SyntaxError: Missing initializer in const declaration  */
+/* @@? 47:8 Error SyntaxError: Variable must be initialized or it's type must be declared  */
+/* @@? 49:13 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 51:25 Error SyntaxError: Rest parameter must be the last formal parameter.  */
+/* @@? 51:27 Error SyntaxError: Unexpected token '...'.  */
+/* @@? 51:33 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@? 51:38 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 51:38 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 51:39 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 51:45 Error SyntaxError: Unexpected token '{'.  */
+/* @@? 52:5 Error SyntaxError: return keyword should be used in function body  */
+/* @@? 55:26 Error SyntaxError: Rest parameter should be of an array type.  */
+/* @@? 59:23 Error SyntaxError: Rest parameter should be of an array type.  */
+/* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 68:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@? 74:11 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@? 84:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@? 93:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@? 103:25 Error SyntaxError: Rest parameter should be of an array type.  */
+/* @@? 104:32 Error SyntaxError: Rest parameter should be of an array type.  */
+/* @@? 115:26 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 115:26 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 115:26 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 115:26 Error SyntaxError: Unexpected token 'case'.  */
+/* @@? 115:30 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 115:33 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 115:33 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 115:34 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 115:38 Error SyntaxError: Unexpected token '{'.  */
+/* @@? 116:5 Error SyntaxError: return keyword should be used in function body  */
+/* @@? 119:26 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@? 119:26 Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
+/* @@? 119:26 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 119:26 Error SyntaxError: Unexpected token 'case'.  */
+/* @@? 119:30 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 119:33 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 119:33 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 119:34 Error SyntaxError: Unexpected token ':'.  */
+/* @@? 119:38 Error SyntaxError: Unexpected token '{'.  */
+/* @@? 120:5 Error SyntaxError: return keyword should be used in function body  */
+/* @@? 123:5 Error SyntaxError: Identifier expected, got ','.  */
+/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared  */
+/* @@? 123:6 Error SyntaxError: Variable must be initialized or it's type must be declared  */
+/* @@? 123:6 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 127:1 Error SyntaxError: The modifier async cannot be used in an ambient context.  */
+/* @@? 132:14 Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */
+/* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer  */
+/* @@? 137:16 Error SyntaxError: Unexpected token '=', expected: ')'.  */
+/* @@? 137:16 Error SyntaxError: Unexpected token '=', expected '{'.  */
+/* @@? 137:16 Error SyntaxError: Unexpected token '=', expected: '{'.  */
+/* @@? 137:16 Error SyntaxError: Unexpected token '='.  */
+/* @@? 137:19 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 137:19 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'.  */
+/* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'.  */
+/* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'.  */
+/* @@? 241:1 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,3 +20,4 @@ function 8274()
 /* @@? 1:1 Node {
     "type": "Program"
 }  */
+/* @@? 17:10 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword  */

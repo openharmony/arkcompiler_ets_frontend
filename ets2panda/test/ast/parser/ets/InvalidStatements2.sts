@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,21 @@
  * limitations under the License.
  */
 
-abstract struct X {
+abstract /* @@ label */struct X {
     x: number = 89
 }
 
-abstract struct B extends X {
+abstract /* @@ label1 */struct B extends X {
     f(): void {
         this.x = 55
     }
 }
 
-function f(x: int): void {
+/* @@ label2 */function f(x: int): void {
     for (let i = 0; i < x; ++i) {
         aa:
         while (i < 10) {
-            aa:
+            /* @@ label3 */aa:
             while (i > 10) {
                 ++i
                 break aa
@@ -37,27 +37,27 @@ function f(x: int): void {
     }
 }
 
-return 48;
+/* @@ label4 */return 48;
 
 function g(x: int): int {
-    switch x
-        case 1: return 0;
+    switch /* @@ label5 */x
+        /* @@ label6 */case 1: return 0;
         case 2: return 1;
-        77: return 2;
+        77/* @@ label7 */: return 2;
         default: return -1;
-        default: return -2;
+        /* @@ label8 */default: return -2;
     }
 }
 
-/* @@? 16:10 Error SyntaxError: struct declaration is not allowed to use 'abstract' modifiers. */
-/* @@? 20:10 Error SyntaxError: struct declaration is not allowed to use 'abstract' modifiers. */
-/* @@? 26:1 Error SyntaxError: struct declaration cannot extends from other class */
-/* @@? 30:13 Error SyntaxError: Label already declared */
-/* @@? 40:1 Error SyntaxError: return keyword should be used in function body */
-/* @@? 43:12 Error SyntaxError: Unexpected token 'identification literal', expected '('. */
-/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected ')'. */
-/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected '{'. */
-/* @@? 46:11 Error SyntaxError: Unexpected token ':'. */
-/* @@? 46:11 Error SyntaxError: Unexpected token ':'. */
-/* @@? 46:11 Error SyntaxError: Unexpected token ':', expected 'case' or 'default'. */
-/* @@? 48:9 Error SyntaxError: Multiple default clauses. */
+/* @@@ label Error SyntaxError: struct declaration is not allowed to use 'abstract' modifiers.  */
+/* @@@ label1 Error SyntaxError: struct declaration is not allowed to use 'abstract' modifiers.  */
+/* @@@ label2 Error SyntaxError: struct declaration cannot extends from other class  */
+/* @@@ label3 Error SyntaxError: Label already declared  */
+/* @@@ label4 Error SyntaxError: return keyword should be used in function body  */
+/* @@@ label5 Error SyntaxError: Unexpected token 'identification literal', expected: '('.  */
+/* @@@ label6 Error SyntaxError: Unexpected token 'case', expected: ')'.  */
+/* @@@ label6 Error SyntaxError: Unexpected token 'case', expected: '{'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token ':'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token ':'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token ':', expected 'case' or 'default'.  */
+/* @@@ label8 Error SyntaxError: Multiple default clauses.  */

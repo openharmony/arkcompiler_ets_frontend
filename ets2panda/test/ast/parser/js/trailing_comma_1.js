@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function foo(...number,) {
+function foo(...number/* @@ label */,/* @@ label1 */) {
     return number[0]
 }
 
@@ -21,7 +21,7 @@ function foo2(number,) {
     return number
 }
 
-function foo3(, number) {
+function foo3(/* @@ label2 */, number) {
     return number
 }
 
@@ -29,20 +29,23 @@ let a = [1, , 2,,] // OK - omitted expressions
 foo(...a,)
 foo(a[0],)
 foo(a[0], a[1], ...a,)
-foo(a[0],,a[0])
-foo(a[0],,)
-foo(,a[0])
-foo(a[0] a[1])
-foo(,)
+foo(a[0],/* @@ label3 */,a[0])
+foo(a[0],/* @@ label4 */,)
+foo(/* @@ label5 */,a[0])
+foo(a[0] /* @@ label6 */a[1]/* @@ label7 */)
+foo(/* @@ label8 */,)
 
 
-/* @@? 16:23 Error SyntaxError: Rest parameter must be the last formal parameter.  */
-/* @@? 24:15 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 32:10 Error SyntaxError: Unexpected token: ','.  */
-/* @@? 33:10 Error SyntaxError: Unexpected token: ','.  */
-/* @@? 34:5 Error SyntaxError: Unexpected token: ','.  */
-/* @@? 35:10 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@? 35:10 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 35:14 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 35:14 Error SyntaxError: Unexpected token: ')'.  */
-/* @@? 36:5 Error SyntaxError: Unexpected token: ','.  */
+/* @@@ label Error SyntaxError: Rest parameter must be the last formal parameter.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label3 Error SyntaxError: Unexpected token: ','.  */
+/* @@@ label4 Error SyntaxError: Unexpected token: ','.  */
+/* @@@ label5 Error SyntaxError: Unexpected token: ','.  */
+/* @@@ label6 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@@ label6 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token ')'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token: ')'.  */
+/* @@@ label8 Error SyntaxError: Unexpected token: ','.  */
+/* @@@ label9 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@ label9 */

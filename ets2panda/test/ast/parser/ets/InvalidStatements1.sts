@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,59 +13,60 @@
  * limitations under the License.
  */
 
-export type function f(): void {
+export type /* @@ label */function f(): void {
 }
 
-export type let x: number = 7
+export type /* @@ label1 */let x: number = 7
 
 label1:
-let x = 77
+/* @@ label2 */let x = 77
 
 class A {
-    let x: number = 5;
+    /* @@ label3 */let x: number = 5;
 }
 
 function f() {
-    struct A {
-        let x:number;
+    /* @@ label4 */struct A {
+        /* @@ label5 */let x:number;
     }
-    function s(): void {}
+    /* @@ label6 */function s(): void {}
 }
 
 try
-    let x: number = 89
+    /* @@ label7 */let x: number = 89
 } catch(a: Exception) {
 }
 
-try x: number;
+/* @@ label8 */try /* @@ label9 */x: /* @@ label10 */number;
 
-try
-    let x: number;
+/* @@ label11 */try
+    /* @@ label12 */let x: number;
 catch
-finally {}
+finally /* @@ label13 */{}
 
 class A {
-    let x: number = 5;
+    /* @@ label14 */let x: number = 5;
 }
 
 throw
-"abc"
+/* @@ label15 */"abc"
 // there were more errors
-/* @@? 16:13 Error SyntaxError: Can only type export class or interface!  */
-/* @@? 19:13 Error SyntaxError: Can only type export class or interface!  */
-/* @@? 22:1 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 25:5 Error SyntaxError: Unexpected token: 'let'.  */
-/* @@? 29:5 Error SyntaxError: Illegal start of STRUCT expression  */
-/* @@? 30:9 Error SyntaxError: Unexpected token: 'let'.  */
-/* @@? 32:5 Error SyntaxError: Nested functions are not allowed  */
-/* @@? 36:5 Error SyntaxError: Expected a '{', got 'let'.  */
-/* @@? 40:5 Error SyntaxError: Expected a '{', got 'identification literal'.  */
-/* @@? 40:8 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 43:5 Error SyntaxError: Expected a '{', got 'let'.  */
-/* @@? 45:9 Error SyntaxError: Unexpected token '{'.  */
-/* @@? 48:5 Error SyntaxError: Unexpected token: 'let'.  */
-/* @@? 52:1 Error SyntaxError: Illegal newline after throw  */
-/* @@? 72:1 Error SyntaxError: Expected a '}' got 'eos'.  */
-/* @@? 42:1 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
-/* @@? 72:1 Error SyntaxError: Expected a '}' got 'eos'.  */
-/* @@? 40:1 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
+/* @@@ label Error SyntaxError: Can only type export class or interface!  */
+/* @@@ label1 Error SyntaxError: Can only type export class or interface!  */
+/* @@@ label2 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label3 Error SyntaxError: Unexpected token: 'let'.  */
+/* @@@ label4 Error SyntaxError: Illegal start of STRUCT expression  */
+/* @@@ label5 Error SyntaxError: Unexpected token: 'let'.  */
+/* @@@ label6 Error SyntaxError: Nested functions are not allowed  */
+/* @@@ label7 Error SyntaxError: Unexpected token 'let', expected: '{'.  */
+/* @@@ label9 Error SyntaxError: Unexpected token 'identification literal', expected: '{'.  */
+/* @@@ label10 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label12 Error SyntaxError: Unexpected token 'let', expected: '{'.  */
+/* @@@ label13 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label14 Error SyntaxError: Unexpected token: 'let'.  */
+/* @@@ label15 Error SyntaxError: Illegal newline after throw  */
+/* @@@ label16 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@@ label11 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
+/* @@@ label16 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@@ label8 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
+/* @@ label16 */

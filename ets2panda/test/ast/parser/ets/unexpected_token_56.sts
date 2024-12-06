@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-for await (/* @@ label1 */;/* @@ label2 */;i < count/* @@ label3 */; ++i) {
+for await (/* @@ label1 */;/* @@ label2 */;i < count/* @@ label3 */; ++i/* @@ label */) {
     result = result + p[i]!.awaitResolution() * a[i];
 }
 for (let i? : Number = 1;;)  { break; }
 
 /* @@@ label1 Error SyntaxError: Unexpected token */
 /* @@@ label2 Error SyntaxError: Unexpected token ';'. */
-/* @@@ label3 Error SyntaxError: Missing right parenthesis in 'for' statement. */
-/* @@? 16:73 Error SyntaxError: Unexpected token ')'. */
-/* @@? 16:73 Error SyntaxError: Unexpected token ')'. */
+/* @@@ label3 Error SyntaxError: Unexpected token ';', expected: ')'. */
+/* @@@ label Error SyntaxError: Unexpected token ')'.  */
+/* @@@ label Error SyntaxError: Unexpected token ')'.  */
