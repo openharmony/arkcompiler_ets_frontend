@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_TS_SIGNATURE_DECLARATION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_TS_SIGNATURE_DECLARATION_H
 
+#include "ir/astNode.h"
 #include "ir/base/scriptFunctionSignature.h"
 #include "ir/typed.h"
 
@@ -74,7 +75,7 @@ public:
         return signature_.TypeParams();
     }
 
-    [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
+    [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
         return signature_.Params();
     }

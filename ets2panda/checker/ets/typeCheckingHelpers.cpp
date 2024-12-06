@@ -1203,7 +1203,7 @@ static ir::AstNode *DerefETSTypeReference(ir::AstNode *node)
 bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda)
 {
     ASSERT(param->IsETSParameterExpression());
-    ir::AstNode *typeAnn = param->AsETSParameterExpression()->TypeAnnotation();
+    ir::AstNode *typeAnn = param->AsETSParameterExpression()->Ident()->TypeAnnotation();
     if (typeAnn->IsETSTypeReference()) {
         typeAnn = DerefETSTypeReference(typeAnn);
     }
@@ -1262,7 +1262,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
     ArenaVector<ir::TypeNode *> lambdaParamTypes {Allocator()->Adapter()};
     for (auto *const lambdaParam : lambda->Params()) {
-        lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->TypeAnnotation());
+        lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->Ident()->TypeAnnotation());
     }
     auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
 
@@ -1279,8 +1279,9 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
 
         //  Restore inferring lambda types:
         for (std::size_t i = 0U; i < lambda->Params().size(); ++i) {
-            if (lambdaParamTypes[i] == nullptr) {
-                lambda->Params()[i]->AsETSParameterExpression()->SetTsTypeAnnotation(nullptr);
+            auto *const lambdaParamTypeAnnotation = lambdaParamTypes[i];
+            if (lambdaParamTypeAnnotation == nullptr) {
+                lambda->Params()[i]->AsETSParameterExpression()->Ident()->SetTsTypeAnnotation(nullptr);
             }
         }
         if (lambdaReturnTypeAnnotation == nullptr) {
@@ -1315,7 +1316,8 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
             continue;
         }
 
-        ir::AstNode *typeAnn = signature->Function()->Params()[index]->AsETSParameterExpression()->TypeAnnotation();
+        auto const *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
+        ir::AstNode *typeAnn = param->TypeAnnotation();
         Type *const parameterType = signature->Params()[index]->TsType();
 
         bool const rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);

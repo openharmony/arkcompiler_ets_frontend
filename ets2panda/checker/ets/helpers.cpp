@@ -724,10 +724,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (annotationType != nullptr) {
-        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(annotationType);
-        const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
-        AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
-                          {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
+        CheckAnnotationTypeForVariableDeclaration(annotationType, annotationType->IsETSUnionType(), init, initType);
 
         if (omitConstInit && ShouldPreserveConstantTypeInVariableDeclaration(annotationType, initType)) {
             bindingVar->SetTsType(init->TsType());
@@ -742,6 +739,29 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     bindingVar->SetTsType(needWidening ? GetNonConstantType(initType) : initType);
 
     return FixOptionalVariableType(bindingVar, flags, init);
+}
+
+void ETSChecker::CheckAnnotationTypeForVariableDeclaration(checker::Type *annotationType, bool isUnionFunction,
+                                                           ir::Expression *init, checker::Type *initType)
+{
+    Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
+
+    if (!isUnionFunction && annotationType->IsETSUnionType()) {
+        for (auto it : annotationType->AsETSUnionType()->ConstituentTypes()) {
+            if (it->IsETSFunctionType() ||
+                (it->IsETSObjectType() && it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+                isUnionFunction = true;
+                break;
+            }
+        }
+    }
+
+    if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {}, TypeRelationFlag::NO_THROW)
+             // CC-OFFNXT(G.FMT.02) project code style
+             .IsAssignable()) {
+        Type *targetType = isUnionFunction ? annotationType : TryGettingFunctionTypeFromInvokeFunction(annotationType);
+        LogTypeError({"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"}, init->Start());
+    }
 }
 
 //==============================================================================//
@@ -1855,9 +1875,10 @@ bool ETSChecker::IsSameDeclarationType(varbinder::LocalVariable *target, varbind
 
 bool ETSChecker::CheckRethrowingParams(const ir::AstNode *ancestorFunction, const ir::AstNode *node)
 {
-    auto const &name = node->AsCallExpression()->Callee()->AsIdentifier()->Name();
     for (const auto param : ancestorFunction->AsScriptFunction()->Signature()->Function()->Params()) {
-        if (name.Is(param->AsETSParameterExpression()->Name().Utf8())) {
+        if (node->AsCallExpression()->Callee()->AsIdentifier()->Name().Is(
+                // CC-OFFNXT(G.FMT.06-CPP) project code style
+                param->AsETSParameterExpression()->Ident()->Name().Mutf8())) {
             return true;
         }
     }
@@ -1968,17 +1989,16 @@ void ETSChecker::CheckRethrowingFunction(ir::ScriptFunction *func)
 
     // It doesn't support lambdas yet.
     for (auto item : func->Params()) {
-        auto const *typeAnnotation = item->AsETSParameterExpression()->TypeAnnotation();
+        auto const *type = item->AsETSParameterExpression()->Ident()->TypeAnnotation();
 
-        if (typeAnnotation->IsETSTypeReference()) {
-            auto *typeDecl =
-                typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
+        if (type->IsETSTypeReference()) {
+            auto *typeDecl = type->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
             if (typeDecl->IsTypeAliasDecl()) {
-                typeAnnotation = typeDecl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
+                type = typeDecl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
             }
         }
 
-        if (typeAnnotation->IsETSFunctionType() && typeAnnotation->AsETSFunctionType()->IsThrowing()) {
+        if (type->IsETSFunctionType() && type->AsETSFunctionType()->IsThrowing()) {
             foundThrowingParam = true;
             break;
         }
@@ -2131,7 +2151,8 @@ bool ETSChecker::NeedTypeInference(const ir::ScriptFunction *lambda)
         return true;
     }
     for (auto *const param : lambda->Params()) {
-        if (param->AsETSParameterExpression()->TypeAnnotation() == nullptr) {
+        const auto *const lambdaParam = param->AsETSParameterExpression()->Ident();
+        if (lambdaParam->TypeAnnotation() == nullptr) {
             return true;
         }
     }
@@ -2168,19 +2189,19 @@ bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunc
 void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType,
                                      Signature *maybeSubstitutedFunctionSig)
 {
-    for (size_t i = 0U; i < calleeType->Params().size(); ++i) {
-        if (auto *const lambdaParam = lambda->Params()[i]->AsETSParameterExpression();
-            lambdaParam->TypeAnnotation() == nullptr) {
-            auto *const typeAnnotation =
-                calleeType->Params()[i]->AsETSParameterExpression()->TypeAnnotation()->Clone(Allocator(), nullptr);
+    for (size_t i = 0; i < calleeType->Params().size(); ++i) {
+        const auto *const calleeParam = calleeType->Params()[i]->AsETSParameterExpression()->Ident();
+        auto *const lambdaParam = lambda->Params()[i]->AsETSParameterExpression()->Ident();
+        if (lambdaParam->TypeAnnotation() == nullptr) {
+            auto *const typeAnnotation = calleeParam->TypeAnnotation()->Clone(Allocator(), lambdaParam);
             if (maybeSubstitutedFunctionSig != nullptr) {
                 ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
                 typeAnnotation->SetTsType(maybeSubstitutedFunctionSig->Params()[i]->TsType());
             }
             lambdaParam->SetTsTypeAnnotation(typeAnnotation);
+            typeAnnotation->SetParent(lambdaParam);
         }
     }
-
     if (lambda->ReturnTypeAnnotation() == nullptr) {
         auto *const returnTypeAnnotation = calleeType->ReturnType()->Clone(Allocator(), lambda);
         if (maybeSubstitutedFunctionSig != nullptr) {
@@ -2491,12 +2512,13 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     }
 }
 
-Type const *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type const *type)
+Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type *type)
 {
     if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         auto const propInvoke = type->AsETSObjectType()->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
                                                                      PropertySearchFlags::SEARCH_INSTANCE_METHOD);
         ASSERT(propInvoke != nullptr);
+
         return propInvoke->TsType();
     }
 

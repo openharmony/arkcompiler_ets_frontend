@@ -18,7 +18,6 @@
 #include "checker/ets/typeRelationContext.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
-#include "ir/base/scriptFunctionSignature.h"
 #include "util/options.h"
 
 namespace ark::es2panda::compiler {
@@ -156,7 +155,6 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
 
 using ParamsAndVarMap =
     std::pair<ArenaVector<ir::Expression *>, ArenaMap<varbinder::Variable *, varbinder::Variable *>>;
-
 ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const CalleeParameterInfo &calleeParameterInfo)
 {
     auto allocator = ctx->allocator;
@@ -190,10 +188,10 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
             break;
         }
 
-        auto *oldParamType = oldParam->AsETSParameterExpression()->TypeAnnotation()->GetType(checker);
+        auto *oldParamType = oldParam->AsETSParameterExpression()->Ident()->TypeAnnotation()->TsType();
         auto *newParamType = oldParamType->Substitute(checker->Relation(), calleeParameterInfo.substitution);
         auto *newParam = oldParam->AsETSParameterExpression()->Clone(allocator, nullptr);
-        newParam->SetVariable(nullptr);  // Remove the cloned variable.
+        newParam->Ident()->SetVariable(nullptr);  // Remove the cloned variable.
         auto [_, var] = varBinder->AddParamDecl(newParam);
         (void)_;
         var->SetTsType(newParamType);
@@ -201,7 +199,6 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
         newParam->SetVariable(var);
         newParam->SetTsType(newParamType);
         newParam->Ident()->SetTsType(newParamType);
-        newParam->TypeAnnotation()->SetTsType(newParamType);
         resParams.push_back(newParam);
         varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
         i++;
@@ -439,19 +436,20 @@ static void ValidateDefaultParameters(public_lib::Context *ctx, ir::ArrowFunctio
 {
     auto *checker = ctx->checker->AsETSChecker();
 
-    std::size_t i = 0U;
+    size_t i = 0;
     for (auto *param : defaultMethod->Function()->Params()) {
         if (param->AsETSParameterExpression()->IsDefault()) {
             break;
         }
 
-        ++i;
+        i++;
     }
 
-    for (; i < lambda->Function()->Params().size(); ++i) {
+    for (; i < lambda->Function()->Params().size(); i++) {
         auto *param = lambda->Function()->Params()[i]->AsETSParameterExpression();
         if (param->Initializer() == nullptr) {
-            checker->LogTypeError({"Expected initializer for parameter ", param->Name(), "."}, param->Start());
+            checker->LogTypeError({"Expected initializer for parameter ", param->Ident()->Name(), "."}, param->Start());
+            break;
         }
     }
 }
@@ -823,7 +821,7 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
         checker::Signature *sigFound = nullptr;
 
         for (auto *sig : type->CallSignatures()) {
-            auto *tmpFunType = checker->CreateETSFunctionType(sig, "");
+            auto *tmpFunType = checker->Allocator()->New<checker::ETSFunctionType>("", sig, checker->Allocator());
             checker::AssignmentContext actx {
                 checker->Relation(), ast, tmpFunType, argType, ast->Start(), {}, checker::TypeRelationFlag::NO_THROW};
             if (!actx.IsAssignable()) {

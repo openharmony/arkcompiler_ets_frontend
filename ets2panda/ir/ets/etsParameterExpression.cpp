@@ -47,11 +47,6 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
     }
 }
 
-const util::StringView &ETSParameterExpression::Name() const noexcept
-{
-    return ident_->Name();
-}
-
 const Identifier *ETSParameterExpression::Ident() const noexcept
 {
     return ident_;
@@ -95,17 +90,6 @@ TypeNode const *ETSParameterExpression::TypeAnnotation() const noexcept
 TypeNode *ETSParameterExpression::TypeAnnotation() noexcept
 {
     return !IsRestParameter() ? ident_->TypeAnnotation() : spread_->TypeAnnotation();
-}
-
-void ETSParameterExpression::SetTsTypeAnnotation(TypeNode *const typeAnnotation) noexcept
-{
-    if (!IsRestParameter()) {
-        ident_->SetTsTypeAnnotation(typeAnnotation);
-        typeAnnotation->SetParent(ident_);
-    } else {
-        spread_->SetTsTypeAnnotation(typeAnnotation);
-        typeAnnotation->SetParent(spread_);
-    }
 }
 
 void ETSParameterExpression::SetVariable(varbinder::Variable *const variable) noexcept

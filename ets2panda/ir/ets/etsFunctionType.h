@@ -28,15 +28,10 @@ class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
 public:
-    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags const funcFlags) noexcept
+    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags funcFlags)
         : TypeNode(AstNodeType::ETS_FUNCTION_TYPE), signature_(std::move(signature)), funcFlags_(funcFlags)
     {
     }
-
-    ETSFunctionType() = delete;
-    ~ETSFunctionType() override = default;
-    NO_COPY_SEMANTIC(ETSFunctionType);
-    NO_MOVE_SEMANTIC(ETSFunctionType);
 
     [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
@@ -58,6 +53,11 @@ public:
         scope_ = nullptr;
     }
 
+    [[nodiscard]] FunctionSignature IrSignature() noexcept
+    {
+        return signature_;
+    }
+
     const TSTypeParameterDeclaration *TypeParams() const
     {
         return signature_.TypeParams();
@@ -68,7 +68,7 @@ public:
         return signature_.TypeParams();
     }
 
-    const ArenaVector<ir::Expression *> &Params() const
+    const ArenaVector<Expression *> &Params() const
     {
         return signature_.Params();
     }
@@ -111,6 +111,11 @@ public:
     bool IsRethrowing() const
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
+    }
+
+    size_t DefaultParamIndex() const
+    {
+        return signature_.DefaultParamIndex();
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

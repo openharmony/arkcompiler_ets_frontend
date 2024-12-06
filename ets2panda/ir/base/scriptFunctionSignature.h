@@ -16,7 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CORE_SCRIPT_FUNCTION_SIGNATURE_H
 #define ES2PANDA_COMPILER_CORE_SCRIPT_FUNCTION_SIGNATURE_H
 
-#include "ir/expression.h"
+#include "ir/astNode.h"
+#include "ir/ets/etsParameterExpression.h"
 
 namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
@@ -24,60 +25,67 @@ class TypeNode;
 
 class FunctionSignature {
 public:
-    explicit FunctionSignature(TSTypeParameterDeclaration *typeParams, ArenaVector<ir::Expression *> &&params,
-                               TypeNode *returnTypeAnnotation)
+    using FunctionParams = ArenaVector<Expression *>;
+
+    FunctionSignature(TSTypeParameterDeclaration *typeParams, FunctionParams &&params, TypeNode *returnTypeAnnotation)
         : typeParams_(typeParams), params_(std::move(params)), returnTypeAnnotation_(returnTypeAnnotation)
     {
     }
 
-    FunctionSignature() = delete;
-    ~FunctionSignature() = default;
-    NO_COPY_SEMANTIC(FunctionSignature);
-    DEFAULT_MOVE_SEMANTIC(FunctionSignature);
-
-    [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
+    const FunctionParams &Params() const
     {
         return params_;
     }
 
-    [[nodiscard]] ArenaVector<ir::Expression *> &Params() noexcept
+    FunctionParams &Params()
     {
         return params_;
     }
 
-    [[nodiscard]] TSTypeParameterDeclaration *TypeParams() noexcept
+    TSTypeParameterDeclaration *TypeParams()
     {
         return typeParams_;
     }
 
-    [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
+    const TSTypeParameterDeclaration *TypeParams() const
     {
         return typeParams_;
     }
 
-    [[nodiscard]] TypeNode *ReturnType() noexcept
+    TypeNode *ReturnType()
     {
         return returnTypeAnnotation_;
     }
 
-    void SetReturnType(TypeNode *type) noexcept
+    void SetReturnType(TypeNode *type)
     {
         returnTypeAnnotation_ = type;
     }
 
-    [[nodiscard]] const TypeNode *ReturnType() const noexcept
+    const TypeNode *ReturnType() const
     {
         return returnTypeAnnotation_;
     }
 
+    [[nodiscard]] size_t DefaultParamIndex() const
+    {
+        for (size_t i = 0; i < params_.size(); i++) {
+            if (params_[i]->AsETSParameterExpression()->IsDefault()) {
+                return i;
+            }
+        }
+        return params_.size();
+    }
+
     void Iterate(const NodeTraverser &cb) const;
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName);
 
     [[nodiscard]] FunctionSignature Clone(ArenaAllocator *allocator);
 
 private:
     TSTypeParameterDeclaration *typeParams_;
-    ArenaVector<ir::Expression *> params_;
+    ArenaVector<Expression *> params_;
     TypeNode *returnTypeAnnotation_;
 };
 

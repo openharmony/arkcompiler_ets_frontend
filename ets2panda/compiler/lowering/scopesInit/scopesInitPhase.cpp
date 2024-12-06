@@ -88,7 +88,7 @@ void ScopesInitPhase::VisitMethodDefinition(ir::MethodDefinition *methodDefiniti
 }
 
 varbinder::FunctionParamScope *ScopesInitPhase::HandleFunctionSig(ir::TSTypeParameterDeclaration *typeParams,
-                                                                  const ArenaVector<ir::Expression *> &params,
+                                                                  const ir::FunctionSignature::FunctionParams &params,
                                                                   ir::TypeNode *returnType)
 {
     auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
