@@ -22,8 +22,7 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::checker::SignatureFlags;
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::CheckAbstractMethod;
 using ark::es2panda::ir::AstNode;
 using ark::es2panda::ir::Identifier;
 using ark::es2panda::ir::MemberExpression;
@@ -35,7 +34,6 @@ namespace {
 TEST_F(ASTVerifierTest, LabelsHaveReferences)
 {
     ark::es2panda::checker::ETSChecker checker;
-    ASTVerifier verifier {Allocator()};
 
     char const *text = R"(
         abstract class A {
@@ -73,7 +71,7 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
         }
     });
 
-    const auto &messages = VerifyCheck(verifier, ast, "CheckAbstractMethodForAll");
+    const auto &messages = verifier_.Verify<CheckAbstractMethod>(ast);
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);

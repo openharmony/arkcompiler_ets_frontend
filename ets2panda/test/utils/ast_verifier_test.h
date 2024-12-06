@@ -41,12 +41,6 @@ public:
                                                      char const *source, char const *fileName,
                                                      es2panda_ContextState state);
 
-    verifier_alias::Messages VerifyCheck(verifier_alias::ASTVerifier &verifier, const ir_alias::AstNode *ast,
-                                         const std::string &check, verifier_alias::InvariantNameSet &checks);
-
-    verifier_alias::Messages VerifyCheck(verifier_alias::ASTVerifier &verifier, const ir_alias::AstNode *ast,
-                                         const std::string &check);
-
     template <typename Ast>
     Ast *GetAstFromContext(const es2panda_Impl *impl, es2panda_Context *ctx)
     {
@@ -58,6 +52,7 @@ public:
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+    ark::es2panda::compiler::ast_verifier::ASTVerifier verifier_ {};
     es2panda_Impl const *impl_;
     es2panda_Config *cfg_;
     ark::ArenaAllocator *allocator_;

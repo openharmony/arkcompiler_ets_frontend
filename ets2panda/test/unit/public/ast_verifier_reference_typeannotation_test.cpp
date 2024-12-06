@@ -21,14 +21,11 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::ReferenceTypeAnnotationIsNull;
 using ark::es2panda::ir::AstNode;
 
 TEST_F(ASTVerifierTest, RefAnnotationNullNegative)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let refNull = 10;
         let trueRef = refNull;
@@ -49,12 +46,8 @@ TEST_F(ASTVerifierTest, RefAnnotationNullNegative)
         }
     });
 
-    const auto check = "ReferenceTypeAnnotationIsNullForAll";
-
-    const auto &messages = VerifyCheck(verifier, ast, check);
-
+    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 1);
-    ASSERT_EQ(messages[0].Invariant(), check);
 
     delete type;
     impl_->DestroyContext(ctx);
@@ -62,8 +55,6 @@ TEST_F(ASTVerifierTest, RefAnnotationNullNegative)
 
 TEST_F(ASTVerifierTest, RefAnnotationNullDefaultParam)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function pair(defParam: number, y: number = 7.0): number {
             return defParam + y;
@@ -78,9 +69,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNullDefaultParam)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "ReferenceTypeAnnotationIsNullForAll");
-
+    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -88,8 +77,6 @@ TEST_F(ASTVerifierTest, RefAnnotationNullDefaultParam)
 
 TEST_F(ASTVerifierTest, RefAnnotationNullInterface)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         interface Base {
             f: int
@@ -106,9 +93,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNullInterface)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "ReferenceTypeAnnotationIsNullForAll");
-
+    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -116,8 +101,6 @@ TEST_F(ASTVerifierTest, RefAnnotationNullInterface)
 
 TEST_F(ASTVerifierTest, RefAnnotationNull1)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let refNull = 10;
         let trueRef = refNull;
@@ -127,9 +110,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNull1)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "ReferenceTypeAnnotationIsNullForAll");
-
+    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -137,8 +118,6 @@ TEST_F(ASTVerifierTest, RefAnnotationNull1)
 
 TEST_F(ASTVerifierTest, RefAnnotationNull2)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let refNull = 10;
     )";
@@ -147,9 +126,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNull2)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "ReferenceTypeAnnotationIsNullForAll");
-
+    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);

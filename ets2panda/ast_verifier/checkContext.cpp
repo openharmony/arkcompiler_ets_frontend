@@ -12,26 +12,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "checkContext.h"
-
-namespace ark::es2panda::compiler::ast_verifier {
-
-void CheckContext::AddCheckMessage(const std::string &cause, const ir::AstNode &node, const lexer::SourcePosition &from)
-{
-    const auto loc = from.line;
-    const auto &&dump = node.DumpJSON();
-    messages_.emplace_back(checkName_, cause.data(), dump.data(), loc);
-}
-
-void CheckContext::SetCheckName(util::StringView checkName)
-{
-    checkName_ = checkName;
-}
-
-Messages CheckContext::GetMessages()
-{
-    return messages_;
-}
-
-}  // namespace ark::es2panda::compiler::ast_verifier

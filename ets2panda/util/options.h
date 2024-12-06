@@ -168,8 +168,8 @@ private:
     ScriptExtension extension_ {ScriptExtension::INVALID};
     CompilationMode compilationMode_ {};
     std::set<std::string> skipPhases_ {};
-    std::set<std::string> verifierWarnings_ {};
-    std::set<std::string> verifierErrors_ {};
+    std::array<bool, gen::verifier_invariants::COUNT> verifierWarnings_ {};
+    std::array<bool, gen::verifier_invariants::COUNT> verifierErrors_ {};
     std::set<std::string> dumpBeforePhases_ {};
     std::set<std::string> dumpEtsSrcBeforePhases_ {};
     std::set<std::string> dumpAfterPhases_ {};

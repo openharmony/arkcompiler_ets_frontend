@@ -21,14 +21,12 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::EveryChildHasValidParent;
 using ark::es2panda::ir::AstNode;
 
 namespace {
 TEST_F(ASTVerifierTest, ReturnTypeInLambda)
 {
-    ASTVerifier verifier {Allocator()};
     char const *text = R"(
         function main(): void {
             let x: () => void = ()=> {}
@@ -39,9 +37,7 @@ TEST_F(ASTVerifierTest, ReturnTypeInLambda)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "EveryChildHasValidParentForAll");
-
+    const auto &messages = verifier_.Verify<EveryChildHasValidParent>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -49,7 +45,6 @@ TEST_F(ASTVerifierTest, ReturnTypeInLambda)
 
 TEST_F(ASTVerifierTest, TSThisType)
 {
-    ASTVerifier verifier {Allocator()};
     char const *text = R"(
         class A {
             foo(a?: Number): this { return this; }
@@ -62,9 +57,7 @@ TEST_F(ASTVerifierTest, TSThisType)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "EveryChildHasValidParentForAll");
-
+    const auto &messages = verifier_.Verify<EveryChildHasValidParent>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -72,7 +65,6 @@ TEST_F(ASTVerifierTest, TSThisType)
 
 TEST_F(ASTVerifierTest, TupleFieldInInterface)
 {
-    ASTVerifier verifier {Allocator()};
     char const *text = R"(
         interface I {
             field: [String, String]
@@ -83,9 +75,7 @@ TEST_F(ASTVerifierTest, TupleFieldInInterface)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "EveryChildHasValidParentForAll");
-
+    const auto &messages = verifier_.Verify<EveryChildHasValidParent>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);

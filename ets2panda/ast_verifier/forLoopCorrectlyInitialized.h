@@ -20,12 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class ForLoopCorrectlyInitialized {
-public:
-    explicit ForLoopCorrectlyInitialized([[maybe_unused]] ArenaAllocator &allocator) {}
+class ForLoopCorrectlyInitialized : public RecursiveInvariant<VerifierInvariants::FOR_LOOP_CORRECTLY_INITIALIZED> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
     [[nodiscard]] CheckResult HandleForInStatement(CheckContext &ctx, const ir::AstNode *ast);
     [[nodiscard]] CheckResult HandleForOfStatement(CheckContext &ctx, const ir::AstNode *ast);
     [[nodiscard]] CheckResult HandleForUpdateStatement(CheckContext &ctx, const ir::AstNode *ast);

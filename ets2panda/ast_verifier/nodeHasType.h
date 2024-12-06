@@ -20,12 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class NodeHasType {
-public:
-    explicit NodeHasType([[maybe_unused]] ArenaAllocator &allocator) {}
+class NodeHasType : public RecursiveInvariant<VerifierInvariants::NODE_HAS_TYPE> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
     CheckResult CheckCompound(CheckContext &ctx, const ir::AstNode *ast);
 };
 

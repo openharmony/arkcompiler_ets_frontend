@@ -20,9 +20,9 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class NodeHasSourceRange {
-public:
-    explicit NodeHasSourceRange([[maybe_unused]] ArenaAllocator &allocator) {}
+class NodeHasSourceRange : public RecursiveInvariant<VerifierInvariants::NODE_HAS_SOURCE_RANGE> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
 };
 

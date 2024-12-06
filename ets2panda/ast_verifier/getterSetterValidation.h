@@ -20,12 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class GetterSetterValidation {
-public:
-    explicit GetterSetterValidation([[maybe_unused]] ArenaAllocator &allocator) {}
+class GetterSetterValidation : public RecursiveInvariant<VerifierInvariants::GETTER_SETTER_VALIDATION> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
     bool ValidateGetter(CheckContext &ctx, ir::MethodDefinition const *const method) const;
     bool ValidateSetter(CheckContext &ctx, ir::MethodDefinition const *const method) const;
 };

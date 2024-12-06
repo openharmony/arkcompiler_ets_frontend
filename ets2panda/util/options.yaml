@@ -206,53 +206,59 @@ options:
 - name: verifier-invariants
   description: Select invariants for AST-verifier to check.
   enum: &VerifierInvariants
-  - ArithmeticOperationValidForAll
-  - CheckAbstractMethodForAll
-  - CheckInfiniteLoopForAll
-  - EveryChildHasValidParentForAll
-  - EveryChildInParentRangeForAll
-  - ForLoopCorrectlyInitializedForAll
-  - GetterSetterValidationForAll
-  - IdentifierHasVariableForAll
-  - ImportExportAccessValid
-  - ModifierAccessValidForAll
-  - NodeHasParentForAll
-  - NodeHasSourceRangeForAll
-  - NodeHasTypeForAll
-  - ReferenceTypeAnnotationIsNullForAll
-  - SequenceExpressionHasLastTypeForAll
-  - VariableHasEnclosingScopeForAll
-  - VariableHasScopeForAll
-  - VariableNameIdentifierNameSameForAll
+    AfterScopesInitPhase:
+    - NodeHasParent
+    - NodeHasSourceRange
+    - EveryChildHasValidParent
+    - EveryChildInParentRange
+    - VariableHasScope
+    AfterChecherPhase:
+    - NodeHasType
+    - IdentifierHasVariable
+    - ReferenceTypeAnnotationIsNull
+    - ArithmeticOperationValid
+    - SequenceExpressionHasLastType
+    - CheckInfiniteLoop
+    - ForLoopCorrectlyInitialized
+    - VariableHasEnclosingScope
+    - ModifierAccessValid
+    - VariableNameIdentifierNameSame
+    - CheckAbstractMethod
+    - GetterSetterValidation
+    - CheckScopeDeclaration
+    - CheckConstProperties
+    # - ImportExportAccessValid
   sub_options:
   - name: as-warnings
     type: arg_list_t
     description: Print errors and continue compilation if AST tree is incorrect.
-    default: [ CheckInfiniteLoopForAll ]
+    default: [ CheckInfiniteLoop ]
     possible_values: *VerifierInvariants
     delimiter: ':'
   - name: as-errors
     type: arg_list_t
     description: Print errors and stop compilation if AST tree is incorrect.
     default:
-    - ArithmeticOperationValidForAll
-    - CheckAbstractMethodForAll
-    # - CheckInfiniteLoopForAll
-    - EveryChildHasValidParentForAll
-    # - EveryChildInParentRangeForAll
-    - ForLoopCorrectlyInitializedForAll
-    - GetterSetterValidationForAll
-    - IdentifierHasVariableForAll
+    - ArithmeticOperationValid
+    - CheckAbstractMethod
+    # - CheckConstProperties
+    # - CheckInfiniteLoop
+    # - CheckScopeDeclaration
+    - EveryChildHasValidParent
+    # - EveryChildInParentRange
+    - ForLoopCorrectlyInitialized
+    - GetterSetterValidation
+    - IdentifierHasVariable
     # - ImportExportAccessValid
-    - ModifierAccessValidForAll
-    - NodeHasParentForAll
-    # - NodeHasSourceRangeForAll
-    - NodeHasTypeForAll
-    - ReferenceTypeAnnotationIsNullForAll
-    - SequenceExpressionHasLastTypeForAll
-    - VariableHasEnclosingScopeForAll
-    - VariableHasScopeForAll
-    - VariableNameIdentifierNameSameForAll
+    - ModifierAccessValid
+    - NodeHasParent
+    # - NodeHasSourceRange
+    - NodeHasType
+    - ReferenceTypeAnnotationIsNull
+    - SequenceExpressionHasLastType
+    - VariableHasEnclosingScope
+    - VariableHasScope
+    - VariableNameIdentifierNameSame
     possible_values: *VerifierInvariants
     delimiter: ':'
   - name: each-phase

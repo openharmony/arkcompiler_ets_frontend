@@ -18,16 +18,13 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::CheckScopeDeclaration;
 using ark::es2panda::ir::AstNode;
 
 namespace {
 
 TEST_F(ASTVerifierTest, FunctionScope)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function test(a: int) {
             console.log(a)
@@ -40,9 +37,7 @@ TEST_F(ASTVerifierTest, FunctionScope)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    InvariantNameSet checks;
-    checks.insert("CheckScopeDeclarationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -52,8 +47,6 @@ TEST_F(ASTVerifierTest, FunctionScope)
 
 TEST_F(ASTVerifierTest, ForUpdateLoopScope)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function main() {
             for (let i = 0; i < 10; i++) {}
@@ -66,9 +59,7 @@ TEST_F(ASTVerifierTest, ForUpdateLoopScope)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    InvariantNameSet checks;
-    checks.insert("CheckScopeDeclarationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -78,8 +69,6 @@ TEST_F(ASTVerifierTest, ForUpdateLoopScope)
 
 TEST_F(ASTVerifierTest, ForInLoopScope)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function main(): void {
             let res = 0
@@ -95,7 +84,7 @@ TEST_F(ASTVerifierTest, ForInLoopScope)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    const auto &messages = VerifyCheck(verifier, ast, "CheckScopeDeclarationForAll");
+    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -105,8 +94,6 @@ TEST_F(ASTVerifierTest, ForInLoopScope)
 
 TEST_F(ASTVerifierTest, PartialClass)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         export class A {
             private static readonly param: int = 0;
@@ -118,7 +105,7 @@ TEST_F(ASTVerifierTest, PartialClass)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    const auto &messages = VerifyCheck(verifier, ast, "CheckScopeDeclarationForAll");
+    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -128,8 +115,6 @@ TEST_F(ASTVerifierTest, PartialClass)
 
 TEST_F(ASTVerifierTest, TryCatch)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function main(): void {
             let catchCode = 0;
@@ -147,7 +132,7 @@ TEST_F(ASTVerifierTest, TryCatch)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    const auto &messages = VerifyCheck(verifier, ast, "CheckScopeDeclarationForAll");
+    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);

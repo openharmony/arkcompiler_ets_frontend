@@ -14,93 +14,72 @@
  */
 
 #include "ASTVerifier.h"
-#include "ast_verifier/sequenceExpressionHasLastType.h"
-#include "ast_verifier/checkAbstractMethod.h"
-#include "ast_verifier/checkInfiniteLoop.h"
-#include "ast_verifier/checkContext.h"
-#include "ast_verifier/everyChildHasValidParent.h"
-#include "ast_verifier/everyChildInParentRange.h"
-#include "ast_verifier/getterSetterValidation.h"
-#include "ast_verifier/identifierHasVariable.h"
-#include "ast_verifier/nodeHasParent.h"
-#include "ast_verifier/nodeHasSourceRange.h"
-#include "ast_verifier/nodeHasType.h"
-#include "ast_verifier/referenceTypeAnnotationIsNull.h"
-#include "ast_verifier/variableHasScope.h"
-#include "ast_verifier/variableHasEnclosingScope.h"
-#include "ast_verifier/forLoopCorrectlyInitialized.h"
-#include "ast_verifier/modifierAccessValid.h"
-#include "ast_verifier/importExportAccessValid.h"
-#include "ast_verifier/arithmeticOperationValid.h"
-#include "ast_verifier/variableNameIdentifierNameSame.h"
-#include "ast_verifier/checkScopeDeclaration.h"
-#include "ast_verifier/checkConstProperties.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
-{
-    AddInvariant<NodeHasParent>(allocator, "NodeHasParent");
-    AddInvariant<NodeHasSourceRange>(allocator, "NodeHasSourceRange");
-    AddInvariant<NodeHasType>(allocator, "NodeHasType");
-    AddInvariant<IdentifierHasVariable>(allocator, "IdentifierHasVariable");
-    AddInvariant<VariableHasScope>(allocator, "VariableHasScope");
-    AddInvariant<EveryChildHasValidParent>(allocator, "EveryChildHasValidParent");
-    AddInvariant<EveryChildInParentRange>(allocator, "EveryChildInParentRange");
-    AddInvariant<VariableHasEnclosingScope>(allocator, "VariableHasEnclosingScope");
-    AddInvariant<CheckInfiniteLoop>(allocator, "CheckInfiniteLoop");
-    AddInvariant<ForLoopCorrectlyInitialized>(allocator, "ForLoopCorrectlyInitialized");
-    AddInvariant<ModifierAccessValid>(allocator, "ModifierAccessValid");
-    AddInvariant<ImportExportAccessValid>(allocator, "ImportExportAccessValid");
-    AddInvariant<ArithmeticOperationValid>(allocator, "ArithmeticOperationValid");
-    AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
-    AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
-    AddInvariant<VariableNameIdentifierNameSame>(allocator, "VariableNameIdentifierNameSame");
-    AddInvariant<CheckAbstractMethod>(allocator, "CheckAbstractMethod");
-    AddInvariant<GetterSetterValidation>(allocator, "GetterSetterValidation");
-    AddInvariant<CheckScopeDeclaration>(allocator, "CheckScopeDeclaration");
-    AddInvariant<CheckConstProperties>(allocator, "CheckConstProperties");
-}
+using AstToCheck = ArenaMap<ASTVerifier::AstPath, const ir::AstNode *>;
 
-Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)
+static auto ExtractAst(const parser::Program *program, bool checkFullProgram)
 {
-    auto recursiveChecks = InvariantNameSet {};
-    std::copy_if(invariantsNames_.begin(), invariantsNames_.end(),
-                 std::inserter(recursiveChecks, recursiveChecks.end()),
-                 [](const std::string &s) { return s.find(RECURSIVE_SUFFIX) != s.npos; });
-    return Verify(ast, recursiveChecks);
-}
-
-Messages ASTVerifier::Verify(const ir::AstNode *ast, const InvariantNameSet &invariantSet)
-{
-    CheckContext ctx {};
-    const auto containsInvariants =
-        std::includes(invariantsNames_.begin(), invariantsNames_.end(), invariantSet.begin(), invariantSet.end());
-    if (!containsInvariants) {
-        auto invalidInvariants = InvariantNameSet {};
-        for (const auto &invariant : invariantSet) {
-            if (invariantsNames_.find(invariant) == invariantsNames_.end()) {
-                invalidInvariants.insert(invariant);
+    ASSERT(program != nullptr);
+    auto &allocator = *program->Allocator();
+    auto astToCheck = AstToCheck {allocator.Adapter()};
+    astToCheck.insert(std::make_pair(program->SourceFilePath(), program->Ast()));
+    if (checkFullProgram) {
+        for (const auto &externalSource : program->ExternalSources()) {
+            for (auto *external : externalSource.second) {
+                astToCheck.insert(std::make_pair(external->SourceFilePath(), external->Ast()));
             }
         }
-        for (const auto &invariant : invalidInvariants) {
-            ctx.AddCheckMessage(std::string {"Invariant was not found: "} + invariant, *ast, lexer::SourcePosition {});
+    }
+    return astToCheck;
+}
+
+void ASTVerifier::Verify(std::string_view phaseName)
+{
+    auto astToCheck = ExtractAst(program_, checkFullProgram_);
+
+    for (const auto &p : astToCheck) {
+        const auto &sourceName = p.first;
+        auto *ast = p.second;
+        ASSERT(ast != nullptr);
+        auto messages = std::apply(
+            [this, ast](auto &...invariant) {
+                CheckContext ctx {};
+                ((NeedCheckVariant(invariant) ? invariant.VerifyAst(&ctx, ast) : void()), ...);
+                return ctx.GetMessages();
+            },
+            invariants_);
+
+        const auto source = Source(sourceName, phaseName);
+        auto &sourcedReport = report_[source];
+        std::copy(messages.begin(), messages.end(), std::back_inserter(sourcedReport));
+    }
+}
+
+ASTVerifier::Result ASTVerifier::DumpMessages()
+{
+    auto warnings = JsonArrayBuilder {};
+    auto errors = JsonArrayBuilder {};
+    const auto filterMessages = [this, &warnings, &errors](const ast_verifier::CheckMessage &message,
+                                                           const std::string &sourceName,
+                                                           const std::string &phaseName) {
+        auto invariantId = message.InvariantId();
+        if (IsAsError(invariantId)) {
+            errors.Add(message.DumpJSON(ast_verifier::CheckSeverity::ERROR, sourceName, phaseName));
+        } else if (IsAsWarning(invariantId)) {
+            warnings.Add(message.DumpJSON(ast_verifier::CheckSeverity::WARNING, sourceName, phaseName));
+        }
+    };
+
+    for (const auto &[source, messages] : report_) {
+        const auto &[sourceName, phaseName] = source;
+        for (const auto &message : messages) {
+            filterMessages(message, sourceName, phaseName);
         }
     }
 
-    for (const auto &name : invariantSet) {
-        if (const auto &found = invariantsChecks_.find(name); found != invariantsChecks_.end()) {
-            if (ast == nullptr) {
-                continue;
-            }
-
-            auto invariant = found->second;
-            ctx.SetCheckName(name.data());
-            invariant(ctx, ast);
-        }
-    }
-
-    return ctx.GetMessages();
+    return Result {std::move(warnings), std::move(errors)};
 }
 
 }  // namespace ark::es2panda::compiler::ast_verifier

@@ -20,8 +20,7 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::checker::ETSChecker;
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::GetterSetterValidation;
 using ark::es2panda::ir::AstNode;
 using ark::es2panda::ir::ETSParameterExpression;
 using ark::es2panda::ir::Identifier;
@@ -31,7 +30,6 @@ namespace {
 TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
 {
     ETSChecker checker {};
-    ASTVerifier verifier {Allocator()};
 
     char const *text =
         R"(
@@ -65,9 +63,7 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
         }
     });
 
-    InvariantNameSet checks;
-    checks.insert("GetterSetterValidationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
 
     ASSERT_EQ(messages.size(), 1);
     ASSERT_EQ(messages[0].Cause(), "GETTER METHOD HAS VOID RETURN TYPE IN RETURN TYPE ANNOTATION");
@@ -77,8 +73,6 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
 
 TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
 {
-    ASTVerifier verifier {Allocator()};
-
     // Program with no type annotation for getter
     char const *text =
         R"(
@@ -112,9 +106,7 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
         }
     });
 
-    InvariantNameSet checks;
-    checks.insert("GetterSetterValidationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
 
     ASSERT_EQ(messages.size(), 1);
     ASSERT_EQ(messages[0].Cause(), "MISSING RETURN TYPE ANNOTATION AND RETURN STATEMENT IN GETTER METHOD");
@@ -125,7 +117,6 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
 TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
 {
     ETSChecker checker {};
-    ASTVerifier verifier {Allocator()};
 
     char const *text =
         R"(
@@ -162,9 +153,7 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
         }
     });
 
-    InvariantNameSet checks;
-    checks.insert("GetterSetterValidationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
 
     ASSERT_EQ(messages.size(), 1);
     ASSERT_EQ(messages[0].Cause(), "GETTER METHOD HAS VOID RETURN TYPE");
@@ -175,7 +164,6 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
 TEST_F(ASTVerifierTest, ValidateGetterArguments)
 {
     ETSChecker checker {};
-    ASTVerifier verifier {Allocator()};
 
     char const *text =
         R"(
@@ -213,7 +201,7 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
         }
     });
 
-    const auto &messages = VerifyCheck(verifier, ast, "GetterSetterValidationForAll");
+    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);
@@ -225,7 +213,6 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
 TEST_F(ASTVerifierTest, ValidateSetterReturnType)
 {
     ETSChecker checker {};
-    ASTVerifier verifier {Allocator()};
 
     char const *text =
         R"(
@@ -258,7 +245,7 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
         }
     });
 
-    const auto &messages = VerifyCheck(verifier, ast, "GetterSetterValidationForAll");
+    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);
@@ -270,7 +257,6 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
 TEST_F(ASTVerifierTest, ValidateSetterArguments)
 {
     ETSChecker checker {};
-    ASTVerifier verifier {Allocator()};
 
     char const *text =
         R"(
@@ -304,7 +290,7 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
         }
     });
 
-    const auto &messages = VerifyCheck(verifier, ast, "GetterSetterValidationForAll");
+    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);

@@ -19,8 +19,7 @@
 #include <gtest/gtest.h>
 #include "checker/ETSchecker.h"
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::CheckConstProperties;
 using ark::es2panda::ir::AstNode;
 
 namespace {
@@ -28,7 +27,6 @@ namespace {
 TEST_F(ASTVerifierTest, CheckConstProperties)
 {
     ark::es2panda::checker::ETSChecker checker;
-    ASTVerifier verifier {Allocator()};
 
     char const *text = R"(
         class Test
@@ -56,13 +54,9 @@ TEST_F(ASTVerifierTest, CheckConstProperties)
         }
     });
 
-    InvariantNameSet checks;
-    const auto &messages = VerifyCheck(verifier, ast, "CheckConstPropertiesForAll");
-
+    const auto &messages = verifier_.Verify<CheckConstProperties>(ast);
     ASSERT_EQ(messages.size(), 1);
-    auto invariant = messages[0].Invariant();
     auto cause = messages[0].Cause();
-    ASSERT_EQ(invariant, "CheckConstPropertiesForAll");
     ASSERT_EQ(cause, "Class property cannot be const");
 
     impl_->DestroyContext(ctx);

@@ -21,15 +21,12 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::IdentifierHasVariable;
 using ark::es2panda::ir::AstNode;
 
 namespace {
 TEST_F(ASTVerifierTest, LabelsHaveReferences)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function main(): void {
         loop: for (let i = 0; i < 10; i++) {
@@ -44,9 +41,7 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    InvariantNameSet checks;
-    checks.insert("IdentifierHasVariableForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -54,8 +49,6 @@ TEST_F(ASTVerifierTest, LabelsHaveReferences)
 
 TEST_F(ASTVerifierTest, ExtensionFunction)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class Fruit {
             name(): void {
@@ -77,9 +70,7 @@ TEST_F(ASTVerifierTest, ExtensionFunction)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    InvariantNameSet checks;
-    checks.insert("IdentifierHasVariableForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -87,8 +78,6 @@ TEST_F(ASTVerifierTest, ExtensionFunction)
 
 TEST_F(ASTVerifierTest, Imports)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         import { PI } from "std/math";
         import { A } from "dynamic_js_import_tests"
@@ -102,9 +91,7 @@ TEST_F(ASTVerifierTest, Imports)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    InvariantNameSet checks;
-    checks.insert("IdentifierHasVariableForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -112,8 +99,6 @@ TEST_F(ASTVerifierTest, Imports)
 
 TEST_F(ASTVerifierTest, OptionalLambdas)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function main(): void {
             let d = (c?: int) => {
@@ -127,9 +112,7 @@ TEST_F(ASTVerifierTest, OptionalLambdas)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    InvariantNameSet checks;
-    checks.insert("IdentifierHasVariableForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -137,8 +120,6 @@ TEST_F(ASTVerifierTest, OptionalLambdas)
 
 TEST_F(ASTVerifierTest, TSQualifiedName)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         import * as Time from "std/time";
 
@@ -151,9 +132,7 @@ TEST_F(ASTVerifierTest, TSQualifiedName)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "IdentifierHasVariableForAll");
-
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -161,8 +140,6 @@ TEST_F(ASTVerifierTest, TSQualifiedName)
 
 TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let b = 1;
         let f = (p: double) => b + p;
@@ -175,9 +152,7 @@ TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "IdentifierHasVariableForAll");
-
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -185,8 +160,6 @@ TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
 
 TEST_F(ASTVerifierTest, Lambdas)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         type asyncLambda = () => Promise<void>;
 
@@ -229,9 +202,7 @@ TEST_F(ASTVerifierTest, Lambdas)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "IdentifierHasVariableForAll");
-
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -239,8 +210,6 @@ TEST_F(ASTVerifierTest, Lambdas)
 
 TEST_F(ASTVerifierTest, PromiseUndefined)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         async function testAsyncVoidNothing() {}
     )";
@@ -249,9 +218,7 @@ TEST_F(ASTVerifierTest, PromiseUndefined)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "IdentifierHasVariableForAll");
-
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -259,8 +226,6 @@ TEST_F(ASTVerifierTest, PromiseUndefined)
 
 TEST_F(ASTVerifierTest, AnonymousClassId)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         interface H {
         }
@@ -277,9 +242,7 @@ TEST_F(ASTVerifierTest, AnonymousClassId)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "IdentifierHasVariableForAll");
-
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -287,8 +250,6 @@ TEST_F(ASTVerifierTest, AnonymousClassId)
 
 TEST_F(ASTVerifierTest, EnumInts)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         enum Color {
             Red = 1,
@@ -305,9 +266,7 @@ TEST_F(ASTVerifierTest, EnumInts)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "IdentifierHasVariableForAll");
-
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -315,8 +274,6 @@ TEST_F(ASTVerifierTest, EnumInts)
 
 TEST_F(ASTVerifierTest, EnumStrings)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         enum Shape {
             Circle = "CIRCLE",
@@ -333,9 +290,7 @@ TEST_F(ASTVerifierTest, EnumStrings)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "IdentifierHasVariableForAll");
-
+    const auto &messages = verifier_.Verify<IdentifierHasVariable>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);

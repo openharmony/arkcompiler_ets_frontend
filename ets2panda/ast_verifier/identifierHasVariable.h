@@ -22,14 +22,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class IdentifierHasVariable {
-public:
-    explicit IdentifierHasVariable([[maybe_unused]] ArenaAllocator &allocator) {}
+class IdentifierHasVariable : public RecursiveInvariant<VerifierInvariants::IDENTIFIER_HAS_VARIABLE> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
-    bool CheckMoreAstExceptions(const ir::Identifier *ast) const;
-    bool CheckAstExceptions(const ir::Identifier *ast) const;
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

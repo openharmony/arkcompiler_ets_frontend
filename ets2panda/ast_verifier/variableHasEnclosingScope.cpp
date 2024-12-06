@@ -21,7 +21,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 
 [[nodiscard]] CheckResult VariableHasEnclosingScope::operator()(CheckContext &ctx, const ir::AstNode *ast)
 {
-    const auto maybeVar = VariableHasScope::GetLocalScopeVariable(allocator_, ctx, ast);
+    const auto maybeVar = VariableHasScope::GetLocalScopeVariable(ctx, ast);
     if (!maybeVar) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }

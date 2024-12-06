@@ -18,15 +18,12 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::VariableHasScope;
 using ark::es2panda::ir::AstNode;
 
 namespace {
 TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         async function bar(flag: boolean): Promise<double> {
             if (flag) {
@@ -41,9 +38,7 @@ TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "VariableHasScopeForAll");
-
+    const auto &messages = verifier_.Verify<VariableHasScope>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -51,8 +46,6 @@ TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
 
 TEST_F(ASTVerifierTest, TestUnions)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         function assert_ccexc(f: () => void) {
             try {
@@ -78,9 +71,7 @@ TEST_F(ASTVerifierTest, TestUnions)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "VariableHasScopeForAll");
-
+    const auto &messages = verifier_.Verify<VariableHasScope>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -88,8 +79,6 @@ TEST_F(ASTVerifierTest, TestUnions)
 
 TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         type BenchmarkFunc = () => void;
 
@@ -105,9 +94,7 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "VariableHasScopeForAll");
-
+    const auto &messages = verifier_.Verify<VariableHasScope>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -115,8 +102,6 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
 
 TEST_F(ASTVerifierTest, AsyncLambda1)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let fs: ((p: int) => int)[]
         function foo(i: int): ((p: int) => int) {
@@ -140,9 +125,7 @@ TEST_F(ASTVerifierTest, AsyncLambda1)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "VariableHasScopeForAll");
-
+    const auto &messages = verifier_.Verify<VariableHasScope>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -150,8 +133,6 @@ TEST_F(ASTVerifierTest, AsyncLambda1)
 
 TEST_F(ASTVerifierTest, AsyncLambda2)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         let global: int;
         async function func(param: int): Promise<String | null> {
@@ -172,9 +153,7 @@ TEST_F(ASTVerifierTest, AsyncLambda2)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    const auto &messages = VerifyCheck(verifier, ast, "VariableHasScopeForAll");
-
+    const auto &messages = verifier_.Verify<VariableHasScope>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);

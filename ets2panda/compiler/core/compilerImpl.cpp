@@ -73,105 +73,6 @@ ark::pandasm::Program *CompilerImpl::Emit(public_lib::Context *context)
     return emitter->Finalize(context->config->options->IsDumpDebugInfo(), Signatures::ETS_GLOBAL);
 }
 
-class ASTVerificationRunner {
-public:
-    class Result {
-    public:
-        explicit Result(JsonArrayBuilder &&warnings, JsonArrayBuilder &&errors)
-            : warnings_ {std::move(warnings)}, errors_ {std::move(errors)}
-        {
-        }
-
-        JsonArrayBuilder &&Warnings()
-        {
-            return std::move(warnings_);
-        }
-
-        JsonArrayBuilder &&Errors()
-        {
-            return std::move(errors_);
-        }
-
-    private:
-        JsonArrayBuilder warnings_;
-        JsonArrayBuilder errors_;
-    };
-
-    using AstPath = std::string;
-    using PhaseName = std::string;
-    using Source = std::tuple<AstPath, PhaseName>;
-    using AstToCheck = ArenaMap<AstPath, const ir::AstNode *>;
-    using GroupedMessages = std::map<Source, ast_verifier::Messages>;
-
-    ASTVerificationRunner(ArenaAllocator &allocator, const public_lib::Context &context)
-        : checkFullProgram_ {context.config->options->IsVerifierInvariantsFullProgram()},
-          verifier_ {&allocator},
-          treatAsWarnings_ {context.config->options->GetVerifierInvariantsAsWarnings()},
-          treatAsErrors_ {context.config->options->GetVerifierInvariantsAsErrors()}
-    {
-    }
-
-    void Verify(const AstToCheck &astToCheck, const PhaseName &phaseName,
-                const ast_verifier::InvariantNameSet &accumulatedChecks)
-    {
-        for (const auto &[sourceName, ast] : astToCheck) {
-            const auto source = Source(sourceName, phaseName);
-            auto messages = verifier_.Verify(ast, accumulatedChecks);
-            auto &sourcedReport = report_[source];
-            std::copy(messages.begin(), messages.end(), std::back_inserter(sourcedReport));
-        }
-    }
-
-    Result DumpMessages()
-    {
-        auto warnings = JsonArrayBuilder {};
-        auto errors = JsonArrayBuilder {};
-        const auto filterMessages = [this, &warnings, &errors](const ast_verifier::CheckMessage &message,
-                                                               const std::string &sourceName,
-                                                               const std::string &phaseName) {
-            auto invariant = message.Invariant();
-            if (auto found = treatAsWarnings_.find(invariant); found != treatAsWarnings_.end()) {
-                warnings.Add(message.DumpJSON(ast_verifier::CheckSeverity::WARNING, sourceName, phaseName));
-                return;
-            }
-            if (auto found = treatAsErrors_.find(invariant); found != treatAsErrors_.end()) {
-                errors.Add(message.DumpJSON(ast_verifier::CheckSeverity::ERROR, sourceName, phaseName));
-            }
-        };
-
-        for (const auto &[source, messages] : report_) {
-            const auto &[sourceName, phaseName] = source;
-            for (const auto &message : messages) {
-                filterMessages(message, sourceName, phaseName);
-            }
-        }
-
-        return Result {std::move(warnings), std::move(errors)};
-    }
-
-    ASTVerificationRunner::AstToCheck ExtractAst(const parser::Program &p)
-    {
-        auto &allocator = *p.Allocator();
-        auto astToCheck = ASTVerificationRunner::AstToCheck {allocator.Adapter()};
-        astToCheck.insert(std::make_pair(p.SourceFilePath(), p.Ast()));
-        if (checkFullProgram_) {
-            for (const auto &externalSource : p.ExternalSources()) {
-                for (auto *external : externalSource.second) {
-                    astToCheck.insert(std::make_pair(external->SourceFilePath(), external->Ast()));
-                }
-            }
-        }
-        return astToCheck;
-    }
-
-private:
-    bool checkFullProgram_;
-    GroupedMessages report_;
-    ast_verifier::ASTVerifier verifier_;
-    const std::set<std::string> &treatAsWarnings_;
-    const std::set<std::string> &treatAsErrors_;
-};
-
 template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
 static public_lib::Context::CodeGenCb MakeCompileJob()
 {
@@ -191,9 +92,8 @@ static public_lib::Context::CodeGenCb MakeCompileJob()
 static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context &context,
                                  const std::vector<Phase *> &phases, parser::Program &program)
 {
-    auto runner = ASTVerificationRunner(*context.allocator, context);
-    auto verificationCtx = ast_verifier::VerificationContext {};
-    const auto runAllChecks = context.config->options->IsVerifierInvariantsEachPhase();
+    auto verifier = ast_verifier::ASTVerifier(context, program);
+    const auto verifierEachPhase = context.config->options->IsVerifierInvariantsEachPhase();
 
     for (auto *phase : phases) {
         if (!phase->Apply(&context, &program)) {
@@ -201,24 +101,22 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
                                         context.parser->ErrorLogger()->IsAnyError());
             return false;
         }
-        if (runAllChecks) {
-            auto ast = runner.ExtractAst(program);
-            runner.Verify(ast, std::string {phase->Name()}, verificationCtx.AccumulatedChecks());
+        if (verifierEachPhase) {
+            verifier.Verify(phase->Name());
         }
-        verificationCtx.IntroduceNewInvariants(phase->Name());
+        verifier.IntroduceNewInvariants(phase->Name());
     }
 
-    if (!runAllChecks) {
-        auto ast = runner.ExtractAst(program);
-        runner.Verify(ast, "AfterAllPhases", verificationCtx.AccumulatedChecks());
+    if (!verifierEachPhase) {
+        verifier.Verify("AfterAllPhases");
     }
 
-    auto result = runner.DumpMessages();
-    if (auto warnings = result.Warnings().Build(); warnings != "[]") {
+    auto verifierResult = verifier.DumpMessages();
+    if (auto warnings = verifierResult.Warnings().Build(); warnings != "[]") {
         LOG(WARNING, ES2PANDA) << warnings;
     }
 
-    if (auto errors = result.Errors().Build(); errors != "[]") {
+    if (auto errors = verifierResult.Errors().Build(); errors != "[]") {
         ASSERT_PRINT(false, errors);
     }
 
