@@ -648,6 +648,7 @@ public:
     bool CheckValidUnionEqual(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
+    void ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const objectType);
 
     // Utility type handler functions
     ir::TypeNode *GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,

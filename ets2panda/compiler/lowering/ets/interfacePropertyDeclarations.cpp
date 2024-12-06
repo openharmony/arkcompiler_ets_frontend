@@ -17,6 +17,7 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/types/type.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
 #include "ir/astNode.h"
 #include "ir/expression.h"
@@ -65,8 +66,8 @@ void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir
 
 }  // namespace
 
-static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, ir::ClassProperty *const field,
-                                                    bool isSetter)
+static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
+                                                    ir::ClassProperty *const field, bool isSetter)
 {
     auto classScope = NearestScope(field);
     auto *paramScope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), classScope);
@@ -85,6 +86,9 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
         auto paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
         paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator(), nullptr));
         paramIdent->TypeAnnotation()->SetParent(paramIdent);
+
+        auto classCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, paramScope);
+        InitScopesPhaseETS::RunExternalNode(paramIdent, varbinder);
 
         auto *const paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
         paramExpression->SetRange(paramIdent->Range());
@@ -131,7 +135,7 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     return method;
 }
 
-static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const checker,
+static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
                                                 ir::TSInterfaceBody *const interface)
 {
     if (interface->Body().empty()) {
@@ -149,7 +153,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
             newPropertyList.emplace_back(prop);
             continue;
         }
-        auto getter = GenerateGetterOrSetter(checker, prop->AsClassProperty(), false);
+        auto getter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), false);
         newPropertyList.emplace_back(getter);
 
         auto methodScope = scope->AsClassScope()->InstanceMethodScope();
@@ -163,7 +167,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
             prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
 
             if (!prop->AsClassProperty()->IsReadonly()) {
-                auto setter = GenerateGetterOrSetter(checker, prop->AsClassProperty(), true);
+                auto setter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), true);
                 newPropertyList.emplace_back(setter);
                 prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
             }
@@ -174,7 +178,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
         }
 
         if (!prop->AsClassProperty()->IsReadonly()) {
-            auto setter = GenerateGetterOrSetter(checker, prop->AsClassProperty(), true);
+            auto setter = GenerateGetterOrSetter(checker, varbinder, prop->AsClassProperty(), true);
             newPropertyList.emplace_back(setter);
             getter->AddOverload(setter);
         }
@@ -198,13 +202,13 @@ bool InterfacePropertyDeclarationsPhase::Perform(public_lib::Context *ctx, parse
     }
 
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
+    varbinder::ETSBinder *const varbinder = ctx->parserProgram->VarBinder()->AsETSBinder();
 
-    program->Ast()->TransformChildrenRecursively(
-        // CC-OFFNXT(G.FMT.14-CPP) project code style
-        [checker](ir::AstNode *const ast) -> ir::AstNode * {
-            return ast->IsTSInterfaceBody() ? UpdateInterfacePropertys(checker, ast->AsTSInterfaceBody()) : ast;
-        },
-        Name());
+    ir::NodeTransformer handleInterfacePropertyDecl = [checker, varbinder](ir::AstNode *const ast) {
+        return ast->IsTSInterfaceBody() ? UpdateInterfacePropertys(checker, varbinder, ast->AsTSInterfaceBody()) : ast;
+    };
+
+    program->Ast()->TransformChildrenRecursively(handleInterfacePropertyDecl, Name());
 
     return true;
 }

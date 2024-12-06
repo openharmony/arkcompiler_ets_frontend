@@ -236,3 +236,10 @@ ast/compiler/ets/DeclareIndexerTest.sts
 
 # issue20682
 runtime/ets/SpreadExpressionsforFunctionCall_primitive_type.sts
+
+# issue #20916
+runtime/ets/interfacePropertyFunctionType.sts
+
+#Issue 21065
+runtime/ets/implementsClassPropertyUnionType1.sts
+runtime/ets/implementsClassPropertyUnionType2.sts
