@@ -21,7 +21,7 @@ ets2panda_add_gtest(es2panda_public_test
 
 add_custom_target(qemu_excluded_gtests)
 
-ets2panda_add_gtest(ast_verifier_test
+ets2panda_add_gtest(ast_verifier_test_1
     CPP_SOURCES
         ast_verifier_short_test.cpp
         ast_verifier_private_protected_public_access_correct_test.cpp
@@ -29,11 +29,21 @@ ets2panda_add_gtest(ast_verifier_test
         ast_verifier_protected_access_correct_test.cpp
         ast_verifier_protected_access_negative_test.cpp
         ast_verifier_reference_typeannotation_test.cpp
+    TEST_GROUP qemu_excluded_gtests
+)
+
+ets2panda_add_gtest(ast_verifier_test_2
+    CPP_SOURCES
         ast_verifier_identifier_has_variable_test.cpp
         ast_verifier_variable_has_enclosing_scope_test.cpp
         ast_verifier_variable_has_scope_test.cpp
         ast_verifier_every_child_has_valid_parent_test.cpp
         ast_verifier_check_infinite_loop_test.cpp
+    TEST_GROUP qemu_excluded_gtests
+)
+
+ets2panda_add_gtest(ast_verifier_test_3
+    CPP_SOURCES
         ast_verifier_check_normal_loop_test.cpp
         ast_verifier_check_abstract_call_test.cpp
         ast_verifier_getter_setter_test.cpp
