@@ -34,7 +34,8 @@ public:
 
     explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, Expression *initializer);
 
-    [[nodiscard]] const util::StringView &Name() const noexcept;
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Identifier *Ident() const noexcept;
     [[nodiscard]] Identifier *Ident() noexcept;
@@ -51,14 +52,8 @@ public:
     [[nodiscard]] varbinder::Variable *Variable() const noexcept;
     void SetVariable(varbinder::Variable *variable) noexcept;
 
-    //=================================================================================//
-    //  NOTE (DZ):  Please use these methods to deal with expression's type annotation!
-    //              Don't try to access 'ident_' member directly!
     [[nodiscard]] TypeNode const *TypeAnnotation() const noexcept;
     [[nodiscard]] TypeNode *TypeAnnotation() noexcept;
-
-    void SetTsTypeAnnotation(TypeNode *typeAnnotation) noexcept;
-    //=================================================================================//
 
     [[nodiscard]] bool IsDefault() const noexcept
     {

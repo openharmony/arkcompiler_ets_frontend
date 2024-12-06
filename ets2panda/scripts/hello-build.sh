@@ -50,7 +50,7 @@ function do_checkout() {
 
 GIT_URL=https://gitee.com/openharmony-sig/arkcompiler_ets_frontend.git
 DEST=koala-sig
-do_checkout "${GIT_URL}" panda_rev_1 "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_2 "${DEST}"
 
 cd "${DEST}" || exit 1
 

@@ -74,14 +74,24 @@ public:
         return signature_;
     }
 
-    [[nodiscard]] const ArenaVector<ir::Expression *> &Params() const noexcept
+    [[nodiscard]] FunctionSignature IrSignature() noexcept
+    {
+        return irSignature_;
+    }
+
+    [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
         return irSignature_.Params();
     }
 
-    [[nodiscard]] ArenaVector<ir::Expression *> &Params() noexcept
+    [[nodiscard]] ArenaVector<Expression *> &Params() noexcept
     {
         return irSignature_.Params();
+    }
+
+    size_t DefaultParamIndex() const noexcept
+    {
+        return this->irSignature_.DefaultParamIndex();
     }
 
     const ArenaVector<ReturnStatement *> &ReturnStatements() const

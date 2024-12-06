@@ -612,7 +612,7 @@ std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator,
             return ParamName(allocator, param->AsTSParameterProperty()->Parameter(), index);
         }
         case ir::AstNodeType::ETS_PARAMETER_EXPRESSION: {
-            return {param->AsETSParameterExpression()->Name(), false};
+            return {param->AsETSParameterExpression()->Ident()->Name(), false};
         }
         default:
             break;

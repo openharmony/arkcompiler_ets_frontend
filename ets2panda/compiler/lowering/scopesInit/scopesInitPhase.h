@@ -154,7 +154,7 @@ protected:
     virtual util::StringView FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id);
     void HandleFunction(ir::ScriptFunction *function);
     varbinder::FunctionParamScope *HandleFunctionSig(ir::TSTypeParameterDeclaration *typeParams,
-                                                     const ArenaVector<ir::Expression *> &params,
+                                                     const ir::FunctionSignature::FunctionParams &params,
                                                      ir::TypeNode *returnType);
 
     /**
