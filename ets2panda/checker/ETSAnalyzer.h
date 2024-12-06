@@ -79,9 +79,8 @@ private:
                 return;
             }
         }
-
-        bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement() ||
-                          parent->IsETSLaunchExpression() || parent->IsCallExpression();
+        bool acceptVoid =
+            parent->IsExpressionStatement() || parent->IsReturnStatement() || parent->IsETSLaunchExpression();
         if (!acceptVoid) {
             checker->LogTypeError({"Cannot use type 'void' as value. "}, expr->Start());
         }
