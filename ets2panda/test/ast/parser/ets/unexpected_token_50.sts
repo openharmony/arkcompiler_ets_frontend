@@ -20,3 +20,4 @@ let output = identity<string>
 let output1 = identity<number>"hehe"
 
 /* @@? 20:31 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@? 24:1 Error SyntaxError: Unexpected token, expected: ')'.  */

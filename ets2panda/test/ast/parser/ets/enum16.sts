@@ -20,4 +20,7 @@ enum InvalidInitTypeEnum {
 }
 
 /* @@? 18:13 Error SyntaxError: Invalid numeric literal  */
-/* @@? 18:13 Error SyntaxError: Missing comma between enum constants  */
+/* @@? 18:13 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
+/* @@? 18:15 Error SyntaxError: Unexpected token ','.  */
+/* @@? 18:15 Error SyntaxError: Unexpected token ','.  */
+/* @@? 20:1 Error SyntaxError: Unexpected token '}'.  */

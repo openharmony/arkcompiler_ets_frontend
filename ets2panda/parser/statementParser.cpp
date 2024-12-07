@@ -1740,42 +1740,40 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat `{` character
 
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
+    lexer::SourcePosition endPos;
 
-    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-            // test exists for ts extension only
-            LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
-        }
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
+        [this, &specifiers]() {
+            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+                // test exists for ts extension only
+                LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
+            }
 
-        lexer::Token localToken = lexer_->GetToken();
-        auto *local = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-        local->SetRange(lexer_->GetToken().Loc());
+            lexer::Token localToken = lexer_->GetToken();
+            auto *local = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            local->SetRange(lexer_->GetToken().Loc());
 
-        lexer_->NextToken();  // eat local name
+            lexer_->NextToken();  // eat local name
 
-        ir::Identifier *exported = nullptr;
+            ir::Identifier *exported = nullptr;
 
-        if (CheckModuleAsModifier()) {
-            lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat `as` literal
-            exported = ParseNamedExport(&lexer_->GetToken());
-            lexer_->NextToken();  // eat exported name
-        } else {
-            exported = ParseNamedExport(&localToken);
-        }
+            if (CheckModuleAsModifier()) {
+                lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat `as` literal
+                exported = ParseNamedExport(&lexer_->GetToken());
+                lexer_->NextToken();  // eat exported name
+            } else {
+                exported = ParseNamedExport(&localToken);
+            }
 
-        if (exported != nullptr) {  // Error processing.
-            auto *specifier = AllocNode<ir::ExportSpecifier>(local, exported);
-            specifier->SetRange({local->Start(), exported->End()});
-            specifiers.push_back(specifier);
-        }
-
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
-        }
-    }
-
-    lexer::SourcePosition endPos = lexer_->GetToken().End();
-    lexer_->NextToken();  // eat right brace
+            if (exported != nullptr) {  // Error processing.
+                auto *specifier = AllocNode<ir::ExportSpecifier>(local, exported);
+                specifier->SetRange({local->Start(), exported->End()});
+                specifiers.push_back(specifier);
+            }
+            return true;
+        },
+        &endPos, true);
 
     ir::StringLiteral *source = nullptr;
 
@@ -1914,37 +1912,35 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
 {
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat `{` character
 
-    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-            // test exists for ts extension only
-            LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
-        }
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
+        [this, specifiers]() {
+            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+                // test exists for ts extension only
+                LogExpectedToken(lexer::TokenType::LITERAL_IDENT);
+            }
 
-        lexer::Token importedToken = lexer_->GetToken();
-        auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
-        ir::Identifier *local = nullptr;
-        imported->SetRange(lexer_->GetToken().Loc());
+            lexer::Token importedToken = lexer_->GetToken();
+            auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
+            ir::Identifier *local = nullptr;
+            imported->SetRange(lexer_->GetToken().Loc());
 
-        lexer_->NextToken();  // eat import name
+            lexer_->NextToken();  // eat import name
 
-        if (CheckModuleAsModifier()) {
-            lexer_->NextToken();  // eat `as` literal
-            local = ParseNamedImport(&lexer_->GetToken());
-            lexer_->NextToken();  // eat local name
-        } else {
-            local = ParseNamedImport(&importedToken);
-        }
+            if (CheckModuleAsModifier()) {
+                lexer_->NextToken();  // eat `as` literal
+                local = ParseNamedImport(&lexer_->GetToken());
+                lexer_->NextToken();  // eat local name
+            } else {
+                local = ParseNamedImport(&importedToken);
+            }
 
-        auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
-        specifier->SetRange({imported->Start(), local->End()});
-        specifiers->push_back(specifier);
-
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
-        }
-    }
-
-    lexer_->NextToken();  // eat right brace
+            auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
+            specifier->SetRange({imported->Start(), local->End()});
+            specifiers->push_back(specifier);
+            return true;
+        },
+        nullptr, true);
 }
 
 ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers)

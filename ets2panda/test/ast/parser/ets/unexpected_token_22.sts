@@ -38,9 +38,8 @@ function main(): void {
 
 /* @@? 25:43 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 25:44 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 25:53 Error SyntaxError: Invalid token: ',' or ')' expected.  */
-/* @@? 25:54 Error SyntaxError: Unexpected token, expected: '=>'.  */
-/* @@? 25:58 Error SyntaxError: Unexpected token '>'.  */
+/* @@? 25:53 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
+/* @@? 25:53 Error SyntaxError: Unexpected token, expected: '=>'.  */
 /* @@? 25:60 Error SyntaxError: Unexpected token '=>'.  */
-/* @@? 25:60 Error SyntaxError: Unexpected token '=>'.  */
-/* @@? 25:60 Error SyntaxError: Unexpected token '=>'.  */
+/* @@? 25:60 Error SyntaxError: Unexpected token: '=>'.  */
+/* @@? 25:60 Error SyntaxError: Unexpected token, arrow (=>)  */

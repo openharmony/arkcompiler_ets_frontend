@@ -49,5 +49,4 @@ let x = new Type(1, 2, ;
 /* @@? 28:30 Error SyntaxError: Cannot use new with import(...) */
 /* @@? 29:24 Error SyntaxError: Unexpected token: ')'. */
 /* @@? 30:24 Error SyntaxError: Unexpected token: ';'. */
-/* @@? 54:1 Error SyntaxError: Unexpected token: 'eos'. */
-/* @@? 54:1 Error SyntaxError: Unexpected token in argument parsing */
+/* @@? 30:24 Error SyntaxError: Unexpected token, expected ',' or ')'. */

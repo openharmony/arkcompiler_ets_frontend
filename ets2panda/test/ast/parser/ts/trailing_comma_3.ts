@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-function identity<Type>(arg: Type): Type {
-  return arg;
+function foo3(, number: int): int {
+    return number
 }
-let output = identity<string>"hehe"
 
-/* @@? 19:30 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 16:15 Error SyntaxError: Unexpected token, expected an identifier.  */

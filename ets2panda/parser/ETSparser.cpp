@@ -483,22 +483,27 @@ ir::Identifier *ETSParser::CreateInvokeIdentifier()
     return ident;
 }
 
-void ETSParser::CheckAccessorDeclaration(ir::ModifierFlags memberModifiers)
+bool ETSParser::CheckAccessorDeclaration(ir::ModifierFlags memberModifiers)
 {
+    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_GET &&
+        Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_SET) {
+        return false;
+    }
+    if (Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_PAREN || Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN) {
+        return false;
+    }
     ir::ModifierFlags methodModifiersNotAccessorModifiers = ir::ModifierFlags::NATIVE | ir::ModifierFlags::ASYNC;
     if ((memberModifiers & methodModifiersNotAccessorModifiers) != 0) {
         LogSyntaxError("Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override').");
     }
+    return true;
 }
 
 ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &properties,
                                        ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags memberModifiers,
                                        const lexer::SourcePosition &startLoc)
 {
-    if (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_PAREN && Lexer()->Lookahead() != lexer::LEX_CHAR_LESS_THAN &&
-        (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
-         Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET)) {
-        CheckAccessorDeclaration(memberModifiers);
+    if (CheckAccessorDeclaration(memberModifiers)) {
         return ParseClassGetterSetterMethod(properties, modifiers, memberModifiers);
     }
 
@@ -535,8 +540,10 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
         }
     }
 
-    auto *memberName = ExpectIdentifier();
-    if (memberName == nullptr) {  // Error processing.
+    auto *memberName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::NO_OPTS);  // don't report error
+    if (memberName == nullptr) {                                                               // log error here
+        LogUnexpectedToken(Lexer()->GetToken().Type());
+        Lexer()->NextToken();
         return nullptr;
     }
 
@@ -1448,30 +1455,6 @@ bool ETSParser::IsDefaultImport()
     return false;
 }
 
-bool ETSParser::ParseNamedSpecifiesHelper(bool *logError)
-{
-    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        // unexpected_token_48.sts
-        LogSyntaxError("Unexpected token, expected identifier or '}'.");
-        const auto pos = Lexer()->Save();
-        Lexer()->NextToken();
-        if (lexer::Token::IsPunctuatorToken(Lexer()->GetToken().Type())) {
-            // import {^}
-            Lexer()->Rewind(pos);
-            Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
-            Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
-        } else {
-            // export type {B
-            // export type {B]
-            Lexer()->Rewind(pos);
-            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-            return true;
-        }
-        *logError = true;
-    }
-    return false;
-}
-
 void ETSParser::ParseNamedSpecifiesDefaultImport(ArenaVector<ir::ImportDefaultSpecifier *> *resultDefault,
                                                  const std::string &fileName)
 {
@@ -1504,49 +1487,42 @@ std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseN
     ArenaVector<ir::ImportSpecifier *> result(Allocator()->Adapter());
     ArenaVector<ir::ImportDefaultSpecifier *> resultDefault(Allocator()->Adapter());
 
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
-            LogSyntaxError("The '*' token is not allowed as a selective binding (between braces)");
-        }
-
-        bool logError = false;
-        if (!IsDefaultImport()) {
-            if (ParseNamedSpecifiesHelper(&logError)) {
-                break;
+    ParseList(
+        lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
+        [this, &result, &resultDefault, &fileName]() {
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
+                ThrowSyntaxError("The '*' token is not allowed as a selective binding (between braces)");
             }
 
-            lexer::Token importedToken = Lexer()->GetToken();
-            auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
-            ir::Identifier *local = nullptr;
-            imported->SetRange(Lexer()->GetToken().Loc());
+            if (!IsDefaultImport()) {
+                if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+                    // NOTE: needs to be replaced by returning invalid value from `ExpectIdentifier`
+                    ExpectToken(lexer::TokenType::LITERAL_IDENT);
+                    return false;
+                }
+                lexer::Token importedToken = Lexer()->GetToken();
+                auto *imported = ExpectIdentifier();
 
-            Lexer()->NextToken();
+                ir::Identifier *local = nullptr;
+                if (CheckModuleAsModifier() && Lexer()->TryEatTokenType(lexer::TokenType::KEYW_AS)) {
+                    local = ParseNamedImport(&Lexer()->GetToken());
+                    Lexer()->NextToken();
+                } else {
+                    local = ParseNamedImport(&importedToken);
+                }
 
-            if (CheckModuleAsModifier() && Lexer()->TryEatTokenType(lexer::TokenType::KEYW_AS)) {
-                local = ParseNamedImport(&Lexer()->GetToken());
-                Lexer()->NextToken();
+                auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
+                specifier->SetRange({imported->Start(), local->End()});
+
+                util::Helpers::CheckImportedName(result, specifier, fileName);
+
+                result.emplace_back(specifier);
             } else {
-                local = ParseNamedImport(&importedToken);
+                ParseNamedSpecifiesDefaultImport(&resultDefault, fileName);
             }
-
-            auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
-            specifier->SetRange({imported->Start(), local->End()});
-
-            util::Helpers::CheckImportedName(result, specifier, fileName);
-
-            result.emplace_back(specifier);
-        } else {
-            ParseNamedSpecifiesDefaultImport(&resultDefault, fileName);
-        }
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
-        }
-
-        if (logError) {
-            break;
-        }
-    }
-    Lexer()->NextToken();  // eat '}'
+            return true;
+        },
+        nullptr, true);
     std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> resultSpecifiers(
         result, resultDefault);
 

@@ -139,11 +139,7 @@ module module2
 /* @@? 79:9 Error SyntaxError: Unexpected token, expected: '>'. */
 /* @@? 79:12 Error SyntaxError: Unexpected token, expected: '{'. */
 /* @@? 79:14 Error SyntaxError: Unexpected token in class property */
-/* @@? 81:7 Error SyntaxError: Unexpected token, expected: ';'. */
-/* @@? 81:8 Error SyntaxError: Unexpected token in class property */
-/* @@? 81:11 Error SyntaxError: Unexpected token in class property */
-/* @@? 81:19 Error SyntaxError: Unexpected token in class property */
-/* @@? 81:22 Error SyntaxError: Unexpected token in class property */
+/* @@? 81:22 Error SyntaxError: Required type parameters may not follow optional type parameters. */
 /* @@? 83:9 Error SyntaxError: Type parameter list cannot be empty. */
 /* @@? 86:14 Error SyntaxError: Abstract methods can only appear within an abstract class. */
 /* @@? 86:20 Error SyntaxError: Unexpected token, expected: ';'. */
@@ -167,5 +163,5 @@ module module2
 /* @@? 105:8 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 106:5 Error SyntaxError: Unexpected token, expected: '{'. */
 /* @@? 110:5 Error SyntaxError: Unexpected token, expected: '{'. */
-/* @@? 172:1 Error SyntaxError: Unexpected token, expected: '}'. */
-/* @@? 172:1 Error SyntaxError: Expected a '}' got 'eos'. */
+/* @@? 168:1 Error SyntaxError: Unexpected token, expected: '}'. */
+/* @@? 168:1 Error SyntaxError: Expected a '}' got 'eos'. */

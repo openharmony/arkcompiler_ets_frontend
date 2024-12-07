@@ -395,19 +395,16 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     bool optionalField = false;
 
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-        Lexer()->NextToken();  // eat '?'
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_QUESTION_MARK)) {
         optionalField = true;
     }
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        Lexer()->NextToken();  // eat ':'
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         typeAnnotation = ParseTypeAnnotation(&options);
         endLoc = typeAnnotation->End();
     }
 
     ir::Expression *initializer = nullptr;
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        Lexer()->NextToken();  // eat '='
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SUBSTITUTION)) {
         initializer = ParseExpression();
     } else if (typeAnnotation == nullptr) {
         LogSyntaxError("Field type annotation expected");
@@ -426,12 +423,6 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     }
 
     declarations->push_back(field);
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-        Lexer()->NextToken();
-        ir::Identifier *nextName = ExpectIdentifier(false, true);
-        ParseClassFieldDefinition(nextName, modifiers, declarations);
-    }
 }
 
 ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
@@ -564,15 +555,13 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
     auto startLoc = Lexer()->GetToken().Start();
 
     ArenaVector<ir::AnnotationUsage *> annotations(Allocator()->Adapter());
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
-        Lexer()->NextToken();
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
         annotations = ParseAnnotations(flags, false);
     }
 
     ir::ModifierFlags memberModifiers = ir::ModifierFlags::NONE;
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 &&
-        Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXPORT) {
-        Lexer()->NextToken();  // eat exported
+        Lexer()->TryEatTokenType(lexer::TokenType::KEYW_EXPORT)) {
         memberModifiers |= ir::ModifierFlags::EXPORTED;
     }
     auto savedPos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
@@ -611,7 +600,9 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         }
         default: {
             auto *property = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
-            ApplyAnnotationsToNode(property, std::move(annotations), savePos);
+            if (property != nullptr) {
+                ApplyAnnotationsToNode(property, std::move(annotations), savePos);
+            }
             return property;
         }
     }

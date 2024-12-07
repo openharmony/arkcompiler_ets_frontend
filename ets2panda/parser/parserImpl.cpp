@@ -824,14 +824,13 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
     } else {
         while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
                lexer_->GetToken().Type() != lexer::TokenType::EOS) {
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-                lexer_->NextToken();
+            if (lexer_->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SEMI_COLON)) {
                 continue;
             }
 
+            util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
             ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
             if (property == nullptr) {  // Error processing.
-                lexer_->NextToken();
                 continue;
             }
 
@@ -889,27 +888,19 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
         lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
         params = std::move(ParseExpressionsArrayFormatPlaceholder());
     } else {
-        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS &&
-               lexer_->GetToken().Type() != lexer::TokenType::EOS) {
-            util::ErrorRecursionGuard infiniteLoopBlocker(lexer_);
+        ParseList(
+            lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE,
+            [this, &params]() {
+                ir::Expression *parameter = ParseFunctionParameter();
+                if (parameter == nullptr) {  // Error processing.
+                    return false;
+                }
 
-            ir::Expression *parameter = ParseFunctionParameter();
-            if (parameter == nullptr) {  // Error processing.
-                continue;
-            }
-
-            ValidateRestParameter(parameter);
-            params.push_back(parameter);
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-                lexer_->NextToken();
-                // CC-OFFNXT(G.FMT.06-CPP) project code style
-            } else if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-                LogSyntaxError("Invalid token: ',' or ')' expected.");
-
-                lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-            }
-        }
+                ValidateRestParameter(parameter);
+                params.push_back(parameter);
+                return true;
+            },
+            nullptr, true);
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {  // Error processing.
@@ -1230,12 +1221,15 @@ util::StringView ParserImpl::ParseSymbolIteratorIdentifier() const noexcept
     return util::StringView {compiler::Signatures::ITERATOR_METHOD};
 }
 
-ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, bool isUserDefinedType)
+ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, bool isUserDefinedType,
+                                             TypeAnnotationParsingOptions options)
 {
     auto const &token = lexer_->GetToken();
     auto const tokenType = token.Type();
     if (tokenType == lexer::TokenType::PUNCTUATOR_FORMAT) {
-        return ParseIdentifierFormatPlaceholder(std::nullopt);
+        if (auto *ident = ParseIdentifierFormatPlaceholder(std::nullopt); ident != nullptr) {
+            return ident;
+        }
     }
 
     if (token.IsDefinableTypeName() && isUserDefinedType) {
@@ -1253,6 +1247,9 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
     }
 
     if (tokenName.Empty()) {
+        if ((options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
+            return nullptr;
+        }
         LogSyntaxError({"Identifier expected, got '", TokenToString(tokenType), "'."}, tokenStart);
         tokenName = ERROR_LITERAL;
     }
@@ -1397,6 +1394,56 @@ bool ParserImpl::CheckModuleAsModifier()
     }
 
     return true;
+}
+
+bool ParserImpl::ParseList(std::optional<lexer::TokenType> termToken, lexer::NextTokenFlags flags,
+                           const std::function<bool()> &parseElement, lexer::SourcePosition *sourceEnd,
+                           bool allowTrailingSep)
+{
+    bool success = true;
+    auto sep = lexer::TokenType::PUNCTUATOR_COMMA;
+    while (Lexer()->GetToken().Type() != termToken && Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
+        // ErrorRecursionGuard is not feasible because we can break without consuming any tokens
+        auto savedPos = lexer_->Save();
+        auto elemSuccess = parseElement();
+        bool hasSep = false;
+        if (Lexer()->GetToken().Type() == sep) {
+            Lexer()->NextToken(flags);
+            hasSep = true;
+        }
+        if (!elemSuccess) {
+            // list element is invalid
+            success = false;
+            if (savedPos == lexer_->Save()) {
+                lexer_->NextToken();
+            }
+            continue;
+        }
+        if (termToken == Lexer()->GetToken().Type() || (!termToken.has_value() && !hasSep)) {
+            if (hasSep && !allowTrailingSep) {
+                LogSyntaxError("Trailing comma is not allowed in this context");
+            }
+            break;
+        }
+        if (hasSep) {
+            continue;
+        }
+        if (termToken.has_value()) {
+            LogSyntaxError({"Unexpected token, expected '", lexer::TokenToString(sep), "' or '",
+                            lexer::TokenToString(termToken.value()), "'."});
+        } else {
+            LogExpectedToken(sep);
+        }
+        // comma or terminator not found
+        return false;
+    }
+    if (termToken) {
+        if (sourceEnd != nullptr) {
+            *sourceEnd = Lexer()->GetToken().End();
+        }
+        ExpectToken(termToken.value());
+    }
+    return success;
 }
 
 }  // namespace ark::es2panda::parser

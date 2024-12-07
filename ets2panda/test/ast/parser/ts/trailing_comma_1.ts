@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-function identity<Type>(arg: Type): Type {
-  return arg;
+function foo(...number: int[],): int {
+    return number[0]
 }
-let output = identity<string>"hehe"
 
-/* @@? 19:30 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 16:30 Error SyntaxError:  A rest parameter must be last in parameter list  */

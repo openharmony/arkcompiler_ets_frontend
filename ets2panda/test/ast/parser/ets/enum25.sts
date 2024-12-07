@@ -19,6 +19,3 @@ enum Direction {
   Left = "LEFT",
   Right = "RIGHT",
 }
-
-/* @@? 21:1 Error SyntaxError: Trailing comma is not allowed in enum constant list  */
-

@@ -10,11 +10,11 @@ TypeError: Bad operand type, the types of the operands must be same type. [dynam
         "loc": {
           "start": {
             "line": 20,
-            "column": 20
+            "column": 19
           },
           "end": {
             "line": 20,
-            "column": 45
+            "column": 44
           }
         }
       },
@@ -70,7 +70,7 @@ TypeError: Bad operand type, the types of the operands must be same type. [dynam
         },
         "end": {
           "line": 20,
-          "column": 45
+          "column": 44
         }
       }
     },

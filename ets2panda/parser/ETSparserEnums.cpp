@@ -195,53 +195,22 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
 
+    lexer::SourcePosition enumEnd;
     if (stringTypeEnum) {
-        ParseStringEnum(members);
+        enumEnd = ParseStringEnum(members);
     } else {
-        ParseNumberEnum(members);
+        enumEnd = ParseNumberEnum(members);
     }
 
     auto *const enumDeclaration = AllocNode<ir::TSEnumDeclaration>(
         Allocator(), key, std::move(members),
         ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()});
-    enumDeclaration->SetRange({enumStart, Lexer()->GetToken().End()});
     if (InAmbientContext()) {
         enumDeclaration->AddModifier(ir::ModifierFlags::DECLARE);
     }
-
-    Lexer()->NextToken();  // eat '}'
+    enumDeclaration->SetRange({enumStart, enumEnd});
 
     return enumDeclaration;
-}
-
-bool ETSParser::ParseNumberEnumEnd()
-{
-    bool isBreak = false;
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-        // enum5.sts
-        LogSyntaxError(MISSING_COMMA_IN_ENUM);
-        if (lexer::Token::IsPunctuatorToken((Lexer()->GetToken().Type()))) {
-            /*  enum Direction {
-                  Left = -1;
-                  Right = 1",
-                }*/
-            Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
-            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-        }
-        /* in another case just skip the token
-            enum Direction {
-              Left = -1
-              Right = 1,
-            }
-        */
-    } else {
-        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-    }
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        isBreak = true;
-    }
-    return isBreak;
 }
 
 bool ETSParser::ParseNumberEnumHelper()
@@ -263,7 +232,7 @@ bool ETSParser::ParseNumberEnumHelper()
     return minusSign;
 }
 
-void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
+lexer::SourcePosition ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
 {
     checker::ETSIntEnumType::ValueType currentValue {};
 
@@ -288,7 +257,7 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
             }
             if (!ordinal->Number().CanGetValue<checker::ETSIntEnumType::ValueType>()) {
                 LogSyntaxError(INVALID_ENUM_VALUE);
-                return;  // Error processing.
+                return false;  // Error processing.
             }
 
             currentValue = ordinal->Number().GetValue<checker::ETSIntEnumType::ValueType>();
@@ -305,20 +274,16 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
         members.emplace_back(member);
 
         ++currentValue;
+        return true;
     };
 
-    parseMember();
-
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
-           Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-        if (ParseNumberEnumEnd()) {
-            break;
-        }
-        parseMember();
-    }
+    lexer::SourcePosition enumEnd;
+    ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT, parseMember, &enumEnd,
+              true);
+    return enumEnd;
 }
 
-void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
+lexer::SourcePosition ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
 {
     // Lambda to parse enum member (maybe with initializer)
     auto const parseMember = [this, &members]() {
@@ -341,46 +306,19 @@ void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
         } else {
             // Default item value is not allowed for string type enumerations!
             LogSyntaxError("All items of string-type enumeration should be explicitly initialized.");
-            return;  // Error processing.
+            return false;  // Error processing.
         }
 
         auto *const member = AllocNode<ir::TSEnumMember>(ident, itemValue);
         member->SetRange({ident->Start(), itemValue->End()});
         members.emplace_back(member);
+        return true;
     };
 
-    parseMember();
-
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
-           Lexer()->GetToken().Type() != lexer::TokenType::EOS) {
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-            // enum5.sts
-            LogSyntaxError(MISSING_COMMA_IN_ENUM);
-            if (lexer::Token::IsPunctuatorToken((Lexer()->GetToken().Type()))) {
-                /*  enum Direction {
-                      Left = "LEFT";
-                      Right = "RIGHT",
-                    }*/
-                Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COMMA);
-                Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-            }
-            /* in another case just skip the token
-                enum Direction {
-                  Left = "LEFT"
-                  Right = "RIGHT",
-                }
-            */
-        } else {
-            Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
-        }
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            LogSyntaxError(TRAILING_COMMA_IN_ENUM);
-            break;
-        }
-
-        parseMember();
-    }
+    lexer::SourcePosition enumEnd;
+    ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT, parseMember, &enumEnd,
+              true);
+    return enumEnd;
 }
 
 }  // namespace ark::es2panda::parser

@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-function identity<Type>(arg: Type): Type {
-  return arg;
+class C {
+  x: int/* @@ label1 */, y: int;
 }
-let output = identity<string>"hehe"
 
-/* @@? 19:30 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token: ','.  */

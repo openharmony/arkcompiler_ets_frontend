@@ -29,6 +29,7 @@
 
 namespace ark::es2panda::lexer {
 class RegExpParser;
+enum class NextTokenFlags : uint32_t;
 }  // namespace ark::es2panda::lexer
 
 namespace ark::es2panda::util {
@@ -214,7 +215,8 @@ protected:
     }
 
     util::StringView ParseSymbolIteratorIdentifier() const noexcept;
-    ir::Identifier *ExpectIdentifier(bool isReference = false, bool isUserDefinedType = false);
+    ir::Identifier *ExpectIdentifier(bool isReference = false, bool isUserDefinedType = false,
+                                     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR);
     void ExpectToken(lexer::TokenType tokenType, bool consumeToken = true);
 
     // ExpressionParser.cpp
@@ -240,7 +242,7 @@ protected:
                                                               ir::TypeNode *returnTypeAnnotation, bool isAsync);
     ir::CallExpression *ParseCallExpression(ir::Expression *callee, bool isOptionalChain = false,
                                             bool handleEval = true);
-    ArenaVector<ir::Expression *> ParseCallExpressionArguments(bool &trailingComma);
+    ArenaVector<ir::Expression *> ParseCallExpressionArguments(bool &trailingComma, lexer::SourcePosition &endLoc);
 
     ir::TemplateLiteral *ParseTemplateLiteral();
     ir::Expression *ParseLeftHandSideExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
@@ -355,10 +357,10 @@ protected:
         [[maybe_unused]] ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::ObjectExpression *ParseObjectExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
-    bool ParseArrayExpressionRightBracketHelper(bool containsRest, bool trailingComma,
-                                                const lexer::SourcePosition &startLoc);
+    bool ParseArrayExpressionRightBracketHelper(bool containsRest, const lexer::SourcePosition &startLoc);
     // NOLINTNEXTLINE(google-default-arguments)
-    virtual ir::ArrayExpression *ParseArrayExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
+    virtual ir::ArrayExpression *ParseArrayExpression(ExpressionParseFlags flags, bool allowOmitted);
+    virtual ir::ArrayExpression *ParseArrayExpression(ExpressionParseFlags flags);
     void ParseArrayExpressionErrorCheck(ir::ArrayExpression *arrayExpressionNode, ExpressionParseFlags flags,
                                         bool inPattern);
     virtual ir::ArrowFunctionExpression *ParsePotentialArrowExpression(ir::Expression **returnExpression,
@@ -540,6 +542,10 @@ protected:
     {
         return classId_;
     }
+
+    bool ParseList(std::optional<lexer::TokenType> termToken, lexer::NextTokenFlags flags,
+                   const std::function<bool()> &parseElement, lexer::SourcePosition *sourceEnd = nullptr,
+                   bool allowTrailingSep = false);
 
 private:
     bool GetCanBeForInOf(ir::Expression *leftNode, ir::AstNode *initNode);
