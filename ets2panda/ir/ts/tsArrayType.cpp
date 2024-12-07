@@ -45,7 +45,15 @@ void TSArrayType::Dump(ir::AstDumper *dumper) const
 void TSArrayType::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(elementType_);
+    if (elementType_->IsETSUnionType()) {
+        dumper->Add("(");
+    }
+
     elementType_->Dump(dumper);
+
+    if (elementType_->IsETSUnionType()) {
+        dumper->Add(")");
+    }
     dumper->Add("[]");
 }
 
