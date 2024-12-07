@@ -191,11 +191,10 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
     // Create argument
     auto *ident = checker.AllocNode<Identifier>("ident", Allocator());
@@ -214,9 +213,7 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
         }
     });
 
-    InvariantNameSet checks;
-    checks.insert("GetterSetterValidationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "GetterSetterValidationForAll");
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);
@@ -244,11 +241,10 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
     // Change setter return type
     ast->IterateRecursively([&checker](ark::es2panda::ir::AstNode *child) {
@@ -262,9 +258,7 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
         }
     });
 
-    InvariantNameSet checks;
-    checks.insert("GetterSetterValidationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "GetterSetterValidationForAll");
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);
@@ -292,11 +286,10 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
     // Change setter arguments
     ast->IterateRecursively([](ark::es2panda::ir::AstNode *child) {
@@ -311,9 +304,7 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
         }
     });
 
-    InvariantNameSet checks;
-    checks.insert("GetterSetterValidationForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "GetterSetterValidationForAll");
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);

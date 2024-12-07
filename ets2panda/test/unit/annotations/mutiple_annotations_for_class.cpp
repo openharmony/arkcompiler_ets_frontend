@@ -47,7 +47,7 @@ public:
                 {"reviewers", "ETSGLOBAL$Anno2$reviewers$1"},
             },
         };
-        CheckAnnoDecl(program, annoName, expectedAnnotations);
+        AnnotationEmitTest::CheckAnnoDecl(program, annoName, expectedAnnotations);
     }
 
     void CheckClassAnnotations(pandasm::Program *program)

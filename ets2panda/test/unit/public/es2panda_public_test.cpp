@@ -17,45 +17,25 @@
 #include "macros.h"
 #include "public/es2panda_lib.h"
 #include "test/utils/panda_executable_path_getter.h"
+#include "test/utils/ast_verifier_test.h"
 
-class Es2PandaLibTest : public testing::Test {
-public:
-    Es2PandaLibTest()
-    {
-        impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-        auto argv = test::utils::PandaExecutablePathGetter::Get();
-        cfg_ = impl_->CreateConfig(argv.size(), argv.data());
-    }
-
-    ~Es2PandaLibTest() override
-    {
-        impl_->DestroyConfig(cfg_);
-    }
-
-    NO_COPY_SEMANTIC(Es2PandaLibTest);
-    NO_MOVE_SEMANTIC(Es2PandaLibTest);
-
-protected:
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    es2panda_Impl const *impl_;
-    es2panda_Config *cfg_;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
+using Es2PandaLibTest = test::utils::AstVerifierTest;
 
 TEST_F(Es2PandaLibTest, NoError)
 {
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, "function main() {}", "no-error.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);  // don't produce any object files
+    es2panda_Context *ctx =
+        CreateContextAndProceedToState(impl_, cfg_, "function main() {}", "no-error.sts", ES2PANDA_STATE_ASM_GENERATED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ASM_GENERATED);
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(Es2PandaLibTest, TypeError)
 {
-    es2panda_Context *ctx =
-        impl_->CreateContextFromString(cfg_, "function main() { let x: int = \"\" }", "type-error.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "function main() { let x: int = \"\" }",
+                                                           "type-error.sts", ES2PANDA_STATE_ASM_GENERATED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ERROR);
+
     ASSERT_EQ(std::string(impl_->ContextErrorMessage(ctx)),
               "TypeError: Type '\"\"' cannot be assigned to type 'int'[type-error.sts:1,32]");
     impl_->DestroyContext(ctx);
@@ -73,8 +53,8 @@ function main() {
     console.log(c.n + 1) // type error, but not syntax error
 }
 )XXX";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "list-ids.sts");
-    ctx = impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
+
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "list-ids.sts", ES2PANDA_STATE_PARSED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     struct Arg {

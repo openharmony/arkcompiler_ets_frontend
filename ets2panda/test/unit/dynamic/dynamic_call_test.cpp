@@ -15,7 +15,6 @@
 
 #include "checker/ets/dynamic/dynamicCall.h"
 #include "checker/types/ets/etsDynamicType.h"
-#include "test/unit/es2panda_unit_gtest.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/identifier.h"
@@ -27,6 +26,9 @@
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "util/language.h"
 #include "parser/ETSparser.h"
+#include "test/utils/scope_init_test.h"
+
+using Es2pandaUnitGtest = test::utils::ScopeInitTest;
 
 namespace ark::es2panda::testing {
 

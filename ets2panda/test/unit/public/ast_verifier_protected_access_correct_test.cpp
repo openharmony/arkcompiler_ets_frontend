@@ -32,11 +32,10 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
             public b: int = this.a;
         }
     )";
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto ast = GetAstFromContext<ETSScript>(impl_, ctx);
 
     ast->AsETSScript()
         ->Statements()[1]
@@ -47,9 +46,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    InvariantNameSet checks;
-    checks.insert("ModifierAccessValidForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = VerifyCheck(verifier, ast, "ModifierAccessValidForAll");
 
     ASSERT_EQ(messages.size(), 0);
 

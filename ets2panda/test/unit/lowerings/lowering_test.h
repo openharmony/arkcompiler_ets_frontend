@@ -17,41 +17,28 @@
 #define ES2PANDA_TEST_LOWERINGS_LOWERING_TEST_H
 
 #include <gtest/gtest.h>
-#include "test/unit/node_creator.h"
+#include "test/utils/node_creator.h"
 #include "test/utils/panda_executable_path_getter.h"
 #include "parser/program/program.h"
+#include "test/utils/ast_verifier_test.h"
 
 namespace ark::es2panda {
 
-class LoweringTest : public testing::Test {
+class LoweringTest : public test::utils::AstVerifierTest {
 public:
-    LoweringTest()
-    {
-        impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-        auto argv = test::utils::PandaExecutablePathGetter::Get();
-        cfg_ = impl_->CreateConfig(argv.size(), argv.data());
-        allocator_ = new ark::ArenaAllocator(ark::SpaceType::SPACE_TYPE_COMPILER);
-    }
+    LoweringTest() = default;
 
     ~LoweringTest() override
     {
         if (ctx_ != nullptr) {
             impl_->DestroyContext(ctx_);
         }
-        delete allocator_;
-        impl_->DestroyConfig(cfg_);
-    }
-
-    ark::ArenaAllocator *Allocator()
-    {
-        return allocator_;
     }
 
     parser::Program *SetupContext(const char *text, es2panda_ContextState state)
     {
         ASSERT(ctx_ == nullptr);
-        ctx_ = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-        impl_->ProceedToState(ctx_, state);
+        ctx_ = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", state);
         ASSERT(impl_->ContextState(ctx_) == state);
 
         return reinterpret_cast<parser::Program *>(impl_->ContextProgram(ctx_));
@@ -62,10 +49,6 @@ public:
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    es2panda_Impl const *impl_ {};
-    es2panda_Config *cfg_ {};
-    ark::ArenaAllocator *allocator_ {};
-
     es2panda_Context *ctx_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };

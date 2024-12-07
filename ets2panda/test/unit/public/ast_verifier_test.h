@@ -18,28 +18,14 @@
 
 #include "ast_verifier/ASTVerifier.h"
 #include "test/utils/panda_executable_path_getter.h"
+#include "test/utils/ast_verifier_test.h"
 
 #include <gtest/gtest.h>
 
-class ASTVerifierTest : public testing::Test {
+class ASTVerifierTest : public test::utils::AstVerifierTest {
 public:
-    ASTVerifierTest()
-    {
-        impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-        std::array argv = test::utils::PandaExecutablePathGetter::Get();
-        cfg_ = impl_->CreateConfig(argv.size(), argv.data());
-        allocator_ = new ark::ArenaAllocator(ark::SpaceType::SPACE_TYPE_COMPILER);
-    }
-    ~ASTVerifierTest() override
-    {
-        delete allocator_;
-        impl_->DestroyConfig(cfg_);
-    }
-
-    ark::ArenaAllocator *Allocator()
-    {
-        return allocator_;
-    }
+    ASTVerifierTest() = default;
+    ~ASTVerifierTest() override = default;
 
     NO_COPY_SEMANTIC(ASTVerifierTest);
     NO_MOVE_SEMANTIC(ASTVerifierTest);
@@ -64,12 +50,6 @@ protected:
         v.insert(v.end(), {std::forward<Args>(args)...});
         return v;
     }
-
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    es2panda_Impl const *impl_;
-    es2panda_Config *cfg_;
-    ark::ArenaAllocator *allocator_;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 #endif  // TEST_UNIT_PUBLIC_AST_VERIFIER_TEST_H
