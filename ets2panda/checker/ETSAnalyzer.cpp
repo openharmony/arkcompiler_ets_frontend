@@ -119,7 +119,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinition *node)
 {
     auto *scriptFunc = node->Function();
-    if (node->IsNative()) {
+    if (node->IsNative() && !node->IsConstructor()) {
         if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
             checker->LogTypeError("'Native' method should have explicit return type", scriptFunc->Start());
             node->SetTsType(checker->GlobalTypeError());
@@ -180,7 +180,7 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
     }
 
     if (scriptFunc->ReturnTypeAnnotation() == nullptr &&
-        (node->IsNative() || (node->IsDeclare() && !node->IsConstructor()))) {
+        ((node->IsNative() || node->IsDeclare()) && !node->IsConstructor())) {
         checker->LogTypeError("Native and Declare methods should have explicit return type.", scriptFunc->Start());
         node->SetTsType(checker->GlobalTypeError());
         return node->TsType();

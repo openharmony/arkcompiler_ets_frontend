@@ -13,8 +13,23 @@
  * limitations under the License.
  */
 
-class Test {
-    async /* @@ label */constructor() {}
-}
+class Apple{
+  x: number
+  y: number
 
-/* @@@ label Error SyntaxError: The modifier for a constructor should be limited to access modifiers (private, internal, protected, public),and 'native' modifiers. */
+
+  native constructor(){
+
+  }
+  native constructor(x:number){
+
+  }
+
+  native constructor(x:number,y:number){
+  }
+
+
+}
+/* @@? 21:23 Error TypeError: Native constructor declaration cannot have a body. */
+/* @@? 24:31 Error TypeError: Native constructor declaration cannot have a body. */
+/* @@? 28:40 Error TypeError: Native constructor declaration cannot have a body. */

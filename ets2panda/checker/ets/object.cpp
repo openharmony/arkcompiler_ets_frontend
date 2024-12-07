@@ -1166,6 +1166,10 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
         return;
     }
 
+    if (ctorSig->Function()->IsNative() && ctorSig->Function()->IsConstructor()) {
+        return;
+    }
+
     auto &stmts = ctorSig->Function()->Body()->AsBlockStatement()->Statements();
     const auto thisCall = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
         return stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
@@ -1197,6 +1201,10 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
 void ETSChecker::CheckThisOrSuperCallInConstructor(ETSObjectType *classType, Signature *ctorSig)
 {
     if (classType == GlobalETSObjectType()) {
+        return;
+    }
+
+    if (ctorSig->Function()->IsNative() && ctorSig->Function()->IsConstructor()) {
         return;
     }
 

@@ -168,7 +168,7 @@ function main(): void {
 
 /* @@? 18:14 Error SyntaxError: Optional variable is not allowed in for of statements */
 /* @@? 28:12 Error SyntaxError: Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override'). */
-/* @@? 34:14 Error SyntaxError: The modifier for a constructor should be limited to access modifiers(private, internal, protected, public). */
+/* @@? 34:14 Error SyntaxError: The modifier for a constructor should be limited to access modifiers (private, internal, protected, public),and 'native' modifiers.  */
 /* @@? 37:33 Error SyntaxError: Only 'throws' can be used with function types */
 /* @@? 37:33 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? 39:14 Error SyntaxError: Unexpected token, expected an identifier. */
