@@ -15,9 +15,9 @@
     ],
     "result": [
         {
-            "line": 21,
+            "line": 22,
             "column": 3,
-            "endLine": 21,
+            "endLine": 22,
             "endColumn": 14,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -25,9 +25,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 24,
+            "line": 25,
             "column": 10,
-            "endLine": 24,
+            "endLine": 25,
             "endColumn": 21,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -35,9 +35,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 45,
+            "line": 46,
             "column": 3,
-            "endLine": 45,
+            "endLine": 46,
             "endColumn": 9,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -45,9 +45,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 49,
+            "line": 50,
             "column": 3,
-            "endLine": 49,
+            "endLine": 50,
             "endColumn": 9,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -55,9 +55,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 56,
+            "line": 57,
             "column": 5,
-            "endLine": 56,
+            "endLine": 57,
             "endColumn": 27,
             "problem": "AnyType",
             "suggest": "",
@@ -65,9 +65,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 107,
+            "line": 108,
             "column": 5,
-            "endLine": 107,
+            "endLine": 108,
             "endColumn": 40,
             "problem": "AnyType",
             "suggest": "",
@@ -75,9 +75,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 117,
+            "line": 118,
             "column": 5,
-            "endLine": 117,
+            "endLine": 118,
             "endColumn": 36,
             "problem": "AnyType",
             "suggest": "",
@@ -85,19 +85,9 @@
             "severity": "ERROR"
         },
         {
-            "line": 158,
+            "line": 159,
             "column": 3,
-            "endLine": 158,
-            "endColumn": 9,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
-            "severity": "ERROR"
-        },
-        {
-            "line": 171,
-            "column": 1,
-            "endLine": 171,
+            "endLine": 159,
             "endColumn": 9,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
@@ -108,7 +98,7 @@
             "line": 172,
             "column": 1,
             "endLine": 172,
-            "endColumn": 13,
+            "endColumn": 9,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
@@ -118,6 +108,16 @@
             "line": 173,
             "column": 1,
             "endLine": 173,
+            "endColumn": 13,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 174,
+            "column": 1,
+            "endLine": 174,
             "endColumn": 13,
             "problem": "PropertyAccessByIndex",
             "suggest": "",

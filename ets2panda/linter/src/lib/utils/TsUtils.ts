@@ -31,6 +31,7 @@ import {
   LANG_NAMESPACE
 } from './consts/SupportedDetsIndexableTypes';
 import { TYPED_ARRAYS } from './consts/TypedArrays';
+import { TYPED_COLLECTIONS } from './consts/TypedCollections';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 import { getScriptKind } from './functions/GetScriptKind';
 import { isStdLibrarySymbol, isStdLibraryType } from './functions/IsStdLibrary';
@@ -285,23 +286,31 @@ export class TsUtils {
     );
   }
 
-  isTypedArray(tsType: ts.Type): boolean {
+  isTypedArray(tsType: ts.Type, allowTypeArrays: string[]): boolean {
     const symbol = tsType.symbol;
     if (!symbol) {
       return false;
     }
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
-    if (this.isGlobalSymbol(symbol) && TYPED_ARRAYS.includes(name)) {
+    if (this.isGlobalSymbol(symbol) && allowTypeArrays.includes(name)) {
       return true;
     }
     const decl = TsUtils.getDeclaration(symbol);
     return (
-      !!decl && TsUtils.isArkTSCollectionsClassOrInterfaceDeclaration(decl) && TYPED_ARRAYS.includes(symbol.getName())
+      !!decl &&
+      TsUtils.isArkTSCollectionsClassOrInterfaceDeclaration(decl) &&
+      allowTypeArrays.includes(symbol.getName())
     );
   }
 
   isArray(tsType: ts.Type): boolean {
-    return this.isGenericArrayType(tsType) || this.isReadonlyArrayType(tsType) || this.isTypedArray(tsType);
+    return (
+      this.isGenericArrayType(tsType) || this.isReadonlyArrayType(tsType) || this.isTypedArray(tsType, TYPED_ARRAYS)
+    );
+  }
+
+  isCollectionArrayType(tsType: ts.Type): boolean {
+    return this.isTypedArray(tsType, TYPED_COLLECTIONS);
   }
 
   isIndexableArray(tsType: ts.Type): boolean {
@@ -310,7 +319,8 @@ export class TsUtils {
       this.isReadonlyArrayType(tsType) ||
       TsUtils.isConcatArrayType(tsType) ||
       TsUtils.isArrayLikeType(tsType) ||
-      this.isTypedArray(tsType)
+      this.isTypedArray(tsType, TYPED_ARRAYS) ||
+      this.isTypedArray(tsType, TYPED_COLLECTIONS)
     );
   }
 

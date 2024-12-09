@@ -12,7 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {OhosInterface} from './oh_modules/ohos_lib'
+import {OhosInterface} from './oh_modules/ohos_lib';
+import { collections } from './@arkts.collections';
 // #14071
 class A {
   v: string = '';
@@ -171,3 +172,13 @@ let mmap3 = new MMap<string, string>();
 mmap1[1];
 mmap2['222'];
 mmap3["kkr"];
+
+@Sendable
+class MyClass extends collections.BitVector {
+  constructor() {
+    super(0);
+    for (let i = 0; i < this.length; i++) {
+      this[i] = 1;
+    }
+  }
+}
