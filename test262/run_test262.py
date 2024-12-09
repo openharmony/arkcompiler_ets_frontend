@@ -97,7 +97,7 @@ def parse_args():
                         help='Other engine binarys to run tests(as:d8,qjs...)')
     parser.add_argument('--babel', action='store_true',
                         help='Whether to use Babel conversion')
-    parser.add_argument('--skip-list',action='append',dest='skip_list',
+    parser.add_argument('--skip-list', action='append', dest='skip_list',
                         help='Use explicitly specify skip list in txt format. Can be set several times')
     parser.add_argument('--timeout', default=DEFAULT_TIMEOUT, type=int,
                         help='Set a custom test timeout in milliseconds !!!\n')
