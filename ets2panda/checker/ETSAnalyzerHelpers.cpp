@@ -265,6 +265,7 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
 
     if (returnType == nullptr) {
         checker->LogTypeError(methodName + "' doesn't have return type.", position);
+        return;
     }
 
     if (returnType->IsETSTypeParameter()) {

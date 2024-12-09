@@ -963,7 +963,7 @@ Type *ETSChecker::MaybeUnboxInRelation(Type *type)
 
 Type *ETSChecker::MaybeUnboxConditionalInRelation(Type *const objectType)
 {
-    if (objectType->IsTypeError()) {
+    if (objectType != nullptr && objectType->IsTypeError()) {
         return objectType;
     }
 
