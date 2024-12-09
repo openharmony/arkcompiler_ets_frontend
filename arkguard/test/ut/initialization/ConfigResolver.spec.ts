@@ -31,7 +31,9 @@ import {
   handleObfuscatedFilePath,
   enableObfuscateFileName,
   getRelativeSourcePath,
-  OptionTypeForTest
+  OptionTypeForTest,
+  SourceObConfig,
+  Obfuscation
 } from '../../../src/initialization/ConfigResolver';
 import { PropCollections, renameFileNameModule } from '../../../src/ArkObfuscator';
 import { nameCacheMap } from '../../../src/initialization/CommonObject';
@@ -63,7 +65,7 @@ describe('test for ConfigResolve', function() {
       ob2.printKeptNamesPath = './test/ut/initialization/printKeptNamesPath.txt';
       ob2.applyNameCache = 'test case';
 
-      ob1.merge(ob2);
+      ob1.mergeObOptions(ob2);
 
       expect(ob1.disableObfuscation).to.be.true;
       expect(ob1.enablePropertyObfuscation).to.be.true;
@@ -89,7 +91,7 @@ describe('test for ConfigResolve', function() {
         config2.keepComments = ['comment2'];
         config2.excludePathSet.add('path2');
 
-        config1.merge(config2);
+        config1.mergeAllRules(config2);
 
         expect(config1.reservedPropertyNames).to.deep.equal(['prop1', 'prop2']);
         expect(config1.reservedGlobalNames).to.deep.equal(['global1', 'global2']);
@@ -107,7 +109,7 @@ describe('test for ConfigResolve', function() {
         config2.options.enableExportObfuscation = true;
         config2.options.stripLanguageDefault = false;
         config2.options.stripSystemApiArgs = true;
-        config1.merge(config2);
+        config1.mergeAllRules(config2);
 
         expect(config1.options.disableObfuscation).to.be.false;
         expect(config1.options.enablePropertyObfuscation).to.be.false;
@@ -163,7 +165,7 @@ describe('test for ConfigResolve', function() {
       expect(serialized).to.include('prop1');
       expect(serialized).to.not.include('option2');
 
-      expect(ObConfigResolver.exportedSwitchMap.has(String('disableObfuscation'))).to.be.true;
+      expect(ObConfigResolver.exportedSwitchMap.has(String('disableObfuscation'))).to.be.false;
       expect(ObConfigResolver.exportedSwitchMap.has(String('enableStringPropertyObfuscation'))).to.be.true;
       expect(resultStr).to.equal('');
     });
@@ -670,6 +672,7 @@ describe('test for ConfigResolve', function() {
           ObConfigResolver.ENABLE_TOPLEVEL_OBFUSCATION,
           ObConfigResolver.ENABLE_FILENAME_OBFUSCATION,
           ObConfigResolver.ENABLE_EXPORT_OBFUSCATION,
+          ObConfigResolver.ENABLE_LIB_OBFUSCATION_OPTIONS,
           ObConfigResolver.REMOVE_COMMENTS,
           ObConfigResolver.COMPACT,
           ObConfigResolver.REMOVE_LOG,
@@ -695,6 +698,7 @@ describe('test for ConfigResolve', function() {
           OptionTypeForTest.ENABLE_TOPLEVEL_OBFUSCATION,
           OptionTypeForTest.ENABLE_FILENAME_OBFUSCATION,
           OptionTypeForTest.ENABLE_EXPORT_OBFUSCATION,
+          OptionTypeForTest.ENABLE_LIB_OBFUSCATION_OPTIONS,
           OptionTypeForTest.REMOVE_COMMENTS,
           OptionTypeForTest.COMPACT,
           OptionTypeForTest.REMOVE_LOG,
@@ -736,6 +740,7 @@ describe('test for ConfigResolve', function() {
           -enable-toplevel-obfuscation,
           -enable-filename-obfuscation,
           -enable-export-obfuscation,
+          -enable-lib-obfuscation-options,
           -extra-options strip-language-default,
           -extra-options strip-system-api-args,
           -keep-parameter-names
@@ -756,6 +761,7 @@ describe('test for ConfigResolve', function() {
         expect(configs.options.removeComments).to.be.true;
         expect(configs.options.enableFileNameObfuscation).to.be.true;
         expect(configs.options.enableExportObfuscation).to.be.true;
+        expect(configs.options.enableLibObfuscationOptions).to.be.true;
         expect(configs.options.compact).to.be.true;
         expect(configs.options.removeLog).to.be.true;
         expect(configs.options.stripLanguageDefault).to.be.true;
@@ -884,6 +890,18 @@ describe('test for ConfigResolve', function() {
         expect(configs.options.enablePropertyObfuscation).to.be.true;
         expect(configs.options.stripLanguageDefault).to.be.false;
         expect(configs.options.stripSystemApiArgs).to.be.false;
+      });
+
+      it('should handle config content correctly when enable lib obfuscation options', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/enable_lib_obfuscation_options/obfuscation-rule.txt';
+        const data = fs.readFileSync(configPath, 'utf-8');
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.enableLibObfuscationOptions).to.be.true;
       });
     });
 
@@ -1120,6 +1138,183 @@ describe('test for ConfigResolve', function() {
     });
   });
 
+  describe('getMergedConfigs', function() {
+    it('should merge all configs', () => {
+      const config1 = new MergedConfig();
+      config1.options.enableLibObfuscationOptions = true;
+  
+      const config2 = new MergedConfig();
+      config2.options.enablePropertyObfuscation = true;
+      config2.options.enableStringPropertyObfuscation = true;
+      config2.options.enableToplevelObfuscation = true;
+      config2.options.compact = true;
+      config2.options.removeLog = true;
+      config2.reservedPropertyNames = ['prop2'];
+      config2.reservedGlobalNames = ['global2'];
+      config2.keepComments = ['comment2'];
+      config2.excludePathSet.add('path2');
+  
+      const projectConfig = {
+        obfuscationOptions: { option1: 'value1' },
+        compileHar: false
+      };
+      const logger = console;
+      const isTerser = false;
+      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      const res: MergedConfig = newObConfigResolver.getMergedConfigsForTest(config1, config2);
+  
+      expect(res.options.enablePropertyObfuscation).to.be.true;
+      expect(res.options.enableStringPropertyObfuscation).to.be.true;
+      expect(res.options.enableToplevelObfuscation).to.be.true;
+      expect(res.options.compact).to.be.true;
+      expect(res.options.removeLog).to.be.true;
+      expect(res.reservedPropertyNames).to.deep.equal(['prop2']);
+      expect(res.reservedGlobalNames).to.deep.equal(['global2']);
+      expect(res.keepComments).to.deep.equal(['comment2']);
+      expect(res.excludePathSet).to.deep.equal(new Set(['path2']));
+    });
+
+    it('should merge only keep configs', () => {
+      const config1 = new MergedConfig();
+      config1.options.enableLibObfuscationOptions = false;
+  
+      const config2 = new MergedConfig();
+      config2.options.enablePropertyObfuscation = true;
+      config2.options.enableStringPropertyObfuscation = true;
+      config2.options.enableToplevelObfuscation = true;
+      config2.options.compact = true;
+      config2.options.removeLog = true;
+      config2.reservedPropertyNames = ['prop2'];
+      config2.reservedGlobalNames = ['global2'];
+      config2.keepComments = ['comment2'];
+      config2.excludePathSet.add('path2');
+  
+      const projectConfig = {
+        obfuscationOptions: { option1: 'value1' },
+        compileHar: false
+      };
+      const logger = console;
+      const isTerser = false;
+      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      const res: MergedConfig = newObConfigResolver.getMergedConfigsForTest(config1, config2);
+  
+      expect(res.options.enablePropertyObfuscation).to.be.false;
+      expect(res.options.enableStringPropertyObfuscation).to.be.false;
+      expect(res.options.enableToplevelObfuscation).to.be.false;
+      expect(res.options.compact).to.be.false;
+      expect(res.options.removeLog).to.be.false;
+      expect(res.reservedPropertyNames).to.deep.equal(['prop2']);
+      expect(res.reservedGlobalNames).to.deep.equal(['global2']);
+      expect(res.keepComments).to.deep.equal(['comment2']);
+      expect(res.excludePathSet).to.deep.equal(new Set(['path2']));
+    });
+  });
+
+  describe('genConsumerConfigFilesForTest', function (){
+    it('should merge all configs: compileHar is true', () => {
+      const config1 = new MergedConfig();
+      config1.options.enableLibObfuscationOptions = true;
+  
+      const config2 = new MergedConfig();
+      config2.options.enablePropertyObfuscation = true;
+      config2.options.enableStringPropertyObfuscation = true;
+      config2.options.enableToplevelObfuscation = true;
+      config2.options.compact = true;
+      config2.options.removeLog = true;
+      config2.reservedPropertyNames = ['prop2'];
+      config2.reservedGlobalNames = ['global2'];
+      config2.keepComments = ['comment2'];
+      config2.excludePathSet.add('path2');
+  
+      const projectConfig = {
+        obfuscationOptions: { option1: 'value1' },
+        compileHar: true
+      };
+      const logger = console;
+      const isTerser = false;
+      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      const sourceObConfig: SourceObConfig = {
+        selfConfig: {} as Obfuscation,
+        sdkApis: [],
+        obfuscationCacheDir: '',
+        exportRulePath: './test/ut/initialization/obfuscation.txt',
+        dependencies: {
+          libraries: [],
+          hars: [],
+          hsps: [],
+          hspLibraries: [],
+        },
+      };
+      newObConfigResolver.genConsumerConfigFilesForTest(sourceObConfig, config1, config2);
+
+      let res: string = fs.readFileSync(sourceObConfig.exportRulePath, 'utf-8');
+      expect(res.indexOf('-enable-lib-obfuscation-options') === -1).to.be.true;
+      expect(res.indexOf('-enable-property-obfuscation') !== -1).to.be.true;
+      expect(res.indexOf('-enable-string-property-obfuscation') !== -1).to.be.true;
+      expect(res.indexOf('-enable-toplevel-obfuscation') !== -1).to.be.true;
+      expect(res.indexOf('-compact') !== -1).to.be.true;
+      expect(res.indexOf('-remove-log') !== -1).to.be.true;
+      expect(res.indexOf('-keep-global-name') !== -1).to.be.true;
+      expect(res.indexOf('global2') !== -1).to.be.true;
+      expect(res.indexOf('-keep-property-name') !== -1).to.be.true;
+      expect(res.indexOf('prop2') !== -1).to.be.true;
+      
+      fs.unlinkSync(sourceObConfig.exportRulePath);
+    });
+
+    it('should merge all configs: compileHar is false', () => {
+      const config1 = new MergedConfig();
+      config1.options.enableLibObfuscationOptions = false;
+  
+      const config2 = new MergedConfig();
+      config2.options.enablePropertyObfuscation = true;
+      config2.options.enableStringPropertyObfuscation = true;
+      config2.options.enableToplevelObfuscation = true;
+      config2.options.compact = true;
+      config2.options.removeLog = true;
+      config2.reservedPropertyNames = ['prop2'];
+      config2.reservedGlobalNames = ['global2'];
+      config2.keepComments = ['comment2'];
+      config2.excludePathSet.add('path2');
+  
+      const projectConfig = {
+        obfuscationOptions: { option1: 'value1' },
+        compileHar: false
+      };
+      const logger = console;
+      const isTerser = false;
+      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      const sourceObConfig: SourceObConfig = {
+        selfConfig: {} as Obfuscation,
+        sdkApis: [],
+        obfuscationCacheDir: '',
+        exportRulePath: './test/ut/initialization/obfuscation.txt',
+        dependencies: {
+          libraries: [],
+          hars: [],
+          hsps: [],
+          hspLibraries: [],
+        },
+      };
+      newObConfigResolver.genConsumerConfigFilesForTest(sourceObConfig, config1, config2);
+
+      let res: string = fs.readFileSync(sourceObConfig.exportRulePath, 'utf-8');
+
+      expect(res.indexOf('-enable-lib-obfuscation-options') === -1).to.be.true;
+      expect(res.indexOf('-enable-property-obfuscation') === -1).to.be.true;
+      expect(res.indexOf('-enable-string-property-obfuscation') === -1).to.be.true;
+      expect(res.indexOf('-enable-toplevel-obfuscation') === -1).to.be.true;
+      expect(res.indexOf('-compact') === -1).to.be.true;
+      expect(res.indexOf('-remove-log') === -1).to.be.true;
+      expect(res.indexOf('-keep-global-name') === -1).to.be.true;
+      expect(res.indexOf('global2') === -1).to.be.true;
+      expect(res.indexOf('-keep-property-name') === -1).to.be.true;
+      expect(res.indexOf('prop2') === -1).to.be.true;
+      
+      fs.unlinkSync(sourceObConfig.exportRulePath);
+    });
+  });
+
   describe('collectResevedFileNameInIDEConfig', () => {
     let collectPathReservedStringStub;
 
@@ -1268,7 +1463,8 @@ describe('test for ConfigResolve', function() {
         keepUniversalPaths: [/test\.js$/],
         excludeUniversalPaths: [/exclude\.js$/],
         excludePathSet: new Set(),
-        merge: () => {},
+        mergeKeepOptions: () => {},
+        mergeAllRules: () => {},
         sortAndDeduplicate: () => {},
         serializeMergedConfig: () => {
           return JSON.stringify(this);
@@ -1299,7 +1495,8 @@ describe('test for ConfigResolve', function() {
         keepUniversalPaths: [],
         excludeUniversalPaths: [],
         excludePathSet: new Set(),
-        merge: () => {},
+        mergeKeepOptions: () => {},
+        mergeAllRules: () => {},
         sortAndDeduplicate: () => {},
         serializeMergedConfig: () => {
           return JSON.stringify(this);
