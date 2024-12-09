@@ -50,6 +50,8 @@ public:
         v->Accept(this);
     }
 
+    [[nodiscard]] ThrowStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+
 private:
     Expression *argument_;
 };
