@@ -33,6 +33,7 @@ describe('hsp support consumerFiles', () => {
     let localHarConfig: SourceObConfig;
     let localMainHspConfig: SourceObConfig;
     let remoteMainHspConfig: SourceObConfig;
+    let libTestHapConfig: SourceObConfig;
     const hapRulesFile = path.join(__dirname, '../../testData/obfuscation/Configs/Hap/obfuscation-rules.txt');
     const outputDir = path.join(__dirname, '../../testData/output');
     const localHspRulesFile = path.join(__dirname, '../../testData/obfuscation/Configs/localHsp/obfuscation-rules.txt');
@@ -59,6 +60,10 @@ describe('hsp support consumerFiles', () => {
     const remoteMainHspExportRulePathFile = path.join(__dirname, '../../testData/output/remoteMainHsp_obfuscation.txt');
     const remoteMainHspObfFile = path.join(__dirname, '../../testData/obfuscation/Configs/remoteMainHsp/obfuscation.txt');
     const systemApiCacheFile = path.join(__dirname, '../../testData/output/systemApiCache.json');
+    const libTestHapRulesFile = path.join(
+      __dirname,
+      '../../testData/obfuscation/Configs/Hap/obfuscation-rules-lib-test.txt',
+    );
     isConfigFileExist(remoteHarObfFile);
     isConfigFileExist(hapRulesFile);
     isConfigFileExist(localHspRulesFile);
@@ -200,6 +205,26 @@ describe('hsp support consumerFiles', () => {
         obfuscationCacheDir: outputDir,
         exportRulePath: remoteMainHspExportRulePathFile
       };
+      libTestHapConfig = {
+        selfConfig: {
+          ruleOptions: {
+            enable: true,
+            rules: [libTestHapRulesFile],
+          },
+          consumerRules: [],
+          libDir: '',
+          consumerFiles: '',
+        },
+        dependencies: {
+          libraries: [],
+          hars: [],
+          hsps: [],
+          hspLibraries: [],
+        },
+        sdkApis: [],
+        obfuscationCacheDir: outputDir,
+        exportRulePath: '',
+      };
     }
 
     function isConfigFileExist(filePath: string): void {
@@ -249,7 +274,7 @@ describe('hsp support consumerFiles', () => {
           hapConfig.dependencies.hspLibraries?.push(localHspConfig.selfConfig);
           const configResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
           const finalConfig = configResolver.resolveObfuscationConfigs();
-          expect(finalConfig.options.enableToplevelObfuscation).to.be.true;
+          expect(finalConfig.options.enableToplevelObfuscation).to.be.false;
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
           expect(finalConfig.options.enablePropertyObfuscation).to.be.false;
           expect(finalConfig.options.disableObfuscation).to.be.false;
@@ -324,9 +349,9 @@ describe('hsp support consumerFiles', () => {
           const configResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
           const finalConfig = configResolver.resolveObfuscationConfigs();
 
-          expect(finalConfig.options.enableToplevelObfuscation).to.be.true;
+          expect(finalConfig.options.enableToplevelObfuscation).to.be.false;
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
-          expect(finalConfig.options.enablePropertyObfuscation).to.be.true;
+          expect(finalConfig.options.enablePropertyObfuscation).to.be.false;
           expect(finalConfig.options.disableObfuscation).to.be.false;
           expect(finalConfig.options.enableStringPropertyObfuscation).to.be.false;
           expect(finalConfig.options.enableFileNameObfuscation).to.be.false;
@@ -402,8 +427,8 @@ describe('hsp support consumerFiles', () => {
           const configResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
           const finalConfig = configResolver.resolveObfuscationConfigs();
 
-          expect(finalConfig.options.removeLog).to.be.true;
-          expect(finalConfig.options.enablePropertyObfuscation).to.be.true;
+          expect(finalConfig.options.removeLog).to.be.false;
+          expect(finalConfig.options.enablePropertyObfuscation).to.be.false;
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
           expect(finalConfig.options.enableToplevelObfuscation).to.be.false;
           expect(finalConfig.options.disableObfuscation).to.be.false;
@@ -451,8 +476,8 @@ describe('hsp support consumerFiles', () => {
           const configResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
           const finalConfig = configResolver.resolveObfuscationConfigs();
 
-          expect(finalConfig.options.compact).to.be.true;
-          expect(finalConfig.options.enableToplevelObfuscation).to.be.true;
+          expect(finalConfig.options.compact).to.be.false;
+          expect(finalConfig.options.enableToplevelObfuscation).to.be.false;
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
           expect(finalConfig.options.removeLog).to.be.false;
           expect(finalConfig.options.enablePropertyObfuscation).to.be.false;
@@ -500,8 +525,8 @@ describe('hsp support consumerFiles', () => {
           const configResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
           const finalConfig = configResolver.resolveObfuscationConfigs();
 
-          expect(finalConfig.options.compact).to.be.true;
-          expect(finalConfig.options.removeLog).to.be.true;
+          expect(finalConfig.options.compact).to.be.false;
+          expect(finalConfig.options.removeLog).to.be.false;
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
           expect(finalConfig.options.enableToplevelObfuscation).to.be.false;
           expect(finalConfig.options.enablePropertyObfuscation).to.be.false;
@@ -579,7 +604,7 @@ describe('hsp support consumerFiles', () => {
           const hapResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
           const finalConfig = hapResolver.resolveObfuscationConfigs();
 
-          expect(finalConfig.options.enableFileNameObfuscation).to.be.true;
+          expect(finalConfig.options.enableFileNameObfuscation).to.be.false;
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
           expect(finalConfig.options.compact).to.be.false;
           expect(finalConfig.options.removeLog).to.be.false;
@@ -633,7 +658,7 @@ describe('hsp support consumerFiles', () => {
           const hapResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
           const finalConfig = hapResolver.resolveObfuscationConfigs();
 
-          expect(finalConfig.options.enableStringPropertyObfuscation).to.be.true;
+          expect(finalConfig.options.enableStringPropertyObfuscation).to.be.false;
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
           expect(finalConfig.options.enableFileNameObfuscation).to.be.false;
           expect(finalConfig.options.compact).to.be.false;
@@ -688,6 +713,59 @@ describe('hsp support consumerFiles', () => {
           hapConfig.dependencies.hspLibraries?.push(localHspConfig.selfConfig);
           hapConfig.dependencies.hsps?.push(remoteHspObfFile);
           const hapResolver = new ObConfigResolver({ obfuscationOptions: hapConfig, compileHar: false, compileShared: false }, console);
+          const finalConfig = hapResolver.resolveObfuscationConfigs();
+
+          expect(finalConfig.options.enableExportObfuscation).to.be.true;
+          expect(finalConfig.options.compact).to.be.false;
+          expect(finalConfig.options.removeLog).to.be.false;
+          expect(finalConfig.options.enableToplevelObfuscation).to.be.false;
+          expect(finalConfig.options.enablePropertyObfuscation).to.be.false;
+          expect(finalConfig.options.disableObfuscation).to.be.false;
+          expect(finalConfig.options.enableFileNameObfuscation).to.be.false;
+          expect(finalConfig.options.enableStringPropertyObfuscation).to.be.false;
+          expect(finalConfig.options.printKeptNames).to.be.false;
+          expect(finalConfig.options.removeComments).to.be.false;
+
+          expect(finalConfig.reservedGlobalNames).to.include('LocalHarClass');
+          expect(finalConfig.reservedPropertyNames).to.include('localHarMethod');
+          expect(finalConfig.reservedGlobalNames).to.include('LocalHspClass');
+          expect(finalConfig.reservedPropertyNames).to.include('localHspMethod');
+          expect(finalConfig.reservedGlobalNames).to.include('RemoteHarClass');
+          expect(finalConfig.reservedPropertyNames).to.include('remoteHarMethod');
+          expect(finalConfig.reservedGlobalNames).to.include('RemoteHspClass');
+          expect(finalConfig.reservedPropertyNames).to.include('remoteHspMethod');
+          expect(finalConfig.reservedNames.length).to.equal(0);
+          expect(finalConfig.reservedFileNames.length).to.equal(0);
+          expect(finalConfig.keepComments.length).to.equal(0);
+          expect(finalConfig.keepSourceOfPaths.length).to.equal(0);
+          expect(finalConfig.universalReservedPropertyNames.length).to.equal(0);
+          expect(finalConfig.universalReservedGlobalNames.length).to.equal(0);
+          expect(finalConfig.keepUniversalPaths.length).to.equal(0);
+          expect(finalConfig.excludeUniversalPaths.length).to.equal(0);
+          expect(finalConfig.excludePathSet.size).to.equal(0);
+        });
+
+        after(() => {
+          if (fs.existsSync(systemApiCacheFile)) {
+            fs.unlinkSync(systemApiCacheFile);
+          }
+        });
+      });
+
+      describe('-enable-lib-obfuscation-options test', function () {
+        before(async () => {
+          initModulesConfig();       
+        });
+
+        it('should contain all local and remote HAR and HSP consumer rules in final HAP config', function () {
+          libTestHapConfig.dependencies.libraries.push(localHarConfig.selfConfig);
+          libTestHapConfig.dependencies.hars.push(remoteHarObfFile);
+          libTestHapConfig.dependencies.hspLibraries?.push(localHspConfig.selfConfig);
+          libTestHapConfig.dependencies.hsps?.push(remoteHspObfFile);
+          const hapResolver = new ObConfigResolver(
+            { obfuscationOptions: libTestHapConfig, compileHar: false, compileShared: false },
+            console,
+          );
           const finalConfig = hapResolver.resolveObfuscationConfigs();
 
           expect(finalConfig.options.enableExportObfuscation).to.be.true;
