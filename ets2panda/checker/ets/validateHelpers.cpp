@@ -150,10 +150,8 @@ void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident)
 
 void ETSChecker::ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident)
 {
-    const auto [target_ident, typeAnnotation] = GetTargetIdentifierAndType(ident);
     auto const resolved = ident->Variable();
     if ((resolved != nullptr) && resolved->TsType() != nullptr && resolved->TsType()->IsETSFunctionType()) {
-        CheckEtsFunctionType(ident, target_ident);
         return;
     }
 
