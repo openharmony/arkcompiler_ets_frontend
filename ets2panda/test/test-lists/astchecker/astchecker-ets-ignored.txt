@@ -35,3 +35,23 @@ ast/parser/ets/extension_function_tests/extension_function_array_primitive.sts
 ast/parser/ets/extension_function_tests/extension_function_array_typealias.sts
 ast/parser/ets/extension_function_tests/extension_function_class.sts
 ast/parser/ets/extension_function_tests/extension_function_class_typealias.sts
+
+# Issue: #20874
+ast/parser/ets/function_implicit_return_type.sts
+ast/parser/ets/unexpected_token_16.sts
+ast/parser/ets/unexpected_token_17.sts
+ast/parser/ets/unexpected_token_34.sts
+ast/parser/ets/unexpected_token_54.sts
+
+# Issue: #20875
+ast/parser/js/module/import_meta_3.js
+ast/parser/js/unexpected_token_8.js
+
+# Issue: #20876
+ast/parser/js/rest_params_1.js
+
+#Issue: #18866
+ast/compiler/ets/annotation_tests/annotationDecl_bad_initializer08.sts
+ast/parser/ets/SmartCast_3.sts
+ast/parser/ets/lambdaWithWrongOptionalParameter.sts
+ast/parser/ets/lambda_optional_param_2.sts

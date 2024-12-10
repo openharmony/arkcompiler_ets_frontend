@@ -18,7 +18,8 @@ enum MissingCommaEnum {
   Green
 }
 
-/* @@? 18:3 Error SyntaxError: Missing comma between enum constants  */
+/* @@? 18:3 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
+/* @@? 19:1 Error SyntaxError: Unexpected token '}'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */
