@@ -2,7 +2,7 @@
     "name": "@arkcompiller/ets_frontend",
     "description": "支持应用TS/JS语言代码的编译，行为符合ArkUI框架需要的Strict模式的ES2015标准",
     "version": "3.1",
-    "license": "Apache V2",
+    "license": "Apache License 2.0",
     "segment": {
         "destPath": "arkcompiler/ets_frontend"
     },
