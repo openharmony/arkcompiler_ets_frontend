@@ -372,7 +372,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
 
         if (argument->IsArrayExpression()) {
             argument->AsArrayExpression()->GetPrefferedTypeFromFuncParam(
-                this, substitutedSig->Function()->Params()[index], flags);
+                this, substitutedSig->Params()[index]->TsType(), flags);
         }
 
         if (!CheckInvokable(substitutedSig, argument, index, flags)) {
