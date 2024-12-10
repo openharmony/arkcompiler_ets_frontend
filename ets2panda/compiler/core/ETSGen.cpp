@@ -645,7 +645,8 @@ const checker::Type *ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode
     if (type->IsUndefinedType() || type->IsETSUndefinedType() || type->IsETSVoidType()) {
         LoadAccumulatorUndefined(node);
     } else if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter() ||
-               type->IsETSNullType() || type->IsETSPartialTypeParameter() || type->IsETSNeverType()) {
+               type->IsETSNullType() || type->IsETSPartialTypeParameter() || type->IsETSNeverType() ||
+               type->IsETSNonNullishType()) {
         // NOTE: need rework about ETSNeverType #20340
         LoadAccumulatorNull(node, type);
     } else if (type->IsETSBooleanType()) {
