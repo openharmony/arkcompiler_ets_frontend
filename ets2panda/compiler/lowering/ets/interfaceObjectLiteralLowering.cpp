@@ -237,8 +237,8 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
 static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpression *objExpr)
 {
     auto *checker = ctx->checker->AsETSChecker();
-
     auto *targetType = objExpr->TsType();
+    checker->CheckObjectLiteralKeys(objExpr->Properties());
     ASSERT(targetType->AsETSObjectType()->GetDeclNode()->IsTSInterfaceDeclaration());
     auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
     checker::Type *resultType = GenerateAnonClassTypeFromInterface(ctx, ifaceNode, objExpr);
