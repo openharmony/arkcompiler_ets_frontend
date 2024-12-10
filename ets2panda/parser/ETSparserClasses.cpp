@@ -625,14 +625,12 @@ ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<
     desc.methodKind = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ? ir::MethodDefinitionKind::GET
                                                                                       : ir::MethodDefinitionKind::SET;
     Lexer()->NextToken();  // eat get/set
-    auto *methodName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    auto *methodName = ExpectIdentifier();
     if (desc.methodKind == ir::MethodDefinitionKind::GET) {
         methodName->SetAccessor();
     } else {
         methodName->SetMutator();
     }
-
-    Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
     desc.newStatus = ParserStatus::ALLOW_SUPER;
     desc.hasSuperClass = (modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U;

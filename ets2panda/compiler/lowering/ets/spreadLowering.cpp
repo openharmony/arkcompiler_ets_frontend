@@ -23,15 +23,6 @@ namespace ark::es2panda::compiler {
 
 using AstNodePtr = ir::AstNode *;
 
-static ir::AstNode *SetSourceRangesRecursively(ir::AstNode *node)
-{
-    auto const refine = [](ir::AstNode *n) { n->SetRange(n->Parent()->Range()); };
-
-    refine(node);
-    node->IterateRecursively(refine);
-    return node;
-}
-
 void CreateSpreadArrayDeclareStatements(public_lib::Context *ctx, ir::ArrayExpression *array,
                                         std::vector<ir::Identifier *> &spreadArrayIds,
                                         ArenaVector<ir::Statement *> &statements)
@@ -260,7 +251,7 @@ bool SpreadConstructionPhase::Perform(public_lib::Context *ctx, parser::Program 
                 //       so, its source range should be same as the original code([element1, element2, ...spreadExpr])
                 blockExpression->SetRange(node->Range());
                 for (auto st : blockExpression->Statements()) {
-                    SetSourceRangesRecursively(st);
+                    SetSourceRangesRecursively(st, node->Range());
                 }
 
                 Recheck(checker->VarBinder()->AsETSBinder(), checker, blockExpression);

@@ -28,6 +28,7 @@ ir::Identifier *Gensym(ArenaAllocator *allocator);
 util::UString GenName(ArenaAllocator *allocator);
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept;
 ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept;
+void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range);
 
 // Rerun varbinder and checker on the node.
 void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);

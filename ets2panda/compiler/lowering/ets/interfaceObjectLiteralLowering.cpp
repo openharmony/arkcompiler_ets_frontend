@@ -16,6 +16,7 @@
 #include "interfaceObjectLiteralLowering.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
+#include "compiler/lowering/util.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "util/helpers.h"
 
@@ -44,106 +45,68 @@ static ir::AstNode *CreateAnonClassImplCtor(checker::ETSChecker *checker)
     return checker->CreateClassInstanceInitializer(initBuilder);
 }
 
-static ir::ClassProperty *CreateAnonClassField(ir::MethodDefinition *ifaceMethod, checker::ETSChecker *checker)
+static ir::ClassProperty *CreateAnonClassField(public_lib::Context *ctx, ir::MethodDefinition *ifaceMethod,
+                                               util::UString anonClassFieldName)
 {
-    auto *const allocator = checker->Allocator();
+    auto *const parser = ctx->parser->AsETSParser();
+    // Field type annotation
+    auto *fieldType = ifaceMethod->Function()->Signature()->ReturnType();
 
+    std::stringstream sourceCode;
+    // Field modifiers flags
+    sourceCode << "private ";
+    // No overloads means no setter function with the same name, so the field is readonly
+    if (ifaceMethod->Overloads().empty()) {
+        sourceCode << "readonly ";
+    }
+    sourceCode << "@@I1 : @@T2;" << std::endl;
+
+    auto field = parser->CreateFormattedClassFieldDefinition(sourceCode.str(), anonClassFieldName, fieldType);
+    field->SetRange(ifaceMethod->Range());
+
+    return field->AsClassProperty();
+}
+
+static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(public_lib::Context *ctx,
+                                                              ir::MethodDefinition *ifaceMethod, bool isSetter,
+                                                              util::UString anonClassFieldName)
+{
+    auto *const parser = ctx->parser->AsETSParser();
     // Field type annotation
     auto *fieldType = ifaceMethod->Function()->Signature()->ReturnType();
     ASSERT(fieldType != nullptr);
-    auto *fieldTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(fieldType);
 
-    // Field identifier
-    util::UString fieldName(std::string("_"), allocator);
-    fieldName.Append(ifaceMethod->Id()->Name());
-    auto *fieldId = checker->AllocNode<ir::Identifier>(fieldName.View(), nullptr, allocator);
+    std::stringstream sourceCode;
 
-    // Field modifiers flags
-    ir::ModifierFlags fieldMF = ir::ModifierFlags::PRIVATE;
+    if (isSetter) {
+        // Setter body: this.<fieldName> = <callParam>;
+        sourceCode << "public set @@I1 (anonParam:@@T2){" << std::endl;
+        sourceCode << "this.@@I3 = anonParam" << std::endl;
+        sourceCode << "}" << std::endl;
 
-    // No overloads means no setter function with the same name, so the field is readonly
-    if (ifaceMethod->Overloads().empty()) {
-        fieldMF |= ir::ModifierFlags::READONLY;
+        return parser
+            ->CreateFormattedClassMethodDefinition(sourceCode.str(), ifaceMethod->Id()->Name(), fieldType,
+                                                   anonClassFieldName)
+            ->AsMethodDefinition();
     }
 
-    // Create synthetic class property node
-    auto *field = checker->AllocNode<ir::ClassProperty>(fieldId, nullptr, fieldTypeNode->Clone(allocator, nullptr),
-                                                        fieldMF, allocator, false);
-    field->SetRange(ifaceMethod->Range());
+    // Getter body: return this.<fieldName>;
+    sourceCode << "public get @@I1():@@T2{" << std::endl;
+    sourceCode << "return this.@@I3" << std::endl;
+    sourceCode << "}" << std::endl;
 
-    return field;
+    return parser
+        ->CreateFormattedClassMethodDefinition(sourceCode.str(), ifaceMethod->Id()->Name(), fieldType,
+                                               anonClassFieldName)
+        ->AsMethodDefinition();
 }
 
-static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(checker::ETSChecker *checker,
-                                                              ir::MethodDefinition *ifaceMethod, bool isSetter)
-{
-    checker::ETSChecker::MethodBuilder methodBuilder = [checker, ifaceMethod,
-                                                        isSetter](ArenaVector<ir::Statement *> *statements,
-                                                                  ArenaVector<ir::Expression *> *params,
-                                                                  checker::Type **returnType) {
-        auto *const allocator = checker->Allocator();
-
-        // Adding mandatory 'this' parameter
-        checker->AddParam(varbinder::VarBinder::MANDATORY_PARAM_THIS, nullptr);
-
-        // ifaceMethod is getter, so it should have return type
-        auto *retType = ifaceMethod->Function()->Signature()->ReturnType();
-        ASSERT(retType != nullptr);
-
-        // Field identifier
-        util::UString fieldName(std::string("_"), allocator);
-        fieldName.Append(ifaceMethod->Id()->Name());
-        auto *fieldId = checker->AllocNode<ir::Identifier>(fieldName.View(), nullptr, allocator);
-
-        if (isSetter) {
-            // Setter call params
-            ir::ETSParameterExpression *param =
-                checker->AddParam(ifaceMethod->Id()->Name(), checker->AllocNode<ir::OpaqueTypeNode>(retType));
-            params->push_back(param);
-
-            // Setter body:
-            // this.<fieldName> = <callParam>;
-            auto *thisExpr = checker->AllocNode<ir::ThisExpression>();
-            auto *lhs = checker->AllocNode<ir::MemberExpression>(
-                thisExpr, fieldId->Clone(allocator, nullptr), ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            auto *rhs = param->Ident()->CloneReference(allocator, nullptr);
-
-            auto *assignment =
-                checker->AllocNode<ir::AssignmentExpression>(lhs, rhs, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-            auto *statement = checker->AllocNode<ir::ExpressionStatement>(assignment);
-            statements->push_back(statement);
-
-            // Setter return type
-            *returnType = checker->GlobalVoidType();
-        } else {
-            // Getter call params are empty
-
-            // Getter body:
-            // Just return this.<fieldName>;
-            auto *thisExpr = checker->AllocNode<ir::ThisExpression>();
-            auto *argument = checker->AllocNode<ir::MemberExpression>(
-                thisExpr, fieldId->Clone(allocator, nullptr), ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-
-            auto *statement = checker->AllocNode<ir::ReturnStatement>(argument);
-            statements->push_back(statement);
-
-            // Getter return type
-            *returnType = retType;
-        }
-    };
-
-    ir::ModifierFlags modifierFlags = ir::ModifierFlags::PUBLIC;
-    modifierFlags |= isSetter ? ir::ModifierFlags::SETTER : ir::ModifierFlags::GETTER;
-    ir::ScriptFunctionFlags funcFlags = ir::ScriptFunctionFlags::METHOD;
-    funcFlags |= isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER;
-
-    return checker->CreateClassMethod(ifaceMethod->Id()->Name().Utf8(), funcFlags, modifierFlags, methodBuilder);
-}
-
-static void FillClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstNode *> *classBody,
+static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *classBody,
                           const ArenaVector<ir::AstNode *> &ifaceBody, ir::ObjectExpression *objExpr,
                           checker::ETSObjectType *currentType = nullptr)
 {
+    auto *checker = ctx->checker->AsETSChecker();
+
     for (auto *it : ifaceBody) {
         ASSERT(it->IsMethodDefinition());
         auto *ifaceMethod = it->AsMethodDefinition();
@@ -172,52 +135,60 @@ static void FillClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstNode 
             }
         }
 
-        auto *field = CreateAnonClassField(copyIfaceMethod, checker);
+        // Field identifier
+        auto anonClassFieldName = GenName(ctx->allocator);
+        auto *field = CreateAnonClassField(ctx, copyIfaceMethod, anonClassFieldName);
         classBody->push_back(field);
+        SetSourceRangesRecursively(field, ifaceMethod->Range());
 
-        auto *getter = CreateAnonClassFieldGetterSetter(checker, copyIfaceMethod, false);
+        auto *getter = CreateAnonClassFieldGetterSetter(ctx, copyIfaceMethod, false, anonClassFieldName);
         classBody->push_back(getter);
+        SetSourceRangesRecursively(getter, ifaceMethod->Range());
 
         if (copyIfaceMethod->Overloads().size() == 1 && copyIfaceMethod->Overloads()[0]->Function()->IsSetter()) {
-            auto *setter = CreateAnonClassFieldGetterSetter(checker, copyIfaceMethod, true);
+            auto *setter = CreateAnonClassFieldGetterSetter(ctx, copyIfaceMethod, true, anonClassFieldName);
             classBody->push_back(setter);
+            SetSourceRangesRecursively(setter, ifaceMethod->Range());
         }
     }
 }
 
-static void FillAnonClassBody(checker::ETSChecker *checker, ArenaVector<ir::AstNode *> *classBody,
+static void FillAnonClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *classBody,
                               ir::TSInterfaceDeclaration *ifaceNode, ir::ObjectExpression *objExpr)
 {
     for (auto *extendedIface : ifaceNode->TsType()->AsETSObjectType()->Interfaces()) {
         auto extendedIfaceBody = extendedIface->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
-        FillClassBody(checker, classBody, extendedIfaceBody, objExpr, extendedIface);
+        FillClassBody(ctx, classBody, extendedIfaceBody, objExpr, extendedIface);
     }
 
-    FillClassBody(checker, classBody, ifaceNode->Body()->Body(), objExpr);
+    FillClassBody(ctx, classBody, ifaceNode->Body()->Body(), objExpr);
 }
 
-static checker::Type *GenerateAnonClassTypeFromInterface(checker::ETSChecker *checker,
+static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ctx,
                                                          ir::TSInterfaceDeclaration *ifaceNode,
                                                          ir::ObjectExpression *objExpr)
 {
+    auto *checker = ctx->checker->AsETSChecker();
+
     if (ifaceNode->GetAnonClass() != nullptr) {
         return ifaceNode->GetAnonClass()->Definition()->TsType()->AsETSObjectType();
     }
 
-    auto classBodyBuilder = [checker, ifaceNode, objExpr](ArenaVector<ir::AstNode *> *classBody) {
+    auto classBodyBuilder = [ctx, checker, ifaceNode, objExpr](ArenaVector<ir::AstNode *> *classBody) {
         if (ifaceNode->TsType() == nullptr) {
             ifaceNode->Check(checker);
         }
 
-        FillAnonClassBody(checker, classBody, ifaceNode, objExpr);
+        FillAnonClassBody(ctx, classBody, ifaceNode, objExpr);
         classBody->push_back(CreateAnonClassImplCtor(checker));
     };
 
-    util::UString className(util::StringView("$anonymous_class$"), checker->Allocator());
-    className.Append(ifaceNode->Id()->Name());
-    auto *classDecl = checker->BuildClass(className.View(), classBodyBuilder);
+    auto anonClassName = GenName(checker->Allocator());
+    auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     auto *classDef = classDecl->Definition();
     auto *classType = classDef->TsType()->AsETSObjectType();
+    classDecl->SetRange(ifaceNode->Range());
+    classDef->SetRange(ifaceNode->Range());
 
     // Class type params
     if (ifaceNode->TypeParams() != nullptr) {
@@ -242,18 +213,20 @@ static checker::Type *GenerateAnonClassTypeFromInterface(checker::ETSChecker *ch
     return classType;
 }
 
-static void HandleInterfaceLowering(checker::ETSChecker *checker, ir::ObjectExpression *objExpr)
+static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpression *objExpr)
 {
+    auto *checker = ctx->checker->AsETSChecker();
+
     const auto *const targetType = objExpr->TsType();
     ASSERT(targetType->AsETSObjectType()->GetDeclNode()->IsTSInterfaceDeclaration());
     auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
-    checker::Type *resultType = GenerateAnonClassTypeFromInterface(checker, ifaceNode, objExpr);
+    checker::Type *resultType = GenerateAnonClassTypeFromInterface(ctx, ifaceNode, objExpr);
 
     if (!targetType->AsETSObjectType()->TypeArguments().empty()) {
         ArenaVector<checker::Type *> typeArgTypes(targetType->AsETSObjectType()->TypeArguments());
-        checker::InstantiationContext ctx(checker, resultType->AsETSObjectType(), std::move(typeArgTypes),
-                                          objExpr->Start());
-        resultType = ctx.Result();
+        checker::InstantiationContext instantiationCtx(checker, resultType->AsETSObjectType(), std::move(typeArgTypes),
+                                                       objExpr->Start());
+        resultType = instantiationCtx.Result();
     }
 
     if (const auto *const parent = objExpr->Parent(); parent->IsArrayExpression()) {
@@ -277,11 +250,9 @@ bool InterfaceObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::P
         }
     }
 
-    auto *checker = ctx->checker->AsETSChecker();
-
-    program->Ast()->IterateRecursivelyPostorder([checker](ir::AstNode *ast) -> void {
+    program->Ast()->IterateRecursivelyPostorder([ctx](ir::AstNode *ast) -> void {
         if (ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType())) {
-            HandleInterfaceLowering(checker, ast->AsObjectExpression());
+            HandleInterfaceLowering(ctx, ast->AsObjectExpression());
         }
     });
 
