@@ -130,7 +130,7 @@ class C {
 export let b = 1;
 @Sendable
 class A {
-  aa: number = b; // ERROR
+  aa: number = b; // OK
 }
 
 namespace xx {
