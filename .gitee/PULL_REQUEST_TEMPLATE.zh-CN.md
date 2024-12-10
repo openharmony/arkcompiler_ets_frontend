@@ -15,6 +15,34 @@
 
 
 ### 测试结果（测试截图直接贴在对应测试项，主干已知问题需明确引入pr/责任人）
+
+#### 当前GGW中未添加的测试套(请在本地进行验证)
+1.版本控制测试用例
+```
+cd arkcompiler/ets_frontend/es2panda
+python3 test/runner.py --version-control --no-progress ../../../out/rk3568/clang_x64/arkcompiler/ets_frontend
+```
+
+2.test262混合编译
+```
+python3 test262/run_test262.py --es2022 all --ark-frontend-binary=../../out/rk3568/clang_x64/arkcompiler/ets_frontend/es2abc --ark-frontend=es2panda --product-name=rk3568 --timeout=3000000 --abc2program
+```
+
+3.Fuzz编译测试
+```
+./build.sh --product-name rk3568 --build-target arkcompiler/runtime_core/tests/fuzztest:fuzztest
+```
+
+4."runtime_core/libpandabase/tests:host_unittest"
+release模式：
+```
+./build.sh --product-name rk3568 --build-target runtime_core_host_unittest
+```
+debug模式：
+```
+./build.sh --product-name rk3568 --build-target runtime_core_host_unittest --gn-args is_debug=true
+```
+
 #### 功能测试（除仅涉及文本外必测项）[wiki](https://gitee.com/openharmony/arkcompiler_ets_frontend/wikis/%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E8%A6%81%E6%B1%82%E5%8F%8A%E6%B5%8B%E8%AF%95%E9%AA%8C%E8%AF%81%E6%B5%81%E7%A8%8B)
 1. test262测试
     - [ ] 已通过
@@ -83,7 +111,5 @@
 #### 指令/abc格式修改自检，需联系下方邮箱，同步至相关领域
 - [ ] 涉及，已同步
 - [ ] 不涉及
-
-#### 当前GGW中忽略的失败测试套
 
 **Email:** chenqiuyao@huawei.com
