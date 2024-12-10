@@ -449,7 +449,8 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
         const printer = ts.createPrinter();
         const transformedAst: string = printer.printFile(ast);
-        expect(transformedAst === "import { A as B } from './file1.ts';\nexport { C as D } from './file1.ts';\n").to.be.true;
+        expect(transformedAst === "import { A as B } from './file1.ts';\nexport { C as D } from './file1.ts';\n").to.be
+          .true;
       });
 
       it('noSymbolIdentifierTest: enable export and toplevel obfuscation', function () {
@@ -478,7 +479,122 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
         const printer = ts.createPrinter();
         const transformedAst: string = printer.printFile(ast);
-        expect(transformedAst === "import { c as a } from './file1.ts';\nexport { e as b } from './file1.ts';\n").to.be.true;
+        expect(transformedAst === "import { c as a } from './file1.ts';\nexport { e as b } from './file1.ts';\n").to.be
+          .true;
+      });
+
+      it('originalSymbolTest: import test', function () {
+        const fileContent3 = `
+          declare module 'testModule2' {
+            import { noSymbolIdentifier2 as ni2 } from 'module2';
+            export { ni2 };
+          }
+        `;
+        let option: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: true,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false
+        };
+        transformer = transformerPlugin.createTransformerFactory(option);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent3, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(
+          transformedAst ===
+            "declare module 'testModule2' {\n    import { h as g } from 'module2';\n    export { g };\n}\n",
+        ).to.be.true;
+      });
+
+      it('originalSymbolTest: export test', function () {
+        const fileContent4 = `
+          type ni2 = string;
+          declare namespace ns {
+            export { ni2 };
+          }
+        `;
+        let option: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: true,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false
+        };
+        transformer = transformerPlugin.createTransformerFactory(option);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent4, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(
+          transformedAst ===
+            "type g = string;\ndeclare namespace i {\n    export { g };\n}\n",
+        ).to.be.true;
+      });
+
+      it('originalSymbolTest: propertyName test', function () {
+        const fileContent5 = `
+          import { Symbol as sy } from 'typescript';
+          let localVariable: number = 1;
+          export { SourceFile sf } from 'typescript';
+          export { localVariable as lv };
+        `;
+        let option: IOptions = {
+          mCompact: false,
+          mRemoveComments: false,
+          mOutputDir: '',
+          mDisableConsole: false,
+          mSimplify: false,
+          mNameObfuscation: {
+            mEnable: true,
+            mNameGeneratorType: 1,
+            mDictionaryList: [],
+            mRenameProperties: false,
+            mKeepStringProperty: false,
+            mTopLevel: true,
+            mReservedProperties: [],
+          },
+          mExportObfuscation: true,
+          mEnableSourceMap: false,
+          mEnableNameCache: false,
+        };
+        transformer = transformerPlugin.createTransformerFactory(option);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent5, ts.ScriptTarget.ES2015, true);
+        let transformed = ts.transform(sourceFile, [transformer]);
+        let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
+        const printer = ts.createPrinter();
+        const transformedAst: string = printer.printFile(ast);
+        expect(
+          transformedAst ===
+            "import { o as j } from 'typescript';\nlet k: number = 1;\nexport { l, m } from 'typescript';\nexport { k as n };\n",
+        ).to.be.true;
       });
     })
   })

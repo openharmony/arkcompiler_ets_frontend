@@ -15,5 +15,5 @@
 declare module 'm' {
     import { l1 } from 'node:console';
     export function k1(): void;
-    export { m1 } from 'node:console';
+    export { l1 } from 'node:console';
 }

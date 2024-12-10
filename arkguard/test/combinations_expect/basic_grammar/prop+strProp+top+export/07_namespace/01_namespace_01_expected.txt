@@ -53,7 +53,7 @@ assert(d.d === 2);
 type A = number;
 declare const j: number;
 declare namespace k {
-    export { r };
+    export { A };
 }
 let e: k.A = 3;
 assert(e === 3);

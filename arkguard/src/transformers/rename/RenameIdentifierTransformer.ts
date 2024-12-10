@@ -58,13 +58,14 @@ import type {
 
 import {
   createScopeManager,
+  exportElementsWithoutSymbol,
+  exportSymbolAliasMap,
+  getNameWithScopeLoc,
   isClassScope,
   isGlobalScope,
   isEnumScope,
   isInterfaceScope,
-  isObjectLiteralScope,
-  exportElementsWithoutSymbol,
-  getNameWithScopeLoc
+  isObjectLiteralScope
 } from '../../utils/ScopeAnalyzer';
 
 import type {
@@ -143,6 +144,7 @@ namespace secharmony {
       let fileExportNames: Set<string> = undefined;
       let fileImportNames: Set<string> = undefined;
       exportElementsWithoutSymbol.clear();
+      exportSymbolAliasMap.clear();
 
       let historyMangledNames: Set<string> = undefined;
       if (historyNameCache && historyNameCache.size > 0) {
@@ -689,6 +691,10 @@ namespace secharmony {
           } else {
             return node;
           }
+        }
+
+        if (exportSymbolAliasMap.has(sym)) {
+          sym = exportSymbolAliasMap.get(sym);
         }
 
         // Add new names to name cache

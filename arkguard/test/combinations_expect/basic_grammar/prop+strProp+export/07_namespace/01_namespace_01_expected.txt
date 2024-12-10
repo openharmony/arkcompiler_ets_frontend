@@ -17,43 +17,43 @@ import assert from 'assert';
 import temp1 = require('fs');
 export import temp2 = require('fs');
 module X {
-    export module p {
-        export interface q {
+    export module o {
+        export interface p {
             a: number;
         }
     }
-    export interface p {
+    export interface o {
         b: string;
     }
 }
-let a: X.p.q = { a: 1 };
+let a: X.o.p = { a: 1 };
 assert(a.a === 1);
-let b: X.p = { b: "1" };
+let b: X.o = { b: "1" };
 assert(b.b === "1");
 module A {
     export module B {
-        export class o {
+        export class m {
             c: boolean = true;
         }
     }
 }
-var c: A.B.o = new A.B.o();
+var c: A.B.m = new A.B.m();
 assert(c.c === true);
 module M {
-    export namespace k {
-        export module l {
-            export interface m {
+    export namespace j {
+        export module k {
+            export interface l {
                 d: number;
             }
         }
     }
 }
-let d: M.k.l.m = { d: 2 };
+let d: M.j.k.l = { d: 2 };
 assert(d.d === 2);
 type A = number;
 declare const Q1: number;
 declare namespace Q2 {
-    export { j };
+    export { A };
 }
 let e: Q2.A = 3;
 assert(e === 3);

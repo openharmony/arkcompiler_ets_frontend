@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import t from 'assert';
-import { u } from './export_namespace_export_01';
-import w, { c, a, d, g, Person, s } from './export_name_export';
-t(u.reduce(3, 1) === 2);
-t(w([2, 4, 6]) === 6);
-t(c === 1);
-t(a(4, 1) === 3);
-let x = new d();
-t(x.getAge === 1);
-t(g(4, 1) === 5);
-let y = new Person(3);
-t(y.doubleProp1() === 6);
-t(s([1, 2, 3, 4, 5, 6]).toString() === "2,4,6");
+import s from 'assert';
+import { t } from './export_namespace_export_01';
+import v, { b, reduce, c, f, Person, r } from './export_name_export';
+s(t.reduce(3, 1) === 2);
+s(v([2, 4, 6]) === 6);
+s(b === 1);
+s(reduce(4, 1) === 3);
+let w = new c();
+s(w.getAge === 1);
+s(f(4, 1) === 5);
+let x = new Person(3);
+s(x.doubleProp1() === 6);
+s(r([1, 2, 3, 4, 5, 6]).toString() === "2,4,6");

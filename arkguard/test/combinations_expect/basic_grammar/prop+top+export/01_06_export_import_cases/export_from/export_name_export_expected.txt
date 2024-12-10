@@ -17,4 +17,4 @@ export { h } from './export_basic1';
 export { reduce, i } from './export_basic1';
 export { m, Person, } from './export_basic2';
 export { default as f1 } from './export_basic3_default';
-export { findMax as default } from './export_basic3_default';
+export { v as default } from './export_basic3_default';

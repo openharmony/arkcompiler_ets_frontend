@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 declare module 'm' {
-    import { m1 } from 'node:console';
-    export function l1(): void;
-    export { n1 } from 'node:console';
+    import { l1 } from 'node:console';
+    export function k1(): void;
+    export { l1 } from 'node:console';
 }
