@@ -77,7 +77,7 @@ void Identifier::TransformChildren(const NodeTransformer &cb, std::string_view c
         }
     }
 
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -91,7 +91,7 @@ void Identifier::Iterate(const NodeTraverser &cb) const
         cb(TypeAnnotation());
     }
 
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 }

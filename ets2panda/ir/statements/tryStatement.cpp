@@ -33,7 +33,7 @@ void TryStatement::TransformChildren(const NodeTransformer &cb, std::string_view
         block_ = transformedNode->AsBlockStatement();
     }
 
-    for (auto *&it : catchClauses_) {
+    for (auto *&it : VectorIterationGuard(catchClauses_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsCatchClause();
@@ -52,7 +52,7 @@ void TryStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(block_);
 
-    for (auto *it : catchClauses_) {
+    for (auto *it : VectorIterationGuard(catchClauses_)) {
         cb(it);
     }
 

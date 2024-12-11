@@ -193,14 +193,14 @@ void ObjectExpression::SetOptional(bool optional)
 
 void ObjectExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
         }
     }
 
-    for (auto *&it : properties_) {
+    for (auto *&it : VectorIterationGuard(properties_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
@@ -217,11 +217,11 @@ void ObjectExpression::TransformChildren(const NodeTransformer &cb, std::string_
 
 void ObjectExpression::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
-    for (auto *it : properties_) {
+    for (auto *it : VectorIterationGuard(properties_)) {
         cb(it);
     }
 

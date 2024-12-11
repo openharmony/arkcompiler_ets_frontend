@@ -586,5 +586,41 @@ private:
     TypeNode *typeAnnotation_ {};
 };
 
+/**
+ * This class is a wrapper for vector and ensures that vector does not invalidate iterators during iteration.
+ */
+template <typename T>
+class VectorIterationGuard {
+public:
+    using ValueType = typename T::value_type;
+    static_assert(std::is_same_v<std::remove_const_t<T>, ArenaVector<ValueType>>);
+
+    explicit VectorIterationGuard(T &vector) : vector_(vector), data_(vector_.data(), vector_.size()) {}
+    NO_COPY_SEMANTIC(VectorIterationGuard);
+    NO_MOVE_SEMANTIC(VectorIterationGuard);
+
+    ~VectorIterationGuard()
+    {
+        // check that `begin` iterator remained valid
+        ASSERT(data_.begin() == vector_.data());
+        // check that there were no `push_back`s or other expansions which potentially cause reallocation
+        ASSERT(data_.size() == vector_.size());
+    }
+
+    auto begin()  // NOLINT(readability-identifier-naming)
+    {
+        return vector_.begin();
+    }
+
+    auto end()  // NOLINT(readability-identifier-naming)
+    {
+        return vector_.end();
+    }
+
+private:
+    T &vector_;
+    Span<const ValueType> data_;
+};
+
 }  // namespace ark::es2panda::ir
 #endif

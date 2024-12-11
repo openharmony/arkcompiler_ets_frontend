@@ -32,7 +32,7 @@ void SwitchCaseStatement::TransformChildren(const NodeTransformer &cb, std::stri
         }
     }
 
-    for (auto *&it : consequent_) {
+    for (auto *&it : VectorIterationGuard(consequent_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsStatement();
@@ -46,7 +46,7 @@ void SwitchCaseStatement::Iterate(const NodeTraverser &cb) const
         cb(test_);
     }
 
-    for (auto *it : consequent_) {
+    for (auto *it : VectorIterationGuard(consequent_)) {
         cb(it);
     }
 }

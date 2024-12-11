@@ -34,7 +34,7 @@
 namespace ark::es2panda::ir {
 void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -53,7 +53,7 @@ void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb, std::s
         }
     }
 
-    for (auto *&it : extends_) {
+    for (auto *&it : VectorIterationGuard(extends_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsTSInterfaceHeritage();
@@ -68,7 +68,7 @@ void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb, std::s
 
 void TSInterfaceDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
@@ -78,7 +78,7 @@ void TSInterfaceDeclaration::Iterate(const NodeTraverser &cb) const
         cb(typeParams_);
     }
 
-    for (auto *it : extends_) {
+    for (auto *it : VectorIterationGuard(extends_)) {
         cb(it);
     }
 

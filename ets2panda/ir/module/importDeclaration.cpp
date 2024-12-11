@@ -30,7 +30,7 @@ void ImportDeclaration::TransformChildren(const NodeTransformer &cb, std::string
         source_ = transformedNode->AsStringLiteral();
     }
 
-    for (auto *&it : specifiers_) {
+    for (auto *&it : VectorIterationGuard(specifiers_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;
@@ -42,7 +42,7 @@ void ImportDeclaration::Iterate(const NodeTraverser &cb) const
 {
     cb(source_);
 
-    for (auto *it : specifiers_) {
+    for (auto *it : VectorIterationGuard(specifiers_)) {
         cb(it);
     }
 }

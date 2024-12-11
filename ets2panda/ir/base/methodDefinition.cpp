@@ -56,11 +56,11 @@ void MethodDefinition::ResolveReferences(const NodeTraverser &cb) const
     cb(key_);
     cb(value_);
 
-    for (auto *it : overloads_) {
+    for (auto *it : VectorIterationGuard(overloads_)) {
         cb(it);
     }
 
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 }
@@ -76,7 +76,7 @@ void MethodDefinition::Iterate(const NodeTraverser &cb) const
         }
     }
 
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 }
@@ -93,14 +93,14 @@ void MethodDefinition::TransformChildren(const NodeTransformer &cb, std::string_
         value_ = transformedNode->AsExpression();
     }
 
-    for (auto *&it : overloads_) {
+    for (auto *&it : VectorIterationGuard(overloads_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsMethodDefinition();
         }
     }
 
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();

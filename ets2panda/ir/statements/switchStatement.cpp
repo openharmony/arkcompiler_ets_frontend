@@ -29,7 +29,7 @@ void SwitchStatement::TransformChildren(const NodeTransformer &cb, std::string_v
         discriminant_ = transformedNode->AsExpression();
     }
 
-    for (auto *&it : cases_) {
+    for (auto *&it : VectorIterationGuard(cases_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsSwitchCaseStatement();
@@ -41,7 +41,7 @@ void SwitchStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(discriminant_);
 
-    for (auto *it : cases_) {
+    for (auto *it : VectorIterationGuard(cases_)) {
         cb(it);
     }
 }

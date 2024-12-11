@@ -29,14 +29,14 @@
 namespace ark::es2panda::ir {
 void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
         }
     }
 
-    for (auto *&it : declarators_) {
+    for (auto *&it : VectorIterationGuard(declarators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsVariableDeclarator();
@@ -46,11 +46,11 @@ void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::stri
 
 void VariableDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
-    for (auto *it : declarators_) {
+    for (auto *it : VectorIterationGuard(declarators_)) {
         cb(it);
     }
 }

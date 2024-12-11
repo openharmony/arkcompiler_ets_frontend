@@ -167,14 +167,14 @@ ValidationInfo ArrayExpression::ValidateExpression()
 
 void ArrayExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
         }
     }
 
-    for (auto *&it : elements_) {
+    for (auto *&it : VectorIterationGuard(elements_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();
@@ -191,11 +191,11 @@ void ArrayExpression::TransformChildren(const NodeTransformer &cb, std::string_v
 
 void ArrayExpression::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
-    for (auto *it : elements_) {
+    for (auto *it : VectorIterationGuard(elements_)) {
         cb(it);
     }
 

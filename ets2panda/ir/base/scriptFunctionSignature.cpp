@@ -25,7 +25,7 @@ void FunctionSignature::Iterate(const NodeTraverser &cb) const
         cb(typeParams_);
     }
 
-    for (auto *it : Params()) {
+    for (auto *it : VectorIterationGuard(Params())) {
         cb(it);
     }
 
@@ -43,7 +43,7 @@ void FunctionSignature::TransformChildren(const NodeTransformer &cb, std::string
         }
     }
 
-    for (auto *&it : params_) {
+    for (auto *&it : VectorIterationGuard(params_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsExpression();

@@ -85,14 +85,14 @@ void ClassDefinition::TransformChildren(const NodeTransformer &cb, std::string_v
         }
     }
 
-    for (auto *&it : implements_) {
+    for (auto *&it : VectorIterationGuard(implements_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsTSClassImplements();
         }
     }
 
-    for (auto *&it : annotations_) {
+    for (auto *&it : VectorIterationGuard(annotations_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsAnnotationUsage();
@@ -106,10 +106,12 @@ void ClassDefinition::TransformChildren(const NodeTransformer &cb, std::string_v
         }
     }
 
-    for (auto *&it : body_) {
-        if (auto *transformedNode = cb(it); it != transformedNode) {
-            it->SetTransformedNode(transformationName, transformedNode);
-            it = transformedNode;
+    // Survives adding new elements to the end
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t ix = 0; ix < body_.size(); ix++) {
+        if (auto *transformedNode = cb(body_[ix]); body_[ix] != transformedNode) {
+            body_[ix]->SetTransformedNode(transformationName, transformedNode);
+            body_[ix] = transformedNode;
         }
     }
 }
@@ -138,7 +140,7 @@ void ClassDefinition::Iterate(const NodeTraverser &cb) const
         cb(implements_[ix]);
     }
 
-    for (auto *it : annotations_) {
+    for (auto *it : VectorIterationGuard(annotations_)) {
         cb(it);
     }
 

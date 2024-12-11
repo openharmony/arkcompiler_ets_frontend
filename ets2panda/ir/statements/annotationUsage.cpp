@@ -29,7 +29,7 @@ void AnnotationUsage::TransformChildren(const NodeTransformer &cb, std::string_v
         expr_ = transformedNode->AsIdentifier();
     }
 
-    for (auto *&it : properties_) {
+    for (auto *&it : VectorIterationGuard(properties_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;
@@ -42,7 +42,7 @@ void AnnotationUsage::Iterate(const NodeTraverser &cb) const
         cb(expr_);
     }
 
-    for (auto *it : properties_) {
+    for (auto *it : VectorIterationGuard(properties_)) {
         cb(it);
     }
 }

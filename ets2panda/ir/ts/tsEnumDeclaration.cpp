@@ -25,7 +25,7 @@
 namespace ark::es2panda::ir {
 void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    for (auto *&it : decorators_) {
+    for (auto *&it : VectorIterationGuard(decorators_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsDecorator();
@@ -37,7 +37,7 @@ void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string
         key_ = transformedNode->AsIdentifier();
     }
 
-    for (auto *&it : members_) {
+    for (auto *&it : VectorIterationGuard(members_)) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode;
@@ -47,13 +47,13 @@ void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb, std::string
 
 void TSEnumDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : decorators_) {
+    for (auto *it : VectorIterationGuard(decorators_)) {
         cb(it);
     }
 
     cb(key_);
 
-    for (auto *it : members_) {
+    for (auto *it : VectorIterationGuard(members_)) {
         cb(it);
     }
 }
