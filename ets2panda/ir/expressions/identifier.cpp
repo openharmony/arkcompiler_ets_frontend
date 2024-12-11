@@ -146,6 +146,11 @@ void Identifier::Dump(ir::AstDumper *dumper) const
 
 void Identifier::Dump(ir::SrcDumper *dumper) const
 {
+    if (IsReceiver()) {
+        dumper->Add("this");
+        return;
+    }
+
     if (IsPrivateIdent()) {
         dumper->Add("private ");
     }

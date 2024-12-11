@@ -13,15 +13,8 @@
  * limitations under the License.
  */
 
-class A {
-}
+class Fruit {}
 
-function A.price(id: int): int {
-    return 1;
-}
+function price(a: number, this: Fruit/* @@label */) {}
 
-function main() {
-    console.log(/* @@ label */price(new A(), 1));
-}
-
-/* @@@ label Error TypeError: No matching call signature  */
+/* @@@ label Error SyntaxError: Function Parameter 'this' must be the first.  */

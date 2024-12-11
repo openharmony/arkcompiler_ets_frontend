@@ -1341,7 +1341,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
     return invocable;
 }
 
-bool ETSChecker::ExtensionETSFunctionType(checker::Type *type)
+bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
 {
     if (!type->IsETSFunctionType()) {
         return false;

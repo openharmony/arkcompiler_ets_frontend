@@ -58,6 +58,7 @@ function f7(a: (b: int = 0) => int): void {
 }
 
 /* @@? 16:35 Error SyntaxError: Rest parameter cannot have the default value. */
+/* @@? 16:37 Error SyntaxError: Identifier is needed here. */
 /* @@? 17:21 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 17:21 Error SyntaxError: Unexpected token '...'. */
 /* @@? 17:21 Error SyntaxError: Unexpected token '...'. */
@@ -73,6 +74,7 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 30:5 Error SyntaxError: Invalid left-hand side in prefix operation */
 /* @@? 30:8 Error SyntaxError: Invalid left-hand side in assignment expression */
 /* @@? 33:27 Error SyntaxError: Rest parameter cannot have the default value. */
+/* @@? 33:29 Error SyntaxError: Identifier is needed here. */
 /* @@? 33:41 Error SyntaxError: Not enable default value with default undefined */
 /* @@? 35:10 Error SyntaxError: Unexpected token ':'. */
 /* @@? 35:10 Error SyntaxError: Unexpected token, expected: ')'. */

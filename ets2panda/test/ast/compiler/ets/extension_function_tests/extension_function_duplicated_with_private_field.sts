@@ -19,15 +19,13 @@ class Banana {
     }
 }
 
-function Banana.name(): int {
+function name(this: Banana): int {
     return 1;
 }
 
 function main() {
     let banana = new Banana();
-    console.println(banana.name(2));
+    console.println(/* @@label */banana.name(2));
 }
 
-/* @@? 28:21 Error TypeError: Signature name(id: int): int is not visible here.  */
-/* @@? 28:21 Error TypeError: Expected 1 arguments, got 2.  */
-/* @@? 28:21 Error TypeError: No matching call signature for name(Banana, int)  */
+/* @@@ label Error TypeError: No matching call signature for name(int)  */

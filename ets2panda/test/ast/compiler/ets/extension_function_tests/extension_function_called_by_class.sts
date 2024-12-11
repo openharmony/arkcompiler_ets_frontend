@@ -19,7 +19,7 @@ class A {
     }
 }
 
-function A.price(id: int): int {
+function price(this: A, id: int): int {
     return 1;
 }
 

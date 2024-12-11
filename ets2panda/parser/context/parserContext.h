@@ -66,6 +66,7 @@ enum class ParserStatus : uint64_t {
 
     ALLOW_DEFAULT_VALUE = 1ULL << 33ULL,
     FUNCTION_HAS_THROW_STATEMENT = 1ULL << 34ULL,
+    ALLOW_RECEIVER = 1ULL << 35ULL
 };
 
 }  // namespace ark::es2panda::parser
@@ -133,6 +134,11 @@ public:
     [[nodiscard]] ParserStatus &Status() noexcept
     {
         return status_;
+    }
+
+    [[nodiscard]] bool AllowReceiver() const noexcept
+    {
+        return (status_ & ParserStatus::ALLOW_RECEIVER) != 0;
     }
 
     [[nodiscard]] bool IsGenerator() const noexcept

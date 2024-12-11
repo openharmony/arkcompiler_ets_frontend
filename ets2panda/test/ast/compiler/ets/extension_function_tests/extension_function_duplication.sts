@@ -17,11 +17,11 @@ class Fruit {
 
 }
 
-function Fruit.name() {
+function name(this: Fruit) {
     console.println("this is extension function 1");
 }
 
-/* @@ label */function Fruit.name() {
+/* @@ label */function name(this: Fruit) {
     console.println("this is extension function 2");
 }
 

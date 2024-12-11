@@ -20,6 +20,8 @@
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
 
+#include <varbinder/varbinder.h>
+
 namespace ark::es2panda::varbinder {
 class Variable;
 }  // namespace ark::es2panda::varbinder
@@ -140,6 +142,11 @@ public:
     [[nodiscard]] bool IsMutator() const noexcept
     {
         return (flags_ & IdentifierFlags::SET) != 0;
+    }
+
+    [[nodiscard]] bool IsReceiver() const noexcept
+    {
+        return name_ == varbinder::VarBinder::MANDATORY_PARAM_THIS;
     }
 
     [[nodiscard]] bool IsPrivateIdent() const noexcept

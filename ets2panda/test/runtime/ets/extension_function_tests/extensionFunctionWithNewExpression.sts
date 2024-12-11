@@ -16,11 +16,21 @@
 class Banana {
 }
 
-function Banana.price(): int {
+function price(this:Banana): int {
     return 1;
 }
 
-function main() {
+function asFuncCall() {
+    let res: int = price(new Banana());
+    assert res == 1 : "expected: " + 1 + " actual: " + res;
+}
+
+function asMethodCall() {
     let res: int = (new Banana()).price();
     assert res == 1 : "expected: " + 1 + " actual: " + res;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
 }

@@ -17,7 +17,7 @@ class Banana {
     private id: int = 5;
 }
 
-function Banana.name(): int {
+function name(this: Banana): int {
     return 1 + this./* @@ label */id;
 }
 

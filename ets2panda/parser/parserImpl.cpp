@@ -17,6 +17,8 @@
 #include "parserStatusContext.h"
 
 #include "varbinder/privateBinding.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/ETSBinder.h"
 #include "ir/astNode.h"
 #include "ir/errorTypeNode.h"
 #include "ir/base/classDefinition.h"
@@ -25,6 +27,7 @@
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
+#include "ir/ets/etsUnionType.h"
 #include "ir/expression.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
@@ -46,6 +49,8 @@
 #include "lexer/token/sourceLocation.h"
 #include "parser/ETSparser.h"
 #include "util/errorRecovery.h"
+
+#include <ir/typeNode.h>
 
 using namespace std::literals::string_literals;
 
@@ -878,23 +883,29 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
+    auto parseFunc = [this, &params]() {
+        ir::Expression *parameter = ParseFunctionParameter();
+        if (parameter == nullptr) {
+            return false;
+        }
+
+        if (parameter->IsETSParameterExpression() && parameter->AsETSParameterExpression()->Ident()->IsReceiver() &&
+            !params.empty()) {
+            LogSyntaxError("Function Parameter 'this' must be the first.");
+            return false;
+        }
+
+        ValidateRestParameter(parameter);
+        params.push_back(parameter);
+        return true;
+    };
+
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
         lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
         params = std::move(ParseExpressionsArrayFormatPlaceholder());
     } else {
-        ParseList(
-            lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE,
-            [this, &params]() {
-                ir::Expression *parameter = ParseFunctionParameter();
-                if (parameter == nullptr) {  // Error processing.
-                    return false;
-                }
-
-                ValidateRestParameter(parameter);
-                params.push_back(parameter);
-                return true;
-            },
-            nullptr, true);
+        ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE, parseFunc, nullptr,
+                  true);
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {  // Error processing.
@@ -924,7 +935,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::
     return {true, body, body->End(), false};
 }
 
-FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::TypeNode *typeAnnotation)
+FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
 {
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseFunctionTypeParameters();
 
@@ -934,24 +945,21 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Ty
 
     FunctionParameterContext funcParamContext(&context_);
 
-    ir::Expression *parameterThis = nullptr;
-    if (typeAnnotation != nullptr) {
-        const auto savedPos = Lexer()->Save();
-        lexer_->NextToken();  // eat '('
-        parameterThis = CreateParameterThis(typeAnnotation);
-        Lexer()->Rewind(savedPos);
-    }
-
     auto params = ParseFunctionParams();
 
-    if (typeAnnotation != nullptr) {
-        params.emplace(params.begin(), parameterThis);
+    ir::TypeNode *returnTypeAnnotation = nullptr;
+    bool hasReceiver = !params.empty() && params[0]->IsETSParameterExpression() &&
+                       params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
+    if (hasReceiver) {
+        SavedParserContext contextAfterParseParams(this, GetContext().Status() | ParserStatus::ALLOW_THIS_TYPE);
+        returnTypeAnnotation = ParseFunctionReturnType(status);
+    } else {
+        returnTypeAnnotation = ParseFunctionReturnType(status);
     }
 
-    ir::TypeNode *returnTypeAnnotation = ParseFunctionReturnType(status);
     ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(true);
 
-    auto res = ir::FunctionSignature(typeParamDecl, std::move(params), returnTypeAnnotation);
+    auto res = ir::FunctionSignature(typeParamDecl, std::move(params), returnTypeAnnotation, hasReceiver);
     return {std::move(res), throwMarker};
 }
 

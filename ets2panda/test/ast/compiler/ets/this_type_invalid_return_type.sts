@@ -19,4 +19,4 @@ class A {
     }
 }
 
-/* @@@ label Error TypeError: The only allowed return value is 'this' if the method's return type is the 'this' type  */
+/* @@@ label Error TypeError: Only extension function or a class method can return 'this'  */

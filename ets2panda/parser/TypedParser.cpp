@@ -218,7 +218,6 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
     auto params = ParseFunctionParams();
 
     ParserStatus arrowStatus = ParserStatus::NO_OPTS;
-
     if (std::any_of(params.begin(), params.end(), [](const auto *param) { return !param->IsIdentifier(); })) {
         arrowStatus = ParserStatus::HAS_COMPLEX_PARAM;
     }

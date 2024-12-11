@@ -21,12 +21,22 @@ class Fruit {
     }
 }
 
-function Fruit.extension(): int {
+function extension(this: Fruit): int {
     this.price = 25;
     return this.price;
 }
 
-function main() {
+function asFuncCall() {
+    let fruit = new Fruit();
+    let res1: int = fruit.price;
+    assert res1 == 1 : "expected: " + 1 + " actual: " + res1;
+    let res2: int = extension(fruit);
+    assert res2 == 25 : "expected: " + 25 + " actual: " + res2;
+    let res3: int = fruit.price;
+    assert res3 == 25 : "expected: " + 25 + " actual: " + res3;
+}
+
+function asMethodCall() {
     let fruit = new Fruit();
     let res1: int = fruit.price;
     assert res1 == 1 : "expected: " + 1 + " actual: " + res1;
@@ -34,4 +44,9 @@ function main() {
     assert res2 == 25 : "expected: " + 25 + " actual: " + res2;
     let res3: int = fruit.price;
     assert res3 == 25 : "expected: " + 25 + " actual: " + res3;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
 }

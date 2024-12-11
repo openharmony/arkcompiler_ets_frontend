@@ -15,20 +15,33 @@
 
 interface Fruit {}
 
-function Fruit.foo(): int {
+function foo(this:Fruit): int {
     return 1;
 }
 
 class Banana implements Fruit {}
 
-function Banana.foo():int {
+function foo(this:Banana):int {
     return 2
 }
 
-function main() {
+function asFuncCall() {
+    let banana = new Banana();
+    let res: int = foo(banana);
+    assert res == 2 : "expected: " + 2 + " actual: " + res;
+    let res1: int = foo((banana as Fruit));
+    assert res1 == 1 : "expected: " + 1 + " actual: " + res1;
+}
+
+function asMethodCall() {
     let banana = new Banana();
     let res: int = banana.foo();
     assert res == 2 : "expected: " + 2 + " actual: " + res;
     let res1: int = (banana as Fruit).foo();
     assert res1 == 1 : "expected: " + 1 + " actual: " + res1;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
 }

@@ -17,7 +17,7 @@ class Fruit {
 
 }
 
-function Fruit.name() {
+function name(this: Fruit) {
     console.println("this is extension function 1");
 }
 

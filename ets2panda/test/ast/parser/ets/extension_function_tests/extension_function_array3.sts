@@ -14,7 +14,7 @@
  */
 
 class A {}
-function A[][][].test() {}
+function test(this: A[][][]) {}
 
 /* @@? 17:1 Node {
   "type": "MethodDefinition",

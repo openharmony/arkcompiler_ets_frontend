@@ -17,7 +17,7 @@ class Fruit {
 
 }
 
-function Fruit.name(): int {
+function name(this:Fruit): int {
     return 1;
 }
 
@@ -25,10 +25,23 @@ function name(): int {
     return 2;
 }
 
-function main() {
+function asFuncCall() {
+    let fruit = new Fruit();
+    let res: int = name(fruit);
+    assert res == 1 : "expected: " + 1 + " actual: " + res;
+    let res1: int = name();
+    assert res1 == 2 : "expected: " + 2 + " actual: " + res1;
+}
+
+function asMethodCall() {
     let fruit = new Fruit();
     let res: int = fruit.name();
     assert res == 1 : "expected: " + 1 + " actual: " + res;
     let res1: int = name();
     assert res1 == 2 : "expected: " + 2 + " actual: " + res1;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
 }

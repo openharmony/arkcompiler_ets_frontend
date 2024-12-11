@@ -62,7 +62,7 @@ TEST_F(ASTVerifierTest, ExtensionFunction)
             }
         }
 
-        function Fruit.name(id: int): void {
+        function name(this:Fruit, id: int): void {
         }
 
         function test() {

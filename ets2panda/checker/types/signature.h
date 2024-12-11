@@ -273,6 +273,7 @@ public:
     bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
     void AssignmentTarget(TypeRelation *relation, Signature *source);
     Signature *BoxPrimitives(ETSChecker *checker);
+    friend class ETSExtensionFuncHelperType;
 
 private:
     bool CheckParameter(TypeRelation *relation, Type *type1, Type *type2);

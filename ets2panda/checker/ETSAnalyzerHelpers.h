@@ -41,7 +41,14 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
 checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expression *callee,
                                          checker::Type *calleeType);
 checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *functionType, checker::ETSChecker *checker,
-                                                 ir::CallExpression *expr);
+                                                 ir::CallExpression *expr,
+                                                 TypeRelationFlag reportFlag = TypeRelationFlag::NONE);
+checker::Signature *ResolveCallForClassMethod(checker::ETSFunctionType *functionType, checker::ETSChecker *checker,
+                                              ir::CallExpression *expr,
+                                              TypeRelationFlag reportFlag = TypeRelationFlag::NONE);
+checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::ETSExtensionFuncHelperType *type,
+                                                                      checker::ETSChecker *checker,
+                                                                      ir::CallExpression *expr);
 checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
                                                              checker::ETSChecker *checker, ir::CallExpression *expr);
 ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, checker::ETSUnionType *etsUnionType);
@@ -58,7 +65,7 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
 bool CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, const std::string &name,
                            ir::ReturnStatement *st);
 bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker::Type *argumentType,
-                     ir::Expression *stArgument, bool isAsync);
+                     ir::Expression *stArgument, ir::ScriptFunction *containingFunc);
 void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
                      ir::Expression *stArgument);
 void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,

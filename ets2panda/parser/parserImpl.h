@@ -326,7 +326,7 @@ protected:
                                                      ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     ir::ClassDeclaration *ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers,
                                                 ir::ModifierFlags flags = ir::ModifierFlags::NONE);
-    FunctionSignature ParseFunctionSignature(ParserStatus status, ir::TypeNode *typeAnnotation = nullptr);
+    FunctionSignature ParseFunctionSignature(ParserStatus status);
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile);
     // NOLINTNEXTLINE(google-default-arguments)

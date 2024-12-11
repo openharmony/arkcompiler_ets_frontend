@@ -709,7 +709,8 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
         }
     }
 
-    if (compatibleSignatures.empty() && notVisibleSignature != nullptr) {
+    if (compatibleSignatures.empty() && notVisibleSignature != nullptr &&
+        ((resolveFlags & TypeRelationFlag::NO_THROW) == 0)) {
         LogTypeError(
             {"Signature ", notVisibleSignature->Function()->Id()->Name(), notVisibleSignature, " is not visible here."},
             pos);
@@ -736,18 +737,11 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
     return mostSpecificSignature;
 }
 
-Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
-                                          const ir::TSTypeParameterInstantiation *typeArguments,
-                                          const ArenaVector<ir::Expression *> &arguments,
-                                          const lexer::SourcePosition &pos, std::string_view signatureKind,
-                                          TypeRelationFlag resolveFlags)
+void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
+                                        const ArenaVector<ir::Expression *> &arguments,
+                                        const lexer::SourcePosition &pos, std::string_view signatureKind)
 {
-    auto compatibleSignatures = CollectSignatures(signatures, typeArguments, arguments, pos, resolveFlags);
-    if (!compatibleSignatures.empty()) {
-        return GetMostSpecificSignature(compatibleSignatures, arguments, pos, resolveFlags);
-    }
-
-    if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0 && !arguments.empty() && !signatures.empty()) {
+    if (!arguments.empty() && !signatures.empty()) {
         std::stringstream ss;
 
         if (signatures[0]->Function()->IsConstructor()) {
@@ -770,15 +764,29 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
             if (index == arguments.size() - 1) {
                 ss << ")";
                 LogTypeError({"No matching ", signatureKind, " signature for ", ss.str().c_str()}, pos);
-                return nullptr;
+                return;
             }
 
             ss << ", ";
         }
     }
 
+    LogTypeError({"No matching ", signatureKind, " signature"}, pos);
+}
+
+Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
+                                          const ir::TSTypeParameterInstantiation *typeArguments,
+                                          const ArenaVector<ir::Expression *> &arguments,
+                                          const lexer::SourcePosition &pos, std::string_view signatureKind,
+                                          TypeRelationFlag resolveFlags)
+{
+    auto compatibleSignatures = CollectSignatures(signatures, typeArguments, arguments, pos, resolveFlags);
+    if (!compatibleSignatures.empty()) {
+        return GetMostSpecificSignature(compatibleSignatures, arguments, pos, resolveFlags);
+    }
+
     if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0) {
-        LogTypeError({"No matching ", signatureKind, " signature"}, pos);
+        ThrowSignatureMismatch(signatures, arguments, pos, signatureKind);
     }
 
     return nullptr;

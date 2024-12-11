@@ -21,7 +21,7 @@ interface Yellow {
     }
 }
 
-function Fruit.foo(id1: int, k1: String): int {
+function foo(this:Fruit, id1: int, k1: String): int {
     return 1;
 }
 
@@ -29,8 +29,8 @@ interface SubFruit extends Fruit {}
 
 class Banana implements SubFruit, Yellow {}
 
-function Banana.foo(id2: int, k2: String): int /* @@ label */{
+function foo(this:Banana, id2: int, k2: String): int/* @@ label */{
     return 2;
 }
 
-/* @@@ label Warning Warning: extension is shadowed by a instance member function 'foo(id0: int, k0: String): String' in class Yellow  */
+/* @@@ label Error TypeError: The extension function 'foo' has the same name with public method in class Yellow  */

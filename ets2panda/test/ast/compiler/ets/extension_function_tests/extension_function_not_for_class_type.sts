@@ -15,7 +15,7 @@
 
 enum Fruit { size = 4 };
 
-/* @@ label */function Fruit.name(): int {
+/* @@label */function name(this: Fruit): int {
     return 1;
 }
 

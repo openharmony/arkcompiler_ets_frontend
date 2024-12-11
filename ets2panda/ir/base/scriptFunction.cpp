@@ -170,10 +170,6 @@ void ScriptFunction::Dump(ir::SrcDumper *dumper) const
     }
     dumper->Add("(");
     for (auto param : Params()) {
-        if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->Ident() != nullptr &&
-            param->AsETSParameterExpression()->Ident()->Name() == varbinder::VarBinder::MANDATORY_PARAM_THIS) {
-            continue;
-        }
         param->Dump(dumper);
         if (param != Params().back()) {
             dumper->Add(", ");

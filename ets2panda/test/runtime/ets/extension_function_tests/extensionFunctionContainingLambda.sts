@@ -17,13 +17,24 @@ class B {
     public kkkkkk: int = 7;
 }
 
-function B.xxx(m: int, n:int):int {
+function xxx(this:B, m: int, n:int):int {
     let bbbbbbbbbb:(x: int, y:int) => int = (x: int, y:int): int => { return x + m + this.kkkkkk + n }
     return bbbbbbbbbb(2, 3);
 }
 
-function main() {
+function asFuncCall() {
+    let b = new B();
+    let res: int = xxx(b, 5, 8);
+    assert res == 22 : "expected: " + 22 + " actual: " + res;
+}
+
+function asMethodCall() {
     let b = new B();
     let res: int = b.xxx(5, 8);
     assert res == 22 : "expected: " + 22 + " actual: " + res;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
 }
