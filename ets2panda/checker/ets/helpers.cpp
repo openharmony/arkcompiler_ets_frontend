@@ -680,6 +680,26 @@ static bool ShouldPreserveConstantTypeInVariableDeclaration(Type *annotation, Ty
             (init->IsETSStringType() && annotation->IsETSStringType()));
 }
 
+static void CheckAssignForDeclare(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
+                                  ir::ModifierFlags const flags, ETSChecker *check)
+{
+    const bool isDeclare = (flags & ir::ModifierFlags::DECLARE) != 0;
+    const bool isAbstract = (flags & ir::ModifierFlags::ABSTRACT) != 0;
+    if (!isDeclare || isAbstract) {
+        return;
+    }
+    if (typeAnnotation != nullptr && init != nullptr && !init->IsUndefinedLiteral()) {
+        check->LogTypeError({"Initializers are not allowed in ambient contexts: ", ident->Name()}, init->Start());
+        return;
+    }
+    const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
+    if (isConst && !init->IsNumberLiteral() && !init->IsStringLiteral()) {
+        check->LogTypeError(
+            {"A \'const\' initializer in an ambient context must be a string or numeric literal: ", ident->Name()},
+            init->Start());
+    }
+}
+
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
 {
@@ -703,6 +723,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     if (init == nullptr) {
         return FixOptionalVariableType(bindingVar, flags, init);
     }
+    CheckAssignForDeclare(ident, typeAnnotation, init, flags, this);
 
     if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
         return GlobalTypeError();

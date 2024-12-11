@@ -102,6 +102,10 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
         anno->Dump(dumper);
     }
 
+    if (IsDeclare()) {
+        dumper->Add("declare ");
+    }
+
     switch (kind_) {
         case VariableDeclarationKind::CONST:
             dumper->Add("const ");
