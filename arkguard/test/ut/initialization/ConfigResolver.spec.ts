@@ -35,7 +35,7 @@ import {
   SourceObConfig,
   Obfuscation
 } from '../../../src/initialization/ConfigResolver';
-import { PropCollections, renameFileNameModule } from '../../../src/ArkObfuscator';
+import { HvigorErrorInfo, PropCollections, renameFileNameModule } from '../../../src/ArkObfuscator';
 import { nameCacheMap } from '../../../src/initialization/CommonObject';
 import path from 'path';
 import fs from 'fs';
@@ -48,9 +48,36 @@ const projectConfig = {
   obfuscationOptions: { option1: 'value1' },
   compileHar: true
 };
+
+function printObfLogger(errorInfo: string, errorCodeInfo: HvigorErrorInfo | string, level: string): void {
+  switch (level) {
+    case 'warn':
+      console.warn(errorInfo);
+      break;
+    case 'error':
+      console.error(errorInfo);
+      break;
+    default:
+      break;
+  }
+}
+
+function printObfHvigorLogger(errorInfo: string, errorCodeInfo: HvigorErrorInfo | string, level: string): void {
+  switch (level) {
+    case 'warn':
+      console.warn(errorCodeInfo);
+      break;
+    case 'error':
+      console.error(errorCodeInfo);
+      break;
+    default:
+      break;
+  }
+}
+
 const logger = console;
 const isTerser = false;
-let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+let newObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
 
 describe('test for ConfigResolve', function() {
   describe('ObOptions', () => {
@@ -178,13 +205,11 @@ describe('test for ConfigResolve', function() {
           obfuscationOptions: { option1: 'value1' },
           compileHar: true
         };
-        const logger = console;
         const isTerser = false;
-        const myInstance = new ObConfigResolver(projectConfig, logger, isTerser);
+        const myInstance = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
 
         expect(myInstance).to.be.an('object');
         expect(myInstance.sourceObConfig).to.deep.equal({ option1: 'value1' });
-        expect(myInstance.logger).to.equal(console);
         expect(myInstance.isHarCompiled).to.be.true;
         expect(myInstance.isTerser).to.be.false;
       });
@@ -194,12 +219,10 @@ describe('test for ConfigResolve', function() {
           obfuscationOptions: { option1: 'value1' },
           compileHar: true
         };
-        const logger = console;
-        const myInstance = new ObConfigResolver(projectConfig, logger, true);
+        const myInstance = new ObConfigResolver(projectConfig, printObfLogger, true);
 
         expect(myInstance).to.be.an('object');
         expect(myInstance.sourceObConfig).to.deep.equal({ option1: 'value1' });
-        expect(myInstance.logger).to.equal(console);
         expect(myInstance.isHarCompiled).to.be.true;
         expect(myInstance.isTerser).to.be.true;
       });
@@ -212,7 +235,7 @@ describe('test for ConfigResolve', function() {
       };
       const logger = console;
       const isTerser = false;
-      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      let newObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
       let testClass: ObConfigResolver & {
         performancePrinter?: any;
       };
@@ -423,13 +446,11 @@ describe('test for ConfigResolve', function() {
           },
           compileHar: true
         };
-        const logger = console;
         const isTerser = false;
-        const resolver = new ObConfigResolver(projectConfig, logger, isTerser);
+        const resolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
 
         expect(resolver).to.be.an('object');
         expect(resolver.sourceObConfig).to.deep.equal(projectConfig.obfuscationOptions);
-        expect(resolver.logger).to.equal(logger);
         expect(resolver.isHarCompiled).to.equal(projectConfig.compileHar);
         expect(resolver.isTerser).to.equal(isTerser);
       });
@@ -445,13 +466,11 @@ describe('test for ConfigResolve', function() {
           },
           compileHar: true
         };
-        const logger = console;
         const isTerser = false;
-        const resolver = new ObConfigResolver(projectConfig, logger, isTerser);
+        const resolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
 
         expect(resolver).to.be.an('object');
         expect(resolver.sourceObConfig).to.deep.equal(projectConfig.obfuscationOptions);
-        expect(resolver.logger).to.equal(logger);
         expect(resolver.isHarCompiled).to.equal(projectConfig.compileHar);
         expect(resolver.isTerser).to.equal(isTerser);
       });
@@ -467,16 +486,14 @@ describe('test for ConfigResolve', function() {
           },
           compileHar: true
         };
-        const logger = console;
         const isTerser = false;
-        const resolver = new ObConfigResolver(projectConfig, logger, isTerser);
+        const resolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
         const selfConfigs = new MergedConfig();
 
         resolver.getSelfConfigsForTest(selfConfigs);
 
         expect(resolver).to.be.an('object');
         expect(resolver.sourceObConfig).to.deep.equal(projectConfig.obfuscationOptions);
-        expect(resolver.logger).to.equal(logger);
         expect(resolver.isHarCompiled).to.equal(projectConfig.compileHar);
         expect(resolver.isTerser).to.equal(isTerser);
       });
@@ -493,13 +510,12 @@ describe('test for ConfigResolve', function() {
         },
         compileHar: true
       };
-      const logger = console;
       let sandbox;
       let instance;
 
       beforeEach(() => {
         sandbox = sinon.createSandbox();
-        instance = new ObConfigResolver(projectConfig, logger, true);
+        instance = new ObConfigResolver(projectConfig, printObfLogger, true);
         instance.logger = { error: sandbox.stub() };
       });
 
@@ -524,12 +540,36 @@ describe('test for ConfigResolve', function() {
       it('should log error and throw when failed to open file', () => {
         const path = './test/testData/obfuscation/filename_obf/non-existent-file.json';
         const configs = new MergedConfig();
-        const errorMessage = `Failed to open ${path}. Error message: ENOENT: no such file or directory, open '${path}'`;
+        const stub = sinon.stub(console, 'error');
+        const errorMessage = `Failed to open ${path}. Error message: Error: ENOENT: no such file or directory, open ${path}`;
+        sandbox.stub(fs, 'readFileSync').throws(new Error(`ENOENT: no such file or directory, open ${path}`));
+        try {
+          instance.getConfigByPath(path, configs);
+        } catch (err) {
+        }
+        expect(stub.calledWith(errorMessage)).to.be.true;
+        stub.restore();
+      });
 
-        sandbox.stub(fs, 'readFileSync').throws(new Error(errorMessage));
-
-        expect(() => instance.getConfigByPath(path, configs)).to.throw(Error, errorMessage);
-        expect(instance.logger.error.calledWith(errorMessage)).to.be.false;
+      it('should log error and throw when failed to open file with hvigor errorCode', () => {
+        const path = './test/testData/obfuscation/filename_obf/non-existent-file.json';
+        const configs = new MergedConfig();
+        const stub = sinon.stub(console, 'error');
+        const errorMessage = {
+          code: '10804001',
+          description: 'ArkTS compiler Error',
+          cause: `Failed to open obfuscation config file from ${path}. Error message: Error: ENOENT: no such file or directory, open ${path}`,
+          position: path,
+          solutions: [`Please check whether ${path} exists.`],
+        };
+        instance = new ObConfigResolver(projectConfig, printObfHvigorLogger, true);
+        sandbox.stub(fs, 'readFileSync').throws(new Error(`ENOENT: no such file or directory, open ${path}`));
+        try {
+          instance.getConfigByPath(path, configs);
+        } catch (err) {
+        }
+        expect(stub.calledWith(errorMessage)).to.be.true;
+        stub.restore();
       });
     });
 
@@ -1158,7 +1198,7 @@ describe('test for ConfigResolve', function() {
       };
       const logger = console;
       const isTerser = false;
-      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      let newObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
       const res: MergedConfig = newObConfigResolver.getMergedConfigsForTest(config1, config2);
   
       expect(res.options.enablePropertyObfuscation).to.be.true;
@@ -1193,7 +1233,7 @@ describe('test for ConfigResolve', function() {
       };
       const logger = console;
       const isTerser = false;
-      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      let newObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
       const res: MergedConfig = newObConfigResolver.getMergedConfigsForTest(config1, config2);
   
       expect(res.options.enablePropertyObfuscation).to.be.false;
@@ -1230,7 +1270,7 @@ describe('test for ConfigResolve', function() {
       };
       const logger = console;
       const isTerser = false;
-      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      let newObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
       const sourceObConfig: SourceObConfig = {
         selfConfig: {} as Obfuscation,
         sdkApis: [],
@@ -1281,7 +1321,7 @@ describe('test for ConfigResolve', function() {
       };
       const logger = console;
       const isTerser = false;
-      let newObConfigResolver = new ObConfigResolver(projectConfig, logger, isTerser);
+      let newObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, isTerser);
       const sourceObConfig: SourceObConfig = {
         selfConfig: {} as Obfuscation,
         sdkApis: [],
@@ -1373,9 +1413,6 @@ describe('test for ConfigResolve', function() {
     let testData;
     let fsWriteFileSyncStub;
     let fsUnlinkSyncStub;
-    let logger = {
-      error: (message: string) => console.error(message),
-    };
     let PropCollections;
     let renameFileNameModule;
 
@@ -1405,7 +1442,7 @@ describe('test for ConfigResolve', function() {
     });
 
     it('should read and parse the name cache file correctly', () => {
-      readNameCache(tempFilePath, logger);
+      readNameCache(tempFilePath, printObfLogger);
 
       expect(nameCacheMap.get('extraKey')).to.equal('');
     });
@@ -1418,7 +1455,7 @@ describe('test for ConfigResolve', function() {
 
     beforeEach(() => {
       fsReadFileSyncStub = sinon.stub(fs, 'readFileSync').returns('{"compileSdkVersion":"1.0","PropertyCache":{},"FileNameCache":{}}');
-      logger = { error: sinon.spy() };
+      logger = { error: sinon.spy(), printError: (msg)=>{}};
     });
 
     afterEach(() => {
@@ -1426,7 +1463,7 @@ describe('test for ConfigResolve', function() {
     });
 
     it('should read the name cache file and parse its content', () => {
-      readNameCache(testPath, logger);
+      readNameCache(testPath, printObfLogger);
       expect(PropCollections.historyMangledTable).to.deep.equal(new Map());
       expect(renameFileNameModule.historyFileNameMangledTable).to.deep.equal(new Map());
       expect(nameCacheMap.get('compileSdkVersion')).to.be.undefined;
@@ -1439,10 +1476,31 @@ describe('test for ConfigResolve', function() {
       };
 
       const nonExistentFilePath = './test/ut/initialization/nonExistentFile.json';
-      readNameCache(nonExistentFilePath, mockLogger);
-      fsReadFileSyncStub.throws(new Error('Test error'));
-      readNameCache(testPath, logger);
+      try {
+        readNameCache(nonExistentFilePath, printObfLogger);
+      } catch (err) {
+      }
       expect(logger.error.calledWith(`Failed to open ${nonExistentFilePath}. Error message: Test error`)).to.be.false;
+    });
+
+    it('should handle errors when reading the file with hvigor errorCode', () => {
+      const mockLogger = {
+        error: (message: string) => console.error(message),
+      };
+
+      const nonExistentFilePath = './test/ut/initialization/nonExistentFile.json';
+      try {
+        readNameCache(nonExistentFilePath, printObfHvigorLogger);
+      } catch (err) {
+      }
+      const errorMessage = {
+        code: '10804002',
+        description: 'ArkTS compiler Error',
+        cause: `Failed to open namecache file from ${nonExistentFilePath}, Error message: Test error`,
+        position: nonExistentFilePath,
+        solutions: [`Please check ${nonExistentFilePath} as error message suggested.`],
+      };
+      expect(logger.error.calledWith(errorMessage)).to.be.false;
     });
   });
 
