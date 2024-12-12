@@ -420,11 +420,17 @@ checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression 
     if (isConstructorCall) {
         return calleeType->AsETSObjectType();
     }
-    if (expr->Callee()->IsIdentifier()) {
+
+    auto callee = expr->Callee();
+    if (callee->IsTSNonNullExpression()) {
+        callee = callee->AsTSNonNullExpression()->Expr();
+    }
+
+    if (callee->IsIdentifier()) {
         return checker->Context().ContainingClass();
     }
-    ASSERT(expr->Callee()->IsMemberExpression());
-    return expr->Callee()->AsMemberExpression()->ObjType();
+    ASSERT(callee->IsMemberExpression());
+    return callee->AsMemberExpression()->ObjType();
 }
 
 void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType)
