@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */0xFFFFFFFFF,
-  Blue
+@interface MyAnno {
+    a : int
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
+let cc= 1
+@MyAnno({a = 1 + cc})
+function foo() {}
+
+/* @@? 21:14 Error SyntaxError: Only constant expression is expected in the field */

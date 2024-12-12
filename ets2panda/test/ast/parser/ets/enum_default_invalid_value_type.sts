@@ -13,10 +13,26 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */0xFFFFFFFFF,
-  Blue
+enum A {
+    a = !3
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
+enum B {
+    a = 9(1)
+}
+
+enum C {
+    a = 1,
+    b = 100 > 1
+}
+  
+enum D {
+    a = 1,
+    b = 1 as int,
+}
+
+
+/* @@? 16:1 Error SyntaxError: Invalid enumeration value type. */
+/* @@? 20:1 Error SyntaxError: Invalid enumeration value type. */
+/* @@? 24:1 Error SyntaxError: Invalid enumeration value type. */
+/* @@? 29:1 Error SyntaxError: Invalid enumeration value type. */
