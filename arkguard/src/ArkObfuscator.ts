@@ -81,6 +81,7 @@ export {
   startSingleFileEvent,
 } from './utils/PrinterUtils';
 import { Extension, type ProjectInfo, type FilePathObj } from './common/type';
+export { type HvigorErrorInfo } from './common/type';
 export { FileUtils } from './utils/FileUtils';
 export { MemoryUtils } from './utils/MemoryUtils';
 import { TypeUtils } from './utils/TypeUtils';
