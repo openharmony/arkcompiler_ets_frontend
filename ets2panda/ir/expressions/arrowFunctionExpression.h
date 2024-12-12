@@ -59,7 +59,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
     ir::TypeNode *CreateTypeAnnotation(checker::ETSChecker *checker);
     ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType);
     void AddChildLambda(ArrowFunctionExpression *childLambda);

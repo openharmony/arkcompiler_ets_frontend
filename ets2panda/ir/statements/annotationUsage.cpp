@@ -111,9 +111,9 @@ checker::Type *AnnotationUsage::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AnnotationUsage::Check(checker::ETSChecker *checker)
+checker::VerifiedType AnnotationUsage::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 Identifier *AnnotationUsage::GetBaseName() const

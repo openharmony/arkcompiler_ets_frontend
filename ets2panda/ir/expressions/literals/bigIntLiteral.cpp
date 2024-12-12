@@ -55,9 +55,9 @@ checker::Type *BigIntLiteral::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *BigIntLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType BigIntLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 BigIntLiteral *BigIntLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)

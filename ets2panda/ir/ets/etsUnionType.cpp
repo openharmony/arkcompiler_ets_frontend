@@ -60,13 +60,13 @@ checker::Type *ETSUnionType::Check([[maybe_unused]] checker::TSChecker *checker)
     return nullptr;
 }
 
-checker::Type *ETSUnionType::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSUnionType::Check(checker::ETSChecker *checker)
 {
     for (auto *it : types_) {
         it->Check(checker);
     }
 
-    return GetType(checker);
+    return {this, GetType(checker)};
 }
 
 static bool CheckConstituentTypesValid(ArenaVector<checker::Type *> const &constituentTypes)

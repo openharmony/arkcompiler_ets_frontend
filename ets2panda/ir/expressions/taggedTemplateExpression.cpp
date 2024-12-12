@@ -85,9 +85,9 @@ checker::Type *TaggedTemplateExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TaggedTemplateExpression *TaggedTemplateExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

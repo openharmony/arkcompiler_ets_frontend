@@ -66,8 +66,8 @@ checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSInterfaceBody::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

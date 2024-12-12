@@ -147,8 +147,8 @@ checker::Type *TSInterfaceDeclaration::Check([[maybe_unused]] checker::TSChecker
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSInterfaceDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSInterfaceDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

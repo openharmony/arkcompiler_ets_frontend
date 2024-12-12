@@ -67,9 +67,9 @@ checker::Type *AwaitExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AwaitExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType AwaitExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 AwaitExpression *AwaitExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

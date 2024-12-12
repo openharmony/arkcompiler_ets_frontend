@@ -420,8 +420,8 @@ void ObjectExpression::Compile(compiler::ETSGen *etsg) const
     etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ObjectExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ObjectExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

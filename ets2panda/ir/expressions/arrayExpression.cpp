@@ -395,9 +395,9 @@ bool ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const che
     return true;
 }
 
-checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ArrayExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,

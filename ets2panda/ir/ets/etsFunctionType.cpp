@@ -97,9 +97,9 @@ checker::Type *ETSFunctionType::GetType([[maybe_unused]] checker::TSChecker *che
     return nullptr;
 }
 
-checker::Type *ETSFunctionType::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSFunctionType::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSFunctionType::GetType(checker::ETSChecker *checker)

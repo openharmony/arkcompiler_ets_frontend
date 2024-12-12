@@ -115,8 +115,8 @@ checker::Type *VariableDeclarator::Check([[maybe_unused]] checker::TSChecker *ch
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *VariableDeclarator::Check(checker::ETSChecker *checker)
+checker::VerifiedType VariableDeclarator::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

@@ -70,9 +70,9 @@ checker::Type *MetaProperty::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *MetaProperty::Check(checker::ETSChecker *checker)
+checker::VerifiedType MetaProperty::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 MetaProperty *MetaProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)

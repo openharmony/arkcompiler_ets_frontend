@@ -87,9 +87,9 @@ checker::Type *AssertStatement::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *AssertStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType AssertStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 AssertStatement *AssertStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)

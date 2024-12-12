@@ -187,6 +187,8 @@ public:
 
     static std::vector<std::string> &StdLib();
     static bool IsStdLib(const parser::Program *program);
+    [[nodiscard]] static checker::Type *CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNode *const node,
+                                                               checker::Type *const type);
 };
 
 template <typename T>

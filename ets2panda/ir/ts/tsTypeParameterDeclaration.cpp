@@ -69,8 +69,8 @@ checker::Type *TSTypeParameterDeclaration::Check([[maybe_unused]] checker::TSChe
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSTypeParameterDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSTypeParameterDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

@@ -262,9 +262,9 @@ checker::Type *ClassDefinition::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ClassDefinition::Check(checker::ETSChecker *checker)
+checker::VerifiedType ClassDefinition::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 int ClassDefinition::classCounter_ = 0;

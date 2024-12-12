@@ -75,9 +75,9 @@ checker::Type *TSPropertySignature::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *TSPropertySignature::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSPropertySignature::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)

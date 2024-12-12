@@ -118,9 +118,9 @@ bool CallExpression::IsETSConstructorCall() const
     return callee_->IsThisExpression() || callee_->IsSuperExpression();
 }
 
-checker::Type *CallExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType CallExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *const allocator)

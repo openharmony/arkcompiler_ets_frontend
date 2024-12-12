@@ -86,8 +86,8 @@ checker::Type *TSConditionalType::GetType([[maybe_unused]] checker::TSChecker *c
     return nullptr;
 }
 
-checker::Type *TSConditionalType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSConditionalType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

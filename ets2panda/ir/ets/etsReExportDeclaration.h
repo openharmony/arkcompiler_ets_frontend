@@ -65,10 +65,7 @@ public:
         return nullptr;
     }
 
-    checker::Type *Check(checker::ETSChecker * /*checker*/) override
-    {
-        return nullptr;
-    }
+    checker::VerifiedType Check(checker::ETSChecker * /*checker*/) override;
 
     void Accept(ASTVisitorT *v) override
     {

@@ -64,9 +64,9 @@ checker::Type *ThrowStatement::Check([[maybe_unused]] checker::TSChecker *checke
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ThrowStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ThrowStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ThrowStatement *ThrowStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)

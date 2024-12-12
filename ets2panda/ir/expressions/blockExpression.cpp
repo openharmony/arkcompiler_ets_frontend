@@ -100,8 +100,8 @@ checker::Type *BlockExpression::Check([[maybe_unused]] checker::TSChecker *check
     UNREACHABLE();
 }
 
-checker::Type *BlockExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType BlockExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

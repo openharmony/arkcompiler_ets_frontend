@@ -75,9 +75,9 @@ checker::Type *ETSNewArrayInstanceExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewArrayInstanceExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSNewArrayInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocator *const allocator,

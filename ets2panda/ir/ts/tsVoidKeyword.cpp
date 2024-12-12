@@ -59,8 +59,8 @@ checker::Type *TSVoidKeyword::GetType([[maybe_unused]] checker::TSChecker *check
     return checker->GlobalVoidType();
 }
 
-checker::Type *TSVoidKeyword::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSVoidKeyword::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

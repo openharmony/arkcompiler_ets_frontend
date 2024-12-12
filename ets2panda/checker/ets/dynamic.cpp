@@ -153,7 +153,7 @@ ir::MethodDefinition *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *cal
 static void ToString(ETSChecker *checker, const ArenaVector<ir::Expression *> &arguments, std::stringstream &ss)
 {
     for (auto *arg : arguments) {
-        auto *type = arg->Check(checker);
+        auto type = arg->Check(checker);
         ss << "-";
         type->ToString(ss);
     }

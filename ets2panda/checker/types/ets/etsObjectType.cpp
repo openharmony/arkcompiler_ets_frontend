@@ -975,7 +975,7 @@ void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObj
 void ETSObjectType::UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop,
                                        PropertyType fieldType, PropertyProcesser const &func)
 {
-    auto *const propType = prop->Declaration()->Node()->Check(checker);
+    auto const propType = prop->Declaration()->Node()->Check(checker);
 
     auto *const propCopy = func(prop, propType);
     if (fieldType == PropertyType::INSTANCE_FIELD) {

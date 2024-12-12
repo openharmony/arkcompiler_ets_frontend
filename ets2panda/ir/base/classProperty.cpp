@@ -145,9 +145,9 @@ checker::Type *ClassProperty::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ClassProperty::Check(checker::ETSChecker *checker)
+checker::VerifiedType ClassProperty::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)

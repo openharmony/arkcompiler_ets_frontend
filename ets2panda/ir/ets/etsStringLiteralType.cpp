@@ -46,9 +46,9 @@ checker::Type *ETSStringLiteralType::Check([[maybe_unused]] checker::TSChecker *
     UNREACHABLE();
 }
 
-checker::Type *ETSStringLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType ETSStringLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSStringLiteralType::GetType([[maybe_unused]] checker::ETSChecker *checker)

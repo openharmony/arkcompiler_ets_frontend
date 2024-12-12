@@ -16,6 +16,12 @@
 #include "loopStatement.h"
 
 #include "varbinder/scope.h"
+#include "checker/checker.h"
 
 namespace ark::es2panda::ir {
+checker::VerifiedType LoopStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+{
+    UNREACHABLE();
+    return {this, nullptr};
+}
 }  // namespace ark::es2panda::ir

@@ -76,11 +76,7 @@ public:
         return nullptr;
     }
 
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override
-    {
-        UNREACHABLE();
-        return nullptr;
-    }
+    checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 protected:
     explicit LoopStatement(AstNodeType type) : Statement(type) {}

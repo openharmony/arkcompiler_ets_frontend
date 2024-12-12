@@ -66,8 +66,8 @@ checker::Type *TSConstructorType::GetType(checker::TSChecker *checker)
     return checker->CheckTypeCached(this);
 }
 
-checker::Type *TSConstructorType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSConstructorType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

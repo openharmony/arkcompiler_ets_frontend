@@ -56,9 +56,9 @@ checker::Type *SuperExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *SuperExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType SuperExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 SuperExpression *SuperExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

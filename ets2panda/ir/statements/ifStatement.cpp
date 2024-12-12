@@ -105,9 +105,9 @@ checker::Type *IfStatement::Check([[maybe_unused]] checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *IfStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType IfStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 IfStatement *IfStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)

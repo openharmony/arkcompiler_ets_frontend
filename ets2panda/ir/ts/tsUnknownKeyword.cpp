@@ -59,8 +59,8 @@ checker::Type *TSUnknownKeyword::GetType([[maybe_unused]] checker::TSChecker *ch
     return checker->GlobalUnknownType();
 }
 
-checker::Type *TSUnknownKeyword::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSUnknownKeyword::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

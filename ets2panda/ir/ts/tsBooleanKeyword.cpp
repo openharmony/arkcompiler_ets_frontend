@@ -59,8 +59,8 @@ checker::Type *TSBooleanKeyword::GetType([[maybe_unused]] checker::TSChecker *ch
     return checker->GlobalBooleanType();
 }
 
-checker::Type *TSBooleanKeyword::Check(checker::ETSChecker *checker)
+checker::VerifiedType TSBooleanKeyword::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

@@ -57,7 +57,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check(checker::ETSChecker *checker) override;
+    checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
     void CheckAndTestCase(checker::ETSChecker *checker, checker::Type *comparedExprType, checker::Type *unboxedDiscType,
                           ir::Expression *node, bool &isDefaultCase);

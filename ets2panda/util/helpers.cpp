@@ -724,4 +724,11 @@ bool Helpers::IsStdLib(const parser::Program *program)
     return std::count(stdlib.begin(), stdlib.end(), fileFolder) != 0;
 }
 
+checker::Type *Helpers::CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNode *const node,
+                                               checker::Type *const type)
+{
+    ASSERT(type != nullptr || !node->IsExpression());
+    return type;
+}
+
 }  // namespace ark::es2panda::util

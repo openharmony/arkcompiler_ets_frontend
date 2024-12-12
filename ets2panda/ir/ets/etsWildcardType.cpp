@@ -74,9 +74,9 @@ checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::TSChecker *che
     return nullptr;
 }
 
-checker::Type *ETSWildcardType::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSWildcardType::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::ETSChecker *checker)

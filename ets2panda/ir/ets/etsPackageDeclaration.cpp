@@ -62,9 +62,9 @@ checker::Type *ETSPackageDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSPackageDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSPackageDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSPackageDeclaration *ETSPackageDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -67,9 +67,9 @@ checker::Type *TSFunctionType::GetType(checker::TSChecker *checker)
     return checker->CheckTypeCached(this);
 }
 
-checker::Type *TSFunctionType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSFunctionType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *TSFunctionType::GetType([[maybe_unused]] checker::ETSChecker *checker)

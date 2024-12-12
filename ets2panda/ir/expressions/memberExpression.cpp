@@ -440,9 +440,9 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
     return nullptr;
 }
 
-checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType MemberExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

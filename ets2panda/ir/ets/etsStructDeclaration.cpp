@@ -75,9 +75,9 @@ checker::Type *ETSStructDeclaration::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSStructDeclaration::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSStructDeclaration::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSStructDeclaration *ETSStructDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)

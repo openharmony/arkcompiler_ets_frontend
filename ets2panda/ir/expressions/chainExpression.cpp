@@ -76,9 +76,9 @@ checker::Type *ChainExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ChainExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ChainExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ChainExpression *ChainExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -84,8 +84,8 @@ checker::Type *TSMappedType::GetType([[maybe_unused]] checker::TSChecker *checke
     return nullptr;
 }
 
-checker::Type *TSMappedType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSMappedType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

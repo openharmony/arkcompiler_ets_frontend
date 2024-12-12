@@ -114,9 +114,9 @@ checker::Type *NamespaceDefinition::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *NamespaceDefinition::Check(checker::ETSChecker *checker)
+checker::VerifiedType NamespaceDefinition::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 }  // namespace ark::es2panda::ir

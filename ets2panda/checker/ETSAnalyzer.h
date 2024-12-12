@@ -43,6 +43,7 @@ public:
     void CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const;
     std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
                                                                          Type *leftType) const;
+    [[nodiscard]] checker::Type *ReturnTypeForStatement([[maybe_unused]] const ir::Statement *const st) const;
 
 private:
     ETSChecker *GetETSChecker() const;
@@ -60,22 +61,6 @@ private:
                                          checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                          ETSChecker *checker) const;
     void CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const;
-    checker::Type *GetCalleeType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr) const
-    {
-        checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
-        if (calleeType->IsTypeError()) {
-            expr->GetTypeRef()->SetTsType(checker->GlobalTypeError());
-            return checker->GlobalTypeError();
-        }
-
-        if (!calleeType->IsETSObjectType()) {
-            checker->LogTypeError("This expression is not constructible.", expr->Start());
-            expr->GetTypeRef()->SetTsType(checker->GlobalTypeError());
-            return checker->GlobalTypeError();
-        }
-
-        return calleeType;
-    }
 
     checker::Type *CheckEnumMemberExpression(ETSEnumType *const baseType, ir::MemberExpression *const expr) const;
 

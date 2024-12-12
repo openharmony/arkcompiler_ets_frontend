@@ -59,9 +59,9 @@ checker::Type *TSThisType::GetType([[maybe_unused]] checker::TSChecker *checker)
     return nullptr;
 }
 
-checker::Type *TSThisType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType TSThisType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 checker::Type *TSThisType::GetType([[maybe_unused]] checker::ETSChecker *checker)

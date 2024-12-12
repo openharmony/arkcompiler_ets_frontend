@@ -34,7 +34,7 @@ bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
 
     for (uint32_t index = 0; index < node->Elements().size(); index++) {
         ir::Expression *currentArrayElem = node->Elements()[index];
-        auto *const currentArrayElementType = currentArrayElem->Check(relation->GetChecker()->AsETSChecker());
+        auto const currentArrayElementType = currentArrayElem->Check(relation->GetChecker()->AsETSChecker());
 
         if (!AssignmentContext(relation, currentArrayElem,
                                currentArrayElem->Check(relation->GetChecker()->AsETSChecker()), target->ElementType(),

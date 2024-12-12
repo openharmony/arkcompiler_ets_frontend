@@ -112,9 +112,9 @@ checker::Type *ForOfStatement::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ForOfStatement::Check(checker::ETSChecker *checker)
+checker::VerifiedType ForOfStatement::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ForOfStatement *ForOfStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)

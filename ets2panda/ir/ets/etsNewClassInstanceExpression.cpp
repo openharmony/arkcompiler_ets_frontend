@@ -103,9 +103,9 @@ checker::Type *ETSNewClassInstanceExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewClassInstanceExpression::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSNewClassInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 
 ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstanceExpression const &other,
@@ -133,4 +133,10 @@ ETSNewClassInstanceExpression *ETSNewClassInstanceExpression::Clone(ArenaAllocat
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
+
+bool ETSNewClassInstanceExpression::TypeIsAllowedForInstantiation(checker::Type *type)
+{
+    return !(type->IsETSNullType() || type->IsETSUndefinedType() || type->IsETSNeverType() || type->IsETSVoidType());
+}
+
 }  // namespace ark::es2panda::ir

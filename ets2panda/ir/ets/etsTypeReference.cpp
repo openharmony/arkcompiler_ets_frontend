@@ -86,11 +86,10 @@ checker::Type *ETSTypeReference::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSTypeReference::Check(checker::ETSChecker *checker)
+checker::VerifiedType ETSTypeReference::Check(checker::ETSChecker *checker)
 {
-    return checker->GetAnalyzer()->Check(this);
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
-
 checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 {
     if (TsType() == nullptr) {
