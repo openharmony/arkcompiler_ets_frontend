@@ -50,7 +50,7 @@ function do_checkout() {
 
 GIT_URL=https://gitee.com/openharmony-sig/arkcompiler_ets_frontend.git
 DEST=koala-sig
-do_checkout "${GIT_URL}" panda_rev_3 "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_4 "${DEST}"
 
 cd "${DEST}" || exit 1
 
@@ -85,9 +85,7 @@ KOALA_BZ=1 npm run ohos-sdk
 popd >/dev/null 2>&1 || exit 1
 
 pushd arkoala-arkts || exit 1
-OUTPUT=$(npm run shopping:all:node)
-echo $OUTPUT
-echo $OUTPUT >> grep "NoSuchMethodError: No implementation found for NativeModule.NativeModule::_SwiperAttribute_indicator"
+npm run shopping:all:node
 popd >/dev/null 2>&1 || exit 1
 
 exit 0
