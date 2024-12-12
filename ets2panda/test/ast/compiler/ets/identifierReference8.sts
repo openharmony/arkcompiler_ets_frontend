@@ -21,9 +21,9 @@ class A {
   }
 
   bar(): void {
-    this.foo + 5;
+    /* @@ label */this./* @@ label1 */foo + 5;
   }
 }
 
-/* @@? 24:10 Error TypeError: Method used in wrong context  */
-/* @@? 24:5 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */
+/* @@@ label1 Error TypeError: Method used in wrong context  */
+/* @@@ label Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */

@@ -15,8 +15,8 @@
 
 class Klass<T> {
     static {
-        let asd: Klass<T> = new Klass<T>();
+        let asd: Klass</* @@ label */T> = new Klass<T>();
     }
 }
 
-/* @@? 18:24 Error TypeError: Cannot make a static reference to the non-static type T  */
+/* @@@ label Error TypeError: Cannot make a static reference to the non-static type T  */

@@ -16,6 +16,6 @@
 class A {}
 
 let arr : Object[] | null = [new Object(), new A()];
-let elem : Object | undefined = arr[0];
+let elem : Object | undefined = /* @@ label */arr[0];
 
-/* @@? 19:33 Error TypeError: Value is possibly nullish.  */
+/* @@@ label Error TypeError: Value is possibly nullish.  */

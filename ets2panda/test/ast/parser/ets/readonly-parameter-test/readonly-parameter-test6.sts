@@ -23,9 +23,9 @@ function foo2 (x : int = 1) : readonly [int, string] {
 }
 
 let arr = foo1()
-arr[0] = 1
+/* @@ label */arr[0] = 1
 let tuple = foo2()
-tuple[1] = "c"
+/* @@ label1 */tuple[1] = "c"
 
-/* @@? 26:1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
-/* @@? 28:1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
+/* @@@ label Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */
+/* @@@ label1 Error TypeError: Cannot modify an array or tuple content that has the readonly parameter */

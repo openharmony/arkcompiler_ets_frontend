@@ -14,6 +14,6 @@
  */
 
 export {foo} from "./export"
-export {foo} from "./export_2"
+export /* @@ label */{foo} from "./export_2"
 
-/* @@? 17:8 Error SyntaxError: Ambiguous export "foo" */
+/* @@@ label Error SyntaxError: Ambiguous export "foo" */

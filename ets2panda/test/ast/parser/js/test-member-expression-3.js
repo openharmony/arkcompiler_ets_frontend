@@ -14,5 +14,5 @@
  */
 
 
-"sfs".b[]
-/* @@? 17:9 Error SyntaxError: Unexpected token: ']'.  */
+"sfs".b[/* @@ label */]
+/* @@@ label Error SyntaxError: Unexpected token: ']'.  */

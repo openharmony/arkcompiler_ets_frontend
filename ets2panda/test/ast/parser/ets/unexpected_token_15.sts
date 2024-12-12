@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-try } catch () {}
+try /* @@ label */} catch (/* @@ label1 */) {}
 
-/* @@? 16:5 Error SyntaxError: Expected a '{', got '}'.  */
-/* @@? 16:14 Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */
+/* @@@ label Error SyntaxError: Expected a '{', got '}'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */

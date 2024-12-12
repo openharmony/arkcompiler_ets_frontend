@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export default (a: int) => { return a }
+export default /* @@ label */(a: int) => { return a }
 
-/* @@? 16:16 Error SyntaxError: Export is allowed only for declarations. */
+/* @@@ label Error SyntaxError: Export is allowed only for declarations. */

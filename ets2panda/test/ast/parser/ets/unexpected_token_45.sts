@@ -19,4 +19,5 @@ do {
     )
 } while (true
 
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@ label */

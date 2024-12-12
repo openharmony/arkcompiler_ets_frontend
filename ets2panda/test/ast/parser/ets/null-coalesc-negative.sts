@@ -34,8 +34,8 @@ function main(): void {
   let c = new C();
   b.increment();
   let a = b ?? c;
-  a.increment();
+  /* @@ label */a./* @@ label1 */increment();
 }
 
-/* @@? 37:5 Error TypeError: Property 'increment' does not exist on type 'C'  */
-/* @@? 37:3 Error TypeError: Member type must be the same for all union objects.  */
+/* @@@ label1 Error TypeError: Property 'increment' does not exist on type 'C'  */
+/* @@@ label Error TypeError: Member type must be the same for all union objects.  */

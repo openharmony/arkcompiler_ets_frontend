@@ -14,5 +14,5 @@
  */
 
 
-var a: { a new ()}
-/* @@? 17:12 Error SyntaxError: Unexpected token, expected: ','.  */
+var a: { a /* @@ label */new ()}
+/* @@@ label Error SyntaxError: Unexpected token, expected: ','.  */

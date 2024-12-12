@@ -17,7 +17,8 @@ function identity<Type>(arg: Type): Type {
   return arg;
 }
 let output = identity<string>
-let output1 = identity<number>"hehe"
+let output1 = identity<number>/* @@ label */"hehe"
 
-/* @@? 20:31 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 24:1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@ label1 */

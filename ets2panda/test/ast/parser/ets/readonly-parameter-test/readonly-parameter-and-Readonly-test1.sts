@@ -17,8 +17,8 @@
 function foo (tuple: Readonly<[number, string, boolean]>, arr: Readonly<int[]>) {
 }
 
-function foo (tuple: readonly [number, string, boolean], arr: readonly int[]) {
+/* @@ label */function foo (tuple: readonly [number, string, boolean], arr: readonly int[]) {
 
 }
 
-/* @@? 20:1 Error TypeError: Function foo is already declared.  */
+/* @@@ label Error TypeError: Function foo is already declared.  */

@@ -21,8 +21,8 @@ function fn<T>(x:T) {}
 function main() : void {
   let b = new B();
 
-  fn<A>(b);
+  /* @@ label */fn<A>(/* @@ label1 */b);
 }
 
-/* @@? 24:9 Error TypeError: Type 'B' is not compatible with type 'A' at index 1  */
-/* @@? 24:3 Error TypeError: No matching call signature for fn(B)  */
+/* @@@ label1 Error TypeError: Type 'B' is not compatible with type 'A' at index 1  */
+/* @@@ label Error TypeError: No matching call signature for fn(B)  */

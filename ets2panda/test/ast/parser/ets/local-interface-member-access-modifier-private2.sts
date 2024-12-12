@@ -17,8 +17,8 @@ function foo()
 {
     interface LocalInterface
     {
-        private method() : void;
+        /* @@ label */private method/* @@ label1 */() : void;
     }
 }
-/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifiers  */
-/* @@? 20:23 Error SyntaxError: Private interface methods must have body  */
+/* @@@ label Error SyntaxError: Local interface declaration members can not have access modifiers  */
+/* @@@ label1 Error SyntaxError: Private interface methods must have body  */

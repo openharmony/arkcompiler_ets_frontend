@@ -14,6 +14,7 @@
  */
 
 
-if()
-/* @@? 17:4 Error SyntaxError: Unexpected token: ')'. */
-/* @@? 20:1 Error SyntaxError: Unexpected token: 'eos'. */
+if(/* @@ label */)
+/* @@@ label Error SyntaxError: Unexpected token: ')'. */
+/* @@@ label1 Error SyntaxError: Unexpected token: 'eos'. */
+/* @@ label1 */

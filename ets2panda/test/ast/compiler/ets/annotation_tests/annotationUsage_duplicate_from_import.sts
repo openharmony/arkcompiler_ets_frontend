@@ -16,7 +16,7 @@ import {MyAnno} from "./annotation_export.sts"
 
 class A{
     @MyAnno
-    @MyAnno
+    @/* @@ label */MyAnno
     foo(){}
 }
-/* @@? 19:6 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */
+/* @@@ label Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */

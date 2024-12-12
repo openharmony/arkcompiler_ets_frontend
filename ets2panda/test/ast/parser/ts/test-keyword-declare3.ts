@@ -14,5 +14,5 @@
  */
 
 
-declare a = 5;
-/* @@? 17:9 Error SyntaxError: Unexpected token: 'identification literal'.  */
+declare /* @@ label */a = 5;
+/* @@@ label Error SyntaxError: Unexpected token: 'identification literal'.  */

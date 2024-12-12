@@ -14,6 +14,6 @@
  */
 
 
-let a = { b , a  n )
+let a = { b , a  /* @@ label */n )
 
-/* @@? 17:18 Error SyntaxError: Unexpected token, expected ',' or '}'  */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'  */

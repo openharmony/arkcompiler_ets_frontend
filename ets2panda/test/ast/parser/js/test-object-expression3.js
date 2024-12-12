@@ -15,6 +15,6 @@
 
 
 a = {
-  a"foo",
+  a/* @@ label */"foo",
 }
-/* @@? 18:4 Error SyntaxError: Unexpected token, expected: ':'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ':'.  */

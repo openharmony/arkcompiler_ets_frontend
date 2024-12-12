@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * 12345 Test from "import_tests/packages"
+import * /* @@ label */12345 Test from "import_tests/packages"
 
 function main():void{
     console.log("not hehe")
 }
 
-/* @@? 15:10 Error SyntaxError: Unexpected token, expected: 'as'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: 'as'.  */
 

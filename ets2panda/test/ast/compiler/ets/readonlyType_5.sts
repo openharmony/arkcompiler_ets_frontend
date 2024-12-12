@@ -19,7 +19,7 @@ class A {
 
 function foo(): void {
     let a: Readonly<A> = new A();
-    let a_class: A = a;
+    let a_class: A = /* @@ label */a;
 }
 
-/* @@? 22:22 Error TypeError: Type 'Readonly<A>' cannot be assigned to type 'A'  */
+/* @@@ label Error TypeError: Type 'Readonly<A>' cannot be assigned to type 'A'  */

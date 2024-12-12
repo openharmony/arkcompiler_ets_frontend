@@ -14,6 +14,6 @@
  */
 
 
-throw ;
+throw /* @@ label */;
 
-/* @@? 17:7 Error SyntaxError: Unexpected token: ';'. */
+/* @@@ label Error SyntaxError: Unexpected token: ';'. */

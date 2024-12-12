@@ -14,7 +14,7 @@
  */
 
 class A {
-    x: int = 444
+    /* @@ label */x: int = 444
 }
 
 let changeAbleVar = new A();
@@ -29,4 +29,4 @@ function bar(a:Readonly<A>){
 bar(changeAbleVar)
 
 
-/* @@? 17:5 Error TypeError: Cannot assign to a readonly variable x  */
+/* @@@ label Error TypeError: Cannot assign to a readonly variable x  */

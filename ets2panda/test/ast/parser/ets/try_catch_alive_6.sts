@@ -18,12 +18,12 @@ function foo(): int {
 
     } catch (e) {
 
-    } finally {
+    } finally /* @@ label */{
         return 0;
-        let a = 2; // unreachable statement
+        /* @@ label1 */let a = 2; // unreachable statement
     }
     
 }
 
-/* @@? 23:9 Error TypeError: Unreachable statement.  */
-/* @@? 21:15 Warning Warning: Finally clause cannot complete normally  */
+/* @@@ label1 Error TypeError: Unreachable statement.  */
+/* @@@ label Warning Warning: Finally clause cannot complete normally  */

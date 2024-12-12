@@ -17,7 +17,7 @@ import * as all from "./re_export_5"
 
 function main() : void
 {
-    all.foo();
+    /* @@ label */all.foo();
 }
 
-/* @@? 20:5 Error TypeError: Ambiguous reference to 'foo'  */
+/* @@@ label Error TypeError: Ambiguous reference to 'foo'  */

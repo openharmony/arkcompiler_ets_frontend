@@ -15,15 +15,15 @@
 
 function main() {
     let x1 = [1, "a"]
-    let y1: [int, string, int, string] = [...x1, ...x1]
+    let y1: [int, string, int, string] = /* @@ label */[/* @@ label1 */...x1, /* @@ label2 */...x1]
     let x2 = [2]
     let x3 = ["abc", "abc"]
-    let y2: [boolean, int, string, string] = [true, ...x2, ...x3]
+    let y2: [boolean, int, string, string] = /* @@ label3 */[true, /* @@ label4 */...x2, /* @@ label5 */...x3]
 }
 
-/* @@? 18:43 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@? 18:50 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@? 18:42 Error TypeError: Few elements in array initializer for tuple with size of 4 */
-/* @@? 21:53 Error TypeError: 'double[]' cannot be spread in tuple. */
-/* @@? 21:60 Error TypeError: 'String[]' cannot be spread in tuple. */
-/* @@? 21:46 Error TypeError: Few elements in array initializer for tuple with size of 4 */
+/* @@@ label1 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
+/* @@@ label2 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
+/* @@@ label Error TypeError: Few elements in array initializer for tuple with size of 4 */
+/* @@@ label4 Error TypeError: 'double[]' cannot be spread in tuple. */
+/* @@@ label5 Error TypeError: 'String[]' cannot be spread in tuple. */
+/* @@@ label3 Error TypeError: Few elements in array initializer for tuple with size of 4 */

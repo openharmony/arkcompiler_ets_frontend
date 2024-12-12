@@ -15,8 +15,8 @@
 
 
 const enum Foo {
-    G = 1, 2, 3
+    G = 1, /* @@ label */2, /* @@ label1 */3
 }
 
-/* @@? 18:12 Error SyntaxError: Unexpected token in enum member  */
-/* @@? 18:15 Error SyntaxError: Unexpected token in enum member  */
+/* @@@ label Error SyntaxError: Unexpected token in enum member  */
+/* @@@ label1 Error SyntaxError: Unexpected token in enum member  */

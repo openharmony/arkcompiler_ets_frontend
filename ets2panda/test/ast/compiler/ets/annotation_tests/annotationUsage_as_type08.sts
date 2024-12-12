@@ -16,8 +16,8 @@
     a:string = "1"
 }
 
-let foo1:(a:MyAnno)=>int
-let foo2:()=>MyAnno
+let foo1:(a:/* @@ label */MyAnno)=>int
+let foo2:()=>/* @@ label1 */MyAnno
 
-/* @@? 19:13 Error TypeError: Annotations cannot be used as a type.  */
-/* @@? 20:14 Error TypeError: Annotations cannot be used as a type.  */
+/* @@@ label Error TypeError: Annotations cannot be used as a type.  */
+/* @@@ label1 Error TypeError: Annotations cannot be used as a type.  */

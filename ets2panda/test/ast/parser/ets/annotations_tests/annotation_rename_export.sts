@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-export {MyAnno as NA}
+export {MyAnno as /* @@ label */NA}
 
 @interface MyAnno{} 
 
-/* @@? 16:19 Error SyntaxError: Can not rename annotation 'MyAnno' in export or import statements.  */
+/* @@@ label Error SyntaxError: Can not rename annotation 'MyAnno' in export or import statements.  */

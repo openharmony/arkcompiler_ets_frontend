@@ -19,7 +19,7 @@ class A {
 
 function main() {
     let a = new A()
-    console.log(a["a"])
+    console.log(/* @@ label */a["a"])
 }
 
-/* @@? 22:17 Error TypeError: Object type doesn't have proper index access method.  */
+/* @@@ label Error TypeError: Object type doesn't have proper index access method.  */

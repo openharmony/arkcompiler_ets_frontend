@@ -14,11 +14,11 @@
  */
 
 declare class A {
-    [&^ index : number]: string
+    [/* @@ label */&^ index : number]: string
 }
 
 function main() {
     let a : A = new A();
 }
 
-/* @@? 17:6 Error SyntaxError: Unexpected token at  */
+/* @@@ label Error SyntaxError: Unexpected token at  */

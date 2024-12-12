@@ -17,14 +17,14 @@ class Apple{
   x: number
   y: number
 
-  native constructor(x:number){
+  native constructor(x:number)/* @@ label */{
     this.x=x
   }
 
-  native constructor(x:number,y:number){
+  native constructor(x:number,y:number)/* @@ label1 */{
     this.x=x
     this.y=y
   }
 }
-/* @@? 20:31 Error TypeError: Native constructor declaration cannot have a body. */
-/* @@? 24:40 Error TypeError: Native constructor declaration cannot have a body. */
+/* @@@ label Error TypeError: Native constructor declaration cannot have a body. */
+/* @@@ label1 Error TypeError: Native constructor declaration cannot have a body. */

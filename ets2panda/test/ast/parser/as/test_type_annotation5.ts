@@ -14,6 +14,6 @@
  */
 
 
-let a: (a: i32, b: u8) u8
+let a: (a: i32, b: u8) /* @@ label */u8
 
-/* @@? 17:24 Error SyntaxError: '=>' expected  */
+/* @@@ label Error SyntaxError: '=>' expected  */

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-import (node) from
+import /* @@ label */(/* @@ label1 */node/* @@ label2 */) /* @@ label3 */from
 
-/* @@? 16:8 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 16:9 Error SyntaxError: Unexpected token, expected: 'from'.  */
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected: 'from'.  */
-/* @@? 16:15 Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: 'from'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected: 'from'.  */
+/* @@@ label3 Error SyntaxError: Unexpected token, expected string literal.  */

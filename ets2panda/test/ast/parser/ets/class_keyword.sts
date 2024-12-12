@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-final kngkgj class B {
+final /* @@ label */kngkgj class B {
 
 }
 
-/* @@? 16:7 Error SyntaxError: Unexpected token: 'identification literal'.  */
+/* @@@ label Error SyntaxError: Unexpected token: 'identification literal'.  */

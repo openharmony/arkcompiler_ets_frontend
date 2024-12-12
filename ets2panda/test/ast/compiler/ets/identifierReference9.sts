@@ -21,9 +21,9 @@ class A {
   }
 
   bar(): void {
-    this.foo = 2;
+    this./* @@ label */foo = /* @@ label1 */2;
   }
 }
 
-/* @@? 24:10 Error TypeError: Method used in wrong context  */
-/* @@? 24:16 Error TypeError: Type 'int' cannot be assigned to type '() => void'  */
+/* @@@ label Error TypeError: Method used in wrong context  */
+/* @@@ label1 Error TypeError: Type 'int' cannot be assigned to type '() => void'  */

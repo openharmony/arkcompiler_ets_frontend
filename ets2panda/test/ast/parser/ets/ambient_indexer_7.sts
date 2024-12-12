@@ -14,14 +14,14 @@
  */
 
 declare class A {
-    [index : number : string
-}
+    [index : number /* @@ label */: /* @@ label1 */string
+/* @@ label2 */}
 
-function main() {
+/* @@ label3 */function main() {
     let a : A = new A();
 }
 
-/* @@? 17:21 Error SyntaxError: ] expected in index signature  */
-/* @@? 17:23 Error SyntaxError: An index signature must have a type annotation.  */
-/* @@? 18:1 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
-/* @@? 20:1 Error SyntaxError: Unexpected token: 'function'.  */
+/* @@@ label Error SyntaxError: ] expected in index signature  */
+/* @@@ label1 Error SyntaxError: An index signature must have a type annotation.  */
+/* @@@ label2 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
+/* @@@ label3 Error SyntaxError: Unexpected token: 'function'.  */

@@ -15,7 +15,7 @@
 
 
 class Foo {
-    a b;
+    a /* @@ label */b;
 }
 
-/* @@? 18:7 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ';'.  */

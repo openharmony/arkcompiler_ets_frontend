@@ -17,7 +17,7 @@
     testProperty2: number
 }
 
-@MyAnno({testProperty1: "123", testProperty2: 123;})
+@MyAnno({testProperty1: "123", testProperty2: 123/* @@ label */;})
 class A{}
 
-/* @@? 20:50 Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ','.  */

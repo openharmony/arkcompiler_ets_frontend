@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-function foo<T>(b: Partial<int>): void {}
+function foo<T>(b: Partial/* @@ label */<int>): void {}
 
-/* @@? 16:27 Error TypeError: Only reference types can be converted to utility types. */
+/* @@@ label Error TypeError: Only reference types can be converted to utility types. */

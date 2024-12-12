@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-if (true { console.log("hello!") }
+if (true /* @@ label */{ console.log("hello!") /* @@ label1 */}
 
-/* @@? 16:10 Error SyntaxError: Expected right parenthesis in an 'IfStatement'  */
-/* @@? 16:34 Error SyntaxError: Unexpected token '}'.  */
+/* @@@ label Error SyntaxError: Expected right parenthesis in an 'IfStatement'  */
+/* @@@ label1 Error SyntaxError: Unexpected token '}'.  */

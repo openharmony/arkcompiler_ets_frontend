@@ -20,7 +20,7 @@ flags: [dynamic-ast]
 import { A } from "dynamic_import_tests/modules/module"
 
 function foo(p: A): void {
-    p.foo("abc")
+    /* @@ label */p.foo(/* @@ label1 */"abc")
 }
-/* @@? 23:11 Error TypeError: Type '"abc"' is not compatible with type 'double' at index 1  */
-/* @@? 23:5 Error TypeError: No matching call signature for foo("abc")  */
+/* @@@ label1 Error TypeError: Type '"abc"' is not compatible with type 'double' at index 1  */
+/* @@@ label Error TypeError: No matching call signature for foo("abc")  */

@@ -15,7 +15,7 @@
 
 function foo<T>(x: T) {}
 
-foo<void>(void) 
+foo<void>(/* @@ label */void) 
 
-/* @@? 18:11 Error TypeError: Unresolved reference void  */
+/* @@@ label Error TypeError: Unresolved reference void  */
 

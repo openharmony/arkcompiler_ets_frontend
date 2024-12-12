@@ -14,7 +14,7 @@
  */
 
 interface I {
-    readonly foo()
+    /* @@ label */readonly foo()
 }
 
-/* @@? 17:5 Error SyntaxError: Modifier 'readonly' cannot be applied to an interface method  */
+/* @@@ label Error SyntaxError: Modifier 'readonly' cannot be applied to an interface method  */

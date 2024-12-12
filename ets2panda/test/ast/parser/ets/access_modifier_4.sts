@@ -14,7 +14,7 @@
  */
 
 class A {
-    static public n: int;
+    static /* @@ label */public n: int;
 }
 
-/* @@? 17:12 Error SyntaxError: Access modifier must precede field and method modifiers.  */
+/* @@@ label Error SyntaxError: Access modifier must precede field and method modifiers.  */

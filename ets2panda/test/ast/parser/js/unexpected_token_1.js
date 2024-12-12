@@ -14,6 +14,6 @@
  */
 
 class A 
-}
+/* @@ label */}
 
-/* @@? 17:1 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '{'.  */

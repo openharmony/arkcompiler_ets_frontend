@@ -14,7 +14,7 @@
  */
 
 function main(): void {
-    launch foo(5);
+    launch /* @@ label */foo(5);
 }
 
-/* @@? 17:12 Error TypeError: Unresolved reference foo  */
+/* @@@ label Error TypeError: Unresolved reference foo  */

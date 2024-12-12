@@ -18,7 +18,7 @@ function foo() : int{
 }
 
 function main() {
-    let goo : int = foo
+    let goo : int = /* @@ label */foo
 }
 
-/* @@? 21:21 Error TypeError: Type '() => int' cannot be assigned to type 'int' */
+/* @@@ label Error TypeError: Type '() => int' cannot be assigned to type 'int' */

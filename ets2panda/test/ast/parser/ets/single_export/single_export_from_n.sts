@@ -10,7 +10,7 @@
  * limitations under the License.
  */
 
-export a from "./type"
+export a /* @@ label */from /* @@ label1 */"./type"
 
-/* @@? 13:10 Error SyntaxError: Unexpected token 'identification literal'. */
-/* @@? 13:15 Error SyntaxError: Unexpected token 'string literal'. */
+/* @@@ label Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@@ label1 Error SyntaxError: Unexpected token 'string literal'. */

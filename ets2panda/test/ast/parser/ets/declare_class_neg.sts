@@ -14,10 +14,10 @@
  */
 
 declare class A {
-  declare constructor()
+  declare /* @@ label */constructor()
 }
 class B {
-  declare constructor()
+  declare /* @@ label1 */constructor()
 }
-/* @@? 17:11 Error SyntaxError: Field type annotation expected */
-/* @@? 20:11 Error SyntaxError: Field type annotation expected */
+/* @@@ label Error SyntaxError: Field type annotation expected */
+/* @@@ label1 Error SyntaxError: Field type annotation expected */

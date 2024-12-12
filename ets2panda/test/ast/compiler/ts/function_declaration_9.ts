@@ -14,7 +14,7 @@
  */
 
 
-function foo(): boolean {
+function foo(): /* @@ label */boolean {
 }
 
-/* @@? 17:17 Error TypeError: A function whose declared type is neither 'void' nor 'any' must return a value.  */
+/* @@@ label Error TypeError: A function whose declared type is neither 'void' nor 'any' must return a value.  */

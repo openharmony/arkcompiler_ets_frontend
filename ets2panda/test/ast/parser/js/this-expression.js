@@ -14,6 +14,6 @@
  */
 
 
-this."foo";
+this./* @@ label */"foo";
 
-/* @@? 17:6 Error SyntaxError: Identifier expected, got 'string literal'.  */
+/* @@@ label Error SyntaxError: Identifier expected, got 'string literal'.  */

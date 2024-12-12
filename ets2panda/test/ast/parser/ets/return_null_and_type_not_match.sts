@@ -16,11 +16,11 @@
 
 
 function main(): int {
-    return test();
+    return /* @@ label */test();
 }
 
 function test():string {
-    return;
+    /* @@ label1 */return;
 }
-/* @@? 19:12 Error TypeError: Type 'String' is not compatible with the enclosing method's return type 'int'  */
-/* @@? 23:5 Error TypeError: Missing return value.  */
+/* @@@ label Error TypeError: Type 'String' is not compatible with the enclosing method's return type 'int'  */
+/* @@@ label1 Error TypeError: Missing return value.  */

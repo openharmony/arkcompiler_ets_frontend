@@ -14,7 +14,7 @@
  */
 
 @interface MyAnno {
-    testProperty1: string = [1,2,a]
+    testProperty1: string = /* @@ label */[1,2,a]
 }
 
-/* @@? 17:29 Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */

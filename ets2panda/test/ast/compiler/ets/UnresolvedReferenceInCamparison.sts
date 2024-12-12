@@ -14,10 +14,10 @@
  */
 
 function main() : void {
-    if (a > b)
-    hehe
+    if (/* @@ label */a > /* @@ label1 */b)
+    /* @@ label2 */hehe
 }
 
-/* @@? 17:9 Error TypeError: Unresolved reference a  */
-/* @@? 17:13 Error TypeError: Unresolved reference b  */
-/* @@? 18:5 Error TypeError: Unresolved reference hehe  */
+/* @@@ label Error TypeError: Unresolved reference a  */
+/* @@@ label1 Error TypeError: Unresolved reference b  */
+/* @@@ label2 Error TypeError: Unresolved reference hehe  */

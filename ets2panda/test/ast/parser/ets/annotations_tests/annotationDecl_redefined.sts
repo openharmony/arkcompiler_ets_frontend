@@ -22,9 +22,9 @@
     testProperty2: number
 }
 
-@interface MyAnno {    // CTE
+@interface /* @@ label */MyAnno {    // CTE
     testProperty3: string
     testProperty4: number
 }
 
-/* @@? 25:12 Error SyntaxError: Variable 'MyAnno' has already been declared.  */
+/* @@@ label Error SyntaxError: Variable 'MyAnno' has already been declared.  */

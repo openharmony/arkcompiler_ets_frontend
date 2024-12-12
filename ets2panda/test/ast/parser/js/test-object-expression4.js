@@ -15,7 +15,7 @@
 
 
 a = {
-  if,
+  /* @@ label */if,
 }
 
-/* @@? 18:3 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */

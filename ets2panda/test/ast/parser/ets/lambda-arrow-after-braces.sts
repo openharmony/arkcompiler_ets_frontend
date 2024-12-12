@@ -15,9 +15,10 @@
 
 function main() : void{
 (
-    ({}=>z)
-}
+    ({}/* @@ label */=>z)
+/* @@ label1 */}
 
-/* @@? 18:8 Error SyntaxError: Unexpected token: '=>'.  */
-/* @@? 19:1 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 24:1 Error SyntaxError: Expected a '}' got 'eos'.  */
+/* @@@ label Error SyntaxError: Unexpected token: '=>'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@@ label2 Error SyntaxError: Expected a '}' got 'eos'.  */
+/* @@ label2 */

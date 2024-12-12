@@ -24,7 +24,7 @@ function labeledTest01(): int {
             case 1:
                 result += 2;
                 ++i;
-                continue %label1;
+                continue /* @@ label */%/* @@ label1 */label1;
             case 2:
                 result = 1;
                 break;
@@ -36,5 +36,5 @@ function labeledTest01(): int {
     return result;
 }
 
-/* @@? 27:26 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 27:27 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label1 Error SyntaxError: Unexpected token 'identification literal'.  */

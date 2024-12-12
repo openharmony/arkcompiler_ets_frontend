@@ -14,7 +14,7 @@
  */
 
 function f1(x: number|string, y: boolean|null): boolean {
-    return x == y
+    return /* @@ label */x == y
 }
 
-/* @@? 17:12 Error TypeError: Operator '==' cannot be applied to types 'Double|String' and 'Boolean|null'.  */
+/* @@@ label Error TypeError: Operator '==' cannot be applied to types 'Double|String' and 'Boolean|null'.  */

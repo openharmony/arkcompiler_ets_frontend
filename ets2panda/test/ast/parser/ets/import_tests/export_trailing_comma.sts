@@ -17,6 +17,6 @@ function foo2(): void {}
 function foo3(): void {}
 
 export {foo2,}
-export {, foo3}
+export {/* @@ label */, foo3}
 
-/* @@? 20:9 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */

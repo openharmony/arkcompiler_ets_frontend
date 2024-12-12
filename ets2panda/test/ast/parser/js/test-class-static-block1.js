@@ -14,10 +14,10 @@
  */
 
 class A {
-    #static {
+    #static /* @@ label */{
 
     }
-}
+/* @@ label1 */}
 
-/* @@? 17:13 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 20:1 Error SyntaxError: Unexpected token: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token: '}'.  */

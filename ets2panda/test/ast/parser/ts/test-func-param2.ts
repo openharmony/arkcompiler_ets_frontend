@@ -14,8 +14,8 @@
  */
 
 
-function foo(a, this) {
+function foo(a, this/* @@ label */) {
 
 }
 
-/* @@? 17:21 Error SyntaxError: A 'this' parameter must be the first parameter  */
+/* @@@ label Error SyntaxError: A 'this' parameter must be the first parameter  */

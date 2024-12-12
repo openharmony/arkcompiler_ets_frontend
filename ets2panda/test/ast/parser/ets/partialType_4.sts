@@ -74,9 +74,9 @@ class A<T extends A<T>>{
     }
     foo<S extends A<S>>(sVar: S, initializers: Partial<S>): void {
             sVar.bar(initializers)
-            initializers.baz = sVar
+            initializers.baz = /* @@ label */sVar
     }
     bar(initializers: Partial<T>): void {}
 }
 
-/* @@? 77:32 Error TypeError: Type 'S' cannot be assigned to type 'T|undefined'  */
+/* @@@ label Error TypeError: Type 'S' cannot be assigned to type 'T|undefined'  */

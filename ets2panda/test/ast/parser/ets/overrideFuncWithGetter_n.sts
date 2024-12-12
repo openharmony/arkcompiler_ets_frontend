@@ -17,11 +17,11 @@ interface A {
     length(): number;
 }
 
-class C implements A {
-    override get length(): number {
+class C implements A /* @@ label */{
+    override get length/* @@ label1 */(): number {
         return 0;
     }
 }
 
-/* @@? 20:22 Error TypeError: C is not abstract and does not override abstract method length(): double in A  */
-/* @@? 21:24 Error TypeError: Method length(): double in C not overriding any method  */
+/* @@@ label Error TypeError: C is not abstract and does not override abstract method length(): double in A  */
+/* @@@ label1 Error TypeError: Method length(): double in C not overriding any method  */

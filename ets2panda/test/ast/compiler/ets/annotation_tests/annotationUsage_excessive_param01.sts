@@ -18,11 +18,11 @@
     testProperty2: string
 }
 
-@MyAnno({testProperty1:"", testProperty2: "", testProperty3: "", testProperty4: ""})
+@/* @@ label */MyAnno({testProperty1:"", testProperty2: "", testProperty3: "", testProperty4: ""})
 class B{
-    @MyAnno({testProperty1:"", testProperty2: "", testProperty3: ""})
+    @/* @@ label1 */MyAnno({testProperty1:"", testProperty2: "", testProperty3: ""})
     foo(){}
 }
 
-/* @@? 21:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
-/* @@? 23:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
+/* @@@ label Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */
+/* @@@ label1 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined.  */

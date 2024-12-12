@@ -17,10 +17,10 @@ class A {
     #a;
     foo() {
         if (#a in this) {
-            let b = #b;
-        }
+            let b = #b/* @@ label */;
+        /* @@ label1 */}
     }
 }
 
-/* @@? 20:23 Error SyntaxError: Unexpected private identifier  */
-/* @@? 21:9 Error SyntaxError: Unexpected token: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected private identifier  */
+/* @@@ label1 Error SyntaxError: Unexpected token: '}'.  */

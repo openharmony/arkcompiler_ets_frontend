@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-do {} while [true)
+do {} while /* @@ label */[true)
 
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '('.  */

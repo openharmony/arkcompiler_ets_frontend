@@ -19,9 +19,9 @@ flags: [module]
 ---*/
 
 import * as b from "foo"
-import a from "bar";
+import a from /* @@ label */"bar"/* @@ label1 */;
 import {c, d as e, f } from "bar"
 import "foobar";
 
-/* @@? 22:15 Error SyntaxError: Unexpected token, expected: 'from'.  */
-/* @@? 22:20 Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: 'from'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected string literal.  */
