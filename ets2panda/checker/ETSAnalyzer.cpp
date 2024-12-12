@@ -146,6 +146,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
 }
 void ETSAnalyzer::CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const
 {
+    ASSERT(scriptFunc != nullptr);
     if (checker->CheckDuplicateAnnotations(scriptFunc->Annotations())) {
         for (auto *it : scriptFunc->Annotations()) {
             it->Check(checker);
