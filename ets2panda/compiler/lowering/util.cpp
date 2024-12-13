@@ -52,6 +52,12 @@ util::UString GenName(ArenaAllocator *const allocator)
     return util::UString {GENSYM_CORE + std::to_string(++gensymCounter), allocator};
 }
 
+void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range)
+{
+    node->SetRange(range);
+    node->IterateRecursively([](ir::AstNode *n) { n->SetRange(n->Parent()->Range()); });
+}
+
 // Function to clear expression node types and identifier node variables (for correct re-binding and re-checking)
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
 {
