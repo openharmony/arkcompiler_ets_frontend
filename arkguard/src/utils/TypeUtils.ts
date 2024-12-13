@@ -90,7 +90,9 @@ export class TypeUtils {
       getDirectories: undefined,
     };
 
-    let option: CompilerOptions = {};
+    let option: CompilerOptions = {
+      'alwaysStrict': true
+    };
     if (ast.fileName.endsWith('.js')) {
       option.allowJs = true;
     }
