@@ -34,7 +34,7 @@ ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
     ir::Expression *expr = ParseLeftHandSideExpression(flags);
     if (!expr->IsCallExpression()) {
         LogSyntaxError("Only call expressions are allowed after 'launch'", exprStart);
-        return AllocErrorExpression();
+        return AllocBrokenExpression();
     }
     auto call = expr->AsCallExpression();
     auto *launchExpression = AllocNode<ir::ETSLaunchExpression>(call);
@@ -272,7 +272,7 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
     }
 
     LogSyntaxError({"Unexpected token '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
-    return AllocErrorExpression();
+    return AllocBrokenExpression();
 }
 
 ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFlags flags)
@@ -337,7 +337,7 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         case lexer::TokenType::KEYW_TYPE: {
             LogSyntaxError("Type alias is allowed only as top-level declaration");
             ParseTypeAliasDeclaration();  // Try to parse type alias and drop the result.
-            return AllocErrorExpression();
+            return AllocBrokenExpression();
         }
         case lexer::TokenType::PUNCTUATOR_FORMAT: {
             return ParseExpressionFormatPlaceholder();

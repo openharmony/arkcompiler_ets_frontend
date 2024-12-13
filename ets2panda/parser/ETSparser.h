@@ -140,12 +140,12 @@ public:
     }
     ir::Statement *ParseTopLevelAnnotation(ir::ModifierFlags memberModifiers);
     ArenaVector<ir::AnnotationUsage *> ParseAnnotations(bool isTopLevelSt);
-    ir::ClassDeclaration *CreateFormattedClassDeclaration(std::string_view sourceCode,
-                                                          std::vector<ir::AstNode *> &insertingNodes,
-                                                          bool allowStatic = false);
+    ir::Statement *CreateFormattedClassDeclaration(std::string_view sourceCode,
+                                                   std::vector<ir::AstNode *> &insertingNodes,
+                                                   bool allowStatic = false);
 
     template <typename... Args>
-    ir::ClassDeclaration *CreateFormattedClassDeclaration(std::string_view sourceCode, bool allowStatic, Args &&...args)
+    ir::Statement *CreateFormattedClassDeclaration(std::string_view sourceCode, bool allowStatic, Args &&...args)
     {
         std::vector<ir::AstNode *> insertingNodes {};
         insertingNodes.reserve(sizeof...(Args));
@@ -245,7 +245,7 @@ private:
 
     ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode);
 
-    ir::ClassDeclaration *CreateClassDeclaration(std::string_view sourceCode, bool allowStatic = false);
+    ir::Statement *CreateClassDeclaration(std::string_view sourceCode, bool allowStatic = false);
     ir::AstNode *CreateClassElement(std::string_view sourceCode, const ArenaVector<ir::AstNode *> &properties,
                                     ir::ClassDefinitionModifiers modifiers);
 
@@ -283,9 +283,8 @@ private:
     std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> ParseNamedSpecifiers();
     ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
-    ir::ETSImportDeclaration *ParseImportDeclarationHelper(lexer::SourcePosition startLoc,
-                                                           ArenaVector<ir::AstNode *> &specifiers,
-                                                           ir::ImportKinds importKind);
+    ir::Statement *ParseImportDeclarationHelper(lexer::SourcePosition startLoc, ArenaVector<ir::AstNode *> &specifiers,
+                                                ir::ImportKinds importKind);
     parser::Program *ParseSource(const SourceFile &sourceFile);
     void AddExternalSource(const std::vector<Program *> &programs);
     ir::ETSModule *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
@@ -362,7 +361,7 @@ private:
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Statement *ParseTryStatement() override;
-    ir::DebuggerStatement *ParseDebuggerStatement() override;
+    ir::Statement *ParseDebuggerStatement() override;
     ir::Statement *ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers);
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
@@ -406,11 +405,11 @@ private:
     ir::Expression *ParseSuperClassReference() override;
     ir::Identifier *ParseClassIdent(ir::ClassDefinitionModifiers modifiers) override;
     // NOLINTNEXTLINE(google-default-arguments)
-    ir::ClassDeclaration *ParseClassStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
-                                              ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
+    ir::Statement *ParseClassStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
+                                       ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
     // NOLINTNEXTLINE(google-default-arguments)
-    ir::ETSStructDeclaration *ParseStructStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
-                                                   ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
+    ir::Statement *ParseStructStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
+                                        ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
     std::pair<bool, bool> HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,

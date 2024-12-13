@@ -174,7 +174,7 @@
     _(YIELD_EXPRESSION, YieldExpression)                                                  \
     _(OPAQUE_TYPE_NODE, OpaqueTypeNode)                                                   \
     _(BLOCK_EXPRESSION, BlockExpression)                                                  \
-    _(ERROR_TYPE_NODE, ErrorTypeNode)
+    _(BROKEN_TYPE_NODE, BrokenTypeNode)
 
 #define AST_NODE_REINTERPRET_MAPPING(_)                                                   \
     _(ARRAY_EXPRESSION, ARRAY_PATTERN, ArrayExpression, ArrayPattern)                     \

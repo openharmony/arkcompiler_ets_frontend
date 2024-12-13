@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_ITERATE_AST_VISITOR_H
 
 #include "AstVisitor.h"
-#include "ir/errorTypeNode.h"
+#include "ir/brokenTypeNode.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/blockExpression.h"
 #include "ir/ets/etsUnionType.h"

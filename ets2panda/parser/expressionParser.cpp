@@ -546,7 +546,7 @@ void ParserImpl::ValidateParenthesizedExpression(ir::Expression *lhsExpression)
 ir::Expression *ParserImpl::ParsePrefixAssertionExpression()
 {
     LogUnexpectedToken(lexer_->GetToken().Type());
-    return AllocErrorExpression();
+    return AllocBrokenExpression();
 }
 
 ir::Expression *ParserImpl::ParseAssignmentExpressionHelper()
@@ -1000,14 +1000,14 @@ ir::Expression *ParserImpl::ParsePrimaryExpressionWithLiterals(ExpressionParseFl
             return ParseStringLiteral();
         default:
             LogUnexpectedToken(lexer_->GetToken().Type());
-            return AllocErrorExpression();
+            return AllocBrokenExpression();
     }
 }
 
 ir::Expression *ParserImpl::ParseHashMaskOperator()
 {
     if (!ValidatePrivateIdentifier()) {
-        return AllocErrorExpression();
+        return AllocBrokenExpression();
     }
 
     auto *privateIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
@@ -1026,6 +1026,10 @@ ir::Expression *ParserImpl::ParseClassExpression()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     ir::ClassDefinition *classDefinition = ParseClassDefinition(ir::ClassDefinitionModifiers::ID_REQUIRED);
+    if (classDefinition == nullptr) {  // Error processing.
+        // Error is logged inside ParseClassDefinition
+        return AllocBrokenExpression();
+    }
 
     auto *classExpr = AllocNode<ir::ClassExpression>(classDefinition);
     classExpr->SetRange({startLoc, classDefinition->End()});
@@ -1783,7 +1787,7 @@ ir::Expression *ParserImpl::ParsePatternElement(ExpressionParseFlags flags, bool
         }
         default: {
             LogSyntaxError("Unexpected token, expected an identifier.");
-            returnNode = AllocErrorExpression();
+            returnNode = AllocBrokenExpression();
         }
     }
 
@@ -2033,7 +2037,7 @@ ir::Expression *ParserImpl::ParsePropertyKey(ExpressionParseFlags flags)
         default: {
             LogSyntaxError("Unexpected token in property key");
             lexer_->NextToken();
-            return AllocErrorExpression();
+            return AllocBrokenExpression();
         }
     }
 }

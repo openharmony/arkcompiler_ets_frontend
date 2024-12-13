@@ -18,6 +18,3 @@ namespace MySpace{
 }
 
 /* @@? 17:5 Error SyntaxError: Unexpected token '...'.  */
-/* @@? 17:5 Error SyntaxError: Failed to parse statement.  */
-/* @@? 18:1 Error SyntaxError: Unexpected token '}'.  */
-

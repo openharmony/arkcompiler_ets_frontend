@@ -13,10 +13,15 @@
  * limitations under the License.
  */
 
+function foo1() {
+    const NaN = 10;
+    const nan = 20;
+    const Infinity = "Inf";
 
-if /* @@ label */else;
-/* @@@ label Error SyntaxError: Unexpected token 'else', expected: '('.  */
-/* @@@ label Error SyntaxError: Unexpected token: 'else'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'else', expected: ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token: 'else'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'else'.  */
+    let NaN = "";
+    let Infinity = test();
+    let undefined
+};
+
+/* @@? 23:9 Error SyntaxError: Identifier expected, got 'undefined'. */
+/* @@? 24:1 Error SyntaxError: Variable must be initialized or it's type must be declared */

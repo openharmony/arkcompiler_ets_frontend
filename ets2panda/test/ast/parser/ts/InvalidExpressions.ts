@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,12 +37,15 @@ let x = new Type(1, 2, ;
 /* @@? 22:20 Error SyntaxError: Unexpected token. */
 /* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
 /* @@? 22:24 Error SyntaxError: Unexpected token: ':'. */
+/* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
 /* @@? 22:30 Error SyntaxError: Unexpected token: ')'. */
 /* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
 /* @@? 22:30 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
 /* @@? 22:32 Error SyntaxError: Unexpected token: '=>'. */
 /* @@? 24:3 Error SyntaxError: Unexpected token '#'. */
 /* @@? 24:5 Error SyntaxError: Unexpected token in private field */
+/* @@? 24:5 Error SyntaxError: Unexpected token 'number literal'. */
 /* @@? 25:2 Error SyntaxError: Unexpected token '#'. */
 /* @@? 25:7 Error SyntaxError: Unexpected private identifier */
 /* @@? 27:1 Error SyntaxError: Unexpected token: 'let'. */

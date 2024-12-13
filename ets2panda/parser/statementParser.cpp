@@ -219,8 +219,8 @@ ir::Statement *ParserImpl::ParseLetStatement(StatementParsingFlags flags)
     }
 
     auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::LET);
-    if (variableDecl == nullptr) {  // Error processing.
-        return nullptr;
+    if (variableDecl->IsBrokenStatement()) {  // Error processing.
+        return variableDecl;
     }
 
     ConsumeSemicolon(variableDecl);
@@ -237,8 +237,8 @@ ir::Statement *ParserImpl::ParseConstStatement(StatementParsingFlags flags)
     lexer_->NextToken();
 
     auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::CONST | VariableParsingFlags::NO_SKIP_VAR_KIND);
-    if (variableDecl == nullptr) {  // Error processing.
-        return nullptr;
+    if (variableDecl->IsBrokenStatement()) {  // Error processing.
+        return variableDecl;
     }
 
     variableDecl->SetStart(constVarStar);
@@ -255,7 +255,7 @@ ir::EmptyStatement *ParserImpl::ParseEmptyStatement()
     return empty;
 }
 
-ir::DebuggerStatement *ParserImpl::ParseDebuggerStatement()
+ir::Statement *ParserImpl::ParseDebuggerStatement()
 {
     auto *debuggerNode = AllocNode<ir::DebuggerStatement>();
     debuggerNode->SetRange(lexer_->GetToken().Loc());
@@ -273,10 +273,6 @@ ir::Statement *ParserImpl::ParseFunctionStatement(StatementParsingFlags flags)
     }
 
     auto *funcDecl = ParseFunctionDeclaration(false, ParserStatus::NO_OPTS);
-    if (funcDecl == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     ArenaVector<ir::Statement *> stmts(Allocator()->Adapter());
     stmts.push_back(funcDecl);
 
@@ -292,18 +288,16 @@ ir::Statement *ParserImpl::ParsePotentialExpressionStatement(StatementParsingFla
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ETSStructDeclaration *ParserImpl::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
-                                                           ir::ClassDefinitionModifiers modifiers,
-                                                           ir::ModifierFlags modFlags)
+ir::Statement *ParserImpl::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
+                                                ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
     LogSyntaxError("Illegal start of expression", Lexer()->GetToken().Start());
     return ParseStructDeclaration(modifiers, modFlags);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ClassDeclaration *ParserImpl::ParseClassStatement(StatementParsingFlags flags,
-                                                      ir::ClassDefinitionModifiers modifiers,
-                                                      ir::ModifierFlags modFlags)
+ir::Statement *ParserImpl::ParseClassStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
+                                               ir::ModifierFlags modFlags)
 {
     if ((flags & StatementParsingFlags::ALLOW_LEXICAL) == 0) {
         LogSyntaxError("Lexical declaration is not allowed in single statement context");
@@ -312,8 +306,7 @@ ir::ClassDeclaration *ParserImpl::ParseClassStatement(StatementParsingFlags flag
     return ParseClassDeclaration(modifiers, modFlags);
 }
 
-ir::ETSStructDeclaration *ParserImpl::ParseStructDeclaration(ir::ClassDefinitionModifiers modifiers,
-                                                             ir::ModifierFlags flags)
+ir::Statement *ParserImpl::ParseStructDeclaration(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
     const lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     modifiers |= ir::ClassDefinitionModifiers::DECLARATION;
@@ -323,7 +316,8 @@ ir::ETSStructDeclaration *ParserImpl::ParseStructDeclaration(ir::ClassDefinition
 
     ir::ClassDefinition *classDefinition = ParseClassDefinition(modifiers, flags);
     if (classDefinition == nullptr) {  // Error processing.
-        return nullptr;
+        // Error is logged inside ParseClassDefinition
+        return AllocBrokenStatement();
     }
 
     lexer::SourcePosition endLoc = classDefinition->End();
@@ -332,7 +326,7 @@ ir::ETSStructDeclaration *ParserImpl::ParseStructDeclaration(ir::ClassDefinition
     return structDecl;
 }
 
-ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
+ir::Statement *ParserImpl::ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
     const lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     modifiers |= ir::ClassDefinitionModifiers::DECLARATION;
@@ -342,7 +336,8 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(ir::ClassDefinitionModif
 
     ir::ClassDefinition *classDefinition = ParseClassDefinition(modifiers, flags);
     if (classDefinition == nullptr) {  // Error processing.
-        return nullptr;
+        // Error is logged inside ParseClassDefinition
+        return AllocBrokenStatement();
     }
 
     lexer::SourcePosition endLoc = classDefinition->End();
@@ -452,7 +447,7 @@ void ParserImpl::ParseDirectivePrologue(ArenaVector<ir::Statement *> *statements
 
 ir::Statement *ParserImpl::ParseAssertStatement()
 {
-    return nullptr;
+    UNREACHABLE();
 }
 
 bool ParserImpl::ValidateLabeledStatement([[maybe_unused]] lexer::TokenType type)
@@ -482,7 +477,7 @@ void ParserImpl::ReportIllegalBreakError(const lexer::SourcePosition &startLoc)
     LogSyntaxError("Illegal break statement", startLoc);
 }
 
-ir::BreakStatement *ParserImpl::ParseBreakStatement()
+ir::Statement *ParserImpl::ParseBreakStatement()
 {
     bool allowBreak = (context_.Status() & (ParserStatus::IN_ITERATION | ParserStatus::IN_SWITCH)) != 0;
 
@@ -534,7 +529,7 @@ void ParserImpl::ReportIllegalContinueError()
     LogSyntaxError("Illegal continue statement");
 }
 
-ir::ContinueStatement *ParserImpl::ParseContinueStatement()
+ir::Statement *ParserImpl::ParseContinueStatement()
 {
     ReportPossibleOutOfBoundaryJumpError((context_.Status() & (ParserStatus::IN_ITERATION | ParserStatus::IN_SWITCH)) !=
                                          0U);
@@ -582,13 +577,14 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
     return continueStatement;
 }
 
-ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
+ir::Statement *ParserImpl::ParseDoWhileStatement()
 {
     IterationContext iterCtx(&context_);
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
     ir::Statement *body = ParseStatement();
+    ASSERT(body != nullptr);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_WHILE) {
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
@@ -613,10 +609,6 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
 
     auto endLoc = lexer_->GetToken().End();
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-
-    if (body == nullptr) {  // Error processing.
-        return nullptr;
-    }
 
     auto *doWhileStatement = AllocNode<ir::DoWhileStatement>(body, test);
     doWhileStatement->SetRange({startLoc, endLoc});
@@ -718,9 +710,6 @@ ir::Statement *ParserImpl::ParseExpressionStatement(StatementParsingFlags flags)
     }
 
     ir::Expression *exprNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
-    if (exprNode->IsErrorExpression()) {
-        return nullptr;
-    }
     context_.Status() = savedStatus;
     lexer::SourcePosition endPos = exprNode->End();
 
@@ -908,7 +897,7 @@ std::tuple<ir::Expression *, ir::Expression *> ParserImpl::ParseForUpdate(bool i
     return {rightNode, updateNode};
 }
 
-std::tuple<ir::Expression *, ir::AstNode *> ParserImpl::ParseForLoopInitializer()
+std::tuple<ir::Expression *, ir::Statement *> ParserImpl::ParseForLoopInitializer()
 {
     VariableParsingFlags varFlags = VariableParsingFlags::IN_FOR;
 
@@ -959,8 +948,10 @@ std::tuple<ir::Expression *, ir::AstNode *> ParserImpl::ParseForLoopInitializer(
 }
 bool ParserImpl::GetCanBeForInOf(ir::Expression *leftNode, ir::AstNode *initNode)
 {
-    bool canBeForInOf = (leftNode != nullptr) || (initNode != nullptr);
-    if (initNode != nullptr) {
+    bool statementIsCorrect = initNode != nullptr && !initNode->IsBrokenStatement();
+    bool expressionIsCorrect = leftNode != nullptr && !leftNode->IsBrokenExpression();
+    bool canBeForInOf = expressionIsCorrect || statementIsCorrect;
+    if (statementIsCorrect) {
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
             lexer_->NextToken();
             canBeForInOf = false;
@@ -981,17 +972,15 @@ struct ForStatementNodes {
 ir::Statement *ParserImpl::CreateForStatement(ForStatementNodes &&nodes, ForStatementKind forKind,
                                               const lexer::SourcePosition &startLoc, bool isAwait)
 {
-    if (nodes.body == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
+    ASSERT(nodes.body != nullptr);
     ir::Statement *forStatement = nullptr;
 
     if (forKind == ForStatementKind::UPDATE) {
         forStatement = AllocNode<ir::ForUpdateStatement>(nodes.init, nodes.right, nodes.update, nodes.body);
     } else {
         if (nodes.init == nullptr || nodes.right == nullptr) {  // Error processing.
-            return nullptr;
+            // Error is logged inside ParseForLoopInitializer or ParseForUpdate, or ParseForInOf
+            return AllocBrokenStatement();
         }
 
         if (forKind == ForStatementKind::IN) {
@@ -1048,7 +1037,7 @@ ir::Statement *ParserImpl::ParseForStatement()
 
 void ParserImpl::ReportIfBodyEmptyError([[maybe_unused]] ir::Statement *consequent) {}
 
-ir::IfStatement *ParserImpl::ParseIfStatement()
+ir::Statement *ParserImpl::ParseIfStatement()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer::SourcePosition endLoc;
@@ -1059,13 +1048,9 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     ir::Statement *consequent = ParseStatement(StatementParsingFlags::IF_ELSE | StatementParsingFlags::ALLOW_LEXICAL);
+    ASSERT(consequent != nullptr);
 
     ReportIfBodyEmptyError(consequent);
-
-    if (consequent == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     endLoc = consequent->End();
     ir::Statement *alternate = nullptr;
 
@@ -1075,10 +1060,6 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
         if (alternate != nullptr) {  // Error processing.
             endLoc = alternate->End();
         }
-    }
-
-    if (test == nullptr) {  // Error processing.
-        return nullptr;
     }
 
     auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, alternate);
@@ -1117,7 +1098,7 @@ ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosi
     return labeledStatement;
 }
 
-ir::ReturnStatement *ParserImpl::ParseReturnStatement()
+ir::Statement *ParserImpl::ParseReturnStatement()
 {
     if ((context_.Status() & ParserStatus::FUNCTION) == 0) {
         LogSyntaxError("return keyword should be used in function body");
@@ -1191,11 +1172,9 @@ ir::SwitchCaseStatement *ParserImpl::ParseSwitchCaseStatement(bool *seenDefault)
            lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_DEFAULT &&
            lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
            lexer_->GetToken().Type() != lexer::TokenType::EOS) {
+        util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
         ir::Statement *consequent = ParseStatement(StatementParsingFlags::ALLOW_LEXICAL);
-        if (consequent == nullptr) {  // Error processing.
-            break;
-        }
-
+        ASSERT(consequent != nullptr);
         caseEndLoc = consequent->End();
         consequents.push_back(consequent);
     }
@@ -1205,7 +1184,7 @@ ir::SwitchCaseStatement *ParserImpl::ParseSwitchCaseStatement(bool *seenDefault)
     return caseNode;
 }
 
-ir::SwitchStatement *ParserImpl::ParseSwitchStatement()
+ir::Statement *ParserImpl::ParseSwitchStatement()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     ExpectToken(lexer::TokenType::KEYW_SWITCH);
@@ -1241,7 +1220,7 @@ void ParserImpl::ReportIllegalNewLineErrorAfterThrow()
     LogSyntaxError("Illegal newline after throw");
 }
 
-ir::ThrowStatement *ParserImpl::ParseThrowStatement()
+ir::Statement *ParserImpl::ParseThrowStatement()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
@@ -1251,9 +1230,7 @@ ir::ThrowStatement *ParserImpl::ParseThrowStatement()
     }
 
     ir::Expression *expression = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
-    if (expression == nullptr) {  // Error processing.
-        return nullptr;
-    }
+    ASSERT(expression != nullptr);
 
     lexer::SourcePosition endLoc = expression->End();
 
@@ -1513,7 +1490,8 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags)
     }
 
     if (declarators.empty()) {  // Error processing.
-        return nullptr;
+        // Error is logged inside ParseVariableDeclaratorKey or ParseVariableDeclaratorInitializer
+        return AllocBrokenStatement();
     }
 
     auto varKind = ir::VariableDeclaration::VariableDeclarationKind::VAR;
@@ -1531,7 +1509,7 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags)
     return declaration;
 }
 
-ir::WhileStatement *ParserImpl::ParseWhileStatement()
+ir::Statement *ParserImpl::ParseWhileStatement()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
@@ -1543,9 +1521,8 @@ ir::WhileStatement *ParserImpl::ParseWhileStatement()
 
     IterationContext iterCtx(&context_);
     ir::Statement *body = ParseStatement();
-    if (body == nullptr || test == nullptr) {  // Error processing.
-        return nullptr;
-    }
+    ASSERT(body != nullptr);
+    ASSERT(test != nullptr);
 
     lexer::SourcePosition endLoc = body->End();
     auto *whileStatement = AllocNode<ir::WhileStatement>(test, body);
@@ -1596,10 +1573,7 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
             break;
     }
 
-    if (declNode == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
+    ASSERT(declNode != nullptr);
     lexer::SourcePosition endLoc = declNode->End();
     auto *exportDeclaration = AllocNode<ir::ExportDefaultDeclaration>(declNode, isExportEquals);
     exportDeclaration->SetRange({startLoc, endLoc});
@@ -1642,10 +1616,6 @@ ir::ExportAllDeclaration *ParserImpl::ParseExportAllDeclaration(const lexer::Sou
         lexer_->NextToken();  // eat exported name
     }
     ir::StringLiteral *source = ParseFromClause();
-    if (source == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     lexer::SourcePosition endLoc = source->End();
 
     auto *exportDeclaration = AllocNode<ir::ExportAllDeclaration>(source, exported);
@@ -1709,7 +1679,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
     return exportDeclaration;
 }
 
-ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
+ir::Statement *ParserImpl::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
 {
     ir::Statement *decl = nullptr;
 
@@ -1743,15 +1713,13 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
             lexer_->NextToken();  // eat `async` keyword
             if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_FUNCTION) {
                 LogExpectedToken(lexer::TokenType::KEYW_FUNCTION);
-            } else {
-                decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
+                return AllocBrokenStatement();
             }
+            decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
+            break;
     }
 
-    if (decl == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
+    ASSERT(decl != nullptr);
     if (decl->IsVariableDeclaration()) {
         ConsumeSemicolon(decl);
     }
@@ -1958,10 +1926,6 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
         source = ParseFromClause(false);
     }
 
-    if (source == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     lexer::SourcePosition endLoc = source->End();
     auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
     importDeclaration->SetRange({startLoc, endLoc});
@@ -1970,4 +1934,22 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
 
     return importDeclaration;
 }
+
+ir::Statement *ParserImpl::AllocBrokenStatement()
+{
+    return AllocEmptyStatement();
+}
+
+bool ParserImpl::IsBrokenStatement(ir::Statement *st)
+{
+    return st->IsEmptyStatement();
+}
+
+ir::Statement *ParserImpl::AllocEmptyStatement()
+{
+    auto *empty = AllocNode<ir::EmptyStatement>();
+    empty->SetRange(lexer_->GetToken().Loc());
+    return empty;
+}
+
 }  // namespace ark::es2panda::parser

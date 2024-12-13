@@ -635,7 +635,7 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
                 memberKey->SetRange(Lexer()->GetToken().Loc());
             } else {
                 LogSyntaxError("Unexpected token in enum member");
-                memberKey = AllocErrorExpression();
+                memberKey = AllocBrokenExpression();
                 // Consider that the current token is a memberKey and skip it.
             }
 
@@ -1177,7 +1177,7 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
                 return expr;
             }
             LogSyntaxError("Identifier expected");
-            return AllocErrorExpression();
+            return AllocBrokenExpression();
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
@@ -1197,7 +1197,7 @@ ir::Expression *TypedParser::ParseLiteralIndent(ir::Expression *typeName, Expres
     }
 
     LogSyntaxError("Identifier expected");
-    return AllocErrorExpression();
+    return AllocBrokenExpression();
 }
 
 ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, ExpressionParseFlags flags)

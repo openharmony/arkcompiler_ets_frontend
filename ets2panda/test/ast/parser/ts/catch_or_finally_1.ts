@@ -24,11 +24,13 @@ try /* @@ label6 */[] /* @@ label7 */finally {}
 /* @@@ label2 Error SyntaxError: Missing catch or finally clause.  */
 /* @@@ label3 Error SyntaxError: Unexpected token '{'.  */
 /* @@@ label4 Error SyntaxError: Unexpected token: 'finally'.  */
+/* @@@ label4 Error SyntaxError: Unexpected token 'finally'. */
 /* @@@ label5 Error SyntaxError: Unexpected token '{'.  */
 /* @@@ label6 Error SyntaxError: Unexpected token '[', expected '{'.  */
 /* @@@ label6 Error SyntaxError: Unexpected token '[', expected: '{'.  */
 /* @@@ label7 Error SyntaxError: Unexpected token 'finally'.  */
 /* @@@ label7 Error SyntaxError: Unexpected token: 'finally'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token 'finally'.  */
 /* @@@ label8 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
 /* @@@ label8 Error SyntaxError: Missing catch or finally clause.  */
 /* @@ label8 */

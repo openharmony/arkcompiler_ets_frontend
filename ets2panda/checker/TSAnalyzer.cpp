@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -892,7 +892,7 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OpaqueTypeNode *expr) cons
     return expr->TsType();
 }
 
-checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ErrorTypeNode *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::BrokenTypeNode *expr) const
 {
     return nullptr;
 }

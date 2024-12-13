@@ -18,5 +18,4 @@ declare namespace MySpace{
 }
 /* @@? 17:10 Error SyntaxError: Unexpected token ':'.  */
 /* @@? 17:10 Error SyntaxError: Unexpected token ':'.  */
-/* @@? 17:10 Error SyntaxError: Failed to parse statement.  */
-/* @@? 18:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 17:10 Error SyntaxError: Unexpected token ':'.  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1600,7 +1600,7 @@ ir::ExportDefaultDeclaration *ASParser::ParseExportDefaultDeclaration(const lexe
 }
 
 class ASParser::ParseNamedExportDeclarationHelper {
-    friend ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
+    friend ir::Statement *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
 
 private:
     static ir::Statement *GetParsedDeclaration(ASParser *parser, lexer::TokenType type)
@@ -1649,7 +1649,7 @@ private:
     }
 };
 
-ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
+ir::Statement *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
 {
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
         CheckDeclare();

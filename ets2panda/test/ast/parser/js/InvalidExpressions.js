@@ -95,11 +95,13 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label20 Error SyntaxError: Unexpected token 'number literal'.  */
 /* @@@ label21 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label21 Error SyntaxError: Unexpected token: ')'.  */
+/* @@@ label21 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label22 Error SyntaxError: Unexpected token: '=>'.  */
 /* @@@ label23 Error SyntaxError: Rest parameter must be the last formal parameter.  */
 /* @@@ label23 Error SyntaxError: Unexpected token, expected: '=>'.  */
 /* @@@ label24 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label24 Error SyntaxError: Unexpected token: ')'.  */
+/* @@@ label24 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label25 Error SyntaxError: Unexpected token, expected: '=>'.  */
 /* @@@ label26 Error SyntaxError: Unexpected token, expected: ']'.  */
 /* @@@ label27 Error SyntaxError: Tagged Template Literals are not allowed in optionalChain  */
@@ -128,7 +130,9 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label44 Error SyntaxError: Unexpected token 'number literal'.  */
 /* @@@ label45 Error SyntaxError: Unexpected token ']'.  */
 /* @@@ label45 Error SyntaxError: Unexpected token: ']'.  */
+/* @@@ label45 Error SyntaxError: Unexpected token ']'.  */
 /* @@@ label46 Error SyntaxError: Unexpected token: ')'.  */
+/* @@@ label46 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label47 Error SyntaxError: Unexpected token: '=>'.  */
 /* @@@ label48 Error SyntaxError: Invalid destructuring assignment target  */
 /* @@@ label48 Error SyntaxError: Unexpected ArrowParameter element  */
@@ -137,6 +141,7 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label50 Error SyntaxError: Unexpected token, expected: '=>'.  */
 /* @@@ label51 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label51 Error SyntaxError: Unexpected token: ')'.  */
+/* @@@ label51 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label52 Error SyntaxError: Unexpected token: '=>'.  */
 /* @@@ label53 Error SyntaxError: Unexpected token, expected: '=>'.  */
 /* @@@ label54 Error SyntaxError: Unexpected token, arrow (=>)  */
@@ -146,5 +151,6 @@ async (x = await 7) /* @@ label56 */=> expression;
 /* @@@ label56 Error SyntaxError: Unexpected ArrowParameter element  */
 /* @@@ label57 Error SyntaxError: Unexpected token ']'.  */
 /* @@@ label57 Error SyntaxError: Unexpected token: ']'.  */
+/* @@@ label57 Error SyntaxError: Unexpected token ']'.  */
 /* @@@ label58 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
 /* @@ label58 */
