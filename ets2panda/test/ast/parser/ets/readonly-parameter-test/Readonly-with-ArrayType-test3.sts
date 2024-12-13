@@ -15,6 +15,6 @@
 
 
 function foo (x: Readonly<[int, string]>) {
-    let y: [int, string] = x
+    let y: [int, string] = /* @@ label */x
 }
-/* @@? 18:28 Error TypeError: Type 'readonly [Int, String]' cannot be assigned to type '[Int, String]' */
+/* @@@ label Error TypeError: Type 'readonly [Int, String]' cannot be assigned to type '[Int, String]' */

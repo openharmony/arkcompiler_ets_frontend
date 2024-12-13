@@ -18,4 +18,5 @@ class B {}
 class A extends B
 
 
-/* @@? 22:1 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@ label */

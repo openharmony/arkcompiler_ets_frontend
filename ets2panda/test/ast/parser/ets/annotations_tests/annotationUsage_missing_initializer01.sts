@@ -17,7 +17,7 @@
     testProperty2: number
 }
 
-@MyAnno({testProperty1: "123", testProperty2})
+@MyAnno({testProperty1: "123", testProperty2/* @@ label */})
 class A{}
 
-/* @@? 20:45 Error SyntaxError: Invalid argument passed to 'testProperty2'  */
+/* @@@ label Error SyntaxError: Invalid argument passed to 'testProperty2'  */

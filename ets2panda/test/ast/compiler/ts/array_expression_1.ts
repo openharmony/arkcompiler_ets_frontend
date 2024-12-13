@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-let a = [1, [1, 2]: number[]];
+let a = [1, [1, 2]: /* @@ label */number[]];
 
-/* @@? 16:21 Error SyntaxError: Unexpected token.  */
+/* @@@ label Error SyntaxError: Unexpected token.  */

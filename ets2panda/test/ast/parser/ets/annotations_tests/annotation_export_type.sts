@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export type @interface MyAnno {}
+export type @/* @@ label */interface MyAnno {}
 
-/* @@? 16:14 Error SyntaxError: Can only type export class or interface!  */
+/* @@@ label Error SyntaxError: Can only type export class or interface!  */

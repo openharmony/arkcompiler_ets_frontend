@@ -32,8 +32,8 @@ class A {
 function main(): void {
     let a = new A();
     a.foo()(1, 1);
-    a.foo(1)(1, "foo");
+    /* @@ label */a.foo(1)(1, /* @@ label1 */"foo");
 }
 
-/* @@? 35:17 Error TypeError: Type '"foo"' is not compatible with type 'Int' at index 2  */
-/* @@? 35:5 Error TypeError: No matching call signature for invoke0(int, "foo")  */
+/* @@@ label1 Error TypeError: Type '"foo"' is not compatible with type 'Int' at index 2  */
+/* @@@ label Error TypeError: No matching call signature for invoke0(int, "foo")  */

@@ -20,11 +20,11 @@ try
 }
 catch(e)
 {
-  let e;
+  let /* @@ label */e;
 }
 finally
 {
 
 }
 
-/* @@? 23:7 Error SyntaxError: Variable 'e' has already been declared. */
+/* @@@ label Error SyntaxError: Variable 'e' has already been declared. */

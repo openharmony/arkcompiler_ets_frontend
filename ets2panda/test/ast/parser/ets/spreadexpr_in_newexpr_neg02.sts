@@ -15,7 +15,7 @@
 
 class A {
     fld: number[];
-    constructor(x: int, y?:number, ...p: number[]) {
+    constructor/* @@ label */(x: int, y?:number, ...p: number[]) {
         this.fld = p;
     }
 }
@@ -26,4 +26,4 @@ function main() {
     let a2 = new A(1, 1.0, ...nums);
 }
 
-/* @@? 18:16 Error SyntaxError: Both optional and rest parameters are not allowed in function's parameter list.  */
+/* @@@ label Error SyntaxError: Both optional and rest parameters are not allowed in function's parameter list.  */

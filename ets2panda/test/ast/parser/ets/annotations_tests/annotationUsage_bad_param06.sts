@@ -17,7 +17,7 @@
     testProperty1: string
 }
 
-@MyAnno((a: int) => {})
+@MyAnno(/* @@ label */(a: int) => {})
 class B{}
 
-/* @@? 20:9 Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */

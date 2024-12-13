@@ -18,6 +18,6 @@
 }
 
 @MyAnno({testProperty1: "Bob", testProperty2: 1})
-abstract class A {} 
+/* @@ label */abstract class A {} 
 
-/* @@? 21:1 Error SyntaxError: Annotations are not allowed on an abstract class or methods.  */
+/* @@@ label Error SyntaxError: Annotations are not allowed on an abstract class or methods.  */

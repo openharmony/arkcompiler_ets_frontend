@@ -16,8 +16,8 @@
 function b()
 {
     
-    function c(a: int)
-}
+    /* @@ label */function c(a: int)
+/* @@ label1 */}
 
 
 function main()
@@ -25,5 +25,5 @@ function main()
     b()
 }
 
-/* @@? 19:5 Error SyntaxError: Nested functions are not allowed  */
-/* @@? 20:1 Error SyntaxError: Expected token '{', got '}'  */
+/* @@@ label Error SyntaxError: Nested functions are not allowed  */
+/* @@@ label1 Error SyntaxError: Expected token '{', got '}'  */

@@ -14,8 +14,8 @@
  */
 
 
-switch () {
+switch (/* @@ label */) {
 
 }
 
-/* @@? 17:9 Error SyntaxError: Unexpected token: ')'. */
+/* @@@ label Error SyntaxError: Unexpected token: ')'. */

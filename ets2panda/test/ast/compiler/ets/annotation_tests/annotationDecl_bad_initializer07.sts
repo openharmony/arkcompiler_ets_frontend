@@ -19,9 +19,9 @@ class A{
 }
 
 @interface MyAnno {
-    testProperty1: string = new A().a
-    testProperty2: string = A.b
+    testProperty1: string = /* @@ label */new A().a
+    testProperty2: string = /* @@ label1 */A.b
 }
 
-/* @@? 22:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
-/* @@? 23:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@@ label Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@@ label1 Error TypeError: Invalid value for annotation field, expected a constant literal.  */

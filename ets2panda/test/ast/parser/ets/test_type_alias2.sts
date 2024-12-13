@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-type bar number;
+type bar /* @@ label */number/* @@ label1 */;
 
-/* @@? 16:10 Error SyntaxError: Unexpected token, expected: '='.  */
-/* @@? 16:16 Error SyntaxError: Invalid Type  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '='.  */
+/* @@@ label1 Error SyntaxError: Invalid Type  */

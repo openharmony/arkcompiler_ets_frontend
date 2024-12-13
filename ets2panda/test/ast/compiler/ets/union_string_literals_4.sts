@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-let map: Record<"aa" | "bb" | int, number> = {
+let map: Record<"aa" | "bb" | int, number> = /* @@ label */{
     "aa": 1,
     42 : 33,
 }
 
-/* @@? 16:46 Error TypeError: All variants of literals listed in the union type must be listed in the object literal  */
+/* @@@ label Error TypeError: All variants of literals listed in the union type must be listed in the object literal  */

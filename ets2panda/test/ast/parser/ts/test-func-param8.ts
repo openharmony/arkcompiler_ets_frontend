@@ -14,5 +14,5 @@
  */
 
 
-function foo(a?= 5) { }
-/* @@? 17:16 Error SyntaxError: Parameter cannot have question mark and initializer  */
+function foo(a?/* @@ label */= 5) { }
+/* @@@ label Error SyntaxError: Parameter cannot have question mark and initializer  */

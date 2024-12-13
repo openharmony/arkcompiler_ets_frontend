@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-import X1~ from
+import X1/* @@ label */~ from
 
-/* @@? 16:10 Error SyntaxError: Unexpected token, expected: 'from'.  */
-/* @@? 20:1 Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: 'from'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected string literal.  */
+/* @@ label1 */

@@ -19,6 +19,6 @@ function main(): void {
     let a: A = new A;
     assert a != null;
   }
-  assert a != null;
+  assert /* @@ label */a != null;
 }
-/* @@? 22:10 Error TypeError: Unresolved reference a  */
+/* @@@ label Error TypeError: Unresolved reference a  */

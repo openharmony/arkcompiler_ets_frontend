@@ -15,7 +15,7 @@
 
 
 declare namespace a 
-    let a: int;
+    /* @@ label */let a: int;
 }
 
-/* @@? 18:5 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '{'.  */

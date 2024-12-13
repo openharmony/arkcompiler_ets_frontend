@@ -14,6 +14,6 @@
  */
 
 
-fa`${}`
+fa`${/* @@ label */}`
 
-/* @@? 17:6 Error SyntaxError: Unexpected token: '}'. */
+/* @@@ label Error SyntaxError: Unexpected token: '}'. */

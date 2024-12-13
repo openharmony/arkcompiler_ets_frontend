@@ -14,10 +14,11 @@
  */
 
 
-declare namespace ^a {
+declare namespace /* @@ label */^/* @@ label1 */a {
     let a: int;
 }
 
-/* @@? 17:19 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 17:20 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 24:1 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@ label2 */

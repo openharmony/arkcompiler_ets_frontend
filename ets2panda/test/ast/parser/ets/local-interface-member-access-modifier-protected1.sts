@@ -17,8 +17,8 @@ function foo()
 {
     interface LocalInterface
     {
-        protected property : int;
+        /* @@ label */protected property : int;
     }
 }
 
-/* @@? 20:9 Error SyntaxError: Unexpected token, expected 'private' or identifier  */
+/* @@@ label Error SyntaxError: Unexpected token, expected 'private' or identifier  */

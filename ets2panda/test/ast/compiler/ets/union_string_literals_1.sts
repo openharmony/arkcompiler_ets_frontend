@@ -14,8 +14,8 @@
  */
 
 function foo<T extends "abc"| "ff">(a: T) {
-    a = "abc"
+    a = /* @@ label */"abc"
     return a
 }
 
-/* @@? 17:9 Error TypeError: Type '"abc"' cannot be assigned to type 'T'  */
+/* @@@ label Error TypeError: Type '"abc"' cannot be assigned to type 'T'  */

@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 
-export default @interface MyAnno {}
+export default @/* @@ label */interface MyAnno {}
 
-/* @@? 16:17 Error SyntaxError: Can not export annotation default!  */
+/* @@@ label Error SyntaxError: Can not export annotation default!  */

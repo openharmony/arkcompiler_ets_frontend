@@ -26,6 +26,6 @@ function main(i : string[], g : int): void {
 }
 
 export default function TestFunc(): void {}
-export default function TestFuncToo(): void {}
+export default /* @@ label */function TestFuncToo(): void {}
 
-/* @@? 29:16 Error SyntaxError: Only one default export is allowed in a module  */
+/* @@@ label Error SyntaxError: Only one default export is allowed in a module  */

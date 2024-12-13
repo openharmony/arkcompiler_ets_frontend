@@ -17,9 +17,9 @@ function foo(x: Double) {}
 
 function main(): void {
   let a : Int = new Int(2);
-  foo(a);
+  /* @@ label */foo(/* @@ label1 */a);
   return;
 }
 
-/* @@? 20:7 Error TypeError: Type 'Int' is not compatible with type 'Double' at index 1  */
-/* @@? 20:3 Error TypeError: No matching call signature for foo(Int)  */
+/* @@@ label1 Error TypeError: Type 'Int' is not compatible with type 'Double' at index 1  */
+/* @@@ label Error TypeError: No matching call signature for foo(Int)  */

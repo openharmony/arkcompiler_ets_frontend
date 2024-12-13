@@ -17,8 +17,8 @@ enum Direction {
   Up = "UP",
   Down = "DOWN",
   Left = "LEFT"
-  Right = "RIGHT"
-}
+  /* @@ label */Right = "RIGHT"
+/* @@ label1 */}
 
-/* @@? 20:3 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 21:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '}'.  */

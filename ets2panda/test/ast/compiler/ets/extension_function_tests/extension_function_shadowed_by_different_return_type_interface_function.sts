@@ -29,8 +29,8 @@ interface SubFruit extends Fruit {}
 
 class Banana implements SubFruit, Yellow {}
 
-function Banana.foo(id2: int, k2: String): int {
+function Banana.foo(id2: int, k2: String): int /* @@ label */{
     return 2;
 }
 
-/* @@? 32:48 Warning Warning: extension is shadowed by a instance member function 'foo(id0: int, k0: String): String' in class Yellow  */
+/* @@@ label Warning Warning: extension is shadowed by a instance member function 'foo(id0: int, k0: String): String' in class Yellow  */

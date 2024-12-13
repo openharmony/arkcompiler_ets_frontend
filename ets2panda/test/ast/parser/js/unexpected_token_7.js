@@ -15,10 +15,11 @@
 
 class Foo {
     #bar = undefined
-    a: int {
-      this.#bar = 0
+    a/* @@ label */: int /* @@ label1 */{
+      this/* @@ label2 */.#bar = 0
 
-/* @@? 18:6 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 18:12 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 19:11 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 25:1 Error SyntaxError: Private field has already been declared  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label3 Error SyntaxError: Private field has already been declared  */
+/* @@ label3 */

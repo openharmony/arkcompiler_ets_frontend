@@ -19,12 +19,12 @@ function main(): int {
     for (let x of arr) {
         sum += x
     }
-    if (sum > 0) {continue;continue;continue;}; // misplaced continue statement, out of loop
+    if (sum > 0) {/* @@ label */continue;/* @@ label1 */continue;/* @@ label2 */continue;}; // misplaced continue statement, out of loop
     sum+arr[0];
-    continue
+    /* @@ label3 */continue
     return 0;
 }
-/* @@? 22:19 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */
-/* @@? 22:28 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */
-/* @@? 22:37 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */
-/* @@? 24:5 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */
+/* @@@ label Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */
+/* @@@ label1 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */
+/* @@@ label2 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */
+/* @@@ label3 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement.  */

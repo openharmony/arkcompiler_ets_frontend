@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-function foo3(, number: int): int {
+function foo3(/* @@ label */, number: int): int {
     return number
 }
 
-/* @@? 16:15 Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */

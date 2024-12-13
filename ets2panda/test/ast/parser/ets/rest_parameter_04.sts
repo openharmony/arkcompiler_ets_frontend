@@ -13,9 +13,9 @@
 * limitations under the License.
 */
 
-function hehe(...items: number[]: void {
+function hehe(...items: number[]/* @@ label */: void /* @@ label1 */{
     console.log("aaaaaaaa")
 }
 
-/* @@? 16:33 Error SyntaxError: Rest parameter must be the last formal parameter.  */
-/* @@? 16:40 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label Error SyntaxError: Rest parameter must be the last formal parameter.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '{'.  */

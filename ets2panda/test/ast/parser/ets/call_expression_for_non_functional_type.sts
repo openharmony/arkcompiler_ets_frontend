@@ -24,7 +24,7 @@ function a()
 function main()
 {
     let b: int = 5
-    b(1, 2)
+    /* @@ label */b(1, 2)
 }
 
-/* @@? 27:5 Error TypeError: This expression is not callable.  */
+/* @@@ label Error TypeError: This expression is not callable.  */

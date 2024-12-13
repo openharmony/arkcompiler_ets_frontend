@@ -16,22 +16,22 @@
 abstract class method_full  {
     foo(): void {
     }
-    foo_int(b : double, c : char, i : int): int {
+    foo_int/* @@ label */(b : double, c : char, i : int): int {
     }
-    foo_bool(d : double, c : char, ... i: int[]): boolean {
+    foo_bool/* @@ label1 */(d : double, c : char, ... i: int[]): boolean {
     }
-    private final foo_private(d : double): int {
+    private final foo_private/* @@ label2 */(d : double): int {
     }
-    public final foo_final(d : double): double {
+    public final foo_final/* @@ label3 */(d : double): double {
     }
-    protected static foo_final(i : int): boolean {
+    protected static foo_final/* @@ label4 */(i : int): boolean {
     }
     protected abstract foo_abstract(): int ;
     private native foo_native(): int ;
 }
 
-/* @@? 19:12 Error TypeError: Function with a non void return type must return a value. */
-/* @@? 21:13 Error TypeError: Function with a non void return type must return a value. */
-/* @@? 23:30 Error TypeError: Function with a non void return type must return a value. */
-/* @@? 25:27 Error TypeError: Function with a non void return type must return a value. */
-/* @@? 27:31 Error TypeError: Function with a non void return type must return a value. */
+/* @@@ label Error TypeError: Function with a non void return type must return a value. */
+/* @@@ label1 Error TypeError: Function with a non void return type must return a value. */
+/* @@@ label2 Error TypeError: Function with a non void return type must return a value. */
+/* @@@ label3 Error TypeError: Function with a non void return type must return a value. */
+/* @@@ label4 Error TypeError: Function with a non void return type must return a value. */

@@ -15,4 +15,5 @@
 
 
 a[b
-/* @@? 19:1 Error SyntaxError: Unexpected token, expected: ']'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ']'.  */
+/* @@ label */

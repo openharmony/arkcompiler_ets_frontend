@@ -15,12 +15,12 @@
 
 function main() {
     let x1 = [1, "a"]
-    let y1: [int, string] = [...x1]
+    let y1: [int, string] = /* @@ label */[/* @@ label1 */...x1]
     let x2 = [2, "b"]
-    let y2: [boolean, int, string] = [true, ...x2]
+    let y2: [boolean, int, string] = /* @@ label2 */[true, /* @@ label3 */...x2]
 }
 
-/* @@? 18:30 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@? 18:29 Error TypeError: Few elements in array initializer for tuple with size of 2 */
-/* @@? 20:45 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
-/* @@? 20:38 Error TypeError: Few elements in array initializer for tuple with size of 3 */
+/* @@@ label1 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
+/* @@@ label Error TypeError: Few elements in array initializer for tuple with size of 2 */
+/* @@@ label3 Error TypeError: '(Int|String)[]' cannot be spread in tuple. */
+/* @@@ label2 Error TypeError: Few elements in array initializer for tuple with size of 3 */

@@ -16,6 +16,6 @@
 
 function foo (x: Readonly<int[]>) {
     let x1 : int[]
-    x1 = x
+    x1 = /* @@ label */x
 }
-/* @@? 19:10 Error TypeError: Type 'readonly int[]' cannot be assigned to type 'int[]' */
+/* @@@ label Error TypeError: Type 'readonly int[]' cannot be assigned to type 'int[]' */

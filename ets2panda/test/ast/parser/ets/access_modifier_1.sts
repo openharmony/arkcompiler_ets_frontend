@@ -14,7 +14,7 @@
  */
 
 class A {
-    final public foo(): void {}
+    final /* @@ label */public foo(): void {}
 }
 
-/* @@? 17:11 Error SyntaxError: Access modifier must precede field and method modifiers.  */
+/* @@@ label Error SyntaxError: Access modifier must precede field and method modifiers.  */

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-function foo(...number: int[],): int {
+function foo(...number: int[]/* @@ label */,): int {
     return number[0]
 }
 
-/* @@? 16:30 Error SyntaxError:  A rest parameter must be last in parameter list  */
+/* @@@ label Error SyntaxError:  A rest parameter must be last in parameter list  */

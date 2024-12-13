@@ -19,7 +19,7 @@ interface Person<T> {
 }
 
 function main(): void {
-  let b : Person<string> ={name: 42, age:25}
+  let b : Person<string> ={name: /* @@ label */42, age:25}
 }
 
-/* @@? 22:34 Error TypeError: Type 'int' is not compatible with type 'String' at property 'name'  */
+/* @@@ label Error TypeError: Type 'int' is not compatible with type 'String' at property 'name'  */

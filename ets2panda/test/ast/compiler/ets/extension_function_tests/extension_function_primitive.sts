@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-function double.value() {
+/* @@ label */function double.value() {
     return 1.2;
 }
 
-/* @@? 16:1 Error TypeError: Extension function can only defined for class, interface or array.  */
+/* @@@ label Error TypeError: Extension function can only defined for class, interface or array.  */

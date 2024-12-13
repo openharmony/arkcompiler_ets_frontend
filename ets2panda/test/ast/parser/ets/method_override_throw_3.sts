@@ -18,8 +18,8 @@ interface A {
 }
 
 class AClass implements A {
-    override foo(param: () => void throws): void throws{}
+    override foo/* @@ label */(param: () => void throws): void throws/* @@ label1 */{}
 }
 
-/* @@? 21:56 Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */
-/* @@? 21:17 Error TypeError: Method foo(param: () => void): void in AClass not overriding any method  */
+/* @@@ label1 Error TypeError: A method that overrides or hides another method cannot change throw or rethrow clauses of the overridden or hidden method.  */
+/* @@@ label Error TypeError: Method foo(param: () => void): void in AClass not overriding any method  */

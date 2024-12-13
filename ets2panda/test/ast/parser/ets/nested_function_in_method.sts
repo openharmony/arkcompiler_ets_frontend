@@ -17,8 +17,8 @@ class A
 {
     public foo()
     {
-        function c()
-    }
+        /* @@ label */function c()
+    /* @@ label1 */}
 }
 
 
@@ -28,5 +28,5 @@ function main()
     a.foo()
 }
 
-/* @@? 20:9 Error SyntaxError: Nested functions are not allowed  */
-/* @@? 21:5 Error SyntaxError: Expected token '{', got '}'  */
+/* @@@ label Error SyntaxError: Nested functions are not allowed  */
+/* @@@ label1 Error SyntaxError: Expected token '{', got '}'  */

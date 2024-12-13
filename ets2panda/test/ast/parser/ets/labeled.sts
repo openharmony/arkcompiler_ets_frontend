@@ -16,17 +16,17 @@
 class LabeledTest  {
     a: int;
     public  Test(): void {
-        L1: this.a = 10;
-        L2: L3: this.a *= 2;
-        L4: L5: L6: this.a += 1;
-        L7: null;
+        L1: /* @@ label */this.a = 10;
+        L2: /* @@ label1 */L3: /* @@ label2 */this.a *= 2;
+        L4: /* @@ label3 */L5: /* @@ label4 */L6: /* @@ label5 */this.a += 1;
+        L7: /* @@ label6 */null;
     }
 }
 
-/* @@? 19:13 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 20:13 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 20:17 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 21:13 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 21:17 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 21:21 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@? 22:13 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label1 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label2 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label3 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label4 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label5 Error SyntaxError: Label must be followed by a loop statement  */
+/* @@@ label6 Error SyntaxError: Label must be followed by a loop statement  */

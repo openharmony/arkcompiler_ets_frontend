@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-interface A }
+interface A /* @@ label */}
 
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 20:1 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@ label1 */

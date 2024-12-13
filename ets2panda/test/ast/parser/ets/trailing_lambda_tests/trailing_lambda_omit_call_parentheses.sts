@@ -18,9 +18,9 @@ function f(c: ()=>void) {
 }
 
 function main() {
-    f {
+    f /* @@ label */{
         console.println("I am call back!")
     }
 }
 
-/* @@? 21:7 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token '{'.  */

@@ -16,7 +16,7 @@
 class A{}
 
 @interface MyAnno {
-    testProperty1: string = (a:int)=>{}
+    testProperty1: string = /* @@ label */(a:int)=>{}
 }
 
-/* @@? 19:29 Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */

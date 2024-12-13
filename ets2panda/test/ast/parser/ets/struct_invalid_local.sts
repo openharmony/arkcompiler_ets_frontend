@@ -14,9 +14,9 @@
  */
  
 function main(): void {
-    struct A {
+    /* @@ label */struct A {
         
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Illegal start of STRUCT expression  */
+/* @@@ label Error SyntaxError: Illegal start of STRUCT expression  */

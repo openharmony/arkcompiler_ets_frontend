@@ -16,7 +16,7 @@
 import * as Src from "./annotation_export"
 
 
-Src.MyAnno()
+Src./* @@ label */MyAnno()
 class A{}
 
-/* @@? 19:5 Error TypeError: Property 'MyAnno' does not exist on type 'annotation_export'  */
+/* @@@ label Error TypeError: Property 'MyAnno' does not exist on type 'annotation_export'  */

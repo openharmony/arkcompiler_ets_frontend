@@ -14,5 +14,5 @@
  */
 
 
-new a(){};
-/* @@? 17:8 Error SyntaxError: Unexpected token '{'. */
+new a()/* @@ label */{};
+/* @@@ label Error SyntaxError: Unexpected token '{'. */

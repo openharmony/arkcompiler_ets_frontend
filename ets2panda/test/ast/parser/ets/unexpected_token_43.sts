@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-let v2 = `--- ${y + abc ${y} = ${ n*2 }!`} ---`;`
+let v2 = `--- ${y + abc /* @@ label */${y} = ${ n*2 }!`/* @@ label1 */} ---`;`
 
-/* @@? 16:25 Error SyntaxError: Unexpected token, expected: '}'.  */
-/* @@? 16:42 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 21:1 Error SyntaxError: Invalid left-hand side in prefix operation  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '}'.  */
+/* @@@ label2 Error SyntaxError: Invalid left-hand side in prefix operation  */
+/* @@ label2 */

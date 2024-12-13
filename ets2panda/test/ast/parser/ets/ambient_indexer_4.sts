@@ -15,11 +15,11 @@
 
 declare class A {
     [index : number]
-}
+/* @@ label */}
 
-function main() {
+/* @@ label1 */function main() {
     let a : A = new A();
 }
 
-/* @@? 18:1 Error SyntaxError: An index signature must have a type annotation.  */
-/* @@? 20:1 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
+/* @@@ label Error SyntaxError: An index signature must have a type annotation.  */
+/* @@@ label1 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */

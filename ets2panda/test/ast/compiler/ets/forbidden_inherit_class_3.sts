@@ -17,8 +17,8 @@ class A {
     i:number
 }
 
-class B extends Readonly<A> {
+class B extends /* @@ label */Readonly<A> {
 
 }
 
-/* @@? 20:17 Error TypeError: The super type of 'B' class is not extensible.  */
+/* @@@ label Error TypeError: The super type of 'B' class is not extensible.  */

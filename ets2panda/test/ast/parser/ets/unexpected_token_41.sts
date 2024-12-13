@@ -13,13 +13,14 @@
  * limitations under the License.
  */
 
-for (let i: int = 0; i < d?length; ++i) {
-    arr.push(d[i]);
-}
+for (let i: int = 0; i < d?length/* @@ label */; ++i/* @@ label1 */) {
+    arr/* @@ label2 */.push(d[i])/* @@ label3 */;
+/* @@ label4 */}
 
-/* @@? 16:34 Error SyntaxError: Unexpected token, expected: ':'.  */
-/* @@? 16:39 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 17:8 Error SyntaxError: Unexpected token, expected: ':'.  */
-/* @@? 17:19 Error SyntaxError: Unexpected token, expected ',' or '}'  */
-/* @@? 18:1 Error SyntaxError: Missing right parenthesis in 'for' statement.  */
-/* @@? 26:1 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ':'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected: ':'.  */
+/* @@@ label3 Error SyntaxError: Unexpected token, expected ',' or '}'  */
+/* @@@ label4 Error SyntaxError: Missing right parenthesis in 'for' statement.  */
+/* @@@ label5 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@ label5 */

@@ -16,6 +16,6 @@
 
 function a(): void {
     @a
-}
+/* @@ label */}
 
-/* @@? 19:1 Error SyntaxError: Unexpected token: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token: '}'.  */

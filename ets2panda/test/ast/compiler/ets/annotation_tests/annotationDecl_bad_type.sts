@@ -16,11 +16,11 @@
 class OtherType{}
 
 @interface MyAnno {
-    testProperty1: OtherType;
-    testProperty2: Array<Int>;
-    testProperty3: [int ,number, string]
+    /* @@ label */testProperty1: OtherType;
+    /* @@ label1 */testProperty2: Array<Int>;
+    /* @@ label2 */testProperty3: [int ,number, string]
 }
 
-/* @@? 19:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
-/* @@? 20:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
-/* @@? 21:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
+/* @@@ label Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
+/* @@@ label1 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
+/* @@@ label2 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */

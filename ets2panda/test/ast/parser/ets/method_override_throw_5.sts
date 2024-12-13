@@ -18,7 +18,7 @@ class BClass {
 }
 
 final class CClass extends BClass {
-    override foo(): void rethrows {}
+    override foo/* @@ label */(): void rethrows {}
 }
 
-/* @@? 21:17 Error TypeError: A rethrowing function must have a throwing function parameter  */
+/* @@@ label Error TypeError: A rethrowing function must have a throwing function parameter  */

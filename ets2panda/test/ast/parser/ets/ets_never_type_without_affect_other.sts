@@ -20,10 +20,10 @@ function foo(): number {
         bar(n)
         let b: number[] = [2.7, n, 3.14]
         let c = ((p: number): number => p + 1)(n)
-        let d = n * 2
+        let d = /* @@ label */n * 2
         return n;
     }
-    return n!
+    return /* @@ label1 */n!
 }
-/* @@? 23:17 Error TypeError: Bad operand type, the types of the operands must be numeric type.  */
-/* @@? 26:12 Error TypeError: Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'.  */
+/* @@@ label Error TypeError: Bad operand type, the types of the operands must be numeric type.  */
+/* @@@ label1 Error TypeError: Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'.  */

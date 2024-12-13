@@ -17,6 +17,6 @@ do {
     console.log(
         "aaa"
     )
-} while [true)
+} while /* @@ label */[true)
 
-/* @@? 20:9 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '('.  */

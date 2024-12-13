@@ -17,8 +17,8 @@ class MyAnno {
     a:string = "1"
 }
 
-@MyAnno()
+@/* @@ label */MyAnno()
 class B{}
 
-/* @@? 20:2 Error TypeError: 'MyAnno' is not an annotation.  */
+/* @@@ label Error TypeError: 'MyAnno' is not an annotation.  */
 

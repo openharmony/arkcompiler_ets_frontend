@@ -20,6 +20,6 @@ class A<T>{
     a:T
 }
 
-new A<MyAnno>()
+new A</* @@ label */MyAnno>()
 
-/* @@? 23:7 Error TypeError: Annotations cannot be used as a type.  */
+/* @@@ label Error TypeError: Annotations cannot be used as a type.  */

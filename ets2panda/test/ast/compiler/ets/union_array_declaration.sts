@@ -16,9 +16,9 @@
 type A = string | string[] | int[]
 
 function main(): int {
-  let b: A = [];
+  let b: A = /* @@ label */[];
 
   return 0;
 }
 
-/* @@? 19:14 Error TypeError: Can't resolve array type  */
+/* @@@ label Error TypeError: Can't resolve array type  */

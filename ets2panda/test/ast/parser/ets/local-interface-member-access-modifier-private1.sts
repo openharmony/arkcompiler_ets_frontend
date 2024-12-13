@@ -17,8 +17,8 @@ function foo()
 {
     interface LocalInterface
     {
-        private property : int;
+        /* @@ label */private property : int;
     }
 }
 
-/* @@? 20:9 Error SyntaxError: Local interface declaration members can not have access modifiers  */
+/* @@@ label Error SyntaxError: Local interface declaration members can not have access modifiers  */

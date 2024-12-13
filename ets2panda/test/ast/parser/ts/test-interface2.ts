@@ -14,5 +14,5 @@
  */
 
 
-interface 5 { }
-/* @@? 17:11 Error SyntaxError: Identifier expected, got 'number literal'.  */
+interface /* @@ label */5 { }
+/* @@@ label Error SyntaxError: Identifier expected, got 'number literal'.  */

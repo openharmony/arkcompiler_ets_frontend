@@ -14,7 +14,7 @@
  */
   function main(){
    let a = 1;
-   a~!;
+   a/* @@ label */~!/* @@ label1 */;
   }
- /* @@? 17:5 Error SyntaxError: Unexpected token '~'. */
- /* @@? 17:7 Error SyntaxError: Unexpected token ';'. */
+ /* @@@ label Error SyntaxError: Unexpected token '~'. */
+ /* @@@ label1 Error SyntaxError: Unexpected token ';'. */

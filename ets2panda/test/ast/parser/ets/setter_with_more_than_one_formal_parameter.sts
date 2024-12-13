@@ -14,7 +14,7 @@
  */
 
  interface Set {
-    set value(a: int, b: int, c : int);
+    set value(a: int, b: int, c : int)/* @@ label */;
  }
 
- /* @@? 17:39 Error SyntaxError: Setter must have exactly one formal parameter */
+ /* @@@ label Error SyntaxError: Setter must have exactly one formal parameter */

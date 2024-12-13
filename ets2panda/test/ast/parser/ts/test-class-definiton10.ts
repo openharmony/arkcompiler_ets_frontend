@@ -15,7 +15,7 @@
 
 
 class Foo {
-    a() { } b() { } c() { } private static readonly declare d e;
+    a() { } b() { } c() { } private static readonly declare d /* @@ label */e;
 }
 
-/* @@? 18:63 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ';'.  */

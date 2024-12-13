@@ -15,7 +15,7 @@
 
 
 class A {
-    constructor(this) { }
+    constructor(this/* @@ label */) { }
 }
 
-/* @@? 18:21 Error SyntaxError: A constructor cannot have a 'this' parameter  */
+/* @@@ label Error SyntaxError: A constructor cannot have a 'this' parameter  */

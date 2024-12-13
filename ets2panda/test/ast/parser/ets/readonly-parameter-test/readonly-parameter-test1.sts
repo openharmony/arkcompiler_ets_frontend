@@ -14,7 +14,7 @@
  */
 
 
-function foo (x: readonly int) {
+function foo (x: readonly int/* @@ label */) {
 }
 
-/* @@? 17:30 Error SyntaxError: 'readonly' type modifier is only permitted on array and tuple types. */
+/* @@@ label Error SyntaxError: 'readonly' type modifier is only permitted on array and tuple types. */

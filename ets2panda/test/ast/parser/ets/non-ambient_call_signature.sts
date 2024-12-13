@@ -14,10 +14,10 @@
  */
 
 class A{
-    (a:number):number
-}
+    /* @@ label */(a:number/* @@ label1 */)/* @@ label2 */:number
+/* @@ label3 */}
 
-/* @@? 17:5 Error SyntaxError: Unexpected token: '('.  */
-/* @@? 17:14 Error SyntaxError: Unexpected token: ')'.  */
-/* @@? 17:15 Error SyntaxError: Unexpected token: ':'.  */
-/* @@? 18:1 Error SyntaxError: Field type annotation expected  */
+/* @@@ label Error SyntaxError: Unexpected token: '('.  */
+/* @@@ label1 Error SyntaxError: Unexpected token: ')'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token: ':'.  */
+/* @@@ label3 Error SyntaxError: Field type annotation expected  */
