@@ -205,6 +205,7 @@ void CompileAbcClassJob::Run()
     auto *program = new panda::pandasm::Program();
     std::string record_name = "";
     compiler_.CompileAbcClass(recordId, *program, record_name);
+    program->isGeneratedFromMergedAbc = true;
 
     // Update ohmurl for abc input when needed
     if (options_.compileContextInfo.needModifyRecord ||
