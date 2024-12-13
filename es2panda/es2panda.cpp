@@ -289,9 +289,10 @@ panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, S
             return nullptr;
         }
 
-        std::cerr << err.TypeString() << ": " << err.Message();
-        std::cerr << " [" << util::Helpers::BaseName(src->fileName) << ":"
-                  << err.Line() << ":" << err.Col() << "]" << std::endl;
+        std::stringstream ss;
+        ss << err.TypeString() << ": " << err.Message() << " [" << util::Helpers::BaseName(src->fileName) << ":" <<
+              err.Line() << ":" << err.Col() << "]";
+        std::cerr << ss.str() << std::endl;
         err.SetReported(true);
 
         throw err;
