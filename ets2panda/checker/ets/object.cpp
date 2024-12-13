@@ -1915,11 +1915,39 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
         }
     }
 
+    if (HasStatus(CheckerStatus::IN_GETTER)) {
+        WarnForEndlessLoopInGetterSetter(memberExpr);
+    }
+
     resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
 
     ResolveMemberReferenceValidate(prop, searchFlag, memberExpr);
 
     return resolveRes;
+}
+
+void ETSChecker::WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *const memberExpr)
+{
+    if (!memberExpr->Object()->IsThisExpression() || memberExpr->Property() == nullptr ||
+        !memberExpr->Property()->IsIdentifier()) {
+        return;
+    }
+    auto ident = memberExpr->Property()->AsIdentifier();
+    auto parent = memberExpr->Parent();
+    while (parent != nullptr &&
+           (!parent->IsMethodDefinition() || (!parent->AsMethodDefinition()->Function()->IsGetter() &&
+                                              !parent->AsMethodDefinition()->Function()->IsSetter()))) {
+        parent = parent->Parent();
+    }
+    if (parent != nullptr && ident->Name() == parent->AsMethodDefinition()->Function()->Id()->Name()) {
+        if (parent->AsMethodDefinition()->Function()->IsGetter()) {
+            Warning("Reading the value of the property inside its getter may lead to an endless loop.",
+                    memberExpr->Property()->AsIdentifier()->Start());
+        } else {
+            Warning("Assigning new value to the property inside its setter may lead to an endless loop.",
+                    memberExpr->Property()->AsIdentifier()->Start());
+        }
+    }
 }
 
 void ETSChecker::ResolveMemberReferenceValidate(varbinder::LocalVariable *const prop,

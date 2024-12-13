@@ -225,6 +225,7 @@ public:
     void CheckCyclicConstructorCall(Signature *signature);
     std::vector<ResolveResult *> ResolveMemberReference(const ir::MemberExpression *memberExpr,
                                                         const ETSObjectType *target);
+    void WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *const memberExpr);
     varbinder::Variable *ResolveInstanceExtension(const ir::MemberExpression *memberExpr);
     void CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig);
     void CheckThisOrSuperCallInConstructor(ETSObjectType *classType, Signature *ctorSig);
