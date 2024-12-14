@@ -449,6 +449,7 @@ libes2panda_sources = [
   "parser/ETSparserTypes.cpp",
   "parser/JSparser.cpp",
   "parser/TSparser.cpp",
+  "parser/ThrowingTypedParser.cpp",
   "parser/TypedParser.cpp",
   "parser/context/classPrivateContext.cpp",
   "parser/context/parserContext.cpp",

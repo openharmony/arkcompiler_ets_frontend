@@ -802,7 +802,8 @@ ir::Statement *ETSParser::ParseTypeDeclarationAbstractFinal(bool allowStatic, ir
         return ParseStructDeclaration(modifiers, flags);
     }
 
-    ThrowUnexpectedToken(Lexer()->GetToken().Type());
+    LogUnexpectedToken(Lexer()->GetToken().Type());
+    return nullptr;
 }
 
 ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
@@ -815,7 +816,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
     switch (tokenType) {
         case lexer::TokenType::KEYW_STATIC: {
             if (!allowStatic) {
-                ThrowUnexpectedToken(Lexer()->GetToken().Type());
+                LogUnexpectedToken(Lexer()->GetToken().Type());
             }
 
             Lexer()->NextToken();
@@ -1494,7 +1495,7 @@ std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseN
         lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
         [this, &result, &resultDefault, &fileName]() {
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
-                ThrowSyntaxError("The '*' token is not allowed as a selective binding (between braces)");
+                LogSyntaxError("The '*' token is not allowed as a selective binding (between braces)");
             }
 
             if (!IsDefaultImport()) {
@@ -1897,7 +1898,8 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
 
 ir::Statement *ETSParser::ParseExportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
-    ThrowUnexpectedToken(lexer::TokenType::KEYW_EXPORT);
+    LogUnexpectedToken(lexer::TokenType::KEYW_EXPORT);
+    return nullptr;
 }
 
 ir::Expression *ETSParser::ParseExpressionOrTypeAnnotation(lexer::TokenType type,
