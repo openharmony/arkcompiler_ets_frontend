@@ -233,6 +233,10 @@ static void ProcessCalleeMethodBody(ir::AstNode *body, checker::ETSChecker *chec
         }
         if (node->IsTyped() && node->AsTyped()->TsType() != nullptr) {
             node->AsTyped()->SetTsType(node->AsTyped()->TsType()->Substitute(checker->Relation(), substitution));
+            if (node->IsTSNonNullExpression()) {
+                auto expr = node->AsTSNonNullExpression();
+                expr->SetOriginalType(expr->OriginalType()->Substitute(checker->Relation(), substitution));
+            }
         }
         if (node->IsCallExpression()) {
             node->AsCallExpression()->SetSignature(
