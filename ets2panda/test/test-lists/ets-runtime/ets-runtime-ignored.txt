@@ -23,14 +23,10 @@ GenericsTest.sts
 objectEquality.sts
 
 # FailKind.ES2PANDA_FAIL # panda#12518
-CastReference3.sts
 conditionalExpressionGenericLUB.sts
 
 # Failed due to lambda captures
 trailing-lambda-with-capture.sts
-
-# ignored until union types are properly implemented and non nullish base type of array types can be properly handled
-notNullMultidimensionalArray.sts
 
 # ignored until verifier can't handle if a field name can be static and non-static at the same time
 class-fields-same-name.sts
@@ -52,9 +48,6 @@ type_param_in_union.sts
 # verifier false positive for 64 bit instructions on union types.
 # Issue: #16216
 union_wide_property_access.sts
-
-# Issue: #16049
-increment-on-nullish-type.sts
 
 # 15276
 n_overrideWithNullable.sts
