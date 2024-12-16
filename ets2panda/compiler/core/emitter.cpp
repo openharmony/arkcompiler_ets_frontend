@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -428,7 +428,8 @@ static void UpdateLiteralBufferId([[maybe_unused]] ark::pandasm::Ins *ins, [[may
         case pandasm::Opcode::ECMA_CREATEOBJECTWITHBUFFER:
         case pandasm::Opcode::ECMA_CREATEOBJECTHAVINGMETHOD:
         case pandasm::Opcode::ECMA_DEFINECLASSPRIVATEFIELDS: {
-            uint32_t storedOffset = std::stoi(ins->ids.back());
+            constexpr int BASE10 = 10;
+            uint32_t storedOffset = strtoul(ins->ids.back().data(), nullptr, BASE10);
             storedOffset += offset;
             ins->ids.back() = std::to_string(storedOffset);
             break;
