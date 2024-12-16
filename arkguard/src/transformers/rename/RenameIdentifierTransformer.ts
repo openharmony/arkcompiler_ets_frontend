@@ -106,6 +106,7 @@ import {
   UnobfuscationCollections,
   LocalVariableCollections
 } from '../../utils/CommonCollections';
+import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 
 namespace secharmony {
   /**
@@ -171,14 +172,18 @@ namespace secharmony {
           return node;
         }
 
+        const checkRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_CHECKER);
         startSingleFileEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
         checker = TypeUtils.createChecker(node);
         endSingleFileEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(checkRecordInfo);
 
+        const scopeRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.SCOPE_ANALYZE);
         startSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
         manager.analyze(node, checker, exportObfuscation);
         endSingleFileEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
-
+        ArkObfuscator.stopRecordStage(scopeRecordInfo);
+ 
         let rootScope: Scope = manager.getRootScope();
         fileExportNames = rootScope.fileExportNames;
         fileImportNames = rootScope.fileImportNames;
@@ -187,12 +192,15 @@ namespace secharmony {
           renameProcessors.push(renamePropertyParametersInScope);
         }
 
+        const obfuscateNamesRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.OBFUSCATE_NAMES);
         startSingleFileEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
         getMangledNamesInScope(rootScope, renameProcessors);
         endSingleFileEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(obfuscateNamesRecordInfo);
 
         rootScope = undefined;
 
+        const obfuscateNodesRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.OBFUSCATE_NODES);
         startSingleFileEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         let updatedNode: Node = renameIdentifiers(node);
 
@@ -203,6 +211,7 @@ namespace secharmony {
 
         let parentNodes = setParentRecursive(updatedNode, true);
         endSingleFileEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
+        ArkObfuscator.stopRecordStage(obfuscateNodesRecordInfo);
         return parentNodes;
       }
 
