@@ -92,7 +92,7 @@ void ClassDefinition::TransformChildren(const NodeTransformer &cb, std::string_v
         }
     }
 
-    for (auto *&it : VectorIterationGuard(annotations_)) {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsAnnotationUsage();
@@ -140,7 +140,7 @@ void ClassDefinition::Iterate(const NodeTraverser &cb) const
         cb(implements_[ix]);
     }
 
-    for (auto *it : VectorIterationGuard(annotations_)) {
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 
@@ -172,7 +172,7 @@ void ClassDefinition::Dump(ir::AstDumper *dumper) const
                  {"superClass", AstDumper::Nullish(superClass_)},
                  {"superTypeParameters", AstDumper::Optional(superTypeParams_)},
                  {"implements", implements_},
-                 {"annotations", AstDumper::Optional(annotations_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"constructor", AstDumper::Optional(ctor_)},
                  {"body", body_, propFilter}});
 }
@@ -197,7 +197,7 @@ void ClassDefinition::DumpBody(ir::SrcDumper *dumper) const
 
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
 {
-    for (auto *anno : annotations_) {
+    for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
     ASSERT(ident_ != nullptr);

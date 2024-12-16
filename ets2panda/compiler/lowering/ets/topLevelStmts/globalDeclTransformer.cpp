@@ -72,6 +72,14 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
                                                                              varDecl->Modifiers(), allocator_, false);
         field->SetRange(declarator->Range());
 
+        if (!varDecl->Annotations().empty()) {
+            ArenaVector<ir::AnnotationUsage *> propAnnotations(allocator_->Adapter());
+            for (auto *annotationUsage : varDecl->Annotations()) {
+                propAnnotations.push_back(annotationUsage->Clone(allocator_, field)->AsAnnotationUsage());
+            }
+            field->SetAnnotations(std::move(propAnnotations));
+        }
+
         if (varDecl->IsExported() && varDecl->HasExportAlias()) {
             field->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
         }

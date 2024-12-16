@@ -90,7 +90,7 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
             return nullptr;
         }
 
-        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), defaultValue);
+        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), defaultValue, Allocator());
 
         std::string value = GetArgumentsSourceView(Lexer(), lexerPos);
         paramExpression->SetLexerSaved(util::UString(value, Allocator()).View());
@@ -108,14 +108,14 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
             return std::make_pair(defaultUndef != nullptr ? AllocNode<ir::UndefinedLiteral>() : nullptr, "undefined");
         }();
 
-        paramExpression =
-            AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), std::get<0>(typeAnnotationValue));
+        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(),
+                                                                std::get<0>(typeAnnotationValue), Allocator());
         if (defaultUndef != nullptr) {
             paramExpression->SetLexerSaved(util::UString(std::get<1>(typeAnnotationValue), Allocator()).View());
         }
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     } else {
-        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsRestElement(), nullptr);
+        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsRestElement(), nullptr, Allocator());
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     }
     return paramExpression;

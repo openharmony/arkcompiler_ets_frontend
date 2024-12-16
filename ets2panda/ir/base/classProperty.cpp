@@ -50,6 +50,13 @@ void ClassProperty::TransformChildren(const NodeTransformer &cb, std::string_vie
             it = transformedNode->AsDecorator();
         }
     }
+
+    for (auto *&it : Annotations()) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ClassProperty::Iterate(const NodeTraverser &cb) const
@@ -65,6 +72,10 @@ void ClassProperty::Iterate(const NodeTraverser &cb) const
     }
 
     for (auto *it : VectorIterationGuard(decorators_)) {
+        cb(it);
+    }
+
+    for (auto *it : Annotations()) {
         cb(it);
     }
 }
@@ -83,11 +94,16 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"computed", isComputed_},
                  {"typeAnnotation", AstDumper::Optional(typeAnnotation_)},
                  {"definite", IsDefinite()},
-                 {"decorators", decorators_}});
+                 {"decorators", decorators_},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ClassProperty::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
+
     if (Parent() != nullptr && Parent()->IsClassDefinition() && !Parent()->AsClassDefinition()->IsLocal()) {
         if (IsPrivate()) {
             dumper->Add("private ");
@@ -172,6 +188,14 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
 
         for (auto *const decorator : decorators_) {
             clone->AddDecorator(decorator->Clone(allocator, clone));
+        }
+
+        if (!annotations_.empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : annotations_) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
         }
 
         return clone;

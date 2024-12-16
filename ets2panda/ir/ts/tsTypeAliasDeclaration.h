@@ -18,6 +18,7 @@
 
 #include "ir/statement.h"
 #include "ir/typed.h"
+#include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::varbinder {
 class Variable;
@@ -33,6 +34,7 @@ public:
                                     TypeNode *typeAnnotation)
         : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation),
           decorators_(allocator->Adapter()),
+          annotations_(allocator->Adapter()),
           id_(id),
           typeParams_(typeParams),
           typeParamTypes_(allocator->Adapter())
@@ -42,6 +44,7 @@ public:
     explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id)
         : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION),
           decorators_(allocator->Adapter()),
+          annotations_(allocator->Adapter()),
           id_(id),
           typeParams_(nullptr),
           typeParamTypes_(allocator->Adapter())
@@ -98,6 +101,24 @@ public:
         return typeParamTypes_;
     }
 
+    [[nodiscard]] ArenaVector<ir::AnnotationUsage *> &Annotations() noexcept
+    {
+        return annotations_;
+    }
+
+    [[nodiscard]] const ArenaVector<ir::AnnotationUsage *> &Annotations() const noexcept
+    {
+        return annotations_;
+    }
+
+    void SetAnnotations(ArenaVector<ir::AnnotationUsage *> &&annotations)
+    {
+        annotations_ = std::move(annotations);
+        for (AnnotationUsage *anno : annotations_) {
+            anno->SetParent(this);
+        }
+    }
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -114,6 +135,7 @@ public:
 
 private:
     ArenaVector<Decorator *> decorators_;
+    ArenaVector<AnnotationUsage *> annotations_;
     Identifier *id_;
     TSTypeParameterDeclaration *typeParams_;
     ArenaVector<checker::Type *> typeParamTypes_;

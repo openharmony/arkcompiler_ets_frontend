@@ -1065,6 +1065,7 @@ void InitScopesPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration 
         CallNode(interfaceDecl->Extends());
         auto localScope = LexicalScopeCreateOrEnter<varbinder::ClassScope>(VarBinder(), interfaceDecl);
         CallNode(interfaceDecl->Body());
+        CallNode(interfaceDecl->Annotations());
         BindScopeNode(localScope.GetScope(), interfaceDecl);
     }
     auto name = FormInterfaceOrEnumDeclarationIdBinding(interfaceDecl->Id());
@@ -1180,18 +1181,10 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
 {
     auto curScope = VarBinder()->GetScope();
     const auto name = classProp->Key()->AsIdentifier()->Name();
-    if (classProp->IsClassStaticBlock()) {
-        ASSERT(curScope->IsClassScope());
-        auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
-            VarBinder(), curScope->AsClassScope()->StaticMethodScope());
-        auto *var = classProp->Id()->Variable();
-        if (var == nullptr) {
-            var = std::get<1>(VarBinder()->NewVarDecl<varbinder::FunctionDecl>(classProp->Start(), Allocator(),
-                                                                               classProp->Id()->Name(), classProp));
-        }
-        var->AddFlag(varbinder::VariableFlags::METHOD);
-        classProp->AsClassStaticBlock()->Function()->Id()->SetVariable(var);
-    } else if (classProp->IsConst()) {
+
+    ASSERT(!classProp->IsClassStaticBlock());
+
+    if (classProp->IsConst()) {
         ASSERT(curScope->Parent() != nullptr);
         const auto initializer = classProp->Value();
         if (initializer == nullptr && curScope->Parent()->IsGlobalScope() && !classProp->IsDeclare()) {

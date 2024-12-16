@@ -209,7 +209,6 @@ public:
     void CheckInnerClassMembers(const ETSObjectType *classType);
     void CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus);
     void CheckClassDefinition(ir::ClassDefinition *classDef);
-    void CheckClassAnnotations(ir::ClassDefinition *classDef);
     void CheckClassMembers(ir::ClassDefinition *classDef);
     void CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType *classType);
     void FindAssignment(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
@@ -521,7 +520,8 @@ public:
     bool ValidateAnnotationPropertyType(checker::Type *tsType);
     void ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
                                ir::AnnotationUsage *st, ETSChecker *checker) const;
-    bool CheckDuplicateAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
+    void CheckFunctionAnnotations(ir::ScriptFunction *scriptFunc);
+    void CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
     void CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl);
     bool CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected);
     bool CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir::Expression *expected);

@@ -138,8 +138,8 @@ public:
         (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
         return CreateFormattedStatements(sourceCode, insertingNodes);
     }
-    ir::Statement *ParseAnnotation(StatementParsingFlags flags, ir::ModifierFlags memberModifiers);
-    ArenaVector<ir::AnnotationUsage *> ParseAnnotations(ir::ModifierFlags &flags, bool isTopLevelSt = true);
+    ir::Statement *ParseTopLevelAnnotation(StatementParsingFlags flags, ir::ModifierFlags memberModifiers);
+    ArenaVector<ir::AnnotationUsage *> ParseAnnotations(bool isTopLevelSt);
     ir::ClassDeclaration *CreateFormattedClassDeclaration(std::string_view sourceCode,
                                                           std::vector<ir::AstNode *> &insertingNodes,
                                                           bool allowStatic = false);
@@ -274,6 +274,8 @@ private:
     ir::ETSScript *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
 
+    void *ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVector<ir::AnnotationUsage *> &&annotations,
+                                         lexer::SourcePosition pos);
     ir::MethodDefinition *ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
                                                        ir::ClassDefinitionModifiers modifiers,
                                                        ir::ModifierFlags memberModifiers);
@@ -348,17 +350,20 @@ private:
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
+    ir::Statement *ParseAnnotationsInStatement(StatementParsingFlags flags) override;
     ir::VariableDeclarator *ParseVariableDeclarator(ir::Expression *init, lexer::SourcePosition startLoc,
                                                     VariableParsingFlags flags) override;
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &startLoc) override;
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
+    ir::AstNode *ParseAnnotationsInInterfaceBody();
     void ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport = false);
     bool CheckModuleAsModifier();
     ir::Expression *ParseFunctionParameterExpression(ir::AnnotatedExpression *paramIdent,
                                                      ir::ETSUndefinedType *defaultUndef);
     std::pair<ir::Expression *, std::string> TypeAnnotationValue(ir::TypeNode *typeAnnotation);
     ir::ETSParameterExpression *ParseFunctionParameterTail(ir::AnnotatedExpression *paramIdent, bool defaultUndefined);
+    ir::Expression *ParseFunctionParameterAnnotations();
     ir::Expression *ParseFunctionParameter() override;
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
     ir::ETSUnionType *CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation, ir::ETSUndefinedType *defaultUndef);

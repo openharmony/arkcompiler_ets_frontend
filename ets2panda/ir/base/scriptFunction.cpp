@@ -24,13 +24,12 @@
 namespace ark::es2panda::ir {
 
 ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data)
-    : AstNode(AstNodeType::SCRIPT_FUNCTION, data.flags),
+    : AnnotationAllowed<AstNode>(AstNodeType::SCRIPT_FUNCTION, data.flags, allocator),
       irSignature_(std::move(data.signature)),
       body_(data.body),
       funcFlags_(data.funcFlags),
       lang_(data.lang),
-      returnStatements_(allocator->Adapter()),
-      annotations_(allocator->Adapter())
+      returnStatements_(allocator->Adapter())
 {
     for (auto *param : irSignature_.Params()) {
         param->SetParent(this);
@@ -110,7 +109,7 @@ void ScriptFunction::TransformChildren(const NodeTransformer &cb, std::string_vi
         }
     }
 
-    for (auto *&it : VectorIterationGuard(annotations_)) {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
         if (auto *transformedNode = cb(it); it != transformedNode) {
             it->SetTransformedNode(transformationName, transformedNode);
             it = transformedNode->AsAnnotationUsage();
@@ -127,7 +126,7 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
     if (body_ != nullptr) {
         cb(body_);
     }
-    for (auto *it : VectorIterationGuard(annotations_)) {
+    for (auto *it : VectorIterationGuard(Annotations())) {
         cb(it);
     }
 }
@@ -158,7 +157,7 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(irSignature_.TypeParams())},
                  {"declare", AstDumper::Optional(IsDeclare())},
                  {"body", AstDumper::Optional(body_)},
-                 {"annotations", AstDumper::Optional(annotations_)},
+                 {"annotations", AstDumper::Optional(Annotations())},
                  {"throwMarker", AstDumper::Optional(throwMarker)}});
 }
 

@@ -561,6 +561,7 @@ HEADERS_TO_BE_PARSED = [
   "checker/types/ts/arrayType.h",
   "ir/astNode.h",
   "ir/typed.h",
+  "ir/annotationAllowed.h",
   "ir/statements/ifStatement.h",
   "ir/ets/etsTuple.h",
   "ir/module/exportSpecifier.h",

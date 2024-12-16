@@ -392,6 +392,7 @@ protected:
     virtual ir::Statement *ParseConstStatement(StatementParsingFlags flags);
 
     virtual ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags);
+    virtual ir::Statement *ParseAnnotationsInStatement(StatementParsingFlags flags);
     virtual ir::VariableDeclarator *ParseVariableDeclarator(ir::Expression *init, lexer::SourcePosition startLoc,
                                                             VariableParsingFlags flags);
     virtual ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,

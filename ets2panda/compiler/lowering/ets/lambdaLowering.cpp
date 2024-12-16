@@ -170,7 +170,8 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
         auto *newType = capturedVar->TsType()->Substitute(checker->Relation(), calleeParameterInfo.substitution);
         auto newId = util::NodeAllocator::ForceSetParent<ir::Identifier>(
             allocator, capturedVar->Name(), allocator->New<ir::OpaqueTypeNode>(newType), allocator);
-        auto param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, newId, nullptr);
+        auto param =
+            util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, newId, nullptr, allocator);
         auto [_, var] = varBinder->AddParamDecl(param);
         (void)_;
         var->SetTsType(newType);
@@ -502,7 +503,8 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
         auto *substitutedType = type->Substitute(checker->Relation(), substitution);
         auto *id = util::NodeAllocator::ForceSetParent<ir::Identifier>(
             allocator, name, allocator->New<ir::OpaqueTypeNode>(substitutedType), allocator);
-        auto *param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, nullptr);
+        auto *param =
+            util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, nullptr, allocator);
         params.push_back(param);
     };
 
@@ -608,7 +610,8 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
         auto *type = wrapToObject ? anyType : lparam->TsType()->Substitute(checker->Relation(), lciInfo->substitution);
         auto *id = util::NodeAllocator::ForceSetParent<ir::Identifier>(
             allocator, lparam->Name(), allocator->New<ir::OpaqueTypeNode>(type), allocator);
-        auto *param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, nullptr);
+        auto *param =
+            util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, nullptr, allocator);
         params.push_back(param);
     }
 
@@ -858,7 +861,7 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
         params.push_back(util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(
             allocator,
             allocator->New<ir::Identifier>(p->Name(), allocator->New<ir::OpaqueTypeNode>(p->TsType()), allocator),
-            nullptr));
+            nullptr, allocator));
     }
     auto *func = util::NodeAllocator::ForceSetParent<ir::ScriptFunction>(
         allocator, allocator,

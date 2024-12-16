@@ -88,8 +88,11 @@ AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode
         }
 
         for (auto *property : properties_) {
-            clone->AddProperty(property);
+            clone->AddProperty(property->Clone(allocator, clone));
         }
+
+        clone->SetRange(range_);
+        clone->SetScope(propertiesScope_);
         return clone;
     }
 

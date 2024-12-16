@@ -78,6 +78,8 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
         return st->TsType();
     }
 
+    checker->CheckAnnotations(st->Annotations());
+
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass(),
                                               checker->Context().ContainingSignature());
@@ -144,15 +146,6 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
         }
     }
 }
-void ETSAnalyzer::CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const
-{
-    ASSERT(scriptFunc != nullptr);
-    if (checker->CheckDuplicateAnnotations(scriptFunc->Annotations())) {
-        for (auto *it : scriptFunc->Annotations()) {
-            it->Check(checker);
-        }
-    }
-}
 
 checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
 {
@@ -160,13 +153,13 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
 
     auto *scriptFunc = node->Function();
 
-    CheckClassProperty(checker, scriptFunc);
-
     if (scriptFunc == nullptr) {
         checker->LogTypeError("Invalid function expression", node->Start());
         node->SetTsType(checker->GlobalTypeError());
         return node->TsType();
     }
+
+    checker->CheckFunctionAnnotations(scriptFunc);
 
     if (scriptFunc->IsProxy()) {
         return ReturnTypeForStatement(node);
@@ -2744,6 +2737,9 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
 checker::Type *ETSAnalyzer::Check(ir::VariableDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    checker->CheckAnnotations(st->Annotations());
+
     for (auto *it : st->Declarators()) {
         it->Check(checker);
     }
@@ -2875,6 +2871,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     checker::ETSObjectType *interfaceType = checker->BuildBasicInterfaceProperties(st);
     ASSERT(interfaceType != nullptr);
 
+    checker->CheckAnnotations(st->Annotations());
+
     interfaceType->SetSuperType(checker->GlobalETSObjectType());
     checker->CheckInvokeMethodsLegitimacy(interfaceType);
     st->SetTsType(interfaceType);
@@ -2951,6 +2949,9 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
 checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    checker->CheckAnnotations(st->Annotations());
+
     if (st->TypeParams() == nullptr) {
         const checker::SavedTypeRelationFlagsContext savedFlagsCtx(
             checker->Relation(), checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);

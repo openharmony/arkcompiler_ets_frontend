@@ -66,6 +66,36 @@ void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir
 
 }  // namespace
 
+static ir::FunctionSignature GenerateGetterOrSetterSignature(checker::ETSChecker *const checker,
+                                                             varbinder::ETSBinder *varbinder,
+                                                             ir::ClassProperty *const field, bool isSetter,
+                                                             varbinder::FunctionParamScope *paramScope)
+{
+    TransformOptionalFieldTypeAnnotation(checker, field);
+    ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
+
+    if (isSetter) {
+        auto paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
+        paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator(), nullptr));
+        paramIdent->TypeAnnotation()->SetParent(paramIdent);
+
+        auto classCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, paramScope);
+        InitScopesPhaseETS::RunExternalNode(paramIdent, varbinder);
+
+        auto *const paramExpression =
+            checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, checker->Allocator());
+        paramExpression->SetRange(paramIdent->Range());
+        auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
+
+        paramIdent->SetVariable(paramVar);
+        paramExpression->SetVariable(paramVar);
+
+        params.push_back(paramExpression);
+    }
+
+    return ir::FunctionSignature(nullptr, std::move(params), isSetter ? nullptr : field->TypeAnnotation());
+}
+
 static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, varbinder::ETSBinder *varbinder,
                                                     ir::ClassProperty *const field, bool isSetter)
 {
@@ -79,28 +109,8 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     auto flags = ir::ModifierFlags::PUBLIC;
     flags |= ir::ModifierFlags::ABSTRACT;
 
-    TransformOptionalFieldTypeAnnotation(checker, field);
-    ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
+    ir::FunctionSignature signature = GenerateGetterOrSetterSignature(checker, varbinder, field, isSetter, paramScope);
 
-    if (isSetter) {
-        auto paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
-        paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator(), nullptr));
-        paramIdent->TypeAnnotation()->SetParent(paramIdent);
-
-        auto classCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, paramScope);
-        InitScopesPhaseETS::RunExternalNode(paramIdent, varbinder);
-
-        auto *const paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
-        paramExpression->SetRange(paramIdent->Range());
-        auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
-
-        paramIdent->SetVariable(paramVar);
-        paramExpression->SetVariable(paramVar);
-
-        params.push_back(paramExpression);
-    }
-
-    auto signature = ir::FunctionSignature(nullptr, std::move(params), isSetter ? nullptr : field->TypeAnnotation());
     auto *func = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(), ir::ScriptFunction::ScriptFunctionData {
                                   nullptr, std::move(signature),  // CC-OFF(G.FMT.02) project code style
@@ -131,6 +141,14 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     method->Function()->AddModifier(method->Modifiers());
     paramScope->BindNode(func);
     functionScope->BindNode(func);
+
+    if (!field->Annotations().empty()) {
+        ArenaVector<ir::AnnotationUsage *> functionAnnotations(checker->Allocator()->Adapter());
+        for (auto *annotationUsage : field->Annotations()) {
+            functionAnnotations.push_back(annotationUsage->Clone(checker->Allocator(), method)->AsAnnotationUsage());
+        }
+        method->Function()->SetAnnotations(std::move(functionAnnotations));
+    }
 
     return method;
 }

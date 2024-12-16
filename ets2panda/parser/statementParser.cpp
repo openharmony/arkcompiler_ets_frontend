@@ -191,9 +191,19 @@ ir::Statement *ParserImpl::ParseStatementBasedOnTokenType(StatementParsingFlags 
             return ParseEnumDeclaration();
         case lexer::TokenType::KEYW_INTERFACE:
             return ParseInterfaceDeclaration(false);
+        case lexer::TokenType::PUNCTUATOR_AT:
+            if (IsETSParser()) {
+                return ParseAnnotationsInStatement(flags);
+            }
+            [[fallthrough]];
         default:
             return ParseExpressionStatement(flags);
     }
+}
+
+ir::Statement *ParserImpl::ParseAnnotationsInStatement([[maybe_unused]] StatementParsingFlags flags)
+{
+    UNREACHABLE();
 }
 
 ir::Statement *ParserImpl::ParseVarStatement()

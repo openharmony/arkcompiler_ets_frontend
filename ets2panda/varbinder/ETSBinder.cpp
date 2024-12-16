@@ -303,6 +303,10 @@ void ETSBinder::ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
         ResolveReference(extend);
     }
 
+    for (auto *anno : decl->Annotations()) {
+        ResolveReference(anno);
+    }
+
     auto scopeCtx = LexicalScope<ClassScope>::Enter(this, decl->Scope()->AsClassScope());
 
     for (auto *stmt : decl->Body()->Body()) {
