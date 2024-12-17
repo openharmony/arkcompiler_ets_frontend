@@ -119,7 +119,7 @@ public:
 
     std::string ExtractContentFromBase64Input(const std::string &inputBase64String);
 
-    const std::string &compilerProtoOutput() const
+    const std::string &CompilerProtoOutput() const
     {
         return compilerProtoOutput_;
     }
