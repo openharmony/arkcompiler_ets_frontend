@@ -48,7 +48,7 @@ import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils
 import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 
 namespace secharmony {
-  const createShorthandPropertyTransformerFactory = function (option: IOptions): TransformerFactory<Node> {
+  const createShorthandPropertyTransformerFactory = function (option: IOptions): TransformerFactory<Node> | null {
     let profile: INameObfuscationOption = option.mNameObfuscation;
     if (!profile || !profile.mEnable) {
       return null;

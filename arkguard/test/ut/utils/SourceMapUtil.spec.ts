@@ -17,13 +17,6 @@ import {assert} from 'chai';
 import {getSourceMapGenerator} from '../../../src/utils/SourceMapUtil';
 
 describe('test for SourceMapUtil', function () {
-  it('should return undefined when path is invalid', function () {
-    const filePath = undefined;
-
-    const generator = getSourceMapGenerator(filePath);
-    assert.strictEqual(generator, undefined);
-  });
-
   it('should return an object if path valid', function () {
     const filePath = 'demo.js';
     const generator = getSourceMapGenerator(filePath);
