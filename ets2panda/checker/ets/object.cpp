@@ -135,6 +135,11 @@ void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interfa
         LogTypeError("Repeated interface.", pos);
     }
 
+    auto *baseType = GetOriginalBaseType(interface);
+    if (baseType != interface && !extendsSet->insert(baseType).second) {
+        LogTypeError({"Implements generic interface '", baseType, "' with different instantiations."}, pos);
+    }
+
     GetInterfaces(interface->AsETSObjectType());
     auto *declNode = interface->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
     if (declNode->TsType() != nullptr && declNode->TsType()->IsTypeError()) {
