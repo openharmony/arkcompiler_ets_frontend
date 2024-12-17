@@ -75,6 +75,11 @@ public:
         return arguments_;
     }
 
+    void SetArguments(ArenaVector<ir::Expression *> &&arguments)
+    {
+        arguments_ = std::move(arguments);
+    }
+
     [[nodiscard]] checker::Signature *GetSignature() const noexcept
     {
         return signature_;

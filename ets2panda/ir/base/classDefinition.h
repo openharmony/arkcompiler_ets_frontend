@@ -224,6 +224,11 @@ public:
         return (modifiers_ & ClassDefinitionModifiers::CLASSDEFINITION_CHECKED) != 0;
     }
 
+    [[nodiscard]] bool IsAnonymous() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::ANONYMOUS) != 0;
+    }
+
     [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return lang_;
@@ -242,6 +247,11 @@ public:
     void SetClassDefinitionChecked() noexcept
     {
         modifiers_ |= ClassDefinitionModifiers::CLASSDEFINITION_CHECKED;
+    }
+
+    void SetAnonymousModifier() noexcept
+    {
+        modifiers_ |= ClassDefinitionModifiers::ANONYMOUS;
     }
 
     [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept

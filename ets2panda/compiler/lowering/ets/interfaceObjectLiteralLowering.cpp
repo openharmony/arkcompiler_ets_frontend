@@ -22,6 +22,9 @@
 
 namespace ark::es2panda::compiler {
 
+using ReadonlyFieldHolder =
+    std::tuple<util::UString, util::StringView, checker::Type *>;  // anonClassFieldName, paramName, fieldType
+
 std::string_view InterfaceObjectLiteralLowering::Name() const
 {
     return "InterfaceObjectLiteralLowering";
@@ -34,11 +37,21 @@ static inline bool IsInterfaceType(const checker::Type *type)
            !type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
 }
 
-static ir::AstNode *CreateAnonClassImplCtor(checker::ETSChecker *checker)
+static ir::AstNode *CreateAnonClassImplCtor(public_lib::Context *ctx, ArenaVector<ReadonlyFieldHolder> &readonlyFields)
 {
+    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const parser = ctx->parser->AsETSParser();
     checker::ETSChecker::ClassInitializerBuilder initBuilder =
-        [checker]([[maybe_unused]] ArenaVector<ir::Statement *> *statements,
-                  [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
+        [checker, parser, readonlyFields](ArenaVector<ir::Statement *> *statements,
+                                          ArenaVector<ir::Expression *> *params) {
+            for (auto [anonClassFieldName, paramName, retType] : readonlyFields) {
+                ir::ETSParameterExpression *param =
+                    checker->AddParam(paramName, checker->AllocNode<ir::OpaqueTypeNode>(retType));
+                params->push_back(param);
+                auto *paramIdent = checker->AllocNode<ir::Identifier>(paramName, checker->Allocator());
+                statements->push_back(
+                    parser->CreateFormattedStatement("this.@@I1 = @@I2;", anonClassFieldName, paramIdent));
+            }
             checker->AddParam(varbinder::VarBinder::MANDATORY_PARAM_THIS, nullptr);
         };
 
@@ -103,6 +116,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(public_lib::Contex
 
 static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *classBody,
                           const ArenaVector<ir::AstNode *> &ifaceBody, ir::ObjectExpression *objExpr,
+                          ArenaVector<ReadonlyFieldHolder> &readonlyFields,
                           checker::ETSObjectType *currentType = nullptr)
 {
     auto *checker = ctx->checker->AsETSChecker();
@@ -138,6 +152,10 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
         // Field identifier
         auto anonClassFieldName = GenName(ctx->allocator);
         auto *field = CreateAnonClassField(ctx, copyIfaceMethod, anonClassFieldName);
+        if (field->IsReadonly()) {
+            readonlyFields.push_back(
+                std::make_tuple(anonClassFieldName, ifaceMethod->Id()->Name(), field->TypeAnnotation()->TsType()));
+        }
         classBody->push_back(field);
         SetSourceRangesRecursively(field, ifaceMethod->Range());
 
@@ -154,14 +172,15 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
 }
 
 static void FillAnonClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *classBody,
-                              ir::TSInterfaceDeclaration *ifaceNode, ir::ObjectExpression *objExpr)
+                              ir::TSInterfaceDeclaration *ifaceNode, ir::ObjectExpression *objExpr,
+                              ArenaVector<ReadonlyFieldHolder> &readonlyFields)
 {
     for (auto *extendedIface : ifaceNode->TsType()->AsETSObjectType()->Interfaces()) {
         auto extendedIfaceBody = extendedIface->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body();
-        FillClassBody(ctx, classBody, extendedIfaceBody, objExpr, extendedIface);
+        FillClassBody(ctx, classBody, extendedIfaceBody, objExpr, readonlyFields, extendedIface);
     }
 
-    FillClassBody(ctx, classBody, ifaceNode->Body()->Body(), objExpr);
+    FillClassBody(ctx, classBody, ifaceNode->Body()->Body(), objExpr, readonlyFields);
 }
 
 static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ctx,
@@ -178,15 +197,17 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
         if (ifaceNode->TsType() == nullptr) {
             ifaceNode->Check(checker);
         }
-
-        FillAnonClassBody(ctx, classBody, ifaceNode, objExpr);
-        classBody->push_back(CreateAnonClassImplCtor(checker));
+        ArenaVector<ReadonlyFieldHolder> readonlyFields(checker->Allocator()->Adapter());
+        FillAnonClassBody(ctx, classBody, ifaceNode, objExpr, readonlyFields);
+        classBody->push_back(CreateAnonClassImplCtor(ctx, readonlyFields));
     };
 
     auto anonClassName = GenName(checker->Allocator());
     auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
     auto *classDef = classDecl->Definition();
     auto *classType = classDef->TsType()->AsETSObjectType();
+    classDef->SetAnonymousModifier();
+
     classDecl->SetRange(ifaceNode->Range());
     classDef->SetRange(ifaceNode->Range());
 

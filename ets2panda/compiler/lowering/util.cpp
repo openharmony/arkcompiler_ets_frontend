@@ -143,4 +143,13 @@ void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *chec
     node->Check(checker);
 }
 
+bool IsAnonymousClassType(const checker::Type *type)
+{
+    if (type == nullptr || !type->IsETSObjectType()) {
+        return false;
+    }
+
+    auto declNode = type->AsETSObjectType()->GetDeclNode();
+    return declNode != nullptr && declNode->IsClassDefinition() && declNode->AsClassDefinition()->IsAnonymous();
+}
 }  // namespace ark::es2panda::compiler
