@@ -380,6 +380,14 @@ ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclarat
     GetInterfaces(interfaceType);
     interfaceType->SetSuperType(GlobalETSObjectType());
     ctScope.TryCheckConstraints();
+
+    // Skip this check if the builtins are not initialized.
+    // They will be initialized in different order,
+    // and it is possible that the FunctionType interface is not yet created.
+    if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
+        CheckInterfaceFunctions(interfaceType);
+    }
+
     return interfaceType;
 }
 
