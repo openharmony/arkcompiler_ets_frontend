@@ -468,6 +468,7 @@ public:
     [[nodiscard]] bool AreOverrideEquivalent(Signature *s1, Signature *s2);
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);
     bool CheckThrowMarkers(Signature *source, Signature *target);
+    bool NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos);
     void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
                                         const lexer::SourcePosition &pos, char const *errorMessage = nullptr);
     void CheckCapturedVariables();

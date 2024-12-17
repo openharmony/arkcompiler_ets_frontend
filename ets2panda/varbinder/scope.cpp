@@ -467,6 +467,15 @@ Variable *AnnotationParamScope::AddBinding([[maybe_unused]] ArenaAllocator *allo
     return var;
 }
 
+Variable *FunctionScope::InsertBindingIfAbsentInScope(ArenaAllocator *allocator, Variable *currentVariable,
+                                                      Decl *newDecl, VariableFlags flag)
+{
+    if (currentVariable != nullptr) {
+        return nullptr;
+    }
+    return InsertBinding(newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag)).first->second;
+}
+
 Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                                     [[maybe_unused]] ScriptExtension extension)
 {
@@ -490,14 +499,12 @@ Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *current
         // NOTE(psiket):Duplication
         case DeclType::INTERFACE: {
             ident = newDecl->Node()->AsTSInterfaceDeclaration()->Id();
-            auto interfaceVar = allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE);
-            var = InsertBinding(newDecl->Name(), interfaceVar).first->second;
+            var = InsertBindingIfAbsentInScope(allocator, currentVariable, newDecl, VariableFlags::INTERFACE);
             break;
         }
         case DeclType::CLASS: {
             ident = newDecl->Node()->AsClassDefinition()->Ident();
-            auto classVar = allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS);
-            var = InsertBinding(newDecl->Name(), classVar).first->second;
+            var = InsertBindingIfAbsentInScope(allocator, currentVariable, newDecl, VariableFlags::CLASS);
             break;
         }
         case DeclType::TYPE_ALIAS: {

@@ -135,8 +135,12 @@ void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interfa
         LogTypeError("Repeated interface.", pos);
     }
 
-    type->AddInterface(interface->AsETSObjectType());
     GetInterfaces(interface->AsETSObjectType());
+    auto *declNode = interface->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
+    if (declNode->TsType() != nullptr && declNode->TsType()->IsTypeError()) {
+        return;
+    }
+    type->AddInterface(interface->AsETSObjectType());
 }
 
 void ETSChecker::GetInterfacesOfClass(ETSObjectType *type)
@@ -160,11 +164,12 @@ void ETSChecker::GetInterfacesOfInterface(ETSObjectType *type)
         return;
     }
 
-    const auto *declNode = type->GetDeclNode()->AsTSInterfaceDeclaration();
+    auto *declNode = type->GetDeclNode()->AsTSInterfaceDeclaration();
 
     TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, declNode->Id()->Start());
     if (tse.HasTypeError()) {
-        type->Interfaces().clear();
+        type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
+        declNode->SetTsType(GlobalTypeError());
         return;
     }
 
@@ -1101,6 +1106,9 @@ void ETSChecker::CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType 
 {
     if (!classDef->IsDeclare()) {
         for (auto *it : classType->ConstructSignatures()) {
+            if (it->Function()->Body() == nullptr) {
+                continue;
+            }
             CheckCyclicConstructorCall(it);
             CheckImplicitSuper(classType, it);
             CheckThisOrSuperCallInConstructor(classType, it);
@@ -1523,7 +1531,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 {
     ASSERT(signature->Function());
 
-    if (signature->Function()->Body() == nullptr || signature->Function()->IsExternal()) {
+    if (signature->Function()->IsExternal()) {
         return;
     }
 
@@ -1543,6 +1551,10 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
             ->Callee()
             ->IsThisExpression()) {
         auto *constructorCall = funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->AsCallExpression();
+        if (constructorCall->TsType()->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+            LogTypeError("No matching call signature for constructor", constructorCall->Start());
+            return;
+        }
         ASSERT(constructorCall->Signature());
         CheckCyclicConstructorCall(constructorCall->Signature());
     }
@@ -1690,7 +1702,7 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
     searchFlag |= PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES;
     if (targetRef != nullptr &&
         (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) ||
-         (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) &&
+         (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) && targetRef->TsType()->Variable() != nullptr &&
           targetRef->TsType()->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)))) {
         searchFlag &= ~PropertySearchFlags::SEARCH_INSTANCE;
     } else if (memberExpr->Object()->IsThisExpression() ||
