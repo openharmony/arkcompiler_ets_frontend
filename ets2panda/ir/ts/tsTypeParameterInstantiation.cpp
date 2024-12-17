@@ -71,16 +71,14 @@ void TSTypeParameterInstantiation::Dump(ir::AstDumper *dumper) const
 
 void TSTypeParameterInstantiation::Dump(ir::SrcDumper *dumper) const
 {
-    if (!params_.empty()) {
-        dumper->Add("<");
-        for (auto param : params_) {
-            param->Dump(dumper);
-            if (param != params_.back()) {
-                dumper->Add(", ");
-            }
+    dumper->Add("<");
+    for (auto param : params_) {
+        param->Dump(dumper);
+        if (param != params_.back()) {
+            dumper->Add(", ");
         }
-        dumper->Add(">");
     }
+    dumper->Add(">");
 }
 
 void TSTypeParameterInstantiation::Compile([[maybe_unused]] compiler::PandaGen *pg) const
