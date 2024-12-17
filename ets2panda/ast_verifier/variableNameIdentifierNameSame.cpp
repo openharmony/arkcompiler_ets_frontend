@@ -21,7 +21,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult VariableNameIdentifierNameSame::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult VariableNameIdentifierNameSame::operator()(const ir::AstNode *ast)
 {
     if (!ast->IsIdentifier()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -65,7 +65,7 @@ namespace ark::es2panda::compiler::ast_verifier {
         }
     }
 
-    ctx.AddCheckMessage("IDENTIFIER_NAME_DIFFERENCE", *id, id->Start());
+    AddCheckMessage("IDENTIFIER_NAME_DIFFERENCE", *id);
     return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
 }
 

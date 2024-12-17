@@ -19,12 +19,14 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult VariableHasEnclosingScope::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult VariableHasEnclosingScope::operator()(const ir::AstNode *ast)
 {
-    const auto maybeVar = VariableHasScope::GetLocalScopeVariable(ctx, ast);
+    VariableHasScope variableHasScope {};
+    const auto maybeVar = variableHasScope.GetLocalScopeVariable(ast);
     if (!maybeVar) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
+    AppendMessages(std::move(variableHasScope).MoveMessages());
     const auto var = *maybeVar;
     const auto scope = var->GetScope();
     if (scope == nullptr) {
@@ -33,7 +35,7 @@ namespace ark::es2panda::compiler::ast_verifier {
     }
     const auto encloseScope = scope->EnclosingVariableScope();
     if (encloseScope == nullptr) {
-        ctx.AddCheckMessage("NO_ENCLOSING_VAR_SCOPE", *ast, ast->Start());
+        AddCheckMessage("NO_ENCLOSING_VAR_SCOPE", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
     const auto node = scope->Node();
@@ -48,12 +50,12 @@ namespace ark::es2panda::compiler::ast_verifier {
         }
 
         result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
-        ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
+        AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast);
     }
 
     if (!IsContainedIn<varbinder::Scope>(scope, encloseScope)) {
         result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
-        ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
+        AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast);
     }
 
     return result;

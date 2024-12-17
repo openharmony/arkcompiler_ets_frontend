@@ -23,10 +23,9 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult ArithmeticOperationValid::operator()([[maybe_unused]] CheckContext &ctx,
-                                                               const ir::AstNode *ast)
+[[nodiscard]] CheckResult ArithmeticOperationValid::operator()(const ir::AstNode *ast)
 {
-    if (auto [decision, action] = CheckCompound(ctx, ast); action == CheckAction::SKIP_SUBTREE) {
+    if (auto [decision, action] = CheckCompound(ast); action == CheckAction::SKIP_SUBTREE) {
         return {decision, action};
     }
     if (!ast->IsBinaryExpression() || !ast->AsBinaryExpression()->IsArithmetic()) {
@@ -39,32 +38,32 @@ namespace ark::es2panda::compiler::ast_verifier {
     }
     auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
     bool isBitwise = ast->AsBinaryExpression()->IsBitwise();
-    ast->Iterate([&result, &ctx, &isBitwise](ir::AstNode *child) {
+    ast->Iterate([this, &result, &isBitwise](ir::AstNode *child) {
         if (!IsValidTypeForBinaryOp(child, isBitwise)) {
-            ctx.AddCheckMessage("Not a numeric type", *child, child->Start());
+            AddCheckMessage("Not a numeric type", *child);
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     });
     return result;
 }
 
-CheckResult ArithmeticOperationValid::CheckCompound(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult ArithmeticOperationValid::CheckCompound(const ir::AstNode *ast)
 {
     if (ast->IsTSInterfaceDeclaration()) {
         for (const auto &member : ast->AsTSInterfaceDeclaration()->Body()->Body()) {
-            [[maybe_unused]] auto _ = (*this)(ctx, member);
+            [[maybe_unused]] auto _ = (*this)(member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }
     if (ast->IsTSEnumDeclaration()) {
         for (const auto &member : ast->AsTSEnumDeclaration()->Members()) {
-            [[maybe_unused]] auto _ = (*this)(ctx, member);
+            [[maybe_unused]] auto _ = (*this)(member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }
     if (ast->IsClassDefinition()) {
         for (const auto &member : ast->AsClassDefinition()->Body()) {
-            [[maybe_unused]] auto _ = (*this)(ctx, member);
+            [[maybe_unused]] auto _ = (*this)(member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }

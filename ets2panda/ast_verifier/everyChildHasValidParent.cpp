@@ -18,7 +18,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-CheckResult EveryChildHasValidParent::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult EveryChildHasValidParent::operator()(const ir::AstNode *ast)
 {
     auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
     if (ast->IsETSScript()) {
@@ -52,7 +52,7 @@ CheckResult EveryChildHasValidParent::operator()(CheckContext &ctx, const ir::As
                 return;
             }
 
-            ctx.AddCheckMessage("INCORRECT_PARENT_REF", *node, node->Start());
+            AddCheckMessage("INCORRECT_PARENT_REF", *node);
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     });

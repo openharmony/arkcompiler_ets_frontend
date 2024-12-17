@@ -23,9 +23,9 @@ namespace ark::es2panda::compiler::ast_verifier {
 class GetterSetterValidation : public RecursiveInvariant<VerifierInvariants::GETTER_SETTER_VALIDATION> {
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-    bool ValidateGetter(CheckContext &ctx, ir::MethodDefinition const *const method) const;
-    bool ValidateSetter(CheckContext &ctx, ir::MethodDefinition const *const method) const;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
+    bool ValidateGetter(ir::MethodDefinition const *const method);
+    bool ValidateSetter(ir::MethodDefinition const *const method);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

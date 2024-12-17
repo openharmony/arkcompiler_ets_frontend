@@ -19,12 +19,12 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-CheckResult NodeHasParent::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult NodeHasParent::operator()(const ir::AstNode *ast)
 {
     const auto isEtsScript = ast->IsETSScript() || (ast->IsBlockStatement() && ast->AsBlockStatement()->IsProgram());
     const auto hasParent = ast->Parent() != nullptr;
     if (!isEtsScript && !hasParent) {
-        ctx.AddCheckMessage("NULL_PARENT", *ast, ast->Start());
+        AddCheckMessage("NULL_PARENT", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 

@@ -20,7 +20,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult CheckAbstractMethod::operator()(CheckContext &ctx, const ir::AstNode *ast) const
+[[nodiscard]] CheckResult CheckAbstractMethod::operator()(const ir::AstNode *ast)
 {
     if (!ast->IsCallExpression()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -34,7 +34,7 @@ namespace ark::es2panda::compiler::ast_verifier {
     auto obj = call->Callee()->AsMemberExpression()->Object();
     if ((obj != nullptr) && obj->IsSuperExpression() && (call->Signature() != nullptr) &&
         (call->Signature()->HasSignatureFlag(checker::SignatureFlags::ABSTRACT))) {
-        ctx.AddCheckMessage("CALL TO ABSTRACT METHOD VIA SUPER", *call, call->Start());
+        AddCheckMessage("CALL TO ABSTRACT METHOD VIA SUPER", *call);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 

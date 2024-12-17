@@ -25,7 +25,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 class IdentifierHasVariable : public RecursiveInvariant<VerifierInvariants::IDENTIFIER_HAS_VARIABLE> {
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

@@ -22,73 +22,34 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class CheckContext;
 enum class CheckDecision { CORRECT, INCORRECT };
 enum class CheckAction { CONTINUE, SKIP_SUBTREE };
 
 using CheckResult = std::tuple<CheckDecision, CheckAction>;
 using VerifierInvariants = util::gen::verifier_invariants::Enum;
 
-template <VerifierInvariants ENUM>
-class InvariantBase {
-public:
-    constexpr static VerifierInvariants ID = ENUM;
-    constexpr static std::string_view NAME = util::gen::verifier_invariants::ToString(ID);
-    CheckResult VerifyNode(CheckContext *ctx, const ir::AstNode *ast);
-};
-
-template <VerifierInvariants ID>
-class RecursiveInvariant : public InvariantBase<ID> {
-public:
-    void VerifyAst(CheckContext *ctx, const ir::AstNode *ast);
-};
-
-enum class CheckSeverity { ERROR, WARNING, UNKNOWN };
-inline std::string CheckSeverityString(CheckSeverity value)
-{
-    switch (value) {
-        case CheckSeverity::ERROR:
-            return "error";
-        case CheckSeverity::WARNING:
-            return "warning";
-        default:
-            UNREACHABLE();
-    }
-}
-
 class CheckMessage {
 public:
-    explicit CheckMessage(VerifierInvariants id, util::StringView cause, util::StringView message, size_t line)
-        : invariantId_ {id}, cause_ {cause}, message_ {message}, line_ {line}
+    explicit CheckMessage(util::StringView cause, util::StringView message, size_t line)
+        : cause_ {cause}, message_ {message}, line_ {line}
     {
     }
 
-    VerifierInvariants InvariantId() const
+    std::function<void(JsonObjectBuilder &)> DumpJSON() const
     {
-        return invariantId_;
+        return [this](JsonObjectBuilder &body) {
+            body.AddProperty("cause", cause_);
+            body.AddProperty("ast", message_);
+            body.AddProperty("line", line_ + 1);
+        };
     }
 
-    std::string Cause() const
+    const auto &Cause() const
     {
         return cause_;
     }
 
-    std::function<void(JsonObjectBuilder &)> DumpJSON(CheckSeverity severity, const std::string &sourceName,
-                                                      const std::string &phaseName) const
-    {
-        return [sourceName, phaseName, severity, this](JsonObjectBuilder &body) {
-            body.AddProperty("severity", CheckSeverityString(severity));
-            body.AddProperty("invariant", util::gen::verifier_invariants::ToString(invariantId_));
-            body.AddProperty("cause", cause_);
-            body.AddProperty("ast", message_);
-            body.AddProperty("line", line_ + 1);
-            body.AddProperty("source", sourceName);
-            body.AddProperty("phase", phaseName);
-        };
-    }
-
 private:
-    VerifierInvariants invariantId_;
     std::string cause_;
     std::string message_;
     size_t line_;
@@ -98,26 +59,49 @@ using Messages = std::vector<CheckMessage>;
 
 class CheckContext {
 public:
-    void AddCheckMessage(const std::string &cause, const ir::AstNode &node, const lexer::SourcePosition &from)
+    void Init()
     {
-        const auto loc = from.line;
+        messages_.clear();
+    }
+
+    void AddCheckMessage(const std::string &cause, const ir::AstNode &node)
+    {
+        const auto loc = node.Start().line;
         const auto &&dump = node.DumpJSON();
-        messages_.emplace_back(invariantId_, cause.data(), dump.data(), loc);
+        messages_.emplace_back(cause.data(), dump.data(), loc);
     }
 
-    void SetInvariantId(VerifierInvariants id)
+    void AppendMessages(const Messages &messages)
     {
-        invariantId_ = id;
+        messages_.insert(messages_.end(), messages.begin(), messages.end());
     }
 
-    Messages GetMessages()
+    auto &&MoveMessages() &&
     {
-        return messages_;
+        return std::move(messages_);
+    }
+
+    bool HasMessages() const
+    {
+        return !messages_.empty();
     }
 
 private:
     Messages messages_;
-    VerifierInvariants invariantId_ {VerifierInvariants::INVALID};
+};
+
+template <VerifierInvariants ENUM>
+class InvariantBase : public CheckContext {
+public:
+    constexpr static VerifierInvariants ID = ENUM;
+    constexpr static std::string_view NAME = util::gen::verifier_invariants::ToString(ID);
+    CheckResult VerifyNode(const ir::AstNode *ast);
+};
+
+template <VerifierInvariants ID>
+class RecursiveInvariant : public InvariantBase<ID> {
+public:
+    void VerifyAst(const ir::AstNode *ast);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

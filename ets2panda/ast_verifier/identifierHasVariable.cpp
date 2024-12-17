@@ -79,7 +79,7 @@ private:
     const ir::Identifier *ast_ {};
 };
 
-CheckResult IdentifierHasVariable::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult IdentifierHasVariable::operator()(const ir::AstNode *ast)
 {
     if (!ast->IsIdentifier()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -94,7 +94,7 @@ CheckResult IdentifierHasVariable::operator()(CheckContext &ctx, const ir::AstNo
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
-    ctx.AddCheckMessage("NULL_VARIABLE", *id, id->Start());
+    AddCheckMessage("NULL_VARIABLE", *id);
     return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
 }
 

@@ -212,7 +212,7 @@ options:
     - EveryChildHasValidParent
     - EveryChildInParentRange
     - VariableHasScope
-    AfterChecherPhase:
+    AfterCheckerPhase:
     - NodeHasType
     - IdentifierHasVariable
     - ReferenceTypeAnnotationIsNull
@@ -249,7 +249,6 @@ options:
     - ForLoopCorrectlyInitialized
     - GetterSetterValidation
     - IdentifierHasVariable
-    # - ImportExportAccessValid
     - ModifierAccessValid
     - NodeHasParent
     # - NodeHasSourceRange

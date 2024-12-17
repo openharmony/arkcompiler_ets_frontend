@@ -21,18 +21,18 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult ModifierAccessValid::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult ModifierAccessValid::operator()(const ir::AstNode *ast)
 {
-    if (auto [decision, action] = HandleMethodExpression(ctx, ast); decision == CheckDecision::INCORRECT) {
+    if (auto [decision, action] = HandleMethodExpression(ast); decision == CheckDecision::INCORRECT) {
         return {decision, action};
     }
-    if (auto [decision, action] = HandleCallExpression(ctx, ast); decision == CheckDecision::INCORRECT) {
+    if (auto [decision, action] = HandleCallExpression(ast); decision == CheckDecision::INCORRECT) {
         return {decision, action};
     }
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-CheckResult ModifierAccessValid::HandleMethodExpression(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult ModifierAccessValid::HandleMethodExpression(const ir::AstNode *ast)
 {
     if (!ast->IsMemberExpression()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -40,13 +40,13 @@ CheckResult ModifierAccessValid::HandleMethodExpression(CheckContext &ctx, const
     const auto *propVar = ast->AsMemberExpression()->PropVar();
     if (propVar != nullptr && propVar->HasFlag(varbinder::VariableFlags::PROPERTY) &&
         !ValidateVariableAccess(propVar, ast->AsMemberExpression())) {
-        ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE", *ast, ast->Start());
+        AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-CheckResult ModifierAccessValid::HandleCallExpression(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult ModifierAccessValid::HandleCallExpression(const ir::AstNode *ast)
 {
     if (!ast->IsCallExpression()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -58,7 +58,7 @@ CheckResult ModifierAccessValid::HandleCallExpression(CheckContext &ctx, const i
         const auto *propVarCallee = calleeMember->PropVar();
         if (propVarCallee != nullptr && propVarCallee->HasFlag(varbinder::VariableFlags::METHOD) &&
             !ValidateMethodAccess(calleeMember, ast->AsCallExpression())) {
-            ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE", *callee, callee->Start());
+            AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE", *callee);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
