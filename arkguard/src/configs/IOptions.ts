@@ -66,4 +66,7 @@ export interface IOptions {
 
   // Whether to print unobfuscation names and the print path.
   readonly mUnobfuscationOption?: IUnobfuscationOption;
+
+  // Use optimized system whitelist
+  readonly mStripLanguageDefaultWhitelist?: boolean;
 }

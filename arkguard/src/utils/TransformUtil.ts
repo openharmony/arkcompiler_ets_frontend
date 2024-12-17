@@ -148,7 +148,7 @@ export function wildcardTransformer(wildcard: string, isPath?: boolean): string 
   // special characters: '\', '^', '$', '.', '+', '|', '[', ']', '{', '}', '(', ')'
   let escapedItem = wildcard.replace(/[\\+^${}()|\[\]\.]/g, '\\$&');
 
-  // isPath: containing '**', and '*', '?' can not be matched with '/'. 
+  // isPath: containing '**', and '*', '?' can not be matched with '/'.
   if (isPath) {
     // before: ../**/a/b/c*/?.ets
     // after: ../.*/a/b/c[^/]*/[^/].ets
@@ -197,7 +197,7 @@ export function handleReservedConfig(config: IOptions, optionName: string, reser
 }
 
 export function isReservedLocalVariable(mangledName: string): boolean {
-  return LocalVariableCollections.reservedLangForLocal.has(mangledName) || 
+  return LocalVariableCollections.reservedLangForLocal.has(mangledName) ||
     LocalVariableCollections.reservedConfig?.has(mangledName) ||
     LocalVariableCollections.reservedStruct?.has(mangledName) ||
     UnobfuscationCollections.reservedSdkApiForProp?.has(mangledName) ||

@@ -69,7 +69,7 @@ export enum OhmUrlStatus {
 }
 
 export interface IPrinterOption {
-  
+
   //Print obfuscation time&memory usage of all files and obfuscation processes
   readonly mFilesPrinter?: boolean;
 

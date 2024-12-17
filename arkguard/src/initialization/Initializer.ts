@@ -109,6 +109,7 @@ function initArkGuardConfig(
       mKeepSourceOfPaths: new Set(),
       mkeepFilesAndDependencies: new Set(),
     },
+    mStripLanguageDefaultWhitelist: mergedObConfig.options.stripLanguageDefault
   };
 
   const arkObfuscator: ArkObfuscator = new ArkObfuscator();

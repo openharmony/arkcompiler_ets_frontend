@@ -56,15 +56,15 @@ describe('test for ConfigResolve', function() {
       const ob1 = new ObOptionsForTest();
       ob1.disableObfuscation = true;
       ob1.enablePropertyObfuscation = true;
-  
+
       const ob2 = new ObOptionsForTest();
       ob2.enableToplevelObfuscation = true;
       ob2.printNameCache = 'test';
       ob2.printKeptNamesPath = './test/ut/initialization/printKeptNamesPath.txt';
       ob2.applyNameCache = 'test case';
-  
+
       ob1.merge(ob2);
-  
+
       expect(ob1.disableObfuscation).to.be.true;
       expect(ob1.enablePropertyObfuscation).to.be.true;
       expect(ob1.enableToplevelObfuscation).to.be.true;
@@ -73,42 +73,69 @@ describe('test for ConfigResolve', function() {
       expect(ob1.applyNameCache).to.equal('test case');
     });
   });
-  
+
   describe('MergedConfig', () => {
-    it('should merge two MergedConfig instances correctly', () => {
-      const config1 = new MergedConfig();
-      config1.reservedPropertyNames = ['prop1'];
-      config1.reservedGlobalNames = ['global1'];
-      config1.keepComments = ['comment1'];
-      config1.excludePathSet.add('path1');
-  
-      const config2 = new MergedConfig();
-      config2.reservedPropertyNames = ['prop2'];
-      config2.reservedGlobalNames = ['global2'];
-      config2.keepComments = ['comment2'];
-      config2.excludePathSet.add('path2');
-  
-      config1.merge(config2);
-  
-      expect(config1.reservedPropertyNames).to.deep.equal(['prop1', 'prop2']);
-      expect(config1.reservedGlobalNames).to.deep.equal(['global1', 'global2']);
-      expect(config1.keepComments).to.deep.equal(['comment1', 'comment2']);
-      expect(config1.excludePathSet).to.deep.equal(new Set(['path1', 'path2']));
+    describe('should merge two MergedConfig instances correctly', () => {
+      it('merge arrays and sets in MergeConfig', () => {
+        const config1 = new MergedConfig();
+        config1.reservedPropertyNames = ['prop1'];
+        config1.reservedGlobalNames = ['global1'];
+        config1.keepComments = ['comment1'];
+        config1.excludePathSet.add('path1');
+
+        const config2 = new MergedConfig();
+        config2.reservedPropertyNames = ['prop2'];
+        config2.reservedGlobalNames = ['global2'];
+        config2.keepComments = ['comment2'];
+        config2.excludePathSet.add('path2');
+
+        config1.merge(config2);
+
+        expect(config1.reservedPropertyNames).to.deep.equal(['prop1', 'prop2']);
+        expect(config1.reservedGlobalNames).to.deep.equal(['global1', 'global2']);
+        expect(config1.keepComments).to.deep.equal(['comment1', 'comment2']);
+        expect(config1.excludePathSet).to.deep.equal(new Set(['path1', 'path2']));
+      });
+
+      it('merge options in MergeConfig', () => {
+        const config1 = new MergedConfig();
+        config1.options.enableExportObfuscation = false;
+        config1.options.stripLanguageDefault = true;
+        config1.options.stripSystemApiArgs = true;
+
+        const config2 = new MergedConfig();
+        config2.options.enableExportObfuscation = true;
+        config2.options.stripLanguageDefault = false;
+        config2.options.stripSystemApiArgs = true;
+        config1.merge(config2);
+
+        expect(config1.options.disableObfuscation).to.be.false;
+        expect(config1.options.enablePropertyObfuscation).to.be.false;
+        expect(config1.options.enableToplevelObfuscation).to.be.false;
+        expect(config1.options.enableStringPropertyObfuscation).to.be.false;
+        expect(config1.options.removeLog).to.be.false;
+        expect(config1.options.compact).to.be.false;
+        expect(config1.options.removeComments).to.be.false;
+        expect(config1.options.enableFileNameObfuscation).to.be.false;
+        expect(config1.options.enableExportObfuscation).to.be.true;
+        expect(config1.options.stripLanguageDefault).to.be.true;
+        expect(config1.options.stripSystemApiArgs).to.be.true;
+      });
     });
-  
+
     it('should sort and deduplicate arrays correctly', () => {
       const config = new MergedConfig();
       config.reservedPropertyNames = ['prop2', 'prop1', 'prop1'];
       config.reservedGlobalNames = ['global2', 'global1', 'global1'];
       config.keepComments = ['comment2', 'comment1', 'comment1'];
-  
+
       config.sortAndDeduplicate();
-  
+
       expect(config.reservedPropertyNames).to.deep.equal(['prop1', 'prop2']);
       expect(config.reservedGlobalNames).to.deep.equal(['global1', 'global2']);
       expect(config.keepComments).to.deep.equal(['comment1', 'comment2']);
     });
-  
+
     it('should serialize merged config correctly', () => {
       let resultStr: string = '';
       const config = new MergedConfig();
@@ -119,7 +146,7 @@ describe('test for ConfigResolve', function() {
       config.options['enableStringPropertyObfuscation'] = true;
       config.reservedGlobalNames = ['global1'];
       config.reservedPropertyNames = ['prop1'];
-  
+
       const serialized = config.serializeMergedConfig();
       const serializedExportSwitchMap = new Map([
         ['disableObfuscation', ObConfigResolver.KEEP_DTS],
@@ -129,19 +156,19 @@ describe('test for ConfigResolve', function() {
         ['compact', ObConfigResolver.COMPACT],
         ['removeLog', ObConfigResolver.REMOVE_LOG],
       ]);
-  
+
       expect(serialized).to.include(ObConfigResolver.KEEP_GLOBAL_NAME);
       expect(serialized).to.include('global1');
       expect(serialized).to.include(ObConfigResolver.KEEP_PROPERTY_NAME);
       expect(serialized).to.include('prop1');
       expect(serialized).to.not.include('option2');
-  
+
       expect(ObConfigResolver.exportedSwitchMap.has(String('disableObfuscation'))).to.be.true;
       expect(ObConfigResolver.exportedSwitchMap.has(String('enableStringPropertyObfuscation'))).to.be.true;
       expect(resultStr).to.equal('');
     });
   });
-  
+
   describe('ObConfigResolver', () => {
     describe('constructor', () => {
       it('should create an instance with the correct properties', () => {
@@ -152,14 +179,14 @@ describe('test for ConfigResolve', function() {
         const logger = console;
         const isTerser = false;
         const myInstance = new ObConfigResolver(projectConfig, logger, isTerser);
-    
+
         expect(myInstance).to.be.an('object');
         expect(myInstance.sourceObConfig).to.deep.equal({ option1: 'value1' });
         expect(myInstance.logger).to.equal(console);
         expect(myInstance.isHarCompiled).to.be.true;
         expect(myInstance.isTerser).to.be.false;
       });
-    
+
       it('should create an instance with Terser enabled', () => {
         const projectConfig = {
           obfuscationOptions: { option1: 'value1' },
@@ -167,7 +194,7 @@ describe('test for ConfigResolve', function() {
         };
         const logger = console;
         const myInstance = new ObConfigResolver(projectConfig, logger, true);
-    
+
         expect(myInstance).to.be.an('object');
         expect(myInstance.sourceObConfig).to.deep.equal({ option1: 'value1' });
         expect(myInstance.logger).to.equal(console);
@@ -219,7 +246,7 @@ describe('test for ConfigResolve', function() {
         testClass.sourceObConfig = {
           selfConfig: {
             ruleOptions: { enable: false },
-          }, 
+          },
           dependencies: { libraries: [], hars: [] },
         };
         generateConsumerObConfigFile(testClass.sourceObConfig, undefined);
@@ -310,7 +337,7 @@ describe('test for ConfigResolve', function() {
         let needKeepSystemApi = enableObfuscation &&
           (mergedConfigs.options.enablePropertyObfuscation ||
             (mergedConfigs.options.enableExportObfuscation && mergedConfigs.options.enableToplevelObfuscation));
-        
+
         newObConfigResolver.getDependencyConfigsForTest(sourceObConfig, dependencyConfigs);
 
         expect(needConsumerConfigs).to.be.true;
@@ -403,7 +430,7 @@ describe('test for ConfigResolve', function() {
         expect(resolver.isHarCompiled).to.equal(projectConfig.compileHar);
         expect(resolver.isTerser).to.equal(isTerser);
       });
-    
+
       it('should get self configs correctly', () => {
         const projectConfig = {
           obfuscationOptions: {
@@ -419,7 +446,7 @@ describe('test for ConfigResolve', function() {
         const isTerser = false;
         const resolver = new ObConfigResolver(projectConfig, logger, isTerser);
         const selfConfigs = new MergedConfig();
-    
+
         resolver.getSelfConfigsForTest(selfConfigs);
 
         expect(resolver).to.be.an('object');
@@ -444,13 +471,13 @@ describe('test for ConfigResolve', function() {
       const logger = console;
       let sandbox;
       let instance;
-    
+
       beforeEach(() => {
         sandbox = sinon.createSandbox();
         instance = new ObConfigResolver(projectConfig, logger, true);
         instance.logger = { error: sandbox.stub() };
       });
-    
+
       afterEach(() => {
         sandbox.restore();
       });
@@ -468,19 +495,19 @@ describe('test for ConfigResolve', function() {
         expect(fileContent).to.equal(expectedContent);
         expect(configs).to.be.an.instanceOf(MergedConfig);
       });
-    
+
       it('should log error and throw when failed to open file', () => {
         const path = './test/testData/obfuscation/filename_obf/non-existent-file.json';
         const configs = new MergedConfig();
         const errorMessage = `Failed to open ${path}. Error message: ENOENT: no such file or directory, open '${path}'`;
 
         sandbox.stub(fs, 'readFileSync').throws(new Error(errorMessage));
-    
+
         expect(() => instance.getConfigByPath(path, configs)).to.throw(Error, errorMessage);
         expect(instance.logger.error.calledWith(errorMessage)).to.be.false;
       });
     });
-   
+
     it('should return a new MergedConfig instance when sourceObConfig is not defined', function() {
       const projectConfig = {
         sourceObConfig: null,
@@ -491,7 +518,7 @@ describe('test for ConfigResolve', function() {
           }
         }
       };
-  
+
       const result = projectConfig.getMergedConfig();
       expect(result).to.be.an.instanceOf(MergedConfig);
     });
@@ -501,9 +528,9 @@ describe('test for ConfigResolve', function() {
         const keepConfigs = ['!test/*/exclude.js', 'test/include.js'];
         const configs = new MergedConfig();
         const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
-    
+
         newObConfigResolver.resolveKeepConfig(keepConfigs, configs, configPath);
-    
+
         expect(configs.excludeUniversalPaths).to.have.lengthOf(1);
         expect(configs.keepUniversalPaths).to.have.lengthOf(0);
         expect(configs.excludePathSet).to.have.lengthOf(0);
@@ -514,9 +541,9 @@ describe('test for ConfigResolve', function() {
         const keepConfigs = ['!test/*/exclude.js', 'test/?/include.js'];
         const configs = new MergedConfig();
         const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
-    
+
         newObConfigResolver.resolveKeepConfig(keepConfigs, configs, configPath);
-    
+
         expect(configs.excludeUniversalPaths).to.have.lengthOf(1);
         expect(configs.keepUniversalPaths).to.have.lengthOf(1);
         expect(configs.excludePathSet).to.have.lengthOf(0);
@@ -527,9 +554,9 @@ describe('test for ConfigResolve', function() {
         const keepConfigs = ['!test/*/exclude.js', '!test/?/include.js'];
         const configs = new MergedConfig();
         const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
-    
+
         newObConfigResolver.resolveKeepConfig(keepConfigs, configs, configPath);
-    
+
         expect(configs.excludeUniversalPaths).to.have.lengthOf(2);
         expect(configs.keepUniversalPaths).to.have.lengthOf(0);
         expect(configs.excludePathSet).to.have.lengthOf(0);
@@ -540,9 +567,9 @@ describe('test for ConfigResolve', function() {
         const keepConfigs = ['test/*/exclude.js', 'test/?/include.js'];
         const configs = new MergedConfig();
         const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
-    
+
         newObConfigResolver.resolveKeepConfig(keepConfigs, configs, configPath);
-    
+
         expect(configs.excludeUniversalPaths).to.have.lengthOf(0);
         expect(configs.keepUniversalPaths).to.have.lengthOf(2);
         expect(configs.excludePathSet).to.have.lengthOf(0);
@@ -553,9 +580,9 @@ describe('test for ConfigResolve', function() {
         const keepConfigs = ['!test/exclude.js', 'test/*/include.js'];
         const configs = new MergedConfig();
         const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
-    
+
         newObConfigResolver.resolveKeepConfig(keepConfigs, configs, configPath);
-    
+
         expect(configs.excludeUniversalPaths).to.have.lengthOf(0);
         expect(configs.keepUniversalPaths).to.have.lengthOf(1);
         expect(configs.excludePathSet).to.have.lengthOf(1);
@@ -566,9 +593,9 @@ describe('test for ConfigResolve', function() {
         const keepConfigs = ['!test/exclude.js', 'test/include.js'];
         const configs = new MergedConfig();
         const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
-    
+
         newObConfigResolver.resolveKeepConfig(keepConfigs, configs, configPath);
-    
+
         expect(configs.excludeUniversalPaths).to.have.lengthOf(0);
         expect(configs.keepUniversalPaths).to.have.lengthOf(0);
         expect(configs.excludePathSet).to.have.lengthOf(1);
@@ -579,9 +606,9 @@ describe('test for ConfigResolve', function() {
         const keepConfigs = ['!test/exclude.js', '!test/include.js'];
         const configs = new MergedConfig();
         const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
-    
+
         newObConfigResolver.resolveKeepConfig(keepConfigs, configs, configPath);
-    
+
         expect(configs.excludeUniversalPaths).to.have.lengthOf(0);
         expect(configs.keepUniversalPaths).to.have.lengthOf(0);
         expect(configs.excludePathSet).to.have.lengthOf(2);
@@ -596,7 +623,7 @@ describe('test for ConfigResolve', function() {
         const result = newObConfigResolver.resolvePathForTest(configPath, token);
         expect(result).to.equal(token);
       });
-    
+
       it('should resolve the relative path based on the config file directory', () => {
         const configPath = '/home/user/config.json';
         const token = 'data.txt';
@@ -627,9 +654,12 @@ describe('test for ConfigResolve', function() {
           ObConfigResolver.PRINT_KEPT_NAMES,
           ObConfigResolver.APPLY_NAMECACHE,
           ObConfigResolver.KEEP,
+          ObConfigResolver.EXTRA_OPTIONS,
+          ObConfigResolver.STRIP_LANGUAGE_DEFAULT,
+          ObConfigResolver.STRIP_SYSTEM_API_ARGS,
           'unknown_token'
         ];
-    
+
         const expectedResults = [
           OptionTypeForTest.KEEP_DTS,
           OptionTypeForTest.KEEP_GLOBAL_NAME,
@@ -649,9 +679,12 @@ describe('test for ConfigResolve', function() {
           OptionTypeForTest.PRINT_KEPT_NAMES,
           OptionTypeForTest.APPLY_NAMECACHE,
           OptionTypeForTest.KEEP,
+          OptionTypeForTest.EXTRA_OPTIONS,
+          OptionTypeForTest.STRIP_LANGUAGE_DEFAULT,
+          OptionTypeForTest.STRIP_SYSTEM_API_ARGS,
           OptionTypeForTest.NONE
         ];
-    
+
         for (let i = 0; i < tokens.length; i++) {
           const result = newObConfigResolver.getTokenTypeForTest(tokens[i]);
           expect(result).to.equal(expectedResults[i]);
@@ -680,6 +713,8 @@ describe('test for ConfigResolve', function() {
           -enable-toplevel-obfuscation,
           -enable-filename-obfuscation,
           -enable-export-obfuscation,
+          -extra-options strip-language-default,
+          -extra-options strip-system-api-args,
           -remove-comments,
           -compact,
           -remove-log,
@@ -687,9 +722,9 @@ describe('test for ConfigResolve', function() {
           -print-kept-names,
           -apply-namecache obfuscation-template.txt
         `;
-    
+
         newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
-    
+
         expect(configs.options.disableObfuscation).to.be.true;
         expect(configs.options.enablePropertyObfuscation).to.be.true;
         expect(configs.options.enableStringPropertyObfuscation).to.be.true;
@@ -699,17 +734,142 @@ describe('test for ConfigResolve', function() {
         expect(configs.options.enableExportObfuscation).to.be.true;
         expect(configs.options.compact).to.be.true;
         expect(configs.options.removeLog).to.be.true;
+        expect(configs.options.stripLanguageDefault).to.be.true;
+        expect(configs.options.stripSystemApiArgs).to.be.true;
+      });
+
+      it('should handle config content correctly when diffenent combinations use line break splitting', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
+        const data = `
+          #This is a comment
+          -extra-options
+          strip-language-default
+          -extra-options
+          strip-system-api-args
+        `;
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.stripLanguageDefault).to.be.true;
+        expect(configs.options.stripSystemApiArgs).to.be.true;
+      });
+
+      it('should handle config content correctly when diffenent combinations use line break splitting', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
+        const data = `
+          #This is a comment
+          -extra-options strip-language-default
+          -extra-options strip-system-api-args
+        `;
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.stripLanguageDefault).to.be.true;
+        expect(configs.options.stripSystemApiArgs).to.be.true;
+      });
+
+      it('should handle config content correctly when diffenent combinations use space separation', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
+        const data = `
+          #This is a comment
+          -extra-options strip-language-default -extra-options strip-system-api-args
+        `;
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.stripLanguageDefault).to.be.true;
+        expect(configs.options.stripSystemApiArgs).to.be.true;
+      });
+
+      it('should handle config content correctly when diffenent combinations only use one "-extra-options"', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
+        const data = `
+          #This is a comment
+          -extra-options strip-language-default, strip-system-api-args
+        `;
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.stripLanguageDefault).to.be.true;
+        expect(configs.options.stripSystemApiArgs).to.be.true;
+      });
+
+      it('should handle config content correctly when no "-extra-options"', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
+        const data = `
+          #This is a comment
+          strip-language-default, strip-system-api-args
+        `;
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.stripLanguageDefault).to.be.false;
+        expect(configs.options.stripSystemApiArgs).to.be.false;
+      });
+
+      it('should handle config content correctly when have invalid token between "-extra-options" and "strip-language-default"', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+        
+        const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
+        const data = `
+          #This is a comment
+          -extra-options
+          invalid-token
+          strip-system-api-args
+          strip-language-default
+        `;
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.stripLanguageDefault).to.be.false;
+        expect(configs.options.stripSystemApiArgs).to.be.false;
+      });
+
+      it('should handle config content correctly when have valid token between "-extra-options" and "strip-language-default"', () => {
+        const configs: MergedConfig = new MergedConfig();
+        configs.options = new ObOptionsForTest();
+
+        const configPath = './test/testData/obfuscation/keepDts/obfuscation-template.txt';
+        const data = `
+          #This is a comment
+          -extra-options
+          -enable-property-obfuscation
+          strip-language-default
+          strip-system-api-args
+        `;
+
+        newObConfigResolver.handleConfigContentForTest(data, configs, configPath);
+
+        expect(configs.options.enablePropertyObfuscation).to.be.true;
+        expect(configs.options.stripLanguageDefault).to.be.false;
+        expect(configs.options.stripSystemApiArgs).to.be.false;
       });
     });
 
-    describe('1: test Api getSystemApiCache', function() {
-      it('1-1: test getSystemApiCache: -enable-property-obfuscation', function () {
+    describe('1: test Api collectSystemApiWhitelist', function() {
+      it('1-1: test collectSystemApiWhitelist: -enable-property-obfuscation', function () {
         let obfuscationCacheDir = path.join(OBFUSCATE_TESTDATA_DIR, 'property');
         let obfuscationOptions = {
           'selfConfig': {
             'ruleOptions': {
               'enable': true,
-              'rules': [ 
+              'rules': [
                 path.join(OBFUSCATE_TESTDATA_DIR, 'property/property.txt')
               ]
             },
@@ -732,7 +892,8 @@ describe('test for ConfigResolve', function() {
         obConfig.resolveObfuscationConfigs();
         const reservedSdkApiForProp = UnobfuscationCollections.reservedSdkApiForProp;
         const reservedSdkApiForGlobal = UnobfuscationCollections.reservedSdkApiForGlobal;
-    
+        const reservedSdkApiForLocal = UnobfuscationCollections.reservedSdkApiForLocal;
+
         expect(reservedSdkApiForProp.size == 12).to.be.true;
         expect(reservedSdkApiForProp.has('TestClass')).to.be.true;
         expect(reservedSdkApiForProp.has('para1')).to.be.true;
@@ -746,13 +907,16 @@ describe('test for ConfigResolve', function() {
         expect(reservedSdkApiForProp.has('ViewV2')).to.be.true;
         expect(reservedSdkApiForProp.has('initParam')).to.be.true;
         expect(reservedSdkApiForProp.has('updateParam')).to.be.true;
-        expect(reservedSdkApiForGlobal.size == 0).to.be.true;
+        expect(reservedSdkApiForProp.has('NavigationBuilderRegister')).to.be.true;
+        expect(reservedSdkApiForProp.has('__Recycle__')).to.be.false;
+        expect(reservedSdkApiForGlobal.size === 0).to.be.true;
+        expect(reservedSdkApiForLocal.size === 8).to.be.true;
         UnobfuscationCollections.clear();
-    
+
         let systemApiPath = obfuscationCacheDir + '/systemApiCache.json';
         const data = fs.readFileSync(systemApiPath, 'utf8');
         const systemApiContent = JSON.parse(data);
-    
+
         expect(systemApiContent.ReservedPropertyNames.length == 12).to.be.true;
         expect(systemApiContent.ReservedPropertyNames.includes('TestClass')).to.be.true;
         expect(systemApiContent.ReservedPropertyNames.includes('para1')).to.be.true;
@@ -766,18 +930,21 @@ describe('test for ConfigResolve', function() {
         expect(systemApiContent.ReservedPropertyNames.includes('ViewV2')).to.be.true;
         expect(systemApiContent.ReservedPropertyNames.includes('initParam')).to.be.true;
         expect(systemApiContent.ReservedPropertyNames.includes('updateParam')).to.be.true;
-        expect(systemApiContent.ReservedGlobalNames == undefined).to.be.true;
-    
+        expect(systemApiContent.ReservedPropertyNames.includes('NavigationBuilderRegister')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('__Recycle__')).to.be.false;
+        expect(systemApiContent.ReservedGlobalNames === undefined).to.be.true;
+        expect(systemApiContent.ReservedLocalNames.size === 8).to.be.false;
+
         fs.unlinkSync(systemApiPath);
       });
-     
-      it('1-2: test getSystemApiCache: -enable-export-obfuscation', function () {
+
+      it('1-2: test collectSystemApiWhitelist: -enable-export-obfuscation', function () {
         let obfuscationCacheDir = path.join(OBFUSCATE_TESTDATA_DIR, 'export');
         let obfuscationOptions = {
           'selfConfig': {
             'ruleOptions': {
               'enable': true,
-              'rules': [ 
+              'rules': [
                 path.join(OBFUSCATE_TESTDATA_DIR, 'export/export.txt')
               ]
             },
@@ -800,24 +967,24 @@ describe('test for ConfigResolve', function() {
         obConfig.resolveObfuscationConfigs();
         const reservedSdkApiForProp = UnobfuscationCollections.reservedSdkApiForProp;
         const reservedSdkApiForGlobal = UnobfuscationCollections.reservedSdkApiForGlobal;
-    
+
         expect(reservedSdkApiForProp.size == 0).to.be.true;
         expect(reservedSdkApiForGlobal.size == 0).to.be.true;
         UnobfuscationCollections.clear();
-    
+
         let systemApiPath = obfuscationCacheDir + '/systemApiCache.json';
         const noSystemApi = fs.existsSync(systemApiPath);
-    
+
         expect(noSystemApi).to.be.false;
       });
-     
-      it('1-3: test getSystemApiCache: -enable-export-obfuscation -enable-toplevel-obfuscation', function () {
+
+      it('1-3: test collectSystemApiWhitelist: -enable-export-obfuscation -enable-toplevel-obfuscation', function () {
         let obfuscationCacheDir = path.join(OBFUSCATE_TESTDATA_DIR, 'export_toplevel');
         let obfuscationOptions = {
           'selfConfig': {
             'ruleOptions': {
               'enable': true,
-              'rules': [ 
+              'rules': [
                 path.join(OBFUSCATE_TESTDATA_DIR, 'export_toplevel/export_toplevel.txt')
               ]
             },
@@ -840,44 +1007,109 @@ describe('test for ConfigResolve', function() {
         obConfig.resolveObfuscationConfigs();
         const reservedSdkApiForProp = UnobfuscationCollections.reservedSdkApiForProp;
         const reservedSdkApiForGlobal = UnobfuscationCollections.reservedSdkApiForGlobal;
-    
+
         expect(reservedSdkApiForProp.size == 0).to.be.true;
         expect(reservedSdkApiForGlobal.size == 3).to.be.true;
         expect(reservedSdkApiForGlobal.has('TestClass')).to.be.true;
         expect(reservedSdkApiForGlobal.has('TestFunction')).to.be.true;
         expect(reservedSdkApiForGlobal.has('ns')).to.be.true;
         UnobfuscationCollections.clear();
-    
+
         let systemApiPath = obfuscationCacheDir + '/systemApiCache.json';
         const data = fs.readFileSync(systemApiPath, 'utf8');
         const systemApiContent = JSON.parse(data);
-    
+
         expect(systemApiContent.ReservedPropertyNames == undefined).to.be.true;
         expect(systemApiContent.ReservedGlobalNames.length == 3).to.be.true;
         expect(systemApiContent.ReservedGlobalNames.includes('TestClass')).to.be.true;
         expect(systemApiContent.ReservedGlobalNames.includes('TestFunction')).to.be.true;
         expect(systemApiContent.ReservedGlobalNames.includes('ns')).to.be.true;
-    
+
+        fs.unlinkSync(systemApiPath);
+      });
+
+      it('1-4: test collectSystemApiWhitelist: system api when -enable-property-obfuscation and -extra-options strip-system-api-args', function () {
+        let obfuscationCacheDir = path.join(OBFUSCATE_TESTDATA_DIR, 'system_api_optimize');
+        let obfuscationOptions = {
+          'selfConfig': {
+            'ruleOptions': {
+              'enable': true,
+              'rules': [
+                path.join(OBFUSCATE_TESTDATA_DIR, 'system_api_optimize/system_api_optimize.txt')
+              ]
+            },
+            'consumerRules': [],
+          },
+          'dependencies': {
+            'libraries': [],
+            'hars': []
+          },
+          'obfuscationCacheDir': obfuscationCacheDir,
+          'sdkApis': [
+            path.join(OBFUSCATE_TESTDATA_DIR, 'system_api.d.ts')
+          ]
+        };
+        let projectConfig = {
+          obfuscationOptions,
+          compileHar: false
+        };
+        const obConfig: ObConfigResolver =  new ObConfigResolver(projectConfig, undefined);
+        obConfig.resolveObfuscationConfigs();
+        const reservedSdkApiForProp = UnobfuscationCollections.reservedSdkApiForProp;
+        const reservedSdkApiForGlobal = UnobfuscationCollections.reservedSdkApiForGlobal;
+        const reservedSdkApiForLocal = UnobfuscationCollections.reservedSdkApiForLocal;
+
+        expect(reservedSdkApiForProp.has('TestClass')).to.be.true;
+        expect(reservedSdkApiForProp.has('para1')).to.be.true;
+        expect(reservedSdkApiForProp.has('para2')).to.be.true;
+        expect(reservedSdkApiForProp.has('foo')).to.be.true;
+        expect(reservedSdkApiForProp.has('TestFunction')).to.be.true;
+        expect(reservedSdkApiForProp.has('funcPara1')).to.be.false;
+        expect(reservedSdkApiForProp.has('funcPara2')).to.be.false;
+        expect(reservedSdkApiForProp.has('ns')).to.be.true;
+        expect(reservedSdkApiForProp.has('NavigationBuilderRegister')).to.be.true;
+        expect(reservedSdkApiForProp.has('__Recycle__')).to.be.true;
+        expect(reservedSdkApiForGlobal.size == 0).to.be.true;
+        expect(reservedSdkApiForLocal.size == 0).to.be.true;
+        UnobfuscationCollections.clear();
+
+        let systemApiPath = obfuscationCacheDir + '/systemApiCache.json';
+        const data = fs.readFileSync(systemApiPath, 'utf8');
+        const systemApiContent = JSON.parse(data);
+
+        expect(systemApiContent.ReservedPropertyNames.includes('TestClass')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('para1')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('para2')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('foo')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('TestFunction')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('funcPara1')).to.be.false;
+        expect(systemApiContent.ReservedPropertyNames.includes('funcPara2')).to.be.false;
+        expect(systemApiContent.ReservedPropertyNames.includes('ns')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('NavigationBuilderRegister')).to.be.true;
+        expect(systemApiContent.ReservedPropertyNames.includes('__Recycle__')).to.be.true;
+        expect(systemApiContent.ReservedGlobalNames === undefined).to.be.true;
+        expect(systemApiContent.ReservedLocalNames === undefined).to.be.true;
+
         fs.unlinkSync(systemApiPath);
       });
     });
   });
-  
+
   describe('collectResevedFileNameInIDEConfig', () => {
     let collectPathReservedStringStub;
-  
+
     beforeEach(function() {
       collectPathReservedStringStub = sinon.stub(FileUtils, 'collectPathReservedString');
       collectPathReservedStringStub.callsFake((filePath, reservedArray) => reservedArray.push(filePath));
     });
-  
+
     afterEach(function() {
       collectPathReservedStringStub.restore();
       projectConfig.compileShared = false;
       projectConfig.byteCodeHar = false;
       projectConfig.aceModuleJsonPath = '';
     });
-  
+
     const ohPackagePath = './test/ut/initialization/testOhPackagePath.json';
     let projectConfig = {
       aceModuleJsonPath: '',
@@ -892,7 +1124,7 @@ describe('test for ConfigResolve', function() {
       module1: 'path/to/module1',
       module2: 'path/to/module2',
     };
-  
+
     it('should collect reserved file names from entryArray and projectConfig', () => {
       const result = collectResevedFileNameInIDEConfig('', projectConfig, undefined, entryArray);
       expect(result).to.deep.equal(['path/to/entry1', 'path/to/entry2','path/to/project','path/to/cache']);
@@ -917,7 +1149,7 @@ describe('test for ConfigResolve', function() {
       expect(noSrcEntry).to.deep.equal(['path/to/project','path/to/cache']);
     });
   });
-  
+
   describe('readNameCache', () => {
     let tempFilePath;
     let testData;
@@ -928,7 +1160,7 @@ describe('test for ConfigResolve', function() {
     };
     let PropCollections;
     let renameFileNameModule;
-  
+
     beforeEach(() => {
       PropCollections = {
         historyMangledTable: {},
@@ -936,7 +1168,7 @@ describe('test for ConfigResolve', function() {
       renameFileNameModule = {
         historyFileNameMangledTable: {},
       };
-      
+
       tempFilePath = './test/ut/initialization/tempNameCache.json';
       testData = {
         compileSdkVersion: '1.0.0',
@@ -944,37 +1176,37 @@ describe('test for ConfigResolve', function() {
         FileNameCache: { key3: 'value3', key4: 'value4' },
         extraKey: '',
       };
-  
+
       fsWriteFileSyncStub = sinon.stub(fs, 'writeFileSync').callsFake((path, data) => {});
       fsUnlinkSyncStub = sinon.stub(fs, 'unlinkSync').callsFake((path) => {});
     });
-  
+
     afterEach(() => {
       fsWriteFileSyncStub.restore();
       fsUnlinkSyncStub.restore();
     });
-  
+
     it('should read and parse the name cache file correctly', () => {
       readNameCache(tempFilePath, logger);
 
       expect(nameCacheMap.get('extraKey')).to.equal('');
     });
   });
-  
+
   describe('readNameCache', () => {
     let fsReadFileSyncStub;
-    let logger; 
+    let logger;
     const testPath = './test/ut/initialization/tempNameCache.json';
-  
+
     beforeEach(() => {
       fsReadFileSyncStub = sinon.stub(fs, 'readFileSync').returns('{"compileSdkVersion":"1.0","PropertyCache":{},"FileNameCache":{}}');
       logger = { error: sinon.spy() };
     });
-  
+
     afterEach(() => {
       fsReadFileSyncStub.restore();
     });
-  
+
     it('should read the name cache file and parse its content', () => {
       readNameCache(testPath, logger);
       expect(PropCollections.historyMangledTable).to.deep.equal(new Map());
@@ -982,7 +1214,7 @@ describe('test for ConfigResolve', function() {
       expect(nameCacheMap.get('compileSdkVersion')).to.be.undefined;
       expect(logger.error.called).to.be.false;
     });
-  
+
     it('should handle errors when reading the file', () => {
       const mockLogger = {
         error: (message: string) => console.error(message),
@@ -995,7 +1227,7 @@ describe('test for ConfigResolve', function() {
       expect(logger.error.calledWith(`Failed to open ${nonExistentFilePath}. Error message: Test error`)).to.be.false;
     });
   });
-  
+
   describe('handleUniversalPathInObf', () => {
     it('should handle universal paths correctly', () => {
       const mergedObConfig: MergedConfig = {
@@ -1022,12 +1254,12 @@ describe('test for ConfigResolve', function() {
         'exclude.js',
         'other.js',
       ]);
-  
+
       handleUniversalPathInObf(mergedObConfig, allSourceFilePaths);
       expect(mergedObConfig.keepSourceOfPaths).to.deep.equal(['test.js']);
       expect(mergedObConfig.excludePathSet).to.deep.equal(new Set(['exclude.js']));
     });
-  
+
     it('should return early if mergedObConfig is not provided or both keepUniversalPaths and excludeUniversalPaths are empty', () => {
       const mergedObConfig: MergedConfig = {
         options: new ObOptionsForTest(),
@@ -1050,20 +1282,20 @@ describe('test for ConfigResolve', function() {
       };
       const allSourceFilePaths = new Set([]);
       const result = handleUniversalPathInObf(mergedObConfig, allSourceFilePaths);
-  
+
       expect(result).to.be.undefined;
     });
   });
-  
+
   describe('getArkguardNameCache', () => {
     it('should return a JSON string with the correct structure', () => {
       const enablePropertyObfuscation = true;
       const enableFileNameObfuscation = true;
       const sdkVersion = '1.0.0';
       const entryPackageInfo = 'packageInfo';
-  
+
       const result = getArkguardNameCache(enablePropertyObfuscation, enableFileNameObfuscation, false, sdkVersion, entryPackageInfo);
-  
+
       try {
         JSON.parse(result);
         // If no error is thrown, the result is a valid JSON string
@@ -1072,16 +1304,16 @@ describe('test for ConfigResolve', function() {
         console.error('Test failed: getArkguardNameCache does not return a valid JSON string');
       }
     });
-  
+
     it('should include the correct compileSdkVersion and entryPackageInfo', () => {
       const enablePropertyObfuscation = false;
       const enableFileNameObfuscation = false;
       const sdkVersion = '2.0.0';
       const entryPackageInfo = 'anotherPackageInfo';
-  
+
       const result = getArkguardNameCache(enablePropertyObfuscation, enableFileNameObfuscation, false, sdkVersion, entryPackageInfo);
       const parsedResult = JSON.parse(result);
-  
+
       expect(parsedResult.compileSdkVersion).to.equal(sdkVersion);
       expect(parsedResult.entryPackageInfo).to.equal(entryPackageInfo);
     });
@@ -1092,7 +1324,7 @@ describe('test for ConfigResolve', function() {
       const enableExportObfuscation = true;
       const sdkVersion = '2.0.0';
       const entryPackageInfo = 'anotherPackageInfo';
-  
+
       PropCollections.historyMangledTable.set("key1", "value1");
       PropCollections.historyMangledTable.set("key2", "value2");
       PropCollections.globalMangledTable.set("key3", "value3");
@@ -1108,7 +1340,7 @@ describe('test for ConfigResolve', function() {
       expect(parsedResult.PropertyCache.key4 === "value4").to.be.true;
     });
   });
-  
+
   describe('fillNameCache', function() {
     it('should correctly fill the name cache with the given table entries', function() {
       const table = new Map([
@@ -1117,39 +1349,39 @@ describe('test for ConfigResolve', function() {
         ['key3', 'value3']
       ]);
       const nameCache = new Map();
-  
+
       fillNameCache(table, nameCache);
-  
+
       assert.deepEqual(nameCache, table);
     });
-  
+
     it('should handle empty tables gracefully', function() {
       const table = new Map();
       const nameCache = new Map();
-  
+
       fillNameCache(table, nameCache);
-  
+
       assert.deepEqual(nameCache, table);
     });
   });
-  
+
   describe('writeObfuscationNameCache', () => {
     let existsSyncSpy;
     let mkdirSyncSpy;
     let writeFileSyncSpy;
-  
+
     beforeEach(function() {
       existsSyncSpy = sinon.spy(fs, 'existsSync');
       mkdirSyncSpy = sinon.spy(fs, 'mkdirSync');
       writeFileSyncSpy = sinon.spy(fs, 'writeFileSync');
     });
-  
+
     afterEach(function() {
       existsSyncSpy.restore();
       mkdirSyncSpy.restore();
       writeFileSyncSpy.restore();
     });
-  
+
     it('should not write cache if projectConfig.arkObfuscator is false', () => {
       const projectConfig = {
         arkObfuscator: false,
@@ -1164,9 +1396,9 @@ describe('test for ConfigResolve', function() {
       const entryPackageInfo = 'testEntryPackageInfo';
       const obfuscationCacheDir = 'testCacheDir';
       const printNameCache = 'testPrintNameCache';
-  
+
       writeObfuscationNameCache(projectConfig, entryPackageInfo, obfuscationCacheDir, printNameCache);
-  
+
       expect(existsSyncSpy.called).to.be.false;
       expect(mkdirSyncSpy.called).to.be.false;
       expect(writeFileSyncSpy.called).to.be.false;
@@ -1231,7 +1463,7 @@ describe('test for ConfigResolve', function() {
       fs.unlinkSync(printNameCache);
     });
   });
-  
+
   describe('enableObfuscatedFilePathConfig', () => {
     it('should return false if in debug mode or no obfuscation config', () => {
       const projectConfig = {
@@ -1241,7 +1473,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscatedFilePathConfig(true, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is disabled or file name obfuscation is not enabled', () => {
       const projectConfig = {
         obfuscationMergedObConfig: {
@@ -1255,7 +1487,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscatedFilePathConfig(false, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return true if all conditions are met', () => {
       const projectConfig = {
         obfuscationMergedObConfig: {
@@ -1270,7 +1502,7 @@ describe('test for ConfigResolve', function() {
       expect(result).to.be.true;
     });
   });
-  
+
   describe('handleObfuscatedFilePath', () => {
     it('should return the original file path if obfuscation is not enabled', () => {
       const filePath = '/path/to/file.js';
@@ -1279,12 +1511,12 @@ describe('test for ConfigResolve', function() {
         enableFileNameObfuscation: false,
         buildMode: 'debug'
       };
-  
+
       const result = handleObfuscatedFilePath(filePath, isPackageModules, projectConfig);
 
       expect(result).to.equal(filePath);
     });
-  
+
     it('should return the original file path if obfuscation is not enabled', () => {
       const filePath = '/path/to/file.txt';
       const isPackageModules = false;
@@ -1295,7 +1527,7 @@ describe('test for ConfigResolve', function() {
       const result = handleObfuscatedFilePath(filePath, isPackageModules, projectConfig);
       expect(result).to.equal(filePath);
     });
-  
+
     it('should return the original file path if obfuscation is not enabled', () => {
       const filePath = '/path/to/file.txt';
       const isPackageModules = false;
@@ -1306,7 +1538,7 @@ describe('test for ConfigResolve', function() {
       const result = handleObfuscatedFilePath(filePath, isPackageModules, projectConfig);
       expect(result).to.equal(filePath);
     });
-  
+
     it('should return the unix formatted file path if obfuscation is enabled and is a package module', () => {
       const filePath = '/path/to/file.js';
       const isPackageModules = true;
@@ -1319,12 +1551,12 @@ describe('test for ConfigResolve', function() {
         },
         buildMode: "not Debug"
       };
-  
+
       const result = handleObfuscatedFilePath(filePath, isPackageModules, projectConfig);
 
       expect(result).to.equal(FileUtils.toUnixPath(filePath));
     });
-  
+
     it('should return the unix formatted file path if obfuscation is enabled and is a package module', () => {
       const filePath = '/path/to/file.js';
       const isPackageModules = true;
@@ -1337,13 +1569,13 @@ describe('test for ConfigResolve', function() {
         },
         buildMode: ""
       };
-  
+
       const result = handleObfuscatedFilePath(filePath, isPackageModules, projectConfig);
 
       expect(result).to.equal(FileUtils.toUnixPath(filePath));
     });
   });
-  
+
   describe('enableObfuscateFileName', () => {
     it('should return false if obfuscation is not enabled', () => {
       const isPackageModules = false;
@@ -1354,7 +1586,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return true if obfuscation is enabled and not a package module', () => {
       const isPackageModules = false;
       const projectConfig = {
@@ -1370,7 +1602,7 @@ describe('test for ConfigResolve', function() {
 
       expect(result).to.be.true;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1385,7 +1617,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1400,7 +1632,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1410,7 +1642,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1420,7 +1652,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1430,7 +1662,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1445,7 +1677,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1460,7 +1692,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1475,7 +1707,7 @@ describe('test for ConfigResolve', function() {
       const result = enableObfuscateFileName(isPackageModules, projectConfig);
       expect(result).to.be.false;
     });
-  
+
     it('should return false if obfuscation is enabled and is a package module', () => {
       const isPackageModules = true;
       const projectConfig = {
@@ -1491,30 +1723,30 @@ describe('test for ConfigResolve', function() {
       expect(result).to.be.false;
     });
   });
-  
+
   describe('getRelativeSourcePath', () => {
     it('should return the relative path of a file within the project root', () => {
       const filePath = '/Users/user/project/src/components/Button.js';
       const projectRootPath = '/Users/user/project';
       const expectedRelativePath = 'src/components/Button.js';
-  
+
       const result = getRelativeSourcePath(filePath, projectRootPath, '');
       expect(result).to.equal(expectedRelativePath);
     });
-  
+
     it('should return the relative path of a file within a specified project path', () => {
       const filePath = '/Users/user/project/src/components/Button.js';
       const belongProjectPath = '/Users/user/project/src';
       const expectedRelativePath = 'components/Button.js';
-  
+
       const result = getRelativeSourcePath(filePath, '', belongProjectPath);
       expect(result).to.equal(expectedRelativePath);
     });
-  
+
     it('should return the original path if no project root or belong project path is provided', () => {
       const filePath = '/Users/user/project/src/components/Button.js';
       const expectedRelativePath = filePath;
-  
+
       const result = getRelativeSourcePath(filePath, '', '');
       expect(result).to.equal(expectedRelativePath);
     });
