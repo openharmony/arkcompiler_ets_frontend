@@ -150,7 +150,7 @@ public:
         v->Accept(this);
     }
 
-    void GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,
+    void GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, checker::Type *param,
                                        checker::TypeRelationFlag flags);
 
 private:

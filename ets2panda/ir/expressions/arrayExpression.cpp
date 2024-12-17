@@ -400,15 +400,14 @@ checker::VerifiedType ArrayExpression::Check(checker::ETSChecker *checker)
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
-void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,
+void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, checker::Type *param,
                                                     checker::TypeRelationFlag flags)
 {
     if (preferredType_ != nullptr) {
         return;
     }
-    auto paramType = param->Check(checker);
-    if (paramType->IsETSArrayType()) {
-        auto *elementType = paramType->AsETSArrayType()->ElementType();
+    if (param->IsETSArrayType()) {
+        auto *elementType = param->AsETSArrayType()->ElementType();
         bool isAssignable = true;
         for (auto elem : elements_) {
             auto assignCtx =
@@ -417,7 +416,7 @@ void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker
             isAssignable &= assignCtx.IsAssignable();
         }
         if (isAssignable) {
-            preferredType_ = paramType;
+            preferredType_ = param;
         }
     }
 }
