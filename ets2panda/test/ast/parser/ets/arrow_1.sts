@@ -27,7 +27,6 @@ let a: A = {
     }
 }
 
-/* @@? 22:12 Error SyntaxError: Unexpected token, expected: '=>'.  */
-/* @@? 22:14 Error SyntaxError: Unexpected token '=>'.  */
-/* @@? 22:14 Error SyntaxError: Unexpected token: '=>'.  */
-/* @@? 22:14 Error SyntaxError: Unexpected token, arrow (=>)  */
+/* @@? 22:12 Error SyntaxError: Unexpected token, expected: '=>'. */
+/* @@? 22:14 Error SyntaxError: Unexpected token '=>'. */
+/* @@? 22:14 Error SyntaxError: Unexpected token: '=>'. */

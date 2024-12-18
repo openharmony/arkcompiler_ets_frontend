@@ -90,10 +90,6 @@ ir::Expression *TypedParser::ParseExpression(ExpressionParseFlags flags)
     }
 
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);
-    if (unaryExpressionNode == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     if (unaryExpressionNode->IsArrowFunctionExpression()) {
         return unaryExpressionNode;
     }
@@ -407,10 +403,6 @@ ir::TypeNode *TypedParser::ParseInterfaceExtendsElement()
         heritageEnd = typeParamInst->End();
     }
 
-    if (expr == nullptr) {  // Error rocessing.
-        return nullptr;
-    }
-
     auto *typeReference = AllocNode<ir::TSTypeReference>(expr, typeParamInst);
     typeReference->SetRange({heritageStart, heritageEnd});
     return typeReference;
@@ -424,11 +416,9 @@ ArenaVector<ir::TSInterfaceHeritage *> TypedParser::ParseInterfaceExtendsClause(
 
     while (true) {
         auto *typeReference = ParseInterfaceExtendsElement();
-        if (typeReference != nullptr) {  // Error processing.
-            auto *heritage = AllocNode<ir::TSInterfaceHeritage>(typeReference);
-            heritage->SetRange(typeReference->Range());
-            extends.push_back(heritage);
-        }
+        auto *heritage = AllocNode<ir::TSInterfaceHeritage>(typeReference);
+        heritage->SetRange(typeReference->Range());
+        extends.push_back(heritage);
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
             Lexer()->GetToken().Type() == lexer::TokenType::EOS) {
@@ -463,9 +453,6 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
     Lexer()->NextToken();  // eat interface keyword
 
     auto id = ExpectIdentifier(true);
-    if (id == nullptr) {  // Error processing.
-        return nullptr;
-    }
 
     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
@@ -557,10 +544,9 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
         util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
 
         ir::AstNode *member = ParseTypeLiteralOrInterfaceMember();
-        // Error processing.
-        if (member == nullptr || (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
-                                  member->AsMethodDefinition()->Function()->IsOverload() &&
-                                  member->AsMethodDefinition()->Function()->Body() != nullptr)) {
+        if (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
+            member->AsMethodDefinition()->Function()->IsOverload() &&
+            member->AsMethodDefinition()->Function()->Body() != nullptr) {
             continue;
         }
 
@@ -580,7 +566,7 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
             Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
                 LogSyntaxError("Interface member initialization is prohibited");
-                Lexer()->NextToken();  // Error processing.
+                Lexer()->NextToken();
             }
             if (!Lexer()->GetToken().NewLine()) {
                 LogExpectedToken(lexer::TokenType::PUNCTUATOR_COMMA);
@@ -657,6 +643,7 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
             memberKey->SetRange(Lexer()->GetToken().Loc());
         } else {
             LogSyntaxError("Unexpected token in enum member");
+            memberKey = AllocErrorExpression();
             // Consider that the current token is a memberKey and skip it.
         }
 
@@ -671,11 +658,9 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
             memberInit = ParseExpression();
         }
 
-        if (memberKey != nullptr) {  // Error processing.
-            auto *member = AllocNode<ir::TSEnumMember>(memberKey, memberInit);
-            member->SetRange({initStart, Lexer()->GetToken().End()});
-            members.push_back(member);
-        }
+        auto *member = AllocNode<ir::TSEnumMember>(memberKey, memberInit);
+        member->SetRange({initStart, Lexer()->GetToken().End()});
+        members.push_back(member);
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
@@ -879,11 +864,9 @@ ArenaVector<ir::TSClassImplements *> TypedParser::ParseClassImplementClause()
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         lexer::SourcePosition implStart = Lexer()->GetToken().Start();
         auto [expr, implTypeParams] = ParseClassImplementsElement();
-        if (expr != nullptr) {  // Error processing.
-            auto *impl = AllocNode<ir::TSClassImplements>(expr, implTypeParams);
-            impl->SetRange({implStart, Lexer()->GetToken().End()});
-            implements.push_back(impl);
-        }
+        auto *impl = AllocNode<ir::TSClassImplements>(expr, implTypeParams);
+        impl->SetRange({implStart, Lexer()->GetToken().End()});
+        implements.push_back(impl);
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             Lexer()->NextToken();
@@ -1069,10 +1052,6 @@ ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &pr
     }
 
     ir::Expression *propName = ParseClassKey(&desc);
-    if (propName == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     if (desc.methodKind == ir::MethodDefinitionKind::CONSTRUCTOR && !desc.decorators.empty()) {
         LogSyntaxError("Decorators are not valid here.", desc.decorators.front()->Start());
     }
@@ -1208,7 +1187,7 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
                 return expr;
             }
             LogSyntaxError("Identifier expected");
-            return nullptr;
+            return AllocErrorExpression();
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
@@ -1221,18 +1200,14 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
 ir::Expression *TypedParser::ParseLiteralIndent(ir::Expression *typeName, ExpressionParseFlags flags,
                                                 const lexer::SourcePosition &startLoc)
 {
-    if ((flags & ExpressionParseFlags::POTENTIAL_CLASS_LITERAL) != 0) {
-        if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {
-            typeName->SetRange({startLoc, Lexer()->GetToken().End()});
-            return typeName;
-        }
-        if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS) {
-            return static_cast<ir::Expression *>(nullptr);
-        }
+    if ((flags & ExpressionParseFlags::POTENTIAL_CLASS_LITERAL) != 0 &&
+        Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {
+        typeName->SetRange({startLoc, Lexer()->GetToken().End()});
+        return typeName;
     }
 
     LogSyntaxError("Identifier expected");
-    return nullptr;
+    return AllocErrorExpression();
 }
 
 ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, ExpressionParseFlags flags)
@@ -1333,16 +1308,15 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
         *options |= TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY;
     }
 
+    lexer::SourcePosition endLoc = Lexer()->GetToken().End();
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
         if ((*options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN);
+    } else {
+        Lexer()->NextToken();  // eat '>'
     }
-
-    lexer::SourcePosition endLoc = Lexer()->GetToken().End();
-    Lexer()->NextToken();  // eat '>'
-
     if (typeParamInst != nullptr) {
         typeParamInst->SetRange({startLoc, endLoc});
         return typeParamInst->AsTSTypeParameterInstantiation();

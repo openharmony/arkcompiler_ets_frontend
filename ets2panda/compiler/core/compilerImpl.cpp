@@ -201,7 +201,6 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
                                         context.parser->ErrorLogger()->IsAnyError());
             return false;
         }
-
         if (runAllChecks) {
             auto ast = runner.ExtractAst(program);
             runner.Verify(ast, std::string {phase->Name()}, verificationCtx.AccumulatedChecks());

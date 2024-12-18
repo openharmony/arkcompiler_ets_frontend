@@ -15,7 +15,7 @@
 
 function main() : void
 {
-  let x : int = new /* @@ label */int();
+  let x : int = /* @@ label */new int();
 }
 
-/* @@@ label Error SyntaxError: Can not use 'new' on primitive types.  */
+/* @@@ label Error TypeError: This expression is not constructible. */

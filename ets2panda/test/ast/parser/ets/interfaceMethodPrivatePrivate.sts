@@ -14,8 +14,9 @@
  */
 
 interface I {
-    private /* @@ label */private foo/* @@ label1 */()
+    private private foo()
 }
 
-/* @@@ label Error SyntaxError: Identifier expected  */
-/* @@@ label1 Error SyntaxError: Private interface methods must have body  */
+/* @@? 17:13 Error SyntaxError: Identifier expected */
+/* @@? 17:13 Error SyntaxError: Unexpected token, expected: ','. */
+/* @@? 17:24 Error SyntaxError: Private interface methods must have body */

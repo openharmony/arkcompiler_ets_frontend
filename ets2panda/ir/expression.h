@@ -98,6 +98,8 @@ public:
         return reinterpret_cast<const AnnotatedExpression *>(this);
     }
 
+    bool IsErrorExpression() const noexcept;
+
 protected:
     explicit Expression(AstNodeType const type) : TypedAstNode(type) {}
     explicit Expression(AstNodeType const type, ModifierFlags const flags) : TypedAstNode(type, flags) {}

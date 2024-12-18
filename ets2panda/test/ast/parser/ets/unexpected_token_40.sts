@@ -15,7 +15,12 @@
 
 let arr = new Array<Number;
 
-/* @@? 16:27 Error SyntaxError: Unexpected token, expected: '>'.  */
-/* @@? 1:1 Node {
     "type": "Program"
 }  */
+/* @@? 16:27 Error SyntaxError: Unexpected token, expected: '>'. */
+/* @@? 18:11 Error SyntaxError: Unexpected token ':'. */
+/* @@? 18:11 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 19:4 Error SyntaxError: Unexpected token '*'. */
+/* @@? 19:5 Error SyntaxError: Unexpected token '/'. */
+/* @@? 27:1 Error SyntaxError: Unexpected token 'eos'. */

@@ -15,8 +15,9 @@
 
 
 class Foo {
-    const /* @@ label */a /* @@ label1 */= 3;
+    const a = 3;
 }
 
-/* @@@ label Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token in class property  */
+/* @@? 18:11 Error SyntaxError: Unexpected token, expected: ';'. */
+/* @@? 18:13 Error SyntaxError: Unexpected token in class property */
+/* @@? 18:15 Error SyntaxError: Unexpected token, expected: ';'. */

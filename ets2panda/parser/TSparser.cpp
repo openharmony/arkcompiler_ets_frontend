@@ -2103,9 +2103,7 @@ ir::AstNode *TSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
             ThrowSyntaxError("identifier expected");
         }
 
-        auto *importEqualsDecl = AllocNode<ir::TSImportEqualsDeclaration>(local, ParseModuleReference(), false);
-
-        return importEqualsDecl;
+        return AllocNode<ir::TSImportEqualsDeclaration>(local, ParseModuleReference(), false);
     }
 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);

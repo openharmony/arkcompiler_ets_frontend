@@ -71,7 +71,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
     ASSERT(type->Variable() && type->GetDeclNode()->IsClassDefinition());
     auto *classDef = type->GetDeclNode()->AsClassDefinition();
 
-    if (classDef->Super() == nullptr) {
+    if (classDef->Super() == nullptr || !classDef->Super()->IsTypeNode()) {
         type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
         if (type != GlobalETSObjectType()) {
             type->SetSuperType(GlobalETSObjectType());

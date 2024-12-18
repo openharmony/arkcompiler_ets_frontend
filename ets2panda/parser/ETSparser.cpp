@@ -354,9 +354,7 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::TypeNod
             ParseFunctionBody(signature.Params(), newStatus, GetContext().Status());
     } else if (isArrow) {
         body = ParseExpression();
-        if (body != nullptr) {  // Error processing.
-            endLoc = body->AsExpression()->End();
-        }
+        endLoc = body->AsExpression()->End();
         functionContext.AddFlag(ir::ScriptFunctionFlags::EXPRESSION);
     }
 
@@ -546,7 +544,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     if (memberName == nullptr) {                                                               // log error here
         LogUnexpectedToken(Lexer()->GetToken().Type());
         Lexer()->NextToken();
-        return nullptr;
+        return AllocErrorExpression();
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
@@ -685,10 +683,7 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
 
     if (typeAnnotation == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0) {
         auto nameField = fieldName->Name().Mutf8();
-        auto logField = " '" + nameField + "'.";
-        if (nameField == ERROR_LITERAL) {
-            logField = ".";
-        }
+        auto logField = !fieldName->IsErrorPlaceHolder() ? " '" + nameField + "'." : ".";
         LogSyntaxError("Missing type annotation for property" + logField, Lexer()->GetToken().Start());
     }
 
@@ -897,11 +892,8 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
     ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
-    if (typeAnnotation != nullptr) {  // Error processing.
-        typeAliasDecl->SetTsTypeAnnotation(typeAnnotation);
-        typeAnnotation->SetParent(typeAliasDecl);
-    }
-
+    typeAliasDecl->SetTsTypeAnnotation(typeAnnotation);
+    typeAnnotation->SetParent(typeAliasDecl);
     typeAliasDecl->SetRange({typeStart, Lexer()->GetToken().End()});
     return typeAliasDecl;
 }
@@ -1092,10 +1084,6 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ETSParser::Pars
     }
 
     auto *typeName = ParseQualifiedName(flags);
-    if (typeName == nullptr) {
-        return {nullptr, nullptr};
-    }
-
     if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
         (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
         return {typeName, nullptr};
@@ -1127,10 +1115,6 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
     while (true) {
         auto partPos = Lexer()->GetToken().Start();
         auto [typeName, typeParams] = ParseTypeReferencePart(options);
-        if (typeName == nullptr) {
-            return nullptr;
-        }
-
         typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeName, typeParams, typeRefPart);
         typeRefPart->SetRange({partPos, Lexer()->GetToken().End()});
 
@@ -1153,48 +1137,26 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
 
 ir::TypeNode *ETSParser::ParseBaseTypeReference(TypeAnnotationParsingOptions *options)
 {
-    ir::TypeNode *typeAnnotation = nullptr;
-
     switch (Lexer()->GetToken().KeywordType()) {
-        case lexer::TokenType::KEYW_BOOLEAN: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::BOOLEAN);
-            break;
-        }
-        case lexer::TokenType::KEYW_BYTE: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::BYTE);
-            break;
-        }
-        case lexer::TokenType::KEYW_CHAR: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::CHAR);
-            break;
-        }
-        case lexer::TokenType::KEYW_DOUBLE: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::DOUBLE);
-            break;
-        }
-        case lexer::TokenType::KEYW_FLOAT: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::FLOAT);
-            break;
-        }
-        case lexer::TokenType::KEYW_INT: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::INT);
-            break;
-        }
-        case lexer::TokenType::KEYW_LONG: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::LONG);
-            break;
-        }
-        case lexer::TokenType::KEYW_SHORT: {
-            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::SHORT);
-            break;
-        }
-
-        default: {
-            break;
-        }
+        case lexer::TokenType::KEYW_BOOLEAN:
+            return ParsePrimitiveType(options, ir::PrimitiveType::BOOLEAN);
+        case lexer::TokenType::KEYW_BYTE:
+            return ParsePrimitiveType(options, ir::PrimitiveType::BYTE);
+        case lexer::TokenType::KEYW_CHAR:
+            return ParsePrimitiveType(options, ir::PrimitiveType::CHAR);
+        case lexer::TokenType::KEYW_DOUBLE:
+            return ParsePrimitiveType(options, ir::PrimitiveType::DOUBLE);
+        case lexer::TokenType::KEYW_FLOAT:
+            return ParsePrimitiveType(options, ir::PrimitiveType::FLOAT);
+        case lexer::TokenType::KEYW_INT:
+            return ParsePrimitiveType(options, ir::PrimitiveType::INT);
+        case lexer::TokenType::KEYW_LONG:
+            return ParsePrimitiveType(options, ir::PrimitiveType::LONG);
+        case lexer::TokenType::KEYW_SHORT:
+            return ParsePrimitiveType(options, ir::PrimitiveType::SHORT);
+        default:
+            return nullptr;
     }
-
-    return typeAnnotation;
 }
 
 std::optional<lexer::SourcePosition> ETSParser::GetDefaultParamPosition(ArenaVector<ir::Expression *> params)
@@ -1305,10 +1267,6 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
     Lexer()->NextToken();
 
     ir::Expression *name = ParseQualifiedName();
-    if (name == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     auto *packageDeclaration = AllocNode<ir::ETSPackageDeclaration>(name);
     packageDeclaration->SetRange({startLoc, Lexer()->GetToken().End()});
 
@@ -1528,10 +1486,7 @@ std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseN
             return true;
         },
         nullptr, true);
-    std::pair<ArenaVector<ir::ImportSpecifier *>, ArenaVector<ir::ImportDefaultSpecifier *>> resultSpecifiers(
-        result, resultDefault);
-
-    return resultSpecifiers;
+    return {result, resultDefault};
 }
 
 void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport)
@@ -1634,7 +1589,7 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
 
         default: {
             LogSyntaxError("Unexpected token, expected an identifier.");
-            return nullptr;
+            return AllocErrorExpression();
         }
     }
 
@@ -1686,10 +1641,6 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     }
 
     auto *const paramIdent = GetAnnotatedExpressionFromParam();
-    if (paramIdent == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     ir::ETSUndefinedType *defaultUndef = nullptr;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
@@ -1706,15 +1657,8 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
-        if (typeAnnotation == nullptr) {  // Error processing.
-            return nullptr;
-        }
-
         if (defaultUndef != nullptr) {
             typeAnnotation = CreateOptionalParameterTypeNode(typeAnnotation, defaultUndef);
-        }
-        if (paramIdent == nullptr) {  // Error processing.
-            return nullptr;
         }
         if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
             LogSyntaxError(ONLY_ARRAY_FOR_REST);
@@ -1763,12 +1707,10 @@ ir::AnnotatedExpression *ETSParser::ParseVariableDeclaratorKey([[maybe_unused]] 
     } else if (tokenType != lexer::TokenType::PUNCTUATOR_SUBSTITUTION && (flags & VariableParsingFlags::FOR_OF) == 0U) {
         LogSyntaxError("Variable must be initialized or it's type must be declared");
     }
-
     if (typeAnnotation != nullptr) {
         init->SetTsTypeAnnotation(typeAnnotation);
         typeAnnotation->SetParent(init);
     }
-
     return init;
 }
 
@@ -1782,10 +1724,6 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclaratorInitializer(ir::Expres
     Lexer()->NextToken();
 
     ir::Expression *initializer = ParseExpression();
-    if (initializer == nullptr) {  // Error processing.
-        return nullptr;
-    }
-
     lexer::SourcePosition endLoc = initializer->End();
 
     auto *declarator = AllocNode<ir::VariableDeclarator>(GetFlag(flags), init, initializer);
@@ -2224,6 +2162,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
         funcIdentNode = ExpectIdentifier();
     } else if (!canBeAnonymous) {
         LogSyntaxError("Unexpected token, expected identifier after 'function' keyword");
+        funcIdentNode = AllocErrorExpression();
     }
 
     if (funcIdentNode != nullptr) {
@@ -2231,7 +2170,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
     }
 
     ir::ScriptFunction *func = ParseFunction(newStatus | ParserStatus::FUNCTION_DECLARATION, typeAnnotation);
-    if (funcIdentNode != nullptr) {  // Error processing.
+    if (funcIdentNode != nullptr) {
         func->SetIdent(funcIdentNode);
     }
 

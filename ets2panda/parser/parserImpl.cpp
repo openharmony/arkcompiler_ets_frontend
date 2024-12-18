@@ -18,6 +18,7 @@
 
 #include "varbinder/privateBinding.h"
 #include "ir/astNode.h"
+#include "ir/errorTypeNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
@@ -392,6 +393,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
         }
         default: {
             LogSyntaxError("Unexpected token in class property");
+            propName = AllocErrorExpression();
         }
     }
 
@@ -552,10 +554,6 @@ void ParserImpl::ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, cha
 
 void ParserImpl::AddPrivateElement(const ir::ClassElement *elem)
 {
-    if (elem->Id() == nullptr) {  // Error processing.
-        return;
-    }
-
     if (!classPrivateContext_.AddElement(elem)) {
         LogSyntaxError("Private field has already been declared");
     }
@@ -626,11 +624,6 @@ ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &pro
     }
 
     ir::Expression *propName = ParseClassKey(&desc);
-    if (propName == nullptr) {  // Error processing.
-        context_.Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
-        return nullptr;
-    }
-
     ValidateClassMethodStart(&desc, nullptr);
     ir::ClassElement *property = ParseClassProperty(&desc, properties, propName, nullptr);
 
@@ -725,6 +718,7 @@ ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifie
 
     if (idRequired == ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED) {
         LogSyntaxError("Unexpected token, expected an identifier.");
+        return AllocErrorExpression();
     }
 
     return nullptr;
@@ -774,7 +768,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
 
     if (identNode == nullptr && (modifiers & ir::ClassDefinitionModifiers::DECLARATION) != 0U) {
         LogSyntaxError("Unexpected token, expected an identifier.");
-        return nullptr;
+        return nullptr;  // ir::ClassDefinition
     }
 
     varbinder::PrivateBinding privateBinding(Allocator(), classId_++);
@@ -913,7 +907,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] ir::TypeNode *typeAnnotation)
 {
     LogSyntaxError("Unexpected token, expected function identifier");
-    return nullptr;
+    return AllocErrorExpression();
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
@@ -1004,10 +998,6 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
         }
     } else {
         argument = ParseExpression(flags);
-    }
-
-    if (argument == nullptr) {  // Error processing.
-        return nullptr;
     }
 
     if (inPattern && argument->IsAssignmentExpression()) {
@@ -1251,15 +1241,14 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
             return nullptr;
         }
         LogSyntaxError({"Identifier expected, got '", TokenToString(tokenType), "'."}, tokenStart);
-        tokenName = ERROR_LITERAL;
+        lexer_->NextToken();
+        return AllocErrorExpression();
     }
 
     auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());
     //  NOTE: here actual token can be changed!
     ident->SetRange({tokenStart, lexer_->GetToken().End()});
-
     lexer_->NextToken();
-
     return ident;
 }
 
@@ -1410,4 +1399,13 @@ bool ParserImpl::ParseList(std::optional<lexer::TokenType> termToken, lexer::Nex
     return success;
 }
 
+ir::Identifier *ParserImpl::AllocErrorExpression()
+{
+    return AllocNode<ir::Identifier>(Allocator());
+}
+
+ir::TypeNode *ParserImpl::AllocErrorType()
+{
+    return AllocNode<ir::ErrorTypeNode>();
+}
 }  // namespace ark::es2panda::parser

@@ -22,7 +22,7 @@ class A{
 }
 
 /* @@? 20:12 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 20:30 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 20:31 Error SyntaxError: Unexpected token ')'. */
-/* @@? 21:9 Error SyntaxError: Label must be followed by a loop statement */
-/* @@? 22:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 20:12 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 20:12 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 20:28 Error SyntaxError: Label must be followed by a loop statement */
+/* @@? 20:31 Error SyntaxError: Unexpected token: ')'. */

@@ -15,8 +15,8 @@
 
 
 declare class Foo {
-    a() /* @@ label */b/* @@ label1 */(/* @@ label2 */)
+    a() b()
 }
-/* @@@ label Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token in class property  */
-/* @@@ label2 Error SyntaxError: Unexpected token in class property  */
+/* @@? 18:9 Error SyntaxError: Unexpected token, expected: ';'. */
+/* @@? 18:10 Error SyntaxError: Unexpected token in class property */
+/* @@? 18:11 Error SyntaxError: Unexpected token, expected: ';'. */

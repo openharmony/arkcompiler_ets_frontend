@@ -154,7 +154,6 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
     if (isControlFlowToken) {
         return ParseStatementControlFlowTokenHelper(flags);
     }
-
     return ParseStatementBasedOnTokenType(flags);
 }
 
@@ -629,7 +628,7 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
         LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     }
 
-    if (body == nullptr || test == nullptr) {  // Error processing.
+    if (body == nullptr) {  // Error processing.
         return nullptr;
     }
 
@@ -735,10 +734,9 @@ ir::Statement *ParserImpl::ParseExpressionStatement(StatementParsingFlags flags)
     }
 
     ir::Expression *exprNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
-    if (exprNode == nullptr) {  // Error processing.
+    if (exprNode->IsErrorExpression()) {
         return nullptr;
     }
-
     context_.Status() = savedStatus;
     lexer::SourcePosition endPos = exprNode->End();
 
@@ -1244,7 +1242,8 @@ ir::SwitchCaseStatement *ParserImpl::ParseSwitchCaseStatement(bool *seenDefault)
     ArenaVector<ir::Statement *> consequents(Allocator()->Adapter());
     while (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CASE &&
            lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_DEFAULT &&
-           lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+           lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
+           lexer_->GetToken().Type() != lexer::TokenType::EOS) {
         ir::Statement *consequent = ParseStatement(StatementParsingFlags::ALLOW_LEXICAL);
         if (consequent == nullptr) {  // Error processing.
             break;
@@ -1300,10 +1299,6 @@ ir::SwitchStatement *ParserImpl::ParseSwitchStatement()
     auto endLoc = lexer_->GetToken().End();
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         lexer_->NextToken();
-    }
-
-    if (discriminant == nullptr) {  // Error processing.
-        return nullptr;
     }
 
     auto *switchStatement = AllocNode<ir::SwitchStatement>(discriminant, std::move(cases));
@@ -1552,9 +1547,7 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
         return nullptr;
     }
 
-    ir::VariableDeclarator *declarator = ParseVariableDeclarator(init, startLoc, flags);
-
-    return declarator;
+    return ParseVariableDeclarator(init, startLoc, flags);
 }
 
 ir::Statement *ParserImpl::ParsePotentialConstEnum([[maybe_unused]] VariableParsingFlags flags)

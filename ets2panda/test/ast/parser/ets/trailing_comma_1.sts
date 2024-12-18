@@ -35,14 +35,15 @@ foo(,a[0])
 foo(a[0] a[1])
 foo(,)
 
-/* @@? 16:30 Error SyntaxError: Rest parameter must be the last formal parameter.  */
-/* @@? 24:15 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 28:12 Error SyntaxError: Unexpected token ','.  */
-/* @@? 32:10 Error SyntaxError: Unexpected token ','.  */
-/* @@? 33:10 Error SyntaxError: Unexpected token ','.  */
-/* @@? 34:5 Error SyntaxError: Unexpected token ','.  */
-/* @@? 35:10 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@? 35:10 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 35:14 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 35:14 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 36:5 Error SyntaxError: Unexpected token ','.  */
+/* @@? 16:30 Error SyntaxError: Rest parameter must be the last formal parameter. */
+/* @@? 24:15 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 24:15 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
+/* @@? 28:12 Error SyntaxError: Unexpected token ','. */
+/* @@? 32:10 Error SyntaxError: Unexpected token ','. */
+/* @@? 33:10 Error SyntaxError: Unexpected token ','. */
+/* @@? 34:5 Error SyntaxError: Unexpected token ','. */
+/* @@? 35:10 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 35:10 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
+/* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
+/* @@? 36:5 Error SyntaxError: Unexpected token ','. */

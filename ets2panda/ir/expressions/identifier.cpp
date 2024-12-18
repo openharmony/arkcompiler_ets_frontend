@@ -21,6 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
+#include "parser/parserImpl.h"
 
 namespace ark::es2panda::ir {
 Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
@@ -32,6 +33,30 @@ Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, 
     for (auto *decorator : other.decorators_) {
         decorators_.emplace_back(decorator->Clone(allocator, this));
     }
+}
+
+Identifier::Identifier(ArenaAllocator *const allocator) : Identifier(parser::ParserImpl::ERROR_LITERAL, allocator) {}
+
+Identifier::Identifier(util::StringView const name, ArenaAllocator *const allocator)
+    : AnnotatedExpression(AstNodeType::IDENTIFIER), name_(name), decorators_(allocator->Adapter())
+{
+    if (name == parser::ParserImpl::ERROR_LITERAL) {
+        flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
+    }
+}
+
+Identifier::Identifier(util::StringView const name, TypeNode *const typeAnnotation, ArenaAllocator *const allocator)
+    : AnnotatedExpression(AstNodeType::IDENTIFIER, typeAnnotation), name_(name), decorators_(allocator->Adapter())
+{
+    if (name == parser::ParserImpl::ERROR_LITERAL) {
+        flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
+    }
+}
+
+void Identifier::SetName(const util::StringView &newName) noexcept
+{
+    ASSERT(newName != parser::ParserImpl::ERROR_LITERAL);
+    name_ = newName;
 }
 
 Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
