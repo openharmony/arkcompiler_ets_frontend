@@ -89,6 +89,7 @@ private:
     std::set<util::StringView> exportedTypes_;
     parser::ETSParser *parser_ {nullptr};
     std::set<util::StringView> importedSpecifiersForExportCheck_;
+    lexer::SourcePosition lastExportErrorPos_ {};
 };
 }  // namespace ark::es2panda::compiler
 

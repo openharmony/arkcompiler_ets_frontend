@@ -1603,11 +1603,13 @@ void ETSChecker::CheckOverride(Signature *signature)
 
         iter = iter->SuperType();
     }
-
+    lexer::SourcePosition ownerPos = signature->Owner()->GetDeclNode()->Start();
+    lexer::SourcePosition signaturePos = signature->Function()->Start();
+    lexer::SourcePosition pos = signaturePos.line == 0 && signaturePos.index == 0 ? ownerPos : signaturePos;
     if (!isOverriding && signature->Function()->IsOverride()) {
         LogTypeError({"Method ", signature->Function()->Id()->Name(), signature, " in ", signature->Owner(),
                       " not overriding any method"},
-                     signature->Function()->Start());
+                     pos);
     }
 }
 

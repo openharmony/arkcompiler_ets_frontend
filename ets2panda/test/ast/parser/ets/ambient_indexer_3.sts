@@ -14,14 +14,12 @@
  */
 
 declare class A {
-    [index : string] : string
+    [index : /* @@ label */string] : string
 }
 
 function main() {
     let a : A = new A();
 }
 
-/* @@? 17:14 Error SyntaxError: Index type must be number in index signature  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Index type must be number in index signature  */
+

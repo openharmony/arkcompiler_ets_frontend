@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-export type {B]
+export type {B/* @@ label */]
 
-/* @@? 16:15 Error SyntaxError: Unexpected token, expected ',' or '}'. */
-/* @@? 16:15 Error SyntaxError: Unexpected token ']'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@@ label Error SyntaxError: Unexpected token ']'.  */
+

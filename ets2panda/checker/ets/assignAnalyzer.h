@@ -177,6 +177,7 @@ private:
     bool isInitialConstructor_ {};
     NodeIdMap nodeIdMap_;
     int numErrors_ {};
+    lexer::SourcePosition lastWarningPos_ {};
     ArenaSet<const ir::AstNode *> foundErrors_;
 };
 

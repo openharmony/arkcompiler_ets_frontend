@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-type 5 = number;
+type /* @@ label */5 = number;
 
-/* @@? 16:6 Error SyntaxError: Identifier expected, got 'number literal'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Identifier expected, got 'number literal'.  */

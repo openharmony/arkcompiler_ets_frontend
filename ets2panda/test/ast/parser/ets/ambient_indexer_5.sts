@@ -14,14 +14,12 @@
  */
 
 declare class A {
-    [index : number]:?
+    [index : number]:/* @@ label */?
 }
 
 function main() {
     let a : A = new A();
 }
 
-/* @@? 17:22 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
+

@@ -22,6 +22,7 @@
 #include "util/ustring.h"
 #include "util/path.h"
 #include "varbinder/varbinder.h"
+#include <lexer/token/sourceLocation.h>
 
 #include <set>
 
@@ -180,6 +181,16 @@ public:
         return directExternalSources_;
     }
 
+    const lexer::SourcePosition &PackageStart() const
+    {
+        return packageStartPosition_;
+    }
+
+    void SetPackageStart(const lexer::SourcePosition &start)
+    {
+        packageStartPosition_ = start;
+    }
+
     void SetSource(const util::StringView &sourceCode, const util::StringView &sourceFilePath,
                    const util::StringView &sourceFileFolder)
     {
@@ -296,6 +307,7 @@ private:
     ETSNolintsCollectionMap etsnolintCollection_;
     ModuleInfo moduleInfo_ {};
     bool isASTchecked_ {};
+    lexer::SourcePosition packageStartPosition_ {};
 };
 }  // namespace ark::es2panda::parser
 

@@ -1261,6 +1261,7 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
         // NOTE(rsipka): Unclear behavior/code. Currently, all entry programs omit the module name if it is not a
         // package module and the '--ets-module' option is not specified during compilation
         GetProgram()->SetModuleInfo(GetProgram()->FileName(), false, GetProgram()->IsEntryPoint() && !IsETSModule());
+        GetProgram()->SetPackageStart(startLoc);
         return nullptr;
     }
 
@@ -1276,6 +1277,7 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
         name->IsIdentifier() ? name->AsIdentifier()->Name() : name->AsTSQualifiedName()->ToString(Allocator());
 
     GetProgram()->SetModuleInfo(packageName, true);
+    GetProgram()->SetPackageStart(startLoc);
 
     return packageDeclaration;
 }

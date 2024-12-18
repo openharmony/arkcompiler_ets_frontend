@@ -52,7 +52,7 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
             // not the best idea
             ctx->parser->LogSyntaxError("Files '" + prog1->FileName().Mutf8() + "' and '" + prog2->FileName().Mutf8() +
                                             "' are in the same folder, but have different package names.",
-                                        lexer::SourcePosition(0, 0));
+                                        prog1->PackageStart());
         }
     };
 

@@ -16,7 +16,7 @@
 export class MathSpectralNorm {
 
   private static spectralnorm(n: int): double {
-    for (i = 0; i < n : i++) {
+    for (i = 0; i < n /* @@ label */: i++) {
       vbv += u[i] * v[i];
       vv  += v[i] * v[i];
 
@@ -25,7 +25,4 @@ export class MathSpectralNorm {
   }
 }
 
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
-/* @@? 19:23 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ';'.  */

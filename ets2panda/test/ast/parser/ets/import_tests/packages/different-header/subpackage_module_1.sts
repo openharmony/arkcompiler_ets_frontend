@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-package import_tests.packages.subpackage_a;
+/* @@ label */package import_tests.packages.subpackage_a;
 
 export let a: String = "SubpackageA";
 
-/* @@? 1:1 Error SyntaxError: Files 'subpackage_module_1' and 'subpackage_module_2' are in the same folder, but have different package names.  */
+/* @@@ label Error SyntaxError: Files 'subpackage_module_1' and 'subpackage_module_2' are in the same folder, but have different package names.  */

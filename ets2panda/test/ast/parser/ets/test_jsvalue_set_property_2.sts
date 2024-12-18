@@ -15,8 +15,8 @@
 
 function fn(): void {
     let v: JSValue;
-    v.prop_name = 5.6;
+    /* @@ label */v.prop_name = 5.6;
 }
 
-/* @@? 18:5 Warning Warning: Variable 'v' is used before being assigned.  */
-/* @@? 1:1 Error TypeError: There were errors during assign analysis (1)  */
+/* @@@ label Warning Warning: Variable 'v' is used before being assigned.  */
+/* @@@ label Error TypeError: There were errors during assign analysis (1)  */
