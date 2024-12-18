@@ -216,6 +216,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/topLevelStmts/topLevelStmts.cpp
   compiler/lowering/ets/expressionLambdaLowering.cpp
   compiler/lowering/ets/genericBridgesLowering.cpp
+  compiler/lowering/ets/boxedTypeLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
   compiler/lowering/ets/constantExpressionLowering.cpp
