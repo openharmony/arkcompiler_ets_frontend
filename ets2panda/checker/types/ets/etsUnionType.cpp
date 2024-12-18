@@ -79,16 +79,17 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
         }
         // NOTE(vpukhov): #19701 void refactoring
         ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
-        if (t->IsETSNullType() || lub == t) {
-            continue;
-        }
-        // NOTE(vpukhov): #19701 void refactoring
-        if (t->IsETSUndefinedType() || t->IsETSVoidType()) {
-            return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
-        }
-        if (lub == nullptr) {
+        t = t->IsETSVoidType() ? checker->GlobalETSUndefinedType() : t;
+
+        if (lub == nullptr || lub->IsETSUndefinedType()) {
             lub = t;
             continue;
+        }
+        if (lub == t || t->IsETSUndefinedType()) {
+            continue;
+        }
+        if (t->IsETSNullType()) {
+            return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
         }
         if (t->IsETSObjectType() && lub->IsETSObjectType()) {
             lub = checker->GetClosestCommonAncestor(lub->AsETSObjectType(), t->AsETSObjectType());
@@ -699,16 +700,6 @@ std::tuple<bool, bool> ETSUnionType::ResolveConditionExpr() const
     }
     // We have to test if union can contain builtin numerics or string types to infer "true"
     return {false, false};
-}
-
-bool ETSUnionType::HasUndefinedType() const
-{
-    for (const auto &type : constituentTypes_) {
-        if (type->IsETSUndefinedType()) {
-            return true;
-        }
-    }
-    return false;
 }
 
 bool ETSUnionType::HasType(Type *type) const

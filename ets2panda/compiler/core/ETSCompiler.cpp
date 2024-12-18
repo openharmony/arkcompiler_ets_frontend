@@ -95,8 +95,7 @@ void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
 void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
 {
     ETSGen *etsg = GetETSGen();
-    etsg->LoadAccumulatorNull(node, node->TsType());
-    ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), node->TsType()));
+    etsg->LoadAccumulatorPoison(node, node->TsType());
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
@@ -145,12 +144,17 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
     etsg->ApplyConversionAndStoreAccumulator(expr, dim, expr->Dimension()->TsType());
     etsg->NewArray(expr, arr, dim, expr->TsType());
 
-    const auto *exprType = expr->TypeReference()->TsType();
+    const auto *elementType = expr->TypeReference()->TsType();
 
-    const bool isUnionTypeContainsUndefined =
-        expr->TypeReference()->IsETSTypeReference() && exprType->IsETSUnionType() &&
-        exprType->AsETSUnionType()->HasType(etsg->Checker()->GlobalETSUndefinedType());
-    if (expr->Signature() != nullptr || isUnionTypeContainsUndefined) {
+    auto const checker = const_cast<checker::ETSChecker *>(GetETSGen()->Checker());
+
+    const bool undefAssignable =
+        checker->Relation()->IsSupertypeOf(elementType, etsg->Checker()->GlobalETSUndefinedType());
+    const bool nullAssignable = checker->Relation()->IsSupertypeOf(elementType, etsg->Checker()->GlobalETSNullType());
+
+    if (elementType->IsETSPrimitiveType() || undefAssignable) {
+        // no-op
+    } else {
         compiler::VReg countReg = etsg->AllocReg();
         auto *startLabel = etsg->AllocLabel();
         auto *endLabel = etsg->AllocLabel();
@@ -164,14 +168,16 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
         etsg->LoadAccumulator(expr, countReg);
         etsg->StoreAccumulator(expr, indexReg);
 
-        const compiler::TargetTypeContext ttctx2(etsg, exprType);
-        ArenaVector<ir::Expression *> arguments(GetCodeGen()->Allocator()->Adapter());
-        if (isUnionTypeContainsUndefined) {
-            exprType = etsg->LoadDefaultValue(expr, exprType);
-        } else {
+        if (nullAssignable) {
+            etsg->LoadAccumulatorNull(expr);
+        } else if (expr->Signature() != nullptr) {
+            const compiler::TargetTypeContext ttctx2(etsg, elementType);
+            ArenaVector<ir::Expression *> arguments(GetCodeGen()->Allocator()->Adapter());
             etsg->InitObject(expr, expr->Signature(), arguments);
+        } else {
+            etsg->LoadAccumulatorPoison(expr, elementType);
         }
-        etsg->StoreArrayElement(expr, arr, indexReg, exprType);
+        etsg->StoreArrayElement(expr, arr, indexReg, elementType);
 
         etsg->IncrementImmediateRegister(expr, countReg, checker::TypeFlag::INT, static_cast<std::int32_t>(1));
         etsg->JumpTo(expr, startLabel);
@@ -412,16 +418,9 @@ void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
     auto lref = compiler::ETSLReference::Create(etsg, expr->Left(), false);
     auto ttctx = compiler::TargetTypeContext(etsg, exprType);
 
-    if (expr->Right()->IsNullLiteral()) {
-        etsg->LoadAccumulatorNull(expr, exprType);
-    } else if (expr->Right()->IsUndefinedLiteral()) {
-        etsg->LoadAccumulatorUndefined(expr);
-        etsg->SetAccumulatorType(exprType);
-    } else {
-        expr->Right()->Compile(etsg);
-        etsg->ApplyConversion(expr->Right(), exprType);
-        etsg->SetAccumulatorType(exprType);
-    }
+    expr->Right()->Compile(etsg);
+    etsg->ApplyConversion(expr->Right(), exprType);
+    etsg->SetAccumulatorType(exprType);
 
     if (expr->Right()->TsType()->IsETSBigIntType()) {
         // For bigints we have to copy the bigint object when performing an assignment operation
@@ -459,7 +458,7 @@ void ETSCompiler::UnimplementedPathError(const ir::AstNode *node, util::StringVi
     etsg->LoadAccumulatorString(node, message);
     etsg->StoreAccumulator(node, msgReg);
     etsg->NewObject(node, Signatures::BUILTIN_ERROR, errorReg);
-    etsg->CallExact(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, msgReg);
+    etsg->CallExact(node, "escompat.Error.<ctor>:std.core.String;void;", errorReg, msgReg);
     etsg->EmitThrow(node, errorReg);
 }
 
@@ -1268,8 +1267,7 @@ void ETSCompiler::Compile(const ir::CharLiteral *expr) const
 void ETSCompiler::Compile(const ir::NullLiteral *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    etsg->LoadAccumulatorNull(expr, expr->TsType());
-    ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
+    etsg->LoadAccumulatorNull(expr);
 }
 
 void ETSCompiler::Compile(const ir::NumberLiteral *expr) const
@@ -1742,7 +1740,7 @@ void ETSCompiler::Compile(const ir::WhileStatement *st) const
 void ETSCompiler::Compile(const ir::TSArrayType *node) const
 {
     ETSGen *etsg = GetETSGen();
-    etsg->LoadAccumulatorNull(node, node->TsType());
+    etsg->LoadAccumulatorPoison(node, node->TsType());
 }
 
 void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,7 +49,7 @@ public:
 
     void CheckFunctionAnnotations(pandasm::Program *program)
     {
-        const std::string funcName1 = "ETSGLOBAL.foo:std.core.Object;void;";
+        const std::string funcName1 = "ETSGLOBAL.foo:std.core.Double;void;";
         const std::string funcName2 = "ETSGLOBAL.foo:void;";
         const AnnotationMap expectedFuncAnnotations = {
             {"Anno", {{"a", "1.000000"}}},
@@ -60,7 +60,7 @@ public:
 
     void CheckFunctionParameterAnnotations(pandasm::Program *program)
     {
-        const std::string funcName1 = "ETSGLOBAL.foo:std.core.Object;void;";
+        const std::string funcName1 = "ETSGLOBAL.foo:std.core.Double;void;";
         const uint32_t paramIndex1 = 0;
         const AnnotationMap expectedFuncAnnotations1 = {
             {"Anno", {{"a", "1.000000"}}},
