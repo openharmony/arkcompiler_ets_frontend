@@ -1826,6 +1826,23 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
     return PropertySearchFlags::SEARCH_FIELD | FUNCTIONAL_FLAGS | GETTER_FLAGS;
 }
 
+static bool ShouldRemoveStaticSearchFlag(const ir::MemberExpression *const memberExpr,
+                                         const varbinder::Variable *targetRef)
+{
+    if ((targetRef != nullptr && targetRef->Declaration() != nullptr && targetRef->Declaration()->IsLetOrConstDecl()) ||
+        !memberExpr->Object()->TsType()->IsETSEnumType()) {
+        auto object = memberExpr->Object();
+        if (object->IsMemberExpression()) {
+            object = object->AsMemberExpression()->Property();
+        }
+        if (!object->IsIdentifier() || !object->AsIdentifier()->Variable() ||
+            object->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::INITIALIZED)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const memberExpr,
                                                const varbinder::Variable *targetRef)
 {
@@ -1842,11 +1859,7 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
          (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) && targetRef->TsType()->Variable() != nullptr &&
           targetRef->TsType()->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)))) {
         searchFlag &= ~PropertySearchFlags::SEARCH_INSTANCE;
-    } else if (memberExpr->Object()->IsThisExpression() ||
-               (targetRef != nullptr && targetRef->Declaration() != nullptr &&
-                targetRef->Declaration()->IsLetOrConstDecl()) ||
-               (memberExpr->Object()->IsIdentifier() && memberExpr->ObjType()->GetDeclNode() != nullptr &&
-                memberExpr->ObjType()->GetDeclNode()->IsTSInterfaceDeclaration())) {
+    } else if (ShouldRemoveStaticSearchFlag(memberExpr, targetRef)) {
         searchFlag &= ~PropertySearchFlags::SEARCH_STATIC;
     }
     return searchFlag;

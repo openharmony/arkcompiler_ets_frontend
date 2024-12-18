@@ -118,16 +118,12 @@ function main() : void {
 
   {
     let c = new C();
-    assertEQ( (c as A).static_name, c'A')
-    assertEQ( (c as A).get_static_name(), c'A')
     assertEQ( (c as A).name, c'A')
     assertEQ( (c as A).get_name(), c'C')
     assertEQ( (c as A).get_name_a(), c'A')
   }
 
   {
-    assertEQ( (new C() as B).static_name, c'B')
-    assertEQ( (new C() as B).get_static_name(), c'B')
     assertEQ( (new C() as B).name, c'B')
     assertTrue( (new C() as B).get_name() ==c'C')
     assertEQ( (new C() as B).super_name(), c'B')
