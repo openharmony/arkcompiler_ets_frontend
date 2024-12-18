@@ -122,7 +122,7 @@ void Options::CollectInputSourceFile(const std::vector<std::string> &itemList, c
     constexpr uint32_t SCRIPT_KIND_IDX = 2;
     constexpr uint32_t SOURCE_FIEL_IDX = 3;
     constexpr uint32_t PKG_NAME_IDX = 4;
-    constexpr uint32_t Is_SHARED_MODULE_IDX = 5;
+    constexpr uint32_t IS_SHARED_MODULE_IDX = 5;
     parser::ScriptKind scriptKind;
     if (itemList[SCRIPT_KIND_IDX] == "script") {
         scriptKind = parser::ScriptKind::SCRIPT;
@@ -139,7 +139,7 @@ void Options::CollectInputSourceFile(const std::vector<std::string> &itemList, c
     }
 
     if (itemList.size() == ITEM_COUNT_MERGE) {
-        src.isSharedModule = itemList[Is_SHARED_MODULE_IDX] == "true";
+        src.isSharedModule = itemList[IS_SHARED_MODULE_IDX] == "true";
     }
 
     sourceFiles_.push_back(src);

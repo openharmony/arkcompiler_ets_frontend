@@ -52,9 +52,9 @@ int Run(int argc, const char **argv)
         return 1;
     }
 
-    std::string protoPathInput = options->protoPathInput();
-    std::string protoBinSuffix = options->protoBinSuffix();
-    std::string outputFilePath = options->outputFilePath();
+    std::string protoPathInput = options->ProtoPathInput();
+    std::string protoBinSuffix = options->ProtoBinSuffix();
+    std::string outputFilePath = options->OutputFilePath();
     if (outputFilePath.empty()) {
         outputFilePath = panda::os::file::File::GetExecutablePath().Value();
     }
@@ -79,7 +79,7 @@ int Run(int argc, const char **argv)
     }
 
     std::string outputFileName = outputFilePath.append(panda::os::file::File::GetPathDelim()).
-        append(options->outputFileName());
+        append(options->OutputFileName());
     if (!panda::pandasm::AsmEmitter::EmitPrograms(panda::os::file::File::GetExtendedFilePath(outputFileName), programs,
         true)) {
         return 1;

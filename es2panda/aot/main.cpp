@@ -181,8 +181,8 @@ static bool GenerateProgram(std::map<std::string, panda::es2panda::util::Program
 
         // Disable generating cached files when cross-program optimization is required, to prevent cached files from
         // not being invalidated when their dependencies are changed
-        if (options->compilerProtoOutput().size() > 0 && !options->CompilerOptions().requireGlobalOptimization) {
-            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, options->compilerProtoOutput());
+        if (options->CompilerProtoOutput().size() > 0 && !options->CompilerOptions().requireGlobalOptimization) {
+            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, options->CompilerProtoOutput());
             return true;
         }
     }
