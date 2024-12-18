@@ -644,8 +644,9 @@ export class ObConfigResolver {
     const sdkApis: string[] = sortAndDeduplicateStringArr(this.sourceObConfig.sdkApis);
     let existPreDefineFilePath: string = '';
     let existArkUIWhitelistPath: string = '';
+    const scannedRootFolder: Set<string> = new Set();
     for (let apiPath of sdkApis) {
-      this.collectSdkApiWhitelist(apiPath);
+      this.collectSdkApiWhitelist(apiPath, scannedRootFolder);
       const preDefineFilePath: string = path.join(apiPath, '../build-tools/ets-loader/lib/pre_define.js');
       if (fs.existsSync(preDefineFilePath)) {
         existPreDefineFilePath = preDefineFilePath;
@@ -685,10 +686,11 @@ export class ObConfigResolver {
     return this.collectSystemApiWhitelist(config, systemApiCachePath);
   }
 
-  private collectSdkApiWhitelist(sdkApiPath: string): void {
+  private collectSdkApiWhitelist(sdkApiPath: string, scannedRootFolder: Set<string>): void {
     ApiExtractor.traverseApiFiles(sdkApiPath, ApiExtractor.ApiType.API);
     const componentPath: string = path.join(sdkApiPath, '../component');
-    if (fs.existsSync(componentPath)) {
+    if (!scannedRootFolder.has(componentPath) && fs.existsSync(componentPath)) {
+      scannedRootFolder.add(componentPath);
       ApiExtractor.traverseApiFiles(componentPath, ApiExtractor.ApiType.COMPONENT);
     }
   }

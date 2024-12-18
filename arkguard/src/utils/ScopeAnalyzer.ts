@@ -87,6 +87,10 @@ namespace secharmony {
    * value: original symbols of export elements
    */
   export const exportSymbolAliasMap: Map<Symbol, Symbol> = new Map();
+  /**
+   * Records of nodes and corresponding symbols
+   */
+  export const nodeSymbolMap: Map<Node, Symbol> = new Map();
 
   /**
    * type of scope
@@ -486,7 +490,7 @@ namespace secharmony {
         if (exportObfuscation) {
           // try to collect symbol for `A` in `import { A as B } from './file'; into current scope`
           tryAddPropertyNameNodeSymbol(propertyNameNode);
-          const nameSymbol = checker.getSymbolAtLocation(node.name);
+          const nameSymbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node.name);
           if (nameSymbol) {
             // nameSymbol is the symbol of A in `import { A } from './file';` and propertyNameNode is undefined
             // nameSymbol is the symbol of B in `import { A as B } from './file';` and propertyNameNode is A
@@ -513,7 +517,7 @@ namespace secharmony {
         return;
       }
 
-      const propertySymbol: Symbol = checker.getSymbolAtLocation(propertyNameNode);
+      const propertySymbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, propertyNameNode);
 
       if (!propertySymbol) {
         exportElementsWithoutSymbol.set(propertyNameNode, current.kind === ScopeKind.GLOBAL);
@@ -605,7 +609,7 @@ namespace secharmony {
         return;
       }
 
-      let symbol = checker.getSymbolAtLocation(node.name);
+      let symbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node.name);
       if (symbol) {
         current.addDefinition(symbol, true);
       }
@@ -779,16 +783,13 @@ namespace secharmony {
         scopes.push(current);
       }
 
-      let symbol: Symbol;
+      let nameNode: Node;
       if ((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent)) {
-        symbol = checker.getSymbolAtLocation(node.name ? node.name : node.parent.name);
+        nameNode = node.name ? node.name : node.parent.name;
       } else {
-        if (isFunctionDeclaration(node)) {
-          symbol = NodeUtils.findSymbolOfIdentifier(checker, node.name);
-        } else {
-          symbol = checker.getSymbolAtLocation(node.name);
-        }
+        nameNode = node.name;
       }
+      let symbol: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, nameNode);
       if (symbol) {
         Reflect.set(symbol, 'isFunction', true);
       }
@@ -932,10 +933,10 @@ namespace secharmony {
         return;
       }
 
-      let symbol: Symbol = null;
+      let symbol: Symbol | undefined;
 
       try {
-        symbol = NodeUtils.findSymbolOfIdentifier(checker, node);
+        symbol = getAndRecordSymbolOfIdentifier(checker, node);
       } catch (e) {
         console.error(e);
         return;
@@ -1005,7 +1006,7 @@ namespace secharmony {
         return undefined;
       }
 
-      let sym: Symbol = checker.getSymbolAtLocation(node);
+      let sym: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node);
       if (!sym) {
         return undefined;
       }
@@ -1032,7 +1033,7 @@ namespace secharmony {
       if (hasExport) {
         current.exportNames.add(node.name.text);
         root.fileExportNames.add(node.name.text);
-        let sym: Symbol | undefined = checker.getSymbolAtLocation(node.name);
+        let sym: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node.name);
         if (sym) {
           current.addDefinition(sym, true);
         }
@@ -1050,7 +1051,8 @@ namespace secharmony {
         return;
       }
 
-      const sym: Symbol | undefined = checker.getSymbolAtLocation(node);
+      const sym: Symbol | undefined = getAndRecordSymbolOfIdentifier(checker, node);
+
       if (!sym) {
         current.mangledNames.add((node as Identifier).text);
       }
@@ -1090,6 +1092,18 @@ namespace secharmony {
       };
 
       noSymbolVisit(node);
+    }
+
+    function getAndRecordSymbolOfIdentifier(checker: TypeChecker, node: Node | undefined): Symbol | undefined {
+      const sym: Symbol | undefined =
+        (node && isIdentifier(node)) ?
+          NodeUtils.findSymbolOfIdentifier(checker, node, nodeSymbolMap) :
+          checker.getSymbolAtLocation(node);
+
+      if (sym) {
+        nodeSymbolMap.set(node, sym);
+      }
+      return sym;
     }
   }
   

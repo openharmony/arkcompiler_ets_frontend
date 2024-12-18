@@ -65,7 +65,8 @@ import {
   isGlobalScope,
   isEnumScope,
   isInterfaceScope,
-  isObjectLiteralScope
+  isObjectLiteralScope,
+  nodeSymbolMap
 } from '../../utils/ScopeAnalyzer';
 
 import type {
@@ -146,6 +147,7 @@ namespace secharmony {
       let fileImportNames: Set<string> = undefined;
       exportElementsWithoutSymbol.clear();
       exportSymbolAliasMap.clear();
+      nodeSymbolMap.clear();
 
       let historyMangledNames: Set<string> = undefined;
       if (historyNameCache && historyNameCache.size > 0) {
@@ -703,7 +705,7 @@ namespace secharmony {
           return node;
         }
 
-        let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
+        let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node, nodeSymbolMap);
         let mangledPropertyNameOfNoSymbolImportExport = '';
         if (!sym) {
           if (shouldObfuscateNodeWithoutSymbol(node)) {
@@ -746,7 +748,7 @@ namespace secharmony {
       }
 
       function updatePropertyParameterNameNode(node: Identifier): Node {
-        let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node);
+        let sym: Symbol | undefined = NodeUtils.findSymbolOfIdentifier(checker, node, nodeSymbolMap);
         if (!sym || sym.valueDeclaration?.kind !== SyntaxKind.Parameter) {
           return node;
         }
