@@ -52,7 +52,7 @@ public:
 
     void CheckClassAnnotations(pandasm::Program *program)
     {
-        const std::string className = "A";
+        const std::string recordName = "A";
         const AnnotationMap expectedClassAnnotations = {
             {"Anno1",
              {
@@ -73,7 +73,7 @@ public:
                  {"mutiArray", "A$Anno3$mutiArray$9"},
              }},
         };
-        AnnotationEmitTest::CheckClassAnnotations(program, className, expectedClassAnnotations);
+        AnnotationEmitTest::CheckRecordAnnotations(program, recordName, expectedClassAnnotations);
     }
 
     void CheckLiteralArrayTable(pandasm::Program *program)

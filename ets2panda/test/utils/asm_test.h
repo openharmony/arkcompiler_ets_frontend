@@ -68,11 +68,17 @@ public:
     void CheckAnnotation(const std::vector<std::pair<std::string, std::string>> &expectedValues,
                          const ark::pandasm::AnnotationData &annotation);
 
-    void CheckClassAnnotations(ark::pandasm::Program *program, const std::string &className,
-                               const AnnotationMap &expectedAnnotations);
+    void CheckRecordAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                const AnnotationMap &expectedAnnotations);
 
     void CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName,
                                   const AnnotationMap &expectedAnnotations);
+
+    void CheckFunctionParameterAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+                                           const uint32_t &paramIndex, const AnnotationMap &expectedAnnotations);
+
+    void CheckClassFieldAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                    const std::string &fieldName, const AnnotationMap &expectedAnnotations);
 
     void SetCurrentProgram(std::string_view src);
 

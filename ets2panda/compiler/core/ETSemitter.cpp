@@ -123,6 +123,11 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
 
     for (const auto *var : paramScope->Params()) {
         func.params.emplace_back(PandasmTypeWithRank(var->TsType()), EXTENSION);
+        if (var->Declaration()->Node() == nullptr || !var->Declaration()->Node()->IsETSParameterExpression()) {
+            continue;
+        }
+        func.params.back().metadata->SetAnnotations(emitter->GenCustomAnnotations(
+            var->Declaration()->Node()->AsETSParameterExpression()->Annotations(), var->Name().Mutf8()));
     }
 
     if (scriptFunc->IsConstructor() || scriptFunc->IsStaticBlock()) {
@@ -140,11 +145,8 @@ static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc,
         accessFlags |= ACC_VARARGS;
     }
     func.metadata->SetAccessFlags(accessFlags);
+    func.metadata->SetAnnotations(emitter->GenCustomAnnotations(scriptFunc->Annotations(), func.name));
 
-    if (!scriptFunc->Annotations().empty()) {
-        auto baseName = scriptFunc->Id()->Name().Mutf8();
-        func.metadata->SetAnnotations(emitter->GenCustomAnnotations(scriptFunc->Annotations(), baseName));
-    }
     return func;
 }
 
@@ -354,6 +356,7 @@ void ETSEmitter::GenClassField(const ir::ClassProperty *prop, pandasm::Record &c
     field.name = prop->Id()->Name().Mutf8();
     field.type = PandasmTypeWithRank(prop->TsType());
     field.metadata->SetAccessFlags(TranslateModifierFlags(prop->Modifiers()));
+    field.metadata->SetAnnotations(GenCustomAnnotations(prop->Annotations(), field.name));
 
     if (external || prop->IsDeclare()) {
         field.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -412,6 +415,7 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
         accessFlags |= ACC_STATIC;
     }
 
+    interfaceRecord.metadata->SetAnnotations(GenCustomAnnotations(interfaceDecl->Annotations(), interfaceRecord.name));
     interfaceRecord.metadata->SetAccessFlags(accessFlags);
     interfaceRecord.sourceFile =
         Context()->parserProgram->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
@@ -485,15 +489,11 @@ static uint32_t GetAccessFlags(const ir::ClassDefinition *classDef)
 void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool external)
 {
     auto classRecord = pandasm::Record(classDef->InternalName().Mutf8(), Program()->lang);
-    auto baseName = classDef->Ident()->Name().Mutf8();
     if (external) {
         classRecord.metadata->SetAttribute(Signatures::EXTERNAL);
     }
 
-    if (!classDef->Annotations().empty()) {
-        classRecord.metadata->SetAnnotations(GenCustomAnnotations(classDef->Annotations(), baseName));
-    }
-
+    classRecord.metadata->SetAnnotations(GenCustomAnnotations(classDef->Annotations(), classRecord.name));
     uint32_t accessFlags = GetAccessFlags(classDef);
     classRecord.metadata->SetAccessFlags(accessFlags);
     classRecord.sourceFile = Context()->parserProgram->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
@@ -857,7 +857,7 @@ pandasm::AnnotationData ETSEmitter::GenCustomAnnotation(ir::AnnotationUsage *ann
 }
 
 std::vector<pandasm::AnnotationData> ETSEmitter::GenCustomAnnotations(
-    const ArenaVector<ir::AnnotationUsage *> &annotationUsages, std::string &baseName)
+    const ArenaVector<ir::AnnotationUsage *> &annotationUsages, const std::string &baseName)
 {
     std::vector<pandasm::AnnotationData> annotations;
     for (auto *anno : annotationUsages) {

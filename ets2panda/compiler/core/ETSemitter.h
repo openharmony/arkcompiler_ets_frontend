@@ -79,7 +79,7 @@ public:
 
     void GenAnnotation() override;
     std::vector<pandasm::AnnotationData> GenCustomAnnotations(
-        const ArenaVector<ir::AnnotationUsage *> &annotationUsages, std::string &baseName);
+        const ArenaVector<ir::AnnotationUsage *> &annotationUsages, const std::string &baseName);
 
 private:
     using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;

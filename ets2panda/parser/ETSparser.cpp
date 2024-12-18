@@ -572,7 +572,15 @@ ir::Expression *ETSParser::ParseAnnotationName()
             ident->SetAnnotationDecl();
         }
     };
-
+    auto save = Lexer()->Save();
+    Lexer()->NextToken();
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+        Lexer()->Rewind(save);
+        expr = ExpectIdentifier();
+        setAnnotation(expr->AsIdentifier());
+        return expr;
+    }
+    Lexer()->Rewind(save);
     if (Lexer()->Lookahead() == '.') {
         auto opt = TypeAnnotationParsingOptions::NO_OPTS;
         expr = ParseTypeReference(&opt);
