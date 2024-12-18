@@ -587,7 +587,6 @@ export class ArkObfuscator {
     renameIdentifierModule.clearCaches();
     if (cleanFileMangledNames) {
       PropCollections.globalMangledTable.clear();
-      PropCollections.newlyOccupiedMangledProps.clear();
     }
     UnobfuscationCollections.unobfuscatedNamesMap.clear();
   }

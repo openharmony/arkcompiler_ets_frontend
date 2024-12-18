@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export function k5() {
+export function y6() {
     return '11';
 }
-interface m5 {
-    w4: number;
+interface a7 {
+    d7: number;
 }
-class n5 {
-    p5: number = 2;
+class b7 {
+    e7: number = 2;
 }
-export default function l5() {
+export default function z6() {
     return 22;
 }
-export { m5, n5 as o5 };
+export { a7, b7 as c7 };

@@ -14,15 +14,15 @@
  */
 import assert from "assert";
 class A5 {
-    t = 5;
-    constructor(public m: number, private o: string, protected p: boolean, readonly q: number, r: string) {
-        r = r + 1;
-        let s = m;
-        let t = o;
-        let u = p;
-        let v = q;
-        this.t = q;
+    a1 = 5;
+    constructor(public o: number, private p: string, protected q: boolean, readonly t: number, u: string) {
+        u = u + 1;
+        let v = o;
+        let w = p;
+        let x = q;
+        let y = t;
+        this.a1 = t;
     }
 }
 let insA5 = new A5(1, '2', false, 4, '5');
-assert(insA5.t === 4);
+assert(insA5.a1 === 4);

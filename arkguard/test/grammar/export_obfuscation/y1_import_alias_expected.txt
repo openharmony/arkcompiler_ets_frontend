@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 import assert from 'assert';
-export * as t5 from './y1_export_alias';
+export * as i7 from './y1_export_alias';
 export { default } from './y1_export_alias';
-import * as q5 from './y1_export_alias';
-let r5 = new q5.o5;
-assert(r5.p5 === 2, 'success');
-type s5 = q5.m5;
-assert(q5.k5() === '11', 'success');
+import * as f7 from './y1_export_alias';
+let g7 = new f7.c7;
+assert(g7.e7 === 2, 'success');
+type h7 = f7.a7;
+assert(f7.y6() === '11', 'success');

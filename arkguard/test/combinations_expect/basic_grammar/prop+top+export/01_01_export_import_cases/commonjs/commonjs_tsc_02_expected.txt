@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 // ts源码
-import l1 = require("fs");
-export = l1.readFileSync("...");
+import o1 = require("fs");
+export = o1.readFileSync("...");
 // 转换为js后代码
 const path = require("path");
 module.exports = path.join('', '');

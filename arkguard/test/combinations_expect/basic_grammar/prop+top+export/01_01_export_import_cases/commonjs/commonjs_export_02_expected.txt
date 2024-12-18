@@ -14,5 +14,5 @@
  */
 // 导出类型中有属性
 module.exports = class {
-    q = 2;
+    t = 2;
 };

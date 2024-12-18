@@ -12,10 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace j1 {
-    function k1() {
+namespace m1 {
+    function n1() {
         return 1;
     }
-    k1();
+    n1();
 }
-export = j1;
+export = m1;

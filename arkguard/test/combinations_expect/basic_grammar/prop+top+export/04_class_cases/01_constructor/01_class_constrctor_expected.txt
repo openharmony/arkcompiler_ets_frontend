@@ -15,39 +15,39 @@
 import assert from "assert";
 // 单个构造器
 class g {
-    m: number;
+    v: number;
     constructor(u: number) {
-        this.m = u;
+        this.v = u;
     }
-    p() {
+    a1() {
     }
 }
 let h = new g(1);
-assert(h.m === 1);
+assert(h.v === 1);
 // 多个构造器
 class i {
-    q: string;
+    b1: string;
     constructor(t: 'hello');
     constructor(s: 'bye');
     constructor(r: string);
     constructor(q: any) {
-        this.q = q;
+        this.b1 = q;
     }
-    t() {
+    c1() {
     }
 }
 let j = new i('bee');
-assert(j.q === 'bee');
+assert(j.b1 === 'bee');
 // class声明 - 两个构造器不连续
 declare namespace k {
     class o {
         constructor();
-        u: string;
+        d1: string;
         constructor(p: number);
     }
 }
 declare class l {
     constructor();
-    v: string;
+    e1: string;
     constructor(m: number);
 }

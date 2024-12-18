@@ -17,7 +17,7 @@ const i: unique symbol = Symbol();
 class j {
     a01?: number;
     b01?: string;
-    o?: boolean;
+    q?: boolean;
     1?: number;
     "x"?: number;
     [i]?: number;
@@ -65,18 +65,18 @@ assert(a01.x01() === 13);
 assert(a01.await() === 14);
 function g({ b01: o, ...p }: {
     b01: number;
-    o: string;
+    q: string;
 }) {
-    return o + p.o;
+    return o + p.q;
 }
-g({ b01: 1, o: "213" });
-assert(g({ b01: 1, o: "213" }) === "1213");
+g({ b01: 1, q: "213" });
+assert(g({ b01: 1, q: "213" }) === "1213");
 function h(n: j) {
     assert(n.a01 === 1);
     assert(n.b01 === "1");
-    assert(n.o === true);
+    assert(n.q === true);
     assert(n[1] === 1);
     assert(n["x"] === 2);
     assert(n[i] === 3);
 }
-h({ a01: 1, b01: "1", o: true, 1: 1, "x": 2, [i]: 3 });
+h({ a01: 1, b01: "1", q: true, 1: 1, "x": 2, [i]: 3 });

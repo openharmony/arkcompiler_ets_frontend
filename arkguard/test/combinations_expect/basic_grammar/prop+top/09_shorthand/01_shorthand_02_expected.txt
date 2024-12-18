@@ -23,13 +23,13 @@ let h = { g: g };
 assert(h.g === 1);
 (function () {
     var o;
-    for ({ i: o = 5 } of [{ i: 1 }]) {
+    for ({ q: o = 5 } of [{ q: 1 }]) {
         assert(o === 1);
     }
 })();
 (function () {
     var n;
-    for ({ j: n = 5 } of [{ j: n }]) {
+    for ({ t: n = 5 } of [{ t: n }]) {
         assert(n === 5);
     }
 })();
@@ -42,8 +42,8 @@ assert(h.g === 1);
     let j: string, k: {
         x: number;
     };
-    let l: any = { y2: "1", k: { x: 2 } };
-    ({ y2: j = '5', k: k = { x: 1 } } = l);
+    let l: any = { y2: "1", u: { x: 2 } };
+    ({ y2: j = '5', u: k = { x: 1 } } = l);
     assert(j === '1');
     assert(k.x === 2);
 })();

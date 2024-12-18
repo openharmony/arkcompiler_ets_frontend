@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 // 指定导出
-class a1 {
-    b1 = 1;
+class b1 {
+    d1 = 1;
 }
-exports.a1 = a1;
-exports.c1 = (b1) => { return 3 * b1 * 2; };
+exports.b1 = b1;
+exports.e1 = (c1) => { return 3 * c1 * 2; };

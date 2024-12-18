@@ -3,12 +3,12 @@ import { multiply, k } from './namecacheTest7_export';
 import { PI, h } from './namecacheTest7_export';
 import { g, i } from './namecacheTest7_export';
 import type { j } from './namecacheTest7_export';
-let t = new h("xiaoming", 12);
-let u: h = new h("xiaohong", 11);
+let v = new h("xiaoming", 12);
+let a1: h = new h("xiaohong", 11);
 var value: j = "hello";
-const v: number = 5;
-let a1 = (k(v, PI) == multiply(v, PI));
-let b1: i = {
+const b1: number = 5;
+let c1 = (k(b1, PI) == multiply(b1, PI));
+let d1: i = {
     id: 1,
-    m: "2023"
+    u: "2023"
 };

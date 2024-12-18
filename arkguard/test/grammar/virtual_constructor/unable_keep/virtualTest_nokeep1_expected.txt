@@ -14,15 +14,15 @@
  */
 import { l } from './virtualTest_nokeep2';
 export interface m {
-    j: number;
     q: number;
+    t: number;
 }
 interface o {
-    t: number;
-    u: string;
+    u: number;
+    v: string;
 }
 export declare struct p {
-    ctrlMenuSize: l.v;
+    ctrlMenuSize: l.a1;
     windowSize: m;
     parameter: o;
     build(): void;

@@ -15,64 +15,64 @@
 import assert from "assert";
 // 单实现interface
 interface g {
-    b1: number;
+    f1: number;
 }
 class h implements g {
-    b1: number = 2;
+    f1: number = 2;
 }
 let i = new h();
-assert(i.b1 === 2);
+assert(i.f1 === 2);
 // 多实现interface
 interface j {
-    c1(): string;
+    g1(): string;
 }
 interface k<T> {
-    d1(): void;
+    h1(): void;
 }
 class l<U> implements j, k<number> {
-    d1(): void {
+    h1(): void {
         let e1 = 'i can swim';
         return;
     }
-    c1<d1>(): string {
+    g1<d1>(): string {
         return 'i can fly';
     }
-    e1: number;
+    i1: number;
 }
 let m = new l();
-assert(m.c1() === 'i can fly');
+assert(m.g1() === 'i can fly');
 // 单实现class
 class o {
-    f1() { return 4; }
+    j1() { return 4; }
 }
 class p implements o {
-    f1(): number {
+    j1(): number {
         return 1;
     }
 }
 let q = new p();
-assert(q.f1() === 1);
+assert(q.j1() === 1);
 // 多实现class
 class t {
-    g1: number;
-    h1(): number {
+    l1: number;
+    m1(): number {
         return 1;
     }
 }
 class u {
-    i1(c1: string): string {
+    n1(c1: string): string {
         return 'hello 4' + c1;
     }
 }
 class v implements t, u {
-    i1(b1: string): string {
+    n1(b1: string): string {
         return 'hello 44' + b1;
     }
-    g1: number;
-    h1(): number {
+    l1: number;
+    m1(): number {
         return 33;
     }
 }
 let a1 = new v();
-assert(a1.h1() === 33);
-assert(a1.i1('55') === 'hello 4455');
+assert(a1.m1() === 33);
+assert(a1.n1('55') === 'hello 4455');

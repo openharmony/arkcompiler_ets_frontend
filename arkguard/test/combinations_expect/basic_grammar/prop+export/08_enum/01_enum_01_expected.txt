@@ -21,14 +21,14 @@ assert(A1.prop1 === 1);
 assert(A1.prop2 === 2);
 enum Direction {
     up = 1,
-    i,
+    j,
     left,
     right
 }
 const direction: Direction = Direction.up;
 assert(direction === 1);
 assert(Direction.up === 1);
-assert(Direction.i === 2);
+assert(Direction.j === 2);
 assert(Direction.left === 3);
 assert(Direction.right === 4);
 assert(Direction[1] === 'up');
@@ -89,20 +89,20 @@ module M {
 assert(M.g.h.b === 2);
 assert(M.g.h[2] === 'b');
 export enum MouseButton {
-    j = 1,
-    k = 2,
-    l = 4,
-    m = 5,
-    o = 6,
-    p = 0
+    k = 1,
+    l = 2,
+    m = 4,
+    o = 5,
+    p = 6,
+    q = 0
 }
 export const DOMMouseButton = {
-    '-1': MouseButton.p,
-    '0': MouseButton.j,
-    '1': MouseButton.l,
-    '2': MouseButton.k,
-    '3': MouseButton.m,
-    '4': MouseButton.o,
+    '-1': MouseButton.q,
+    '0': MouseButton.k,
+    '1': MouseButton.m,
+    '2': MouseButton.l,
+    '3': MouseButton.o,
+    '4': MouseButton.p,
 };
 assert(DOMMouseButton['-1'] === 0);
 assert(DOMMouseButton['0'] === 1);

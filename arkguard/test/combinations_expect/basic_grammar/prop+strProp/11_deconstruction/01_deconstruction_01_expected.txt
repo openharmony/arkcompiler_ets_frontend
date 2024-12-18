@@ -26,25 +26,25 @@ assert(c1 === 1);
 assert(d === 3);
 [, ,] = [...arr];
 //object
-let obj = { g: 1, h: a1 + 1, i: 3 };
-assert(obj.g === 1);
-assert(obj.h === 2);
-assert(obj.i === 3);
-let { i: b2, g: c2, h: d2 } = obj;
+let obj = { k: 1, l: a1 + 1, m: 3 };
+assert(obj.k === 1);
+assert(obj.l === 2);
+assert(obj.m === 3);
+let { m: b2, k: c2, l: d2 } = obj;
 assert(b2 === 3);
 assert(c2 === 1);
 assert(d2 === 2);
 class C1 {
-    g: number;
-    h: number;
-    i: number;
+    k: number;
+    l: number;
+    m: number;
     constructor([h, i, j]: Array<number>) {
-        this.g = h;
-        this.h = i;
-        this.i = j;
+        this.k = h;
+        this.l = i;
+        this.m = j;
     }
 }
-function f1([a, b, c]: Array<number>, { g: e, h: f, i: g }: C1) {
+function f1([a, b, c]: Array<number>, { k: e, l: f, m: g }: C1) {
     a;
     b;
     c;

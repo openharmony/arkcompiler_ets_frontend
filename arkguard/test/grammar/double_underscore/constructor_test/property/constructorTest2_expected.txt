@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 class __BaseClass {
-    private j: string;
+    private o: string;
     constructor(m: string) {
-        this.j = m;
+        this.o = m;
     }
 }
 class __PersonDetails {
-    public k: string;
-    private l: string;
-    protected m: number;
+    public p: string;
+    private q: string;
+    protected t: number;
     constructor(j: string, k: string, l: number) {
-        this.k = j;
-        this.l = k;
-        this.m = l;
+        this.p = j;
+        this.q = k;
+        this.t = l;
     }
 }
 class __CustomTest {

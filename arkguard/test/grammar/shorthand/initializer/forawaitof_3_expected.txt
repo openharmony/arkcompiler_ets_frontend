@@ -14,16 +14,16 @@
  */
 import assert from 'assert';
 namespace g {
-    let s = 1, t = 2;
-    const u = 0;
-    const v = 0;
-    async function r() {
-        for await ({ i: s = u, j: t = v } of [{ i: s, j: t }]) {
-            assert.strictEqual(s, 1);
-            assert.strictEqual(t, 2);
+    let w = 1, x = 2;
+    const y = 0;
+    const z = 0;
+    async function v() {
+        for await ({ o: w = y, p: x = z } of [{ o: w, p: x }]) {
+            assert.strictEqual(w, 1);
+            assert.strictEqual(x, 2);
         }
     }
 }
 class h {
-    i: string = "123";
+    o: string = "123";
 }

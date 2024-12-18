@@ -24,9 +24,10 @@ export namespace PropCollections {
   // the white list of property
   export let reservedProperties: Set<string> = new Set();
   export let universalReservedProperties: RegExp[] = [];
-  // saved generated property name
-  export let newlyOccupiedMangledProps: Set<string> = new Set();
-  export let mangledPropsInNameCache: Set<string> = new Set();
+  // In incremental compilation, save the globally obfuscated names generated during the last compilation.
+  // When generating new variable or property obfuscated names,
+  // it is necessary to prevent duplication with the names in this set.
+  export let globalMangledNamesInCache: Set<string> = new Set();
 
   // When the module is compiled, call this function to clear the collections associated with property obfuscation.
   export function clearPropsCollections(): void {
@@ -34,8 +35,7 @@ export namespace PropCollections {
     historyMangledTable?.clear();
     reservedProperties.clear();
     universalReservedProperties = [];
-    newlyOccupiedMangledProps.clear();
-    mangledPropsInNameCache.clear();
+    globalMangledNamesInCache.clear();
   }
 }
 

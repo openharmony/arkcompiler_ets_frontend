@@ -264,15 +264,13 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .escapedText == 'para1')
             .to.be.true;
         PropCollections.reservedProperties.clear();
-        PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
       })
 
-      it('should not obfuscated as names in ReservedProperty or ReservedLocalVariable or newlyOccupiedMangledProps or mangledPropsInNameCache', function () {
+      it('should not obfuscated as names in ReservedProperty or ReservedLocalVariable or mangledPropsInNameCache', function () {
         PropCollections.reservedProperties.add('b');
         UnobfuscationCollections.reservedExportName.add('c');
-        PropCollections.newlyOccupiedMangledProps.add('d');
-        PropCollections.historyMangledTable.set('testorigin', 'e');
+        PropCollections.historyMangledTable.set('testorigin', 'd');
         transformer = transformerPlugin.createTransformerFactory(option);
         const sourceFile: ts.SourceFile = ts.createSourceFile('demo.ts', fileContent, ts.ScriptTarget.ES2015, true);
         let transformed = ts.transform(sourceFile, [transformer]);
@@ -292,7 +290,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[1]
             .name as ts.Identifier)
-            .escapedText == 'f')
+            .escapedText == 'e')
             .to.be.true;
         expect(
           ((((transformed
@@ -301,7 +299,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[2]
             .name as ts.Identifier)
-            .escapedText == 'g')
+            .escapedText == 'f')
             .to.be.true;
         expect(
           ((((transformed
@@ -310,7 +308,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[3]
             .name as ts.Identifier)
-            .escapedText == 'h')
+            .escapedText == 'g')
             .to.be.true;
         expect(
           ((((transformed
@@ -319,11 +317,10 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .members[1] as ts.ConstructorDeclaration)
             .parameters[4]
             .name as ts.Identifier)
-            .escapedText == 'i')
+            .escapedText == 'h')
             .to.be.true;
         PropCollections.reservedProperties.clear();
         UnobfuscationCollections.reservedExportName.clear();
-        PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
         UnobfuscationCollections.reservedExportNameAndProp.clear();
         PropCollections.historyMangledTable.clear();
@@ -378,7 +375,6 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             .name as ts.Identifier)
             .escapedText == 'f')
             .to.be.true;
-        PropCollections.newlyOccupiedMangledProps.clear();
         PropCollections.globalMangledTable.clear();
       })
 
@@ -479,7 +475,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         let ast: ts.SourceFile = transformed.transformed[0] as ts.SourceFile;
         const printer = ts.createPrinter();
         const transformedAst: string = printer.printFile(ast);
-        expect(transformedAst === "import { c as a } from './file1.ts';\nexport { e as b } from './file1.ts';\n").to.be
+        expect(transformedAst === "import { c as a } from './file1.ts';\nexport { d as b } from './file1.ts';\n").to.be
           .true;
       });
 
@@ -517,7 +513,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         const transformedAst: string = printer.printFile(ast);
         expect(
           transformedAst ===
-            "declare module 'testModule2' {\n    import { h as g } from 'module2';\n    export { g };\n}\n",
+            "declare module 'testModule2' {\n    import { c as b } from 'module2';\n    export { b };\n}\n",
         ).to.be.true;
       });
 
@@ -555,7 +551,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         const transformedAst: string = printer.printFile(ast);
         expect(
           transformedAst ===
-            "type g = string;\ndeclare namespace i {\n    export { g };\n}\n",
+            "type b = string;\ndeclare namespace a {\n    export { b };\n}\n",
         ).to.be.true;
       });
 
@@ -593,7 +589,7 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
         const transformedAst: string = printer.printFile(ast);
         expect(
           transformedAst ===
-            "import { o as j } from 'typescript';\nlet k: number = 1;\nexport { l, m } from 'typescript';\nexport { k as n };\n",
+            "import { f as a } from 'typescript';\nlet b: number = 1;\nexport { c, d } from 'typescript';\nexport { b as e };\n",
         ).to.be.true;
       });
     })

@@ -12,5 +12,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const s1 = { v: 1, t1: { u1: 2 } };
-export default s1.t1;
+const s1 = { t1: 1, u1: { v1: 2 } };
+export default s1.u1;

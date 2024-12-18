@@ -18,10 +18,10 @@ export function reduce(j: g, k: number) {
     return j - k;
 }
 export class i {
-    j: g = 1;
-    k: string = 'xx';
+    l: g = 1;
+    m: string = 'xx';
     constructor() { }
-    get l(): g {
-        return this.j;
+    get o(): g {
+        return this.l;
     }
 }

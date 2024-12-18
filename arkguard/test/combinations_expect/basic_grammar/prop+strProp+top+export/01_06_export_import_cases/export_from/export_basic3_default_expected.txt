@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export default function u(d1: number[]): number[] {
-    return d1.filter(e1 => e1 % 2 === 0);
+export default function b1(g1: number[]): number[] {
+    return g1.filter(h1 => h1 % 2 === 0);
 }
-export function v(c1: number[]): number | null {
-    if (c1.length === 0)
+export function c1(f1: number[]): number | null {
+    if (f1.length === 0)
         return null;
-    return Math.max(...c1);
+    return Math.max(...f1);
 }
-function a1(b1: number[]): number | null {
-    if (b1.length === 0)
+function d1(e1: number[]): number | null {
+    if (e1.length === 0)
         return null;
-    return Math.min(...b1);
+    return Math.min(...e1);
 }

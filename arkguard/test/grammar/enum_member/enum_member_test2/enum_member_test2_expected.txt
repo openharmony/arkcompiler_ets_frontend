@@ -14,16 +14,16 @@
  */
 // Do not obfuscate as enum member when enum members are reserved
 namespace ns {
-    var f = { g: 1 };
-    var g = { g: 1 };
-    var h = { g: 1 };
-    var i = { g: 1 };
-    var j = { g: 1 };
+    var f = { l: 1 };
+    var g = { l: 1 };
+    var h = { l: 1 };
+    var i = { l: 1 };
+    var j = { l: 1 };
     enum k {
-        a = f.g,
-        b = g.g,
-        c = h.g,
-        d = i.g,
-        e = j.g
+        a = f.l,
+        b = g.l,
+        c = h.l,
+        d = i.l,
+        e = j.l
     }
 }

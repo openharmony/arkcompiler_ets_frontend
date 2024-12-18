@@ -130,7 +130,7 @@ namespace secharmony {
     }
 
     let options: NameGeneratorOptions = {};
-    let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
+    globalGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
     const enableToplevel: boolean = option?.mNameObfuscation?.mTopLevel;
     const exportObfuscation: boolean = option?.mExportObfuscation;
@@ -253,7 +253,7 @@ namespace secharmony {
           });
         }
 
-        renames(scope, scope.defs, generator);
+        renames(scope, scope.defs, globalGenerator);
       }
 
       // process property parameters symbols in class scope
@@ -262,7 +262,7 @@ namespace secharmony {
           return;
         }
 
-        renamePropertyParameters(scope, scope.defs, generator);
+        renamePropertyParameters(scope, scope.defs, globalGenerator);
       }
 
       function renames(scope: Scope, defs: Set<Symbol>, generator: INameGenerator): void {
@@ -344,7 +344,9 @@ namespace secharmony {
           if (historyMangledNames && historyMangledNames.has(tmpName)) {
             continue;
           }
-          if (PropCollections.newlyOccupiedMangledProps.has(tmpName) || PropCollections.mangledPropsInNameCache.has(tmpName)) {
+
+          // For incremental compilation, preventing generated names from conflicting with existing global name.
+          if (PropCollections.globalMangledNamesInCache.has(tmpName)) {
             continue;
           }
           if (searchMangledInParent(scope, tmpName)) {
@@ -353,7 +355,6 @@ namespace secharmony {
           mangledName = tmpName;
         }
         PropCollections.globalMangledTable.set(originalName, mangledName);
-        PropCollections.newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
       }
 
@@ -365,7 +366,7 @@ namespace secharmony {
         const historyName: string = PropCollections.historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {
-          let tmpName = generator.getName();
+          let tmpName = globalGenerator.getName();
           if (isReservedTopLevel(tmpName) ||
             tmpName === original) {
             continue;
@@ -396,7 +397,10 @@ namespace secharmony {
             continue;
           }
 
-          if (PropCollections.newlyOccupiedMangledProps.has(tmpName) || PropCollections.mangledPropsInNameCache.has(tmpName)) {
+          /**
+           * For incremental compilation, preventing generated names from conflicting with existing global name.
+           */
+          if (PropCollections.globalMangledNamesInCache.has(tmpName)) {
             continue;
           }
 
@@ -412,7 +416,6 @@ namespace secharmony {
         }
 
         PropCollections.globalMangledTable.set(original, mangledName);
-        PropCollections.newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
       }
 
@@ -467,6 +470,14 @@ namespace secharmony {
             continue;
           }
 
+          /**
+           * For incremental compilation, preventing generated names from conflicting with existing global name.
+           */
+          if (PropCollections.globalMangledNamesInCache.has(mangled)) {
+            mangled = '';
+            continue;
+          }
+
           if (searchMangledInParent(scope, mangled)) {
             mangled = '';
             continue;
@@ -499,7 +510,7 @@ namespace secharmony {
       function getMangledLabel(label: Label, mangledLabels: string[]): string {
         let mangledLabel: string = '';
         do {
-          mangledLabel = generator.getName();
+          mangledLabel = globalGenerator.getName();
           if (mangledLabel === label.name) {
             mangledLabel = '';
           }
@@ -808,7 +819,7 @@ namespace secharmony {
         tmpReservedProps.forEach(item => {
           PropCollections.reservedProperties.add(item);
         });
-        PropCollections.mangledPropsInNameCache = new Set(PropCollections.historyMangledTable?.values());
+        PropCollections.globalMangledNamesInCache = new Set(PropCollections.historyMangledTable?.values());
         if (profile?.mUniversalReservedProperties) {
           PropCollections.universalReservedProperties = [...profile.mUniversalReservedProperties];
         }
@@ -847,6 +858,8 @@ namespace secharmony {
   export let classMangledName: Map<Node, string> = new Map();
   // Record the original class name and line number range to distinguish between class names and member method names.
   export let classInfoInMemberMethodCache: Set<string> = new Set();
+  // Generate obfuscated names for all property and variable names.
+  export let globalGenerator: INameGenerator;
 
   export function clearCaches(): void {
     nameCache.clear();

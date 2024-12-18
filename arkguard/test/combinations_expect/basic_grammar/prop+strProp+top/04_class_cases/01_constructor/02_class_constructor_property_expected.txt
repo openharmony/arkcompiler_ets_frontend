@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 import assert from "assert";
-class v {
-    f1 = 5;
-    constructor(public b1: number, private c1: string, protected d1: boolean, readonly e1: number, f1: string) {
-        f1 = f1 + 1;
-        let g1 = b1;
-        let h1 = c1;
-        let i1 = d1;
-        let j1 = e1;
-        this.f1 = e1;
+class d1 {
+    o1 = 5;
+    constructor(public f1: number, private g1: string, protected h1: boolean, readonly i1: number, j1: string) {
+        j1 = j1 + 1;
+        let k1 = f1;
+        let l1 = g1;
+        let m1 = h1;
+        let n1 = i1;
+        this.o1 = i1;
     }
 }
-let a1 = new v(1, '2', false, 4, '5');
-assert(a1.f1 === 4);
+let e1 = new d1(1, '2', false, 4, '5');
+assert(e1.o1 === 4);

@@ -11,16 +11,16 @@ export { multiply as k };
 export const PI: number = 3.14;
 export class h {
     name: string;
-    l: number;
+    t: number;
     constructor(l: string, m: number) {
         this.name = l;
-        this.l = m;
+        this.t = m;
     }
     ;
 }
 interface i {
     id: number;
-    m: string;
+    u: string;
 }
 type j = string;
 export { g, j, i };

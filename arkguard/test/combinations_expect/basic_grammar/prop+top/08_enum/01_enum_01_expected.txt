@@ -21,14 +21,14 @@ assert(g.prop1 === 1);
 assert(g.prop2 === 2);
 enum h {
     up = 1,
-    p,
+    q,
     left,
     right
 }
 const direction: h = h.up;
 assert(direction === 1);
 assert(h.up === 1);
-assert(h.p === 2);
+assert(h.q === 2);
 assert(h.left === 3);
 assert(h.right === 4);
 assert(h[1] === 'up');

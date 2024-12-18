@@ -15,20 +15,20 @@
 import assert from 'assert';
 enum g {
     prop1 = 1,
-    p = 2
+    q = 2
 }
 assert(g.prop1 === 1);
-assert(g.p === 2);
+assert(g.q === 2);
 enum h {
     up = 1,
-    q,
+    u,
     left,
     right
 }
 const direction: h = h.up;
 assert(direction === 1);
 assert(h.up === 1);
-assert(h.q === 2);
+assert(h.u === 2);
 assert(h.left === 3);
 assert(h.right === 4);
 assert(h[1] === 'up');
@@ -37,19 +37,19 @@ assert(h[4] === 'right');
 var i;
 (function (p) {
     p[p["prop1"] = 1] = "prop1";
-    p[p["p"] = 2] = "prop2";
+    p[p["q"] = 2] = "prop2";
 })(i || (i = {}));
 assert(i.prop1 === 1);
-assert(i.p === 2);
+assert(i.q === 2);
 assert(i[1] === 'prop1');
 assert(i[2] === 'prop2');
 let j = 1;
 enum k {
     prop1 = 1,
-    p = prop1 + j + 1
+    q = prop1 + j + 1
 }
 assert(k.prop1 === 1);
-assert(k.p === 3);
+assert(k.q === 3);
 assert(k[1] === 'prop1');
 enum l {
     a = 2,

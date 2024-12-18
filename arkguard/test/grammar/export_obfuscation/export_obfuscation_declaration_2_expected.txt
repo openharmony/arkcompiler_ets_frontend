@@ -12,14 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export declare struct q1 {
+export declare struct f2 {
     param1: string;
     message1: string;
     method1(): void;
 }
-export declare function g(u1, v1);
-export declare const s1;
-export declare struct t1 {
+export declare function g(i2, j2);
+export declare const g2;
+export declare struct h2 {
     param2: string;
     message2: string;
     method2(): void;
