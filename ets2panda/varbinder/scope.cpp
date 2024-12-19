@@ -958,19 +958,25 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
 
     SetBindingProps(newDecl, &props, isStatic);
 
-    auto options = newDecl->Type() != DeclType::TYPE_ALIAS ? ResolveBindingOptions::ALL_NON_TYPE
-                                                           : ResolveBindingOptions::TYPE_ALIASES;
-
-    const auto *foundVar = FindLocal(newDecl->Name(), options);
+    // First search
+    const auto typeOptions = newDecl->Type() != DeclType::TYPE_ALIAS ? ResolveBindingOptions::ALL_NON_TYPE
+                                                                     : ResolveBindingOptions::TYPE_ALIASES;
+    const auto *foundVar = FindLocal(newDecl->Name(), typeOptions);
     if (foundVar != nullptr) {
+        // Found potential conflict in the current scope
         if (!newDecl->IsLetOrConstDecl()) {
             return nullptr;
         }
 
-        foundVar = FindLocal(newDecl->Name(),
-                             ResolveBindingOptions::ALL ^ (isStatic ? ResolveBindingOptions::VARIABLES
-                                                                    : ResolveBindingOptions::STATIC_VARIABLES));
+        // Non-static variables can coexist with static variables and static methods and vice versa.
+        // Run second search with filtered options.
+        const auto excludeOptions =
+            isStatic ? ResolveBindingOptions::VARIABLES | ResolveBindingOptions::METHODS
+                     : ResolveBindingOptions::STATIC_VARIABLES | ResolveBindingOptions::STATIC_METHODS;
+        const auto options = ResolveBindingOptions::ALL ^ excludeOptions;
+        foundVar = FindLocal(newDecl->Name(), options);
         if (foundVar != nullptr) {
+            // Conflict in bindings
             return nullptr;
         }
     }
