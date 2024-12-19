@@ -25,6 +25,7 @@ fi
 
 HUAWEI_MIRROR="${HUAWEI_MIRROR:-https://repo.huaweicloud.com/repository/npm/}"
 KOALA_REGISTRY="${KOALA_REGISTRY:-https://$NEXUS_REPO/repository/koala-npm/}"
+NPROC_PER_JOB="${NPROC_PER_JOB:-16}"
 
 function do_checkout() {
     local repo=$1
@@ -50,7 +51,7 @@ function do_checkout() {
 
 GIT_URL=https://gitee.com/openharmony-sig/arkcompiler_ets_frontend.git
 DEST=koala-sig
-do_checkout "${GIT_URL}" panda_rev_4-workarounds "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_4-workarounds-j "${DEST}"
 
 cd "${DEST}" || exit 1
 
