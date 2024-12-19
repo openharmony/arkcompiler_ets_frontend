@@ -142,7 +142,7 @@ Set &Set::AndSet(const Set &xs)
     std::set<int> res;
     std::set_intersection(nodes_.begin(), nodes_.end(), xs.nodes_.begin(), xs.nodes_.end(),
                           std::inserter(res, res.begin()));
-    nodes_ = res;
+    nodes_ = std::move(res);
     return *this;
 }
 
@@ -150,7 +150,7 @@ Set &Set::OrSet(const Set &xs)
 {
     std::set<int> res;
     std::set_union(nodes_.begin(), nodes_.end(), xs.nodes_.begin(), xs.nodes_.end(), std::inserter(res, res.begin()));
-    nodes_ = res;
+    nodes_ = std::move(res);
     return *this;
 }
 
@@ -159,7 +159,7 @@ Set &Set::DiffSet(const Set &xs)
     std::set<int> res;
     std::set_difference(nodes_.begin(), nodes_.end(), xs.nodes_.begin(), xs.nodes_.end(),
                         std::inserter(res, res.begin()));
-    nodes_ = res;
+    nodes_ = std::move(res);
     return *this;
 }
 
@@ -189,9 +189,7 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     globalClassIsVisited_ = true;
 
     firstNonGlobalAdr_ = nextAdr_;
-
     AnalyzeNodes(node);
-
     if (numErrors_ > 0) {
         checker_->LogTypeError("There were errors during assign analysis (" + std::to_string(numErrors_) + ")",
                                node->Start());
@@ -217,9 +215,7 @@ void AssignAnalyzer::AnalyzeNodes(const ir::AstNode *node)
 
 void AssignAnalyzer::AnalyzeNode(const ir::AstNode *node)
 {
-    if (node == nullptr) {
-        return;
-    }
+    ASSERT(node != nullptr);
 
     // NOTE(pantos) these are dummy methods to conform the CI's method size and complexity requirements
     if (AnalyzeStmtNode1(node) || AnalyzeStmtNode2(node) || AnalyzeExprNode1(node) || AnalyzeExprNode2(node)) {
@@ -401,10 +397,7 @@ bool AssignAnalyzer::AnalyzeExprNode2(const ir::AstNode *node)
 
 void AssignAnalyzer::AnalyzeStat(const ir::AstNode *node)
 {
-    if (node == nullptr) {
-        return;
-    }
-
+    ASSERT(node != nullptr);
     AnalyzeNode(node);
 }
 
@@ -506,7 +499,7 @@ void AssignAnalyzer::ProcessClassDefStaticFields(const ir::ClassDefinition *clas
             (it->IsStatic() && it->IsMethodDefinition() &&
              it->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(compiler::Signatures::INIT_METHOD))) {
             AnalyzeNodes(it);
-            CheckPendingExits(false);
+            ClearPendingExits();
         }
     }
 
@@ -599,10 +592,10 @@ void AssignAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
         }
     }
 
-    CheckPendingExits(true);
+    CheckPendingExits();
 
-    inits_ = initsPrev;
-    uninits_ = uninitsPrev;
+    inits_ = std::move(initsPrev);
+    uninits_ = std::move(uninitsPrev);
 }
 
 void AssignAnalyzer::AnalyzeVarDef(const ir::VariableDeclaration *varDef)
@@ -649,8 +642,8 @@ void AssignAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *doWhileStmt)
         uninits_ = uninitsEntry.AndSet(uninitsWhenTrue_);
     }
 
-    inits_ = initsSkip;
-    uninits_ = uninitsSkip;
+    inits_ = std::move(initsSkip);
+    uninits_ = std::move(uninitsSkip);
 
     ResolveBreaks(doWhileStmt);
 }
@@ -688,8 +681,8 @@ void AssignAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *whileStmt)
         uninits_ = uninitsEntry.AndSet(uninits_);
     }
 
-    inits_ = initsSkip;
-    uninits_ = uninitsSkip;
+    inits_ = std::move(initsSkip);
+    uninits_ = std::move(uninitsSkip);
 
     ResolveBreaks(whileStmt);
 }
@@ -698,7 +691,9 @@ void AssignAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 {
     ScopeGuard save(nextAdr_);
 
-    AnalyzeNode(forStmt->Init());
+    if (forStmt->Init() != nullptr) {
+        AnalyzeNode(forStmt->Init());
+    }
 
     Set initsSkip {};
     Set uninitsSkip {};
@@ -731,7 +726,9 @@ void AssignAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 
         ResolveContinues(forStmt);
 
-        AnalyzeNode(forStmt->Update());
+        if (forStmt->Update() != nullptr) {
+            AnalyzeNode(forStmt->Update());
+        }
 
         if (prevErrors != numErrors_ || phase == LOOP_PHASES || uninitsEntry.DiffSet(uninits_).Next(firstAdr_) == -1) {
             break;
@@ -740,8 +737,8 @@ void AssignAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
         uninits_ = uninitsEntry.AndSet(uninits_);
     }
 
-    inits_ = initsSkip;
-    uninits_ = uninitsSkip;
+    inits_ = std::move(initsSkip);
+    uninits_ = std::move(uninitsSkip);
 
     ResolveBreaks(forStmt);
 }
@@ -783,7 +780,7 @@ void AssignAnalyzer::AnalyzeForOfLoop(const ir::ForOfStatement *forOfStmt)
     }
 
     inits_ = initsStart;
-    uninits_ = uninitsStart.AndSet(uninits_);
+    uninits_ = std::move(uninitsStart.AndSet(uninits_));
 
     ResolveBreaks(forOfStmt);
 }
@@ -800,10 +797,10 @@ void AssignAnalyzer::AnalyzeIf(const ir::IfStatement *ifStmt)
     AnalyzeStat(ifStmt->Consequent());
 
     if (ifStmt->Alternate() != nullptr) {
-        Set initsAfterThen = inits_;
-        Set uninitsAfterThen = uninits_;
-        inits_ = initsBeforeElse;
-        uninits_ = uninitsBeforeElse;
+        Set initsAfterThen = std::move(inits_);
+        Set uninitsAfterThen = std::move(uninits_);
+        inits_ = std::move(initsBeforeElse);
+        uninits_ = std::move(uninitsBeforeElse);
 
         AnalyzeStat(ifStmt->Alternate());
 
@@ -912,7 +909,7 @@ void AssignAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
     }
 
     if (tryStmt->FinallyBlock() != nullptr) {
-        inits_ = initsTry;
+        inits_ = std::move(initsTry);
         uninits_ = uninitsTry_;
 
         PendingExitsVector exits = PendingExits();
@@ -930,8 +927,8 @@ void AssignAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
             inits_.OrSet(initsEnd);
         }
     } else {
-        inits_ = initsEnd;
-        uninits_ = uninitsEnd;
+        inits_ = std::move(initsEnd);
+        uninits_ = std::move(uninitsEnd);
 
         PendingExitsVector exits = PendingExits();
         SetPendingExits(prevPendingExits);
@@ -956,7 +953,9 @@ void AssignAnalyzer::AnalyzeContinue(const ir::ContinueStatement *contStmt)
 
 void AssignAnalyzer::AnalyzeReturn(const ir::ReturnStatement *retStmt)
 {
-    AnalyzeNode(retStmt->Argument());
+    if (retStmt->Argument() != nullptr) {
+        AnalyzeNode(retStmt->Argument());
+    }
     RecordExit(AssignPendingExit(retStmt, inits_, uninits_));
 }
 
@@ -981,17 +980,16 @@ void AssignAnalyzer::AnalyzeAssert(const ir::AssertStatement *assertStmt)
         AnalyzeExpr(assertStmt->Second());
     }
 
-    inits_ = initsExit;
-    uninits_ = uninitsExit;
+    inits_ = std::move(initsExit);
+    uninits_ = std::move(uninitsExit);
 }
 
 void AssignAnalyzer::AnalyzeExpr(const ir::AstNode *node)
 {
-    if (node != nullptr) {
-        AnalyzeNode(node);
-        if (inits_.IsReset()) {
-            Merge();
-        }
+    ASSERT(node != nullptr);
+    AnalyzeNode(node);
+    if (inits_.IsReset()) {
+        Merge();
     }
 }
 
@@ -1112,8 +1110,8 @@ void AssignAnalyzer::AnalyzeCondExpr(const ir::ConditionalExpression *condExpr)
         Set initsAfterThenWhenFalse = initsWhenFalse_;
         Set uninitsAfterThenWhenTrue = uninitsWhenTrue_;
         Set uninitsAfterThenWhenFalse = uninitsWhenFalse_;
-        inits_ = initsBeforeElse;
-        uninits_ = uninitsBeforeElse;
+        inits_ = std::move(initsBeforeElse);
+        uninits_ = std::move(uninitsBeforeElse);
 
         AnalyzeCond(condExpr->Alternate());
 
@@ -1126,8 +1124,8 @@ void AssignAnalyzer::AnalyzeCondExpr(const ir::ConditionalExpression *condExpr)
 
         Set initsAfterThen = inits_;
         Set uninitsAfterThen = uninits_;
-        inits_ = initsBeforeElse;
-        uninits_ = uninitsBeforeElse;
+        inits_ = std::move(initsBeforeElse);
+        uninits_ = std::move(uninitsBeforeElse);
 
         AnalyzeExpr(condExpr->Alternate());
 
@@ -1156,7 +1154,9 @@ void AssignAnalyzer::AnalyzeNewClass(const ir::ETSNewClassInstanceExpression *ne
 {
     AnalyzeExpr(newClass->GetTypeRef());
     AnalyzeExprs(newClass->GetArguments());
-    AnalyzeNode(newClass->ClassDefinition());
+    if (newClass->ClassDefinition() != nullptr) {
+        AnalyzeNode(newClass->ClassDefinition());
+    }
 }
 
 void AssignAnalyzer::AnalyzeUnaryExpr(const ir::UnaryExpression *unaryExpr)
@@ -1165,12 +1165,12 @@ void AssignAnalyzer::AnalyzeUnaryExpr(const ir::UnaryExpression *unaryExpr)
 
     switch (unaryExpr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-            Set t = initsWhenFalse_;
-            initsWhenFalse_ = initsWhenTrue_;
-            initsWhenTrue_ = t;
-            t = uninitsWhenFalse_;
-            uninitsWhenFalse_ = uninitsWhenTrue_;
-            uninitsWhenTrue_ = t;
+            Set ti = std::move(initsWhenFalse_);
+            initsWhenFalse_ = std::move(initsWhenTrue_);
+            initsWhenTrue_ = std::move(ti);
+            Set tu = std::move(uninitsWhenFalse_);
+            uninitsWhenFalse_ = std::move(uninitsWhenTrue_);
+            uninitsWhenTrue_ = std::move(tu);
             break;
         }
         default: {
@@ -1501,17 +1501,13 @@ void AssignAnalyzer::Merge()
     uninits_ = uninitsWhenFalse_.AndSet(uninitsWhenTrue_);
 }
 
-void AssignAnalyzer::CheckPendingExits(bool inMethod)
+void AssignAnalyzer::CheckPendingExits()
 {
-    PendingExitsVector exits = PendingExits();
-
-    for (auto &it : exits) {
-        // NOTE(pantos) pending exits should be refactored, break/continue may stay in this
-        if (inMethod && !it.Node()->IsReturnStatement()) {
+    for (const auto &it : PendingExits()) {
+        if (!it.Node()->IsReturnStatement()) {
             continue;
         }
-
-        if (inMethod && isInitialConstructor_) {
+        if (isInitialConstructor_) {
             inits_ = it.exitInits_;
 
             for (int i = firstAdr_; i < nextAdr_; i++) {
@@ -1519,7 +1515,6 @@ void AssignAnalyzer::CheckPendingExits(bool inMethod)
             }
         }
     }
-
     ClearPendingExits();
 }
 
