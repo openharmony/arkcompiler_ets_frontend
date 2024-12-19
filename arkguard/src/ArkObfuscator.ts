@@ -182,6 +182,10 @@ export class ArkObfuscator {
     this.mTransformers = [];
   }
 
+  public getWriteOriginalFileForTest(): boolean {
+    return this.mWriteOriginalFile;
+  }
+
   public setWriteOriginalFile(flag: boolean): void {
     this.mWriteOriginalFile = flag;
   }
@@ -259,6 +263,10 @@ export class ArkObfuscator {
         ArkObfuscator.memoryDottingStopCallback(recordInfo);
       }
     }
+  }
+
+  public isCurrentFileInKeepPathsForTest(customProfiles: IOptions, originalFilePath: string): boolean {
+    return this.isCurrentFileInKeepPaths(customProfiles, originalFilePath);
   }
 
   private isCurrentFileInKeepPaths(customProfiles: IOptions, originalFilePath: string): boolean {

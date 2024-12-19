@@ -1,0 +1,600 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { describe, it } from 'mocha';
+import { expect } from 'chai';
+import {
+  ArkObfuscator,
+  clearGlobalCaches,
+  collectReservedNameForObf,
+  collectResevedFileNameInIDEConfig,
+  deleteLineInfoForNameString,
+  enableObfuscatedFilePathConfig,
+  enableObfuscateFileName,
+  generateConsumerObConfigFile,
+  getRelativeSourcePath,
+  handleObfuscatedFilePath,
+  handleUniversalPathInObf,
+  initObfuscationConfig,
+  mangleFilePath,
+  MemoryUtils,
+  MergedConfig,
+  nameCacheMap,
+  ObConfigResolver,
+  ObfuscationResultType,
+  orignalFilePathForSearching,
+  PropCollections,
+  readNameCache,
+  readProjectPropertiesByCollectedPaths,
+  renameFileNameModule,
+  ReseverdSetForArkguard,
+  TimeSumPrinter,
+  UnobfuscationCollections,
+  writeObfuscationNameCache,
+  writeUnobfuscationContent,
+  unobfuscationNamesObj,
+} from '../../../src/ArkObfuscator'; 
+
+import {
+  createSourceFile,
+  createObfTextSingleLineWriter,
+  RawSourceMap,
+  SourceFile,
+  ScriptTarget,
+} from 'typescript';
+
+import { IOptions } from '../../../src/configs/IOptions';
+import { getSourceMapGenerator } from '../../../src/utils/SourceMapUtil';
+import { 
+  globalFileNameMangledTable,
+  historyFileNameMangledTable,
+} from '../../../src/transformers/rename/RenameFileNameTransformer';
+import { LocalVariableCollections } from '../../../src/utils/CommonCollections';
+import { FilePathObj } from '../../../src/common/type';
+import { historyAllUnobfuscatedNamesMap } from '../../../src/initialization/Initializer';
+
+describe('Tester Cases for <ArkObfuscator>', function () {
+  let obfuscator: ArkObfuscator;
+  let defaultConfig: IOptions;
+
+  const sourceFilePathObj: FilePathObj = {
+    buildFilePath: 'demo.ts',
+    relativeFilePath: 'demo',
+  };
+  let sourceFile: SourceFile;
+  let sourceFileContent: string = `class Person {
+  constructor(public name: string, public age: number) {
+      this.name = name;
+      this.age = age;
+  }
+}`;
+
+  const jsSourceFilePathObj: FilePathObj = {
+    buildFilePath: 'demo.js',
+    relativeFilePath: '',
+  };
+  let jsSourceFile: SourceFile;
+  let jsSourceFileContent: string = `//This is a comment
+//This is a comment
+function subtract(a, b) {
+    return a - b;
+}`;
+
+  const declSourceFilePathObj: FilePathObj = {
+    buildFilePath: 'demo.d.ts',
+    relativeFilePath: '',
+  };
+  let declSourceFile: SourceFile;
+  let declSourceFileContent: string = `//This is a comment
+//This is a comment
+export declare function add(num1: number, num2: number): number;
+export declare function findElement<T>(arr: T[], callback: (item: T) => boolean): T | undefined;`;
+
+  beforeEach(() => {
+    obfuscator = new ArkObfuscator();
+
+    // Clear the collection to ensure test isolation
+    PropCollections.clearPropsCollections();
+    UnobfuscationCollections.clear();
+    LocalVariableCollections.clear();
+  
+    defaultConfig = {
+      mRemoveComments: true,
+      mNameObfuscation: {
+        mEnable: true,
+        mNameGeneratorType: 1,
+        mReservedNames: [],
+        mRenameProperties: true,
+        mReservedProperties: [],
+        mTopLevel: true,
+        mReservedToplevelNames: [],
+      },
+      mEnableSourceMap: true,
+      mEnableNameCache: true,
+    };
+
+    sourceFile = createSourceFile(sourceFilePathObj.buildFilePath, sourceFileContent, ScriptTarget.ES2015, true);
+    jsSourceFile = createSourceFile(jsSourceFilePathObj.buildFilePath, jsSourceFileContent, ScriptTarget.ES2015, true);
+    declSourceFile = createSourceFile(declSourceFilePathObj.buildFilePath, declSourceFileContent, ScriptTarget.ES2015, true);
+  });
+
+  describe('test for ArkObfuscator.init', () => {
+    it('should return false if config is undefined', () => {
+      const result = obfuscator.init(undefined);
+      expect(result).to.be.false;
+    });
+
+    it('should return true if config is valid', () => {
+      const result = obfuscator.init(defaultConfig);
+      expect(result).to.be.true;
+    });
+
+    it('source code should be compacted into one line', () => {
+      const config: IOptions = {
+        mCompact: true,
+        mEnableSourceMap: true,
+        mRemoveComments: true
+      };
+      obfuscator.init(config);
+
+      let sourceMapGenerator = getSourceMapGenerator(jsSourceFilePathObj.buildFilePath);
+      const textWriter = createObfTextSingleLineWriter();
+      obfuscator.createObfsPrinter(jsSourceFile.isDeclarationFile).writeFile(jsSourceFile, textWriter, sourceMapGenerator);
+      const actualContent = textWriter.getText();
+      const expectContent = `function subtract(a, b) {return a - b;}`;
+      expect(actualContent === expectContent).to.be.true;
+    });
+  });
+
+  describe('test for ArkObfuscator.obfuscate', () => {
+    it('should return empty result for ignored files', async () => {
+      const sourceFilePathObj: FilePathObj = {
+        buildFilePath: 'ignoredFile.cpp',
+        relativeFilePath: '',
+      };
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        'hello world',
+        sourceFilePathObj,
+      );
+      expect(result).to.deep.equal({ content: undefined });
+    });
+
+    it('should return empty result for empty AST', async () => {
+      const sourceFilePathObj: FilePathObj = {
+        buildFilePath: 'emptyFile.js',
+        relativeFilePath: '',
+      };
+      const result: ObfuscationResultType = await obfuscator.obfuscate('', sourceFilePathObj);
+      expect(result).to.deep.equal({ content: undefined });
+    });
+
+    it('should be correctly obfuscated for valid AST', async () => {
+      obfuscator.init(defaultConfig);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        sourceFile,
+        sourceFilePathObj,
+      );
+      const expectResult = `class g {
+    constructor(public name: string, public h: number) {
+        this.name = name;
+        this.h = h;
+    }
+}
+`;
+      expect(result.content === expectResult).to.be.true;
+    });
+
+    it('comments in declaration file should be removed when enable -remove-comments', async () => {
+      const config: IOptions = {
+        mRemoveDeclarationComments: {
+          mEnable: true,
+          mReservedComments: [],
+          mUniversalReservedComments: [],
+        },
+      };
+
+      obfuscator.init(config);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(declSourceFile, declSourceFilePathObj);
+      const expectResult = `export declare function add(num1: number, num2: number): number;
+export declare function findElement<T>(arr: T[], callback: (item: T) => boolean): T | undefined;
+`;
+      expect(result.content === expectResult).to.be.true;
+    });
+
+    it('comments in declaration file should not be removed when enable -remove-comments', async () => {
+      const config: IOptions = {
+        mRemoveDeclarationComments: {
+          mEnable: false,
+          mReservedComments: [],
+          mUniversalReservedComments: [],
+        },
+      };
+      obfuscator.init(config);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(declSourceFile, declSourceFilePathObj);
+      const expectResult = `//This is a comment
+//This is a comment
+export declare function add(num1: number, num2: number): number;
+export declare function findElement<T>(arr: T[], callback: (item: T) => boolean): T | undefined;
+`;
+      expect(result.content === expectResult).to.be.true;
+    });
+
+    it('unobfuscationNameMap should be Map type when enable -print-kept-names', async () => {
+      const config = {
+        mUnobfuscationOption: {
+          mPrintKeptNames: true,
+          mPrintPath: 'local.json',
+        },
+      };
+      historyAllUnobfuscatedNamesMap.set('demo', {'key': ['value']});
+      obfuscator.init(config);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        sourceFile,
+        sourceFilePathObj,
+      );
+      expect(result.unobfuscationNameMap instanceof Map).to.be.true;
+    });
+
+    it('unobfuscationNameMap should be undefined when disable -print-kept-names, ', async () => {
+      obfuscator.init(defaultConfig);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        sourceFile,
+        sourceFilePathObj,
+      );
+      expect(result.unobfuscationNameMap === undefined).to.be.true;
+    });
+
+    it('historyNameCache should be used when provide historyNameCache', async () => {
+      obfuscator.init(defaultConfig);
+      const historyNameCache = new Map([['#Person', 'm'], ['Person:2:5', 'm']]);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        sourceFile,
+        sourceFilePathObj,
+        undefined,
+        historyNameCache,
+      );
+      const expectResult = `
+        class m {
+          constructor(public name: string, public g: number) {
+            this.name = name;
+            this.g = g;
+          }
+        }
+      `;
+      expect(compareStringsIgnoreNewlines(result.content, expectResult)).to.be.true;
+    });
+
+    it('fileName should be obfuscated when enable -enable-filename-obfuscation', async () => {
+      const config: IOptions = {
+        mRenameFileName: {
+          mEnable: true,
+          mNameGeneratorType: 1,
+          mReservedFileNames: [],
+        },
+      };
+      obfuscator.init(config);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        sourceFile,
+        sourceFilePathObj,
+      );
+
+      expect(orignalFilePathForSearching === 'demo.ts').to.be.true;
+      expect(result.filePath === 'a.ts').to.be.true;
+    });
+
+    it('PropCollections shoule be cleared when only enable toplevel option', async () => {
+      PropCollections.globalMangledTable.set('test', 'obfuscated');
+      const config: IOptions = {
+        mNameObfuscation: {
+          mEnable: true,
+          mNameGeneratorType: 1,
+          mRenameProperties: false,
+          mReservedProperties: [],
+          mTopLevel: true,
+        },
+        mExportObfuscation: false,
+      };
+      obfuscator.init(config);
+      await obfuscator.obfuscate(sourceFile, sourceFilePathObj);
+      expect(PropCollections.globalMangledTable.size).to.equal(0);
+    });
+
+    it('PropCollections shoule not be cleared when enable toplevel、property and export option', async () => {
+      PropCollections.globalMangledTable.set('test', 'obfuscated');
+      const config: IOptions = {
+        mNameObfuscation: {
+          mEnable: true,
+          mNameGeneratorType: 1,
+          mRenameProperties: true,
+          mReservedProperties: [],
+          mTopLevel: true,
+        },
+        mExportObfuscation: true,
+      };
+      obfuscator.init(config);
+      await obfuscator.obfuscate(sourceFile, sourceFilePathObj);
+      expect(PropCollections.globalMangledTable.get('test') === 'obfuscated').to.be.true;
+    });
+
+    it('test for use sourcemap mapping', async () => {
+      obfuscator.init(defaultConfig);
+      const previousStageSourceMap = {
+        "version":3,
+        "file":"demo.js",
+        "sourceRoot":"",
+        "sources":["demo.js"],
+        "names":[],
+        "mappings":"AAAA,mBAAmB;AACnB,mBAAmB;AACnB,SAAS,QAAQ,CAAC,CAAC,EAAE,CAAC;IAClB,OAAO,CAAC,GAAG,CAAC,CAAC;AACjB,CAAC"
+      } as RawSourceMap;
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        jsSourceFile,
+        jsSourceFilePathObj,
+        previousStageSourceMap,
+      );
+      const actualSourceMap = JSON.stringify(result.sourceMap);
+      const expectSourceMap = `{"version":3,"file":"demo.js","sources":["demo.js"],"names":[],
+        "mappings":"AAEA,WAAkB,CAAC,EAAE,CAAC;IAClB,OAAO,KAAK,CAAC;AACjB,CAAC","sourceRoot":""}`;
+      expect(compareStringsIgnoreNewlines(actualSourceMap, expectSourceMap)).to.be.true;
+    });
+
+    it('test for not use sourcemap mapping', async () => {
+      obfuscator.init(defaultConfig);
+      const result: ObfuscationResultType = await obfuscator.obfuscate(
+        jsSourceFile,
+        jsSourceFilePathObj,
+      );
+      const actualSourceMap = JSON.stringify(result.sourceMap);
+      const expectSourceMap = `{"version":3,"file":"demo.js","sourceRoot":"","sources":["demo.js"],
+        "names":[],"mappings":"AAEA,WAAkB,CAAC,EAAE,CAAC;IAClB,OAAO,KAAK,CAAC;AACjB,CAAC"}`;
+      expect(compareStringsIgnoreNewlines(actualSourceMap, expectSourceMap)).to.be.true;
+    });
+  });
+
+  describe('test for ArkObfuscator.setWriteOriginalFile', () => {
+    it('should set writeOriginalFile to true', () => {
+      obfuscator.setWriteOriginalFile(true);
+      expect(obfuscator.getWriteOriginalFileForTest()).to.be.true;
+    });
+
+    it('should set writeOriginalFile to false', () => {
+      obfuscator.setWriteOriginalFile(false);
+      expect(obfuscator.getWriteOriginalFileForTest()).to.be.false;
+    });
+  });
+
+  describe('test for ArkObfuscator.addReservedSetForPropertyObf', () => {
+    it('should add reserved sets correctly', () => {
+      const properties: ReseverdSetForArkguard = {
+        structPropertySet: new Set(['struct1']),
+        stringPropertySet: new Set(['string1']),
+        exportNameAndPropSet: new Set(['export1']),
+        exportNameSet: undefined,
+        enumPropertySet: new Set(['enum1']),
+      };
+
+      obfuscator.addReservedSetForPropertyObf(properties);
+
+      expect(UnobfuscationCollections.reservedStruct.has('struct1')).to.be.true;
+      expect(UnobfuscationCollections.reservedStrProp.has('string1')).to.be.true;
+      expect(UnobfuscationCollections.reservedExportNameAndProp.has('export1')).to.be.true;
+      expect(UnobfuscationCollections.reservedEnum.has('enum1')).to.be.true;
+    });
+
+    it('should not add empty sets', () => {
+      const properties: ReseverdSetForArkguard = {
+        structPropertySet: new Set(),
+        stringPropertySet: new Set(),
+        exportNameAndPropSet: new Set(),
+        exportNameSet: undefined,
+        enumPropertySet: new Set(),
+      };
+
+      obfuscator.addReservedSetForPropertyObf(properties);
+
+      expect(UnobfuscationCollections.reservedStruct.size).to.equal(0);
+      expect(UnobfuscationCollections.reservedStrProp.size).to.equal(0);
+      expect(UnobfuscationCollections.reservedExportNameAndProp.size).to.equal(0);
+      expect(UnobfuscationCollections.reservedEnum.size).to.equal(0);
+    });
+  });
+
+  describe('test for ArkObfuscator.addReservedSetForDefaultObf', () => {
+    it('should add reserved export name set correctly', () => {
+      const properties: ReseverdSetForArkguard = {
+        structPropertySet: undefined,
+        stringPropertySet: undefined,
+        exportNameAndPropSet: undefined,
+        exportNameSet: new Set(['exportName1']),
+        enumPropertySet: undefined,
+      };
+
+      obfuscator.addReservedSetForDefaultObf(properties);
+      expect(UnobfuscationCollections.reservedExportName.has('exportName1')).to.be.true;
+    });
+  });
+
+  describe('test for ArkObfuscator.setKeepSourceOfPaths', () => {
+    it('should set the keep source of paths correctly', () => {
+      const config: IOptions = {
+        mKeepFileSourceCode: {
+          mKeepSourceOfPaths: new Set(),
+          mkeepFilesAndDependencies: new Set(),
+        },
+      };
+      obfuscator.init(config);
+
+      const paths = new Set(['path1', 'path2']);
+      obfuscator.setKeepSourceOfPaths(paths);
+      expect(obfuscator.customProfiles.mKeepFileSourceCode?.mKeepSourceOfPaths).to.equal(paths);
+    });
+  });
+
+  describe('test for ArkObfuscator.isCurrentFileInKeepPaths', () => {
+    it('should return false if mKeepSourceOfPaths is empty', () => {
+      const customProfiles: IOptions = {
+        mKeepFileSourceCode: {
+          mKeepSourceOfPaths: new Set(),
+          mkeepFilesAndDependencies: new Set(),
+        },
+      };
+      const result = obfuscator.isCurrentFileInKeepPathsForTest(customProfiles, 'some/file/path.js');
+      expect(result).to.be.false;
+    });
+
+    it('should return true if originalFilePath is in mKeepSourceOfPaths', () => {
+      const keepPaths = new Set(['some/file/path.js']);
+      const customProfiles: IOptions = {
+        mKeepFileSourceCode: {
+          mKeepSourceOfPaths: keepPaths,
+          mkeepFilesAndDependencies: new Set(),
+        }
+      };
+      const result = obfuscator.isCurrentFileInKeepPathsForTest(customProfiles, 'some/file/path.js');
+      expect(result).to.be.true;
+    });
+  });
+
+  describe('test for clearGlobalCaches', () => {
+    beforeEach(() => {
+      PropCollections.globalMangledTable.set('test1', 'obfuscated1');
+      PropCollections.historyMangledTable = new Map([['test2', 'obfuscated2']]);
+      PropCollections.reservedProperties.add('reserved1');
+      PropCollections.universalReservedProperties.push(/universal\d+/);
+      globalFileNameMangledTable.set('key1', 'value1');
+      renameFileNameModule.historyFileNameMangledTable = new Map([['keyA', 'valueA']]);
+      UnobfuscationCollections.reservedSdkApiForProp.add('api1');  
+      UnobfuscationCollections.reservedSdkApiForGlobal.add('globalApi1');  
+      UnobfuscationCollections.reservedSdkApiForLocal.add('localApi1');  
+      UnobfuscationCollections.reservedStruct.add('struct1');  
+      UnobfuscationCollections.reservedLangForProperty.add('lang1');  
+      UnobfuscationCollections.reservedExportName.add('exportName1');  
+      UnobfuscationCollections.reservedExportNameAndProp.add('exportNameAndProp1');  
+      UnobfuscationCollections.reservedStrProp.add('stringProp1');  
+      UnobfuscationCollections.reservedEnum.add('enum1');  
+      UnobfuscationCollections.unobfuscatedPropMap.set('age', new Set(['key', 'value']));
+      UnobfuscationCollections.unobfuscatedNamesMap.set('name1', new Set(['key1', 'value2']));  
+      LocalVariableCollections.reservedStruct.add('localStruct1');
+      LocalVariableCollections.reservedConfig.add('localConfig1');
+    });
+  
+    it('should clear all global caches', () => {
+      clearGlobalCaches();
+  
+      expect(PropCollections.globalMangledTable.size).to.equal(0);
+      expect(PropCollections.historyMangledTable.size).to.equal(0);
+      expect(PropCollections.reservedProperties.size).to.equal(0);
+      expect(PropCollections.universalReservedProperties.length).to.equal(0);
+      expect(globalFileNameMangledTable.size).to.equal(0);
+      expect(historyFileNameMangledTable.size).to.equal(0);
+      expect(UnobfuscationCollections.reservedSdkApiForProp.size).to.equal(0);
+      expect(UnobfuscationCollections.reservedStruct.size).to.equal(0);
+      expect(UnobfuscationCollections.reservedExportName.size).to.equal(0);
+      expect(UnobfuscationCollections.printKeptName).to.be.false;
+      expect(LocalVariableCollections.reservedStruct.size).to.equal(0);  
+      expect(LocalVariableCollections.reservedConfig.size).to.equal(0);
+    });
+  });
+  
+  describe('test whether the methods exported from the ArkObfuscator file exist', () => {
+    it('The ArkObfuscator export the collectReservedNameForObf method', () => {
+      expect(collectReservedNameForObf).to.exist;
+    });
+
+    it('The ArkObfuscator export the collectResevedFileNameInIDEConfig method', () => {
+      expect(collectResevedFileNameInIDEConfig).to.exist;
+    });
+
+    it('The ArkObfuscator export the deleteLineInfoForNameString method', () => {
+      expect(deleteLineInfoForNameString).to.exist;
+    });
+
+    it('The ArkObfuscator export the enableObfuscatedFilePathConfig method', () => {
+      expect(enableObfuscatedFilePathConfig).to.exist;
+    });
+
+    it('The ArkObfuscator export the enableObfuscateFileName method', () => {
+      expect(enableObfuscateFileName).to.exist;
+    });
+
+    it('The ArkObfuscator export the generateConsumerObConfigFile method', () => {
+      expect(generateConsumerObConfigFile).to.exist;
+    });
+
+    it('The ArkObfuscator export the getRelativeSourcePath method', () => {
+      expect(getRelativeSourcePath).to.exist;
+    });
+
+    it('The ArkObfuscator export the handleObfuscatedFilePath method', () => {
+      expect(handleObfuscatedFilePath).to.exist;
+    });
+
+    it('The ArkObfuscator export the handleUniversalPathInObf method', () => {
+      expect(handleUniversalPathInObf).to.exist;
+    });
+
+    it('The ArkObfuscator export the initObfuscationConfig method', () => {
+      expect(initObfuscationConfig).to.exist;
+    });
+
+    it('The ArkObfuscator export the mangleFilePath method', () => {
+      expect(mangleFilePath).to.exist;
+    });
+
+    it('The ArkObfuscator export the MemoryUtils method', () => {
+      expect(MemoryUtils).to.exist;
+    });
+
+    it('The ArkObfuscator export the MergedConfig method', () => {
+      expect(MergedConfig).to.exist;
+    });
+
+    it('The ArkObfuscator export the nameCacheMap method', () => {
+      expect(nameCacheMap).to.exist;
+    });
+
+    it('The ArkObfuscator export the ObConfigResolver method', () => {
+      expect(ObConfigResolver).to.exist;
+    });
+
+    it('The ArkObfuscator export the readNameCache method', () => {
+      expect(readNameCache).to.exist;
+    });
+
+    it('The ArkObfuscator export the readProjectPropertiesByCollectedPaths method', () => {
+      expect(readProjectPropertiesByCollectedPaths).to.exist;
+    });
+
+    it('The ArkObfuscator export the TimeSumPrinter method', () => {
+      expect(TimeSumPrinter).to.exist;
+    });
+
+    it('The ArkObfuscator export the writeObfuscationNameCache method', () => {
+      expect(writeObfuscationNameCache).to.exist;
+    });
+
+    it('The ArkObfuscator export the writeUnobfuscationContent method', () => {
+      expect(writeUnobfuscationContent).to.exist;
+    });
+
+    it('The ArkObfuscator export the unobfuscationNamesObj method', () => {
+      expect(unobfuscationNamesObj).to.exist;
+    });
+  });
+});
+
+function compareStringsIgnoreNewlines(str1: string, str2: string): boolean {
+  const normalize = (str: string) => str.replace(/[\n\r\s]+/g, '');
+  return normalize(str1) === normalize(str2);
+}
