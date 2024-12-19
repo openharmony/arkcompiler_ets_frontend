@@ -301,7 +301,7 @@ std::string GetNodeFileName(ir::AstNode *contextualTypeNode)
     if (!contextualTypeNode->IsETSImportDeclaration()) {
         return "";
     }
-    return contextualTypeNode->AsETSImportDeclaration()->ResolvedSource()->ToString();
+    return std::string(contextualTypeNode->AsETSImportDeclaration()->ResolvedSource());
 }
 
 bool IsClass(ir::AstNode *node)

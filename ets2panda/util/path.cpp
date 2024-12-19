@@ -21,8 +21,9 @@
 namespace ark::es2panda::util {
 
 constexpr size_t ALLOWED_EXTENSIONS_SIZE = 8;
-constexpr std::array<std::string_view, ALLOWED_EXTENSIONS_SIZE> SUPPORTED_EXTENSIONS = {
+inline constexpr std::array<std::string_view, ALLOWED_EXTENSIONS_SIZE> SUPPORTED_EXTENSIONS = {
     ".d.ets", ".ets", ".d.sts", ".sts", ".d.ts", ".ts", ".js", ".abc"};
+
 Path::Path() = default;
 
 Path::Path(const util::StringView &absolutePath, ArenaAllocator *allocator)
@@ -94,8 +95,8 @@ void Path::InitializeFileExtension()
         return;
     }
 
-    for (auto &extension : SUPPORTED_EXTENSIONS) {
-        if (EndsWith(path_.Mutf8(), extension)) {
+    for (auto extension : SUPPORTED_EXTENSIONS) {
+        if (EndsWith(path_.Utf8(), extension)) {
             fileExtension_ = util::UString(extension, allocator_).View();
             return;
         }

@@ -20,8 +20,8 @@
 #include "parser/program/program.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ets/etsImportDeclaration.h"
-#include "ir/ets/etsImportSource.h"
 #include "ir/expressions/literals/stringLiteral.h"
+#include "util/importPathManager.h"
 
 namespace ark::es2panda::evaluate {
 
@@ -74,18 +74,19 @@ ir::ETSImportDeclaration *EntityDeclarator::CreateIrImport(util::StringView path
     auto *checker = debugInfoPlugin_.GetIrCheckHelper()->GetChecker();
     auto *allocator = checker->Allocator();
 
-    auto *resolvedSource = checker->AllocNode<ir::StringLiteral>(pathToDeclSourceFile);
     auto moduleName = debugInfoPlugin_.GetDebugInfoStorage()->GetModuleName(pathToDeclSourceFile.Utf8());
     auto *source = checker->AllocNode<ir::StringLiteral>(moduleName);
     auto importLanguage = ToLanguage(debugInfoPlugin_.GetETSBinder()->Extension());
-    auto *importSource = allocator->New<ir::ImportSource>(source, resolvedSource, importLanguage, true);
+    util::ImportPathManager::ImportMetadata importMetadata {
+        util::ImportFlags::NONE, importLanguage.GetId(), pathToDeclSourceFile.Utf8(),
+        util::ImportPathManager::DUMMY_PATH, util::ImportPathManager::DUMMY_PATH};
 
     auto *local = checker->AllocNode<ir::Identifier>(classDeclName, allocator);
     auto *imported = checker->AllocNode<ir::Identifier>(classImportedName, allocator);
     auto *spec = checker->AllocNode<ir::ImportSpecifier>(imported, local);
     ArenaVector<ir::AstNode *> specifiers(1, spec, allocator->Adapter());
 
-    return checker->AllocNode<ir::ETSImportDeclaration>(importSource, specifiers);
+    return checker->AllocNode<ir::ETSImportDeclaration>(source, importMetadata, std::move(specifiers));
 }
 
 void EntityDeclarator::InsertImportStatement(ir::Statement *importStatement, parser::Program *importerProgram)

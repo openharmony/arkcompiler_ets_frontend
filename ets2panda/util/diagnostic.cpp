@@ -195,8 +195,8 @@ ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const DiagnosticMe
 }
 
 ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const DiagnosticMessageParams &params,
-                                         const lexer::SourcePosition &poc)
-    : DiagnosticBase(poc), type_(type), message_(Format(params))
+                                         const lexer::SourcePosition &pos)
+    : DiagnosticBase(pos), type_(type), message_(Format(params))
 {
 }
 
@@ -208,14 +208,14 @@ ThrowableDiagnostic::ThrowableDiagnostic(DiagnosticType type, const DiagnosticMe
 
 ThrowableDiagnostic::ThrowableDiagnostic(const DiagnosticType type, const diagnostic::DiagnosticKind &diagnosticKind,
                                          const util::DiagnosticMessageParams &diagnosticParams,
-                                         const lexer::SourcePosition &poc)
-    : DiagnosticBase(poc), type_(type), message_(Format(diagnosticKind.Message(), FormatParams(diagnosticParams)))
+                                         const lexer::SourcePosition &pos)
+    : DiagnosticBase(pos), type_(type), message_(Format(diagnosticKind.Message(), FormatParams(diagnosticParams)))
 {
 }
 
 Diagnostic::Diagnostic(const diagnostic::DiagnosticKind &diagnosticKind,
-                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &poc)
-    : DiagnosticBase(poc), diagnosticKind_(&diagnosticKind), diagnosticParams_(FormatParams(diagnosticParams))
+                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
+    : DiagnosticBase(pos), diagnosticKind_(&diagnosticKind), diagnosticParams_(FormatParams(diagnosticParams))
 {
 }
 

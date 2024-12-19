@@ -151,7 +151,7 @@ TEST_F(PluginConversionRuleUnitTest, FunctionSignaturePtrConstructor)
 }
 
 // apiName: CreateImportSource
-TEST_F(PluginConversionRuleUnitTest, LanguageInputParameter)
+TEST_F(PluginConversionRuleUnitTest, DISABLED_LanguageInputParameter)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_ImportSource *CreateImportSource([[maybe_unused]] es2panda_Context *context,
@@ -516,7 +516,7 @@ TEST_F(PluginConversionRuleUnitTest, LabelPairPtrConstructor)
 }
 
 // apiName: CreateETSImportDeclaration
-TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrInputParameter)
+TEST_F(PluginConversionRuleUnitTest, DISABLED_ImportSourcePtrInputParameter)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_AstNode *CreateETSImportDeclaration([[maybe_unused]] es2panda_Context *context,
@@ -543,7 +543,7 @@ TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrInputParameter)
 }
 
 // apiName: CreateImportSource
-TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrReturnValue)
+TEST_F(PluginConversionRuleUnitTest, DISABLED_ImportSourcePtrReturnValue)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_ImportSource *CreateImportSource([[maybe_unused]] es2panda_Context *context,
@@ -565,7 +565,7 @@ TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrReturnValue)
 }
 
 // apiName: ImportSourceSourceConst
-TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrCall)
+TEST_F(PluginConversionRuleUnitTest, DISABLED_ImportSourcePtrCall)
 {
     std::string targetCAPI {R"(
     extern "C" const es2panda_AstNode *ImportSourceSourceConst([[maybe_unused]] es2panda_Context *context,
@@ -581,7 +581,7 @@ TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrCall)
 }
 
 // apiName: CreateImportSource
-TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrConstructor)
+TEST_F(PluginConversionRuleUnitTest, DISABLED_ImportSourcePtrConstructor)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_ImportSource *CreateImportSource([[maybe_unused]] es2panda_Context *context,

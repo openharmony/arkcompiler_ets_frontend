@@ -17,7 +17,7 @@
 flags: [dynamic-ast]
 ---*/
 
-import { A, B } from "dynamic_js_import_tests"
+import { A, B } from "dynamic_import_tests"
 
 function fn(o: B): boolean {
     return o instanceof A;

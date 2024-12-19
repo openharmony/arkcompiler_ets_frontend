@@ -241,10 +241,7 @@ export class Es2pandaNativeModule {
   _ETSImportDeclarationResolvedSource(context: KPtr, node: KPtr): KPtr {
     throw new Error("Not implemented")
   }
-  _ETSImportDeclarationHasDeclConst(context: KPtr, node: KPtr): KBoolean {
-    throw new Error("Not implemented")
-  }
-  _CreateImportSource(context: KPtr, source: KPtr, resolvedSource: KPtr, hasDecl: KBoolean): KNativePointer {
+  _CreateImportSource(context: KPtr, source: KPtr, resolvedSource: KPtr, declPath: string): KNativePointer {
     throw new Error("Not implemented")
   }
   _CreateImportSpecifier(context: KPtr, imported: KPtr, local: KPtr): KNativePointer {

@@ -2778,7 +2778,6 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
     funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
-
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
                                                             modifierFlag, checker->Allocator(), false);
@@ -2993,7 +2992,7 @@ void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclarati
                                                           checker::ETSObjectType *lastObjectType, ir::Identifier *ident)
 {
     for (auto item : VarBinder()->AsETSBinder()->ReExportImports()) {
-        if (!importDecl->ResolvedSource()->Str().Is(item->GetProgramPath().Mutf8())) {
+        if (importDecl->ResolvedSource() != item->GetProgramPath().Mutf8()) {
             continue;
         }
         auto *reExportType = GetImportSpecifierObjectType(item->GetETSImportDeclarations(), ident);
@@ -3012,7 +3011,7 @@ void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclarati
 
 Type *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident)
 {
-    auto importPath = importDecl->ResolvedSource()->Str();
+    auto importPath = importDecl->ResolvedSource();
     parser::Program *program =
         SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(VarBinder()), importPath);
     if (program == nullptr) {

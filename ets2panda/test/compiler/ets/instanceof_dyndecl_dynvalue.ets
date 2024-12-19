@@ -17,7 +17,7 @@
 flags: [dynamic-ast]
 ---*/
 
-import { A } from "dynamic_js_import_tests"
+import { A } from "dynamic_import_tests"
 import { ADeclared } from "dynamic_import_tests/modules/instanceof"
 
 function fn(o: ADeclared): boolean {

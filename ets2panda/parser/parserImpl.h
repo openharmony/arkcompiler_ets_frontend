@@ -75,8 +75,6 @@ public:
 
     void ParseScript(const SourceFile &sourceFile, bool genStdLib);
 
-    ScriptExtension Extension() const;
-
     [[nodiscard]] virtual bool IsETSParser() const noexcept
     {
         return false;

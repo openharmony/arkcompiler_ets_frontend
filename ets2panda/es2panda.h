@@ -75,7 +75,7 @@ inline Language ToLanguage(ScriptExtension ext)
 struct SourceFile {
     SourceFile(std::string_view fn, std::string_view s);
     SourceFile(std::string_view fn, std::string_view s, bool m);
-    SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m);
+    SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m, bool d);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     std::string_view filePath {};
@@ -83,6 +83,8 @@ struct SourceFile {
     std::string_view source {};
     std::string_view resolvedPath {};
     bool isModule {};
+    // NOTE(dkofanov): Should be aligned with 'Program::moduleInfo_'.
+    bool isDeclForDynamicStaticInterop {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 

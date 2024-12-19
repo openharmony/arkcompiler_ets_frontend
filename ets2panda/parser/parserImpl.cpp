@@ -1349,11 +1349,6 @@ void ParserImpl::LogGenericError(std::string_view errorMessage)
     diagnosticEngine_.LogFatalError(errorMessage, lexer_->GetToken().Start());
 }
 
-ScriptExtension ParserImpl::Extension() const
-{
-    return program_->Extension();
-}
-
 lexer::SourcePosition ParserImpl::GetPositionForDiagnostic() const
 {
     return Lexer()->GetToken().Start();

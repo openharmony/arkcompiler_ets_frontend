@@ -477,7 +477,7 @@ static std::string CanonicalizeName(std::string name)
     return name;
 }
 
-std::string Emitter::DumpAsmFunction(std::string name, const pandasm::Function &func)
+static std::string DumpAsmFunction(std::string name, const pandasm::Function &func)
 {
     std::stringstream ss;
 

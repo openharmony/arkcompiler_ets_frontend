@@ -41,7 +41,7 @@ import {
 interface DynamicPathItem {
   language: string,
   declPath: string,
-  runtimeName: string
+  ohmUrl: string
 }
 
 interface ArkTSConfigObject {
@@ -178,7 +178,7 @@ export class ArkTSConfigGenerator {
         dynamicPathSection[ohmurl] = {
           language: "js",
           declPath: declFilesObject.files[file].declPath,
-          runtimeName: declFilesObject.files[file].ohmUrl
+          ohmUrl: declFilesObject.files[file].ohmUrl
         }
 
         let absFilePath: string = path.resolve(depModuleInfo.moduleRootPath, file);

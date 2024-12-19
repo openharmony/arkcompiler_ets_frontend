@@ -17,6 +17,7 @@
 
 #include "ir/astNode.h"
 #include "util/helpers.h"
+#include "parser/program/program.h"
 
 #include <cmath>
 #include <iostream>

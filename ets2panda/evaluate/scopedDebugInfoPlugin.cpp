@@ -404,8 +404,8 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
 
     // Checker doesn't yet have `VarBinder`, must retrieve it from `globalProgram_`.
     parser::Program *program = allocator->New<parser::Program>(allocator, GetETSBinder());
-    program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), true});
-    program->SetPackageInfo(moduleName, parser::ModuleKind::MODULE);
+    program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), true, false});
+    program->SetPackageInfo(moduleName, util::ModuleKind::MODULE);
     auto *emptyIdent = allocator->New<ir::Identifier>("", allocator);
     auto *etsModule = allocator->New<ir::ETSModule>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()),
                                                     emptyIdent, ir::ModuleFlag::ETSSCRIPT, program);

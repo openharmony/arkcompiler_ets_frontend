@@ -24,7 +24,7 @@ flags: [dynamic-ast]
 //     location
 // } 
 
-import { A } from "dynamic_js_import_tests"
+import { A } from "dynamic_import_tests"
 
 function main(): void {
     let a: A = { name: "Edalyn", age: 30, location: "Boiling_isles" };

@@ -89,35 +89,26 @@ __attribute__((unused)) char const *TokenToStr(TokenTypeToStr const *table, lexe
     ES2PANDA_UNREACHABLE();
 }
 
-__attribute__((unused)) char *StringViewToCString(ArenaAllocator *allocator, util::StringView const sv)
+char *StringViewToCString(ArenaAllocator *allocator, std::string_view const utf8)
 {
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
-    std::string_view utf8 = sv.Utf8();
-    if (utf8.data()[utf8.size()] == '\0') {
+    if (!utf8.empty() && (utf8.back() == '\0')) {
         // Avoid superfluous allocation.
         return const_cast<char *>(utf8.data());
     }
     char *res = reinterpret_cast<char *>(allocator->Alloc(utf8.size() + 1));
-    [[maybe_unused]] auto err = memmove_s(res, utf8.size() + 1, utf8.cbegin(), utf8.size());
-    ES2PANDA_ASSERT(err == EOK);
+    if (!utf8.empty()) {
+        [[maybe_unused]] auto err = memmove_s(res, utf8.size() + 1, utf8.cbegin(), utf8.size());
+        ES2PANDA_ASSERT(err == EOK);
+    }
     res[utf8.size()] = '\0';
     return res;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
 }
 
-char *StringViewToCString(ArenaAllocator *allocator, std::string_view const utf8)
+__attribute__((unused)) char *StringViewToCString(ArenaAllocator *allocator, util::StringView const sv)
 {
-    // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
-    if (utf8.data()[utf8.size()] == '\0') {
-        // Avoid superfluous allocation.
-        return const_cast<char *>(utf8.data());
-    }
-    char *res = reinterpret_cast<char *>(allocator->Alloc(utf8.size() + 1));
-    [[maybe_unused]] auto err = memmove_s(res, utf8.size() + 1, utf8.cbegin(), utf8.size());
-    ES2PANDA_ASSERT(err == EOK);
-    res[utf8.size()] = '\0';
-    return res;
-    // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
+    return StringViewToCString(allocator, sv.Utf8());
 }
 
 __attribute__((unused)) char *StdStringToCString(ArenaAllocator *allocator, std::string str)
@@ -746,23 +737,19 @@ extern "C" __attribute__((unused)) int GenerateTsDeclarationsFromContext(es2pand
                                                                                                                   : 1;
 }
 
-extern "C" void InsertETSImportDeclarationAfterParse(es2panda_Context *context, es2panda_AstNode *importDeclaration)
+extern "C" void InsertETSImportDeclarationAndParse(es2panda_Context *context, es2panda_AstNode *importDeclaration)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
-    auto *importDeclarationE2p = reinterpret_cast<ir::ETSImportDeclaration *>(importDeclaration);
+    auto *importDeclE2p = reinterpret_cast<ir::ETSImportDeclaration *>(importDeclaration);
 
-    ctx->parserProgram->Ast()->Statements().insert(ctx->parserProgram->Ast()->Statements().begin(),
-                                                   importDeclarationE2p);
-    ctx->parser->AsETSParser()->GetImportPathManager()->AddToParseList(
-        importDeclarationE2p->ResolvedSource()->Str(), util::ImportFlags::NONE, lexer::SourcePosition());
+    ctx->parserProgram->Ast()->Statements().insert(ctx->parserProgram->Ast()->Statements().begin(), importDeclE2p);
+    importDeclE2p->SetParent(ctx->parserProgram->Ast());
+
     ctx->parser->AsETSParser()->AddExternalSource(ctx->parser->AsETSParser()->ParseSources());
 
-    for (auto *specific : importDeclarationE2p->Specifiers()) {
-        if (specific->Parent() == nullptr) {
-            specific->SetParent(importDeclarationE2p);
-        }
+    for ([[maybe_unused]] auto *specific : importDeclE2p->Specifiers()) {
+        ES2PANDA_ASSERT(specific->Parent() != nullptr);
     }
-    importDeclarationE2p->SetParent(ctx->parserProgram->Ast());
 }
 
 es2panda_Impl g_impl = {
@@ -812,7 +799,7 @@ es2panda_Impl g_impl = {
     Es2pandaEnumToString,
     DeclarationFromIdentifier,
     GenerateTsDeclarationsFromContext,
-    InsertETSImportDeclarationAfterParse,
+    InsertETSImportDeclarationAndParse,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 
