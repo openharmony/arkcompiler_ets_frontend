@@ -63,49 +63,9 @@ export function collectExistNames(sourceFile: SourceFile): Set<string> {
 type IdentifiersAndStructs = {shadowIdentifiers: Identifier[], shadowStructs: StructDeclaration[]};
 
 /**
- * collect exist identifiers in current source file
- * @param sourceFile
- * @param context
- */
-export function collectIdentifiersAndStructs(sourceFile: SourceFile, context: TransformationContext): IdentifiersAndStructs {
-  const identifiers: Identifier[] = [];
-  const structs: StructDeclaration[] = [];
-
-  let visit = (node: Node): Node => {
-    if (isStructDeclaration(node)) {
-      structs.push(node);
-    }
-    // @ts-ignore
-    if (getOriginalNode(node).virtual) {
-      return node;
-    }
-    if (!isIdentifier(node) || !node.parent) {
-      return visitEachChild(node, visit, context);
-    }
-
-    identifiers.push(node);
-    return node;
-  };
-
-  visit(sourceFile);
-  return {shadowIdentifiers: identifiers, shadowStructs: structs};
-}
-
-export function isCommentedNode(node: Node, sourceFile: SourceFile): boolean {
-  const ranges: CommentRange[] = getLeadingCommentRangesOfNode(node, sourceFile);
-  return ranges !== undefined;
-}
-
-export function isSuperCallStatement(node: Node): boolean {
-  return isExpressionStatement(node) &&
-    isCallExpression(node.expression) &&
-    node.expression.expression.kind === SyntaxKind.SuperKeyword;
-}
-
-/**
  * separate wildcards from specific items.
  */
-export function separateUniversalReservedItem(originalArray: string[]): ReservedNameInfo {
+export function separateUniversalReservedItem(originalArray: string[] | undefined): ReservedNameInfo {
   if (!originalArray) {
     throw new Error('Unable to handle the empty array.');
   }
