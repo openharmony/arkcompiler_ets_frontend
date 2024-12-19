@@ -111,7 +111,6 @@ class Demo{
           "names": [],
           "mappings": ";;AAIA,MAAM,IAAI;IACR,YAAY,MAAM,CAAE,KAAK,EAAE,MAAM,EAAE,MAAM,CAAE,OAAO,EAAE,MAAM,EAAE,MAAM,CAAE,IAAI,EAAE,MAAM;QAC5E,IAAI,CAAC,KAAK,GAAG,KAAK,CAAA;QAClB,IAAI,CAAC,OAAO,GAAG,OAAO,CAAA;QACtB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAA;IACpB,CAAC;CACF"
         }
-      console.log(JSON.stringify(actualSourceMap, null, 2))
       assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
       assert.strictEqual(compareStringsIgnoreNewlines(JSON.stringify(actualSourceMap, null, 2), JSON.stringify(expectSourceMap, null, 2)), true);
     });
@@ -158,9 +157,7 @@ class Demo{
             this.mark = mark;
           }
         }`;
-      console.log(actualContent)
       assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
-      console.log(actualContent);
     });
   });
 
