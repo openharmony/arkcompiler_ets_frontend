@@ -16,27 +16,69 @@
 #include "emitFiles.h"
 
 #include <assembly-emitter.h>
-#include <mem/arena_allocator.h>
 #include "utils/timers.h"
 
 #include <es2panda.h>
 #include <protobufSnapshotGenerator.h>
+#include <util/commonUtil.h>
 #include <util/helpers.h>
 
 namespace panda::es2panda::aot {
 void EmitFileQueue::ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob)
 {
-    for (const auto &info: progsInfo_) {
+    std::unordered_map<std::string, util::AbcProgramsCache *> abcProgsCacheMap {};
+    /**
+     * The programKey is usually the fileName of the source file. If the program generated from the abc file,
+     * the programKey format is the abc filePath + verticalLine + recordName.
+     */
+    for (const auto &[programKey, programCache]: progsInfo_) {
         // generate cache protoBins and set dependencies
-        if (!info.second->needUpdateCache) {
+        if (!programCache->needUpdateCache) {
             continue;
         }
-        auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
+
+        bool isAbcProgram = options_->CompilerOptions().enableAbcInput &&
+                            programKey.find(util::CHAR_VERTICAL_LINE) != std::string::npos;
+        if (isAbcProgram) {
+            // An abc file will contain multiple programs, and a protobin file is needed to map multiple programs
+            FillAbcProgramsMap(abcProgsCacheMap, programKey, programCache);
+            continue;
+        }
+        auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(programKey);
         if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
-            auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, info.second);
+            auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, programCache);
             emitProtoJob->DependsOn(emitMergedAbcJob);
             jobs_.push_back(emitProtoJob);
             jobsCount_++;
+        }
+    }
+    for (const auto &info: abcProgsCacheMap) {
+        // Cache programs from the same abc file into a protobin file
+        auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
+        auto emitAbcProtoJob = new EmitAbcCacheJob(outputCacheIter->second, info.second);
+        emitAbcProtoJob->DependsOn(emitMergedAbcJob);
+        jobs_.push_back(emitAbcProtoJob);
+        jobsCount_++;
+    }
+}
+
+void EmitFileQueue::FillAbcProgramsMap(std::unordered_map<std::string, util::AbcProgramsCache *> &abcprogsCacheMap,
+                                       std::string progKey, panda::es2panda::util::ProgramCache *progCache)
+{
+    constexpr size_t ABC_FILE_PATH_POS = 0;
+    std::vector<std::string> items = util::Split(progKey, util::CHAR_VERTICAL_LINE);
+    std::string abcFilePath = items[ABC_FILE_PATH_POS];
+    auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(abcFilePath);
+    if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
+        auto iter = abcprogsCacheMap.find(abcFilePath);
+        if (iter == abcprogsCacheMap.end()) {
+            std::map<std::string, util::ProgramCache *> abcProgramsInfo {};
+            abcProgramsInfo.insert({progKey, progCache});
+            auto *cache = allocator_->New<panda::es2panda::util::AbcProgramsCache>(progCache->hashCode,
+                                                                                   abcProgramsInfo);
+            abcprogsCacheMap.insert({abcFilePath, cache});
+        } else {
+            iter->second->programsCache.insert({progKey, progCache});
         }
     }
 }
@@ -131,6 +173,15 @@ void EmitCacheJob::Run()
     panda::Timer::timerStart(panda::EVENT_EMIT_CACHE_FILE, outputProtoName_);
     panda::proto::ProtobufSnapshotGenerator::UpdateCacheFile(progCache_, outputProtoName_);
     panda::Timer::timerEnd(panda::EVENT_EMIT_CACHE_FILE, outputProtoName_);
+}
+
+void EmitAbcCacheJob::Run()
+{
+    std::unique_lock<std::mutex> lock(m_);
+    cond_.wait(lock, [this] { return dependencies_ == 0; });
+    panda::Timer::timerStart(panda::EVENT_UPDATE_ABC_PROG_CACHE, outputProtoName_);
+    panda::proto::ProtobufSnapshotGenerator::UpdateAbcCacheFile(abcProgsCache_, outputProtoName_);
+    panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PROG_CACHE, outputProtoName_);
 }
 
 }  // namespace panda::es2panda::util
