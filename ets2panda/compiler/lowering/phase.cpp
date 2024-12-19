@@ -120,7 +120,6 @@ std::vector<Phase *> GetETSPhaseList()
     return {
         &g_pluginsAfterParse,
         &g_stringConstantsLowering,
-        &g_constantExpressionLowering,
         &g_packageImplicitImport,
         &g_topLevelStatements,
         &g_defaultParameterLowering,
@@ -131,6 +130,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_structLowering,
         &g_expressionLambdaConstructionPhase,
         &g_interfacePropDeclPhase,
+        &g_constantExpressionLowering,
         &g_enumLoweringPhase,
         &g_resolveIdentifiers,
         &g_capturedVariables,

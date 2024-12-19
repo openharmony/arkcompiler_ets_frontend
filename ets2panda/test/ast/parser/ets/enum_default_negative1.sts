@@ -13,11 +13,15 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
+enum A {
+    a = "a" - "a"
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+let foo = 0;
+enum B {
+    b = "a" + foo
+}
+
+
+/* @@? 17:9 Error SyntaxError: Unsupported operator for String */
+/* @@? 22:9 Error SyntaxError: Only constant expression is expected in the field */

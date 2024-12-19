@@ -28,6 +28,12 @@
 @MyAnno({a = 1 + -1, b = 1554.4 ^ 10, c = 12 >= 10})
 function foo() {}
 
+const annoA = 10
+const annoB = 1451.1
+const annoC = 123
+@MyAnno({a = annoA, b = annoB ^ 10, c = annoC > 10})
+function foo1() {}
+
 function main() {
     assert true
 }

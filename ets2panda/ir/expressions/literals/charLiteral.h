@@ -50,6 +50,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::VerifiedType Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    std::string ToString() const override;
 
     void Accept(ASTVisitorT *v) override
     {

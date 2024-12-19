@@ -20,3 +20,4 @@ enum InvalidInitTypeEnum {
 }
 
 /* @@@ label Error SyntaxError: Invalid enum initialization value  */
+/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */

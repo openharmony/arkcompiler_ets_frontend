@@ -20,5 +20,5 @@ enum Direction {
   Right = /* @@ label */0
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization type  */
 
+/* @@@ label Error SyntaxError: Invalid enum initialization value  */

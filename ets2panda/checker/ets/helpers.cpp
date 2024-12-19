@@ -38,6 +38,10 @@ varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringV
 std::pair<varbinder::Variable *, const ETSObjectType *> ETSChecker::FindVariableInClassOrEnclosing(
     const util::StringView name, const ETSObjectType *classType)
 {
+    // For Annotation, it doesnot have containing class, so classType will be nullptr.
+    if (classType == nullptr) {
+        return {nullptr, nullptr};
+    }
     const auto searchFlags = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
                              PropertySearchFlags::SEARCH_IN_INTERFACES;
     auto *resolved = classType->GetProperty(name, searchFlags);

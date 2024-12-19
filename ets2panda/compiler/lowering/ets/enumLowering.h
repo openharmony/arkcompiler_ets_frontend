@@ -51,6 +51,9 @@ private:
 
     void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
 
+    template <typename TypeNode>
+    bool CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError);
+
     [[nodiscard]] ir::ScriptFunction *MakeFunction(FunctionInfo &&functionInfo);
     ir::ClassDeclaration *CreateClass(ir::TSEnumDeclaration *const enumDecl);
     ir::ClassProperty *CreateOrdinalField(ir::ClassDefinition *const enumClass);

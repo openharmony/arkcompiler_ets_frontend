@@ -74,23 +74,29 @@ void EnumLoweringPhase::LogSyntaxError(std::string_view errorMessage, const lexe
 }
 
 template <typename TypeNode>
-static bool CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers)
+bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError)
 {
     for (auto *member : enumMembers) {
         auto *init = member->AsTSEnumMember()->Init();
         if constexpr (std::is_same_v<TypeNode, ir::NumberLiteral>) {
-            if (!init->IsNumberLiteral()) {
-                return false;
+            if (!init->IsNumberLiteral() || !init->AsNumberLiteral()->Number().IsInt()) {
+                LogSyntaxError("Invalid enum initialization value", init->Start());
+                hasLoggedError = true;
             }
         } else if constexpr (std::is_same_v<TypeNode, ir::StringLiteral>) {
             if (!init->IsStringLiteral()) {
-                return false;
+                LogSyntaxError("Invalid enum initialization value", init->Start());
+                hasLoggedError = true;
+            }
+            if (member->AsTSEnumMember()->IsGenerated()) {
+                LogSyntaxError("All items of string-type enumeration should be explicitly initialized.", init->Start());
+                hasLoggedError = true;
             }
         } else {
             static_assert(std::is_same_v<TypeNode, void>, "Unsupported TypeNode in CheckEnumMemberType.");
         }
     }
-    return true;
+    return !hasLoggedError;
 }
 
 [[nodiscard]] ir::ScriptFunction *EnumLoweringPhase::MakeFunction(FunctionInfo &&functionInfo)
@@ -384,14 +390,18 @@ bool EnumLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *progr
     program->Ast()->IterateRecursively([this, &isPerformedSuccess](ir::AstNode *ast) -> void {
         if (ast->IsTSEnumDeclaration()) {
             auto *enumDecl = ast->AsTSEnumDeclaration();
-
+            bool hasLoggedError = false;
             if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
-                itemInit->IsNumberLiteral() && CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members())) {
+                itemInit->IsNumberLiteral() &&
+                CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError)) {
                 CreateEnumIntClassFromEnumDeclaration(enumDecl);
-            } else if (itemInit->IsStringLiteral() && CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members())) {
+            } else if (itemInit->IsStringLiteral() &&
+                       CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError)) {
                 CreateEnumStringClassFromEnumDeclaration(enumDecl);
+            } else if (!hasLoggedError) {
+                LogSyntaxError("Invalid enum initialization value", itemInit->Start());
+                isPerformedSuccess = false;
             } else {
-                LogSyntaxError("Invalid enumeration value type.", enumDecl->Start());
                 isPerformedSuccess = false;
             }
         }

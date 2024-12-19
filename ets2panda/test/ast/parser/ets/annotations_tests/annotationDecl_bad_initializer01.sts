@@ -16,7 +16,10 @@
 class A{}
 
 @interface MyAnno {
-    testProperty1: string = /* @@ label */A
+    testProperty1: string = A
 }
 
-/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+
+/* @@? 19:29 Error TypeError: Unresolved reference A  */
+/* @@? 19:29 Error TypeError: Type 'A' cannot be assigned to type 'String'  */
+/* @@? 19:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */

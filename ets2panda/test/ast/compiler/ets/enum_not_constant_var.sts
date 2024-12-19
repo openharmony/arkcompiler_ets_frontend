@@ -12,11 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-/*
- * Can not moved into ast/parser while #19557 isn't resolved
- */ 
 
-enum TrailingCommaEnum {
-  Red,
+let a = 1
+const b = a + 1
+
+enum Color {
+    Red = /* @@ label */b,
 }
+
+/* @@@ label Error SyntaxError: Only constant expression is expected in the field  */

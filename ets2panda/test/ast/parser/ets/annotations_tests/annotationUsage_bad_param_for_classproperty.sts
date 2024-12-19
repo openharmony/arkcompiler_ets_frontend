@@ -21,8 +21,15 @@ class A{}
 
 class B{
     @MyAnno({testProperty1: A})
-    x : int, y : int
+    x : int
+    @MyAnno({testProperty1: A})
+    y : int
 }
 
-/* @@? 23:29 Error SyntaxError: Invalid value for annotation field, expected a constant literal. */
-/* @@? 24:12 Error SyntaxError: Unexpected token: ','. */
+
+/* @@? 23:29 Error TypeError: Unresolved reference A  */
+/* @@? 23:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 23:14 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'A', but expected type is 'String'.  */
+/* @@? 25:29 Error TypeError: Unresolved reference A  */
+/* @@? 25:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 25:14 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'A', but expected type is 'String'.  */

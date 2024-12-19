@@ -32,6 +32,11 @@ public:
         return true;
     }
 
+    virtual std::string ToString() const
+    {
+        UNREACHABLE();
+    }
+
 protected:
     explicit Literal(AstNodeType const type) : Expression(type) {}
 };

@@ -558,6 +558,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ts/voidType.cpp
   util/arktsconfig.cpp
   util/bitset.cpp
+  util/dtoa_helper.cpp
   util/errorHandler.cpp
   util/errorLogger.cpp
   util/errorRecovery.cpp

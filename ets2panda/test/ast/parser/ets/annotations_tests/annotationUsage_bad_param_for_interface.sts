@@ -25,4 +25,6 @@ interface itf {
     foo() : string
 }
 
-/* @@? 22:25 Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 22:25 Error TypeError: Unresolved reference A  */
+/* @@? 22:25 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@? 22:10 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'A', but expected type is 'String'.  */

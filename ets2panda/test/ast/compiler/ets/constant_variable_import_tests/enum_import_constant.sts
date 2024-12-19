@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
+import {constVar} from './const_var'
+
+// Constant variable should be in the same compilation unit
+enum Color {
+    C = /* @@ label */constVar
 }
 
 /* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */

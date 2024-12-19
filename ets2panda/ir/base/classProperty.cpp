@@ -198,6 +198,8 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
             clone->SetAnnotations(std::move(annotationUsages));
         }
 
+        clone->SetRange(range_);
+
         return clone;
     }
 

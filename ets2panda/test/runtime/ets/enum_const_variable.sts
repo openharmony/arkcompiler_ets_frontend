@@ -13,11 +13,19 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
+const b = 1 + 1 * 2
+const a = b + 10
+const c = 177.141513
+enum Color {
+    Red = b,
+    Blue = a,
+    Yellow,
+    Purple = c as int
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+function main() {
+    assert Color.Red == 3
+    assert Color.Blue == 13
+    assert Color.Yellow == 14
+    assert Color.Purple == 177
+}

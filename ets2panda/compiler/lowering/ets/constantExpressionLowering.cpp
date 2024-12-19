@@ -16,6 +16,7 @@
 #include "constantExpressionLowering.h"
 
 #include "checker/ETSchecker.h"
+#include "compiler/lowering/util.h"
 #include "lexer/token/token.h"
 #include "util/errorHandler.h"
 
@@ -44,6 +45,15 @@ static bool IsSupportedLiteral(ir::Expression *const node)
            literal->IsStringLiteral() || literal->IsUndefinedLiteral() || literal->IsNullLiteral();
 }
 
+static bool IsStringTypeReference(ir::ETSTypeReference *type)
+{
+    if (type->Part()->Name()->IsIdentifier()) {
+        auto name = type->Part()->Name()->AsIdentifier()->Name();
+        return name == "string" || name == "String";
+    }
+    return false;
+}
+
 static bool CheckIsBooleanConstantForUnary(ir::Literal *const unaryLiteral, lexer::TokenType opType)
 {
     if (unaryLiteral->IsBooleanLiteral()) {
@@ -52,9 +62,9 @@ static bool CheckIsBooleanConstantForUnary(ir::Literal *const unaryLiteral, lexe
     return opType == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
 }
 
-static bool CheckIsBooleanConstantForBinary(ir::Literal *const left, ir::Literal *const right, lexer::TokenType opType)
+static bool CheckIsBooleanConstantForBinary(ir::Literal *lhs, ir::Literal *rhs, lexer::TokenType opType)
 {
-    if (left->IsBooleanLiteral() || right->IsBooleanLiteral()) {
+    if (lhs->IsBooleanLiteral() && rhs->IsBooleanLiteral()) {
         return true;
     }
     return opType == lexer::TokenType::PUNCTUATOR_GREATER_THAN ||
@@ -341,7 +351,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryBooleanConstant(ir::BinaryExp
 
     auto resNode = util::NodeAllocator::Alloc<ir::BooleanLiteral>(context_->allocator, result);
     resNode->SetParent(expr->Parent());
-    resNode->SetRange({left->Range().start, right->Range().end});
+    resNode->SetRange(expr->Range());
     return resNode;
 }
 
@@ -493,7 +503,7 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryNumericConstantHelper(ir::Bin
 
     ir::TypedAstNode *resNode = util::NodeAllocator::Alloc<ir::NumberLiteral>(context_->allocator, resNum);
     resNode->SetParent(expr->Parent());
-    resNode->SetRange({lhs->Range().start, rhs->Range().end});
+    resNode->SetRange(expr->Range());
     return resNode;
 }
 
@@ -501,7 +511,6 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryNumericConstant(ir::BinaryExp
 {
     auto left = expr->Left()->AsLiteral();
     auto right = expr->Right()->AsLiteral();
-    // Note(daizihan): Not supported string + int concatenation
     if (!IsSupportedLiteralForNumeric(left) && !IsSupportedLiteralForNumeric(right)) {
         return expr;
     }
@@ -529,6 +538,22 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryNumericConstant(ir::BinaryExp
     }
 }
 
+ir::AstNode *ConstantExpressionLowering::FoldBinaryStringConstant(ir::BinaryExpression *const expr)
+{
+    if (expr->OperatorType() != lexer::TokenType::PUNCTUATOR_PLUS) {
+        LogSyntaxError("Unsupported operator for String", expr->Left()->Start());
+        return expr;
+    }
+
+    auto const lhs = expr->Left()->AsLiteral();
+    auto const rhs = expr->Right()->AsLiteral();
+    auto const resStr = util::UString(lhs->ToString() + rhs->ToString(), context_->allocator).View();
+    auto resNode = util::NodeAllocator::Alloc<ir::StringLiteral>(context_->allocator, resStr);
+    resNode->SetParent(expr->Parent());
+    resNode->SetRange(expr->Range());
+    return resNode;
+}
+
 ir::AstNode *ConstantExpressionLowering::FoldBinaryConstant(ir::BinaryExpression *const expr)
 {
     auto const lhs = expr->Left()->AsLiteral();
@@ -538,7 +563,9 @@ ir::AstNode *ConstantExpressionLowering::FoldBinaryConstant(ir::BinaryExpression
     if (isBooleanConstant) {
         return FoldBinaryBooleanConstant(expr);
     }
-
+    if (lhs->IsStringLiteral() || rhs->IsStringLiteral()) {
+        return FoldBinaryStringConstant(expr);
+    }
     return FoldBinaryNumericConstant(expr);
 }
 
@@ -652,9 +679,142 @@ ir::AstNode *ConstantExpressionLowering::FoldUnaryConstant(ir::UnaryExpression *
     return FoldUnaryNumericConstant(unary);
 }
 
+ir::AstNode *ConstantExpressionLowering::TryFoldTSAsExpressionForString(ir::TSAsExpression *expr)
+{
+    if (expr->Expr()->IsStringLiteral() && expr->TypeAnnotation()->IsETSTypeReference() &&
+        IsStringTypeReference(expr->TypeAnnotation()->AsETSTypeReference())) {
+        auto res = expr->Expr()->AsStringLiteral();
+        res->SetParent(expr->Parent());
+        res->SetRange(expr->Range());
+        return res;
+    }
+    return expr;
+}
+
+ir::AstNode *ConstantExpressionLowering::FoldTSAsExpression(ir::TSAsExpression *const expr)
+{
+    if (expr->Expr()->IsNumberLiteral() && expr->TypeAnnotation()->IsETSPrimitiveType()) {
+        auto *numLiteral = expr->Expr()->AsNumberLiteral();
+        lexer::Number resNum;
+        switch (expr->TypeAnnotation()->AsETSPrimitiveType()->GetPrimitiveType()) {
+            case ir::PrimitiveType::CHAR: {
+                auto resChar = GetOperand<char16_t>(numLiteral);
+                ir::TypedAstNode *resNode = util::NodeAllocator::Alloc<ir::CharLiteral>(context_->allocator, resChar);
+                resNode->SetParent(expr->Parent());
+                resNode->SetRange(expr->Range());
+                return resNode;
+            }
+            case ir::PrimitiveType::BYTE: {
+                resNum = lexer::Number(GetOperand<int8_t>(numLiteral));
+                break;
+            }
+            case ir::PrimitiveType::SHORT: {
+                resNum = lexer::Number(GetOperand<int16_t>(numLiteral));
+                break;
+            }
+            case ir::PrimitiveType::INT: {
+                resNum = lexer::Number(GetOperand<int32_t>(numLiteral));
+                break;
+            }
+            case ir::PrimitiveType::LONG: {
+                resNum = lexer::Number(GetOperand<int64_t>(numLiteral));
+                break;
+            }
+            case ir::PrimitiveType::FLOAT: {
+                resNum = lexer::Number(GetOperand<float>(numLiteral));
+                break;
+            }
+            case ir::PrimitiveType::DOUBLE: {
+                resNum = lexer::Number(GetOperand<double>(numLiteral));
+                break;
+            }
+            default: {
+                return expr;
+            }
+        }
+        ir::TypedAstNode *result = util::NodeAllocator::Alloc<ir::NumberLiteral>(context_->allocator, resNum);
+        result->SetParent(expr->Parent());
+        result->SetRange(expr->Range());
+        return result;
+    }
+    return TryFoldTSAsExpressionForString(expr);
+}
+
+varbinder::Variable *ConstantExpressionLowering::FindIdentifier(ir::Identifier *ident)
+{
+    auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(ident));
+    auto option = varbinder::ResolveBindingOptions::ALL_VARIABLES;
+    auto *resolved = localCtx.GetScope()->FindInFunctionScope(ident->Name(), option).variable;
+    if (resolved == nullptr) {
+        resolved = localCtx.GetScope()->FindInGlobal(ident->Name(), option).variable;
+    }
+    return resolved;
+}
+
+ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifier(ir::AstNode *node, ir::AstNode *originNode)
+{
+    ir::AstNode *resNode = nullptr;
+    if (node->IsClassProperty()) {
+        auto prop = node->AsClassElement();
+        resNode = prop->Value()->Clone(context_->allocator, originNode->Parent());
+        resNode->SetRange(originNode->Range());
+    }
+    if (resNode != nullptr) {
+        return UnfoldConstIdentifiers(resNode);
+    }
+
+    return node;
+}
+
+ir::AstNode *ConstantExpressionLowering::UnfoldConstMemberExpression(ir::MemberExpression *member)
+{
+    auto *object = member->Object();
+    if (object->IsIdentifier()) {
+        auto variable = FindIdentifier(object->AsIdentifier());
+        // Constant expression
+        if (!variable->Declaration()->IsNameSpaceDecl()) {
+            return member;
+        }
+        return UnfoldConstIdentifiers(member->Property());
+    }
+    return member;
+}
+
+ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifiers(ir::AstNode *constantNode)
+{
+    ir::NodeTransformer handleUnfoldIdentifiers = [this](ir::AstNode *const node) {
+        if (node->IsIdentifier()) {
+            auto *ident = node->AsIdentifier();
+            auto *resolved = FindIdentifier(ident);
+            if (resolved == nullptr) {
+                return node;
+            }
+            if (!resolved->Declaration()->IsConstDecl()) {
+                return node;
+            }
+            return UnfoldConstIdentifier(resolved->Declaration()->Node(), node);
+        }
+        // For namespace constant expression
+        if (node->IsMemberExpression()) {
+            auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(node));
+            return UnfoldConstMemberExpression(node->AsMemberExpression());
+        }
+        return node;
+    };
+    constantNode->TransformChildrenRecursivelyPostorder(handleUnfoldIdentifiers, Name());
+    return constantNode;
+}
+
 ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
 {
     ir::NodeTransformer handleFoldConstant = [this](ir::AstNode *const node) {
+        if (node->IsTSAsExpression()) {
+            auto tsAsExpr = node->AsTSAsExpression();
+            if (IsSupportedLiteral(tsAsExpr->Expr())) {
+                return FoldTSAsExpression(tsAsExpr);
+            }
+            LogSyntaxError("Only constant expression is expected in the field", node->Start());
+        }
         if (node->IsUnaryExpression()) {
             auto unaryOp = node->AsUnaryExpression();
             if (IsSupportedLiteral(unaryOp->Argument())) {
@@ -678,29 +838,26 @@ ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
         }
         return node;
     };
-
     constantNode->TransformChildrenRecursivelyPostorder(handleFoldConstant, Name());
-
     return constantNode;
 }
 
 bool ConstantExpressionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (context_ == nullptr) {
-        context_ = ctx;
-    }
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : ext_programs) {
             Perform(ctx, extProg);
         }
     }
+
+    context_ = ctx;
     program_ = program;
+    varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program->Ast()->TransformChildrenRecursively(
-        // CC-OFFNXT(G.FMT.14-CPP) project code style
         [this](ir::AstNode *const node) -> AstNodePtr {
-            if (node->IsAnnotationUsage() || node->IsTSEnumDeclaration() || node->IsAnnotationDeclaration()) {
-                return FoldConstant(node);
+            if (node->IsAnnotationDeclaration() || node->IsAnnotationUsage() || node->IsTSEnumDeclaration()) {
+                return FoldConstant(UnfoldConstIdentifiers(node));
             }
             return node;
         },

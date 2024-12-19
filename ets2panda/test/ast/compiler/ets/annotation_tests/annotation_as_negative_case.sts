@@ -12,12 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class A {}
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
+@interface Anno{
+    a : string = 1 as string
+    b : int = 1 as A;
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+
+/* @@? 18:18 Error TypeError: Cannot cast type 'int' to 'String'  */
+/* @@? 19:15 Error TypeError: Cannot cast type 'int' to 'A'  */
+/* @@? 19:15 Error TypeError: Type 'A' cannot be assigned to type 'int'  */

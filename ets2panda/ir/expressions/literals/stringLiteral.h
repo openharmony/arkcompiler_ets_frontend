@@ -36,6 +36,11 @@ public:
         return str_;
     }
 
+    std::string ToString() const override
+    {
+        return str_.Mutf8();
+    }
+
     bool operator==(const StringLiteral &other) const
     {
         return str_ == other.str_;

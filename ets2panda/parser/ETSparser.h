@@ -433,11 +433,9 @@ private:
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst,
                                             bool isStatic) override;
 
-    ir::Expression *ParseNumberEnumExpression();
-    ir::Expression *ParseStringEnumExpression();
+    ir::Expression *ParseEnumExpression();
     bool ParseNumberEnumHelper();
-    lexer::SourcePosition ParseNumberEnum(ArenaVector<ir::AstNode *> &members);
-    lexer::SourcePosition ParseStringEnum(ArenaVector<ir::AstNode *> &members);
+    lexer::SourcePosition ParseEnumMember(ArenaVector<ir::AstNode *> &members);
 
     ir::Statement *ParseInterfaceDeclaration(bool isStatic) override;
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
