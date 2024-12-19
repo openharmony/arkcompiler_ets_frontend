@@ -1,6 +1,7 @@
 .language ECMAScript
 
 slotNum = 0xd
+expectedProperty = 0x3
 .function any .#~C=#C(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -65,6 +66,7 @@ label_2:
 }
 
 slotNum = 0x2
+expectedProperty = 0x1
 .function any .#~C=C~^1=#(any a0, any a1, any a2) {
 label_1: 
 label_0: 

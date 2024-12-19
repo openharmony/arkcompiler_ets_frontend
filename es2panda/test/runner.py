@@ -2315,6 +2315,7 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/module-record/module-record-field-name-option.js", "js",
                          ["--module-record-field-name=abc", "--source-file=abc", "--module", "--dump-normalized-asm-program"])
     runner.add_directory("parser/annotations", "ts", ["--module", "--dump-ast", "--enable-annotations"])
+    runner.add_directory("parser/ts/inline-property", "ts", ["--dump-assembly", "--module"])
 
     runners.append(runner)
 
