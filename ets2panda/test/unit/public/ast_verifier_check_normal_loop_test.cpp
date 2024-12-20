@@ -19,8 +19,7 @@
 
 #include <gtest/gtest.h>
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::CheckInfiniteLoop;
 using ark::es2panda::ir::AstNode;
 
 namespace {
@@ -66,8 +65,6 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(NormalLoopTests, NormalLoop)
 {
-    ASTVerifier verifier {Allocator()};
-
     TestData data = GetParam();
     char const *text = data.program;
 
@@ -76,7 +73,7 @@ TEST_P(NormalLoopTests, NormalLoop)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    const auto &messages = VerifyCheck(verifier, ast, "CheckInfiniteLoopForAll");
+    const auto &messages = verifier_.Verify<CheckInfiniteLoop>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);

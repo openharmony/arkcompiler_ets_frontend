@@ -16,14 +16,32 @@
 #ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_CHECKCONTEXT_H
 #define ES2PANDA_COMPILER_CORE_AST_VERIFIER_CHECKCONTEXT_H
 
+#include "generated/options.h"
 #include "ir/astNode.h"
 #include "utils/json_builder.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
+class CheckContext;
 enum class CheckDecision { CORRECT, INCORRECT };
 enum class CheckAction { CONTINUE, SKIP_SUBTREE };
+
 using CheckResult = std::tuple<CheckDecision, CheckAction>;
+using VerifierInvariants = util::gen::verifier_invariants::Enum;
+
+template <VerifierInvariants ENUM>
+class InvariantBase {
+public:
+    constexpr static VerifierInvariants ID = ENUM;
+    constexpr static std::string_view NAME = util::gen::verifier_invariants::ToString(ID);
+    CheckResult VerifyNode(CheckContext *ctx, const ir::AstNode *ast);
+};
+
+template <VerifierInvariants ID>
+class RecursiveInvariant : public InvariantBase<ID> {
+public:
+    void VerifyAst(CheckContext *ctx, const ir::AstNode *ast);
+};
 
 enum class CheckSeverity { ERROR, WARNING, UNKNOWN };
 inline std::string CheckSeverityString(CheckSeverity value)
@@ -40,14 +58,14 @@ inline std::string CheckSeverityString(CheckSeverity value)
 
 class CheckMessage {
 public:
-    explicit CheckMessage(util::StringView name, util::StringView cause, util::StringView message, size_t line)
-        : invariantName_ {name}, cause_ {cause}, message_ {message}, line_ {line}
+    explicit CheckMessage(VerifierInvariants id, util::StringView cause, util::StringView message, size_t line)
+        : invariantId_ {id}, cause_ {cause}, message_ {message}, line_ {line}
     {
     }
 
-    std::string Invariant() const
+    VerifierInvariants InvariantId() const
     {
-        return invariantName_;
+        return invariantId_;
     }
 
     std::string Cause() const
@@ -60,7 +78,7 @@ public:
     {
         return [sourceName, phaseName, severity, this](JsonObjectBuilder &body) {
             body.AddProperty("severity", CheckSeverityString(severity));
-            body.AddProperty("invariant", invariantName_);
+            body.AddProperty("invariant", util::gen::verifier_invariants::ToString(invariantId_));
             body.AddProperty("cause", cause_);
             body.AddProperty("ast", message_);
             body.AddProperty("line", line_ + 1);
@@ -70,7 +88,7 @@ public:
     }
 
 private:
-    std::string invariantName_;
+    VerifierInvariants invariantId_;
     std::string cause_;
     std::string message_;
     size_t line_;
@@ -80,15 +98,26 @@ using Messages = std::vector<CheckMessage>;
 
 class CheckContext {
 public:
-    explicit CheckContext() : checkName_ {"Invalid"} {}
+    void AddCheckMessage(const std::string &cause, const ir::AstNode &node, const lexer::SourcePosition &from)
+    {
+        const auto loc = from.line;
+        const auto &&dump = node.DumpJSON();
+        messages_.emplace_back(invariantId_, cause.data(), dump.data(), loc);
+    }
 
-    void AddCheckMessage(const std::string &cause, const ir::AstNode &node, const lexer::SourcePosition &from);
-    void SetCheckName(util::StringView checkName);
-    Messages GetMessages();
+    void SetInvariantId(VerifierInvariants id)
+    {
+        invariantId_ = id;
+    }
+
+    Messages GetMessages()
+    {
+        return messages_;
+    }
 
 private:
     Messages messages_;
-    util::StringView checkName_;
+    VerifierInvariants invariantId_ {VerifierInvariants::INVALID};
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

@@ -20,9 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class VariableNameIdentifierNameSame {
-public:
-    explicit VariableNameIdentifierNameSame([[maybe_unused]] ArenaAllocator &allocator) {}
+class VariableNameIdentifierNameSame
+    : public RecursiveInvariant<VerifierInvariants::VARIABLE_NAME_IDENTIFIER_NAME_SAME> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
 };
 

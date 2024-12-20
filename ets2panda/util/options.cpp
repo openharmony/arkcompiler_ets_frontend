@@ -242,12 +242,19 @@ void Options::InitCompilerOptions()
 {
     auto vecToSet = [](const std::vector<std::string> &v) { return std::set<std::string>(v.begin(), v.end()); };
     skipPhases_ = vecToSet(gen::Options::GetSkipPhases());
-    verifierWarnings_ = vecToSet(gen::Options::GetVerifierInvariantsAsWarnings());
-    verifierErrors_ = vecToSet(gen::Options::GetVerifierInvariantsAsErrors());
+
     dumpBeforePhases_ = vecToSet(gen::Options::GetDumpBeforePhases());
     dumpEtsSrcBeforePhases_ = vecToSet(gen::Options::GetDumpEtsSrcBeforePhases());
     dumpAfterPhases_ = vecToSet(gen::Options::GetDumpAfterPhases());
     dumpEtsSrcAfterPhases_ = vecToSet(gen::Options::GetDumpEtsSrcAfterPhases());
+
+    auto verifierInit = [](std::array<bool, gen::verifier_invariants::COUNT> *a, const std::vector<std::string> &v) {
+        for (const auto &str : v) {
+            (*a)[gen::verifier_invariants::FromString(str)] = true;
+        }
+    };
+    verifierInit(&verifierWarnings_, gen::Options::GetVerifierInvariantsAsWarnings());
+    verifierInit(&verifierErrors_, gen::Options::GetVerifierInvariantsAsErrors());
 
     if (IsEtsWarnings()) {
         InitializeWarnings();

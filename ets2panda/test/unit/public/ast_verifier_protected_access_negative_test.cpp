@@ -16,14 +16,11 @@
 #include "ast_verifier_test.h"
 #include "checker/ETSchecker.h"
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::ModifierAccessValid;
 using ark::es2panda::ir::ETSScript;
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class Base {
             public a: int = 1;
@@ -48,20 +45,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    InvariantNameSet checks;
-    checks.insert("ModifierAccessValidForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
-
-    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class Base {
             public a: int = 1;
@@ -87,20 +78,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    InvariantNameSet checks;
-    checks.insert("ModifierAccessValidForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
-
-    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class Base {
             public a: int = 1;
@@ -126,20 +111,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    InvariantNameSet checks;
-    checks.insert("ModifierAccessValidForAll");
-    const auto &messages = verifier.Verify(ast, checks);
+    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
-
-    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class Base {
             public a: int = 1;
@@ -177,20 +156,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    InvariantNameSet checks;
-    const auto &messages = VerifyCheck(verifier, ast, "ModifierAccessValidForAll", checks);
-
+    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
-
-    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class Base {
             public a: int = 1;
@@ -229,20 +202,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    InvariantNameSet checks;
-    const auto &messages = VerifyCheck(verifier, ast, "ModifierAccessValidForAll", checks);
-
+    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
-
-    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class Base {
             public a: int = 1;
@@ -281,12 +248,8 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    InvariantNameSet checks;
-    const auto &messages = VerifyCheck(verifier, ast, "ModifierAccessValidForAll", checks);
-
+    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
-
-    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }

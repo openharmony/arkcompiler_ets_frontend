@@ -20,12 +20,11 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
+// NOTE(dkofanov) Fix and enable via `RecursiveInvariant`
 class ImportExportAccessValid {
-public:
-    explicit ImportExportAccessValid([[maybe_unused]] ArenaAllocator &allocator) {}
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
     bool ValidateExport(const varbinder::Variable *var);
     bool InvariantImportExportMethod(const std::unordered_set<std::string> &importedVariables,
                                      const varbinder::Variable *varCallee, const ir::AstNode *callExpr,

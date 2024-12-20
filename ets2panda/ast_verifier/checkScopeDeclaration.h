@@ -20,12 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class CheckScopeDeclaration {
-public:
-    explicit CheckScopeDeclaration([[maybe_unused]] ArenaAllocator &allocator) {}
+class CheckScopeDeclaration : public RecursiveInvariant<VerifierInvariants::CHECK_SCOPE_DECLARATION> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast) const;
-
-private:
     CheckResult CheckScope(CheckContext &ctx, varbinder::Scope const *const scope) const;
 };
 

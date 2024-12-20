@@ -14,7 +14,7 @@
  */
 
 #include "helpers.h"
-#include "identifierHasVariable.h"
+#include "ASTVerifier.h"
 #include "variableHasScope.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ts/tsEnumDeclaration.h"
@@ -30,7 +30,7 @@ CheckResult VariableHasScope::operator()(CheckContext &ctx, const ir::AstNode *a
     }
 
     // we will check invariant for only local variables of identifiers
-    if (const auto maybeVar = GetLocalScopeVariable(allocator_, ctx, ast); maybeVar.has_value()) {
+    if (const auto maybeVar = GetLocalScopeVariable(ctx, ast); maybeVar.has_value()) {
         const auto var = *maybeVar;
         const auto scope = var->GetScope();
         if (scope == nullptr) {
@@ -49,18 +49,17 @@ CheckResult VariableHasScope::operator()(CheckContext &ctx, const ir::AstNode *a
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-std::optional<varbinder::LocalVariable *> VariableHasScope::GetLocalScopeVariable(ArenaAllocator &allocator,
-                                                                                  CheckContext &ctx,
+std::optional<varbinder::LocalVariable *> VariableHasScope::GetLocalScopeVariable(CheckContext &ctx,
                                                                                   const ir::AstNode *ast)
 {
     if (!ast->IsIdentifier()) {
         return std::nullopt;
     }
 
-    auto invariantHasVariable = IdentifierHasVariable {allocator};
-    const auto variable = ast->AsIdentifier()->Variable();
-    const auto [decision, action] = invariantHasVariable(ctx, ast);
+    auto invariantHasVariable = IdentifierHasVariable {};
+    const auto [decision, action] = invariantHasVariable.VerifyNode(&ctx, ast);
 
+    const auto variable = ast->AsIdentifier()->Variable();
     if (variable == nullptr) {
         // NOTE(kkonkuznetsov): variable should not be null
         // but currently some identifiers do not have variables,

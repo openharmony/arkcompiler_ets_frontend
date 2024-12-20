@@ -1,8 +1,8 @@
-# IdentifierHasVariableForAll::NULL_VARIABLE
+# IdentifierHasVariable::NULL_VARIABLE
 union_property_access_in_call.sts
 common_property_union_access.sts
 
-# VariableHasScopeForAll::NULL_VARIABLE
+# VariableHasScope::NULL_VARIABLE
 15445.sts
 15502.sts
 15656.sts

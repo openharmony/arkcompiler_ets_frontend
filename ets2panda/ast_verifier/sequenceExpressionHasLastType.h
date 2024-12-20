@@ -20,12 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class SequenceExpressionHasLastType {
-public:
-    explicit SequenceExpressionHasLastType([[maybe_unused]] ArenaAllocator &allocator) {}
+class SequenceExpressionHasLastType : public RecursiveInvariant<VerifierInvariants::SEQUENCE_EXPRESSION_HAS_LAST_TYPE> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

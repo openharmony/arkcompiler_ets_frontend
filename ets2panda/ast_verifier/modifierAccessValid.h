@@ -20,12 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class ModifierAccessValid {
-public:
-    explicit ModifierAccessValid([[maybe_unused]] ArenaAllocator &allocator) {}
+class ModifierAccessValid : public RecursiveInvariant<VerifierInvariants::MODIFIER_ACCESS_VALID> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-
-private:
     CheckResult HandleMethodExpression(CheckContext &ctx, const ir::AstNode *ast);
     CheckResult HandleCallExpression(CheckContext &ctx, const ir::AstNode *ast);
 };

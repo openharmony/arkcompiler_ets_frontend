@@ -41,20 +41,4 @@ es2panda_Context *AstVerifierTest::CreateContextAndProceedToState(const es2panda
     return ctx;
 }
 
-verifier_alias::Messages AstVerifierTest::VerifyCheck(verifier_alias::ASTVerifier &verifier,
-                                                      const ir_alias::AstNode *ast, const std::string &check,
-                                                      verifier_alias::InvariantNameSet &checks)
-{
-    checks.insert(check);
-    return verifier.Verify(ast, checks);
-}
-
-verifier_alias::Messages AstVerifierTest::VerifyCheck(verifier_alias::ASTVerifier &verifier,
-                                                      const ir_alias::AstNode *ast, const std::string &check)
-{
-    verifier_alias::InvariantNameSet checks;
-    checks.insert(check);
-    return verifier.Verify(ast, checks);
-}
-
 }  // namespace test::utils

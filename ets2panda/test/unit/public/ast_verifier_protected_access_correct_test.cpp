@@ -16,14 +16,11 @@
 #include "ast_verifier_test.h"
 #include "checker/ETSchecker.h"
 
-using ark::es2panda::compiler::ast_verifier::ASTVerifier;
-using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
+using ark::es2panda::compiler::ast_verifier::ModifierAccessValid;
 using ark::es2panda::ir::ETSScript;
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
 {
-    ASTVerifier verifier {Allocator()};
-
     char const *text = R"(
         class A {
             public a: int = 1;
@@ -46,8 +43,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    const auto &messages = VerifyCheck(verifier, ast, "ModifierAccessValidForAll");
-
+    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);

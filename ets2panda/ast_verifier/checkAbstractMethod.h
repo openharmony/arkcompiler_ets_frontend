@@ -20,12 +20,10 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class CheckAbstractMethod {
-public:
-    explicit CheckAbstractMethod([[maybe_unused]] ArenaAllocator &allocator) {}
+class CheckAbstractMethod : public RecursiveInvariant<VerifierInvariants::CHECK_ABSTRACT_METHOD> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast) const;
-
-private:
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier
