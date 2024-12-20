@@ -148,7 +148,7 @@ private:
     void CheckInit(const ir::AstNode *node);
     void Split(bool setToNull);
     void Merge();
-    void CheckPendingExits(bool inMethod);
+    void CheckPendingExits();
     NodeId GetNodeId(const ir::AstNode *node) const;
     util::StringView GetVariableType(const ir::AstNode *node) const;
     util::StringView GetVariableName(const ir::AstNode *node) const;
