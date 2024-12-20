@@ -59,7 +59,11 @@ Tranformation "one to many" is supported to express map of e.g. `std::vector<int
 
           # Cast C argument to C++ class, to call method from it.
             call_cast:
-              call_var: 'es2panda_FunctionSignature *ast'
+              call_var:
+                name: ast
+                type:
+                  name: es2panda_FunctionSignature
+                  ptr_depth: 1
               start: >-
                 (reinterpret_cast<?const? ir::FunctionSignature *>(ast))->
 
@@ -263,7 +267,11 @@ There are 4 keys in first layer:
         FunctionSignature in `cppToCTypes.yaml`:
         ```yaml
         call_cast:
-            call_var: 'es2panda_FunctionSignature *ast'
+            call_var:
+                name: ast
+                type:
+                    name: es2panda_FunctionSignature
+                    ptr_depth: 1
             start: >-
                 (reinterpret_cast<?const? ir::FunctionSignature *>(ast))->
         ```
@@ -362,8 +370,63 @@ ninja gen_api   # only generates *.inc files.
 
 ninja es2panda-public   # compiles es2panda_lib
 ```
-
 You can find generated files in `<build>/tools/es2panda/generated/es2panda_lib`.
+
+## IDL
+
+### How to check IDL for correctness:
+```bash
+# Cmake
+mkdir build && cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=Debug <runtime_core>/static_core
+
+# Run generation
+ninja gen_api
+
+# Cd to generated dir
+cd <build>/tools/es2panda/generated/es2panda_lib
+mkdir test
+
+# Check idl for correctness
+cp ./es2panda_lib.idl ./test/
+npx @azanat/idlize --idl2h --input-dir=<build>/tools/es2panda/generated/es2panda_lib/test
+
+# See results
+cat <build>/tools/es2panda/generated/es2panda_lib/generated/headers/arkoala_api_generated.h
+```
+
+
+### How to interpret type names in .idl:
+For example let's see type `[constant, ptr_2] es2panda_Variable` from `es2panda_lib.idl`:
+
+Read from right:
+- `ptr_2`: means that ptr_depth = 2 e.g. `**` in C/C++.
+- `constant`: means that type has `const` modifier
+- `es2panda_Variable`: base type, that is used in es2panda API
+
+As result:
+```c++
+// Type in .idl:
+[constant, ptr_2] es2panda_Variable
+
+// Equals to
+
+// Type in .h/.cpp
+const es2panda_Variable **
+```
+
+### Cutsom complex types which should be hardcoded when generating from idl:
+Due to the specifics of IDL there are some custom types:
+- `void *` is represented as `void_ptr` in IDL.
+- `void (*func)(es2panda_AstNode *, void *)` argument is represented as `AstNodeForEachFunction func` argument in IDL.
+- `es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *)` type is represented as `NodeTransformer` type in IDL.
+- `void (*NodeTraverser)(es2panda_AstNode *)` type is represented as `NodeTraverser` type in IDL.
+- `bool (*NodePredicate)(es2panda_AstNode *)` type is represented as `NodePredicate` type in IDL.
+- `es2panda_Variable *(*PropertyProcessor)(es2panda_Variable *, es2panda_Type *)` type is represented as `PropertyProcessor` type in IDL.
+- `void (*PropertyTraverser)(const es2panda_Variable *)` type is represented as `PropertyTraverser` type in IDL.
+- `void (*ClassBuilder)(es2panda_AstNode **nodes, size_t size)` type is represented as `ClassBuilder` type in IDL.
+- `void (*MethodBuilder)(es2panda_AstNode **statements, size_t sizeStatements, es2panda_AstNode **expression, size_t sizeExpression, es2panda_Type **type)` type is represented as `MethodBuilder` type in IDL.
+- `void (*ClassInitializerBuilder)(es2panda_AstNode **statements, size_t sizeStatements, es2panda_AstNode **expression, size_t sizeExpression)` type is represented as `ClassInitializerBuilder` type in IDL.
+
 
 ## Tests:
 Tests are located in `ets_frontend/ets2panda/test/unit/public`, their names start with "e2p_test_plugin".

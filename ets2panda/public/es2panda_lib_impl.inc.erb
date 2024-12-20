@@ -241,8 +241,8 @@ extern "C" <%= classData.constructor_type().lib_type_to_str()
 % classData.class_methods&.each_with_index do |method_info, index|
 /* <%= method_info["raw_decl"] %> */
 extern "C" <%= method_info["return_type"].lib_type_to_str %><%= className + method_info["overload_name"]
-%>([[maybe_unused]] es2panda_Context *context<%= if classData.call_cast["call_var"]
-then ", " + classData.call_cast["call_var"] end %><%=
+%>([[maybe_unused]] es2panda_Context *context<%= if classData.call_cast["call_var_str"]
+then ", " + classData.call_cast["call_var_str"] end %><%=
 method_info["args"]&.map { |arg| if arg.lib_args_to_str.strip() != "" then
 ", " + "[[maybe_unused]] " + arg.lib_args_to_str end}&.join("") %>/*return_args:*/<%= method_info["return_arg_to_str"] %>)
 {
@@ -261,8 +261,8 @@ method_info["args"]&.map { |arg| if arg.lib_args_to_str.strip() != "" then
 
 % structData.struct_getters&.each_with_index do |method_info, index|
 extern "C" <%= method_info["return_type"].lib_type_to_str %><%= structName + method_info["name"]
-%>([[maybe_unused]] es2panda_Context *context<%= if structData.call_cast["call_var"]
-then structData.call_cast["call_var"] end %>/*return_args:*/<%= method_info["return_arg_to_str"] %>)
+%>([[maybe_unused]] es2panda_Context *context<%= if structData.call_cast["call_var_str"]
+then structData.call_cast["call_var_str"] end %>/*return_args:*/<%= method_info["return_arg_to_str"] %>)
 {
 % method_info["args"]&.each do |arg|
     <%= arg.lib_cast["expression"] %>

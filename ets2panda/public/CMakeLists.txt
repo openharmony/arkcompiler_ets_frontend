@@ -553,6 +553,7 @@ set (ES2PANDA_INC
     ${LIB_NAME}_enums.inc.erb
     ${LIB_NAME}_impl.inc.erb
     ${LIB_NAME}_list.inc.erb
+    ${LIB_NAME}.idl.erb
 )
 
 panda_gen(
