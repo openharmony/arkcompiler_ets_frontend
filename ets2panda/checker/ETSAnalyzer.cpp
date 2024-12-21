@@ -2903,8 +2903,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
     //  If the actual [smart] type is definitely 'null' or 'undefined' then probably CTE should be thrown.
     //  Anyway we'll definitely obtain NullPointerException at runtime.
     if (exprType->DefinitelyETSNullish()) {
-        return checker->TypeError(
-            expr, "Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'.",
+        checker->ReportWarning(
+            {"Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'."},
             expr->Expr()->Start());
     }
     expr->SetTsType(checker->GetNonNullishType(exprType));

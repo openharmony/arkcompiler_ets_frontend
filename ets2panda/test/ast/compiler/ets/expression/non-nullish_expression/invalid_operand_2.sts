@@ -12,10 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- function main(){
-  let a:number|undefined = undefined;
-  a!++;
- }
 
- /* @@? 17:3 Warning Warning: Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'. */
- /* @@? 17:3 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
+function foo(x: Object|null) {
+    if (x instanceof Object) {
+        return x
+    }
+    return x!
+}
+
+/* @@? 20:12 Warning Warning: Bad operand type, the operand of the non-nullish expression is 'null' or 'undefined'. */
