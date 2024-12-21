@@ -88,6 +88,7 @@ import { handleReservedConfig } from './utils/TransformUtil';
 import { UnobfuscationCollections } from './utils/CommonCollections';
 import { historyAllUnobfuscatedNamesMap } from './initialization/Initializer';
 import { MemoryDottingDefine } from './utils/MemoryDottingDefine';
+import { nodeSymbolMap } from './utils/ScopeAnalyzer';
 export { UnobfuscationCollections } from './utils/CommonCollections';
 export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
 export type { ReservedNameInfo } from './utils/TransformUtil';
@@ -597,5 +598,6 @@ export class ArkObfuscator {
       PropCollections.globalMangledTable.clear();
     }
     UnobfuscationCollections.unobfuscatedNamesMap.clear();
+    nodeSymbolMap.clear();
   }
 }

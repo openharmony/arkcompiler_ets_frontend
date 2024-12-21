@@ -68,7 +68,7 @@ export class TypeUtils {
         if (name === ast.fileName) {
           return ast;
         } else {
-          return host.getSourceFile(name, languageVersion);
+          return undefined;
         }
       },
       // optional
@@ -82,7 +82,7 @@ export class TypeUtils {
       getNewLine: host.getNewLine,
       fileExists: () => true,
       readFile: (name): string => {
-        return name === ast.fileName ? ast.text : host.readFile(name);
+        return name === ast.fileName ? ast.text : undefined;
       },
       // must, read program.ts => createCompilerHost
       directoryExists: undefined,

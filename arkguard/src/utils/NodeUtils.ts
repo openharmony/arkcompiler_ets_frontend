@@ -269,8 +269,12 @@ export class NodeUtils {
     return false;
   }
 
-  public static findSymbolOfIdentifier(checker: TypeChecker, node: Identifier): Symbol | undefined {
-    let sym: Symbol | undefined = checker.getSymbolAtLocation(node);
+  public static findSymbolOfIdentifier(
+    checker: TypeChecker,
+    node: Identifier,
+    nodeSymbolMap: Map<Node, Symbol>
+  ): Symbol | undefined {
+    let sym: Symbol | undefined = nodeSymbolMap.get(node) ?? checker.getSymbolAtLocation(node);
     if (!sym || (sym && sym.name !== 'default')) {
       return sym;
     }
