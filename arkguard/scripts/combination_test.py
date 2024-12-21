@@ -40,7 +40,8 @@ DEFAULT_CONFIG = {
         'mDictionaryList': [],
         'mRenameProperties': False,
         'mKeepStringProperty': True,
-        'mTopLevel': False
+        'mTopLevel': False,
+        'mKeepParameterNames': False
     },
     'mExportObfuscation': False,
     'mEnableSourceMap': False,
@@ -66,7 +67,8 @@ CONFIG_ALIAS = {
         'mEnable': 'localVar',
         'mRenameProperties': 'prop',
         'mKeepStringProperty': 'strProp',
-        'mTopLevel': 'top'
+        'mTopLevel': 'top',
+        'mKeepParameterNames': 'keepPara'
     },
     'mExportObfuscation': 'export',
     'mEnableSourceMap': 'sourcemap',

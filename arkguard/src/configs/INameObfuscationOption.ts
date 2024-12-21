@@ -35,6 +35,8 @@ export interface INameObfuscationOption {
 
   readonly mTopLevel?: boolean;
 
+  readonly mKeepParameterNames?: boolean;
+
   mReservedToplevelNames?: string[];
 
   mUniversalReservedToplevelNames?: RegExp[];

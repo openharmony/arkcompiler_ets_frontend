@@ -738,6 +738,7 @@ describe('test for ConfigResolve', function() {
           -enable-export-obfuscation,
           -extra-options strip-language-default,
           -extra-options strip-system-api-args,
+          -keep-parameter-names
           -remove-comments,
           -compact,
           -remove-log,
@@ -759,6 +760,7 @@ describe('test for ConfigResolve', function() {
         expect(configs.options.removeLog).to.be.true;
         expect(configs.options.stripLanguageDefault).to.be.true;
         expect(configs.options.stripSystemApiArgs).to.be.true;
+        expect(configs.options.keepParameterNames).to.be.true;
       });
 
       it('should handle config content correctly when diffenent combinations use line break splitting', () => {

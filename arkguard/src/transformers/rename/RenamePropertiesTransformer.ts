@@ -176,7 +176,7 @@ namespace secharmony {
       }
 
       function renameProperty(node: Node, computeName: boolean): Node {
-        if (!isStringLiteralLike(node) && !isIdentifier(node) && !isPrivateIdentifier(node) && !isNumericLiteral(node)) {
+        if (!NodeUtils.isPropertyNameType(node)) {
           return visitEachChild(node, renameProperties, context);
         }
 

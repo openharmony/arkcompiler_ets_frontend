@@ -592,6 +592,31 @@ describe('Teste Cases for <RenameFileNameTransformer>.', function () {
             "import { f as a } from 'typescript';\nlet b: number = 1;\nexport { c, d } from 'typescript';\nexport { b as e };\n",
         ).to.be.true;
       });
+
+      it('Test the option of mKeepParameterNames for declaration file', () => {
+        let options: IOptions = {
+          'mNameObfuscation': {
+            'mEnable': true,
+            'mRenameProperties': false,
+            'mReservedProperties': [],
+            'mTopLevel': false,
+            'mKeepParameterNames': true
+          }
+        };
+        assert.strictEqual(options !== undefined, true);
+        const renameIdentifierFactory = secharmony.transformerPlugin.createTransformerFactory(options);
+        const fileContent = `export declare function foo(para: number): void;`;
+        const textWriter = ts.createTextWriter('\n');
+        let arkobfuscator = new ArkObfuscatorForTest();
+        arkobfuscator.init(options);
+        const sourceFile: ts.SourceFile = ts.createSourceFile('demo.d.ts', fileContent, ts.ScriptTarget.ES2015, true);
+        let transformedResult: ts.TransformationResult<ts.Node> = ts.transform(sourceFile, [renameIdentifierFactory], {});
+        let ast: ts.SourceFile = transformedResult.transformed[0] as ts.SourceFile;
+        arkobfuscator.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, textWriter, undefined);
+        const actualContent = textWriter.getText();
+        const expectContent = `export declare function foo(para: number): void;`;
+        assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
+      })
     })
   })
 })

@@ -21,7 +21,10 @@ import type {
   SourceFile,
   TypeChecker,
   TransformationContext,
-  TransformerFactory
+  TransformerFactory,
+  StringLiteralLike,
+  NumericLiteral,
+  PrivateIdentifier
 } from 'typescript';
 import {
   Symbol,
@@ -42,6 +45,7 @@ import {
   isMetaProperty,
   isMethodDeclaration,
   isMethodSignature,
+  isNumericLiteral,
   isParameter,
   isPrivateIdentifier,
   isPropertyAccessExpression,
@@ -293,6 +297,10 @@ export class NodeUtils {
       }
     }
     return sym;
+  }
+
+  public static isPropertyNameType(node: Node): node is StringLiteralLike | Identifier | PrivateIdentifier | NumericLiteral {
+    return isStringLiteralLike(node) || isIdentifier(node) || isPrivateIdentifier(node) || isNumericLiteral(node);
   }
 }
 
