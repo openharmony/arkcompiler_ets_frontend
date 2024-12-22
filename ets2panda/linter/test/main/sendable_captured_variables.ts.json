@@ -205,16 +205,6 @@
             "severity": "ERROR"
         },
         {
-            "line": 133,
-            "column": 16,
-            "endLine": 133,
-            "endColumn": 17,
-            "problem": "SendableCapturedVars",
-            "suggest": "",
-            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)",
-            "severity": "ERROR"
-        },
-        {
             "line": 140,
             "column": 18,
             "endLine": 140,

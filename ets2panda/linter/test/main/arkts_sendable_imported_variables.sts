@@ -127,32 +127,52 @@ function sendableFunctionE() {
 
 };
 
+export class ExportClassA {
+
+};
+
+export interface ExportInterfaceA {
+
+};
+
+export function exportFooA() {
+
+};
+
+export const exportObj: ExportClassA = new ExportClassA();
+
 @Sendable 
 class SendableClass {
   handle() {
-    new SendableLocalClassA(); // OK
-    sendableFunctionA(); // OK
-    new SendableLocalClassB(); // WARING, export decl
-    sendableFunctionB(); // WARING, export decl
-    new SendableLocalClassC(); // WARING, export { decl }
-    sendableFunctionC(); // WARING, export { decl }
-    new SendableLocalClassD(); // WARING, export { decl as alias }
-    sendableFunctionD(); // WARING, export { decl as alias }
-    new SendableLocalClassE(); // WARING, export default decl
+    new SendableLocalClassA();
+    sendableFunctionA();
+    new SendableLocalClassB();
+    sendableFunctionB();
+    new SendableLocalClassC();
+    sendableFunctionC();
+    new SendableLocalClassD();
+    sendableFunctionD();
+    new SendableLocalClassE();
+    new ExportClassA();
+    exportFooA();
+    exportObj;
   }
 }
 
 @Sendable
 function sendableFunction() {
-    new SendableLocalClassA(); // OK
-    sendableFunctionA(); // OK
-    new SendableLocalClassB(); // WARING, export decl
-    sendableFunctionB(); // WARING, export decl
-    new SendableLocalClassC(); // WARING, export { decl }
-    sendableFunctionC(); // WARING, export { decl }
-    new SendableLocalClassD(); // WARING, export { decl as alias }
-    sendableFunctionD(); // WARING, export { decl as alias }
-    new SendableLocalClassE(); // WARING, export default decl
+    new SendableLocalClassA();
+    sendableFunctionA();
+    new SendableLocalClassB();
+    sendableFunctionB();
+    new SendableLocalClassC();
+    sendableFunctionC();
+    new SendableLocalClassD();
+    sendableFunctionD();
+    new SendableLocalClassE();
+    new ExportClassA();
+    exportFooA();
+    exportObj;
 }
 
 export { SendableLocalClassC, sendableFunctionC, SendableLocalClassD as Sc42, sendableFunctionD as sf42 };
