@@ -6,3 +6,5 @@ Matrix_test
 mathjs_test
 validator_test
 lodash_test
+js-sha256_test
+easyreplace_test
