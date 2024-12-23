@@ -2789,12 +2789,12 @@ ir::Statement *ParserImpl::ParseDecoratorAndAnnotation()
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat '@'
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+        lexer_->GetToken().Ident().Utf8().rfind(ir::Annotation::annotationPrefix, 0) != std::string_view::npos) {
         // Annotation usage case
         if (!program_.IsEnableAnnotations()) {
             ThrowSyntaxError("Annotations are not enabled");
         }
-        lexer_->NextToken();  // eat '#'
         ir::Expression *expr = ParseLeftHandSideExpression();
         ir::Statement *resultAnnotation = static_cast<ir::Statement *>(AllocNode<ir::Annotation>(expr));
         resultAnnotation->SetRange({start, expr->End()});

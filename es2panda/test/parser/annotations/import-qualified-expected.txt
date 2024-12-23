@@ -152,15 +152,15 @@
                   "type": "MemberExpression",
                   "object": {
                     "type": "Identifier",
-                    "name": "Namespace1",
+                    "name": "__$$ETS_ANNOTATION$$__Namespace1",
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 3
+                        "column": 2
                       },
                       "end": {
                         "line": 18,
-                        "column": 13
+                        "column": 34
                       }
                     }
                   },
@@ -170,11 +170,11 @@
                     "loc": {
                       "start": {
                         "line": 18,
-                        "column": 14
+                        "column": 35
                       },
                       "end": {
                         "line": 18,
-                        "column": 18
+                        "column": 39
                       }
                     }
                   },
@@ -183,11 +183,11 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 18,
-                      "column": 18
+                      "column": 39
                     }
                   }
                 },
@@ -196,11 +196,11 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 18,
-                    "column": 20
+                    "column": 41
                   }
                 }
               },
@@ -213,7 +213,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 20
+                  "column": 41
                 }
               }
             }
@@ -348,15 +348,15 @@
                 "type": "MemberExpression",
                 "object": {
                   "type": "Identifier",
-                  "name": "Namespace1",
+                  "name": "__$$ETS_ANNOTATION$$__Namespace1",
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 21,
-                      "column": 13
+                      "column": 34
                     }
                   }
                 },
@@ -366,11 +366,11 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 14
+                      "column": 35
                     },
                     "end": {
                       "line": 21,
-                      "column": 18
+                      "column": 39
                     }
                   }
                 },
@@ -379,11 +379,11 @@
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 21,
-                    "column": 18
+                    "column": 39
                   }
                 }
               },
@@ -396,7 +396,7 @@
                 },
                 "end": {
                   "line": 21,
-                  "column": 18
+                  "column": 39
                 }
               }
             }
@@ -533,15 +533,15 @@
                   "type": "MemberExpression",
                   "object": {
                     "type": "Identifier",
-                    "name": "Namespace1",
+                    "name": "__$$ETS_ANNOTATION$$__Namespace1",
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 3
+                        "column": 2
                       },
                       "end": {
                         "line": 24,
-                        "column": 13
+                        "column": 34
                       }
                     }
                   },
@@ -551,11 +551,11 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 14
+                        "column": 35
                       },
                       "end": {
                         "line": 24,
-                        "column": 19
+                        "column": 40
                       }
                     }
                   },
@@ -564,11 +564,11 @@
                   "loc": {
                     "start": {
                       "line": 24,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 24,
-                      "column": 19
+                      "column": 40
                     }
                   }
                 },
@@ -587,11 +587,11 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 21
+                              "column": 42
                             },
                             "end": {
                               "line": 24,
-                              "column": 22
+                              "column": 43
                             }
                           }
                         },
@@ -601,11 +601,11 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 24
+                              "column": 45
                             },
                             "end": {
                               "line": 24,
-                              "column": 25
+                              "column": 46
                             }
                           }
                         },
@@ -613,11 +613,11 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 21
+                            "column": 42
                           },
                           "end": {
                             "line": 24,
-                            "column": 25
+                            "column": 46
                           }
                         }
                       },
@@ -632,11 +632,11 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 27
+                              "column": 48
                             },
                             "end": {
                               "line": 24,
-                              "column": 28
+                              "column": 49
                             }
                           }
                         },
@@ -646,11 +646,11 @@
                           "loc": {
                             "start": {
                               "line": 24,
-                              "column": 30
+                              "column": 51
                             },
                             "end": {
                               "line": 24,
-                              "column": 38
+                              "column": 59
                             }
                           }
                         },
@@ -658,11 +658,11 @@
                         "loc": {
                           "start": {
                             "line": 24,
-                            "column": 27
+                            "column": 48
                           },
                           "end": {
                             "line": 24,
-                            "column": 38
+                            "column": 59
                           }
                         }
                       }
@@ -670,11 +670,11 @@
                     "loc": {
                       "start": {
                         "line": 24,
-                        "column": 20
+                        "column": 41
                       },
                       "end": {
                         "line": 24,
-                        "column": 39
+                        "column": 60
                       }
                     }
                   }
@@ -683,11 +683,11 @@
                 "loc": {
                   "start": {
                     "line": 24,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 24,
-                    "column": 40
+                    "column": 61
                   }
                 }
               },
@@ -700,7 +700,7 @@
                 },
                 "end": {
                   "line": 24,
-                  "column": 40
+                  "column": 61
                 }
               }
             }
@@ -841,15 +841,15 @@
                       "type": "MemberExpression",
                       "object": {
                         "type": "Identifier",
-                        "name": "Namespace1",
+                        "name": "__$$ETS_ANNOTATION$$__Namespace1",
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 3
+                            "column": 2
                           },
                           "end": {
                             "line": 27,
-                            "column": 13
+                            "column": 34
                           }
                         }
                       },
@@ -859,11 +859,11 @@
                         "loc": {
                           "start": {
                             "line": 27,
-                            "column": 14
+                            "column": 35
                           },
                           "end": {
                             "line": 27,
-                            "column": 24
+                            "column": 45
                           }
                         }
                       },
@@ -872,11 +872,11 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 3
+                          "column": 2
                         },
                         "end": {
                           "line": 27,
-                          "column": 24
+                          "column": 45
                         }
                       }
                     },
@@ -886,11 +886,11 @@
                       "loc": {
                         "start": {
                           "line": 27,
-                          "column": 25
+                          "column": 46
                         },
                         "end": {
                           "line": 27,
-                          "column": 35
+                          "column": 56
                         }
                       }
                     },
@@ -899,11 +899,11 @@
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 3
+                        "column": 2
                       },
                       "end": {
                         "line": 27,
-                        "column": 35
+                        "column": 56
                       }
                     }
                   },
@@ -913,11 +913,11 @@
                     "loc": {
                       "start": {
                         "line": 27,
-                        "column": 36
+                        "column": 57
                       },
                       "end": {
                         "line": 27,
-                        "column": 41
+                        "column": 62
                       }
                     }
                   },
@@ -926,11 +926,11 @@
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 27,
-                      "column": 41
+                      "column": 62
                     }
                   }
                 },
@@ -939,11 +939,11 @@
                 "loc": {
                   "start": {
                     "line": 27,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 27,
-                    "column": 43
+                    "column": 64
                   }
                 }
               },
@@ -956,7 +956,7 @@
                 },
                 "end": {
                   "line": 27,
-                  "column": 43
+                  "column": 64
                 }
               }
             }
@@ -1095,15 +1095,15 @@
                     "type": "MemberExpression",
                     "object": {
                       "type": "Identifier",
-                      "name": "Namespace1",
+                      "name": "__$$ETS_ANNOTATION$$__Namespace1",
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 3
+                          "column": 2
                         },
                         "end": {
                           "line": 30,
-                          "column": 13
+                          "column": 34
                         }
                       }
                     },
@@ -1113,11 +1113,11 @@
                       "loc": {
                         "start": {
                           "line": 30,
-                          "column": 14
+                          "column": 35
                         },
                         "end": {
                           "line": 30,
-                          "column": 24
+                          "column": 45
                         }
                       }
                     },
@@ -1126,11 +1126,11 @@
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 3
+                        "column": 2
                       },
                       "end": {
                         "line": 30,
-                        "column": 24
+                        "column": 45
                       }
                     }
                   },
@@ -1140,11 +1140,11 @@
                     "loc": {
                       "start": {
                         "line": 30,
-                        "column": 25
+                        "column": 46
                       },
                       "end": {
                         "line": 30,
-                        "column": 35
+                        "column": 56
                       }
                     }
                   },
@@ -1153,11 +1153,11 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 30,
-                      "column": 35
+                      "column": 56
                     }
                   }
                 },
@@ -1167,11 +1167,11 @@
                   "loc": {
                     "start": {
                       "line": 30,
-                      "column": 36
+                      "column": 57
                     },
                     "end": {
                       "line": 30,
-                      "column": 41
+                      "column": 62
                     }
                   }
                 },
@@ -1180,11 +1180,11 @@
                 "loc": {
                   "start": {
                     "line": 30,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 30,
-                    "column": 41
+                    "column": 62
                   }
                 }
               },
@@ -1197,7 +1197,7 @@
                 },
                 "end": {
                   "line": 30,
-                  "column": 41
+                  "column": 62
                 }
               }
             }
@@ -1338,15 +1338,15 @@
                       "type": "MemberExpression",
                       "object": {
                         "type": "Identifier",
-                        "name": "Namespace1",
+                        "name": "__$$ETS_ANNOTATION$$__Namespace1",
                         "loc": {
                           "start": {
                             "line": 33,
-                            "column": 3
+                            "column": 2
                           },
                           "end": {
                             "line": 33,
-                            "column": 13
+                            "column": 34
                           }
                         }
                       },
@@ -1356,11 +1356,11 @@
                         "loc": {
                           "start": {
                             "line": 33,
-                            "column": 14
+                            "column": 35
                           },
                           "end": {
                             "line": 33,
-                            "column": 24
+                            "column": 45
                           }
                         }
                       },
@@ -1369,11 +1369,11 @@
                       "loc": {
                         "start": {
                           "line": 33,
-                          "column": 3
+                          "column": 2
                         },
                         "end": {
                           "line": 33,
-                          "column": 24
+                          "column": 45
                         }
                       }
                     },
@@ -1383,11 +1383,11 @@
                       "loc": {
                         "start": {
                           "line": 33,
-                          "column": 25
+                          "column": 46
                         },
                         "end": {
                           "line": 33,
-                          "column": 35
+                          "column": 56
                         }
                       }
                     },
@@ -1396,11 +1396,11 @@
                     "loc": {
                       "start": {
                         "line": 33,
-                        "column": 3
+                        "column": 2
                       },
                       "end": {
                         "line": 33,
-                        "column": 35
+                        "column": 56
                       }
                     }
                   },
@@ -1410,11 +1410,11 @@
                     "loc": {
                       "start": {
                         "line": 33,
-                        "column": 36
+                        "column": 57
                       },
                       "end": {
                         "line": 33,
-                        "column": 41
+                        "column": 62
                       }
                     }
                   },
@@ -1423,11 +1423,11 @@
                   "loc": {
                     "start": {
                       "line": 33,
-                      "column": 3
+                      "column": 2
                     },
                     "end": {
                       "line": 33,
-                      "column": 41
+                      "column": 62
                     }
                   }
                 },
@@ -1446,11 +1446,11 @@
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 43
+                              "column": 64
                             },
                             "end": {
                               "line": 33,
-                              "column": 44
+                              "column": 65
                             }
                           }
                         },
@@ -1460,11 +1460,11 @@
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 46
+                              "column": 67
                             },
                             "end": {
                               "line": 33,
-                              "column": 47
+                              "column": 68
                             }
                           }
                         },
@@ -1472,11 +1472,11 @@
                         "loc": {
                           "start": {
                             "line": 33,
-                            "column": 43
+                            "column": 64
                           },
                           "end": {
                             "line": 33,
-                            "column": 47
+                            "column": 68
                           }
                         }
                       },
@@ -1491,11 +1491,11 @@
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 49
+                              "column": 70
                             },
                             "end": {
                               "line": 33,
-                              "column": 50
+                              "column": 71
                             }
                           }
                         },
@@ -1505,11 +1505,11 @@
                           "loc": {
                             "start": {
                               "line": 33,
-                              "column": 52
+                              "column": 73
                             },
                             "end": {
                               "line": 33,
-                              "column": 60
+                              "column": 81
                             }
                           }
                         },
@@ -1517,11 +1517,11 @@
                         "loc": {
                           "start": {
                             "line": 33,
-                            "column": 49
+                            "column": 70
                           },
                           "end": {
                             "line": 33,
-                            "column": 60
+                            "column": 81
                           }
                         }
                       }
@@ -1529,11 +1529,11 @@
                     "loc": {
                       "start": {
                         "line": 33,
-                        "column": 42
+                        "column": 63
                       },
                       "end": {
                         "line": 33,
-                        "column": 61
+                        "column": 82
                       }
                     }
                   }
@@ -1542,11 +1542,11 @@
                 "loc": {
                   "start": {
                     "line": 33,
-                    "column": 3
+                    "column": 2
                   },
                   "end": {
                     "line": 33,
-                    "column": 62
+                    "column": 83
                   }
                 }
               },
@@ -1559,7 +1559,7 @@
                 },
                 "end": {
                   "line": 33,
-                  "column": 62
+                  "column": 83
                 }
               }
             }
