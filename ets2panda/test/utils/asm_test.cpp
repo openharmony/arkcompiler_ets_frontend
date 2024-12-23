@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 #include <algorithm>
-
 #include "asm_test.h"
+#include "assembly-field.h"
 
 namespace test::utils {
 
@@ -106,20 +106,25 @@ void AsmTest::CheckAnnotation(const std::vector<std::pair<std::string, std::stri
     }
 }
 
-void AsmTest::CheckClassAnnotations(ark::pandasm::Program *program, const std::string &className,
-                                    const AnnotationMap &expectedAnnotations)
+void AsmTest::CheckRecordAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                     const AnnotationMap &expectedAnnotations)
 {
     const auto &recordTable = program->recordTable;
     ASSERT_FALSE(recordTable.empty()) << "No records found in the program.";
-    auto found = recordTable.find(className);
+    auto found = recordTable.find(recordName);
     ASSERT_NE(found, recordTable.end());
 
-    for (const auto &anno : found->second.metadata->GetAnnotations()) {
-        auto it = expectedAnnotations.find(anno.GetName());
-        ASSERT_NE(it, expectedAnnotations.end()) << "Unexpected annotation: " << anno.GetName();
+    for (const auto &expected : expectedAnnotations) {
+        auto annotations = found->second.metadata->GetAnnotations();
+        auto it = std::find_if(annotations.begin(), annotations.end(),
+                               [&expected](const ark::pandasm::AnnotationData &annotation) {
+                                   return annotation.GetName() == expected.first;
+                               });
+
+        ASSERT_NE(it, annotations.end()) << recordName << " missing expected annotation: " << expected.first;
 
         // Check the fields for the matched annotation name
-        CheckAnnotation(it->second, anno);
+        CheckAnnotation(expected.second, *it);
     }
 }
 
@@ -128,14 +133,66 @@ void AsmTest::CheckFunctionAnnotations(ark::pandasm::Program *program, const std
 {
     const auto &functionTable = program->functionTable;
     auto found = functionTable.find(functionName);
-    ASSERT_NE(found, functionTable.end());
+    ASSERT_NE(found, functionTable.end()) << "Unexpected function Name: " << functionName;
 
-    for (const auto &annotation : found->second.metadata->GetAnnotations()) {
-        auto it = expectedAnnotations.find(annotation.GetName());
-        ASSERT_NE(it, expectedAnnotations.end()) << "Unexpected annotation: " << annotation.GetName();
+    for (const auto &expected : expectedAnnotations) {
+        auto annotations = found->second.metadata->GetAnnotations();
+        auto it = std::find_if(annotations.begin(), annotations.end(),
+                               [&expected](const ark::pandasm::AnnotationData &annotation) {
+                                   return annotation.GetName() == expected.first;
+                               });
+
+        ASSERT_NE(it, annotations.end()) << functionName << " missing expected annotation: " << expected.first;
 
         // Check the fields for the matched annotation name
-        CheckAnnotation(it->second, annotation);
+        CheckAnnotation(expected.second, *it);
+    }
+}
+
+void AsmTest::CheckFunctionParameterAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+                                                const uint32_t &paramIndex, const AnnotationMap &expectedAnnotations)
+{
+    const auto &functionTable = program->functionTable;
+    auto found = functionTable.find(functionName);
+    ASSERT_NE(found, functionTable.end());
+    ASSERT_LT(paramIndex, found->second.params.size());
+
+    for (const auto &expected : expectedAnnotations) {
+        auto annotations = found->second.params.at(paramIndex).metadata->GetAnnotations();
+        auto it = std::find_if(annotations.begin(), annotations.end(),
+                               [&expected](const ark::pandasm::AnnotationData &annotation) {
+                                   return annotation.GetName() == expected.first;
+                               });
+
+        ASSERT_NE(it, annotations.end()) << functionName << "param at " << paramIndex
+                                         << " missing expected annotation: " << expected.first;
+
+        // Check the fields for the matched annotation name
+        CheckAnnotation(expected.second, *it);
+    }
+}
+
+void AsmTest::CheckClassFieldAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                         const std::string &fieldName, const AnnotationMap &expectedAnnotations)
+{
+    const auto &recordTable = program->recordTable;
+    auto found = recordTable.find(recordName);
+    ASSERT_NE(found, recordTable.end());
+    auto &filedList = found->second.fieldList;
+    auto result = std::find_if(filedList.begin(), filedList.end(),
+                               [&fieldName](const ark::pandasm::Field &field) { return field.name == fieldName; });
+    ASSERT_NE(result, filedList.end()) << "Cannot find classProperty '" << fieldName << "'.";
+    for (const auto &expected : expectedAnnotations) {
+        auto annotations = result->metadata->GetAnnotations();
+        auto it = std::find_if(annotations.begin(), annotations.end(),
+                               [&expected](const ark::pandasm::AnnotationData &annotation) {
+                                   return annotation.GetName() == expected.first;
+                               });
+
+        ASSERT_NE(it, annotations.end()) << fieldName << " missing expected annotation: " << expected.first;
+
+        // Check the fields for the matched annotation name
+        CheckAnnotation(expected.second, *it);
     }
 }
 

@@ -28,7 +28,11 @@ function foo2(@Anno() x : int, @Anno2({name: "name2"}) y : int) {
 }
 function foo3(@Anno({}) x : int, @Anno2({name: "name3"}) y : int) {
 }
-function foo4(@Anno() @Anno2({name: "name4"}) x : int, @Anno @Anno2({name: "name4"}) y : int) {
+function foo4(@Anno({}) x: int, @Anno2({name: "name3"}) ...y : int[]) {
+}
+function foo5(@Anno({}) x: int, @Anno2({name: "name3"}) y ?: int) {
+}
+function foo6(@Anno() @Anno2({name: "name4"}) x : int, @Anno @Anno2({name: "name4"}) y : int) {
 }
 
 function main() {
@@ -36,4 +40,6 @@ function main() {
     foo2(3, 4)
     foo3(5, 6)
     foo4(7, 8)
+    foo5(9, 10)
+    foo6(11, 12)
 }

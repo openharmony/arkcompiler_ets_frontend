@@ -15,6 +15,7 @@
 
 #include "defaultParameterLowering.h"
 #include <iostream>
+#include <utility>
 #include "checker/ETSchecker.h"
 #include "parser/ETSparser.h"
 #include "parser/parserImpl.h"
@@ -229,6 +230,12 @@ void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *meth
         method->Kind(), ident, funcExpression, method->Modifiers(), checker->Allocator(), false);
 
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+    ArenaVector<ir::AnnotationUsage *> annotations {checker->Allocator()->Adapter()};
+    for (auto *anno : method->Function()->Annotations()) {
+        auto clone = anno->Clone(checker->Allocator(), overloadMethod->Function());
+        annotations.push_back(clone);
+    }
+    overloadMethod->Function()->SetAnnotations(std::move(annotations));
     overloadMethod->SetRange(funcExpression->Range());
 
     if (!method->IsDeclare() && method->Parent()->IsTSInterfaceBody()) {
