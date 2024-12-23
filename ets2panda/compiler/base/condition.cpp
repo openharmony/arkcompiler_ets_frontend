@@ -293,7 +293,7 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLa
                expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
         expr->AsUnaryExpression()->Argument()->Compile(etsg);
         etsg->ApplyConversion(expr->AsUnaryExpression()->Argument(), etsg->Checker()->GlobalETSBooleanType());
-        etsg->ResolveConditionalResultIfTrue(expr, falseLabel);
+        etsg->ResolveConditionalResultIfTrue<false, false>(expr, falseLabel);
         etsg->BranchIfTrue(expr, falseLabel);
         return;
     }
