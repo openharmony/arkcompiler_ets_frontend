@@ -907,7 +907,11 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
     auto *const varType = ETSChecker::IsVariableGetterSetter(prop) ? prop->TsType() : checker->GetTypeOfVariable(prop);
     auto *const copiedPropType = SubstituteVariableType(relation, substitution, varType);
     auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
-    copiedPropType->SetVariable(copiedProp);
+    // NOTE: some situation copiedPropType we get here are types cached in Checker,
+    // uncontrolled SetVariable will pollute the cache.
+    if (copiedPropType->Variable() == prop || copiedPropType->Variable() == nullptr) {
+        copiedPropType->SetVariable(copiedProp);
+    }
     copiedProp->SetTsType(copiedPropType);
     return copiedProp;
 }

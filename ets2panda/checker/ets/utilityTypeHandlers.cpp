@@ -88,15 +88,8 @@ Type *ETSChecker::CreatePartialType(Type *const typeToBePartial)
         return HandleUnionForPartialType(typeToBePartial->AsETSUnionType());
     }
 
-    auto typeDeclNode = typeToBePartial->Variable()->Declaration()->Node();
-    if (typeDeclNode->IsClassDefinition() || typeDeclNode->IsTSInterfaceDeclaration()) {
-        // NOTE (mmartin): there is a bug, that modifies the declaration of the variable of a type. That could make the
-        // declaration node of an ETSObjectType eg. a ClassProperty, instead of the actual class declaration. When it's
-        // fixed, remove this.
-        return CreatePartialTypeClass(typeToBePartial->AsETSObjectType(), typeDeclNode);
-    }
-
-    return typeToBePartial;
+    return CreatePartialTypeClass(typeToBePartial->AsETSObjectType(),
+                                  typeToBePartial->Variable()->Declaration()->Node());
 }
 
 Type *ETSChecker::CreatePartialTypeParameter(ETSTypeParameter *typeToBePartial)
