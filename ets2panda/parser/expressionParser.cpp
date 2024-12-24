@@ -343,7 +343,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
     // clang-format on
     funcNode->SetRange({desc->startLoc, endLoc});
 
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
     arrowFuncNode->SetRange(funcNode->Range());
 
     return arrowFuncNode;

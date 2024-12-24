@@ -21,4 +21,5 @@ class A{}
 
 /* @@? 19:14 Error SyntaxError: Unexpected token, expected: ')'. */
 /* @@? 19:19 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:16 Error SyntaxError: Annotations are not allowed on this type of declaration. */
 /* @@? 19:19 Error SyntaxError: Unexpected token ')'. */

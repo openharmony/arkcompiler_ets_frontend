@@ -50,6 +50,10 @@ public:
     }
 
 protected:
+    explicit AnnotationAllowed(Expression const &other, ArenaAllocator *allocator)
+        : T(other), annotations_(allocator->Adapter())
+    {
+    }
     explicit AnnotationAllowed(AstNodeType const type, ArenaVector<AnnotationUsage *> &&annotations)
         : T(type), annotations_(std::move(annotations))
     {
@@ -65,6 +69,11 @@ protected:
     }
     explicit AnnotationAllowed(AstNodeType const type, ModifierFlags const flags, ArenaAllocator *const allocator)
         : T(type, flags), annotations_(allocator->Adapter())
+    {
+    }
+    explicit AnnotationAllowed(AstNodeType const type, Expression *const key, Expression *const value,
+                               ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
+        : T(type, key, value, modifiers, allocator, isComputed), annotations_(allocator->Adapter())
     {
     }
 

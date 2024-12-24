@@ -909,7 +909,7 @@ static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ct
 
     auto *func = GetWrappingLambdaParentFunction(ctx, funcRef, signature);
 
-    auto *lambda = util::NodeAllocator::ForceSetParent<ir::ArrowFunctionExpression>(allocator, func);
+    auto *lambda = util::NodeAllocator::ForceSetParent<ir::ArrowFunctionExpression>(allocator, func, allocator);
     lambda->SetParent(parent);
 
     auto *nearestScope = NearestScope(lambda);

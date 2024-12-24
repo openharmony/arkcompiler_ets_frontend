@@ -190,9 +190,9 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
             clone->AddDecorator(decorator->Clone(allocator, clone));
         }
 
-        if (!annotations_.empty()) {
+        if (!Annotations().empty()) {
             ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : annotations_) {
+            for (auto *annotationUsage : Annotations()) {
                 annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
             }
             clone->SetAnnotations(std::move(annotationUsages));

@@ -12,10 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@interface MyAnno {
-    private testProperty1: string
-    testProperty2: number
+@interface Log{
+    msg:string = ""
 }
 
+const invalidUsage1 = @Log("value")) ()=>{}
 
-/* @@? 16:5 Error SyntaxError: Annotation property can not have access modifiers  */
+/* @@? 19:36 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:36 Error SyntaxError: Annotations are not allowed on this type of declaration. */
+/* @@? 19:36 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:36 Error SyntaxError: Unexpected token ')'. */

@@ -138,7 +138,7 @@ public:
         (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
         return CreateFormattedStatements(sourceCode, insertingNodes);
     }
-    ir::Statement *ParseTopLevelAnnotation(StatementParsingFlags flags, ir::ModifierFlags memberModifiers);
+    ir::Statement *ParseTopLevelAnnotation(ir::ModifierFlags memberModifiers);
     ArenaVector<ir::AnnotationUsage *> ParseAnnotations(bool isTopLevelSt);
     ir::ClassDeclaration *CreateFormattedClassDeclaration(std::string_view sourceCode,
                                                           std::vector<ir::AstNode *> &insertingNodes,
@@ -210,6 +210,8 @@ public:
         (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
         return CreateFormattedTopLevelStatement(sourceCode, insertingNodes);
     }
+    void ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
+                                lexer::SourcePosition pos);
 
 private:
     NodeFormatType GetFormatPlaceholderType();
@@ -396,8 +398,6 @@ private:
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
     void UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &seenStatic);
-    void ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
-                                lexer::SourcePosition pos);
     ir::ModifierFlags ParseMemberAccessModifiers();
     template <bool IS_USAGE>
     ir::Expression *ParseAnnotationName();

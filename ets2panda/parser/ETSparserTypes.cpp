@@ -500,20 +500,26 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
 
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
+    ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
+        annotations = ParseAnnotations(false);
+    }
+    ir::TypeNode *typeAnnotation = nullptr;
+    auto startPos = Lexer()->GetToken().Start();
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
-        auto startPos = Lexer()->GetToken().Start();
         Lexer()->NextToken();  // eat 'readonly'
-        ir::TypeNode *typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
+        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
             LogSyntaxError("'readonly' type modifier is only permitted on array and tuple types.");
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);
-        return typeAnnotation;
+    } else {
+        typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
     }
-
-    return ParseTypeAnnotationNoPreferParam(options);
+    ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos);
+    return typeAnnotation;
 }
 
 }  // namespace ark::es2panda::parser

@@ -430,7 +430,7 @@ ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()
 {
     auto newStatus = ParserStatus::ARROW_FUNCTION;
     auto *func = ParseFunction(newStatus);
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func, Allocator());
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;
 }
@@ -668,7 +668,7 @@ ir::Expression *ETSParser::ParseAsyncExpression()
     if (func == nullptr) {  // Error processing.
         return nullptr;
     }
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func, Allocator());
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;
 }
@@ -749,6 +749,11 @@ void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
 {
+    ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
+        annotations = ParseAnnotations(false);
+    }
+    auto savedPos = Lexer()->GetToken().Start();
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_YIELD &&
         (flags & ExpressionParseFlags::DISALLOW_YIELD) == 0U) {
         ir::YieldExpression *yieldExpr = ParseYieldExpression();
@@ -762,6 +767,7 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     }
 
     ir::Expression *assignmentExpression = ParseAssignmentExpression(unaryExpressionNode, flags);
+    ApplyAnnotationsToNode(assignmentExpression, std::move(annotations), savedPos);
 
     if (Lexer()->GetToken().NewLine()) {
         return assignmentExpression;

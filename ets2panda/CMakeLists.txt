@@ -438,6 +438,7 @@ set(ES2PANDA_LIB_SRC
   parser/parserImpl.cpp
   parser/ETSFormattedParser.cpp
   parser/ETSparser.cpp
+  parser/ETSparserAnnotations.cpp
   parser/ETSparserClasses.cpp
   parser/ETSparserEnums.cpp
   parser/ETSparserExpressions.cpp

@@ -510,46 +510,6 @@ void ETSParser::UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &
     }
 }
 
-void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
-                                       lexer::SourcePosition pos)
-{
-    if (!annotations.empty()) {
-        if (node->IsAbstract() ||
-            (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
-            LogSyntaxError("Annotations are not allowed on an abstract class or methods.", pos);
-        }
-
-        switch (node->Type()) {
-            case ir::AstNodeType::METHOD_DEFINITION:
-                node->AsMethodDefinition()->Function()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::CLASS_DECLARATION:
-                node->AsClassDeclaration()->Definition()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::FUNCTION_DECLARATION:
-                node->AsFunctionDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::TS_INTERFACE_DECLARATION:
-                node->AsTSInterfaceDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::CLASS_PROPERTY:
-                node->AsClassProperty()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::VARIABLE_DECLARATION:
-                node->AsVariableDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
-                node->AsTSTypeAliasDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::ETS_PARAMETER_EXPRESSION:
-                node->AsETSParameterExpression()->SetAnnotations(std::move(annotations));
-                break;
-            default:
-                LogSyntaxError("Annotations are not allowed on this type of declaration.", pos);
-        }
-    }
-}
-
 ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                           ir::ClassDefinitionModifiers modifiers,
                                           [[maybe_unused]] ir::ModifierFlags flags)
@@ -562,10 +522,6 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
     }
 
     ir::ModifierFlags memberModifiers = ir::ModifierFlags::NONE;
-    if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0 &&
-        Lexer()->TryEatTokenType(lexer::TokenType::KEYW_EXPORT)) {
-        memberModifiers |= ir::ModifierFlags::EXPORTED;
-    }
     auto savedPos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
@@ -582,17 +538,20 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
     if (!annotations.empty() && (memberModifiers & ir::ModifierFlags::ABSTRACT) != 0) {
         LogSyntaxError("Annotations cannot be applied to an abstract class or method.", Lexer()->GetToken().Start());
     }
-
-    auto savePos = Lexer()->GetToken().Start();
+    ir::AstNode *result = nullptr;
+    auto delcStartLoc = Lexer()->GetToken().Start();
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_INTERFACE:
         case lexer::TokenType::KEYW_CLASS:
         case lexer::TokenType::KEYW_ENUM:
-            return ParseInnerTypeDeclaration(memberModifiers, savedPos, isStepToken, seenStatic);
+            result = ParseInnerTypeDeclaration(memberModifiers, savedPos, isStepToken, seenStatic);
+            break;
         case lexer::TokenType::KEYW_CONSTRUCTOR:
-            return ParseInnerConstructorDeclaration(memberModifiers, startLoc);
+            result = ParseInnerConstructorDeclaration(memberModifiers, startLoc);
+            break;
         case lexer::TokenType::KEYW_NAMESPACE:
-            return ParseNamespaceDeclaration(memberModifiers);
+            result = ParseNamespaceDeclaration(memberModifiers);
+            break;
         case lexer::TokenType::KEYW_PUBLIC:
         case lexer::TokenType::KEYW_PRIVATE:
         case lexer::TokenType::KEYW_PROTECTED: {
@@ -601,11 +560,12 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
             return nullptr;
         }
         default: {
-            auto *property = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
-            ApplyAnnotationsToClassElement(property, std::move(annotations), savePos);
-            return property;
+            result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
+            break;
         }
     }
+    ApplyAnnotationsToClassElement(result, std::move(annotations), delcStartLoc);
+    return result;
 }
 
 void *ETSParser::ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVector<ir::AnnotationUsage *> &&annotations,

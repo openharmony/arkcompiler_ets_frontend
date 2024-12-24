@@ -13,12 +13,18 @@
  * limitations under the License.
  */
 
-declare namespace ns {
-    export function foo():void;
-    export class A {}
-    export let bar:int;
-
-    function foo2():void;
-    class A2 {}
-    let bar2:int;    
+@interface Log{
+    msg:string = ""
 }
+
+@ClassAuthor (x: 1) => x * 2;
+
+
+/* @@? 20:18 Error SyntaxError: Invalid Type */
+/* @@? 20:18 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 20:18 Error SyntaxError: Unexpected token, expected: '=>'. */
+/* @@? 20:19 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:19 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:19 Error SyntaxError: Unexpected token ')'. */
+/* @@? 20:21 Error SyntaxError: Unexpected token '=>'. */
+/* @@? 20:21 Error SyntaxError: Unexpected token: '=>'. */

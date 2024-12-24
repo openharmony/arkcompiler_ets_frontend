@@ -18,6 +18,7 @@
 
 #include "ir/base/classElement.h"
 #include "ir/statements/annotationUsage.h"
+#include "ir/annotationAllowed.h"
 
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
@@ -27,7 +28,7 @@ namespace ark::es2panda::ir {
 class Expression;
 class TypeNode;
 
-class ClassProperty : public ClassElement {
+class ClassProperty : public AnnotationAllowed<ClassElement> {
 public:
     ClassProperty() = delete;
     ~ClassProperty() override = default;
@@ -37,9 +38,8 @@ public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     explicit ClassProperty(Expression *const key, Expression *const value, TypeNode *const typeAnnotation,
                            ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
-        : ClassElement(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, isComputed),
-          typeAnnotation_(typeAnnotation),
-          annotations_(allocator->Adapter())
+        : AnnotationAllowed<ClassElement>(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, isComputed),
+          typeAnnotation_(typeAnnotation)
     {
     }
 
@@ -75,27 +75,8 @@ public:
         v->Accept(this);
     }
 
-    [[nodiscard]] ArenaVector<ir::AnnotationUsage *> &Annotations() noexcept
-    {
-        return annotations_;
-    }
-
-    [[nodiscard]] const ArenaVector<ir::AnnotationUsage *> &Annotations() const noexcept
-    {
-        return annotations_;
-    }
-
-    void SetAnnotations(ArenaVector<AnnotationUsage *> &&annotations)
-    {
-        annotations_ = std::move(annotations);
-        for (auto anno : annotations_) {
-            anno->SetParent(this);
-        }
-    }
-
 private:
     TypeNode *typeAnnotation_;
-    ArenaVector<AnnotationUsage *> annotations_;
 };
 }  // namespace ark::es2panda::ir
 
