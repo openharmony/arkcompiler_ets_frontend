@@ -739,7 +739,7 @@ export class ObConfigResolver {
     }
 
     for (const lib of sourceObConfig.dependencies.hspLibraries || []) {
-      if(lib.consumerRules && lib.consumerRules.length > 0) {
+      if (lib.consumerRules && lib.consumerRules.length > 0) {
         this.mergeDependencyConfigsByPath(lib.consumerRules, dependencyConfigs);
       }
     }
@@ -752,11 +752,11 @@ export class ObConfigResolver {
       this.mergeDependencyConfigsByPath(sourceObConfig.dependencies.hars, dependencyConfigs);
     }
 
-    if(
+    if (
       sourceObConfig.dependencies &&
       sourceObConfig.dependencies.hsps &&
       sourceObConfig.dependencies.hsps.length > 0
-    ){
+    ) {
       this.mergeDependencyConfigsByPath(sourceObConfig.dependencies.hsps, dependencyConfigs);
     }
   }

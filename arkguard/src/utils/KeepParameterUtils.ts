@@ -65,7 +65,7 @@ export function shouldKeepParameter(decl: Declaration | undefined, config: IName
     if (!config.mRenameProperties) {
       return true;
     }
-    let methodName: Identifier | NumericLiteral | StringLiteralLike | undefined = getPropertyNameOfMethod(parentNode.name)
+    let methodName: Identifier | NumericLiteral | StringLiteralLike | undefined = getPropertyNameOfMethod(parentNode.name);
     return !!methodName && NodeUtils.isPropertyNameType(methodName) && isReservedProperty(methodName.text);
   }
 
