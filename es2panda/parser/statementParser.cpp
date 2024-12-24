@@ -2247,8 +2247,10 @@ void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source,
         }
         if (it->IsImportSpecifier()) {
             AddImportEntryItemForImportSpecifier(source, it, isLazy);
+        } else if (it->IsImportDefaultSpecifier()) {
+            AddImportEntryItemForImportDefaultSpecifier(source, it, isType, isLazy);
         } else {
-            AddImportEntryItemForImportDefaultOrNamespaceSpecifier(source, it, isType);
+            AddImportEntryItemForNamespaceSpecifier(source, it, isType);
         }
     }
 }
@@ -2270,27 +2272,34 @@ void ParserImpl::AddImportEntryItemForImportSpecifier(const ir::StringLiteral *s
     moduleRecord->AddImportEntry(entry);
 }
 
-void ParserImpl::AddImportEntryItemForImportDefaultOrNamespaceSpecifier(const ir::StringLiteral *source,
-                                                                        const ir::AstNode *specifier, bool isType)
+void ParserImpl::AddImportEntryItemForImportDefaultSpecifier(const ir::StringLiteral *source,
+                                                             const ir::AstNode *specifier,
+                                                             bool isType, bool isLazy)
+{
+    auto *moduleRecord = isType ? GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
+    ASSERT(moduleRecord != nullptr);
+    int moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str(), isLazy);
+
+    auto localName = specifier->AsImportDefaultSpecifier()->Local()->Name();
+    auto importName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
+    auto localId = specifier->AsImportDefaultSpecifier()->Local();
+    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+        localName, importName, moduleRequestIdx, localId, nullptr);
+    moduleRecord->AddImportEntry(entry);
+}
+
+void ParserImpl::AddImportEntryItemForNamespaceSpecifier(const ir::StringLiteral *source,
+                                                         const ir::AstNode *specifier, bool isType)
 {
     auto *moduleRecord = isType ? GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
     ASSERT(moduleRecord != nullptr);
     auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
 
-    if (specifier->IsImportDefaultSpecifier()) {
-        auto localName = specifier->AsImportDefaultSpecifier()->Local()->Name();
-        auto importName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
-        auto localId = specifier->AsImportDefaultSpecifier()->Local();
-        auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-            localName, importName, moduleRequestIdx, localId, nullptr);
-        moduleRecord->AddImportEntry(entry);
-    } else if (specifier->IsImportNamespaceSpecifier()) {
-        auto localName = specifier->AsImportNamespaceSpecifier()->Local()->Name();
-        auto localId = specifier->AsImportNamespaceSpecifier()->Local();
-        auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-            localName, moduleRequestIdx, localId);
-        moduleRecord->AddStarImportEntry(entry);
-    }
+    auto localName = specifier->AsImportNamespaceSpecifier()->Local()->Name();
+    auto localId = specifier->AsImportNamespaceSpecifier()->Local();
+    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+        localName, moduleRequestIdx, localId);
+    moduleRecord->AddStarImportEntry(entry);
 }
 
 void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers,
@@ -3103,7 +3112,7 @@ ir::Expression *ParserImpl::ParseModuleReference()
     return result;
 }
 
-ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType)
+ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy)
 {
     ir::Identifier *local = ParseNamedImport(lexer_->GetToken());
     lexer_->NextToken();  // eat local name
@@ -3129,7 +3138,7 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
         return importEqualsDecl;
     }
 
-    auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
+    auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local, isLazy);
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
 
@@ -3175,7 +3184,7 @@ ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *speci
 
     // import [default] from 'source'
     if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-        ir::AstNode *astNode = ParseImportDefaultSpecifier(specifiers, isType);
+        ir::AstNode *astNode = ParseImportDefaultSpecifier(specifiers, isType, isLazy);
         if (astNode != nullptr) {
             return astNode;
         }
@@ -3189,17 +3198,30 @@ ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *speci
     return nullptr;
 }
 
-void ParserImpl::VerifySupportLazyImportVersion()
+void ParserImpl::VerifySupportLazyImportVersion(bool isNamedImport)
 {
-    if (!util::Helpers::IsSupportLazyImportVersion(program_.TargetApiVersion(), program_.GetTargetApiSubVersion())) {
-        std::string errMessage = "Current configuration does not support using lazy import. Lazy import can be "
-            "used in the beta3 version of API 12 or higher versions.\n"
-            "Solutions: > Check the compatibleSdkVersion and compatibleSdkVersionStage in build-profile.json5."
-            "> If compatibleSdkVersion is set to API 12, then compatibleSdkVersionStage needs to be configured "
-            "as beta3."
-            "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
-            "target-api-sub-version options are correctly configured.";
-        ThrowSyntaxError(errMessage);
+    if (isNamedImport) {
+        if (!util::Helpers::IsSupportLazyImportVersion(program_.TargetApiVersion(),
+            program_.GetTargetApiSubVersion())) {
+            std::string errMessage = "Current configuration does not support using lazy import. Lazy import can be "
+                "used in the beta3 version of API 12 or higher versions.\n"
+                "Solutions: > Check the compatibleSdkVersion and compatibleSdkVersionStage in build-profile.json5."
+                "> If compatibleSdkVersion is set to API 12, then compatibleSdkVersionStage needs to be configured "
+                "as beta3."
+                "> If you're running es2abc in commandline without IDE, please check whether target-api-version and "
+                "target-api-sub-version options are correctly configured.";
+            ThrowSyntaxError(errMessage);
+        }
+    } else {
+        if (!util::Helpers::IsSupportLazyImportDefaultVersion(program_.TargetApiVersion())) {
+            std::string errMessage = "Current configuration does not support using lazy import default."
+                "Lazy import can be used in the version of API 16 or higher versions.\n"
+                "Solutions: > Check the compatibleSdkVersion in build-profile.json5."
+                "> If compatibleSdkVersion is set to API 16."
+                "> If you're running es2abc in commandline without IDE, please check whether target-api-version "
+                "options are correctly configured.";
+            ThrowSyntaxError(errMessage);
+        }
     }
 }
 
@@ -3225,12 +3247,18 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
     lexer_->NextToken();  // eat import
 
     bool isLazy = false;
+    bool isNamedImport = false;
+    bool isDefaultImport = false;
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_LAZY) {
         const auto savedPos = lexer_->Save();
         lexer_->NextToken();  // eat lazy
-        // only support import lazy {xxx} from '...'
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-            VerifySupportLazyImportVersion();
+        // support import lazy {xxx} from '...' / import lazy default , {xxx} from '...'
+        isNamedImport = lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE;
+        isDefaultImport = (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+                        lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_TYPE) &&
+                        lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM;
+        if (isNamedImport || isDefaultImport) {
+            VerifySupportLazyImportVersion(isNamedImport);
             isLazy = true;
         } else {
             lexer_->Rewind(savedPos);
