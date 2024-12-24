@@ -59,10 +59,9 @@ void ETSTypeParameter::Cast(TypeRelation *relation, Type *target)
     }
 
     // NOTE(vpukhov): adjust UNCHECKED_CAST flags
-    if (target->IsETSObjectType()) {
-        relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
+    if (target->IsETSReferenceType()) {
+        relation->Result(relation->InCastingContext());
     }
-    relation->Result(relation->InCastingContext());
 }
 
 void ETSTypeParameter::CastTarget(TypeRelation *relation, Type *source)

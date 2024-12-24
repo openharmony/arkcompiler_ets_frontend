@@ -56,7 +56,10 @@ void ETSNonNullishType::Cast(TypeRelation *relation, Type *target)
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
         return;
     }
-    relation->Result(relation->InCastingContext());
+
+    if (target->IsETSReferenceType()) {
+        relation->Result(relation->InCastingContext());
+    }
 }
 
 void ETSNonNullishType::CastTarget(TypeRelation *relation, Type *source)
