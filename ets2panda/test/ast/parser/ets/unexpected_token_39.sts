@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-let r: ((((number)))[];
+let r: ((((number)))[]/* @@ label */;
 
-/* @@? 16:23 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ')'.  */

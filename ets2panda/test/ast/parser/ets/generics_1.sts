@@ -33,8 +33,8 @@ class Z {
 
 function main(): void {
     let d: A<Z> = new A<Z>(new B<Z>(new Z()));
-    d.b.a.c = 127;
+    /* @@ label */d.b.a.c = 127;
 }
 
-/* @@? 30:5 Warning Warning: Variable 'd' is used before being assigned.  */
-/* @@? 1:1 Error TypeError: There were errors during assign analysis (1)  */
+/* @@@ label Warning Warning: Variable 'd' is used before being assigned.  */
+/* @@@ label Error TypeError: There were errors during assign analysis (1)  */

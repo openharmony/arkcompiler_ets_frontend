@@ -13,9 +13,7 @@
  * limitations under the License.
  */
 
-import * from "./module"
+import * /* @@ label */from "./module"
 
-/* @@? 16:10 Error SyntaxError: Unexpected token, expected: 'as'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: 'as'.  */
+

@@ -20,15 +20,13 @@ let void2: (i: int) => void = void1;
 let void3: (i: int)  => void  = (i: int): void => { return; };
 let void4: (i: int) =>  void = (  i: int)      => { return; };
 function void5(fn1: () => void, fn2: (x: int) => void) { fn1(); fn2(2); }
-let void6: (i: int  )       = void1; // CTE; need return type
+let void6: (i: int  )       /* @@ label */= void1; // CTE; need return type
 
 function main() {}
 
-/* @@? 23:29 Error SyntaxError: Unexpected token, expected: '=>'. */
-/* @@? 23:29 Error SyntaxError: Invalid Type */
-/* @@? 23:29 Error SyntaxError: Invalid Type */
-/* @@? 23:29 Error SyntaxError: Invalid Type */
-/* @@? 23:29 Error SyntaxError: Variable must be initialized or it's type must be declared */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '=>'. */
+/* @@@ label Error SyntaxError: Invalid Type */
+/* @@@ label Error SyntaxError: Invalid Type */
+/* @@@ label Error SyntaxError: Invalid Type */
+/* @@@ label Error SyntaxError: Variable must be initialized or it's type must be declared */
+

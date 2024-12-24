@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-for let i = 0; i < count; ++i) {
+for /* @@ label */let i = 0; i < count; ++i) {
     result = result + p[i]!.awaitResolution() * a[i];
 }
 
-/* @@? 16:5 Error SyntaxError: Missing left parenthesis in 'for' statement.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Missing left parenthesis in 'for' statement.  */
+

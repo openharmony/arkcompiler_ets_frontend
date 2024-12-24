@@ -192,19 +192,22 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     AnalyzeNodes(node);
     if (numErrors_ > 0) {
         checker_->LogTypeError("There were errors during assign analysis (" + std::to_string(numErrors_) + ")",
-                               node->Start());
+                               lastWarningPos_);
+        lastWarningPos_ = lexer::SourcePosition();
     }
 }
 
 void AssignAnalyzer::Warning(const std::string_view message, const lexer::SourcePosition &pos)
 {
     ++numErrors_;
+    lastWarningPos_ = pos;
     checker_->Warning(message, pos);
 }
 
 void AssignAnalyzer::Warning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
 {
     ++numErrors_;
+    lastWarningPos_ = pos;
     checker_->ReportWarning(list, pos);
 }
 

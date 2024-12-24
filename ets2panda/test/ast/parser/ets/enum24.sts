@@ -17,10 +17,8 @@ enum Direction {
   Up = "UP",
   Down = "DOWN",
   Left = "LEFT",
-  Right = 0
+  Right = /* @@ label */0
 }
 
-/* @@? 20:11 Error SyntaxError: Invalid enum initialization type  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Invalid enum initialization type  */
+

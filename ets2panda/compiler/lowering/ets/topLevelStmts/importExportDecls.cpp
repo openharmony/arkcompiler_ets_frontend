@@ -129,7 +129,8 @@ void ImportExportDecls::PopulateAliasMap(const ir::ExportNamedDeclaration *decl,
             util::ErrorHandler::LogSyntaxError(parser_->ErrorLogger(), varbinder_->Program(),
                                                "The given name '" + spec->Local()->Name().Mutf8() +
                                                    "' is already used in another export",
-                                               spec->Start());
+                                               lastExportErrorPos_);
+            lastExportErrorPos_ = lexer::SourcePosition();
         }
     }
 }
@@ -208,6 +209,7 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
             exportedTypes_.insert(local->Name());
         }
         if (!exportNameMap_.emplace(local->Name(), local->Start()).second) {
+            lastExportErrorPos_ = local->Start();
             util::ErrorHandler::LogSyntaxError(
                 parser_->ErrorLogger(), varbinder_->Program(),
                 "The given name '" + local->Name().Mutf8() + "' is already used in another export", local->Start());

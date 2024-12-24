@@ -13,10 +13,7 @@
  * limitations under the License.
  */
 
-import {^} from "./import_tests/modules/module"
+import {/* @@ label */^} from /* @@ label1 */"./import_tests/modules/module"
 
-/* @@? 16:9 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 16:17 Error SyntaxError: Unexpected token 'string literal'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */
+/* @@@ label1 Error SyntaxError: Unexpected token 'string literal'.  */

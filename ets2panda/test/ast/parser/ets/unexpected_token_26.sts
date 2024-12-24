@@ -16,7 +16,5 @@
 let x: int[] = [1,2,3]
 let y: int = x [0
 
-/* @@? 23:1 Error SyntaxError: Unexpected token, expected: ']'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ']'.  */
+/* @@ label */

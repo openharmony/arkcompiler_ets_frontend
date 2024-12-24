@@ -16,12 +16,9 @@
 function main(): void {
     try {
         throw new Exception();
-    } catch (^) {
+    } catch (/* @@ label */^) {
         //Do something.
     }
 }
 
-/* @@? 19:14 Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */

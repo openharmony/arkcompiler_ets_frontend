@@ -15,11 +15,9 @@
 
 enum MissingCommaEnum {
   Red
-  Green
-}
+  /* @@ label */Green
+/* @@ label1 */}
 
-/* @@? 18:3 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 19:1 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token, expected ',' or '}'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '}'.  */
+

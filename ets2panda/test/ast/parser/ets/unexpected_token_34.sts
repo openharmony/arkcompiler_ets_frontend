@@ -15,7 +15,7 @@
 
 let a: boolean = false;
 
-switch (a {
+switch (a /* @@ label */{
     case true:
     case false:
         console.log("aaaaaa")
@@ -23,7 +23,5 @@ switch (a {
         console.log("bbb")
 }
 
-/* @@? 18:11 Error SyntaxError: Unexpected token '{', expected ')'  */
-/* @@? 1:1 Node {
-    "type": "Program"
-}  */
+/* @@@ label Error SyntaxError: Unexpected token '{', expected ')'  */
+

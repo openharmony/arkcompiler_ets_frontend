@@ -17,7 +17,7 @@ function foo<U, V>() {
     let u:U // CTE
     let v:V // CTE
 
-    console.log("What ? :-)", u, v)
+    console.log("What ? :-)", /* @@ label */u, /* @@ label1 */v)
 }
 
 
@@ -26,6 +26,6 @@ function main(): void {
     foo<string, string>()
 }
 
-/* @@? 20:31 Warning Warning: Variable 'u' is used before being assigned.  */
-/* @@? 20:34 Warning Warning: Variable 'v' is used before being assigned.  */
-/* @@? 1:1 Error TypeError: There were errors during assign analysis (2)  */
+/* @@@ label Warning Warning: Variable 'u' is used before being assigned.  */
+/* @@@ label1 Warning Warning: Variable 'v' is used before being assigned.  */
+/* @@@ label1 Error TypeError: There were errors during assign analysis (2)  */
