@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,7 +52,7 @@ using ark::es2panda::varbinder::VariableFlags;
 TEST_F(ASTVerifierTest, NullParent)
 {
     StringLiteral emptyNode;
-    const auto &messages = verifier_.VerifyNode<NodeHasParent>(&emptyNode);
+    const auto &messages = VerifyNode<NodeHasParent>(&emptyNode);
     bool hasParent = messages.empty();
     ASSERT_FALSE(hasParent);
     ASSERT_EQ(messages.size(), 1);
@@ -61,7 +61,7 @@ TEST_F(ASTVerifierTest, NullParent)
 TEST_F(ASTVerifierTest, NullRange)
 {
     StringLiteral emptyNode;
-    const auto &messages = verifier_.VerifyNode<NodeHasSourceRange>(&emptyNode);
+    const auto &messages = VerifyNode<NodeHasSourceRange>(&emptyNode);
     bool hasSourceRange = messages.empty();
     ASSERT_FALSE(hasSourceRange);
     ASSERT_EQ(messages.size(), 1);
@@ -70,7 +70,7 @@ TEST_F(ASTVerifierTest, NullRange)
 TEST_F(ASTVerifierTest, NullType)
 {
     StringLiteral emptyNode;
-    const auto &messages = verifier_.VerifyNode<NodeHasType>(&emptyNode);
+    const auto &messages = VerifyNode<NodeHasType>(&emptyNode);
     bool hasType = messages.empty();
     ASSERT_EQ(hasType, false);
     ASSERT_NE(messages.size(), 0);
@@ -79,7 +79,7 @@ TEST_F(ASTVerifierTest, NullType)
 TEST_F(ASTVerifierTest, WithoutScope)
 {
     StringLiteral emptyNode;
-    const auto &messages = verifier_.VerifyNode<VariableHasScope>(&emptyNode);
+    const auto &messages = VerifyNode<VariableHasScope>(&emptyNode);
     ASSERT_EQ(messages.size(), 0);
 }
 
@@ -98,7 +98,7 @@ TEST_F(ASTVerifierTest, ScopeTest)
 
     local.SetScope(&scope);
 
-    const auto &messages = verifier_.VerifyNode<VariableHasScope>(&ident);
+    const auto &messages = VerifyNode<VariableHasScope>(&ident);
     ASSERT_EQ(messages.size(), 0);
 }
 
@@ -118,7 +118,7 @@ TEST_F(ASTVerifierTest, ScopeNodeTest)
 
     local.SetScope(&scope);
 
-    const auto &messages = verifier_.VerifyNode<VariableHasEnclosingScope>(&ident);
+    const auto &messages = VerifyNode<VariableHasEnclosingScope>(&ident);
     ASSERT_EQ(messages.size(), 0);
 }
 
@@ -133,7 +133,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
     left.SetTsType(etschecker.GlobalIntType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = verifier_.VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
+    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
     ASSERT_EQ(messages.size(), 0);
 }
 
@@ -155,7 +155,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
     left2.SetTsType(etschecker.GlobalIntType());
     right2.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = verifier_.VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
+    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
     ASSERT_EQ(messages.size(), 0);
 }
 
@@ -172,7 +172,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = verifier_.VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
+    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
     ASSERT_EQ(messages.size(), 1);
 }
 
@@ -187,7 +187,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    const auto &messages = verifier_.VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
+    const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
     ASSERT_EQ(messages.size(), 1);
 }
 
@@ -201,7 +201,7 @@ TEST_F(ASTVerifierTest, SequenceExpressionType)
     last->SetTsType(checker.GlobalIntType());
     sequenceExpression->SetTsType(checker.GlobalIntType());
 
-    const auto &messages = verifier_.VerifyNode<SequenceExpressionHasLastType>(sequenceExpression);
+    const auto &messages = VerifyNode<SequenceExpressionHasLastType>(sequenceExpression);
     ASSERT_EQ(messages.size(), 0);
 }
 
@@ -246,7 +246,7 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSameNegative)
         ->AsIdentifier()
         ->SetName("not_name");
 
-    const auto &messages = verifier_.Verify<VariableNameIdentifierNameSame>(ast);
+    const auto &messages = Verify<VariableNameIdentifierNameSame>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     impl_->DestroyContext(ctx);
@@ -270,7 +270,7 @@ TEST_F(ASTVerifierTest, VariableNameIdentifierNameSame)
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<ark::es2panda::ir::ETSModule>(impl_, ctx);
-    const auto &messages = verifier_.Verify<VariableNameIdentifierNameSame>(ast);
+    const auto &messages = Verify<VariableNameIdentifierNameSame>(ast);
     ASSERT_EQ(messages.size(), 0);
     impl_->DestroyContext(ctx);
 }

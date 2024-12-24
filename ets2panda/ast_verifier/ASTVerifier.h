@@ -67,7 +67,7 @@
 namespace ark::es2panda::compiler::ast_verifier {
 
 template <typename... Invs>
-class InvariantsRegistry {
+class InvariantsRegistryImpl {
 public:
     using Invariants = std::tuple<Invs...>;
     template <VerifierInvariants ID>
@@ -87,7 +87,7 @@ private:
     {
         static_assert(ORDER_IN_PARAMETER_LIST == DEFINED_ENUM,
                       "Invariant's `ID` must be equal to"
-                      "index of the invariant in `InvariantsRegistry` parameter-list");
+                      "index of the invariant in `InvariantsRegistryImpl` parameter-list");
         return true;
     }
 
@@ -99,93 +99,90 @@ protected:
     static_assert(CheckRegistry(std::make_index_sequence<sizeof...(Invs)> {}));
 };
 
-/*
- * ASTVerifier used for checking various invariants that should hold during AST transformation in lowerings
- * For all available checks lookup the constructor
- *
- * NOTE(dkofanov) Fix and enable ImportExportAccessValid
- */
-class ASTVerifier
-    : public InvariantsRegistry<CheckStructDeclaration, NodeHasParent, NodeHasSourceRange, EveryChildHasValidParent,
-                                EveryChildInParentRange, VariableHasScope, NodeHasType, IdentifierHasVariable,
-                                ReferenceTypeAnnotationIsNull, ArithmeticOperationValid, SequenceExpressionHasLastType,
-                                CheckInfiniteLoop, ForLoopCorrectlyInitialized, VariableHasEnclosingScope,
-                                ModifierAccessValid, VariableNameIdentifierNameSame, CheckAbstractMethod,
-                                GetterSetterValidation, CheckScopeDeclaration, CheckConstProperties> {
-public:
-    using SourcePath = std::string_view;
-    using PhaseName = std::string_view;
-    using InvariantName = std::string_view;
-    using InvariantsMessages = std::map<InvariantName, Messages>;
-    using WarningsErrors = std::map<std::string_view, InvariantsMessages>;
-    using SourceMessages = std::map<SourcePath, WarningsErrors>;
-    using GroupedMessages = std::map<PhaseName, SourceMessages>;
+// NOTE(dkofanov) Fix and enable ImportExportAccessValid:
+using InvariantsRegistry =
+    InvariantsRegistryImpl<NodeHasParent, NodeHasSourceRange, EveryChildHasValidParent, EveryChildInParentRange,
+                           CheckStructDeclaration, VariableHasScope, NodeHasType, IdentifierHasVariable,
+                           ReferenceTypeAnnotationIsNull, ArithmeticOperationValid, SequenceExpressionHasLastType,
+                           CheckInfiniteLoop, ForLoopCorrectlyInitialized, VariableHasEnclosingScope,
+                           ModifierAccessValid, VariableNameIdentifierNameSame, CheckAbstractMethod,
+                           GetterSetterValidation, CheckScopeDeclaration, CheckConstProperties>;
 
+/*
+ * ASTVerifier checks whether various conditions are invariant (across AST transformations).
+ */
+class ASTVerifier : public InvariantsRegistry {
+public:
     NO_COPY_SEMANTIC(ASTVerifier);
     NO_MOVE_SEMANTIC(ASTVerifier);
-    ASTVerifier() = default;
+
     ASTVerifier(const public_lib::Context &context, const parser::Program &program)
-        : program_ {&program}, options_ {context.config->options}
+        : program_ {program}, options_ {*context.config->options}
     {
+        for (size_t i = VerifierInvariants::BASE_FIRST; i <= VerifierInvariants::BASE_LAST; i++) {
+            allowed_[i] = true;
+        }
         for (size_t i = 0; i < VerifierInvariants::COUNT; i++) {
             enabled_[i] = TreatAsWarning(VerifierInvariants {i}) || TreatAsError(VerifierInvariants {i});
+        }
+        if (options_.IsAstVerifierBeforePhases()) {
+            Verify("before");
         }
     }
 
     ~ASTVerifier()
     {
-        DumpMessages();
+        if (!suppressed_) {
+            if (options_.IsAstVerifierAfterPhases()) {
+                Verify("after");
+            }
+            if (HasErrors() || HasWarnings()) {
+                DumpMessages();
+            }
+        }
     }
 
     void Verify(std::string_view phaseName);
 
-    template <typename Invariant>
-    Messages &&Verify(const ir::AstNode *ast)
+    void IntroduceNewInvariants(std::string_view occurredPhaseName)
     {
-        std::get<Invariant>(invariants_).Init();
-        std::get<Invariant>(invariants_).VerifyAst(ast);
-        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
-    }
-
-    template <typename Invariant>
-    Messages &&VerifyNode(const ir::AstNode *ast)
-    {
-        std::get<Invariant>(invariants_).Init();
-        std::get<Invariant>(invariants_).VerifyNode(ast);
-        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
-    }
-
-    void IntroduceNewInvariants(std::string_view phaseName)
-    {
-        if (phaseName == "plugins-after-parse") {
+        if (occurredPhaseName == "plugins-after-parse") {
             for (size_t i = VerifierInvariants::AFTER_PLUGINS_AFTER_PARSE_FIRST;
                  i <= VerifierInvariants::AFTER_PLUGINS_AFTER_PARSE_LAST; i++) {
                 allowed_[i] = true;
             }
         }
-        if (phaseName == "ScopesInitPhase") {
+        if (occurredPhaseName == "ScopesInitPhase") {
             for (size_t i = VerifierInvariants::AFTER_SCOPES_INIT_PHASE_FIRST;
                  i <= VerifierInvariants::AFTER_SCOPES_INIT_PHASE_LAST; i++) {
                 allowed_[i] = true;
             }
         }
-        if (phaseName == "CheckerPhase") {
+        if (occurredPhaseName == "CheckerPhase") {
             for (size_t i = VerifierInvariants::AFTER_CHECKER_PHASE_FIRST;
                  i <= VerifierInvariants::AFTER_CHECKER_PHASE_LAST; i++) {
                 allowed_[i] = true;
             }
         }
+        if (occurredPhaseName == "UnionLowering") {
+            std::get<IdentifierHasVariable>(invariants_).SetUnionLoweringOccurred();
+        }
+    }
+
+    void Suppress()
+    {
+        suppressed_ = true;
     }
 
     void DumpMessages() const;
 
     bool TreatAsWarning(VerifierInvariants id) const
     {
-        return options_->GetVerifierInvariantsAsWarnings()[id];
+        return options_.GetAstVerifierWarnings()[id];
     }
     bool TreatAsError(VerifierInvariants id) const
     {
-        return options_->GetVerifierInvariantsAsErrors()[id];
+        return options_.GetAstVerifierErrors()[id];
     }
     bool HasErrors() const
     {
@@ -203,14 +200,23 @@ private:
         return enabled_[T::ID] && allowed_[T::ID];
     }
 
+public:
+    using SourcePath = std::string_view;
+    using PhaseName = std::string_view;
+    using InvariantsMessages = std::map<VerifierInvariants, Messages>;
+    using WarningsErrors = std::map<std::string_view, InvariantsMessages>;
+    using SourceMessages = std::map<SourcePath, WarningsErrors>;
+    using GroupedMessages = std::vector<std::pair<PhaseName, SourceMessages>>;
+
 private:
-    const parser::Program *program_ {};
-    const util::Options *options_ {};
+    const parser::Program &program_;
+    const util::Options &options_;
     InvArray<bool> enabled_ {};
     InvArray<bool> allowed_ {};
 
     bool hasErrors_ {false};
     bool hasWarnings_ {false};
+    bool suppressed_ {false};
     GroupedMessages report_;
 
     struct SinglePassVerifier;
@@ -221,7 +227,7 @@ CheckResult InvariantBase<ID>::VerifyNode(const ir::AstNode *ast)
 {
     auto [res, action] = (*static_cast<ASTVerifier::InvariantClass<ID> *>(this))(ast);
     if (action == CheckAction::SKIP_SUBTREE) {
-        LOG_ASTV(DEBUG, util::gen::verifier_invariants::ToString(ID) << ": SKIP_SUBTREE");
+        LOG_ASTV(DEBUG, util::gen::ast_verifier::ToString(ID) << ": SKIP_SUBTREE");
     }
     return {res, action};
 }

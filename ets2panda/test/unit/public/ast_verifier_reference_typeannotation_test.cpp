@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,7 +46,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNullNegative)
         }
     });
 
-    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
+    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     delete type;
@@ -69,7 +69,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNullDefaultParam)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
+    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -93,7 +93,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNullInterface)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
+    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -110,7 +110,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNull1)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
+    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
@@ -126,7 +126,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNull2)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = verifier_.Verify<ReferenceTypeAnnotationIsNull>(ast);
+    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);

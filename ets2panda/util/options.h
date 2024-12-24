@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -117,11 +117,11 @@ public:
         return extension_ != ScriptExtension::STS;
     }
 
-    const auto &GetVerifierInvariantsAsWarnings() const
+    const auto &GetAstVerifierWarnings() const
     {
         return verifierWarnings_;
     }
-    const auto &GetVerifierInvariantsAsErrors() const
+    const auto &GetAstVerifierErrors() const
     {
         return verifierErrors_;
     }
@@ -151,6 +151,26 @@ public:
         return etsWarningCollection_;
     }
 
+    bool IsAstVerifierBeforePhases() const
+    {
+        return astVerifierBeforePhases_;
+    }
+
+    bool IsAstVerifierEachPhase() const
+    {
+        return astVerifierEachPhase_;
+    }
+
+    bool IsAstVerifierAfterPhases() const
+    {
+        return astVerifierAfterPhases_;
+    }
+
+    bool HasVerifierPhase(std::string_view phase) const
+    {
+        return astVerifierPhases_.find(std::string(phase)) != astVerifierPhases_.end();
+    }
+
 private:
     template <typename T>
     static bool CallPandArgParser(const std::vector<std::string> &args, T &options);
@@ -160,6 +180,7 @@ private:
     bool ProcessEtsSpecificOptions();
     std::optional<ArkTsConfig> ParseArktsConfig();
     void InitCompilerOptions();
+    void InitAstVerifierOptions();
     void InitializeWarnings();
 
 private:
@@ -168,8 +189,12 @@ private:
     ScriptExtension extension_ {ScriptExtension::INVALID};
     CompilationMode compilationMode_ {};
     std::set<std::string> skipPhases_ {};
-    std::array<bool, gen::verifier_invariants::COUNT> verifierWarnings_ {};
-    std::array<bool, gen::verifier_invariants::COUNT> verifierErrors_ {};
+    std::array<bool, gen::ast_verifier::COUNT> verifierWarnings_ {};
+    std::array<bool, gen::ast_verifier::COUNT> verifierErrors_ {};
+    bool astVerifierBeforePhases_ {};
+    bool astVerifierEachPhase_ {};
+    bool astVerifierAfterPhases_ {};
+    std::set<std::string> astVerifierPhases_ {};
     std::set<std::string> dumpBeforePhases_ {};
     std::set<std::string> dumpEtsSrcBeforePhases_ {};
     std::set<std::string> dumpAfterPhases_ {};

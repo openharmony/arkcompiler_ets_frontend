@@ -203,16 +203,17 @@ options:
   description: Phases to skip
   delimiter: ","
 
-- name: verifier-invariants
-  description: Select invariants for AST-verifier to check.
+- name: ast-verifier
+  description: Configure AST-verifier.
   enum: &VerifierInvariants
-    AfterPluginsAfterParse:
-    - CheckStructDeclaration
-    AfterScopesInitPhase:
+    Base:
     - NodeHasParent
     - NodeHasSourceRange
     - EveryChildHasValidParent
     - EveryChildInParentRange
+    AfterPluginsAfterParse:
+    - CheckStructDeclaration
+    AfterScopesInitPhase:
     - VariableHasScope
     AfterCheckerPhase:
     - NodeHasType
@@ -231,15 +232,15 @@ options:
     - CheckConstProperties
     # - ImportExportAccessValid
   sub_options:
-  - name: as-warnings
+  - name: warnings
     type: arg_list_t
-    description: Print errors and continue compilation if AST tree is incorrect.
+    description: Print warnings and continue compilation even if AST tree is incorrect.
     default: [ CheckInfiniteLoop ]
     possible_values: *VerifierInvariants
     delimiter: ':'
-  - name: as-errors
+  - name: errors
     type: arg_list_t
-    description: Print errors and stop compilation if AST tree is incorrect.
+    description: Print errors and aborts compilation if AST tree is incorrect.
     default:
     - ArithmeticOperationValid
     - CheckAbstractMethod
@@ -263,14 +264,24 @@ options:
     - VariableNameIdentifierNameSame
     possible_values: *VerifierInvariants
     delimiter: ':'
-  - name: each-phase
-    type: bool
-    default: false
-    description: Run verifier checks on every phase, monotonically expanding them on every phase
+  - name: phases
+    type: arg_list_t
+    default: [ "after" ]
+    description: >
+      Specify phases to finalize with ASTVerifier. Shortcuts: "before", "each", "after".
+    delimiter: ':'
   - name: full-program
     type: bool
     default: false
     description: Analyze full program, including program AST and it's dependencies
+  - name: json
+    type: bool
+    default: false
+    description: Report in json-format instead of stderr dump. More verbose.
+  - name: json-path
+    type: std::string
+    default: "astverifier_report.json"
+    description: Path to json-dump (if enabled)
 
 - name: list-phases
   type: bool

@@ -773,13 +773,13 @@ extern "C" void AstNodeRecheck(es2panda_Context *ctx, es2panda_AstNode *node)
 
 extern "C" Es2pandaEnum Es2pandaEnumFromString([[maybe_unused]] es2panda_Context *ctx, const char *str)
 {
-    return IrToE2pEnum(es2panda::util::gen::verifier_invariants::FromString(str));
+    return IrToE2pEnum(es2panda::util::gen::ast_verifier::FromString(str));
 }
 
 extern "C" char *Es2pandaEnumToString(es2panda_Context *ctx, Es2pandaEnum id)
 {
     auto *allocator = reinterpret_cast<Context *>(ctx)->allocator;
-    return StringViewToCString(allocator, es2panda::util::gen::verifier_invariants::ToString(E2pToIrEnum(id)));
+    return StringViewToCString(allocator, es2panda::util::gen::ast_verifier::ToString(E2pToIrEnum(id)));
 }
 
 es2panda_Impl g_impl = {

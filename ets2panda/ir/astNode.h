@@ -64,6 +64,36 @@ enum class AstNodeType {
 #undef DECLARE_NODE_TYPES
 };
 
+// CC-OFFNXT(G.PRE.02) code generation
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define STRING_FROM_NODE_TYPE(nodeType, className)                          \
+    case AstNodeType::nodeType: { /* CC-OFF(G.PRE.02) qualified name part*/ \
+        return #nodeType;         /* CC-OFF(G.PRE.05) function gen */       \
+    }
+// CC-OFFNXT(G.PRE.02) code generation
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define STRING_FROM_NODE_TYPE_REINTERPRET(nodeType1, nodeType2, baseClass, reinterpretClass) \
+    case AstNodeType::nodeType1: { /* CC-OFF(G.PRE.02) qualified name part*/                 \
+        return #nodeType1;         /* CC-OFF(G.PRE.05) function gen */                       \
+    }                                                                                        \
+    case AstNodeType::nodeType2: { /* CC-OFF(G.PRE.02) qualified name part*/                 \
+        return #nodeType2;         /* CC-OFF(G.PRE.05) function gen */                       \
+    }
+
+inline std::string_view ToString(AstNodeType nodeType)
+{
+    switch (nodeType) {
+        AST_NODE_MAPPING(STRING_FROM_NODE_TYPE)
+        AST_NODE_REINTERPRET_MAPPING(STRING_FROM_NODE_TYPE_REINTERPRET)
+        default:
+            LOG(FATAL, ES2PANDA) << "Invalid 'AstNodeType'";
+            UNREACHABLE();
+    }
+}
+
+#undef STRING_FROM_NODE_TYPE
+#undef STRING_FROM_NODE_TYPE
+
 // Forward declarations
 class AstDumper;
 class Expression;

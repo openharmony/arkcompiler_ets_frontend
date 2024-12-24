@@ -14,24 +14,25 @@
  */
 
 #include "identifierHasVariable.h"
+#include "ir/base/scriptFunction.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/ts/tsEnumDeclaration.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-class ExceptionsMatcher {
+class IdentifierHasVariable::ExceptionsMatcher {
 public:
-    explicit ExceptionsMatcher(const ir::Identifier *ast) : ast_(ast) {}
+    ExceptionsMatcher(const IdentifierHasVariable *inv, const ir::Identifier *ast) : inv_(inv), ast_(ast) {}
     bool Match()
     {
-        auto res = IsLengthProp() || IsEmptyName() || IsInObjectExpr() || IsInPackageDecl() || IsUtilityType();
+        auto res = IsLengthProp() || IsEmptyName() || IsInObjectExpr() || IsInPackageDecl() || IsUtilityType() ||
+                   IsUnionMemberAccess();
         return res;
     }
 
 private:
     bool IsLengthProp()
     {
-        // NOTE(kkonkuznetsov): some identifiers have empty names
         return ast_->Parent() != nullptr && ast_->Parent()->IsMemberExpression() && ast_->Name().Is("length");
     }
 
@@ -75,12 +76,25 @@ private:
                ast_->Name().Is(Signatures::READONLY_TYPE_NAME);
     }
 
+    bool IsUnionMemberAccess()
+    {
+        return ast_->Parent() != nullptr && ast_->Parent()->IsMemberExpression() &&
+               ast_->Parent()->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
+               !inv_->UnionLoweringOccurred();
+    }
+
 private:
+    const IdentifierHasVariable *inv_ {};
     const ir::Identifier *ast_ {};
 };
 
 CheckResult IdentifierHasVariable::operator()(const ir::AstNode *ast)
 {
+    if (ast->IsScriptFunction() && ast->AsScriptFunction()->IsExternal()) {
+        // Identifiers in external functions' definitions are not resolved, so skip it
+        ASSERT(!ast->AsScriptFunction()->IsExternalOverload());
+        return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+    }
     if (!ast->IsIdentifier()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
@@ -90,7 +104,7 @@ CheckResult IdentifierHasVariable::operator()(const ir::AstNode *ast)
     }
 
     const auto *id = ast->AsIdentifier();
-    if (ExceptionsMatcher {id}.Match()) {
+    if (ExceptionsMatcher {this, id}.Match()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 

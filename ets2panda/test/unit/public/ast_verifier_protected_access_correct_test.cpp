@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
+    const auto &messages = Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);

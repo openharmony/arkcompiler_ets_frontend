@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,10 +26,12 @@ namespace verifier_alias = ark::es2panda::compiler::ast_verifier;
 
 namespace test::utils {
 
-class AstVerifierTest : public testing::Test {
+// NOLINTNEXTLINE(fuchsia-multiple-inheritance)
+class AstVerifierTest : public testing::Test, public verifier_alias::InvariantsRegistry {
 public:
     AstVerifierTest();
-
+    NO_COPY_SEMANTIC(AstVerifierTest);
+    NO_MOVE_SEMANTIC(AstVerifierTest);
     ~AstVerifierTest() override;
 
     ark::ArenaAllocator *Allocator()
@@ -47,12 +49,25 @@ public:
         auto ast = reinterpret_cast<Ast *>(impl->ProgramAst(impl->ContextProgram(ctx)));
         return ast;
     }
-    NO_COPY_SEMANTIC(AstVerifierTest);
-    NO_MOVE_SEMANTIC(AstVerifierTest);
+
+    template <typename Invariant>
+    verifier_alias::Messages &&Verify(const ir_alias::AstNode *ast)
+    {
+        std::get<Invariant>(invariants_).Init();
+        std::get<Invariant>(invariants_).VerifyAst(ast);
+        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
+    }
+
+    template <typename Invariant>
+    verifier_alias::Messages &&VerifyNode(const ir_alias::AstNode *ast)
+    {
+        std::get<Invariant>(invariants_).Init();
+        std::get<Invariant>(invariants_).VerifyNode(ast);
+        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
+    }
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    ark::es2panda::compiler::ast_verifier::ASTVerifier verifier_ {};
     es2panda_Impl const *impl_;
     es2panda_Config *cfg_;
     ark::ArenaAllocator *allocator_;

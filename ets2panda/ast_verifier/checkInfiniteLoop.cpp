@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -76,6 +76,7 @@ bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const bod
     if (ConditionIsAlwaysTrue(test)) {
         if (!HasBreakOrReturnStatement(body)) {
             AddCheckMessage("INFINITE LOOP", *stmt);
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
 
@@ -93,6 +94,7 @@ bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const bod
     if (ConditionIsAlwaysTrue(test)) {
         if (!HasBreakOrReturnStatement(body)) {
             AddCheckMessage("INFINITE LOOP", *stmt);
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
 
@@ -112,7 +114,7 @@ bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const bod
     if (test == nullptr || ConditionIsAlwaysTrue(test)) {
         if (!HasBreakOrReturnStatement(body)) {
             AddCheckMessage("INFINITE LOOP", *stmt);
-            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
 
