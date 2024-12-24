@@ -667,8 +667,6 @@ public:
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *const prop,
                                              ir::TSInterfaceDeclaration *const newTSInterfaceDefinition);
-    void ConvertGetterAndSetterToProperty(ir::TSInterfaceDeclaration *interfaceDecl,
-                                          ir::TSInterfaceDeclaration *partialInterface);
     ir::MethodDefinition *CreateNullishAccessor(ir::MethodDefinition *const accessor,
                                                 ir::TSInterfaceDeclaration *interface);
     ir::ClassProperty *CreateNullishPropertyFromAccessorInInterface(
@@ -693,6 +691,8 @@ public:
     Type *CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *const interfaceDecl,
                                          ETSObjectType *const typeToBePartial,
                                          ir::TSInterfaceDeclaration *partialInterface);
+    void CreatePartialTypeInterfaceMethods(ir::TSInterfaceDeclaration *const interfaceDecl,
+                                           ir::TSInterfaceDeclaration *partialInterface);
     ir::ClassDefinition *CreateClassPrototype(util::StringView name, parser::Program *classDeclProgram);
     varbinder::Variable *SearchNamesInMultiplePrograms(const std::set<const parser::Program *> &programs,
                                                        const std::set<util::StringView> &classNamesToFind);

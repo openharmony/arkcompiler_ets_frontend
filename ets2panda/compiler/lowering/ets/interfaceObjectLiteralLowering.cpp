@@ -238,10 +238,14 @@ static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpressi
 {
     auto *checker = ctx->checker->AsETSChecker();
 
-    const auto *const targetType = objExpr->TsType();
+    auto *targetType = objExpr->TsType();
     ASSERT(targetType->AsETSObjectType()->GetDeclNode()->IsTSInterfaceDeclaration());
     auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
     checker::Type *resultType = GenerateAnonClassTypeFromInterface(ctx, ifaceNode, objExpr);
+
+    if (targetType->AsETSObjectType()->IsPartial()) {
+        resultType->AsETSObjectType()->SetBaseType(targetType->AsETSObjectType()->GetBaseType());
+    }
 
     if (!targetType->AsETSObjectType()->TypeArguments().empty()) {
         ArenaVector<checker::Type *> typeArgTypes(targetType->AsETSObjectType()->TypeArguments());
