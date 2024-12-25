@@ -85,13 +85,13 @@ void PatchFix::ValidateModuleInfo(const std::string &recordName,
 {
     auto it = originModuleInfo_->find(recordName);
     if (!IsHotReload() && it == originModuleInfo_->end()) {
-        std::cerr << "[Patch] Found new import/export expression in " << recordName << ", not supported!" << std::endl;
+        errMsg_ << "[Patch] Found new import/export expression in " + recordName + ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }
 
     if (!IsHotReload() && Helpers::GetHashString(ConvertLiteralToString(moduleBuffer)) != it->second) {
-        std::cerr << "[Patch] Found import/export expression changed in " << recordName << ", not supported!" <<
+        errMsg_ << "[Patch] Found import/export expression changed in " + recordName + ", not supported!" <<
             std::endl;
         patchError_ = true;
         return;
@@ -110,14 +110,14 @@ void PatchFix::ValidateJsonContentRecInfo(const std::string &recordName, const s
 {
     auto it = originModuleInfo_->find(recordName);
     if (!IsHotReload() && it == originModuleInfo_->end()) {
-        std::cerr << "[Patch] Found new import/require json file expression in " << recordName <<
+        errMsg_ << "[Patch] Found new import/require json file expression in " + recordName +
             ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }
 
     if (!IsHotReload() && Helpers::GetHashString(jsonFileContent) != it->second) {
-        std::cerr << "[Patch] Found imported/required json file content changed in " << recordName <<
+        errMsg_ << "[Patch] Found imported/required json file content changed in " + recordName +
             ", not supported!" << std::endl;
         patchError_ = true;
         return;
@@ -464,7 +464,8 @@ void PatchFix::Finalize(panda::pandasm::Program **prog)
 
     if (patchError_) {
         *prog = nullptr;
-        std::cerr << "[Patch] Found unsupported change in file, will not generate patch!" << std::endl;
+        errMsg_ << "[Patch] Found unsupported change in file, will not generate patch!" << std::endl;
+        std::cerr << errMsg_.str();
         return;
     }
 
@@ -487,7 +488,7 @@ bool PatchFix::CompareLexenv(const std::string &funcName, const compiler::PandaG
     auto &lexenv = bytecodeInfo.lexenv;
     if (funcName != funcMain0_) {
         if (lexenv.size() != lexicalVarNameAndTypes.size()) {
-            std::cerr << "[Patch] Found lexical variable added or removed in " << funcName << ", not supported!"
+            errMsg_ << "[Patch] Found lexical variable added or removed in " + funcName + ", not supported!"
                 << std::endl;
             patchError_ = true;
             return false;
@@ -496,7 +497,7 @@ bool PatchFix::CompareLexenv(const std::string &funcName, const compiler::PandaG
             auto varSlot = variable.first;
             auto lexenvIter = lexenv.find(varSlot);
             if (lexenvIter == lexenv.end()) {
-                std::cerr << "[Patch] Found new lexical variable added in function " << funcName << ", not supported!"
+                errMsg_ << "[Patch] Found new lexical variable added in function " + funcName + ", not supported!"
                     << std::endl;
                 patchError_ = true;
                 return false;
@@ -505,7 +506,7 @@ bool PatchFix::CompareLexenv(const std::string &funcName, const compiler::PandaG
             auto &lexInfo = lexenvIter->second;
             if (!IsColdFix() && (std::string(variable.second.first) != lexInfo.first ||
                                  variable.second.second != lexInfo.second)) {
-                std::cerr << "[Patch] Found lexical variable changed in function " << funcName << ", not supported!"
+                errMsg_ << "[Patch] Found lexical variable changed in function " + funcName + ", not supported!"
                     << std::endl;
                 patchError_ = true;
                 return false;
@@ -528,7 +529,7 @@ bool PatchFix::CompareClassHash(std::vector<std::pair<std::string, std::string>>
                 continue;
             } else {
                 ASSERT(IsHotFix());
-                std::cerr << "[Patch] Found class " << hashList[i].first << " changed, not supported!" << std::endl;
+                errMsg_ << "[Patch] Found class " + hashList[i].first + " changed, not supported!" << std::endl;
             }
             patchError_ = true;
             return false;
@@ -544,8 +545,8 @@ void PatchFix::CheckAndRestoreSpecialFunctionName(uint32_t globalIndexForSpecial
     if (it != originRecordHashFunctionNames_->end()) {
         if (it->second.size() == 0 || globalIndexForSpecialFunc > it->second.size()) {
             // anonymous, special or duplicate function added
-            std::cerr << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
-                    << funcInternalName << " not supported!" << std::endl;
+            errMsg_ << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
+                    + funcInternalName + " not supported!" << std::endl;
             patchError_ = true;
             return;
         }
@@ -553,8 +554,8 @@ void PatchFix::CheckAndRestoreSpecialFunctionName(uint32_t globalIndexForSpecial
         // special name function in the same position must have the same real function name as original
         if (originalName.substr(originalName.find_last_of("#")) !=
             funcInternalName.substr(funcInternalName.find_last_of("#"))) {
-            std::cerr << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
-                    << funcInternalName << " not supported!" << std::endl;
+            errMsg_ << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
+                    + funcInternalName + " not supported!" << std::endl;
             patchError_ = true;
             return;
         }
@@ -571,8 +572,8 @@ void PatchFix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Func
         if ((!util::Helpers::IsDefaultApiVersion(targetApiVersion_, targetApiSubVersion_)) &&
             IsHotFix() &&
             IsAnonymousOrSpecialOrDuplicateFunction(funcName)) {
-            std::cerr << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
-                      << funcName << " not supported!" << std::endl;
+            errMsg_ << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
+                      + funcName + " not supported!" << std::endl;
             patchError_ = true;
             return;
         }
