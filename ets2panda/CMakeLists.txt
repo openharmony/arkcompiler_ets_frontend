@@ -48,6 +48,8 @@ if(PANDA_WITH_ETS)
       "    \"paths\": {\n"
       "      \"std\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}stdlib${DELIM}std\"],\n"
       "      \"escompat\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}stdlib${DELIM}escompat\"],\n"
+      "      \"api\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}api\"],\n"
+      "      \"arkts\": [\"${STATIC_CORE}${DELIM}plugins${DELIM}ets${DELIM}sdk${DELIM}arkts\"],\n"
       "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"],\n"
       "      \"dynamic_import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\"]\n"
       "    },\n"
