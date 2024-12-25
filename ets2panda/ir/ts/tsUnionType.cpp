@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +30,12 @@ void TSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view 
             it = static_cast<TypeNode *>(transformedNode);
         }
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSUnionType::Iterate(const NodeTraverser &cb) const
@@ -37,15 +43,21 @@ void TSUnionType::Iterate(const NodeTraverser &cb) const
     for (auto *it : VectorIterationGuard(types_)) {
         cb(it);
     }
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSUnionType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSUnionType"}, {"types", types_}});
+    dumper->Add({{"type", "TSUnionType"}, {"types", types_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSUnionType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSUnionType");
 }
 

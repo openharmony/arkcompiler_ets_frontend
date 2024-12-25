@@ -18,4 +18,3 @@
 }
 
 /* @@? 18:1 Error SyntaxError: Invalid Type */
-/* @@? 18:1 Error SyntaxError: Annotations are not allowed on this type of declaration. */

@@ -138,7 +138,7 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
 static ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker::Type *const opaqueType,
                                            ir::Expression *const node, ir::AstNode *const parent)
 {
-    auto *const typeNode = checker->AllocNode<ir::OpaqueTypeNode>(opaqueType);
+    auto *const typeNode = checker->AllocNode<ir::OpaqueTypeNode>(opaqueType, checker->Allocator());
     auto *const asExpression = checker->AllocNode<ir::TSAsExpression>(node, typeNode, false);
     asExpression->SetParent(parent);
     asExpression->Check(checker);

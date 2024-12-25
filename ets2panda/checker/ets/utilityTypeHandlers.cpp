@@ -232,7 +232,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessorInInterface(
 
     auto tsType = accessor->Function()->IsGetter() ? callSign->ReturnType() : callSign->Params()[0]->TsType();
 
-    prop->SetTypeAnnotation(Allocator()->New<ir::OpaqueTypeNode>(tsType));
+    prop->SetTypeAnnotation(Allocator()->New<ir::OpaqueTypeNode>(tsType, Allocator()));
 
     return CreateNullishProperty(prop, newTSInterfaceDefinition);
 }
@@ -265,7 +265,7 @@ ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessor(ir::MethodDefin
 
     auto tsType = accessor->Function()->IsGetter() ? callSign->ReturnType() : callSign->Params()[0]->TsType();
 
-    prop->SetTypeAnnotation(Allocator()->New<ir::OpaqueTypeNode>(tsType));
+    prop->SetTypeAnnotation(Allocator()->New<ir::OpaqueTypeNode>(tsType, Allocator()));
 
     return CreateNullishProperty(prop, newClassDefinition);
 }
@@ -289,13 +289,13 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
 
     // Handle implicit type annotation
     if (propTypeAnn == nullptr) {
-        propTypeAnn = Allocator()->New<ir::OpaqueTypeNode>(prop->TsType());
+        propTypeAnn = Allocator()->New<ir::OpaqueTypeNode>(prop->TsType(), Allocator());
     }
 
     // Create new nullish type
     types.push_back(propTypeAnn);
-    types.push_back(AllocNode<ir::ETSUndefinedType>());
-    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types));
+    types.push_back(AllocNode<ir::ETSUndefinedType>(Allocator()));
+    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
     propClone->SetTypeAnnotation(unionType);
 
     // Set new parents
@@ -322,14 +322,14 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
 
     ir::TypeNode *propertyTypeAnnotation = propClone->TypeAnnotation();
     if (propertyTypeAnnotation == nullptr) {
-        propertyTypeAnnotation = Allocator()->New<ir::OpaqueTypeNode>(prop->Check(this));
+        propertyTypeAnnotation = Allocator()->New<ir::OpaqueTypeNode>(prop->Check(this), Allocator());
     }
 
     // Create new nullish type annotation
     ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
     types.push_back(propertyTypeAnnotation);
-    types.push_back(AllocNode<ir::ETSUndefinedType>());
-    propertyTypeAnnotation = AllocNode<ir::ETSUnionType>(std::move(types));
+    types.push_back(AllocNode<ir::ETSUndefinedType>(Allocator()));
+    propertyTypeAnnotation = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
     propClone->SetTypeAnnotation(propertyTypeAnnotation);
     propClone->SetTsType(nullptr);
 
@@ -353,7 +353,7 @@ ir::TSTypeParameterDeclaration *ETSChecker::ProcessTypeParamAndGenSubstitution(
         auto *newTypeParam = AllocNode<ir::TSTypeParameter>(
             CloneNodeIfNotNullptr(classOrInterfaceDefTypeParam->Name(), Allocator()),
             CloneNodeIfNotNullptr(classOrInterfaceDefTypeParam->Constraint(), Allocator()),
-            CloneNodeIfNotNullptr(classOrInterfaceDefTypeParam->DefaultType(), Allocator()));
+            CloneNodeIfNotNullptr(classOrInterfaceDefTypeParam->DefaultType(), Allocator()), Allocator());
         newTypeParams->AddParam(newTypeParam);
         newTypeParam->SetParent(newTypeParams);
         (*likeSubstitution)[classOrInterfaceDefTypeParam] = newTypeParam;
@@ -383,9 +383,9 @@ ir::TSTypeParameterInstantiation *ETSChecker::CreateNewSuperPartialRefTypeParams
             originRefParams[ix]->AsETSTypeReference()->Part()->TsType()->AsETSTypeParameter()->GetDeclNode());
         if (it != likeSubstitution->end()) {
             auto *typeParamRefPart =
-                AllocNode<ir::ETSTypeReferencePart>(it->second->Name()->Clone(Allocator(), nullptr));
+                AllocNode<ir::ETSTypeReferencePart>(it->second->Name()->Clone(Allocator(), nullptr), Allocator());
             typeParamRefPart->Name()->SetParent(typeParamRefPart);
-            auto *typeParamRef = AllocNode<ir::ETSTypeReference>(typeParamRefPart);
+            auto *typeParamRef = AllocNode<ir::ETSTypeReference>(typeParamRefPart, Allocator());
             typeParamRefPart->SetParent(typeParamRef);
 
             typeParamRef->SetParent(superPartialRefTypeParams);
@@ -404,13 +404,14 @@ ir::ETSTypeReference *ETSChecker::BuildSuperPartialTypeReference(
         auto *clonedId = superPartialDeclNode->IsClassDefinition()
                              ? superPartialDeclNode->AsClassDefinition()->Ident()->Clone(Allocator(), nullptr)
                              : superPartialDeclNode->AsTSInterfaceDeclaration()->Id()->Clone(Allocator(), nullptr);
-        auto *superPartialRefPart = AllocNode<ir::ETSTypeReferencePart>(clonedId, superPartialRefTypeParams, nullptr);
+        auto *superPartialRefPart =
+            AllocNode<ir::ETSTypeReferencePart>(clonedId, superPartialRefTypeParams, nullptr, Allocator());
         superPartialRefPart->Name()->SetParent(superPartialRefPart);
         if (superPartialRefTypeParams != nullptr) {
             superPartialRefTypeParams->SetParent(superPartialRefPart);
         }
 
-        superPartialRef = AllocNode<ir::ETSTypeReference>(superPartialRefPart);
+        superPartialRef = AllocNode<ir::ETSTypeReference>(superPartialRefPart, Allocator());
         superPartialRefPart->SetParent(superPartialRef);
     }
     return superPartialRef;
@@ -422,10 +423,10 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
     if (classDef->TypeParams() != nullptr) {
         ArenaVector<ir::TSTypeParameter *> typeParams(Allocator()->Adapter());
         for (auto *const classDefTypeParam : classDef->TypeParams()->Params()) {
-            auto *const newTypeParam =
-                AllocNode<ir::TSTypeParameter>(CloneNodeIfNotNullptr(classDefTypeParam->Name(), Allocator()),
-                                               CloneNodeIfNotNullptr(classDefTypeParam->Constraint(), Allocator()),
-                                               CloneNodeIfNotNullptr(classDefTypeParam->DefaultType(), Allocator()));
+            auto *const newTypeParam = AllocNode<ir::TSTypeParameter>(
+                CloneNodeIfNotNullptr(classDefTypeParam->Name(), Allocator()),
+                CloneNodeIfNotNullptr(classDefTypeParam->Constraint(), Allocator()),
+                CloneNodeIfNotNullptr(classDefTypeParam->DefaultType(), Allocator()), Allocator());
             typeParams.emplace_back(newTypeParam);
         }
 
@@ -512,14 +513,19 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
         auto *propTypeAnn = function->ReturnTypeAnnotation();
 
         auto *unionType = AllocNode<ir::ETSUnionType>(
-            ArenaVector<ir::TypeNode *>({propTypeAnn, AllocNode<ir::ETSUndefinedType>()}, Allocator()->Adapter()));
+            ArenaVector<ir::TypeNode *>({propTypeAnn, AllocNode<ir::ETSUndefinedType>(Allocator())},
+                                        Allocator()->Adapter()),
+            Allocator());
         function->SetReturnTypeAnnotation(unionType);
     } else {
         for (auto *params : function->Params()) {
             auto *paramExpr = params->AsETSParameterExpression();
 
-            auto *unionType = AllocNode<ir::ETSUnionType>(ArenaVector<ir::TypeNode *>(
-                {paramExpr->Ident()->TypeAnnotation(), AllocNode<ir::ETSUndefinedType>()}, Allocator()->Adapter()));
+            auto *unionType =
+                AllocNode<ir::ETSUnionType>(ArenaVector<ir::TypeNode *>({paramExpr->Ident()->TypeAnnotation(),
+                                                                         AllocNode<ir::ETSUndefinedType>(Allocator())},
+                                                                        Allocator()->Adapter()),
+                                            Allocator());
             paramExpr->Ident()->SetTsTypeAnnotation(unionType);
             unionType->SetParent(paramExpr->Ident());
 

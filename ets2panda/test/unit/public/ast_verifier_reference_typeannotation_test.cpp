@@ -36,7 +36,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNullNegative)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    auto *type = new ark::es2panda::ir::ETSPrimitiveType(ark::es2panda::ir::PrimitiveType::CHAR);
+    auto *type = new ark::es2panda::ir::ETSPrimitiveType(ark::es2panda::ir::PrimitiveType::CHAR, Allocator());
 
     ast->IterateRecursively([type](AstNode *astT) {
         if (astT->IsIdentifier()) {

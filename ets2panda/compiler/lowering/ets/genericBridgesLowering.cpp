@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -55,20 +55,22 @@ std::string GenericBridgesPhase::CreateMethodDefinitionString(ir::ClassDefinitio
         auto const *const derivedParameter = derivedParameters[i];
         auto const &parameterName = derivedParameter->Name().Utf8();
         str1 += parameterName;
-        typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType()));
+        typeNodes.emplace_back(
+            checker->AllocNode<ir::OpaqueTypeNode>(baseParameters[i]->TsType(), checker->Allocator()));
         str1 += ": @@T" + std::to_string(typeNodes.size());
 
         str2 += parameterName;
-        typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType()));
+        typeNodes.emplace_back(
+            checker->AllocNode<ir::OpaqueTypeNode>(derivedParameter->TsType(), checker->Allocator()));
         str2 += " as @@T" + std::to_string(typeNodes.size());
     }
 
     typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
-        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType())));
+        const_cast<checker::Type *>(derivedFunction->Signature()->ReturnType()), checker->Allocator()));
     str1 += "): @@T" + std::to_string(typeNodes.size()) + ' ';
 
-    typeNodes.emplace_back(
-        checker->AllocNode<ir::OpaqueTypeNode>(const_cast<checker::Type *>(classDefinition->TsType())));
+    typeNodes.emplace_back(checker->AllocNode<ir::OpaqueTypeNode>(
+        const_cast<checker::Type *>(classDefinition->TsType()), checker->Allocator()));
     str2 = "{ return (this as @@T" + std::to_string(typeNodes.size()) + str2 + "); }";
 
     str1 += str2;

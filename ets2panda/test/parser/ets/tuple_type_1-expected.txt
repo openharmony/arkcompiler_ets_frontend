@@ -1726,6 +1726,7 @@
                     }
                   }
                 },
+                "annotations": [],
                 "loc": {
                   "start": {
                     "line": 24,

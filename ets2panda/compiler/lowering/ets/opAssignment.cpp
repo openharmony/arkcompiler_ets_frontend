@@ -113,7 +113,7 @@ static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir:
     if (auto *lcTypeAsPrimitive = checker->MaybeUnboxInRelation(lcType); lcTypeAsPrimitive != nullptr) {
         lcType = lcTypeAsPrimitive;
     }
-    return checker->AllocNode<ir::OpaqueTypeNode>(lcType);
+    return checker->AllocNode<ir::OpaqueTypeNode>(lcType, checker->Allocator());
 }
 
 static std::string GenFormatForExpression(ir::Expression *expr, size_t ix1, size_t ix2)

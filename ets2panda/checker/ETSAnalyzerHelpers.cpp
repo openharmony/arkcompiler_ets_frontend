@@ -220,7 +220,8 @@ void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scr
         checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());
     checker->VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
     auto *returnType = checker->AllocNode<ir::ETSTypeReference>(
-        checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));
+        checker->AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr, checker->Allocator()),
+        checker->Allocator());
     objectId->SetParent(returnType->Part());
     returnType->Part()->SetParent(returnType);
     returnType->SetTsType(
@@ -349,7 +350,8 @@ checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expre
     }
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), typeAnnotation);
-    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
+    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE,
+                                                             checker->Allocator());
 
     funcType->SetScope(arrowFunc->Scope()->AsFunctionScope()->ParamScope());
     auto *const funcIface = typeAnnotation != nullptr ? funcType->Check(checker) : funcReturnType;

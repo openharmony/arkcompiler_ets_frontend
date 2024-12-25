@@ -53,7 +53,7 @@ static ir::AstNode *CreateAnonClassImplCtor(public_lib::Context *ctx, ArenaVecto
                                           ArenaVector<ir::Expression *> *params) {
             for (auto [anonClassFieldName, paramName, retType] : readonlyFields) {
                 ir::ETSParameterExpression *param =
-                    checker->AddParam(paramName, checker->AllocNode<ir::OpaqueTypeNode>(retType));
+                    checker->AddParam(paramName, checker->AllocNode<ir::OpaqueTypeNode>(retType, checker->Allocator()));
                 params->push_back(param);
                 auto *paramIdent = checker->AllocNode<ir::Identifier>(paramName, checker->Allocator());
                 statements->push_back(
@@ -230,8 +230,8 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
     }
 
     // Class implements
-    auto *classImplements =
-        checker->AllocNode<ir::TSClassImplements>(checker->AllocNode<ir::OpaqueTypeNode>(ifaceNode->TsType()));
+    auto *classImplements = checker->AllocNode<ir::TSClassImplements>(
+        checker->AllocNode<ir::OpaqueTypeNode>(ifaceNode->TsType(), checker->Allocator()));
     classImplements->SetParent(classDef);
     classDef->Implements().emplace_back(classImplements);
     classType->RemoveObjectFlag(checker::ETSObjectFlags::RESOLVED_INTERFACES);

@@ -15,7 +15,9 @@
 
 #include "ETSparser.h"
 #include <utility>
+#include "forwardDeclForParserImpl.h"
 #include "parser/parserStatusContext.h"
+#include "parserFlags.h"
 #include "util/language.h"
 #include "utils/arena_containers.h"
 #include "lexer/lexer.h"
@@ -28,6 +30,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/dummyNode.h"
 #include "ir/ets/etsTuple.h"
+#include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsParameterExpression.h"
@@ -271,56 +274,117 @@ static bool ApplyAnnotationsToNamespace(ir::ETSModule *ns, ArenaVector<ir::Annot
 }
 
 void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
-                                       lexer::SourcePosition pos)
+                                       lexer::SourcePosition pos, TypeAnnotationParsingOptions options)
 {
-    if (!annotations.empty()) {
-        if (node->IsAbstract() ||
-            (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
-            LogSyntaxError("Annotations are not allowed on an abstract class or methods.", pos);
-        }
-        if (node->IsExpressionStatement()) {
-            ApplyAnnotationsToNode(node->AsExpressionStatement()->GetExpression(), std::move(annotations), pos);
-            return;
-        }
-
-        switch (node->Type()) {
-            case ir::AstNodeType::METHOD_DEFINITION:
-                node->AsMethodDefinition()->Function()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::CLASS_DECLARATION:
-                node->AsClassDeclaration()->Definition()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::STRUCT_DECLARATION:
-                node->AsETSStructDeclaration()->Definition()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::FUNCTION_DECLARATION:
-                node->AsFunctionDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::TS_INTERFACE_DECLARATION:
-                node->AsTSInterfaceDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::CLASS_PROPERTY:
-                node->AsClassProperty()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::VARIABLE_DECLARATION:
-                node->AsVariableDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
-                node->AsTSTypeAliasDeclaration()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::ETS_PARAMETER_EXPRESSION:
-                node->AsETSParameterExpression()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION:
-                node->AsArrowFunctionExpression()->SetAnnotations(std::move(annotations));
-                break;
-            case ir::AstNodeType::ETS_MODULE:
-                ApplyAnnotationsToNamespace(node->AsETSModule(), annotations);
-                break;
-            default:
-                LogSyntaxError("Annotations are not allowed on this type of declaration.", pos);
-        }
+    if (node == nullptr || annotations.empty()) {
+        return;
     }
+
+    if ((options & TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW) != 0) {
+        LogSyntaxError("Annotations are not allowed on this type of declaration.", pos);
+        return;
+    }
+
+    if (node->IsAbstract() || (node->IsClassDeclaration() && node->AsClassDeclaration()->Definition()->IsAbstract())) {
+        LogSyntaxError("Annotations are not allowed on an abstract class or methods.", pos);
+        return;
+    }
+
+    if (node->IsExpressionStatement()) {
+        ApplyAnnotationsToNode(node->AsExpressionStatement()->GetExpression(), std::move(annotations), pos);
+        return;
+    }
+
+    ApplyAnnotationsToSpecificNodeType(node, std::move(annotations), pos);
+}
+
+void ETSParser::ApplyAnnotationsToArrayType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
+                                            lexer::SourcePosition pos)
+{
+    const auto *elementType = node->AsTSArrayType()->ElementType();
+    while (elementType->IsTSArrayType()) {
+        elementType = elementType->AsTSArrayType()->ElementType();
+    }
+    ApplyAnnotationsToNode(const_cast<ir::TypeNode *>(elementType), std::move(annotations), pos);
+}
+
+// CC-OFFNXT(huge_method,huge_cyclomatic_complexity,G.FUN.01-CPP) big switch-case, solid logic
+void ETSParser::ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
+                                                   lexer::SourcePosition pos)
+{
+    switch (node->Type()) {
+        case ir::AstNodeType::METHOD_DEFINITION:
+            node->AsMethodDefinition()->Function()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::CLASS_DECLARATION:
+            node->AsClassDeclaration()->Definition()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::STRUCT_DECLARATION:
+            node->AsETSStructDeclaration()->Definition()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::FUNCTION_DECLARATION:
+            node->AsFunctionDeclaration()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::TS_INTERFACE_DECLARATION:
+            node->AsTSInterfaceDeclaration()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::CLASS_PROPERTY:
+            node->AsClassProperty()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::VARIABLE_DECLARATION:
+            node->AsVariableDeclaration()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
+            node->AsTSTypeAliasDeclaration()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ETS_PARAMETER_EXPRESSION:
+            node->AsETSParameterExpression()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION:
+            node->AsArrowFunctionExpression()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ETS_MODULE:
+            ApplyAnnotationsToNamespace(node->AsETSModule(), annotations);
+            break;
+        case ir::AstNodeType::ETS_TYPE_REFERENCE:
+            node->AsETSTypeReference()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::TS_ARRAY_TYPE:
+            ApplyAnnotationsToArrayType(node, std::move(annotations), pos);
+            break;
+        case ir::AstNodeType::ETS_TUPLE:
+            node->AsETSTuple()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ETS_UNION_TYPE:
+            node->AsETSUnionType()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ETS_FUNCTION_TYPE:
+            node->AsETSFunctionType()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ETS_STRING_LITERAL_TYPE:
+            node->AsETSStringLiteralType()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ETS_NULL_TYPE:
+            node->AsETSNullType()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::ETS_UNDEFINED_TYPE:
+            node->AsETSUndefinedType()->SetAnnotations(std::move(annotations));
+            break;
+        case ir::AstNodeType::TS_TYPE_PARAMETER:
+            node->AsTSTypeParameter()->SetAnnotations(std::move(annotations));
+            break;
+        default:
+            LogSyntaxError("Annotations are not allowed on this type of declaration.", pos);
+    }
+}
+
+static lexer::SourcePosition GetExpressionEndLoc(ir::Expression *expr)
+{
+    if (expr->IsIdentifier()) {
+        return expr->AsIdentifier()->End();
+    }
+    auto *part = expr->AsETSTypeReference()->Part();
+    return part->Name()->AsTSQualifiedName()->Right()->End();
 }
 
 ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
@@ -332,7 +396,7 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
     ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS &&
-        !IsArrowFunctionExpressionStart()) {
+        !IsArrowFunctionExpressionStart() && IsAnnotationUsageStart(GetExpressionEndLoc(expr))) {
         Lexer()->NextToken();  // eat '('
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
             properties = ParseAnnotationProperties(flags);
@@ -360,6 +424,51 @@ ir::AnnotationUsage *ETSParser::ParseAnnotationUsage()
     annotationUsage->AddModifier(flags);
     annotationUsage->SetRange({startLoc, Lexer()->GetToken().End()});
     return annotationUsage;
+}
+
+bool ETSParser::TryParseAnnotations()
+{
+    ArenaVector<ir::AnnotationUsage *> annotations(Allocator()->Adapter());
+
+    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
+        Lexer()->NextToken();
+
+        ir::Expression *ident = ParseAnnotationName<true>();
+        ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+            TryParseAnnotationsParams();
+        }
+
+        auto *annotation = AllocNode<ir::AnnotationUsage>(ident, std::move(properties));
+        annotations.push_back(annotation);
+    }
+
+    return !annotations.empty();
+}
+
+void ETSParser::TryParseAnnotationsParams()
+{
+    Lexer()->NextToken();
+    int parenthesesCount = 1;
+
+    while (parenthesesCount > 0) {
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+            parenthesesCount++;
+        } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            parenthesesCount--;
+        }
+        Lexer()->NextToken();
+    }
+}
+
+bool ETSParser::IsAnnotationUsageStart(lexer::SourcePosition lastTokenEndIndex)
+{
+    auto result = true;
+    if (Lexer()->GetToken().End().index - lastTokenEndIndex.index != 1) {
+        result = false;
+    }
+    return result;
 }
 
 }  // namespace ark::es2panda::parser

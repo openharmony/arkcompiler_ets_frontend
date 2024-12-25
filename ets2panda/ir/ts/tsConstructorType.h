@@ -27,8 +27,8 @@ class TSTypeParameterDeclaration;
 
 class TSConstructorType : public TypeNode {
 public:
-    explicit TSConstructorType(FunctionSignature signature, bool abstract)
-        : TypeNode(AstNodeType::TS_CONSTRUCTOR_TYPE), signature_(std::move(signature)), abstract_(abstract)
+    explicit TSConstructorType(FunctionSignature signature, bool abstract, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_CONSTRUCTOR_TYPE, allocator), signature_(std::move(signature)), abstract_(abstract)
     {
     }
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields

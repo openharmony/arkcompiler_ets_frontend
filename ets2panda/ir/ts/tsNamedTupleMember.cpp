@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,12 +34,21 @@ void TSNamedTupleMember::TransformChildren(const NodeTransformer &cb, std::strin
         elementType_->SetTransformedNode(transformationName, transformedNode);
         elementType_ = static_cast<TypeNode *>(transformedNode);
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSNamedTupleMember::Iterate(const NodeTraverser &cb) const
 {
     cb(label_);
     cb(elementType_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSNamedTupleMember::Dump(ir::AstDumper *dumper) const
@@ -47,11 +56,15 @@ void TSNamedTupleMember::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSNamedTupleMember"},
                  {"elementType", elementType_},
                  {"label", label_},
-                 {"optional", AstDumper::Optional(optional_)}});
+                 {"optional", AstDumper::Optional(optional_)},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSNamedTupleMember::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("TSNamedTupleMember");
 }
 

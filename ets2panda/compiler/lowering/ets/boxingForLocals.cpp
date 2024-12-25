@@ -139,7 +139,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     ArenaVector<ir::Expression *> newInitArgs {allocator->Adapter()};
     newInitArgs.push_back(initId);
     auto *newInit = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
-        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType), std::move(newInitArgs), nullptr);
+        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType, allocator), std::move(newInitArgs), nullptr);
 
     auto const newVarName = GenName(allocator);
     auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
@@ -190,12 +190,12 @@ static ir::AstNode *HandleVariableDeclarator(public_lib::Context *ctx, ir::Varia
         auto *arg = declarator->Init();
         if (arg->TsType() != type) {
             arg = util::NodeAllocator::ForceSetParent<ir::TSAsExpression>(
-                allocator, arg, allocator->New<ir::OpaqueTypeNode>(type), false);
+                allocator, arg, allocator->New<ir::OpaqueTypeNode>(type, allocator), false);
         }
         initArgs.push_back(arg);
     }
     auto *newInit = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
-        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType), std::move(initArgs), nullptr);
+        allocator, allocator->New<ir::OpaqueTypeNode>(boxedType, allocator), std::move(initArgs), nullptr);
     auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
         allocator, declarator->Flag(), allocator->New<ir::Identifier>(id->Name(), allocator), newInit);
     newDeclarator->SetParent(declarator->Parent());

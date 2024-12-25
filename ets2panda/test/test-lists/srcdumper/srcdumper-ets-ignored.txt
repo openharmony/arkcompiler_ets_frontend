@@ -10,6 +10,8 @@ parser/ets/string_template_4.sts
 ast/compiler/ets/annotation_tests/annotationUsage_duplicate_from_import.sts
 ast/parser/ets/annotations_tests/annotationUsage_bad_param03.sts
 ast/parser/ets/annotations_tests/annotationDecl_parser_bad_token05.sts
+runtime/ets/annotation_tests/AnnotationForDifferentTypes.sts
+runtime/ets/annotation_tests/AnnotationForTypesInDifferentCase.sts
 runtime/ets/annotation_tests/AnnotationDeclare01.sts
 runtime/ets/annotation_tests/annotationUsageSingleFileds01.sts
 runtime/ets/annotation_tests/annotationUsageSingleFileds02.sts
@@ -249,6 +251,10 @@ runtime/ets/interfacePropertyFunctionType.sts
 #Issue 21065
 runtime/ets/implementsClassPropertyUnionType1.sts
 runtime/ets/implementsClassPropertyUnionType2.sts
+ast/compiler/ets/annotation_tests/annotation_for_function_type.sts
+ast/compiler/ets/annotation_tests/annotation_for_union_type.sts
+runtime/ets/annotation_tests/AnnotationForFunctionType.sts
+runtime/ets/annotation_tests/AnnotationForUnionType.sts
 
 #New failures at #FailKind.SRC_DUMPER_FAI
 ast/compiler/ets/ambient_namesapce01.sts

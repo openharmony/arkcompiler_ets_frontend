@@ -19,7 +19,7 @@
 }
 
 // Annotation use:
-@FuncAuthor ()
+@FuncAuthor()
 function foo():void {}
 function main(): void {
    

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,13 +29,14 @@ public:
     NO_COPY_SEMANTIC(OpaqueTypeNode);
     NO_MOVE_SEMANTIC(OpaqueTypeNode);
 
-    explicit OpaqueTypeNode(checker::Type *const type) : TypeNode(AstNodeType::OPAQUE_TYPE_NODE)
+    explicit OpaqueTypeNode(checker::Type *const type, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::OPAQUE_TYPE_NODE, allocator)
     {
         ASSERT(type != nullptr);
         SetTsType(type);
     }
 
-    explicit OpaqueTypeNode() : TypeNode(AstNodeType::OPAQUE_TYPE_NODE) {}
+    explicit OpaqueTypeNode(ArenaAllocator *const allocator) : TypeNode(AstNodeType::OPAQUE_TYPE_NODE, allocator) {}
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;

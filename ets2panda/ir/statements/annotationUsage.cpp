@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -56,7 +56,7 @@ void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
     ASSERT(expr_ != nullptr);
     dumper->Add("@");
     expr_->Dump(dumper);
-    dumper->Add(" (");
+    dumper->Add("(");
 
     if (!properties_.empty()) {
         dumper->Add("{");
@@ -71,7 +71,6 @@ void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
         dumper->Add("}");
     }
     dumper->Add(")");
-    dumper->Endl();
 }
 
 AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode *const parent)

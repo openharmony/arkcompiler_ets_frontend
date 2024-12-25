@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,6 +35,12 @@ void ETSTuple::TransformChildren(const NodeTransformer &cb, std::string_view con
             spreadType_ = static_cast<TypeNode *>(transformedNode);
         }
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ETSTuple::Iterate(const NodeTraverser &cb) const
@@ -46,17 +52,25 @@ void ETSTuple::Iterate(const NodeTraverser &cb) const
     if (HasSpreadType()) {
         cb(spreadType_);
     }
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void ETSTuple::Dump(ir::AstDumper *const dumper) const
 {
     dumper->Add({{"type", "ETSTuple"},
                  {"types", AstDumper::Optional(typeAnnotationList_)},
-                 {"spreadType", AstDumper::Nullish(spreadType_)}});
+                 {"spreadType", AstDumper::Nullish(spreadType_)},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSTuple::Dump(ir::SrcDumper *const dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("[");
     for (const auto *const typeAnnot : typeAnnotationList_) {
         typeAnnot->Dump(dumper);
@@ -125,6 +139,7 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
     if (TsType() != nullptr) {
         return TsType();
     }
+    checker->CheckAnnotations(Annotations());
 
     ArenaVector<checker::Type *> typeList(checker->Allocator()->Adapter());
 
@@ -170,6 +185,14 @@ ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent
         for (auto *const type : typeAnnotationList_) {
             auto *const t = type->Clone(allocator, clone);
             typeList.push_back(t);
+        }
+
+        if (!Annotations().empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : Annotations()) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
         }
 
         clone->SetTypeAnnotationsList(std::move(typeList));

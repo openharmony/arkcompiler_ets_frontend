@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -120,25 +120,37 @@ checker::Type *ETSTypeReferencePart::HandleInternalTypes(checker::ETSChecker *co
     }
 
     if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
-        auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
-        if (baseType != nullptr && baseType->IsETSObjectType() &&
-            !baseType->AsETSObjectType()->TypeArguments().empty()) {
-            // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
-            // but not a generic type param for Partial<>
+        return HandlePartialType(checker, ident);
+    }
+
+    return nullptr;
+}
+
+checker::Type *ETSTypeReferencePart::HandlePartialType(checker::ETSChecker *const checker,
+                                                       const Identifier *const ident)
+{
+    auto *baseType = checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8());
+    if (baseType != nullptr && baseType->IsETSObjectType() && !baseType->AsETSObjectType()->TypeArguments().empty()) {
+        // we treat Partial<A<T,D>> class as a different copy from A<T,D> now,
+        // but not a generic type param for Partial<>
+        if (typeParams_ != nullptr) {
             for (auto &typeRef : typeParams_->Params()) {
                 checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(),
                                                   typeRef->AsETSTypeReference()->Part()->typeParams_, Start());
                 baseType = ctx.Result();
             }
         }
-        return baseType;
     }
-
-    return nullptr;
+    return baseType;
 }
 
 checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 {
+    if (TypeParams() != nullptr) {
+        for (auto *param : TypeParams()->Params()) {
+            checker->CheckAnnotations(param->Annotations());
+        }
+    }
     if (prev_ == nullptr) {
         if (name_->IsIdentifier()) {
             SetTsType(HandleInternalTypes(checker, name_->AsIdentifier()));
@@ -168,7 +180,7 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
     auto *const typeParamsClone =
         typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr)->AsTSTypeParameterInstantiation() : nullptr;
     auto *const prevClone = prev_ != nullptr ? prev_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
-    if (auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone);
+    if (auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone, allocator);
         clone != nullptr) {
         if (nameClone != nullptr) {
             nameClone->SetParent(clone);

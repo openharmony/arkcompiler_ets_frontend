@@ -1413,6 +1413,6 @@ ir::Identifier *ParserImpl::AllocBrokenExpression()
 
 ir::TypeNode *ParserImpl::AllocBrokenType()
 {
-    return AllocNode<ir::BrokenTypeNode>();
+    return AllocNode<ir::BrokenTypeNode>(Allocator());
 }
 }  // namespace ark::es2panda::parser

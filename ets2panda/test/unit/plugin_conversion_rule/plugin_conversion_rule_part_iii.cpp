@@ -58,10 +58,12 @@ TEST_F(PluginConversionRuleUnitTest, FunctionSignatureInputParameter)
     [[maybe_unused]] es2panda_FunctionSignature *signature, [[maybe_unused]] Es2pandaScriptFunctionFlags funcFlags)
     {
         auto funcFlagsE2p = E2pToIrScriptFunctionFlags(funcFlags);
+        auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSFunctionType>(std::forward
-               <ir::FunctionSignature>(*reinterpret_cast<ir::FunctionSignature *>(signature)), funcFlagsE2p));
+        return reinterpret_cast<es2panda_AstNode *>(
+            ctxAllocator->New<ir::ETSFunctionType>(std::forward<ir::FunctionSignature>(
+            *reinterpret_cast<ir::FunctionSignature *>(signature)), funcFlagsE2p, allocatorE2p));
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);

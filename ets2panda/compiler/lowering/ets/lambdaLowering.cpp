@@ -112,8 +112,8 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
         auto *oldTypeParamNode = oldIrTypeParams->Params()[ix];
         auto *oldTypeParam = enclosingFunction->Signature()->TypeParams()[ix]->AsETSTypeParameter();
         auto *newTypeParamId = allocator->New<ir::Identifier>(oldTypeParamNode->Name()->Name(), allocator);
-        auto *newTypeParamNode =
-            util::NodeAllocator::ForceSetParent<ir::TSTypeParameter>(allocator, newTypeParamId, nullptr, nullptr);
+        auto *newTypeParamNode = util::NodeAllocator::ForceSetParent<ir::TSTypeParameter>(allocator, newTypeParamId,
+                                                                                          nullptr, nullptr, allocator);
         auto *newTypeParam = allocator->New<checker::ETSTypeParameter>();
         newTypeParam->SetDeclNode(newTypeParamNode);
 
@@ -137,13 +137,14 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
         if (auto *oldConstraint = oldTypeParam->GetConstraintType(); oldConstraint != nullptr) {
             auto *newConstraint = oldConstraint->Substitute(checker->Relation(), substitution);
             newTypeParams[ix]->SetConstraintType(newConstraint);
-            newTypeParamNodes[ix]->SetConstraint(allocator->New<ir::OpaqueTypeNode>(newConstraint));
+            newTypeParamNodes[ix]->SetConstraint(
+                allocator->New<ir::OpaqueTypeNode>(newConstraint, checker->Allocator()));
             newTypeParamNodes[ix]->Constraint()->SetParent(newTypeParamNodes[ix]);
         }
         if (auto *oldDefault = oldTypeParam->GetDefaultType(); oldDefault != nullptr) {
             auto *newDefault = oldDefault->Substitute(checker->Relation(), substitution);
             newTypeParams[ix]->SetDefaultType(newDefault);
-            newTypeParamNodes[ix]->SetDefaultType(allocator->New<ir::OpaqueTypeNode>(newDefault));
+            newTypeParamNodes[ix]->SetDefaultType(allocator->New<ir::OpaqueTypeNode>(newDefault, checker->Allocator()));
             newTypeParamNodes[ix]->DefaultType()->SetParent(newTypeParamNodes[ix]);
         }
     }
@@ -172,7 +173,7 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
     for (auto capturedVar : calleeParameterInfo.captured) {
         auto *newType = capturedVar->TsType()->Substitute(checker->Relation(), calleeParameterInfo.substitution);
         auto newId = util::NodeAllocator::ForceSetParent<ir::Identifier>(
-            allocator, capturedVar->Name(), allocator->New<ir::OpaqueTypeNode>(newType), allocator);
+            allocator, capturedVar->Name(), allocator->New<ir::OpaqueTypeNode>(newType, allocator), allocator);
         auto param =
             util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, newId, nullptr, allocator);
         auto [_, var] = varBinder->AddParamDecl(param);
@@ -371,7 +372,7 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
         cmInfo->forcedReturnType != nullptr
             ? cmInfo->forcedReturnType
             : lambda->Function()->Signature()->ReturnType()->Substitute(checker->Relation(), substitution);
-    auto returnTypeAnnotation = allocator->New<ir::OpaqueTypeNode>(returnType);
+    auto returnTypeAnnotation = allocator->New<ir::OpaqueTypeNode>(returnType, allocator);
 
     auto funcFlags = ir::ScriptFunctionFlags::METHOD | cmInfo->auxFunctionFlags;
     auto modifierFlags = ir::ModifierFlags::PUBLIC |
@@ -505,7 +506,7 @@ static void CreateLambdaClassConstructor(public_lib::Context *ctx, ir::ClassDefi
     auto makeParam = [checker, allocator, substitution, &params](util::StringView name, checker::Type *type) {
         auto *substitutedType = type->Substitute(checker->Relation(), substitution);
         auto *id = util::NodeAllocator::ForceSetParent<ir::Identifier>(
-            allocator, name, allocator->New<ir::OpaqueTypeNode>(substitutedType), allocator);
+            allocator, name, allocator->New<ir::OpaqueTypeNode>(substitutedType, allocator), allocator);
         auto *param =
             util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, nullptr, allocator);
         params.push_back(param);
@@ -588,7 +589,8 @@ static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *c
     if (lciInfo->classDefinition->TypeParams() != nullptr) {
         auto typeArgs = ArenaVector<ir::TypeNode *>(allocator->Adapter());
         for (auto *tp : lciInfo->classDefinition->TypeParams()->Params()) {
-            typeArgs.push_back(allocator->New<ir::OpaqueTypeNode>(tp->Name()->AsIdentifier()->Variable()->TsType()));
+            typeArgs.push_back(
+                allocator->New<ir::OpaqueTypeNode>(tp->Name()->AsIdentifier()->Variable()->TsType(), allocator));
         }
         auto *typeArg =
             util::NodeAllocator::ForceSetParent<ir::TSTypeParameterInstantiation>(allocator, std::move(typeArgs));
@@ -641,7 +643,7 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
         auto *lparam = lciInfo->lambdaSignature->Params()[i];
         auto *type = wrapToObject ? anyType : lparam->TsType()->Substitute(checker->Relation(), lciInfo->substitution);
         auto *id = util::NodeAllocator::ForceSetParent<ir::Identifier>(
-            allocator, lparam->Name(), allocator->New<ir::OpaqueTypeNode>(type), allocator);
+            allocator, lparam->Name(), allocator->New<ir::OpaqueTypeNode>(type, allocator), allocator);
         auto *initializer = function->Params()[i]->AsETSParameterExpression()->Initializer();
         if (initializer != nullptr) {
             initializer = initializer->Clone(ctx->allocator, nullptr)->AsExpression();
@@ -671,7 +673,8 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
     auto body = util::NodeAllocator::ForceSetParent<ir::BlockStatement>(allocator, allocator, std::move(bodyStmts));
     auto *returnType2 = allocator->New<ir::OpaqueTypeNode>(
         wrapToObject ? anyType
-                     : lciInfo->lambdaSignature->ReturnType()->Substitute(checker->Relation(), lciInfo->substitution));
+                     : lciInfo->lambdaSignature->ReturnType()->Substitute(checker->Relation(), lciInfo->substitution),
+        allocator);
     ir::ScriptFunctionFlags functionFlag = function->IsExtensionMethod()
                                                ? ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD
                                                : ir::ScriptFunctionFlags::METHOD;
@@ -799,7 +802,7 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
                                                                info->enclosingFunction->Signature()->TypeParams());
     }
     auto *newExpr = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
-        allocator, allocator->New<ir::OpaqueTypeNode>(constructedType), std::move(args), nullptr);
+        allocator, allocator->New<ir::OpaqueTypeNode>(constructedType, allocator), std::move(args), nullptr);
     auto *lambdaOrFuncRefParent = lambdaOrFuncRef->Parent();
     newExpr->SetParent(lambdaOrFuncRefParent);
     // NOTE(dslynko, #19869): Required for correct debug-info generation
@@ -936,7 +939,8 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
     for (auto *p : signature->Params()) {
         params.push_back(util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(
             allocator,
-            allocator->New<ir::Identifier>(p->Name(), allocator->New<ir::OpaqueTypeNode>(p->TsType()), allocator),
+            allocator->New<ir::Identifier>(p->Name(), allocator->New<ir::OpaqueTypeNode>(p->TsType(), allocator),
+                                           allocator),
             nullptr, allocator));
     }
     auto *func = util::NodeAllocator::ForceSetParent<ir::ScriptFunction>(
@@ -944,7 +948,7 @@ static ir::ScriptFunction *GetWrappingLambdaParentFunction(public_lib::Context *
         ir::ScriptFunction::ScriptFunctionData {
             nullptr,
             ir::FunctionSignature {nullptr, std::move(params),
-                                   allocator->New<ir::OpaqueTypeNode>(signature->ReturnType())},
+                                   allocator->New<ir::OpaqueTypeNode>(signature->ReturnType(), allocator)},
             ir::ScriptFunctionFlags::ARROW});
 
     ArenaVector<ir::Statement *> bodyStmts {allocator->Adapter()};

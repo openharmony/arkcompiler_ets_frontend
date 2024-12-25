@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -180,9 +180,11 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
 
         key->SetParent(clone);
         if (value != nullptr) {
+            value->SetTsType(value_->TsType());
             value->SetParent(clone);
         }
         if (typeAnnotation != nullptr) {
+            typeAnnotation->SetTsType(typeAnnotation->TsType());
             typeAnnotation->SetParent(clone);
         }
 

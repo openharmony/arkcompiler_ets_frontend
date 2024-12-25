@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,8 +63,9 @@ public:
             *checker_->GetTupleElementAccessValue(argument_->AsMemberExpression()->Property()->TsType(),
                                                   argument_->AsMemberExpression()->Property()->Start()));
 
-        tupleElementTypeNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->ElementType());
-        tupleTypeAtIdxNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(tupleTypeAtIdx_);
+        tupleElementTypeNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->ElementType(),
+                                                                        checker_->Allocator());
+        tupleTypeAtIdxNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(tupleTypeAtIdx_, checker_->Allocator());
     }
 
     ArenaVector<ir::Expression *> GenerateExpressions()
@@ -238,8 +239,8 @@ static ir::AssignmentExpression *ConvertTupleAssignment(checker::ETSChecker *con
 
     // Compute necessary types and OpaqueTypeNodes
     auto *const elementTypeTypeNode =
-        checker->AllocNode<ir::OpaqueTypeNode>(leftObjectType->AsETSTupleType()->ElementType());
-    auto *const tupleTypeAtIdxTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(savedLeftType);
+        checker->AllocNode<ir::OpaqueTypeNode>(leftObjectType->AsETSTupleType()->ElementType(), checker->Allocator());
+    auto *const tupleTypeAtIdxTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(savedLeftType, checker->Allocator());
     // --------------
 
     // make node: tuple[n] = ((variable as <tuple type at index n>) as <tuple element_type>)

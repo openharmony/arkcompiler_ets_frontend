@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,20 +30,32 @@ void TSArrayType::TransformChildren(const NodeTransformer &cb, std::string_view 
         elementType_->SetTransformedNode(transformationName, transformedNode);
         elementType_ = static_cast<TypeNode *>(transformedNode);
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSArrayType::Iterate(const NodeTraverser &cb) const
 {
     cb(elementType_);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSArrayType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSArrayType"}, {"elementType", elementType_}});
+    dumper->Add({{"type", "TSArrayType"}, {"elementType", elementType_}, {"annotations", Annotations()}});
 }
 
 void TSArrayType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     ASSERT(elementType_);
     if (elementType_->IsETSUnionType()) {
         dumper->Add("(");
@@ -96,7 +108,7 @@ TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const 
 {
     auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator, nullptr) : nullptr;
 
-    if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone); clone != nullptr) {
+    if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone, allocator); clone != nullptr) {
         clone->AddModifier(flags_);
 
         if (elementTypeClone != nullptr) {
@@ -105,6 +117,14 @@ TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const 
 
         if (parent != nullptr) {
             clone->SetParent(parent);
+        }
+
+        if (!Annotations().empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : Annotations()) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
         }
 
         return clone;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -125,8 +125,8 @@ ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChec
     */
     ASSERT(returnType != nullptr);
     auto *ident = checker->AllocNode<ir::Identifier>(util::StringView(""), checker->Allocator());
-    auto *const part = checker->AllocNode<ir::ETSTypeReferencePart>(ident);
-    auto *returnNode = checker->AllocNode<ir::ETSTypeReference>(part);
+    auto *const part = checker->AllocNode<ir::ETSTypeReferencePart>(ident, checker->Allocator());
+    auto *returnNode = checker->AllocNode<ir::ETSTypeReference>(part, checker->Allocator());
     returnNode->SetTsType(returnType);
     return returnNode;
 }
@@ -160,7 +160,8 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
     checker->CopyParams(Function()->Params(), params);
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), returnNode);
-    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
+    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE,
+                                                             checker->Allocator());
     return funcType;
 }
 

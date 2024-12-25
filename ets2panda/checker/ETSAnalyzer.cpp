@@ -80,7 +80,9 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     ASSERT(st->Id() != nullptr && st->Id()->Variable() != nullptr);
     ETSChecker *checker = GetETSChecker();
     checker->CheckAnnotations(st->Annotations());
-
+    if (st->TypeAnnotation() != nullptr) {
+        st->TypeAnnotation()->Check(checker);
+    }
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass(),
                                               checker->Context().ContainingSignature());
@@ -185,8 +187,9 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         checker->LogTypeError("Invalid function expression", node->Start());
         return returnErrorType();
     }
-
-    checker->CheckFunctionAnnotations(scriptFunc);
+    checker->CheckAnnotations(scriptFunc->Annotations());
+    checker->CheckFunctionSignatureAnnotations(scriptFunc->Params(), scriptFunc->TypeParams(),
+                                               scriptFunc->ReturnTypeAnnotation());
 
     if (scriptFunc->IsProxy()) {
         return ReturnTypeForStatement(node);
@@ -331,6 +334,9 @@ checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
 {
     if (node->TsType() == nullptr) {
         ETSChecker *checker = GetETSChecker();
+
+        checker->CheckAnnotations(node->Annotations());
+        checker->CheckFunctionSignatureAnnotations(node->Params(), node->TypeParams(), node->ReturnType());
 
         auto *interfaceType = CreateInterfaceTypeForETSFunctionType(checker, node);
 
@@ -598,6 +604,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSStructDeclaration *node) const
 checker::Type *ETSAnalyzer::Check(ir::ETSTypeReference *node) const
 {
     ETSChecker *checker = GetETSChecker();
+    checker->CheckAnnotations(node->Annotations());
     return node->GetType(checker);
 }
 
@@ -610,12 +617,14 @@ checker::Type *ETSAnalyzer::Check(ir::ETSTypeReferencePart *node) const
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSNullType *node) const
 {
     ETSChecker *checker = GetETSChecker();
+    checker->CheckAnnotations(node->Annotations());
     return checker->GlobalETSNullType();
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSUndefinedType *node) const
 {
     ETSChecker *checker = GetETSChecker();
+    checker->CheckAnnotations(node->Annotations());
     return checker->GlobalETSUndefinedType();
 }
 
@@ -625,9 +634,10 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSNeverType *node) const
     return checker->GlobalETSNeverType();
 }
 
-checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSStringLiteralType *node) const
+checker::Type *ETSAnalyzer::Check(ir::ETSStringLiteralType *node) const
 {
     ETSChecker *checker = GetETSChecker();
+    checker->CheckAnnotations(node->Annotations());
     return node->GetType(checker);
 }
 
@@ -2241,6 +2251,9 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDeclaration *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
 {
+    if (st->Expr()->TsType() != nullptr) {
+        return ReturnTypeForStatement(st);
+    }
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
@@ -2260,6 +2273,9 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
 {
+    if (st->Expr()->TsType() != nullptr) {
+        return ReturnTypeForStatement(st);
+    }
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
@@ -2798,6 +2814,7 @@ checker::Type *ETSAnalyzer::Check(ir::WhileStatement *st) const
 checker::Type *ETSAnalyzer::Check(ir::TSArrayType *node) const
 {
     ETSChecker *checker = GetETSChecker();
+    checker->CheckAnnotations(node->Annotations());
     node->elementType_->Check(checker);
     node->SetTsType(node->GetType(checker));
 
@@ -2814,6 +2831,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
         return expr->TsType();
     }
 
+    checker->CheckAnnotations(expr->TypeAnnotation()->Annotations());
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
     // Object expression requires that its type be set by the context before checking. in this case, the target type
     // provides that context.
@@ -2904,7 +2922,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     checker::ETSObjectType *interfaceType = checker->BuildBasicInterfaceProperties(st);
     ASSERT(interfaceType != nullptr);
 
-    checker->CheckAnnotations(st->Annotations());
+    checker->CheckInterfaceAnnotations(st);
 
     interfaceType->SetSuperType(checker->GlobalETSObjectType());
     checker->CheckInvokeMethodsLegitimacy(interfaceType);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,17 +22,31 @@ namespace ark::es2panda::ir {
 void ETSUndefinedType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                          [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void ETSUndefinedType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void ETSUndefinedType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void ETSUndefinedType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSUndefinedType"}});
+    dumper->Add({{"type", "ETSUndefinedType"}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSUndefinedType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("undefined");
 }
 
@@ -59,9 +73,16 @@ checker::Type *ETSUndefinedType::GetType([[maybe_unused]] checker::ETSChecker *c
 
 ETSUndefinedType *ETSUndefinedType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSUndefinedType>(); clone != nullptr) {
+    if (auto *const clone = allocator->New<ir::ETSUndefinedType>(allocator); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
+        }
+        if (!Annotations().empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : Annotations()) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
         }
         return clone;
     }
@@ -71,17 +92,31 @@ ETSUndefinedType *ETSUndefinedType::Clone(ArenaAllocator *allocator, AstNode *pa
 void ETSNullType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                                     [[maybe_unused]] std::string_view const transformationName)
 {
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
-void ETSNullType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void ETSNullType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+{
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
+}
 
 void ETSNullType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSNullType"}});
+    dumper->Add({{"type", "ETSNullType"}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSNullType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("null");
 }
 
@@ -108,9 +143,16 @@ checker::Type *ETSNullType::GetType([[maybe_unused]] checker::ETSChecker *checke
 
 ETSNullType *ETSNullType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSNullType>(); clone != nullptr) {
+    if (auto *const clone = allocator->New<ir::ETSNullType>(allocator); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
+        }
+        if (!Annotations().empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : Annotations()) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
         }
         return clone;
     }

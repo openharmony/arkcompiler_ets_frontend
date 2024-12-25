@@ -1079,14 +1079,13 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     TransformProperties(classType);
-
-    CheckAnnotations(classDef->Annotations());
-    CheckClassMembers(classDef);
+    CheckClassElement(classDef);
 
     if (classDef->IsGlobal() || classType->SuperType() == nullptr) {
         return;
     }
 
+    CheckClassAnnotations(classDef);
     CheckConstructors(classDef, classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);
@@ -1094,7 +1093,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     CheckInvokeMethodsLegitimacy(classType);
 }
 
-void ETSChecker::CheckClassMembers(ir::ClassDefinition *classDef)
+void ETSChecker::CheckClassElement(ir::ClassDefinition *classDef)
 {
     for (auto *it : classDef->Body()) {
         if (it->IsClassProperty()) {
@@ -1105,6 +1104,26 @@ void ETSChecker::CheckClassMembers(ir::ClassDefinition *classDef)
     for (auto *it : classDef->Body()) {
         if (!it->IsClassProperty()) {
             it->Check(this);
+        }
+    }
+}
+
+void ETSChecker::CheckClassAnnotations(ir::ClassDefinition *classDef)
+{
+    CheckAnnotations(classDef->Annotations());
+    if (classDef->TypeParams() != nullptr) {
+        for (auto *param : classDef->TypeParams()->Params()) {
+            CheckAnnotations(param->Annotations());
+        }
+    }
+}
+
+void ETSChecker::CheckInterfaceAnnotations(ir::TSInterfaceDeclaration *interfaceDecl)
+{
+    CheckAnnotations(interfaceDecl->Annotations());
+    if (interfaceDecl->TypeParams() != nullptr) {
+        for (auto *param : interfaceDecl->TypeParams()->Params()) {
+            CheckAnnotations(param->Annotations());
         }
     }
 }

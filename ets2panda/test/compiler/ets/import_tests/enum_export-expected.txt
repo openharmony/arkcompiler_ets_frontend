@@ -41,12 +41,12 @@
             "value": 0,
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 20,
+                "column": 36
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 20,
+                "column": 36
               }
             }
           },
@@ -63,6 +63,7 @@
         }
       ],
       "const": false,
+      "declare": true,
       "loc": {
         "start": {
           "line": 20,
@@ -114,12 +115,12 @@
             "value": 0,
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 23,
+                "column": 8
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 23,
+                "column": 8
               }
             }
           },
@@ -198,12 +199,12 @@
             "value": 43,
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 23,
+                "column": 26
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 23,
+                "column": 26
               }
             }
           },
@@ -220,6 +221,7 @@
         }
       ],
       "const": false,
+      "declare": false,
       "loc": {
         "start": {
           "line": 22,
@@ -335,6 +337,7 @@
         }
       ],
       "const": false,
+      "declare": false,
       "loc": {
         "start": {
           "line": 26,
@@ -911,100 +914,6 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "<cctor>",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "kind": "method",
-            "accessibility": "public",
-            "static": true,
-            "optional": false,
-            "computed": false,
-            "value": {
-              "type": "FunctionExpression",
-              "function": {
-                "type": "ScriptFunction",
-                "id": {
-                  "type": "Identifier",
-                  "name": "<cctor>",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "generator": false,
-                "async": false,
-                "expression": false,
-                "params": [],
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [],
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 1,
-                    "column": 1
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 1,
-                  "column": 1
-                },
-                "end": {
-                  "line": 1,
-                  "column": 1
-                }
-              }
-            },
-            "overloads": [],
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          {
-            "type": "MethodDefinition",
-            "key": {
-              "type": "Identifier",
               "name": "constructor",
               "decorators": [],
               "loc": {
@@ -1318,6 +1227,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -1409,6 +1319,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -1528,6 +1439,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -1678,6 +1590,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -1910,6 +1823,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -2763,6 +2677,7 @@
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 1,
@@ -3794,6 +3709,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -3913,6 +3829,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -4060,6 +3977,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -4300,6 +4218,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -4786,6 +4705,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -6554,6 +6474,7 @@
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 1,
@@ -8437,6 +8358,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -8570,6 +8492,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -8765,6 +8688,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -9124,6 +9048,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 1,
@@ -10600,6 +10525,7 @@
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 1,

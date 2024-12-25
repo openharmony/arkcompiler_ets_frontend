@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,8 +22,8 @@ namespace ark::es2panda::ir {
 
 class ETSWildcardType : public TypeNode {
 public:
-    explicit ETSWildcardType(ir::ETSTypeReference *typeReference, ModifierFlags flags)
-        : TypeNode(AstNodeType::ETS_WILDCARD_TYPE, flags), typeReference_(typeReference)
+    explicit ETSWildcardType(ir::ETSTypeReference *typeReference, ModifierFlags flags, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::ETS_WILDCARD_TYPE, flags, allocator), typeReference_(typeReference)
     {
         ASSERT(flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
         ASSERT(typeReference != nullptr || flags == ModifierFlags::OUT);

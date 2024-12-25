@@ -48,8 +48,8 @@ namespace {
 [[nodiscard]] ir::ETSTypeReference *MakeTypeReference(checker::ETSChecker *const checker, const util::StringView &name)
 {
     auto *const ident = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
-    auto *const referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(ident);
-    return checker->AllocNode<ir::ETSTypeReference>(referencePart);
+    auto *const referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(ident, checker->Allocator());
+    return checker->AllocNode<ir::ETSTypeReference>(referencePart, checker->Allocator());
 }
 
 ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::ClassDefinition *enumClass,
@@ -154,7 +154,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclarat
                                                         ir::ClassDefinition *const enumClass)
 {
     auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
-    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation);
+    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation, Allocator());
 
     // clang-format off
     return MakeArray(enumDecl, enumClass, "NamesArray", arrayTypeAnnotation,
@@ -233,7 +233,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
 ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *const enumClass)
 {
     auto *const fieldIdent = Allocator()->New<ir::Identifier>("ordinal", Allocator());
-    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
     auto *field = checker_->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, intTypeAnnotation,
                                                          ir::ModifierFlags::PROTECTED, Allocator(), false);
 
@@ -246,7 +246,7 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
     auto *const inputOrdinalParam = MakeFunctionParam(checker_, "ordinal", intTypeAnnotation);
     params.push_back(inputOrdinalParam);
 
@@ -425,8 +425,8 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
 ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl,
                                                          ir::ClassDefinition *const enumClass)
 {
-    auto *const intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
-    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(intType);
+    auto *const intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
+    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(intType, Allocator());
     // clang-format off
     return MakeArray(enumDecl, enumClass, "ValuesArray", arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
@@ -445,7 +445,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumD
                                                                ir::ClassDefinition *const enumClass)
 {
     auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
-    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation);
+    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation, Allocator());
 
     // clang-format off
     return MakeArray(enumDecl, enumClass, "StringValuesArray", arrayTypeAnnotation,
@@ -471,7 +471,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumItemsArray(const ir::TSEnumDeclarat
                                                         ir::ClassDefinition *const enumClass)
 {
     auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
-    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation);
+    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation, Allocator());
     // clang-format off
     return MakeArray(enumDecl, enumClass, "ItemsArray", arrayTypeAnnotation,
                      [this, enumDecl](const ir::TSEnumMember *const member) {
@@ -492,7 +492,7 @@ ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDec
 {
     auto boxedClassName = GetEnumClassName(checker_, enumDecl).View();
     auto *const enumTypeAnnotation = MakeTypeReference(checker_, boxedClassName);
-    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation);
+    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation, Allocator());
     // clang-format off
     return MakeArray(enumDecl, enumClass, "BoxedItemsArray", arrayTypeAnnotation,
                      [this, enumDecl, &boxedClassName](const ir::TSEnumMember *const member) {
@@ -504,7 +504,7 @@ ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDec
                         auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
                             enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
-                        auto intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+                        auto intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
                         auto asExpression = checker_->AllocNode<ir::TSAsExpression>(enumMemberExpr, intType, false);
 
                         ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
@@ -583,7 +583,7 @@ ir::ReturnStatement *CreateReturnWitAsStatement(checker::ETSChecker *checker, ir
                                                 ir::ETSParameterExpression *const parameter)
 {
     auto *const paramRefIdent = MakeParamRefIdent(checker, parameter);
-    auto intType = checker->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto intType = checker->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, checker->Allocator());
     auto asExpression = checker->AllocNode<ir::TSAsExpression>(paramRefIdent, intType, false);
     paramRefIdent->SetParent(asExpression);
 
@@ -602,7 +602,7 @@ void EnumLoweringPhase::CreateEnumFromIntMethod(const ir::TSEnumDeclaration *con
                                                 const util::StringView &methodName,
                                                 const util::StringView &returnTypeName)
 {
-    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
     auto *const inputOrdinalParameter = MakeFunctionParam(checker_, "ordinal", intTypeAnnotation);
     auto *const inArraySizeExpr = CreateIfTest(checker_, enumClass->Ident(), arrayIdent, inputOrdinalParameter);
     auto *const returnEnumStmt =
@@ -671,7 +671,7 @@ void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *con
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     params.push_back(inputEnumIdent);
-    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
     auto *const function = MakeFunction({std::move(params), std::move(body), intTypeAnnotation, enumDecl,
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
     auto *const functionIdent =
@@ -820,7 +820,7 @@ void EnumLoweringPhase::CreateEnumValuesMethod(const ir::TSEnumDeclaration *cons
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     auto *const enumArrayTypeAnnotation =
-        checker_->AllocNode<ir::TSArrayType>(MakeTypeReference(checker_, enumDecl->Key()->Name()));
+        checker_->AllocNode<ir::TSArrayType>(MakeTypeReference(checker_, enumDecl->Key()->Name()), Allocator());
 
     auto *const function = MakeFunction({std::move(params), std::move(body), enumArrayTypeAnnotation, enumDecl,
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});

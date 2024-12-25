@@ -88,6 +88,9 @@ void ETSBinder::IdentifierAnalysis()
 void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef)
 {
     auto *iter = typeRef->Part();
+    for (auto *anno : typeRef->Annotations()) {
+        ResolveReference(anno);
+    }
 
     while (iter != nullptr) {
         if (iter->TypeParams() == nullptr) {

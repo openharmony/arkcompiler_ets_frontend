@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,10 @@ class TSAnalyzer;
 namespace ark::es2panda::ir {
 class TSArrayType : public TypeNode {
 public:
-    explicit TSArrayType(TypeNode *elementType) : TypeNode(AstNodeType::TS_ARRAY_TYPE), elementType_(elementType) {}
+    explicit TSArrayType(TypeNode *elementType, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_ARRAY_TYPE, allocator), elementType_(elementType)
+    {
+    }
 
     const TypeNode *ElementType() const
     {
