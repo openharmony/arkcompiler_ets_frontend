@@ -194,9 +194,9 @@ void MethodDefinition::DumpPrefix(ir::SrcDumper *dumper) const
         dumper->Add("override ");
     }
 
-    if (kind_ == MethodDefinitionKind::GET) {
+    if (IsGetter()) {
         dumper->Add("get ");
-    } else if (kind_ == MethodDefinitionKind::SET) {
+    } else if (IsSetter()) {
         dumper->Add("set ");
     }
 }
