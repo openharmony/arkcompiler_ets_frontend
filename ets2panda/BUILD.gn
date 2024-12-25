@@ -203,6 +203,7 @@ libes2panda_sources = [
   "compiler/lowering/checkerPhase.cpp",
   "compiler/lowering/ets/ambientLowering.cpp",
   "compiler/lowering/ets/bigintLowering.cpp",
+  "compiler/lowering/ets/boxedTypeLowering.cpp",
   "compiler/lowering/ets/boxingForLocals.cpp",
   "compiler/lowering/ets/capturedVariables.cpp",
   "compiler/lowering/ets/constStringToCharLowering.cpp",
