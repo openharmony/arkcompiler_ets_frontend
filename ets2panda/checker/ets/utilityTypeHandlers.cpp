@@ -178,15 +178,17 @@ Type *ETSChecker::HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDe
                                   : VarBinder()->AsETSBinder()->GetExternalRecordTable().at(programToUse);
     const varbinder::BoundContext boundCtx(recordTable, partialInterDecl);
 
-    NamedTypeStackElement ntse(this, partialInterDecl->TsType());
-
     // If class is external, put partial of it in global scope for the varbinder
     if (!isClassDeclaredInCurrentFile) {
         VarBinder()->Program()->GlobalScope()->InsertBinding(partialInterDecl->Id()->Name(),
                                                              partialInterDecl->Variable());
     }
 
-    return CreatePartialTypeInterfaceDecl(interfaceDecl, typeToBePartial, partialInterDecl);
+    auto *partialType = CreatePartialTypeInterfaceDecl(interfaceDecl, typeToBePartial, partialInterDecl);
+    ASSERT(partialType != nullptr);
+    NamedTypeStackElement ntse(this, partialType);
+
+    return partialType;
 }
 
 ir::ClassProperty *ETSChecker::CreateNullishPropertyFromAccessorInInterface(
@@ -520,24 +522,6 @@ void ETSChecker::CreatePartialClassDeclaration(ir::ClassDefinition *const newCla
     newClassDefinition->Variable()->SetTsType(nullptr);
 }
 
-void ETSChecker::ConvertGetterAndSetterToProperty(ir::TSInterfaceDeclaration *interfaceDecl,
-                                                  ir::TSInterfaceDeclaration *partialInterface)
-{
-    auto *propertyAdded = Allocator()->New<ArenaSet<util::StringView>>(Allocator()->Adapter());
-    for (auto *const prop : interfaceDecl->Body()->Body()) {
-        if (prop->IsMethodDefinition() && (prop->AsMethodDefinition()->Function()->IsGetter() ||
-                                           prop->AsMethodDefinition()->Function()->IsSetter())) {
-            auto *propMethod = prop->AsMethodDefinition();
-            if (propertyAdded->find(propMethod->Id()->Name()) != propertyAdded->end()) {
-                continue;
-            }
-            auto *newProp = CreateNullishPropertyFromAccessorInInterface(propMethod, partialInterface);
-            propertyAdded->insert(propMethod->Id()->Name());
-
-            partialInterface->Body()->Body().emplace_back(newProp);
-        }
-    }
-}
 ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *const accessor,
                                                         ir::TSInterfaceDeclaration *interface)
 {
@@ -628,11 +612,42 @@ ir::TSInterfaceDeclaration *ETSChecker::CreateInterfaceProto(util::StringView na
     return partialInterface;
 }
 
+void ETSChecker::CreatePartialTypeInterfaceMethods(ir::TSInterfaceDeclaration *const interfaceDecl,
+                                                   ir::TSInterfaceDeclaration *partialInterface)
+{
+    auto &partialInterfaceMethods = partialInterface->Body()->Body();
+    for (auto *const prop : interfaceDecl->Body()->Body()) {
+        if (prop->IsMethodDefinition() && (prop->AsMethodDefinition()->Function()->IsGetter() ||
+                                           prop->AsMethodDefinition()->Function()->IsSetter())) {
+            auto *propMethod = prop->AsMethodDefinition();
+            auto *method = CreateNullishAccessor(propMethod, partialInterface);
+            partialInterfaceMethods.emplace_back(method);
+        }
+    }
+
+    // In order to set the getter/setter overload, need to ensure that the method is ordered by name and getter/setter
+    std::sort(partialInterfaceMethods.begin(), partialInterfaceMethods.end(), [](ir::AstNode *a, ir::AstNode *b) {
+        return a->AsMethodDefinition()->Id()->Name() == b->AsMethodDefinition()->Id()->Name()
+                   ? a->AsMethodDefinition()->Function()->IsGetter()
+                   : a->AsMethodDefinition()->Id()->Name() > b->AsMethodDefinition()->Id()->Name();
+    });
+
+    ir::MethodDefinition *getter = nullptr;
+    for (auto *partialInterfaceMethod : partialInterfaceMethods) {
+        if (partialInterfaceMethod->AsMethodDefinition()->Function()->IsGetter()) {
+            getter = partialInterfaceMethod->AsMethodDefinition();
+        } else if (getter->Id()->Name() == partialInterfaceMethod->AsMethodDefinition()->Id()->Name()) {
+            getter->AddOverload(partialInterfaceMethod->AsMethodDefinition());
+            partialInterfaceMethod->AsMethodDefinition()->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+        }
+    }
+}
+
 Type *ETSChecker::CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *const interfaceDecl,
                                                  ETSObjectType *const typeToBePartial,
                                                  ir::TSInterfaceDeclaration *partialInterface)
 {
-    ConvertGetterAndSetterToProperty(interfaceDecl, partialInterface);
+    CreatePartialTypeInterfaceMethods(interfaceDecl, partialInterface);
     // Create nullish properties of the partial class
     // Build the new Partial class based on the 'T' type parameter of 'Partial<T>'
     auto *likeSubstitution =
@@ -644,6 +659,16 @@ Type *ETSChecker::CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *con
     }
 
     compiler::InitScopesPhaseETS::RunExternalNode(partialInterface, VarBinder());
+
+    auto methodscope = partialInterface->Scope()->AsClassScope()->InstanceMethodScope();
+    // Add getter methods to instancemethodscope.
+    for (auto *const prop : partialInterface->Body()->Body()) {
+        if (prop->IsMethodDefinition() && prop->AsMethodDefinition()->Function()->IsGetter()) {
+            auto *decl = Allocator()->New<varbinder::FunctionDecl>(
+                Allocator(), prop->AsMethodDefinition()->Key()->AsIdentifier()->Name(), prop);
+            methodscope->AddDecl(Allocator(), decl, ScriptExtension::STS);
+        }
+    }
 
     // Create partial type for super type
     for (auto *extend : interfaceDecl->Extends()) {

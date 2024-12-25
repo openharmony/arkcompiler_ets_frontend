@@ -119,6 +119,26 @@ static bool CheckReadonlyAndUpdateCtorArgs(const ir::Identifier *key, ir::Expres
     return true;
 }
 
+static void PopulateCtorArgumentsFromMap(checker::ETSChecker *checker, ir::ObjectExpression *objExpr,
+                                         ArenaVector<ir::Expression *> &ctorArguments,
+                                         std::map<util::StringView, ir::Expression *> &ctorArgumentsMap)
+{
+    if (ctorArgumentsMap.empty()) {
+        return;
+    }
+    auto *const allocator = checker->Allocator();
+    auto *const classType = objExpr->TsType()->AsETSObjectType();
+
+    for (auto param : classType->ConstructSignatures().front()->Params()) {
+        auto ctorArgument = ctorArgumentsMap[param->Declaration()->Name()];
+        if (ctorArgument == nullptr && objExpr->PreferredType()->AsETSObjectType()->IsPartial()) {
+            ctorArguments.push_back(allocator->New<ir::UndefinedLiteral>());
+            continue;
+        }
+        ctorArguments.push_back(ctorArgument);
+    }
+}
+
 static void SetInstanceArguments(ArenaVector<ir::Statement *> &statements, ArenaVector<ir::Expression *> &ctorArguments)
 {
     if (statements.empty() || ctorArguments.empty()) {
@@ -203,11 +223,7 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
         }
     }
 
-    if (!ctorArgumentsMap.empty()) {
-        for (auto param : classType->ConstructSignatures().front()->Params()) {
-            ctorArguments.push_back(ctorArgumentsMap[param->Declaration()->Name()]);
-        }
-    }
+    PopulateCtorArgumentsFromMap(checker, objExpr, ctorArguments, ctorArgumentsMap);
 
     ss << "(@@I" << addNode(genSymIdent->Clone(allocator, nullptr)) << ");" << std::endl;
 }
