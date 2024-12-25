@@ -16,13 +16,13 @@
 #include "emitter.h"
 
 #include <assembly-program.h>
+#include <compiler/core/compilerContext.h>
 
 namespace panda::es2panda::compiler {
-constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 
 void Emitter::SetCommonjsField(bool isCommonjs)
 {
-    auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
+    auto isCommonJsField = panda::pandasm::Field(source_lang_);
     isCommonJsField.name = "isCommonjs";
     isCommonJsField.type = panda::pandasm::Type("u8", 0);
     isCommonJsField.metadata->SetValue(
@@ -32,9 +32,9 @@ void Emitter::SetCommonjsField(bool isCommonjs)
 
 void Emitter::GenCommonjsRecord() const
 {
-    auto commonjsRecord = panda::pandasm::Record("_CommonJsRecord", LANG_EXT);
+    auto commonjsRecord = panda::pandasm::Record("_CommonJsRecord", source_lang_);
     commonjsRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-    auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
+    auto isCommonJsField = panda::pandasm::Field(source_lang_);
     isCommonJsField.name = "isCommonJs";
     isCommonJsField.type = panda::pandasm::Type("u8", 0);
     isCommonJsField.metadata->SetValue(

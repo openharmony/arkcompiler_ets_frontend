@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x2
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_5: 
 label_0: 

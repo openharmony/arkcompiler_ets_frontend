@@ -18,18 +18,18 @@ export let test: string = "test";
 function testReplacementWoAt() {
     import("@normalized:N&module&bundle&lib/importfile1&1.0.0");
     import("@normalized:N&module&bundle&lib/importfile1&");
-    import("@normalized:N&&bundle&lib/importfile1&1.0.0");
-    import("@normalized:N&&bundle&lib/importfile1&");
+    import("@normalized:N&module&bundle&lib/importfile1&1.0.0");
+    import("@normalized:N&module&bundle&lib/importfile1&");
 
     // No-effect since no version info in compileContextInfo.json
     import("@normalized:N&&&lib2/importfile3&");
 }
 
 function testReplacementWithAt() {
-    import("@normalized:N&module&&@ohos/lib/importfile2&1.0.0");
-    import("@normalized:N&module&&@ohos/lib/importfile2&");
-    import("@normalized:N&&&@ohos/lib/importfile2&1.0.0");
-    import("@normalized:N&&&@ohos/lib/importfile2&");
+    import("@normalized:N&lib&&@ohos/lib/importfile2&1.0.0");
+    import("@normalized:N&lib&&@ohos/lib/importfile2&");
+    import("@normalized:N&lib&&@ohos/lib/importfile2&1.0.0");
+    import("@normalized:N&lib&&@ohos/lib/importfile2&");
 
     // No-effect since no version info in compileContextInfo.json
     import("@normalized:N&&&@ohos/lib2/importfile4&");
@@ -41,14 +41,14 @@ function testNonOhmurl() {
 
 function testNonConst() {
     // Take effect only under release due to bcopt
-    let a = "@normalized:N&&bundle&lib/importfile1&"
+    let a = "@normalized:N&module&bundle&lib/importfile1&"
     import(a);
 
-    a = "@normalized:N&&bundle&lib/importfile1&";
-    let b = "@normalized:N&&bundle&lib/importfile1&";
+    a = "@normalized:N&module&bundle&lib/importfile1&";
+    let b = "@normalized:N&module&bundle&lib/importfile1&";
     import(a);
 
-    a = "@normalized:N&&bundle&lib/importfile1&";
-    "@normalized:N&&bundle&lib/importfile1&";
+    a = "@normalized:N&module&bundle&lib/importfile1&";
+    "@normalized:N&module&bundle&lib/importfile1&";
     import(a);
 }

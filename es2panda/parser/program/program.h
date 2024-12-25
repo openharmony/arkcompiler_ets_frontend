@@ -235,6 +235,24 @@ public:
         return enableAnnotations_;
     }
 
+    void SetSourceLang(const std::string &sourceLang)
+    {
+        if (sourceLang == "ets") {
+            sourceLang_ = panda::pandasm::extensions::Language::ARKTS;
+        } else if (sourceLang == "ts") {
+            sourceLang_ = panda::pandasm::extensions::Language::TYPESCRIPT;
+        } else if (sourceLang == "js") {
+            sourceLang_ = panda::pandasm::extensions::Language::JAVASCRIPT;
+        } else {
+            sourceLang_ = panda::pandasm::extensions::Language::ECMASCRIPT;
+        }
+    }
+
+    panda::pandasm::extensions::Language SourceLang() const
+    {
+        return sourceLang_;
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -261,6 +279,7 @@ private:
     bool enableAnnotations_ {false};
     std::string targetApiSubVersion_ { util::Helpers::DEFAULT_SUB_API_VERSION };
     std::string moduleRecordFieldName_;
+    panda::pandasm::extensions::Language sourceLang_ {panda::pandasm::extensions::DEFAULT_LANGUAGE};
 };
 
 }  // namespace panda::es2panda::parser

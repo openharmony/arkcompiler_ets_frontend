@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x0
+.language ECMAScript
 .function any .#*#(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -10,6 +9,7 @@ label_2:
 }
 
 slotNum = 0x1
+.language ECMAScript
 .function any .#*#enumerable(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -22,6 +22,7 @@ label_2:
 }
 
 slotNum = 0x7
+.language ECMAScript
 .function any .#*@0*#(any a0, any a1, any a2, any a3, any a4, any a5) {
 label_1: 
 label_0: 
@@ -45,6 +46,7 @@ label_2:
 
 slotNum = 0x2
 expectedProperty = 0x1
+.language ECMAScript
 .function any .#~@1=#Greeter(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -56,6 +58,7 @@ label_2:
 }
 
 slotNum = 0x3
+.language ECMAScript
 .function any .#~@1>#greet(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -69,6 +72,7 @@ label_2:
 }
 
 slotNum = 0x1a
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 

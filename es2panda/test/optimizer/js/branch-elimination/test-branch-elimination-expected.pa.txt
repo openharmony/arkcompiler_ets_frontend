@@ -1,6 +1,5 @@
-.language ECMAScript
-
 slotNum = 0x1d
+.language ECMAScript
 .function any .#*#testBBStruct(any a0, any a1, any a2) {
 label_18: 
 label_1: 
@@ -16,6 +15,7 @@ label_19:
 }
 
 slotNum = 0x13
+.language ECMAScript
 .function any .#*#testBool(any a0, any a1, any a2) {
 label_19: 
 label_17: 
@@ -31,6 +31,7 @@ label_20:
 }
 
 slotNum = 0x17
+.language ECMAScript
 .function any .#*#testFloatNumber(any a0, any a1, any a2) {
 label_25: 
 label_23: 
@@ -46,6 +47,7 @@ label_26:
 }
 
 slotNum = 0x17
+.language ECMAScript
 .function any .#*#testIntNumber(any a0, any a1, any a2) {
 label_25: 
 label_23: 
@@ -61,6 +63,7 @@ label_26:
 }
 
 slotNum = 0x1d
+.language ECMAScript
 .function any .#*#testString(any a0, any a1, any a2) {
 label_23: 
 label_0: 
@@ -120,6 +123,7 @@ label_24:
 }
 
 slotNum = 0x34
+.language ECMAScript
 .function any .#*#testTypeConvert(any a0, any a1, any a2) {
 label_35: 
 label_3: 
@@ -263,6 +267,7 @@ label_36:
 }
 
 slotNum = 0x12
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 

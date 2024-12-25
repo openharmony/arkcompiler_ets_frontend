@@ -118,6 +118,11 @@ public:
         return functionScopes_;
     }
 
+    panda::pandasm::extensions::Language SourceLang() const
+    {
+        return program_ ? program_->SourceLang() : pandasm::extensions::DEFAULT_LANGUAGE;
+    }
+
     const parser::Program *Program() const
     {
         return program_;

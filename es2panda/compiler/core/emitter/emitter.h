@@ -162,11 +162,13 @@ private:
     void CreateEnumProp(const ir::ClassProperty *prop, const std::string &annoName, panda::pandasm::Field &annoProp);
     void CreateLiteralArrayProp(const ir::ClassProperty *prop, const std::string &annoName,
                                 panda::pandasm::Field &annoProp);
-    panda::pandasm::Field CreateAnnotationProp(const ir::ClassProperty *prop, const std::string &annoName);
+    panda::pandasm::Field CreateAnnotationProp(const ir::ClassProperty *prop,
+                                               const std::string &annoName);
 
     std::mutex m_;
     panda::pandasm::Program *prog_;
     panda::pandasm::Record *rec_;
+    pandasm::extensions::Language source_lang_ = pandasm::extensions::DEFAULT_LANGUAGE;
     // Constant local export module variable slots.
     // Used by the branch elimination optimization to identify initial constants.
     // Should be replaced by analyzing the stconstmodulevar instruction in the

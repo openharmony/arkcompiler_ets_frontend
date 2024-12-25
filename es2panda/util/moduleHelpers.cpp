@@ -51,7 +51,7 @@ void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
         std::string recordName = line.substr(0, pos);
         std::string field = line.substr(pos + 1);
 
-        auto langExt = panda::pandasm::extensions::Language::ECMASCRIPT;
+        auto langExt = panda::pandasm::extensions::DEFAULT_LANGUAGE;
         auto entryNameField = panda::pandasm::Field(langExt);
         entryNameField.name = field;
         entryNameField.type = panda::pandasm::Type("u8", 0);

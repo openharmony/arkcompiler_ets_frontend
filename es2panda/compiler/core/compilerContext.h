@@ -52,6 +52,11 @@ public:
         return binder_;
     }
 
+    pandasm::extensions::Language SourceLang() const
+    {
+        return binder_ ? binder_->SourceLang() : pandasm::extensions::DEFAULT_LANGUAGE;
+    }
+
     Emitter *GetEmitter() const
     {
         return emitter_.get();

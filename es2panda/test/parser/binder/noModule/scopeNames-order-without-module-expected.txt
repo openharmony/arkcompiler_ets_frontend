@@ -1,7 +1,6 @@
-.language ECMAScript
-
 slotNum = 0x5a
 expectedProperty = 0x12
+.language ECMAScript
 .function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -137,6 +136,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@0=#CCC(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -146,6 +146,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@10=#SSSS(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -155,6 +156,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@1=#DDD(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -164,6 +166,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@2=#EEE(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -173,6 +176,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@3=#FFF(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -182,6 +186,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@4=#GGG(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -191,6 +196,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@5=#HHH(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -200,6 +206,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@6=#III(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -209,6 +216,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@7=#JJJ(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -218,6 +226,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@8=#KKK(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -227,6 +236,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@9=#LLL(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -236,6 +246,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@a=#MMM(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -245,6 +256,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@b=#NNN(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -254,6 +266,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@c=#OOO(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -263,6 +276,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@d=#PPP(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -272,6 +286,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@e=#QQQ(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -281,6 +296,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~@f=#RRR(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -290,6 +306,7 @@ label_2:
 }
 
 slotNum = 0x0
+.language ECMAScript
 .function any .#~A=A~BB=#BB(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -299,6 +316,7 @@ label_2:
 }
 
 slotNum = 0x4
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
