@@ -372,19 +372,18 @@ bool IsPunctuartorSpecialCharacter(lexer::TokenType tokenType)
     }
 }
 
-// This function was created to reduce the size of `ETSParser::IsArrowFunctionExpressionStart`.
+// This function was created to reduce the size of `EatArrowFunctionParams`.
 static bool IsValidTokenTypeOfArrowFunctionStart(lexer::TokenType tokenType)
 {
     return (tokenType == lexer::TokenType::LITERAL_IDENT ||
             tokenType == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD || tokenType == lexer::TokenType::KEYW_THIS);
 }
 
-bool ETSParser::IsArrowFunctionExpressionStart()
+static bool EatArrowFunctionParams(lexer::Lexer *lexer)
 {
-    const auto savedPos = Lexer()->Save();
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
-    Lexer()->NextToken();
-    auto tokenType = Lexer()->GetToken().Type();
+    ASSERT(lexer->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    lexer->NextToken();
+    auto tokenType = lexer->GetToken().Type();
 
     size_t openBrackets = 1;
     bool expectIdentifier = true;
@@ -406,22 +405,38 @@ bool ETSParser::IsArrowFunctionExpressionStart()
                 break;
             case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
             case lexer::TokenType::PUNCTUATOR_BACK_TICK:
-                Lexer()->Rewind(savedPos);
                 return false;
             default:
                 if (!expectIdentifier) {
                     break;
                 }
                 if (!IsValidTokenTypeOfArrowFunctionStart(tokenType)) {
-                    Lexer()->Rewind(savedPos);
                     return false;
                 }
                 expectIdentifier = false;
         }
-        Lexer()->NextToken(flag);
-        tokenType = Lexer()->GetToken().Type();
+        lexer->NextToken(flag);
+        tokenType = lexer->GetToken().Type();
+    }
+    return true;
+}
+
+bool ETSParser::IsArrowFunctionExpressionStart()
+{
+    auto finalizer = [this, savedPos = Lexer()->Save()]([[maybe_unused]] void *ptr) { Lexer()->Rewind(savedPos); };
+    std::unique_ptr<void, decltype(finalizer)> defer(&finalizer, finalizer);
+    if (!EatArrowFunctionParams(Lexer())) {
+        return false;
     }
 
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::RETURN_TYPE;
+        if (ParseTypeAnnotation(&options) == nullptr) {
+            return false;
+        }
+    }
+
+    auto tokenType = Lexer()->GetToken().Type();
     while (tokenType != lexer::TokenType::EOS && tokenType != lexer::TokenType::PUNCTUATOR_ARROW) {
         if (lexer::Token::IsPunctuatorToken(tokenType) && !IsPunctuartorSpecialCharacter(tokenType)) {
             break;
@@ -429,8 +444,7 @@ bool ETSParser::IsArrowFunctionExpressionStart()
         Lexer()->NextToken();
         tokenType = Lexer()->GetToken().Type();
     }
-    Lexer()->Rewind(savedPos);
-    return tokenType == lexer::TokenType::PUNCTUATOR_ARROW;
+    return Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW;
 }
 
 ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()

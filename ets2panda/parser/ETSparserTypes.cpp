@@ -186,23 +186,24 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
     return wildcardType;
 }
 
-ir::TypeNode *ETSParser::ParseFunctionType()
+ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options)
 {
     auto startLoc = Lexer()->GetToken().Start();
-
     auto params = ParseFunctionParams();
     bool hasReceiver = !params.empty() && params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
-
-    ExpectToken(lexer::TokenType::PUNCTUATOR_ARROW);
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_ARROW)) {
+        if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_ARROW);
+        }
+        return nullptr;
+    }
     ir::TypeNode *returnTypeAnnotation = nullptr;
     if (hasReceiver) {
         SavedParserContext contextAfterParseParams(this, GetContext().Status() | ParserStatus::HAS_RECEIVER);
-        returnTypeAnnotation = ParseTypeAnnotation(&options);
+        returnTypeAnnotation = ParseTypeAnnotation(options);
     } else {
-        returnTypeAnnotation = ParseTypeAnnotation(&options);
+        returnTypeAnnotation = ParseTypeAnnotation(options);
     }
-
     if (returnTypeAnnotation == nullptr) {
         return nullptr;
     }
@@ -302,7 +303,7 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
         GetContext().Status() |= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         // '(' is consumed in `ParseFunctionType`
         Lexer()->Rewind(savePos);
-        auto typeAnnotation = ParseFunctionType();
+        auto typeAnnotation = ParseFunctionType(options);
         GetContext().Status() ^= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         return typeAnnotation;
     }
@@ -369,7 +370,12 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(Type
     }
 
     lexer::LexerPosition savedPos = Lexer()->Save();
-    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS)) {
+        if (((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) {
+            LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+        }
+        return {nullptr, false};
+    }
 
     typeAnnotation = ParseTypeAnnotation(options);
     if (typeAnnotation == nullptr) {
