@@ -21,6 +21,7 @@ set(RB_LIST "")
 
 set(ES2PANDA_API
     ${CMAKE_CURRENT_SOURCE_DIR}/cppToCTypes.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/ignoredAllowed.yaml
 )
 
 set (HEADERS_TO_BE_PARSED

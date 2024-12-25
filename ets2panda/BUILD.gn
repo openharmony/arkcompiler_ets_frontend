@@ -1014,7 +1014,10 @@ ES2PANDA_API_GENERATED = [
   "$LIBGEN_DIR/gen/headers/parser/ETSparser.yaml",
 ]
 
-ES2PANDA_API = [ "public/cppToCTypes.yaml" ]
+ES2PANDA_API = [
+  "public/cppToCTypes.yaml",
+  "public/ignoredAllowed.yaml",
+]
 
 ES2PANDA_API += ES2PANDA_API_GENERATED
 
