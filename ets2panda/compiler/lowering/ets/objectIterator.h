@@ -24,10 +24,10 @@ class ETSParser;
 
 namespace ark::es2panda::compiler {
 
-class ObjectIteratorLowering : public Phase {
+class ObjectIteratorLowering : public PhaseForBodies {
 public:
     std::string_view Name() const override;
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
     [[nodiscard]] ir::Statement *ProcessObjectIterator(parser::ETSParser *parser, checker::ETSChecker *checker,

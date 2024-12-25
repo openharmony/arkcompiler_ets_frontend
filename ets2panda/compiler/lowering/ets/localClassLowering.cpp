@@ -230,7 +230,7 @@ void LocalClassConstructionPhase::HandleLocalClass(
     capturedVarsMap.emplace(classDef, std::move(capturedVars));
 }
 
-bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
     ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> capturedVarsMap {

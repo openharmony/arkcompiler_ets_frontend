@@ -41,6 +41,48 @@ public:
     }
 };
 
+/* Phase that modifies declarations. Need to process external dependencies */
+class PhaseForDeclarations : public Phase {
+    bool Precondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+
+    /* Called from Perform, Pre/Postcondition */
+    virtual bool PreconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                       [[maybe_unused]] const parser::Program *program)
+    {
+        return true;
+    }
+    virtual bool PerformForModule(public_lib::Context *ctx, parser::Program *program) = 0;
+    virtual bool PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                        [[maybe_unused]] const parser::Program *program)
+    {
+        return true;
+    }
+};
+
+/* Phase that only modifies bodies.
+   No need to process external dependencies unless we are compiling stdlib.
+*/
+class PhaseForBodies : public Phase {
+    bool Precondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+
+    /* Called from Perform, Pre/Postcondition */
+    virtual bool PreconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                       [[maybe_unused]] const parser::Program *program)
+    {
+        return true;
+    }
+    virtual bool PerformForModule(public_lib::Context *ctx, parser::Program *program) = 0;
+    virtual bool PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                        [[maybe_unused]] const parser::Program *program)
+    {
+        return true;
+    }
+};
+
 std::vector<Phase *> GetPhaseList(ScriptExtension ext);
 
 }  // namespace ark::es2panda::compiler

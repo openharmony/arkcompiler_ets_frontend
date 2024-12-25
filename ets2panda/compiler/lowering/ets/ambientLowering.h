@@ -18,11 +18,11 @@
 #include "compiler/lowering/phase.h"
 
 namespace ark::es2panda::compiler {
-class AmbientLowering : public Phase {
+class AmbientLowering : public PhaseForDeclarations {
 public:
     std::string_view Name() const override;
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+    bool PostconditionForModule(public_lib::Context *ctx, const parser::Program *program) override;
 
 private:
     ir::ClassDefinition *CreateIndexerMethodIfNeeded(ir::ClassDefinition *classDef, public_lib::Context *ctx);

@@ -20,15 +20,15 @@
 
 namespace ark::es2panda::compiler {
 
-class PromiseVoidInferencePhase : public Phase {
+class PromiseVoidInferencePhase : public PhaseForDeclarations {
 public:
     std::string_view Name() const override
     {
         return "PromiseVoidInferencePhase";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+    bool PostconditionForModule(public_lib::Context *ctx, const parser::Program *program) override;
 
 private:
     ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *checker, ir::BlockStatement *body);

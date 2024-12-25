@@ -20,14 +20,14 @@
 
 namespace ark::es2panda::compiler {
 
-class PartialExportClassGen : public Phase {
+class PartialExportClassGen : public PhaseForBodies {
 public:
     std::string_view Name() const override
     {
         return "PartialExportClassGen";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 };
 
 }  // namespace ark::es2panda::compiler

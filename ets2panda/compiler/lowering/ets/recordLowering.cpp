@@ -71,17 +71,8 @@ RecordLowering::KeyType RecordLowering::TypeToKey(checker::Type *type) const
     return {};
 }
 
-bool RecordLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool RecordLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, extPrograms] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : extPrograms) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     // Replace Record Object Expressions with Block Expressions
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style

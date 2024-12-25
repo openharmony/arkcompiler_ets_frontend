@@ -20,7 +20,7 @@
 
 namespace ark::es2panda::compiler {
 
-class StringComparisonLowering : public Phase {
+class StringComparisonLowering : public PhaseForBodies {
     bool IsStringComparison(ir::AstNode *node);
     void ProcessBinaryExpression(ir::BinaryExpression *expr, public_lib::Context *ctx);
 
@@ -29,7 +29,7 @@ public:
     {
         return "StringComparisonLowering";
     }
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 };
 
 }  // namespace ark::es2panda::compiler

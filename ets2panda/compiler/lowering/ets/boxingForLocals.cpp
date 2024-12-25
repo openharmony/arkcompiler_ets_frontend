@@ -341,18 +341,9 @@ static void HandleScriptFunction(public_lib::Context *ctx, ir::ScriptFunction *f
     func->TransformChildrenRecursivelyPostorder(handleNode, LOWERING_NAME);
 }
 
-bool BoxingForLocals::Perform(public_lib::Context *ctx, parser::Program *program)
+bool BoxingForLocals::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     parser::SavedFormattingFileName savedFormattingName(ctx->parser->AsETSParser(), "boxing-for-lambdas");
-
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : ext_programs) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
 
     std::function<void(ir::AstNode *)> searchForFunctions = [&](ir::AstNode *ast) {
         if (ast->IsScriptFunction()) {
@@ -365,17 +356,8 @@ bool BoxingForLocals::Perform(public_lib::Context *ctx, parser::Program *program
     return true;
 }
 
-bool BoxingForLocals::Postcondition([[maybe_unused]] public_lib::Context *ctx, parser::Program const *program)
+bool BoxingForLocals::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx, parser::Program const *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *node) {
         if (node->IsAssignmentExpression() && node->AsAssignmentExpression()->Left()->IsIdentifier()) {
             auto asExpr = node->AsAssignmentExpression();

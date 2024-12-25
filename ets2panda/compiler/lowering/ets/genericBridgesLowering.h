@@ -20,14 +20,14 @@
 
 namespace ark::es2panda::compiler {
 
-class GenericBridgesPhase : public Phase {
+class GenericBridgesPhase : public PhaseForBodies {
 public:
     std::string_view Name() const override
     {
         return "CreateGenericBridges";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
     struct Substitutions {

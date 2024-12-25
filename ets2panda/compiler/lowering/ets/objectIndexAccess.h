@@ -24,15 +24,15 @@ class ETSParser;
 
 namespace ark::es2panda::compiler {
 
-class ObjectIndexLowering : public Phase {
+class ObjectIndexLowering : public PhaseForBodies {
 public:
     std::string_view Name() const override
     {
         return "ObjectIndexLowering";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
+    bool PostconditionForModule(public_lib::Context *ctx, const parser::Program *program) override;
 
 private:
     ir::Expression *ProcessIndexGetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,

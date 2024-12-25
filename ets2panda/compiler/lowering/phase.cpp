@@ -285,4 +285,108 @@ static ActionAfterCheckPhase CheckOptionsAfterPhase(const util::Options &options
     return ActionAfterCheckPhase::NONE;
 }
 
+bool PhaseForDeclarations::Precondition(public_lib::Context *ctx, const parser::Program *program)
+{
+    for (auto &[_, extPrograms] : program->ExternalSources()) {
+        (void)_;
+        for (auto *extProg : extPrograms) {
+            if (!Precondition(ctx, extProg)) {
+                return false;
+            }
+        }
+    }
+
+    return PreconditionForModule(ctx, program);
+}
+
+bool PhaseForDeclarations::Perform(public_lib::Context *ctx, parser::Program *program)
+{
+    bool result = true;
+    for (auto &[_, extPrograms] : program->ExternalSources()) {
+        (void)_;
+        for (auto *extProg : extPrograms) {
+            result &= Perform(ctx, extProg);
+        }
+    }
+
+    result &= PerformForModule(ctx, program);
+    return result;
+}
+
+bool PhaseForDeclarations::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+{
+    for (auto &[_, extPrograms] : program->ExternalSources()) {
+        (void)_;
+        for (auto *extProg : extPrograms) {
+            if (!Postcondition(ctx, extProg)) {
+                return false;
+            }
+        }
+    }
+
+    return PostconditionForModule(ctx, program);
+}
+
+bool PhaseForBodies::Precondition(public_lib::Context *ctx, const parser::Program *program)
+{
+    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
+        for (auto *p : programs) {
+            if (!Precondition(ctx, p)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, extPrograms] : program->ExternalSources()) {
+            (void)_;
+            if (!checkExternalPrograms(extPrograms)) {
+                return false;
+            };
+        }
+    }
+
+    return PreconditionForModule(ctx, program);
+}
+
+bool PhaseForBodies::Perform(public_lib::Context *ctx, parser::Program *program)
+{
+    bool result = true;
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, extPrograms] : program->ExternalSources()) {
+            (void)_;
+            for (auto *extProg : extPrograms) {
+                result &= Perform(ctx, extProg);
+            }
+        }
+    }
+
+    result &= PerformForModule(ctx, program);
+    return result;
+}
+
+bool PhaseForBodies::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+{
+    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
+        for (auto *p : programs) {
+            if (!Postcondition(ctx, p)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, extPrograms] : program->ExternalSources()) {
+            (void)_;
+            if (!checkExternalPrograms(extPrograms)) {
+                return false;
+            };
+        }
+    }
+
+    return PostconditionForModule(ctx, program);
+}
+
 }  // namespace ark::es2panda::compiler

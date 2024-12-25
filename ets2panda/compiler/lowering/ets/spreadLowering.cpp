@@ -218,15 +218,8 @@ static ir::BlockExpression *CreateLoweredExpression(public_lib::Context *ctx, ir
     return checker->AllocNode<ir::BlockExpression>(std::move(statements));
 }
 
-bool SpreadConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
     varbinder::ETSBinder *const varbinder = checker->VarBinder()->AsETSBinder();
 
@@ -256,19 +249,6 @@ bool SpreadConstructionPhase::Perform(public_lib::Context *ctx, parser::Program 
             return node;
         },
         Name());
-    return true;
-}
-
-bool SpreadConstructionPhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
-{
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
     return true;
 }
 

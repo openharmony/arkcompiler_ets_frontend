@@ -113,17 +113,8 @@ static void HandleScriptFunction(ir::ScriptFunction const *const scriptFunction)
     variables.clear();
 }
 
-bool CapturedVariables::Perform(public_lib::Context *ctx, parser::Program *program)
+bool CapturedVariables::PerformForModule([[maybe_unused]] public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : ext_programs) {
-                Perform(ctx, extProg);
-            }
-        }
-    }
-
     std::function<void(ir::AstNode *)> searchForFunctions = [&](ir::AstNode *ast) {
         if (ast->IsScriptFunction()) {
             HandleScriptFunction(ast->AsScriptFunction());  // no recursion

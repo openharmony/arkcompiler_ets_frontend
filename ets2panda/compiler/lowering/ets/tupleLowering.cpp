@@ -260,15 +260,8 @@ static ir::AssignmentExpression *ConvertTupleAssignment(checker::ETSChecker *con
     return newAssignment;
 }
 
-bool TupleLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool TupleLowering::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *const extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
@@ -291,17 +284,9 @@ bool TupleLowering::Perform(public_lib::Context *const ctx, parser::Program *con
     return true;
 }
 
-bool TupleLowering::Postcondition(public_lib::Context *const ctx, const parser::Program *const program)
+bool TupleLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *const ctx,
+                                           const parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (const auto *const extProg : ext_programs) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *const ast) {
         const bool isLeftMemberExpr =
             ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression();

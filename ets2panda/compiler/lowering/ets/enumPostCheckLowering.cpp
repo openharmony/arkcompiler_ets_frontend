@@ -101,18 +101,12 @@ static ir::CallExpression *GenerateValueOfCall(checker::ETSChecker *checker, ir:
     return callExpr;
 }
 
-bool EnumPostCheckLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     if (program->Extension() != ScriptExtension::STS) {
         return true;
     }
 
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            Perform(ctx, extProg);
-        }
-    }
     program->Ast()->TransformChildrenRecursivelyPostorder(
         // clang-format off
         [ctx](ir::AstNode *const node) -> ir::AstNode* {

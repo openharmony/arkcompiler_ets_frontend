@@ -266,15 +266,8 @@ static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpressi
     objExpr->SetTsType(resultType);
 }
 
-bool InterfaceObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool InterfaceObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            Perform(ctx, extProg);
-        }
-    }
-
     program->Ast()->IterateRecursivelyPostorder([ctx](ir::AstNode *ast) -> void {
         if (ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType())) {
             HandleInterfaceLowering(ctx, ast->AsObjectExpression());
@@ -284,17 +277,9 @@ bool InterfaceObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::P
     return true;
 }
 
-bool InterfaceObjectLiteralLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool InterfaceObjectLiteralLowering::PostconditionForModule([[maybe_unused]] public_lib::Context *ctx,
+                                                            const parser::Program *program)
 {
-    for (auto &[_, extPrograms] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : extPrograms) {
-            if (!Postcondition(ctx, extProg)) {
-                return false;
-            }
-        }
-    }
-
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
         return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType());
     });

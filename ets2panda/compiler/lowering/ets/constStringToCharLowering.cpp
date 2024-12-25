@@ -51,15 +51,8 @@ ir::AstNode *TryConvertToCharLiteral(checker::ETSChecker *checker, ir::AstNode *
     return newValue;
 }
 
-bool ConstStringToCharLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
+bool ConstStringToCharLowering::PerformForModule(public_lib::Context *const ctx, parser::Program *const program)
 {
-    for (const auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *const extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     auto *const checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(

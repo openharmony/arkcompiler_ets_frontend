@@ -21,14 +21,14 @@
 
 namespace ark::es2panda::compiler {
 
-class EnumPostCheckLoweringPhase : public Phase {
+class EnumPostCheckLoweringPhase : public PhaseForDeclarations {
 public:
     EnumPostCheckLoweringPhase() noexcept = default;
     std::string_view Name() const override
     {
         return "EnumPostCheckLoweringPhase";
     }
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 };
 
 }  // namespace ark::es2panda::compiler
