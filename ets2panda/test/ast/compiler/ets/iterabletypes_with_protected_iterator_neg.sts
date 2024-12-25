@@ -44,6 +44,5 @@ function main(): int {
     return 0;
 }
 
-/* @@? 40:19 Error TypeError: Signature $_iterator(): void is not visible here.  */
 /* @@? 40:19 Error TypeError: Cannot find iterator method with the required signature.  */
 /* @@? 40:19 Error TypeError: 'For-of' statement source expression is not of iterable type.  */

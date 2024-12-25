@@ -19,10 +19,10 @@
 
 namespace ark::es2panda::checker {
 /*
-    !NB etsExtensionFuncHelperType is to support extension function when we try to resolve a member expression
-    like "a.b", there are different cases:
+    !NB etsExtensionFuncHelperType is to support function with receiver(extension function)
+    when we try to resolve a member expression like "a.b", there are different cases:
         1. there is a method or prop whose name is "b" in class A
-        2. there is an instance extension of class A, function A.b() {}
+        2. there is an instance extension of class A, function b(this:A) {}
         3. both 1 and 2 existed
     in order to figure out a representation for case 3, we need the etsExtensionFuncHelperType
 */

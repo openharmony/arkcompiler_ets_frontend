@@ -16,7 +16,7 @@
 class A {}
 type B = A
 
-function B.test() {}
+function test(this: B) {}
 
 /* @@? 19:1 Node {
   "type": "MethodDefinition",

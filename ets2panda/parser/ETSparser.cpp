@@ -325,11 +325,11 @@ ir::Statement *ETSParser::ParseIdentKeyword()
     return nullptr;
 }
 
-ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::TypeNode *typeAnnotation)
+ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus)
 {
     FunctionContext functionContext(this, newStatus | ParserStatus::FUNCTION);
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    auto [signature, throwMarker] = ParseFunctionSignature(newStatus, typeAnnotation);
+    auto [signature, throwMarker] = ParseFunctionSignature(newStatus);
 
     ir::AstNode *body = nullptr;
     lexer::SourcePosition endLoc = startLoc;
@@ -516,7 +516,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     }
 
     auto parseClassMethod = [&memberModifiers, &startLoc, this](ir::Identifier *methodName) {
-        auto *classMethod = ParseClassMethodDefinition(methodName, memberModifiers, nullptr);
+        auto *classMethod = ParseClassMethodDefinition(methodName, memberModifiers);
         classMethod->SetStart(startLoc);
         return classMethod;
     };
@@ -1644,10 +1644,29 @@ ir::Expression *ETSParser::ParseFunctionParameterAnnotations()
     return result;
 }
 
+ir::Expression *ETSParser::ParseFunctionReceiver()
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    Lexer()->NextToken();  // eat 'this';
+    if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
+        LogSyntaxError("The function parameter 'this' must explicitly specify the typeAnnotation.");
+        return AllocErrorExpression();
+    }
+
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
+    ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
+
+    return CreateParameterThis(typeAnnotation);
+}
+
 ir::Expression *ETSParser::ParseFunctionParameter()
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
         return ParseFunctionParameterAnnotations();
+    }
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS && GetContext().AllowReceiver()) {
+        return ParseFunctionReceiver();
     }
 
     auto *const paramIdent = GetAnnotatedExpressionFromParam();
@@ -2121,27 +2140,6 @@ void ETSParser::CheckDeclare()
     }
 }
 
-ir::TypeNode *ETSParser::ParseExtensionFunctionsTypeAnnotation()
-{
-    const char32_t savedHead = Lexer()->Lookahead();
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
-
-    // Parse class and interface type annotation:
-    auto *typeAnnotation = ParseBaseTypeReference(&options);
-    if (typeAnnotation == nullptr) {
-        auto *typeIdent = ExpectIdentifier(true);
-        auto *typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeIdent, nullptr, nullptr);
-        typeAnnotation = AllocNode<ir::ETSTypeReference>(typeRefPart);
-    }
-
-    // Parse array type annotation:
-    if (savedHead == lexer::LEX_CHAR_LEFT_SQUARE) {
-        typeAnnotation = ParseTsArrayType(typeAnnotation, &options);
-    }
-
-    return typeAnnotation;
-}
-
 ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers)
 {
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
@@ -2158,16 +2156,9 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
         newStatus |= ParserStatus::GENERATOR_FUNCTION;
     }
 
-    ir::TypeNode *typeAnnotation = nullptr;
     ir::Identifier *funcIdentNode = nullptr;
 
-    if (Lexer()->Lookahead() == lexer::LEX_CHAR_DOT || Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_SQUARE) {
-        // Parse extension function. Example: `function A.foo() {}` or `function A[].foo() {}`:
-        typeAnnotation = ParseExtensionFunctionsTypeAnnotation();
-        newStatus |= ParserStatus::IN_EXTENSION_FUNCTION;
-        Lexer()->NextToken();  // eat '.'
-        funcIdentNode = ExpectIdentifier();
-    } else if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         // Parse regular function. Example: `function foo() {}`:
         funcIdentNode = ExpectIdentifier();
     } else if (!canBeAnonymous) {
@@ -2179,8 +2170,12 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
         CheckRestrictedBinding(funcIdentNode->Name(), funcIdentNode->Start());
     }
 
-    ir::ScriptFunction *func = ParseFunction(newStatus | ParserStatus::FUNCTION_DECLARATION, typeAnnotation);
-    if (funcIdentNode != nullptr) {
+    ir::ScriptFunction *func =
+        ParseFunction(newStatus | ParserStatus::FUNCTION_DECLARATION | ParserStatus::ALLOW_RECEIVER);
+    if (func->IrSignature().HasReceiver()) {
+        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
+    }
+    if (funcIdentNode != nullptr) {  // Error processing.
         func->SetIdent(funcIdentNode);
     }
 
@@ -2192,11 +2187,6 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
     funcDecl->SetRange(func->Range());
     func->AddModifier(modifiers);
     func->SetStart(startLoc);
-
-    if (typeAnnotation != nullptr) {
-        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
-    }
-
     return funcDecl;
 }
 

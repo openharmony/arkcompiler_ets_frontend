@@ -17,12 +17,14 @@ class Fruit {
 
 }
 
-function Fruit.name(): int {
+function name(this:Fruit): int {
     return 2;
 }
 
 function main() {
     let fruit = new Fruit();
     let res: int = fruit.name();
+    let res2: int = name(fruit);
     assert res == 2 : "expected: " + 2 + " actual: " + res;
+    assert res2 == 2 : "expected: " + 2 + " actual: " + res2;
 }

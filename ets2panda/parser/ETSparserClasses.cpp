@@ -423,16 +423,10 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     declarations->push_back(field);
 }
 
-ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
-                                                            ir::Identifier *className)
+ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers)
 {
     auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
     auto methodKind = ir::MethodDefinitionKind::METHOD;
-
-    if (className != nullptr) {
-        methodKind = ir::MethodDefinitionKind::EXTENSION_METHOD;
-        newStatus |= ParserStatus::IN_EXTENSION_FUNCTION;
-    }
 
     if ((modifiers & ir::ModifierFlags::CONSTRUCTOR) != 0) {
         newStatus = ParserStatus::CONSTRUCTOR_FUNCTION | ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL;
@@ -447,21 +441,12 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
         newStatus |= ParserStatus::ALLOW_THIS_TYPE;
     }
 
-    ir::ETSTypeReference *typeAnnotation = nullptr;
-    if (className != nullptr) {
-        auto *typeRefPart = AllocNode<ir::ETSTypeReferencePart>(className, nullptr, nullptr);
-        typeAnnotation = AllocNode<ir::ETSTypeReference>(typeRefPart);
-    }
-
-    ir::ScriptFunction *func = ParseFunction(newStatus, typeAnnotation);
+    ir::ScriptFunction *func = ParseFunction(newStatus);
     func->SetIdent(methodName);
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     funcExpr->SetRange(func->Range());
     func->AddModifier(modifiers);
 
-    if (typeAnnotation != nullptr) {
-        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
-    }
     auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),
                                                    funcExpr, modifiers, Allocator(), false);
     method->SetRange(funcExpr->Range());

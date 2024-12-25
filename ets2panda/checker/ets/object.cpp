@@ -1638,7 +1638,7 @@ varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpres
                                 .variable;
     // clang-format on
 
-    if (globalFunctionVar == nullptr || !ExtensionETSFunctionType(this->GetTypeOfVariable(globalFunctionVar))) {
+    if (globalFunctionVar == nullptr || !IsExtensionETSFunctionType(this->GetTypeOfVariable(globalFunctionVar))) {
         return nullptr;
     }
 
@@ -1903,7 +1903,7 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
             Example code:
                 class A {}
-                static function A.xxx() {}
+                static function xxx(this:A) {}
                 function main() {
                     A.xxx()
                 }

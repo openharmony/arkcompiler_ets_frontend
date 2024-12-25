@@ -25,6 +25,8 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "ir/statements/namespaceDeclaration.h"
 
+#include <ir/ets/etsUnionType.h>
+
 namespace ark::es2panda::checker {
 
 ETSChecker *ETSAnalyzer::GetETSChecker() const
@@ -1147,12 +1149,10 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
                                                   checker::Type *calleeType, bool isFunctionalInterface,
                                                   bool isUnionTypeWithFunctionalInterface) const
 {
-    bool extensionFunctionType = expr->Callee()->IsMemberExpression() && checker->ExtensionETSFunctionType(calleeType);
-
     if (calleeType->IsETSExtensionFuncHelperType()) {
         return ResolveCallForETSExtensionFuncHelperType(calleeType->AsETSExtensionFuncHelperType(), checker, expr);
     }
-    if (extensionFunctionType) {
+    if (checker->IsExtensionETSFunctionType(calleeType)) {
         return ResolveCallExtensionFunction(calleeType->AsETSFunctionType(), checker, expr);
     }
     auto &signatures = ChooseSignatures(checker, calleeType, expr->IsETSConstructorCall(), isFunctionalInterface,
@@ -1171,16 +1171,7 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
             signatures.end());
     }
 
-    checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
-    if (signature == nullptr) {
-        return nullptr;
-    }
-
-    if (signature->Function()->IsExtensionMethod()) {
-        checker->LogTypeError({"No matching call signature"}, expr->Start());
-        return nullptr;
-    }
-    return signature;
+    return checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
 }
 
 checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Type *calleeType) const
@@ -1230,18 +1221,18 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
     }
 
     if (signature->Function()->IsDynamic()) {
-        ASSERT(signature->Function()->IsDynamic());
         auto lang = signature->Function()->Language();
         expr->SetSignature(checker->ResolveDynamicCallExpression(expr->Callee(), signature->Params(), lang, false));
     } else {
-        ASSERT(!signature->Function()->IsDynamic());
         expr->SetSignature(signature);
     }
 
     auto *returnType = signature->ReturnType();
 
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
-        returnType = ChooseCalleeObj(checker, expr, calleeType, isConstructorCall);
+        returnType = signature->Function()->IsExtensionMethod()
+                         ? signature->Params()[0]->TsType()
+                         : ChooseCalleeObj(checker, expr, calleeType, isConstructorCall);
     }
 
     return returnType;
@@ -2487,19 +2478,48 @@ checker::Type *ETSAnalyzer::Check(ir::LabelledStatement *st) const
     return ReturnTypeForStatement(st);
 }
 
+static bool CheckIsValidReturnTypeAnnotation(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
+                                             ir::TypeNode *returnTypeAnnotation, ETSChecker *checker)
+{
+    // check valid `this` type as return type
+    if (!returnTypeAnnotation->IsTSThisType()) {
+        return true;
+    }
+
+    // only extension function and class method could return `this`;
+    bool inValidNormalFuncReturnThisType = st->Argument() == nullptr || !st->Argument()->IsThisExpression();
+    bool inValidExtensionFuncReturnThisType =
+        !containingFunc->IsExtensionMethod() ||
+        (containingFunc->IsExtensionMethod() && (st->Argument() == nullptr || !st->Argument()->IsIdentifier() ||
+                                                 !st->Argument()->AsIdentifier()->IsReceiver()));
+    if (inValidNormalFuncReturnThisType && inValidExtensionFuncReturnThisType) {
+        checker->LogTypeError("Only extension function or a class method can return 'this'", st->Start());
+        return false;
+    }
+
+    return true;
+}
+
 bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc,
                                                   checker::Type *&funcReturnType, ir::TypeNode *returnTypeAnnotation,
                                                   ETSChecker *checker) const
 {
-    funcReturnType = returnTypeAnnotation->GetType(checker);
-    if (returnTypeAnnotation->IsTSThisType() && (st->Argument() == nullptr || !st->Argument()->IsThisExpression())) {
-        checker->LogTypeError("The only allowed return value is 'this' if the method's return type is the 'this' type",
-                              st->Start());
+    if (!CheckIsValidReturnTypeAnnotation(st, containingFunc, returnTypeAnnotation, checker)) {
         return false;
     }
 
-    // Case when function's return type is defined explicitly:
+    if (containingFunc->IsExtensionMethod() && containingFunc->ReturnTypeAnnotation()->IsTSThisType()) {
+        // when return `this` in extensionFunction, the type of `this` actually should be type of the receiver,
+        // so some substitution should be done
+        auto *const thisType = containingFunc->Signature()->Params()[0]->TsType();
+        auto *const thisTypeAnnotation =
+            containingFunc->Params()[0]->AsETSParameterExpression()->Ident()->TypeAnnotation();
+        containingFunc->Signature()->SetReturnType(thisType);
+        containingFunc->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker->Allocator(), containingFunc));
+    }
+    funcReturnType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
 
+    // Case when function's return type is defined explicitly:
     if (st->argument_ == nullptr) {
         if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
             !funcReturnType->IsETSAsyncFuncReturnType()) {
@@ -2526,7 +2546,7 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
         }
 
         checker::Type *argumentType = st->argument_->Check(checker);
-        return CheckReturnType(checker, funcReturnType, argumentType, st->argument_, containingFunc->IsAsyncFunc());
+        return CheckReturnType(checker, funcReturnType, argumentType, st->argument_, containingFunc);
     }
     return true;
 }

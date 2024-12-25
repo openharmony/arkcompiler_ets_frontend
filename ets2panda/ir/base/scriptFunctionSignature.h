@@ -27,8 +27,12 @@ class FunctionSignature {
 public:
     using FunctionParams = ArenaVector<Expression *>;
 
-    FunctionSignature(TSTypeParameterDeclaration *typeParams, FunctionParams &&params, TypeNode *returnTypeAnnotation)
-        : typeParams_(typeParams), params_(std::move(params)), returnTypeAnnotation_(returnTypeAnnotation)
+    FunctionSignature(TSTypeParameterDeclaration *typeParams, FunctionParams &&params, TypeNode *returnTypeAnnotation,
+                      bool hasReceiver = false)
+        : typeParams_(typeParams),
+          params_(std::move(params)),
+          returnTypeAnnotation_(returnTypeAnnotation),
+          hasReceiver_(hasReceiver)
     {
     }
 
@@ -83,10 +87,16 @@ public:
 
     [[nodiscard]] FunctionSignature Clone(ArenaAllocator *allocator);
 
+    [[nodiscard]] bool HasReceiver()
+    {
+        return hasReceiver_;
+    }
+
 private:
     TSTypeParameterDeclaration *typeParams_;
     ArenaVector<Expression *> params_;
     TypeNode *returnTypeAnnotation_;
+    bool hasReceiver_;
 };
 
 }  // namespace ark::es2panda::ir

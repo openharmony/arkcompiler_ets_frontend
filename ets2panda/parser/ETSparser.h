@@ -291,9 +291,8 @@ private:
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);
     ir::ModifierFlags ParseClassMethodModifierFlag();
     ir::ModifierFlags ParseClassMethodModifiers(bool seenStatic);
-    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
-                                                     ir::Identifier *className = nullptr);
-    ir::ScriptFunction *ParseFunction(ParserStatus newStatus, ir::TypeNode *typeAnnotation = nullptr);
+    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers);
+    ir::ScriptFunction *ParseFunction(ParserStatus newStatus);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
@@ -365,6 +364,7 @@ private:
     ir::ETSParameterExpression *ParseFunctionParameterTail(ir::AnnotatedExpression *paramIdent, bool defaultUndefined);
     ir::Expression *ParseFunctionParameterAnnotations();
     ir::Expression *ParseFunctionParameter() override;
+    ir::Expression *ParseFunctionReceiver();
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
     ir::ETSUnionType *CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation, ir::ETSUndefinedType *defaultUndef);
     ir::Expression *ResolveArgumentUnaryExpr(ExpressionParseFlags flags);

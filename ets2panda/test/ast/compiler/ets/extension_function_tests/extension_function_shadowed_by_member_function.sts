@@ -34,17 +34,17 @@ class B extends A {
     }
 }
 
-function A.sweetness() {
+function sweetness(this:A) {
 }
 
-function B.sweetness1(id1: String) /* @@ label */{
+function sweetness1(this:B, id1: String) /* @@label1 */{
 }
 
-function B.price() /* @@ label1 */{
+function price(this:B) /* @@label2 */{
 }
 
-function A.xxx(id: int) {
+function xxx(this:A, id: int) {
 }
 
-/* @@@ label1 Warning Warning: extension is shadowed by a instance member function 'price(): int' in class B  */
-/* @@@ label Warning Warning: extension is shadowed by a instance member function 'sweetness1(id: String): void' in class B  */
+/* @@@ label1 Error TypeError: The extension function 'sweetness1' has the same name with public method in class B  */
+/* @@@ label2 Error TypeError: The extension function 'price' has the same name with public method in class B  */

@@ -18,7 +18,7 @@ class Fruit {
 
 let x:int = 1;
 
-function Fruit.foo(cb: ()=>void): int {
+function foo(this:Fruit, cb: ()=>void): int {
     cb();
     return 3;
 }
@@ -28,10 +28,23 @@ function foo(cb: ()=>void): int {
     return 1;
 }
 
-function main() {
+function asFuncCall() {
+    x = 1;
+    let fruit = new Fruit();
+    let res:int = foo(fruit) { x++ };
+    assert res == 3 : "expected: " + 3 + " actual: " + res;
+    assert x == 2 : "expected: " + 2 + " actual: " + x;
+}
+
+function asMethodCall() {
     x = 1;
     let fruit = new Fruit();
     let res:int = fruit.foo() { x++ };
     assert res == 3 : "expected: " + 3 + " actual: " + res;
     assert x == 2 : "expected: " + 2 + " actual: " + x;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
 }

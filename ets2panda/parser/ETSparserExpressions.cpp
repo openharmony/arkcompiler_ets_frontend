@@ -87,6 +87,7 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
 
         auto defaultValue = ParseExpression();
         if (!paramIdent->IsIdentifier()) {
+            LogSyntaxError("Identifier is needed here.");
             return nullptr;
         }
 

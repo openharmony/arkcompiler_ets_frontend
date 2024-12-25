@@ -20,12 +20,23 @@ class Banana extends Fruit {
 
 }
 
-function Fruit.name(): int {
+function name(this: Fruit): int {
     return 1;
 }
 
-function main() {
+function asFuncCall() {
+    let banana = new Banana();
+    let res: int = name(banana);
+    assert res == 1 : "expected: " + 1 + " actual: " + res;
+}
+
+function asMethodCall() {
     let banana = new Banana();
     let res: int = banana.name();
     assert res == 1 : "expected: " + 1 + " actual: " + res;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
 }

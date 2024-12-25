@@ -83,7 +83,7 @@ static void UpdateCall(es2panda_AstNode *ast, es2panda_Context *ctx)
     auto *body = const_cast<es2panda_AstNode *>(
         impl->ScriptFunctionBodyConst(ctx, impl->ArrowFunctionExpressionFunction(ctx, arrowFunc)));
     auto *funcSignature = impl->CreateFunctionSignature(
-        ctx, nullptr, nullptr, 0, impl->CreateETSPrimitiveType(ctx, Es2pandaPrimitiveType::PRIMITIVE_TYPE_VOID));
+        ctx, nullptr, nullptr, 0, impl->CreateETSPrimitiveType(ctx, Es2pandaPrimitiveType::PRIMITIVE_TYPE_VOID), false);
     auto *scriptFunc = impl->CreateScriptFunction(ctx, body, funcSignature,
                                                   Es2pandaScriptFunctionFlags::SCRIPT_FUNCTION_FLAGS_ARROW, 0);
     impl->AstNodeSetParent(ctx, body, scriptFunc);

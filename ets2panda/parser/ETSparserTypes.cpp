@@ -421,11 +421,16 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     // - the usage of 'this' as a type is not allowed in the current context, or
     // - 'this' is not used as a return type, or
     // - the current context is an arrow function (might be inside a method of a class where 'this' is allowed).
-    if (((*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0) &&
-        (((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) == 0) ||
-         ((*options & TypeAnnotationParsingOptions::RETURN_TYPE) == 0) ||
-         ((GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0))) {
-        LogSyntaxError("A 'this' type is available only as return type in a non-static method of a class or struct.");
+    bool reportErr = (*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
+    bool allowThisType = (GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) != 0;
+    bool parseReturnType = (*options & TypeAnnotationParsingOptions::RETURN_TYPE) != 0;
+    bool isArrowFunc = (GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0;
+    bool notSimpleReturnThisType =
+        (allowThisType && parseReturnType && (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_BRACE));
+    if (reportErr && (!allowThisType || !parseReturnType || isArrowFunc || notSimpleReturnThisType)) {
+        LogSyntaxError(
+            "A 'this' type is available only as return type in a non-static method of a class or struct and extension "
+            "functions.");
     }
 
     auto *const thisType = AllocNode<ir::TSThisType>();

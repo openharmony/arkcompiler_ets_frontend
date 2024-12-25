@@ -14,17 +14,34 @@
  */
 
 class Fruit {
-    name(): int {
+    foo() {
+        return this.name();
+    }
+    private name(): int {
         return 3;
     }
 }
 
-function Fruit.name(): int {
+function name(this:Fruit): int {
     return 1;
 }
 
-function main() {
+function asFuncCall() {
+    let fruit = new Fruit();
+    let res: int = name(fruit);
+    assert res == 1 : "expected: " + 1 + " actual: " + res;
+}
+
+function asMethodCall() {
     let fruit = new Fruit();
     let res: int = fruit.name();
+    assert res == 1 : "expected: " + 1 + " actual: " + res;
+}
+
+function main() {
+    asFuncCall();
+    asMethodCall();
+    let fruit = new Fruit();
+    let res: int = fruit.foo()
     assert res == 3 : "expected: " + 3 + " actual: " + res;
 }
