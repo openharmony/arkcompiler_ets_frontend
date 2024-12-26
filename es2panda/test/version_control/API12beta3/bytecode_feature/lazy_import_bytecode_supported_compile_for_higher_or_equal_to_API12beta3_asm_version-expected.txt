@@ -1,7 +1,6 @@
-.language ECMAScript
-
 slotNum = 0x2
 expectedProperty = 0x1
+.language ECMAScript
 .function any .#~@0=#SendableLazyLoading(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -16,6 +15,7 @@ label_2:
 }
 
 slotNum = 0x8
+.language ECMAScript
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
