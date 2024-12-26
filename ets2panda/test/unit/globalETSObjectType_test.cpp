@@ -74,4 +74,33 @@ TEST_F(GlobalETSObjectTypeTest, ObjectPartialGenTest)
     [[maybe_unused]] auto *declNode = globalETSObjectType->Variable()->Declaration()->Node();
     ASSERT(declNode->IsClassDefinition());
 }
+
+TEST_F(GlobalETSObjectTypeTest, ETSArrayContainGlobalETSObject)
+{
+    // The ETSArray which contains GlobalETSObject, its type is cached in the checker's ArrayTypes map
+    // We should ensure that it is not polluted by certain modifiers, such as "TypeFlag::READONLY"
+    std::stringstream src;
+    src << "class A<K> {\n"
+        << "    private readonly prop: number;\n"
+        << "    constructor() {\n"
+        << "        this.prop = 0.0;}\n"
+        << "    constructor(a: K[]) {\n"
+        << "        this.prop = 1.0;}\n}"
+        << "class B<K> {\n"
+        << "    private readonly prop: number;\n"
+        << "    constructor() {\n"
+        << "        this.prop = 0.0;}\n"
+        << "    constructor(a: readonly K[]) {\n"
+        << "        this.prop = 1.0;}\n}"
+        << "let a = new A<Object>();\n let b = new B<Object>();";
+
+    InitializeChecker("_.sts", src.str());
+    auto checker = Checker();
+    ASSERT(checker);
+    auto *globalETSObjectType = checker->GlobalETSObjectType();
+    [[maybe_unused]] auto arrayType = checker->CreateETSArrayType(globalETSObjectType, false);
+    [[maybe_unused]] auto readonlyArrayType = checker->CreateETSArrayType(globalETSObjectType, true);
+    ASSERT(!arrayType->HasTypeFlag(checker::TypeFlag::READONLY));
+    ASSERT(readonlyArrayType->HasTypeFlag(checker::TypeFlag::READONLY));
+}
 }  // namespace ark::es2panda

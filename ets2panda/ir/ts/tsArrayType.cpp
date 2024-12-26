@@ -84,7 +84,7 @@ checker::VerifiedType TSArrayType::Check(checker::ETSChecker *checker)
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 {
-    checker::Type *type = checker->CreateETSArrayType(elementType_->GetType(checker));
+    checker::Type *type = checker->CreateETSArrayType(elementType_->GetType(checker), IsReadonlyType());
     if (IsReadonlyType()) {
         type = checker->GetReadonlyType(type);
     }

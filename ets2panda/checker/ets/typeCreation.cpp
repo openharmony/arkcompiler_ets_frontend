@@ -115,9 +115,9 @@ ETSStringType *ETSChecker::CreateETSStringLiteralType(util::StringView value)
     return Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), Relation(), value);
 }
 
-ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
+ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType, bool isCachePolluting)
 {
-    auto res = arrayTypes_.find(elementType);
+    auto res = arrayTypes_.find({elementType, isCachePolluting});
     if (res != arrayTypes_.end()) {
         return res->second;
     }
@@ -128,7 +128,7 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
     arrayType->ToAssemblerTypeWithRank(ss);
     arrayType->SetAssemblerName(util::UString(ss.str(), Allocator()).View());
 
-    auto it = arrayTypes_.insert({elementType, arrayType});
+    auto it = arrayTypes_.insert({{elementType, isCachePolluting}, arrayType});
     if (it.second && (!elementType->IsTypeParameter() || !elementType->IsETSTypeParameter())) {
         CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
