@@ -15,3 +15,6 @@ jBox2d_test
 #20840
 mathjs_test
 
+#20690
+dayjs_test
+
