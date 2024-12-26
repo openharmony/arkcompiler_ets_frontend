@@ -28,3 +28,9 @@ base64_test
 #20257
 mathjs_test
 pdview_test
+
+#20690
+dayjs_test 
+
+#21251
+validator_test

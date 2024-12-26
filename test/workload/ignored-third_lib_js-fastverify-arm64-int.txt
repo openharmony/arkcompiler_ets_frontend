@@ -19,3 +19,6 @@ cborjs_test
 
 #20257
 dayjs_test
+
+#21251
+validator_test

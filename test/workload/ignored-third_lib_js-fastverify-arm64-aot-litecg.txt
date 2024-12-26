@@ -13,3 +13,9 @@ zxing-text-encoding_test
 
 #20257
 crypto-js_test
+
+#20690
+dayjs_test 
+
+#21251
+validator_test

@@ -29,3 +29,6 @@ DisplayNames_supportedLocalesOf
 
 #20257
 Math_abs
+
+#21472
+Symbol_split
