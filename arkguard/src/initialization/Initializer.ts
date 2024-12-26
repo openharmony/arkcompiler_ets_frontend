@@ -19,6 +19,7 @@ import path from 'path';
 import { ArkObfuscator, blockPrinter, renameIdentifierModule } from '../ArkObfuscator';
 import { collectResevedFileNameInIDEConfig, MergedConfig, ObConfigResolver, readNameCache } from './ConfigResolver';
 import { type IOptions } from '../configs/IOptions';
+import type { HvigorErrorInfo } from '../common/type';
 
 // Record all unobfuscated properties and reasons.
 export let historyUnobfuscatedPropMap: Map<string, string[]> | undefined;
@@ -35,8 +36,8 @@ export const printerConfig = {
   mOutputPath: '',
 };
 
-export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any, logger: any): void {
-  const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, logger, true);
+export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any, printObfLogger: Function): void {
+  const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger, true);
   const mergedObConfig: MergedConfig = obConfig.resolveObfuscationConfigs();
   const isHarCompiled: boolean = projectConfig.compileHar;
   if (mergedObConfig.options.disableObfuscation) {
@@ -59,7 +60,7 @@ export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any,
 
   arkProjectConfig.arkObfuscator = initArkGuardConfig(
     projectConfig.obfuscationOptions?.obfuscationCacheDir,
-    logger,
+    printObfLogger,
     mergedObConfig,
     isHarCompiled,
   );
@@ -67,7 +68,7 @@ export function initObfuscationConfig(projectConfig: any, arkProjectConfig: any,
 
 function initArkGuardConfig(
   obfuscationCacheDir: string | undefined,
-  logger: any,
+  printObfLogger: Function,
   mergedObConfig: MergedConfig,
   isHarCompiled: boolean,
 ): ArkObfuscator {
@@ -116,25 +117,25 @@ function initArkGuardConfig(
   const arkObfuscator: ArkObfuscator = new ArkObfuscator();
   arkObfuscator.init(arkguardConfig);
   if (mergedObConfig.options.applyNameCache && mergedObConfig.options.applyNameCache.length > 0) {
-    readNameCache(mergedObConfig.options.applyNameCache, logger);
+    readNameCache(mergedObConfig.options.applyNameCache, printObfLogger);
   } else {
     if (obfuscationCacheDir) {
       const defaultNameCachePath: string = path.join(obfuscationCacheDir, 'nameCache.json');
       if (fs.existsSync(defaultNameCachePath)) {
-        readNameCache(defaultNameCachePath, logger);
+        readNameCache(defaultNameCachePath, printObfLogger);
       }
     }
   }
   if (mergedObConfig.options.printKeptNames && obfuscationCacheDir) {
     const defaultUnobfuscationPath: string = path.join(obfuscationCacheDir, 'keptNames.json');
     if (fs.existsSync(defaultUnobfuscationPath)) {
-      readUnobfuscationContent(defaultUnobfuscationPath, logger);
+      readUnobfuscationContent(defaultUnobfuscationPath, printObfLogger);
     }
   }
   return arkObfuscator;
 }
 
-function readUnobfuscationContent(defaultUnobfuscationPath: string, logger: any): void {
+function readUnobfuscationContent(defaultUnobfuscationPath: string, printObfLogger: Function): void {
   try {
     const unobfuscationContent = fs.readFileSync(defaultUnobfuscationPath, 'utf-8');
     const unobfuscationObj: {
@@ -153,6 +154,14 @@ function readUnobfuscationContent(defaultUnobfuscationPath: string, logger: any)
       historyAllUnobfuscatedNamesMap.set(key, rest[key]);
     });
   } catch (err) {
-    logger.error(`Failed to open ${defaultUnobfuscationPath}. Error message: ${err}`);
+    const errorInfo: string = `Failed to open ${defaultUnobfuscationPath}. Error message: ${err}`;
+    const errorCodeInfo: HvigorErrorInfo = {
+      code: '10804003',
+      description: 'ArkTS compiler Error',
+      cause: `Failed to open ${defaultUnobfuscationPath}. Error message: ${err}`,
+      position: defaultUnobfuscationPath,
+      solutions: [`Please check ${defaultUnobfuscationPath} as error message suggested.`],
+    };
+    printObfLogger(errorInfo, errorCodeInfo, 'error');
   }
 }

@@ -43,6 +43,7 @@ import { WhitelistType } from '../utils/TransformUtil';
 import { endFilesEvent, startFilesEvent } from '../utils/PrinterUtils';
 import { MemoryDottingDefine } from '../utils/MemoryDottingDefine';
 import { initScanProjectConfigByMergeConfig, scanProjectConfig, resetScanProjectConfig } from '../common/ApiReader';
+import type { HvigorErrorInfo } from '../common/type';
 
 enum OptionType {
   NONE,
@@ -193,14 +194,14 @@ export class MergedConfig {
 
 export class ObConfigResolver {
   sourceObConfig: any;
-  logger: any;
+  printObfLogger: Function;
   isHarCompiled: boolean | undefined;
   isHspCompiled: boolean | undefined;
   isTerser: boolean;
 
-  constructor(projectConfig: any, logger: any, isTerser?: boolean) {
+  constructor(projectConfig: any, printObfLogger: Function, isTerser?: boolean) {
     this.sourceObConfig = projectConfig.obfuscationOptions;
-    this.logger = logger;
+    this.printObfLogger = printObfLogger;
     this.isHarCompiled = projectConfig.compileHar;
     this.isHspCompiled = projectConfig.compileShared;
     this.isTerser = isTerser;
@@ -287,8 +288,15 @@ export class ObConfigResolver {
     try {
       fileContent = fs.readFileSync(path, 'utf-8');
     } catch (err) {
-      this.logger.error(`Failed to open ${path}. Error message: ${err}`);
-      throw err;
+      const errorInfo = `Failed to open ${path}. Error message: ${err}`;
+      const errorCodeInfo: HvigorErrorInfo = {
+        code: '10804001',
+        description: 'ArkTS compiler Error',
+        cause: `Failed to open obfuscation config file from ${path}. Error message: ${err}`,
+        position: path,
+        solutions: [`Please check whether ${path} exists.`],
+      };
+      this.printObfLogger(errorInfo, errorCodeInfo, 'error');
     }
     this.handleConfigContent(fileContent, configs, path);
   }
@@ -630,7 +638,8 @@ export class ObConfigResolver {
       }
 
       if (!fs.existsSync(tempAbsPath)) {
-        this.logger.warn(yellow + 'ArkTS: The path of obfuscation \'-keep\' configuration does not exist: ' + keepPath);
+        const warnInfo: string = `ArkTS: The path of obfuscation \'-keep\' configuration does not exist: ${keepPath}`;
+        this.printObfLogger(warnInfo, warnInfo, 'warn');
         continue;
       }
       tempAbsPath = fs.realpathSync(tempAbsPath);
@@ -860,7 +869,15 @@ export class ObConfigResolver {
 
   private determineNameCachePath(nameCachePath: string, configPath: string): void {
     if (!fs.existsSync(nameCachePath)) {
-      throw new Error(`The applied namecache file '${nameCachePath}' configured by '${configPath}' does not exist.`);
+      const errorInfo: string = `The applied namecache file '${nameCachePath}' configured by '${configPath}' does not exist.`;
+      const errorCodeInfo: HvigorErrorInfo = {
+        code: '10804004',
+        description: 'ArkTS compiler Error',
+        cause: `The applied namecache file '${nameCachePath}' configured by '${configPath}' does not exist.`,
+        position: configPath,
+        solutions: [`Please check ${configPath} and make sure the file configured by -apply-namecache exists`],
+      };
+      this.printObfLogger(errorInfo, errorCodeInfo, 'error');
     }
   }
 }
@@ -928,7 +945,7 @@ export function collectResevedFileNameInIDEConfig(
   return reservedFileNames;
 }
 
-export function readNameCache(nameCachePath: string, logger: any): void {
+export function readNameCache(nameCachePath: string, printObfLogger: Function): void {
   try {
     const fileContent = fs.readFileSync(nameCachePath, 'utf-8');
     const nameCache: {
@@ -949,7 +966,15 @@ export function readNameCache(nameCachePath: string, logger: any): void {
       nameCacheMap.set(key, rest[key]);
     });
   } catch (err) {
-    logger.error(`Failed to open ${nameCachePath}. Error message: ${err}`);
+    const errorInfo: string = `Failed to open ${nameCachePath}. Error message: ${err}`;
+    const errorCodeInfo: HvigorErrorInfo = {
+      code: '10804002',
+      description: 'ArkTS compiler Error',
+      cause: `Failed to open namecache file from ${nameCachePath}, Error message: ${err}`,
+      position: nameCachePath,
+      solutions: [`Please check ${nameCachePath} as error message suggested.`],
+    };
+    printObfLogger(errorInfo, errorCodeInfo, 'error');
   }
 }
 
@@ -1208,9 +1233,9 @@ export function printUnobfuscationReasons(configPath: string, defaultPath: strin
 }
 
 
-export function generateConsumerObConfigFile(obfuscationOptions: any, logger: any): void {
+export function generateConsumerObConfigFile(obfuscationOptions: any, printObfLogger: Function): void {
   const projectConfig = { obfuscationOptions, compileHar: true };
-  const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, logger);
+  const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger);
   obConfig.resolveObfuscationConfigs();
 }
 
