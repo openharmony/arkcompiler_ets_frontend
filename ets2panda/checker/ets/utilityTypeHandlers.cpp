@@ -330,63 +330,6 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
     return propClone;
 }
 
-ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *const accessor,
-                                                        ir::ClassDefinition *classDefinition)
-{
-    const auto interfaceCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(VarBinder(), classDefinition->Scope());
-    auto *paramScope = Allocator()->New<varbinder::FunctionParamScope>(Allocator(), classDefinition->Scope());
-    auto *functionScope = Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
-    functionScope->BindParamScope(paramScope);
-    paramScope->BindFunctionScope(functionScope);
-
-    {
-        auto paramScopeCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), paramScope);
-        VarBinder()->AddMandatoryParam(varbinder::TypedBinder::MANDATORY_PARAM_THIS);
-    }
-
-    ir::MethodDefinition *nullishAccessor = accessor->Clone(Allocator(), classDefinition);
-
-    auto *decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), nullishAccessor->Key()->AsIdentifier()->Name(),
-                                                           nullishAccessor);
-    auto *var = Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
-    var->AddFlag(varbinder::VariableFlags::METHOD);
-    nullishAccessor->Id()->SetVariable(var);
-    nullishAccessor->SetVariable(var);
-
-    functionScope->BindName(classDefinition->InternalName());
-
-    auto *function = nullishAccessor->Function();
-
-    function->SetVariable(var);
-    function->SetIdent(nullishAccessor->Id());
-    function->SetScope(functionScope);
-    paramScope->BindNode(function);
-    functionScope->BindNode(function);
-
-    if (function->IsGetter()) {
-        auto *propTypeAnn = function->ReturnTypeAnnotation();
-
-        auto *unionType = AllocNode<ir::ETSUnionType>(
-            ArenaVector<ir::TypeNode *>({propTypeAnn, AllocNode<ir::ETSUndefinedType>()}, Allocator()->Adapter()));
-        function->SetReturnTypeAnnotation(unionType);
-    } else {
-        for (auto *params : function->Params()) {
-            auto *paramExpr = params->AsETSParameterExpression();
-
-            auto *unionType = AllocNode<ir::ETSUnionType>(ArenaVector<ir::TypeNode *>(
-                {paramExpr->Ident()->TypeAnnotation(), AllocNode<ir::ETSUndefinedType>()}, Allocator()->Adapter()));
-            paramExpr->Ident()->SetTsTypeAnnotation(unionType);
-
-            auto *const paramVar = std::get<2>(paramScope->AddParamDecl(Allocator(), paramExpr));
-            paramExpr->SetVariable(paramVar);
-        }
-    }
-    ArenaVector<ir::MethodDefinition *> overloads(Allocator()->Adapter());
-    nullishAccessor->SetOverloads(std::move(overloads));
-
-    return nullishAccessor;
-}
-
 ir::TSTypeParameterDeclaration *ETSChecker::ProcessTypeParamAndGenSubstitution(
     ir::TSTypeParameterDeclaration const *const thisTypeParams,
     ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *likeSubstitution,
@@ -550,7 +493,7 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
     auto *function = nullishAccessor->Function();
 
     function->SetVariable(var);
-    function->SetIdent(nullishAccessor->Id());
+    function->SetIdent(nullishAccessor->Id()->Clone(Allocator(), function));
     function->SetScope(functionScope);
     paramScope->BindNode(function);
     functionScope->BindNode(function);
@@ -568,6 +511,7 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
             auto *unionType = AllocNode<ir::ETSUnionType>(ArenaVector<ir::TypeNode *>(
                 {paramExpr->Ident()->TypeAnnotation(), AllocNode<ir::ETSUndefinedType>()}, Allocator()->Adapter()));
             paramExpr->Ident()->SetTsTypeAnnotation(unionType);
+            unionType->SetParent(paramExpr->Ident());
 
             auto *const paramVar = std::get<2>(paramScope->AddParamDecl(Allocator(), paramExpr));
             paramExpr->SetVariable(paramVar);
@@ -680,6 +624,7 @@ Type *ETSChecker::CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *con
             ir::ETSTypeReference *superPartialRef =
                 BuildSuperPartialTypeReference(superPartialType, superPartialRefTypeParams);
             partialInterface->Extends().push_back(AllocNode<ir::TSInterfaceHeritage>(superPartialRef));
+            partialInterface->Extends().back()->SetParent(partialInterface);
         }
     }
 
