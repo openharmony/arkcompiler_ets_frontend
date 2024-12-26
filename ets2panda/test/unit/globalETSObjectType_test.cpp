@@ -53,6 +53,21 @@ TEST_F(GlobalETSObjectTypeTest, TypeDeclNodeTest)
         << "}\n}\n}" << std::endl;
 
     InitializeChecker("_.sts", src.str());
+    auto *checker = Checker();
+    auto *globalETSObjectType = checker->GlobalETSObjectType();
+    [[maybe_unused]] auto *declNode = globalETSObjectType->Variable()->Declaration()->Node();
+    ASSERT(declNode->IsClassDefinition());
+}
+
+TEST_F(GlobalETSObjectTypeTest, ObjectPartialGenTest)
+{
+    std::stringstream src;
+    src << "class A<T> {\n"
+        << "    constructor(obj: Object) {this.testObj = obj;}"
+        << "    testObj: Object;\n}\n"
+        << "let a = new A<int>({})\n;" << std::endl;
+
+    InitializeChecker("_.sts", src.str());
     auto checker = Checker();
     ASSERT(checker);
     auto *globalETSObjectType = checker->GlobalETSObjectType();
