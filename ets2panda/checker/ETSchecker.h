@@ -683,8 +683,6 @@ public:
         ir::MethodDefinition *const accessor, ir::TSInterfaceDeclaration *const newTSInterfaceDefinition);
     ir::ClassProperty *CreateNullishPropertyFromAccessor(ir::MethodDefinition *const accessor,
                                                          ir::ClassDefinition *newClassDefinition);
-    ir::MethodDefinition *CreateNullishAccessor(ir::MethodDefinition *const accessor,
-                                                ir::ClassDefinition *classDefinition);
     void CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition, ir::ClassDefinition *classDef);
     ir::ETSTypeReference *BuildSuperPartialTypeReference(Type *superPartialType,
                                                          ir::TSTypeParameterInstantiation *superPartialRefTypeParams);
