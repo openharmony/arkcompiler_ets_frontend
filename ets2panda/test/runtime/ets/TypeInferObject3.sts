@@ -35,7 +35,7 @@ function foo<T, U, K>(a: A<A<K, U, T>, String, K>): void {
     assert ((typeof a.c) == "boolean");
     assert ((typeof a.a.a) == "boolean");
     assert ((typeof a.a.b) == "string");
-    assert ((typeof a.a.c) == "int");
+    assert ((typeof a.a.c) == "number");
 }
 
 function main(): void {

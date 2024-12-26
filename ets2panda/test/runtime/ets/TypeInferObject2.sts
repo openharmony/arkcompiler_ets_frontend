@@ -26,7 +26,7 @@ class A<T, U, K> {
 }
 
 function foo<T, U extends Number, K, L extends A<T, K, T>>(a: A<T, K, int>, b: U, c: K, d: U, e: L) {
-    assert(typeof a.a == "int");
+    assert(typeof a.a == "number");
     assert(typeof a.b == "string");
     assert(typeof a.c == "number");
     assert(typeof b == "number");
@@ -37,9 +37,9 @@ function foo<T, U extends Number, K, L extends A<T, K, T>>(a: A<T, K, int>, b: U
 }
 
 function bar<T, U, K>(a: A<T, K, T>, b : U) {
-    assert(typeof a.a == "int");
+    assert(typeof a.a == "number");
     assert(typeof a.b == "string");
-    assert(typeof a.c == "int");
+    assert(typeof a.c == "number");
     assert(typeof b == "number");
     return new A<T, U, K>(a.a, b, a.b);
 }

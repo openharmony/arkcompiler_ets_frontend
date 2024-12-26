@@ -36,7 +36,7 @@ class B <U, T, K> {
 }
 
 function func1<U, T, K>(arg: A<T, U>, arg1: K){
-    assert(typeof arg1 == "int");
+    assert(typeof arg1 == "number");
     return new A<U, T>(arg.value2, arg.value1);
 }
 
