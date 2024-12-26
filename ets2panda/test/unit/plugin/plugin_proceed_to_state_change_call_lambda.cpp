@@ -141,8 +141,8 @@ int main(int argc, char **argv)
     std::cout << std::endl << "SRC DUMP AFTER CHANGE CALL:" << std::endl;
     std::cout << impl->AstNodeDumpEtsSrcConst(context, programNode) << std::endl << std::endl;
 
-    impl->ProceedToState(context, ES2PANDA_STATE_SCOPE_INITED);
-    CheckForErrors("SCOPE INITED", context);
+    impl->ProceedToState(context, ES2PANDA_STATE_BOUND);
+    CheckForErrors("BOUND", context);
 
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);

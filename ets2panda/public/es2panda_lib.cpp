@@ -32,6 +32,7 @@
 #include "compiler/core/regSpiller.h"
 #include "compiler/lowering/phase.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/astNode.h"
 #include "ir/expressions/arrowFunctionExpression.h"
@@ -342,7 +343,7 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
     return ctx;
 }
 
-__attribute__((unused)) static Context *InitScopes(Context *ctx)
+__attribute__((unused)) static Context *Bind(Context *ctx)
 {
     // NOTE: Remove duplicated code in all phases
     if (ctx->state < ES2PANDA_STATE_PARSED) {
@@ -360,8 +361,8 @@ __attribute__((unused)) static Context *InitScopes(Context *ctx)
                 break;
             }
             ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
-        } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::ScopesInitPhase::NAME);
-        ctx->state = ES2PANDA_STATE_SCOPE_INITED;
+        } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::ResolveIdentifiers::NAME);
+        ctx->state = ES2PANDA_STATE_BOUND;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
@@ -518,8 +519,8 @@ extern "C" __attribute__((unused)) es2panda_Context *ProceedToState(es2panda_Con
         case ES2PANDA_STATE_PARSED:
             ctx = Parse(ctx);
             break;
-        case ES2PANDA_STATE_SCOPE_INITED:
-            ctx = InitScopes(ctx);
+        case ES2PANDA_STATE_BOUND:
+            ctx = Bind(ctx);
             break;
         case ES2PANDA_STATE_CHECKED:
             ctx = Check(ctx);

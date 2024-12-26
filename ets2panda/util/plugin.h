@@ -54,6 +54,13 @@ public:
         }
     }
 
+    void AfterBind(es2panda_Context *context) const
+    {
+        if (afterBind_ != nullptr) {
+            afterBind_(context);
+        }
+    }
+
     void AfterCheck(es2panda_Context *context) const
     {
         if (afterCheck_ != nullptr) {
@@ -78,6 +85,7 @@ private:
 
     void (*initialize_)() = nullptr;
     void (*afterParse_)(es2panda_Context *) = nullptr;
+    void (*afterBind_)(es2panda_Context *) = nullptr;
     void (*afterCheck_)(es2panda_Context *) = nullptr;
     void (*afterLowerings_)(es2panda_Context *) = nullptr;
 };

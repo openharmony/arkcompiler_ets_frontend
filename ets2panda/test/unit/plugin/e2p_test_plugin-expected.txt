@@ -34,5 +34,6 @@ n
 console
 log
 k
+After bind
 After check
 After lowerings
