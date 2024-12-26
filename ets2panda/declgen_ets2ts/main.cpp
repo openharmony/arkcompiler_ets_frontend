@@ -19,6 +19,16 @@
 
 namespace ark::es2panda::declgen_ets2ts {
 
+static void PrintUsage()
+{
+    std::cerr << "Usage: declgen_ets2ts [OPTIONS] [input]\n";
+    std::cerr << "    --export-all        Treat all top level statements as exported\n";
+    std::cerr << "    --output-dts=[FILE] Path to output .d.ts file\n";
+    std::cerr << "    --help              Print this message and exit. Default: false\n";
+    std::cerr << "Tail arguments:\n";
+    std::cerr << "input: input file\n";
+}
+
 void FilterArgs(Span<const char *const> args, int &newArgc, const char **&newArgv)
 {
     ASSERT(args.size() > 1);
@@ -42,7 +52,6 @@ void FilterArgs(Span<const char *const> args, int &newArgc, const char **&newArg
 
 static DeclgenOptions ParseOptions(Span<const char *const> args)
 {
-    ASSERT(args.size() > 1);
     DeclgenOptions options;
     for (size_t i = 1; i < args.size(); ++i) {
         if (std::strcmp(args[i], "--export-all") == 0) {
@@ -59,6 +68,10 @@ static DeclgenOptions ParseOptions(Span<const char *const> args)
 static int Run(int argc, const char **argv)
 {
     Span<const char *const> args(argv, static_cast<size_t>(argc));
+    if (args.size() == 1 || std::strcmp(args[1], "--help") == 0) {
+        PrintUsage();
+        return 1;
+    }
     auto declgenOptions = ParseOptions(args);
     int newArgc = 0;
     const char **newArgv = nullptr;
