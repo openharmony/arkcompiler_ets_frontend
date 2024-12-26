@@ -26,21 +26,22 @@ set(LIBRARY_PLUGIN "LIB")
 set(EXECUTABLE_PLUGIN "EXE")
 
 set(PLUGIN_TESTS
-  #"test_name test_sts_file how_to_test_mode plugin_file_extension(c|cpp) how_to_compile_mode"
-  "e2p_test_plugin_dump_json compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin_ets_src compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin_ets_benchmark_test compile.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
-  # 20756 "e2p_test_plugin_ets_benchmark_with_checker_func_test compile.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin_ets_node_types compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin_ets_varibles_and_types compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin_change_func runtime_change_func_call.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin compile.sts ${EXPECTED_MODE} c ${LIBRARY_PLUGIN}"
-  "e2p_test_plugin_is compile.sts ${EXPECTED_MODE} c ${LIBRARY_PLUGIN}"
-  "plugin_proceed_to_state compile.sts ${EXPECTED_MODE} cpp ${EXECUTABLE_PLUGIN}"
-  "plugin_proceed_to_state_update_statements compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
-  "plugin_proceed_to_state_update_statements_lambda compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
-  "plugin_proceed_to_state_change_func runtime_change_func_call.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
-  "plugin_proceed_to_state_change_call_lambda compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    #"test_name test_sts_file how_to_test_mode plugin_file_extension(c|cpp) how_to_compile_mode"
+    "e2p_test_plugin_dump_json compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_ets_src compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_ets_benchmark_test compile.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
+    # 20756 "e2p_test_plugin_ets_benchmark_with_checker_func_test compile.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_ets_node_types compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_ets_varibles_and_types compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_change_func runtime_change_func_call.sts ${RUNTIME_MODE} cpp ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin compile.sts ${EXPECTED_MODE} c ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_is compile.sts ${EXPECTED_MODE} c ${LIBRARY_PLUGIN}"
+    "e2p_test_plugin_after_bind compile.sts ${EXPECTED_MODE} cpp ${LIBRARY_PLUGIN}"
+    "plugin_proceed_to_state compile.sts ${EXPECTED_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_update_statements compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_update_statements_lambda compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_change_func runtime_change_func_call.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_change_call_lambda compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
 
 set(RUNTIME_ARGUMENTS

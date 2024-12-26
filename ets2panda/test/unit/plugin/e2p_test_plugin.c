@@ -44,6 +44,11 @@ void e2p_test_plugin_AfterParse(es2panda_Context *ctx)
     impl->AstNodeForEach(ast, PrintIfIdentifier, ctx);
 }
 
+void e2p_test_plugin_AfterBind(es2panda_Context *ctx)
+{
+    puts("After bind");
+}
+
 void e2p_test_plugin_AfterCheck(es2panda_Context *ctx)
 {
     puts("After check");

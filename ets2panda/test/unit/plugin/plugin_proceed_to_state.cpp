@@ -87,8 +87,8 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", context);
 
-    impl->ProceedToState(context, ES2PANDA_STATE_SCOPE_INITED);
-    CheckForErrors("SCOPE INITED", context);
+    impl->ProceedToState(context, ES2PANDA_STATE_BOUND);
+    CheckForErrors("BOUND", context);
 
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
     CheckForErrors("CHECKED", context);

@@ -21,6 +21,8 @@
 namespace ark::es2panda::compiler {
 class ResolveIdentifiers : public Phase {
 public:
+    static constexpr std::string_view NAME = "ResolveIdentifiers";
+
     std::string_view Name() const override
     {
         return "ResolveIdentifiers";
