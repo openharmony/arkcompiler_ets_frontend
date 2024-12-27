@@ -740,42 +740,6 @@ void ETSEmitter::GenCustomAnnotationRecord(const ir::AnnotationDeclaration *anno
     Program()->recordTable.emplace(annoRecord.name, std::move(annoRecord));
 }
 
-static pandasm::ScalarValue CreateAnnotationScalarValue(checker::TypeFlag typeKind, const ir::Literal *init)
-{
-    switch (typeKind) {
-        case checker::TypeFlag::ETS_BOOLEAN: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::U1>(
-                static_cast<uint8_t>(init->AsBooleanLiteral()->Value()));
-        }
-        case checker::TypeFlag::BYTE: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I8>(init->AsNumberLiteral()->Number().GetInt());
-        }
-        case checker::TypeFlag::SHORT: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I16>(init->AsNumberLiteral()->Number().GetInt());
-        }
-        case checker::TypeFlag::INT: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I32>(init->AsNumberLiteral()->Number().GetInt());
-        }
-        case checker::TypeFlag::LONG: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::I64>(init->AsNumberLiteral()->Number().GetLong());
-        }
-        case checker::TypeFlag::FLOAT: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::F32>(
-                init->AsNumberLiteral()->Number().GetFloat());
-        }
-        case checker::TypeFlag::DOUBLE: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(
-                init->AsNumberLiteral()->Number().GetDouble());
-        }
-        case checker::TypeFlag::ETS_OBJECT: {
-            return pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(init->AsStringLiteral()->Str().Mutf8());
-        }
-        default: {
-            UNREACHABLE();
-        }
-    }
-}
-
 pandasm::AnnotationElement ETSEmitter::ProcessArrayType(const ir::ClassProperty *prop, std::string &baseName,
                                                         const ir::Expression *init)
 {
@@ -818,8 +782,8 @@ pandasm::AnnotationElement ETSEmitter::GenCustomAnnotationElement(const ir::Clas
                     propName, std::make_unique<pandasm::ScalarValue>(
                                   pandasm::ScalarValue::Create<pandasm::Value::Type::F64>(negNumberValue))};
             }
-            return pandasm::AnnotationElement {propName, std::make_unique<pandasm::ScalarValue>(
-                                                             CreateAnnotationScalarValue(typeKind, init->AsLiteral()))};
+            return pandasm::AnnotationElement {
+                propName, std::make_unique<pandasm::ScalarValue>(CreateScalarValue(init->TsType(), typeKind))};
         }
         case checker::TypeFlag::ETS_INT_ENUM: {
             auto *initValue = init->AsMemberExpression()->PropVar()->Declaration()->Node()->AsTSEnumMember()->Init();

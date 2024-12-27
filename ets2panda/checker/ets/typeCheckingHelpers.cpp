@@ -915,14 +915,11 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
                      st->Start());
     }
     auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
-    auto ctx = checker::AssignmentContext(Relation(), param->Value(), param->TsType(), singleField->TsType(),
-                                          param->Start(), {}, TypeRelationFlag::NO_THROW);
-    if (!ctx.IsAssignable()) {
-        LogTypeError({"The value provided for annotation '", st->GetBaseName()->Name(), "' field '",
-                      param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
-                      singleField->TsType(), "'."},
-                     param->Start());
-    }
+    auto clone = singleField->TypeAnnotation()->Clone(Allocator(), param);
+    param->SetTypeAnnotation(clone);
+    ScopeContext scopeCtx(this, st->Scope());
+    param->Check(this);
+    CheckAnnotationPropertyType(param);
 }
 
 void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
@@ -954,14 +951,11 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::
                          param->Start());
             continue;
         }
-        auto ctx = checker::AssignmentContext(Relation(), param->Value(), param->TsType(), result->second->TsType(),
-                                              param->Start(), {}, TypeRelationFlag::NO_THROW);
-        if (!ctx.IsAssignable()) {
-            LogTypeError({"The value provided for annotation '", st->GetBaseName()->Name(), "' field '",
-                          param->Id()->Name(), "' is of type '", param->TsType(), "', but expected type is '",
-                          result->second->TsType(), "'."},
-                         param->Start());
-        }
+        auto clone = result->second->TypeAnnotation()->Clone(Allocator(), param);
+        param->SetTypeAnnotation(clone);
+        ScopeContext scopeCtx(this, st->Scope());
+        param->Check(this);
+        CheckAnnotationPropertyType(param);
         fieldMap.erase(result);
     }
 }

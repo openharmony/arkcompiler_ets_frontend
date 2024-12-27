@@ -2272,18 +2272,6 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     annoDecl->Check(checker);
 
-    ScopeContext scopeCtx(checker, st->Scope());
-    for (auto *it : st->Properties()) {
-        it->Check(checker);
-        auto property = it->AsClassProperty();
-        if (property->Value() != nullptr &&
-            ((property->Value()->IsMemberExpression() && !property->TsType()->IsETSEnumType()) ||
-             property->Value()->IsIdentifier())) {
-            checker->LogTypeError("Invalid value for annotation field, expected a constant literal.",
-                                  property->Value()->Start());
-        }
-    }
-
     ArenaUnorderedMap<util::StringView, ir::ClassProperty *> fieldMap {checker->Allocator()->Adapter()};
     for (auto *it : annoDecl->Properties()) {
         auto *field = it->AsClassProperty();
@@ -2305,7 +2293,6 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     }
 
     checker->ProcessRequiredFields(fieldMap, st, checker);
-
     return ReturnTypeForStatement(st);
 }
 
