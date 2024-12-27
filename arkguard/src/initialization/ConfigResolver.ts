@@ -1233,7 +1233,7 @@ export function printUnobfuscationReasons(configPath: string, defaultPath: strin
 }
 
 
-export function generateConsumerObConfigFile(obfuscationOptions: any, printObfLogger: Function): void {
+export function generateConsumerObConfigFile(obfuscationOptions: SourceObConfig, printObfLogger: Function): void {
   const projectConfig = { obfuscationOptions, compileHar: true };
   const obConfig: ObConfigResolver = new ObConfigResolver(projectConfig, printObfLogger);
   obConfig.resolveObfuscationConfigs();
