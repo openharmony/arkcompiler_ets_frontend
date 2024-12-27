@@ -8,6 +8,20 @@ record_name: &myapp/hap-file-exec&
 program_file: sourcehar-file1.ts
 record_name: &sourcehar/sourcehar-file1&2.0.0
 
+slotNum = 0x6
+expectedProperty = 0x3
+.language ECMAScript
+.function any &bytecodehar1/bytecodehar1-file1&2.0.0.#*#A(any a0, any a1, any a2, any a3) {
+	lda a3
+	stobjbyname 0x0, a, a2
+	ldai 0x1
+	stobjbyname 0x2, b, a2
+	ldai 0x2
+	stobjbyname 0x4, c, a2
+	ldundefined
+	returnundefined
+}
+
 slotNum = 0x3
 .language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test(any a0, any a1, any a2) {
@@ -23,10 +37,11 @@ slotNum = 0x3
 	returnundefined
 }
 
-slotNum = 0x1
+slotNum = 0x2
 .language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
-	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
+	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#A, 0x1
+	definefunc 0x1, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
 	ldundefined
 	returnundefined
@@ -35,9 +50,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1366
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1688
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1370
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1692
 {
   index: 0
     tag: 2
@@ -99,7 +114,7 @@ slot &bytecodehar1/bytecodehar1-file1&2.0.0_1370
     val: 0
 },
 ======> strings <======
-"&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "bytecodehar1.file1.test"; "print"; 
+"&bytecodehar1/bytecodehar1-file1&2.0.0.#*#A"; "&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "a"; "b"; "bytecodehar1.file1.test"; "c"; "print"; 
 slotNum = 0x3
 .language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test(any a0, any a1, any a2) {
@@ -115,11 +130,34 @@ slotNum = 0x3
 	returnundefined
 }
 
-slotNum = 0x1
+slotNum = 0x2
+expectedProperty = 0x1
+.language ECMAScript
+.function any &bytecodehar1/bytecodehar1-file2&2.0.0.#~@0=#Example(any a0, any a1, any a2) {
+	ldai 0x0
+	stobjbyname 0x0, a, a2
+	lda a2
+	return
+}
+
+slotNum = 0x2
+.language ECMAScript
+.function any &bytecodehar1/bytecodehar1-file2&2.0.0.#~@0>#setValue(any a0, any a1, any a2, any a3) {
+	lda a3
+	stobjbyname 0x0, a, a2
+	ldundefined
+	returnundefined
+}
+
+slotNum = 0x4
 .language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x1, &bytecodehar1/bytecodehar1-file2&2.0.0.#~@0=#Example, &bytecodehar1/bytecodehar1-file2&2.0.0_1801, 0x0, v0
+	ldobjbyname 0x2, prototype
 	ldundefined
 	returnundefined
 }
@@ -127,9 +165,19 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1420
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1742
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: Example
+},
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file2&2.0.0_1424
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1751
 {
   index: 0
     tag: 2
@@ -190,8 +238,50 @@ slot &bytecodehar1/bytecodehar1-file2&2.0.0_1424
     tag: 2
     val: 0
 },
+------------------------------------
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1801
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: setValue
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: &bytecodehar1/bytecodehar1-file2&2.0.0.#~@0>#setValue
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 1
+},
+{
+  index: 6
+    tag: 0
+    val: 2
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
 ======> strings <======
-"&bytecodehar1/bytecodehar1-file2&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file2&2.0.0"; "bytecodehar1.file2.test"; "print"; 
+"&bytecodehar1/bytecodehar1-file2&2.0.0.#*#test"; "&bytecodehar1/bytecodehar1-file2&2.0.0.#~@0=#Example"; "@normalized:N&&&sourcehar/sourcehar-file2&2.0.0"; "a"; "bytecodehar1.file2.test"; "print"; "prototype"; 
 
 ======> literal array buffer <======
 ======> strings <======
@@ -592,6 +682,20 @@ slot &sourcehar/sourcehar-file2&2.0.0_1
 },
 ======> strings <======
 "&sourcehar/sourcehar-file2&2.0.0.#*#test"; "print"; "sourcehar.file2.test"; 
+slotNum = 0x6
+expectedProperty = 0x3
+.language ECMAScript
+.function any &bytecodehar1/bytecodehar1-file1&2.0.0.#*#A(any a0, any a1, any a2, any a3) {
+	lda a3
+	stobjbyname 0x0, a, a2
+	ldai 0x1
+	stobjbyname 0x2, b, a2
+	ldai 0x2
+	stobjbyname 0x4, c, a2
+	ldundefined
+	returnundefined
+}
+
 slotNum = 0x3
 .language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test(any a0, any a1, any a2) {
@@ -607,10 +711,11 @@ slotNum = 0x3
 	returnundefined
 }
 
-slotNum = 0x1
+slotNum = 0x2
 .language ECMAScript
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
-	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
+	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#A, 0x1
+	definefunc 0x1, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
 	ldundefined
 	returnundefined
@@ -619,9 +724,9 @@ slotNum = 0x1
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1366
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1688
 ------------------------------------
-slot &bytecodehar1/bytecodehar1-file1&2.0.0_1370
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_1692
 {
   index: 0
     tag: 2
@@ -683,7 +788,7 @@ slot &bytecodehar1/bytecodehar1-file1&2.0.0_1370
     val: 0
 },
 ======> strings <======
-"&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "bytecodehar1.file1.test"; "print"; 
+"&bytecodehar1/bytecodehar1-file1&2.0.0.#*#A"; "&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "a"; "b"; "bytecodehar1.file1.test"; "c"; "print"; 
 slotNum = 0x3
 .language ECMAScript
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test(any a0, any a1, any a2) {

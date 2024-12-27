@@ -19,3 +19,9 @@ export function test() {
     print('bytecodehar1.file1.test');
     import('@normalized:N&&&sourcehar/sourcehar-file1&2.0.0')
 }
+
+function A(a) {
+    this.a = a
+    this.b = 1
+    this.c = 2
+}
