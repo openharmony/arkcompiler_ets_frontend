@@ -28,6 +28,11 @@ public:
     {
     }
 
+    explicit TSEnumMember(Expression *key, Expression *init, bool isGenerated)
+        : Statement(AstNodeType::TS_ENUM_MEMBER), key_(key), init_(init), isGenerated_(isGenerated)
+    {
+    }
+
     const Expression *Key() const
     {
         return key_;
@@ -41,6 +46,16 @@ public:
     const Expression *Init() const
     {
         return init_;
+    }
+
+    Expression *Init()
+    {
+        return init_;
+    }
+
+    bool IsGenerated() const
+    {
+        return isGenerated_;
     }
 
     [[nodiscard]] util::StringView Name() const;
@@ -62,6 +77,7 @@ public:
 private:
     Expression *key_;
     Expression *init_;
+    bool isGenerated_ {false};
 };
 }  // namespace ark::es2panda::ir
 

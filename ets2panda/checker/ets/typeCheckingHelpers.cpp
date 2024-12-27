@@ -889,8 +889,9 @@ void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
     // The type of the Initializer has been check in the parser,
     // except for the enumeration type, because it is a member expression,
     // so here is an additional check to the enumeration type.
-    if (property->Value() != nullptr && property->Value()->IsMemberExpression() &&
-        !property->TsType()->IsETSEnumType()) {
+    if (property->Value() != nullptr &&
+        ((property->Value()->IsMemberExpression() && !property->TsType()->IsETSEnumType()) ||
+         property->Value()->IsIdentifier())) {
         LogTypeError("Invalid value for annotation field, expected a constant literal.", property->Value()->Start());
     }
 }

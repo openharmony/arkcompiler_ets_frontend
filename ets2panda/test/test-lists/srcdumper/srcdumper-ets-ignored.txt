@@ -8,6 +8,7 @@ parser/ets/string_template_4.sts
 
 # FailKind.SRC_DUMPER_FAIL (Issue #20458)
 ast/compiler/ets/annotation_tests/annotationUsage_duplicate_from_import.sts
+ast/parser/ets/annotations_tests/annotationUsage_bad_param03.sts
 ast/parser/ets/annotations_tests/annotationDecl_parser_bad_token05.sts
 runtime/ets/annotation_tests/AnnotationDeclare01.sts
 runtime/ets/annotation_tests/annotationUsageSingleFileds01.sts

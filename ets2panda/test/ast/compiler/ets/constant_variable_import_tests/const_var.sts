@@ -13,11 +13,4 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
-}
-
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+export const constVar = 10

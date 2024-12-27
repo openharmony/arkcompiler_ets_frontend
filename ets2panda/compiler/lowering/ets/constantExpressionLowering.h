@@ -69,6 +69,8 @@ private:
 
     ir::AstNode *FoldBinaryNumericConstant(ir::BinaryExpression *expr);
 
+    ir::AstNode *FoldBinaryStringConstant(ir::BinaryExpression *expr);
+
     ir::AstNode *FoldBinaryConstant(ir::BinaryExpression *expr);
 
     template <typename InputType>
@@ -83,10 +85,23 @@ private:
 
     ir::AstNode *FoldUnaryConstant(ir::UnaryExpression *unary);
 
+    ir::AstNode *TryFoldTSAsExpressionForString(ir::TSAsExpression *expr);
+
+    ir::AstNode *FoldTSAsExpression(ir::TSAsExpression *expr);
+
     ir::AstNode *FoldConstant(ir::AstNode *constantNode);
+
+    varbinder::Variable *FindIdentifier(ir::Identifier *ident);
+
+    ir::AstNode *UnfoldConstIdentifier(ir::AstNode *node, ir::AstNode *originNode);
+
+    ir::AstNode *UnfoldConstMemberExpression(ir::MemberExpression *member);
+
+    ir::AstNode *UnfoldConstIdentifiers(ir::AstNode *constantNode);
 
     public_lib::Context *context_ {nullptr};
     parser::Program *program_ {nullptr};
+    varbinder::ETSBinder *varbinder_ {nullptr};
 };
 
 }  // namespace ark::es2panda::compiler

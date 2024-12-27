@@ -20,4 +20,6 @@
 @MyAnno(/* @@ label */a)
 class B{}
 
-/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+
+/* @@@ label Error TypeError: Unresolved reference a  */
+/* @@@ label Error TypeError: Invalid value for annotation field, expected a constant literal.  */

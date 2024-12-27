@@ -13,17 +13,6 @@
  * limitations under the License.
  */
  
-/*
- * Can not moved into ast/parser while #19557 isn't resolved
- */ 
-
-enum Color { Red, Green, Blue }
-
-function main(): void {
-  const red = Color.Red;
-  switch (Color.Green) {
-    case Color.Blue: break;
-    case red: break;
-    case Color.Green: break;
-  }
+enum TrailingCommaEnum {
+    Red,
 }

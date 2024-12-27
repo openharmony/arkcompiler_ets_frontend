@@ -79,4 +79,11 @@ CharLiteral *CharLiteral::Clone(ArenaAllocator *const allocator, AstNode *const 
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
+
+std::string CharLiteral::ToString() const
+{
+    std::string charStr;
+    util::StringView::Mutf8Encode(&charStr, char_);
+    return charStr;
+}
 }  // namespace ark::es2panda::ir

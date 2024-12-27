@@ -11,13 +11,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
+@interface MyAnno {
+    a : int = 49 as char as int
+    b : byte = 1.0 as byte
+    c : short = c'c' as short
+    d : int = 12.2f as int
+    e : long = 123 as long
+    f : float = c'c' as float
+    g : double = c'c' as double
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+function main() {
+    assert true
+}

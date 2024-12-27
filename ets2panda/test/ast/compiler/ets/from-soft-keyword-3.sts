@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
-}
+import * as all from "std/math";
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+enum from { from, from1, from2 };
+
+function main(): void {
+    let from: int = 84;
+}

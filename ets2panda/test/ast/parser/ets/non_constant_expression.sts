@@ -17,8 +17,9 @@
     a : int
 }
 
-let cc= 1
+let cc = 1
 @MyAnno({a = 1 + cc})
 function foo() {}
+
 
 /* @@? 21:14 Error SyntaxError: Only constant expression is expected in the field */

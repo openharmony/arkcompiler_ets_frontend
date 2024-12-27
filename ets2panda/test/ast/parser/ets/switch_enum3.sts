@@ -13,11 +13,18 @@
  * limitations under the License.
  */
 
-enum InvalidInitTypeEnum {
-  Red,
-  Green = /* @@ label */1.0,
-  Blue
+enum A {
+    B, C, D
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization value  */
-/* @@? 19:7 Error SyntaxError: Invalid enum initialization value  */
+function main() {
+    let k: A = A.D
+    switch (k) {
+        case A.B:
+            break;
+        case A.C:
+            break;
+        case A.D:
+            break;
+    }
+}

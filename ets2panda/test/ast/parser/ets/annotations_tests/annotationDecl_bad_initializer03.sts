@@ -14,7 +14,9 @@
  */
 
 @interface MyAnno {
-    testProperty1: string = /* @@ label */[1,2,a]
+    /* @@ label */testProperty1: string = /* @@ label1 */[1,2,a]
 }
 
-/* @@@ label Error SyntaxError: Invalid value for annotation field, expected a constant literal.  */
+
+/* @@@ label1 Error TypeError: Expected type for array literal should be an array type, got String  */
+/* @@@ label Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */

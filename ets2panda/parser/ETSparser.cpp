@@ -669,7 +669,7 @@ bool ETSParser::ValidAnnotationValue(ir::Expression *initializer)
     }
     return initializer->IsStringLiteral() || initializer->IsNumberLiteral() || initializer->IsMemberExpression() ||
            initializer->IsBooleanLiteral() || initializer->IsBinaryExpression() || initializer->IsUnaryExpression() ||
-           initializer->IsConditionalExpression();
+           initializer->IsConditionalExpression() || initializer->IsIdentifier() || initializer->IsTSAsExpression();
 }
 
 ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::ModifierFlags memberModifiers,

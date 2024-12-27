@@ -25,14 +25,8 @@ enum C {
     a = 1,
     b = 100 > 1
 }
-  
-enum D {
-    a = 1,
-    b = 1 as int,
-}
 
 
-/* @@? 16:1 Error SyntaxError: Invalid enumeration value type. */
-/* @@? 20:1 Error SyntaxError: Invalid enumeration value type. */
-/* @@? 24:1 Error SyntaxError: Invalid enumeration value type. */
-/* @@? 29:1 Error SyntaxError: Invalid enumeration value type. */
+/* @@? 17:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 21:9 Error SyntaxError: Invalid enum initialization value */
+/* @@? 26:9 Error SyntaxError: Invalid enum initialization value */

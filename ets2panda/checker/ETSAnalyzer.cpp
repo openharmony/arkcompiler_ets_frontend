@@ -2217,6 +2217,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
+    ScopeContext scopeCtx(checker, st->Scope());
     for (auto *it : st->Properties()) {
         auto *property = it->AsClassProperty();
         property->Check(checker);
@@ -2243,11 +2244,13 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     annoDecl->Check(checker);
 
+    ScopeContext scopeCtx(checker, st->Scope());
     for (auto *it : st->Properties()) {
         it->Check(checker);
         auto property = it->AsClassProperty();
-        if (property->Value() != nullptr && property->Value()->IsMemberExpression() &&
-            !property->TsType()->IsETSEnumType()) {
+        if (property->Value() != nullptr &&
+            ((property->Value()->IsMemberExpression() && !property->TsType()->IsETSEnumType()) ||
+             property->Value()->IsIdentifier())) {
             checker->LogTypeError("Invalid value for annotation field, expected a constant literal.",
                                   property->Value()->Start());
         }

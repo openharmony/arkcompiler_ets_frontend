@@ -15,8 +15,9 @@
 
 enum InvalidInitTypeEnum {
   Red,
-  Green = /* @@ label */a2b,
+  Green = a2b,
   Blue
 }
 
-/* @@@ label Error SyntaxError: Invalid enum initialization type  */
+
+/* @@? 19:7 Error SyntaxError: Only constant expression is expected in the field  */
