@@ -97,7 +97,7 @@ export function transformDiagnostic(diagnostic: ts.Diagnostic): ProblemInfo {
     end: endPos,
     type: 'StrictModeError',
     // expect strict options to always present
-    severity: ProblemSeverity.ERROR,
+    severity: diagnostic.category === ts.DiagnosticCategory.Warning ? ProblemSeverity.WARNING : ProblemSeverity.ERROR,
     problem: FaultID[faultId],
     suggest: messageText,
     rule: messageText,

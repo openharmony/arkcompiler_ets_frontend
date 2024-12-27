@@ -83,6 +83,36 @@
             "suggest": "Type 'null' is not assignable to type 'Object'.",
             "rule": "Type 'null' is not assignable to type 'Object'.",
             "severity": "ERROR"
+        },
+        {
+            "line": 62,
+            "column": 8,
+            "endLine": 62,
+            "endColumn": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'A'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'A'.",
+            "severity": "WARNING"
+        },
+        {
+            "line": 63,
+            "column": 16,
+            "endLine": 63,
+            "endColumn": 20,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'A'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'A'.",
+            "severity": "ERROR"
+        },
+        {
+            "line": 64,
+            "column": 20,
+            "endLine": 64,
+            "endColumn": 24,
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'A'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'A'.",
+            "severity": "ERROR"
         }
     ]
 }

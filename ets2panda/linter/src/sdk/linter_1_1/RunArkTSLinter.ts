@@ -78,7 +78,7 @@ export function runArkTSLinter(
   const etsLoaderPath = program.getCompilerOptions().etsLoaderPath;
   const tsImportSendableEnable = program.getCompilerOptions().tsImportSendableEnable;
   const typeScriptLinter = createTypeScriptLinter(program, tscStrictDiagnostics, sdkOptions);
-  LibraryTypeCallDiagnosticChecker.rebuildTscDiagnostics(tscStrictDiagnostics);
+  LibraryTypeCallDiagnosticChecker.instance.rebuildTscDiagnostics(tscStrictDiagnostics);
   const interopTypescriptLinter = createInteropTypescriptLinter(program, !!sdkOptions?.isUseRtLogic);
   processFiles(srcFiles, {
     incrementalLinterState,

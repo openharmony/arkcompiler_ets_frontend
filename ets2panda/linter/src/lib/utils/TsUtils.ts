@@ -17,7 +17,7 @@ import * as path from 'node:path';
 import * as ts from 'typescript';
 import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { FaultID } from '../Problems';
-import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
+import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_DIRS_OH_MODULES, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
 import { ES_OBJECT } from './consts/ESObject';
 import { EXTENDED_BASE_TYPES } from './consts/ExtendedBaseTypes';
 import { SENDABLE_DECORATOR } from './consts/SendableAPI';
@@ -41,6 +41,7 @@ import { srcFilePathContainsDirectory } from './functions/PathHelper';
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { isIntrinsicObjectType } from './functions/isIntrinsicObjectType';
 import type { LinterOptions } from '../LinterOptions';
+import { ETS } from './consts/TsSuffix';
 
 export const SYMBOL = 'Symbol';
 export const SYMBOL_CONSTRUCTOR = 'SymbolConstructor';
@@ -1527,6 +1528,15 @@ export class TsUtils {
       return !isStatic && !isStdLib;
     }
     return false;
+  }
+
+  static isOhModulesEtsSymbol(sym: ts.Symbol | undefined): boolean {
+    const sourceFile = sym?.declarations?.[0]?.getSourceFile();
+    return (
+      !!sourceFile &&
+      path.extname(sourceFile.fileName).toLowerCase() === ETS &&
+      srcFilePathContainsDirectory(sourceFile, ARKTS_IGNORE_DIRS_OH_MODULES)
+    );
   }
 
   isDynamicType(type: ts.Type | undefined): boolean | undefined {

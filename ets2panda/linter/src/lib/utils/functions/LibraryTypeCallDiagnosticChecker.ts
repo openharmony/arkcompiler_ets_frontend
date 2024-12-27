@@ -15,9 +15,8 @@
 
 /* eslint prefer-named-capture-group: 0 */
 
-import type * as ts from 'typescript';
-import { TypeScriptLinter } from '../../TypeScriptLinter';
-import type { DiagnosticChecker } from './DiagnosticChecker';
+import * as ts from 'typescript';
+import ArrayUtils from './ArrayUtils';
 
 /*
  * Current approach relates on error code and error message matching and it is quite fragile,
@@ -46,138 +45,35 @@ export enum ErrorType {
   NO_ERROR,
   UNKNOW,
   NULL,
-  UNDEFINED
+  POSSIBLY_UNDEFINED
 }
 
-export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
-  inLibCall: boolean = false;
-  diagnosticMessages: Array<ts.DiagnosticMessageChain> | undefined;
-  filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
+interface CheckRange {
+  begin: number;
+  end: number;
+}
 
-  constructor(filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>) {
-    this.filteredDiagnosticMessages = filteredDiagnosticMessages;
+export class LibraryTypeCallDiagnosticChecker {
+  private static _instance: LibraryTypeCallDiagnosticChecker;
+
+  static get instance(): LibraryTypeCallDiagnosticChecker {
+    if (!LibraryTypeCallDiagnosticChecker._instance) {
+      LibraryTypeCallDiagnosticChecker._instance = new LibraryTypeCallDiagnosticChecker();
+    }
+    return LibraryTypeCallDiagnosticChecker._instance;
   }
 
-  configure(inLibCall: boolean, diagnosticMessages: Array<ts.DiagnosticMessageChain>): void {
-    this.inLibCall = inLibCall;
-    this.diagnosticMessages = diagnosticMessages;
+  private _diagnosticErrorTypeMap: Map<ts.Diagnostic, ErrorType> = new Map();
+
+  private constructor() {}
+
+  clear(): void {
+    this._diagnosticErrorTypeMap = new Map();
   }
 
-  checkMessageText(msg: string): boolean {
-    if (this.inLibCall) {
-      const match =
-        msg.match(ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE) ||
-        msg.match(ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE) ||
-        msg.match(TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE) ||
-        msg.match(TYPE_NULL_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE);
-      return !match;
-    }
-    return true;
-  }
-
-  // eslint-disable-next-line complexity
-  static checkMessageChain(chain: ts.DiagnosticMessageChain, inLibCall: boolean): ErrorType {
-    if (chain.code === TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE) {
-      if (chain.messageText.match(TYPE_UNKNOWN_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
-        return ErrorType.UNKNOW;
-      }
-      if (inLibCall && chain.messageText.match(TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
-        return ErrorType.UNDEFINED;
-      }
-      if (inLibCall && chain.messageText.match(TYPE_NULL_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
-        return ErrorType.NULL;
-      }
-    }
-    if (chain.code === ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE) {
-      if (
-        inLibCall &&
-        chain.messageText.match(ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)
-      ) {
-        return ErrorType.UNDEFINED;
-      }
-      if (inLibCall && chain.messageText.match(ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)) {
-        return ErrorType.NULL;
-      }
-    }
-    if (!chain.next?.length) {
-      return ErrorType.NO_ERROR;
-    }
-    // 'No_overrload... 'Errors need to check each sub-error message, others only check the first one
-    if (chain.code !== NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE) {
-      return LibraryTypeCallDiagnosticChecker.checkMessageChain(chain.next[0], inLibCall);
-    }
-    let result = ErrorType.NO_ERROR;
-    for (const child of chain.next) {
-      result = LibraryTypeCallDiagnosticChecker.checkMessageChain(child, inLibCall);
-      if (result !== ErrorType.NO_ERROR) {
-        break;
-      }
-    }
-    return result;
-  }
-
-  checkFilteredDiagnosticMessages(msgText: ts.DiagnosticMessageChain | string): boolean {
-    if (this.filteredDiagnosticMessages.size === 0) {
-      return true;
-    }
-
-    if (typeof msgText !== 'string' && this.filteredDiagnosticMessages.has(msgText)) {
-      return false;
-    }
-
-    for (const msgChain of this.filteredDiagnosticMessages) {
-      if (typeof msgText === 'string') {
-        if (msgText === msgChain.messageText) {
-          return false;
-        }
-        continue;
-      }
-
-      let curMsg: ts.DiagnosticMessageChain | undefined = msgText;
-      let curFilteredMsg: ts.DiagnosticMessageChain | undefined = msgChain;
-      while (curMsg) {
-        if (!curFilteredMsg) {
-          return true;
-        }
-
-        if (curMsg.code !== curFilteredMsg.code) {
-          return true;
-        }
-
-        if (curMsg.messageText !== curFilteredMsg.messageText) {
-          return true;
-        }
-
-        curMsg = curMsg.next ? curMsg.next[0] : undefined;
-        curFilteredMsg = curFilteredMsg.next ? curFilteredMsg.next[0] : undefined;
-      }
-
-      return false;
-    }
-    return true;
-  }
-
-  checkDiagnosticMessage(msgText: string | ts.DiagnosticMessageChain): boolean {
-    if (!this.diagnosticMessages) {
-      return false;
-    }
-
-    if (this.inLibCall && !this.checkFilteredDiagnosticMessages(msgText)) {
-      return false;
-    }
-
-    if (typeof msgText === 'string') {
-      return this.checkMessageText(msgText);
-    }
-
-    if (LibraryTypeCallDiagnosticChecker.checkMessageChain(msgText, this.inLibCall) !== ErrorType.NO_ERROR) {
-      this.diagnosticMessages.push(msgText);
-      return false;
-    }
-    return true;
-  }
-
-  static rebuildTscDiagnostics(tscStrictDiagnostics: Map<string, ts.Diagnostic[]>): void {
+  // eslint-disable-next-line max-lines-per-function
+  rebuildTscDiagnostics(tscStrictDiagnostics: Map<string, ts.Diagnostic[]>): void {
+    this.clear();
     if (tscStrictDiagnostics.size === 0) {
       return;
     }
@@ -198,35 +94,129 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
       }
     });
 
-    if (diagnosticMessageChainArr.length === 0 || strictArr.length === 0) {
-      return;
-    }
-
-    const textSet: Set<string> = new Set<string>();
+    /**
+     * When there are multiple errors with the same origin,
+     * only the first error message will retain the complete error reason,
+     * while the rest will only have a single line of error information.
+     *
+     * So need to check all the complete error messages first,
+     * and then check the single-line error messages by matching the first line of text.
+     */
+    const nullSet: Set<string> = new Set<string>();
     const unknownSet: Set<string> = new Set<string>();
     diagnosticMessageChainArr.forEach((item) => {
       const diagnosticMessageChain = item.messageText as ts.DiagnosticMessageChain;
-      const isAllowFilter: ErrorType = LibraryTypeCallDiagnosticChecker.checkMessageChain(diagnosticMessageChain, true);
-      if (isAllowFilter === ErrorType.UNKNOW) {
-        LibraryTypeCallDiagnosticChecker.collectDiagnosticMessage(diagnosticMessageChain, unknownSet);
-        TypeScriptLinter.unknowDiagnosticCache.add(item);
-        return;
-      }
-      if (isAllowFilter !== ErrorType.NO_ERROR) {
-        LibraryTypeCallDiagnosticChecker.collectDiagnosticMessage(diagnosticMessageChain, textSet);
-        TypeScriptLinter.strictDiagnosticCache.add(item);
+      const errorType: ErrorType = MessageUtils.checkMessageChainErrorType(diagnosticMessageChain);
+      if (errorType === ErrorType.UNKNOW) {
+        MessageUtils.collectDiagnosticMessage(diagnosticMessageChain, unknownSet);
+        this._diagnosticErrorTypeMap.set(item, ErrorType.UNKNOW);
+      } else if (errorType === ErrorType.NULL) {
+        MessageUtils.collectDiagnosticMessage(diagnosticMessageChain, nullSet);
+        this._diagnosticErrorTypeMap.set(item, ErrorType.NULL);
       }
     });
     strictArr.forEach((item) => {
       const messageText = item.messageText as string;
+      let errorType: ErrorType;
       if (unknownSet.has(messageText)) {
-        TypeScriptLinter.unknowDiagnosticCache.add(item);
-      } else if (textSet.has(messageText)) {
-        TypeScriptLinter.strictDiagnosticCache.add(item);
+        errorType = ErrorType.UNKNOW;
+      } else if (nullSet.has(messageText)) {
+        errorType = ErrorType.NULL;
+      } else {
+        errorType = MessageUtils.checkMessageErrorType(item.code, messageText);
       }
+
+      if (errorType === ErrorType.NO_ERROR) {
+        return;
+      }
+      this._diagnosticErrorTypeMap.set(item, errorType);
     });
   }
 
+  // eslint-disable-next-line max-lines-per-function
+  filterDiagnostics(
+    tscDiagnostics: readonly ts.Diagnostic[],
+    expr: ts.CallExpression | ts.NewExpression,
+    isLibCall: boolean,
+    filterHandle: (diagnositc: ts.Diagnostic, errorType: ErrorType) => void
+  ): void {
+    const exprRange: CheckRange = { begin: expr.getStart(), end: expr.getEnd() };
+    let validArgsRanges: CheckRange[];
+
+    /*
+     * When the "Object is possibly 'undefined'." error may be caused by another filterable error in the current callExpression,
+     * only then is it necessary to filter the "Object is possibly 'undefined'." error.
+     */
+    let hasFiltered: boolean = false;
+    ArrayUtils.forEachWithDefer(
+      tscDiagnostics,
+      (diagnostic) => {
+        return this.getErrorType(diagnostic) === ErrorType.POSSIBLY_UNDEFINED;
+      },
+      (diagnostic) => {
+        const errorType = this.getErrorType(diagnostic);
+        if (
+          errorType === ErrorType.NO_ERROR ||
+          diagnostic.category === ts.DiagnosticCategory.Warning ||
+          !LibraryTypeCallDiagnosticChecker.isValidErrorType(errorType, isLibCall, hasFiltered) ||
+          !LibraryTypeCallDiagnosticChecker.isValidDiagnosticRange(
+            diagnostic,
+            exprRange,
+            validArgsRanges || (validArgsRanges = RangeUtils.getValidArgsRanges(expr.arguments))
+          )
+        ) {
+          return;
+        }
+
+        hasFiltered = false;
+        filterHandle(diagnostic, errorType);
+      }
+    );
+  }
+
+  private getErrorType(diagnostic: ts.Diagnostic): ErrorType {
+    return this._diagnosticErrorTypeMap.get(diagnostic) ?? ErrorType.NO_ERROR;
+  }
+
+  private static isValidErrorType(errorType: ErrorType, isLibCall: boolean, hasFiltered: boolean): boolean {
+    switch (errorType) {
+      case ErrorType.UNKNOW:
+        return true;
+      case ErrorType.NULL:
+        return isLibCall;
+      case ErrorType.POSSIBLY_UNDEFINED:
+        return isLibCall && hasFiltered;
+      default:
+        return false;
+    }
+  }
+
+  private static isValidDiagnosticRange(
+    diagnostic: ts.Diagnostic,
+    exprRange: CheckRange,
+    validArgsRanges: CheckRange[]
+  ): boolean {
+    if (diagnostic.start === undefined) {
+      return false;
+    }
+    // Some strict mode errors caused by actual parameters. The error message will be mounted on the entire function call node.
+    const isFullCall = !!diagnostic.length && exprRange.end === diagnostic.start + diagnostic.length;
+    switch (diagnostic.code) {
+      case ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE:
+        return RangeUtils.isInRanges(diagnostic.start, validArgsRanges);
+      case NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE:
+        return isFullCall || RangeUtils.isInRanges(diagnostic.start, validArgsRanges);
+      case TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE:
+        return RangeUtils.isInRanges(diagnostic.start, validArgsRanges);
+      case OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE:
+        return isFullCall;
+      default:
+        return false;
+    }
+  }
+}
+
+class MessageUtils {
   static collectDiagnosticMessage(diagnosticMessageChain: ts.DiagnosticMessageChain, textSet: Set<string>): void {
     const isTypeError = diagnosticMessageChain.code === TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE;
     const typeText = isTypeError ?
@@ -241,5 +231,94 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
       diagnosticMessageChain.messageText;
     textSet.add(typeText);
     textSet.add(argumentText);
+  }
+
+  static checkMessageErrorType(code: number, messageText: string): ErrorType {
+    if (code === TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE) {
+      if (messageText.match(TYPE_UNKNOWN_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
+        return ErrorType.UNKNOW;
+      }
+      if (messageText.match(TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
+        return ErrorType.NULL;
+      }
+      if (messageText.match(TYPE_NULL_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
+        return ErrorType.NULL;
+      }
+    }
+    if (code === ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE) {
+      if (messageText.match(ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)) {
+        return ErrorType.NULL;
+      }
+      if (messageText.match(ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)) {
+        return ErrorType.NULL;
+      }
+    }
+    if (code === OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE) {
+      return ErrorType.POSSIBLY_UNDEFINED;
+    }
+    return ErrorType.NO_ERROR;
+  }
+
+  static checkMessageChainErrorType(chain: ts.DiagnosticMessageChain): ErrorType {
+    let errorType = MessageUtils.checkMessageErrorType(chain.code, chain.messageText);
+    if (errorType !== ErrorType.NO_ERROR || !chain.next?.length) {
+      return errorType;
+    }
+    // 'No_overrload... 'Errors need to check each sub-error message, others only check the first one
+    if (chain.code !== NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE) {
+      return MessageUtils.checkMessageChainErrorType(chain.next[0]);
+    }
+
+    for (const child of chain.next) {
+      errorType = MessageUtils.checkMessageChainErrorType(child);
+      if (errorType !== ErrorType.NO_ERROR) {
+        break;
+      }
+    }
+    return errorType;
+  }
+}
+
+class RangeUtils {
+  static isInRanges(pos: number, ranges: CheckRange[]): boolean {
+    for (let i = 0; i < ranges.length; i++) {
+      if (pos >= ranges[i].begin && pos < ranges[i].end) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static getValidArgsRanges(args: ts.NodeArray<ts.Expression> | undefined): CheckRange[] {
+    if (!args) {
+      return [];
+    }
+    const nonFilteringRanges = RangeUtils.findNonFilteringRangesFunctionCalls(args);
+    const rangesToFilter: CheckRange[] = [];
+    if (nonFilteringRanges.length !== 0) {
+      const rangesSize = nonFilteringRanges.length;
+      rangesToFilter.push({ begin: args.pos, end: nonFilteringRanges[0].begin });
+      rangesToFilter.push({ begin: nonFilteringRanges[rangesSize - 1].end, end: args.end });
+      for (let i = 0; i < rangesSize - 1; i++) {
+        rangesToFilter.push({ begin: nonFilteringRanges[i].end, end: nonFilteringRanges[i + 1].begin });
+      }
+    } else {
+      rangesToFilter.push({ begin: args.pos, end: args.end });
+    }
+    return rangesToFilter;
+  }
+
+  private static findNonFilteringRangesFunctionCalls(args: ts.NodeArray<ts.Expression>): CheckRange[] {
+    const result: CheckRange[] = [];
+    for (const arg of args) {
+      if (ts.isArrowFunction(arg)) {
+        const arrowFuncExpr = arg;
+        result.push({ begin: arrowFuncExpr.body.pos, end: arrowFuncExpr.body.end });
+      } else if (ts.isCallExpression(arg)) {
+        result.push({ begin: arg.arguments.pos, end: arg.arguments.end });
+      }
+      // there may be other cases
+    }
+    return result;
   }
 }
