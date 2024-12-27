@@ -1688,9 +1688,8 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
             checker->LogTypeError({"The object literal properties must be key-value pairs"}, expr->Start());
             return;
         }
-        ir::Property *prop = propExpr->AsProperty();
-        ir::Expression *key = prop->Key();
-        ir::Expression *value = prop->Value();
+        ir::Expression *key = propExpr->AsProperty()->Key();
+        ir::Expression *value = propExpr->AsProperty()->Value();
 
         util::StringView pname;
         if (key->IsStringLiteral()) {
@@ -1714,6 +1713,12 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
         }
 
         auto *propType = checker->GetTypeOfVariable(lv);
+        if (propType->IsETSFunctionType()) {
+            checker->LogTypeError({"Method '", pname, "' cannot be used as a key of object literal."},
+                                  propExpr->Start());
+            return;
+        }
+
         key->SetTsType(propType);
 
         if (value->IsObjectExpression()) {
@@ -1721,12 +1726,11 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
         }
         value->SetTsType(value->Check(checker));
 
-        auto *const valueType = value->TsType();
-        const checker::Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(valueType);
+        const checker::Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(value->TsType());
         const checker::Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(propType);
 
         checker::AssignmentContext(
-            checker->Relation(), value, valueType, propType, value->Start(),
+            checker->Relation(), value, value->TsType(), propType, value->Start(),
             {"Type '", sourceType, "' is not compatible with type '", targetType, "' at property '", pname, "'"});
     }
 
