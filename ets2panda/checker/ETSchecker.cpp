@@ -50,6 +50,30 @@ static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signat
     return iterator->first;
 }
 
+void ETSChecker::CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &properties)
+{
+    static std::set<util::StringView> names;
+    names.clear();
+
+    for (auto property : properties) {
+        if (!property->IsProperty()) {
+            continue;
+        }
+        auto propertyDecl = property->AsProperty();
+        auto propKey = propertyDecl->Key();
+        if (!propKey->IsIdentifier()) {
+            continue;
+        }
+
+        // number kind only used here
+        auto propName = propKey->AsIdentifier()->Name();
+        if (names.find(propName) != names.end()) {
+            LogTypeError("An object literal cannot have multiple properties with the same name.", property->Start());
+        }
+        names.insert(propName);
+    }
+}
+
 static void SetupFunctionalInterface(ETSObjectType *type)
 {
     type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);

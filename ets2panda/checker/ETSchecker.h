@@ -171,6 +171,7 @@ public:
     }
 
     // Object
+    void CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &properties);
     ETSObjectType *BuildBasicClassProperties(ir::ClassDefinition *classDef);
     ETSObjectType *BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType);
     ETSObjectType *BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
