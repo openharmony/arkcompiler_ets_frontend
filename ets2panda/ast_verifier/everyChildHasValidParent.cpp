@@ -26,7 +26,8 @@ CheckResult EveryChildHasValidParent::operator()(CheckContext &ctx, const ir::As
     }
 
     auto maybeOverloadMethod = [](const ir::AstNode *root, const ir::AstNode *node) -> bool {
-        if (root->IsClassDefinition() && node->IsMethodDefinition() && node->Parent()->IsMethodDefinition()) {
+        if ((root->IsClassDefinition() || root->IsTSInterfaceBody()) && node->IsMethodDefinition() &&
+            node->Parent()->IsMethodDefinition()) {
             auto maybeBaseOverloadMethod = node->Parent()->AsMethodDefinition();
             auto overloads = maybeBaseOverloadMethod->Overloads();
             auto res =
