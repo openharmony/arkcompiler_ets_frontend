@@ -1114,7 +1114,9 @@ module Es2pandaLibApi
        { 'name' => 'RelationHolder', 'namespace' => 'checker' }, { 'name' => 'auto' }, { 'name' => 'recursive_mutex' },
        { 'name' => 'SmartCastArray' }, { 'name' => 'SmartCastTypes' }, { 'name' => 'SemanticAnalyzer' },
        { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'WrapperDesc' }, { 'name' => 'Language' },
-       { 'name' => 'ScopedDebugInfoPlugin' }, { 'name' => 'Args', 'namespace' => 'parser' }, { 'name' => 'ETSParser' }],
+       { 'name' => 'ScopedDebugInfoPlugin' }, { 'name' => 'Args', 'namespace' => 'parser' }, { 'name' => 'ETSParser' },
+       { 'namespace' => 'std', 'name' => 'function' }, { 'name' => 'ScriptExtension' },
+       { 'name' => 'Result', 'namespace' => 'compiler::ast_verifier::' }],
       'arg_type' =>
       [{ 'name' => 'Tag' }, { 'name' => 'Number', 'namespace' => 'lexer' }, { 'name' => 'K' },
        { 'name' => 'Property', 'namespace' => 'AstDumper' }, { 'name' => 'TSChecker', 'namespace' => 'checker' },

@@ -261,6 +261,9 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/expressions/typeofExpression.h
     ${ES2PANDA_ROOT}/checker/types/ets/etsAsyncFuncReturnType.h
     ${ES2PANDA_ROOT}/ir/statements/loopStatement.h
+    ${ES2PANDA_ROOT}/ir/statements/annotationDeclaration.h
+    ${ES2PANDA_ROOT}/ir/statements/annotationUsage.h
+    ${ES2PANDA_ROOT}/ir/annotationAllowed.h
     ${ES2PANDA_ROOT}/ir/base/scriptFunctionSignature.h
     ${ES2PANDA_ROOT}/ir/expressions/yieldExpression.h
     ${ES2PANDA_ROOT}/ir/ets/etsNewMultiDimArrayInstanceExpression.h
@@ -416,6 +419,9 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsModuleBlock.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsNewArrayInstanceExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/loopStatement.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/annotationDeclaration.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/statements/annotationUsage.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/annotationAllowed.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/emptyStatement.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsLaunchExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/whileStatement.yaml
