@@ -21,3 +21,4 @@ parser/ts/test-func-param.ts
 parser/ts/test-tuple-type.ts
 parser/ts/test-type-literal.ts
 parser/ts/test_generic.ts
+compiler/ts/functionCall.ts

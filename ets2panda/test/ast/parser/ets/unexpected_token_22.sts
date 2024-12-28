@@ -39,5 +39,3 @@ function main(): void {
 /* @@? 25:43 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 25:44 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 25:60 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 31:11 Error TypeError: This expression is not callable. */
-/* @@? 31:11 Error TypeError: 'await' expressions require Promise object as argument. */

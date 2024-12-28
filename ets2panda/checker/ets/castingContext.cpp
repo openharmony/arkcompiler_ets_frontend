@@ -30,6 +30,7 @@ CastingContext::CastingContext(TypeRelation *relation, const util::DiagnosticMes
     relation->Result(false);
     if (!relation->IsSupertypeOf(data.target, data.source) && !isLegalBoxedPrimitiveConversion) {
         relation->IsCastableTo(data.source, data.target);
+        // #22954 string comparison
         if (!relation->IsTrue() && data.source->ToString() == data.target->ToString()) {
             relation->Result(true);
         }

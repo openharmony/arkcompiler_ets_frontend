@@ -115,7 +115,7 @@ void GenericBridgesPhase::AddGenericBridge(ir::ClassDefinition const *const clas
     auto *methodType = methodDefinition->Id()->Variable()->TsType()->AsETSFunctionType();
 
     checker->BuildFunctionSignature(bridgeMethod->Function());
-    auto *const bridgeMethodType = checker->BuildNamedFunctionType(bridgeMethod->Function());
+    auto *const bridgeMethodType = checker->BuildMethodType(bridgeMethod->Function());
     checker->CheckIdenticalOverloads(methodType, bridgeMethodType, bridgeMethod);
     bridgeMethod->SetTsType(bridgeMethodType);
     methodType->AddCallSignature(bridgeMethod->Function()->Signature());
@@ -138,8 +138,8 @@ void GenericBridgesPhase::ProcessScriptFunction(ir::ClassDefinition const *const
             checker, checker->Context().Status() | checker::CheckerStatus::IN_BRIDGE_TEST,
             classDefinition->TsType()->AsETSObjectType());
         checker::SavedTypeRelationFlagsContext const savedFlags(relation, checker::TypeRelationFlag::BRIDGE_CHECK);
-        return relation->IsCompatibleTo(const_cast<checker::Signature *>(source),
-                                        const_cast<checker::Signature *>(target));
+        return relation->SignatureIsSupertypeOf(const_cast<checker::Signature *>(source),
+                                                const_cast<checker::Signature *>(target));
     };
 
     //  We are not interested in functions that either don't have type parameters at all

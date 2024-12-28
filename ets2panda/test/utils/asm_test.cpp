@@ -20,9 +20,7 @@ namespace test::utils {
 
 AsmTest::AsmTest()
 {
-    const auto compilerSize = 268435456;
-
-    ark::mem::MemConfig::Initialize(0, 0, compilerSize, 0, 0, 0);
+    ark::mem::MemConfig::Initialize(0, 0, ark::es2panda::COMPILER_SIZE, 0, 0, 0);
     ark::PoolManager::Initialize(ark::PoolType::MMAP);
 }
 AsmTest::~AsmTest()

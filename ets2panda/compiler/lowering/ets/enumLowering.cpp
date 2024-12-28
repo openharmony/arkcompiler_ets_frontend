@@ -31,7 +31,7 @@ namespace {
                                                             ir::TypeNode *const typeAnnotation)
 {
     auto *const paramIdent = checker->AllocNode<ir::Identifier>(name, typeAnnotation, checker->Allocator());
-    auto *const param = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, checker->Allocator());
+    auto *const param = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, false, checker->Allocator());
 
     return param;
 }

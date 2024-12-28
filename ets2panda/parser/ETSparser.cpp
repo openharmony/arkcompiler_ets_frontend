@@ -660,7 +660,7 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 
 std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptFunction *const function)
 {
-    bool hasDefaultParameter = false;
+    bool hasOptionalParameters = false;
     bool hasRestParameter = false;
     std::size_t requiredParametersNumber = 0U;
 
@@ -676,23 +676,23 @@ std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptF
             LogError(diagnostic::REST_PARAM_LAST, {}, param->Start());
         }
 
-        if (param->IsDefault()) {
-            hasDefaultParameter = true;
+        if (param->IsOptional()) {
+            hasOptionalParameters = true;
             continue;
         }
 
-        if (hasDefaultParameter) {
+        if (hasOptionalParameters) {
             LogError(diagnostic::REQUIRED_PARAM_AFTER_DEFAULT, {}, param->Start());
         }
 
         ++requiredParametersNumber;
     }
 
-    if (hasDefaultParameter && hasRestParameter) {
+    if (hasOptionalParameters && hasRestParameter) {
         LogError(diagnostic::REST_AND_DEFAULT_SAME_TIME, {}, function->Start());
     }
 
-    return std::make_pair(hasDefaultParameter, requiredParametersNumber);
+    return std::make_pair(hasOptionalParameters, requiredParametersNumber);
 }
 
 std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
@@ -915,16 +915,6 @@ ir::TypeNode *ETSParser::ParseBaseTypeReference(TypeAnnotationParsingOptions *op
         default:
             return nullptr;
     }
-}
-
-std::optional<lexer::SourcePosition> ETSParser::GetDefaultParamPosition(ArenaVector<ir::Expression *> params)
-{
-    for (auto &param : params) {
-        if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->IsDefault()) {
-            return param->AsETSParameterExpression()->Initializer()->Start();
-        }
-    }
-    return {};
 }
 
 ir::TypeNode *ETSParser::ParseLiteralIdent(TypeAnnotationParsingOptions *options)
@@ -1348,25 +1338,6 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
     return parameter;
 }
 
-ir::ETSUnionType *ETSParser::CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation,
-                                                             ir::ETSUndefinedType *defaultUndef)
-{
-    ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
-    if (typeAnnotation->IsETSUnionType()) {
-        for (auto const &type : typeAnnotation->AsETSUnionType()->Types()) {
-            types.push_back(type);
-        }
-    } else {
-        types.push_back(typeAnnotation);
-    }
-    types.push_back(defaultUndef);
-
-    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
-    unionType->SetAnnotations(std::move(typeAnnotation->Annotations()));
-    unionType->SetRange({typeAnnotation->Start(), typeAnnotation->End()});
-    return unionType;
-}
-
 ir::Expression *ETSParser::ParseFunctionParameterAnnotations()
 {
     Lexer()->NextToken();  // eat '@'
@@ -1406,14 +1377,13 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     }
 
     auto *const paramIdent = GetAnnotatedExpressionFromParam();
-    ir::ETSUndefinedType *defaultUndef = nullptr;
 
+    bool isOptional = false;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+        isOptional = true;
         if (paramIdent->IsRestElement()) {
             LogError(diagnostic::NO_DEFAULT_FOR_REST);
         }
-        defaultUndef = AllocNode<ir::ETSUndefinedType>(Allocator());
-        defaultUndef->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
         Lexer()->NextToken();  // eat '?'
     }
 
@@ -1422,21 +1392,17 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
-        if (defaultUndef != nullptr) {
-            typeAnnotation = CreateOptionalParameterTypeNode(typeAnnotation, defaultUndef);
-        }
         if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
             LogError(diagnostic::ONLY_ARRAY_FOR_REST);
         }
-
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
         paramIdent->SetEnd(typeAnnotation->End());
-    } else if (!isArrow && defaultUndef == nullptr) {
+    } else if (!isArrow && !isOptional) {
         LogError(diagnostic::EXPLICIT_PARAM_TYPE);
     }
 
-    return ParseFunctionParameterExpression(paramIdent, defaultUndef);
+    return ParseFunctionParameterExpression(paramIdent, isOptional);
 }
 
 ir::Expression *ETSParser::CreateParameterThis(ir::TypeNode *typeAnnotation)
@@ -1447,7 +1413,7 @@ ir::Expression *ETSParser::CreateParameterThis(ir::TypeNode *typeAnnotation)
     typeAnnotation->SetParent(paramIdent);
     paramIdent->SetTsTypeAnnotation(typeAnnotation);
 
-    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr, Allocator());
+    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, false, Allocator());
     paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
 
     return paramExpression;

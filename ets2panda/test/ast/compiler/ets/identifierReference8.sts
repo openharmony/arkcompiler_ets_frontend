@@ -25,5 +25,4 @@ class A {
   }
 }
 
-/* @@@ label1 Error TypeError: Method used in wrong context  */
-/* @@@ label Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String.  */
+/* @@@ label1 Error TypeError: Instance method is used as value  */

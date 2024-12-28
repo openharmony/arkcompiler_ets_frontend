@@ -68,8 +68,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
         std::ignore = TypeError(ident->Variable(), {"Namespace style identifier ", ident->Name(), " is not callable."},
                                 ident->Start());
     }
-    if (type->IsETSFunctionType() || type->IsETSDynamicType() ||  // NOTE(vpukhov): #19822
-        (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+    if (type->IsETSFunctionType() || type->IsETSDynamicType()) {
         return;
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -149,19 +148,6 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     return isFinished;
 }
 
-static void ValidateOverloadedFunctionIdentifier(ETSChecker *checker, ir::Identifier *const ident)
-{
-    auto const callable =
-        ident->Parent()->IsMemberExpression() && ident->Parent()->AsMemberExpression()->Property() == ident
-            ? ident->Parent()
-            : ident;
-    if (callable->Parent()->IsCallExpression() && callable->Parent()->AsCallExpression()->Callee() == callable) {
-        return;
-    }
-    checker->LogTypeError({"Overloaded function identifier \"", ident->Name(), "\" can not be used as value"},
-                          ident->Start());
-}
-
 void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
 {
     varbinder::Variable *const resolved = ident->Variable();
@@ -171,11 +157,6 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
 
     auto *smartType = Context().GetSmartCast(resolved);
     auto *const resolvedType = GetApparentType(smartType != nullptr ? smartType : GetTypeOfVariable(resolved));
-
-    if (resolvedType->IsETSFunctionType() && !resolvedType->IsETSArrowType()) {
-        ValidateOverloadedFunctionIdentifier(this, ident);
-        return;
-    }
 
     switch (ident->Parent()->Type()) {
         case ir::AstNodeType::CALL_EXPRESSION:

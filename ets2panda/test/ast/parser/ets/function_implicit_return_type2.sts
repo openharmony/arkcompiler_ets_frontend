@@ -16,4 +16,4 @@
 
 let fn: (i: int) => int = /* @@ label */() => { return; };
 
-/* @@@ label Error TypeError: Type '() => void' cannot be assigned to type '(p1: Int) => Int'  */
+/* @@@ label Error TypeError: Type '() => void' cannot be assigned to type '(i: Int) => Int'  */

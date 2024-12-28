@@ -16,8 +16,8 @@
 function foo<T>(f: (i: T) => undefined) {}
 
 function main() {
-    /* @@ label */foo((/* @@ label1 */value) => {})
+    foo(/* @@ label */(/* @@ label1 */value) => {})
 }
 
-/* @@@ label1 Error TypeError: The type of parameter 'value' cannot be determined  */
-/* @@@ label Error TypeError: No matching call signature for foo(...)  */
+/* @@@ label1 Error TypeError: The type of parameter 'value' cannot be inferred  */
+/* @@@ label Error TypeError: Type '(value: *ERROR_TYPE*) => void' is not compatible with type '(i: *ERROR_TYPE*) => undefined' at index 1  */

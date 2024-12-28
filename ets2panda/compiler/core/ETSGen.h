@@ -409,6 +409,9 @@ public:
     }
 #endif  // PANDA_WITH_ETS
 
+    // until a lowering for implicit super is available
+    void CallRangeFillUndefined(const ir::AstNode *const node, checker::Signature *const signature, const VReg thisReg);
+
     void CreateBigIntObject(const ir::AstNode *node, VReg arg0,
                             std::string_view signature = Signatures::BUILTIN_BIGINT_CTOR);
 

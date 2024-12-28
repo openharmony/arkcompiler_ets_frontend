@@ -305,12 +305,7 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
 
     if (param->Constraint() != nullptr) {
         traverseReferenced(param->Constraint());
-        auto *const constraint = param->Constraint()->GetType(this);
-        // invalid: T extends int[]
-        if (!constraint->IsETSObjectType() && !constraint->IsETSTypeParameter() && !constraint->IsETSUnionType()) {
-            LogTypeError("Extends constraint must be an object", param->Constraint()->Start());
-        }
-        paramType->SetConstraintType(constraint);
+        paramType->SetConstraintType(param->Constraint()->GetType(this));
     } else {
         paramType->SetConstraintType(GlobalETSNullishObjectType());
     }
@@ -650,11 +645,9 @@ void ETSChecker::CreateFunctionTypesFromAbstracts(const std::vector<Signature *>
         auto *found = FindFunctionInVectorGivenByName(name, *target);
         if (found != nullptr) {
             found->AddCallSignature(it);
-            continue;
+        } else {
+            target->push_back(CreateETSMethodType(name, {{it}, Allocator()->Adapter()}));
         }
-
-        auto *created = CreateETSFunctionType(it);
-        target->push_back(created);
     }
 }
 
@@ -1245,7 +1238,7 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
     if (superExpr == stmts.end()) {
         const auto superTypeCtorSigs = classType->SuperType()->ConstructSignatures();
         const auto superTypeCtorSig = std::find_if(superTypeCtorSigs.begin(), superTypeCtorSigs.end(),
-                                                   [](const Signature *sig) { return sig->Params().empty(); });
+                                                   [](const Signature *sig) { return sig->MinArgCount() == 0; });
         // Super type has no parameterless ctor
         if (superTypeCtorSig == superTypeCtorSigs.end()) {
             LogTypeError("Must call super constructor", ctorSig->Function()->Start());
@@ -1654,9 +1647,10 @@ void ETSChecker::ValidateNamespaceProperty(varbinder::Variable *property, const 
                                            const ir::Identifier *ident)
 {
     ir::AstNode *parent = nullptr;
-    if (property->TsType() != nullptr && property->TsType()->IsETSFunctionType()) {
+    if (property->TsType() != nullptr && property->TsType()->IsETSMethodType()) {
         auto funcType = property->TsType()->AsETSFunctionType();
         property = funcType->CallSignatures()[0]->OwnerVar();
+        ASSERT(property != nullptr);
     }
 
     if (property->Declaration() == nullptr) {
@@ -1772,8 +1766,7 @@ varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpres
 
 PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression *const memberExpr)
 {
-    constexpr auto FUNCTIONAL_FLAGS =
-        PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_FUNCTIONAL | PropertySearchFlags::SEARCH_FIELD;
+    constexpr auto FUNCTIONAL_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::SEARCH_FIELD;
     constexpr auto GETTER_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_GETTER;
     constexpr auto SETTER_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_SETTER;
 
@@ -1782,7 +1775,6 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
             if (memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
                 return FUNCTIONAL_FLAGS;
             }
-
             break;
         }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
@@ -1807,13 +1799,6 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
                     return PropertySearchFlags::SEARCH_FIELD | SETTER_FLAGS;
                 }
                 return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS | SETTER_FLAGS;
-            }
-
-            auto const *targetType = assignmentExpr->Left()->TsType();
-            if (targetType->IsETSFunctionType() ||
-                (targetType->IsETSObjectType() &&
-                 targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                return FUNCTIONAL_FLAGS;
             }
 
             return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS;
@@ -1974,44 +1959,16 @@ bool ETSChecker::FindPropertyInAssignment(const ir::AstNode *it, const std::stri
     }) != nullptr;
 }
 
-void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *const memberExpr,
-                                                      varbinder::LocalVariable *const prop)
-{
-    const auto [target_ident,
-                type_annotation] = [memberExpr]() -> std::pair<const ir::Identifier *, const ir::TypeNode *> {
-        if (memberExpr->Parent()->IsVariableDeclarator()) {
-            const auto *const ident = memberExpr->Parent()->AsVariableDeclarator()->Id()->AsIdentifier();
-            return {ident, ident->TypeAnnotation()};
-        }
-        return {memberExpr->Parent()->AsClassProperty()->Key()->AsIdentifier(),
-                memberExpr->Parent()->AsClassProperty()->TypeAnnotation()};
-    }();
-
-    GetTypeOfVariable(prop);
-
-    if (prop->TsType() != nullptr && prop->TsType()->IsETSFunctionType() && !IsVariableGetterSetter(prop) &&
-        type_annotation != nullptr) {
-        auto *targetType = GetTypeOfVariable(target_ident->Variable());
-        ES2PANDA_ASSERT(targetType != nullptr);
-
-        if (!(targetType->IsETSFunctionType() ||
-              (targetType->IsETSObjectType() &&
-               targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)))) {
-            LogTypeError({"Method ", memberExpr->Property()->AsIdentifier()->Name(), " does not exist on this type."},
-                         memberExpr->Property()->Start());
-        }
-    }
-}
-
 static ResolvedKind DecideResolvedKind(Type *typeOfGlobalFunctionVar)
 {
-    ES2PANDA_ASSERT(typeOfGlobalFunctionVar->IsETSObjectType() || typeOfGlobalFunctionVar->IsETSFunctionType());
+    ASSERT(typeOfGlobalFunctionVar != nullptr);
+    ASSERT(typeOfGlobalFunctionVar->IsETSObjectType() || typeOfGlobalFunctionVar->IsETSFunctionType());
     if (typeOfGlobalFunctionVar->IsETSObjectType()) {
         return ResolvedKind::EXTENSION_FUNCTION;
     }
 
-    auto const *callSig = typeOfGlobalFunctionVar->AsETSFunctionType()->CallSignatures()[0];
-    if (callSig->Function()->IsGetter() || callSig->Function()->IsSetter()) {
+    auto const *callSig = typeOfGlobalFunctionVar->AsETSFunctionType()->CallSignaturesOfMethodOrArrow()[0];
+    if (callSig->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER)) {
         return ResolvedKind::EXTENSION_ACCESSOR;
     }
 
@@ -2086,8 +2043,9 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
     resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
 
-    ResolveMemberReferenceValidate(prop, searchFlag, memberExpr);
-
+    if (IsVariableGetterSetter(prop)) {
+        ValidateGetterSetter(memberExpr, prop, searchFlag);
+    }
     return resolveRes;
 }
 
@@ -2112,28 +2070,6 @@ void ETSChecker::WarnForEndlessLoopInGetterSetter(const ir::MemberExpression *co
             Warning("Assigning new value to the property inside its setter may lead to an endless loop.",
                     memberExpr->Property()->AsIdentifier()->Start());
         }
-    }
-}
-
-void ETSChecker::ResolveMemberReferenceValidate(varbinder::LocalVariable *const prop,
-                                                PropertySearchFlags const searchFlag,
-                                                const ir::MemberExpression *const memberExpr)
-{
-    if (prop->HasFlag(varbinder::VariableFlags::METHOD) && !IsVariableGetterSetter(prop) &&
-        (searchFlag & PropertySearchFlags::IS_FUNCTIONAL) == 0) {
-        LogTypeError("Method used in wrong context", memberExpr->Property()->Start());
-        return;
-    }
-
-    if (IsVariableGetterSetter(prop)) {
-        ValidateGetterSetter(memberExpr, prop, searchFlag);
-    }
-
-    // Before returning the computed property variable, we have to validate the special case where we are in a variable
-    // declaration, and the properties type is a function type but the currently declared variable doesn't have a type
-    // annotation
-    if (memberExpr->Parent()->IsVariableDeclarator() || memberExpr->Parent()->IsClassProperty()) {
-        ValidateVarDeclaratorOrClassProperty(memberExpr, prop);
     }
 }
 
@@ -2287,8 +2223,9 @@ void ETSChecker::CheckGetterSetterProperties(ETSObjectType *classType)
                 return;
             }
         }
-        if (sigSetter != nullptr && ((sigGetter->Function()->Modifiers() ^ sigSetter->Function()->Modifiers()) &
-                                     ir::ModifierFlags::ACCESSOR_MODIFIERS) != 0) {
+        if ((sigSetter != nullptr && sigGetter != nullptr) &&
+            ((sigGetter->Function()->Modifiers() ^ sigSetter->Function()->Modifiers()) &
+             ir::ModifierFlags::ACCESSOR_MODIFIERS) != 0) {
             LogTypeError("Getter and setter methods must have the same accessor modifiers",
                          sigGetter->Function()->Start());
         }

@@ -136,7 +136,8 @@ public:
     ETSObjectType *GlobalBuiltinJSValueType() const;
     ETSObjectType *GlobalBuiltinBoxType(Type *contents);
 
-    ETSObjectType *GlobalBuiltinFunctionType(size_t nargs, ir::ScriptFunctionFlags flags) const;
+    ETSObjectType *GlobalBuiltinFunctionType(size_t nargs, SignatureFlags flags) const;
+    ETSObjectType *GlobalBuiltinLambdaType(size_t nargs, SignatureFlags flags) const;
     size_t GlobalBuiltinFunctionTypeVariadicThreshold() const;
 
     ETSObjectType *GlobalBuiltinDynamicType(Language lang) const;
@@ -286,17 +287,14 @@ public:
     }
     ETSTypeAliasType *CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
                                              bool isRecursive = false);
-
-    ETSFunctionType *CreateETSFunctionType(Signature *signature);
-    ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView const &name);
-    ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature,
-                                           util::StringView const &name);
-    ETSFunctionType *CreateETSFunctionType(util::StringView const &name);
-
+    ETSFunctionType *CreateETSArrowType(Signature *signature);
+    ETSFunctionType *CreateETSMethodType(util::StringView name, ArenaVector<Signature *> &&signatures);
+    ETSFunctionType *CreateETSDynamicArrowType(Signature *signature, Language lang);
+    ETSFunctionType *CreateETSDynamicMethodType(util::StringView name, ArenaVector<Signature *> &&signatures,
+                                                Language lang);
     ETSExtensionFuncHelperType *CreateETSExtensionFuncHelperType(ETSFunctionType *classMethodType,
                                                                  ETSFunctionType *extensionFunctionType);
     void AddThisReturnTypeFlagForInterfaceInvoke(ETSObjectType *interface);
-    ETSObjectType *FunctionTypeToFunctionalInterfaceType(Signature *signature);
     ETSTypeParameter *CreateTypeParameter();
     ETSObjectType *CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags);
     ETSObjectType *CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, ETSObjectFlags flags);
@@ -307,7 +305,7 @@ public:
     ETSObjectType *CreatePromiseOf(Type *type);
 
     Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func);
-    Signature *CreateSignature(SignatureInfo *info, Type *returnType, util::StringView internalName);
+    Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff);
     SignatureInfo *CreateSignatureInfo();
 
     // Arithmetic
@@ -378,7 +376,7 @@ public:
                                    Type *parameterType, TypeRelationFlag flags);
     bool CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,
                           Type *const subParameterType);
-    bool CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda, TypeRelationFlag flags);
+    bool CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda);
     bool CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda);
     bool IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typeArgument, const Substitution *substitution);
     Substitution *NewSubstitution()
@@ -396,24 +394,18 @@ public:
                                                       Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
                                                     Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
+                                                      Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
                                                    Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *paramType,
                                                    Type *argumentType, Substitution *substitution);
-    [[nodiscard]] bool EnhanceSubstitutionForFunction(const ArenaVector<Type *> &typeParams, ETSFunctionType *paramType,
-                                                      Type *argumentType, Substitution *substitution);
-    [[nodiscard]] bool EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
-                                                         const Type *paramType, Substitution *substitution);
-    [[nodiscard]] static bool HasTypeArgsOfObject(Type *argType, Type *paramType);
-    [[nodiscard]] bool InsertTypeIntoSubstitution(const ArenaVector<Type *> &typeParams, const Type *typeParam,
-                                                  const size_t index, Substitution *substitution, Type *objectParam);
     std::pair<ArenaVector<Type *>, bool> CreateUnconstrainedTypeParameters(
         ir::TSTypeParameterDeclaration const *typeParams);
     void AssignTypeParameterConstraints(ir::TSTypeParameterDeclaration const *typeParams);
     Signature *ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
-                                                TypeRelationFlag flags);
-    Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos,
-                                               TypeRelationFlag resolveFlags = TypeRelationFlag::NONE);
+                                                bool throwError);
+    Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos);
     Signature *ValidateSignature(
         std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
         const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
@@ -423,8 +415,7 @@ public:
                                          bool reportError);
     bool ValidateSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument, std::size_t index,
                                             TypeRelationFlag flags);
-    bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index,
-                                     TypeRelationFlag flags);
+    bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index);
     bool ValidateArgumentAsIdentifier(const ir::Identifier *identifier);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                      TypeRelationFlag flags, bool reportError, const bool unique);
@@ -439,12 +430,12 @@ public:
     Signature *FindMostSpecificSignature(const ArenaVector<Signature *> &signatures,
                                          const ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
                                          size_t paramCount);
-    void SearchAmongMostSpecificTypes(
-        Type *&mostSpecificType, Signature *&prevSig,
-        std::tuple<const lexer::SourcePosition &, size_t, size_t, size_t, Signature *> info, bool lookForClassType);
+    void SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig,
+                                      std::tuple<const lexer::SourcePosition &, size_t, Signature *> info,
+                                      bool lookForClassType);
     ArenaMultiMap<size_t, Signature *> GetSuitableSignaturesForParameter(
         const std::vector<bool> &argTypeInferenceRequired, size_t paramCount, ArenaVector<Signature *> &signatures,
-        const lexer::SourcePosition &pos, size_t argumentsSize);
+        const lexer::SourcePosition &pos);
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
@@ -461,17 +452,13 @@ public:
 
     Signature *ComposeSignature(ir::ScriptFunction *func, SignatureInfo *signatureInfo, Type *returnType,
                                 varbinder::Variable *nameVar);
-
-    Type *ComposeReturnType(ir::ScriptFunction *func);
-    Type *ComposeReturnType(ir::ETSFunctionType *typeNode);
-    SignatureInfo *ComposeSignatureInfo(ir::ScriptFunction *func);
-    SignatureInfo *ComposeSignatureInfo(ir::ETSFunctionType *typeNode);
+    Type *ComposeReturnType(ir::TypeNode *typeAnnotation, bool isAsync);
+    SignatureInfo *ComposeSignatureInfo(ir::TSTypeParameterDeclaration *typeParams,
+                                        ArenaVector<ir::Expression *> const &params);
     void ValidateMainSignature(ir::ScriptFunction *func);
     void BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig = false);
-
-    checker::ETSFunctionType *BuildNamedFunctionType(ir::ScriptFunction *func);
-    checker::Type *BuildMethodSignature(ir::MethodDefinition *method);
-
+    ETSFunctionType *BuildMethodType(ir::ScriptFunction *func);
+    Type *BuildMethodSignature(ir::MethodDefinition *method);
     Signature *CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *target, ETSFunctionType *source);
     static Signature *GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef);
     void CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
@@ -654,7 +641,6 @@ public:
     bool ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
-    Type *TryGettingFunctionTypeFromInvokeFunction(Type *type);
 
     ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(const std::string &className);
@@ -840,9 +826,6 @@ private:
     bool FindPropertyInAssignment(const ir::AstNode *it, const std::string &targetName);
     void ValidateReadonlyProperty(const ir::MemberExpression *memberExpr, const ETSFunctionType *propType,
                                   lexer::SourcePosition sourcePos);
-    void ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *memberExpr, varbinder::LocalVariable *prop);
-    void ResolveMemberReferenceValidate(varbinder::LocalVariable *prop, PropertySearchFlags searchFlag,
-                                        const ir::MemberExpression *const memberExpr);
     std::tuple<bool, bool> IsResolvedAndValue(const ir::Expression *expr, Type *type) const;
     PropertySearchFlags GetSearchFlags(const ir::MemberExpression *memberExpr, const varbinder::Variable *targetRef);
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);

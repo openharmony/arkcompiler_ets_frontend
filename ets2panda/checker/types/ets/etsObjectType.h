@@ -100,37 +100,37 @@ public:
         return relation_;
     }
 
-    PropertyMap InstanceMethods() const
+    PropertyMap &InstanceMethods() const
     {
         EnsurePropertiesInstantiated();
         return properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)];
     }
 
-    PropertyMap InstanceFields() const
+    PropertyMap &InstanceFields() const
     {
         EnsurePropertiesInstantiated();
         return properties_[static_cast<size_t>(PropertyType::INSTANCE_FIELD)];
     }
 
-    PropertyMap InstanceDecls() const
+    PropertyMap &InstanceDecls() const
     {
         EnsurePropertiesInstantiated();
         return properties_[static_cast<size_t>(PropertyType::INSTANCE_DECL)];
     }
 
-    PropertyMap StaticMethods() const
+    PropertyMap &StaticMethods() const
     {
         EnsurePropertiesInstantiated();
         return properties_[static_cast<size_t>(PropertyType::STATIC_METHOD)];
     }
 
-    PropertyMap StaticFields() const
+    PropertyMap &StaticFields() const
     {
         EnsurePropertiesInstantiated();
         return properties_[static_cast<size_t>(PropertyType::STATIC_FIELD)];
     }
 
-    PropertyMap StaticDecls() const
+    PropertyMap &StaticDecls() const
     {
         EnsurePropertiesInstantiated();
         return properties_[static_cast<size_t>(PropertyType::STATIC_DECL)];
@@ -264,13 +264,7 @@ public:
         return (flags_ & flag) != 0;
     }
 
-    ETSFunctionType *GetFunctionalInterfaceInvokeType() const
-    {
-        ES2PANDA_ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
-        auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-        ES2PANDA_ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
-        return invoke->TsType()->AsETSFunctionType();
-    }
+    ETSFunctionType *GetFunctionalInterfaceInvokeType() const;
 
     ETSObjectFlags BuiltInKind() const
     {
@@ -369,7 +363,8 @@ public:
     std::vector<varbinder::LocalVariable *> Fields() const;
     varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                    PropertySearchFlags flags) const;
-    varbinder::LocalVariable *CollectSignaturesForSyntheticType(ETSFunctionType *funcType, const util::StringView &name,
+    varbinder::LocalVariable *CollectSignaturesForSyntheticType(std::vector<Signature *> &signatures,
+                                                                const util::StringView &name,
                                                                 PropertySearchFlags flags) const;
     bool CheckIdenticalFlags(ETSObjectType *other) const;
 
@@ -387,8 +382,8 @@ public:
     ETSObjectType *SubstituteArguments(TypeRelation *relation, ArenaVector<Type *> const &arguments);
     void Cast(TypeRelation *relation, Type *target) override;
     bool CastNumericObject(TypeRelation *relation, Type *target);
-    bool DefaultObjectTypeChecks(const ETSChecker *etsChecker, TypeRelation *relation, Type *source);
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
+    void IsSubtypeOf(TypeRelation *relation, Type *target) override;
     Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar) override;
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override;
     static std::string NameToDescriptor(util::StringView name);
@@ -420,7 +415,7 @@ public:
     }
 
 protected:
-    virtual ETSFunctionType *CreateETSFunctionType(const util::StringView &name) const;
+    virtual ETSFunctionType *CreateMethodTypeForProp(const util::StringView &name) const;
 
 private:
     template <size_t... IS>
@@ -453,12 +448,11 @@ private:
             propertiesInstantiated_ = true;
         }
     }
-    ArenaMap<util::StringView, const varbinder::LocalVariable *> CollectAllProperties() const;
     bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
                                TypeFlag narrowingFlags);
     void IdenticalUptoTypeArguments(TypeRelation *relation, Type *other);
     void SubstitutePartialTypes(TypeRelation *relation, Type *other);
-    void IsGenericSupertypeOf(TypeRelation *relation, Type *source);
+    void IsGenericSupertypeOf(TypeRelation *relation, ETSObjectType *source);
     void UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop, PropertyType fieldType,
                             PropertyProcesser const &func);
 

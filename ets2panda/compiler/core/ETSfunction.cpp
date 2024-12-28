@@ -35,6 +35,8 @@
 #include "checker/types/ets/types.h"
 
 namespace ark::es2panda::compiler {
+
+// #22952: this should have been done in lowering
 void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 {
     RegScope rs(etsg);
@@ -47,12 +49,17 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
     }
 
     auto res = std::find_if(superType->ConstructSignatures().cbegin(), superType->ConstructSignatures().cend(),
-                            [](const checker::Signature *sig) { return sig->Params().empty(); });
+                            [](const checker::Signature *sig) { return sig->MinArgCount() == 0; });
     if (res == superType->ConstructSignatures().cend()) {
+        ASSERT(superType->ConstructSignatures().empty());
         return;
     }
-
-    etsg->CallExact(etsg->RootNode(), (*res)->InternalName(), etsg->GetThisReg());
+    auto sig = *res;
+    if (sig->ArgCount() == 0) {
+        etsg->CallExact(etsg->RootNode(), (*res)->InternalName(), etsg->GetThisReg());
+    } else {
+        etsg->CallRangeFillUndefined(etsg->RootNode(), *res, etsg->GetThisReg());
+    }
 }
 
 void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *block)

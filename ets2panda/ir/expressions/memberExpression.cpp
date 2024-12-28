@@ -359,8 +359,7 @@ bool MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
 
 checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *checker)
 {
-    checker::PropertySearchFlags searchFlag =
-        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::IS_FUNCTIONAL;
+    checker::PropertySearchFlags searchFlag = checker::PropertySearchFlags::SEARCH_METHOD;
     searchFlag |= checker::PropertySearchFlags::SEARCH_IN_BASE | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
     // NOTE(DZ) maybe we need to exclude static methods: search_flag &= ~(checker::PropertySearchFlags::SEARCH_STATIC);
 

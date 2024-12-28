@@ -454,10 +454,14 @@ void ETSCompiler::UnimplementedPathError(const ir::AstNode *node, util::StringVi
     compiler::RegScope rs(etsg);
     const auto errorReg = etsg->AllocReg();
     const auto msgReg = etsg->AllocReg();
+    const auto undefReg = etsg->AllocReg();
     etsg->LoadAccumulatorString(node, message);
     etsg->StoreAccumulator(node, msgReg);
+    etsg->LoadAccumulatorUndefined(node);
+    etsg->StoreAccumulator(node, undefReg);
+
     etsg->NewObject(node, Signatures::BUILTIN_ERROR, errorReg);
-    etsg->CallExact(node, "escompat.Error.<ctor>:std.core.String;void;", errorReg, msgReg);
+    etsg->CallExact(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, msgReg, undefReg);
     etsg->EmitThrow(node, errorReg);
 }
 
@@ -713,37 +717,6 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::C
     }
 }
 
-void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const ir::CallExpression *expr)
-{
-    std::size_t const argumentCount = expr->Arguments().size();
-    auto &arguments = const_cast<ArenaVector<ir::Expression *> &>(expr->Arguments());
-    auto *signature = expr->Signature();
-
-    for (size_t i = 0; i < argumentCount; i++) {
-        checker::Type *paramType;
-        if (i < signature->Params().size()) {
-            paramType = signature->Params()[i]->TsType();
-        } else {
-            ES2PANDA_ASSERT(signature->RestVar() != nullptr);
-            auto *restType = signature->RestVar()->TsType();
-            ES2PANDA_ASSERT(restType->IsETSArrayType());
-            paramType = restType->AsETSArrayType()->ElementType();
-        }
-
-        auto *arg = arguments[i];
-        auto *cast = checker->Allocator()->New<ir::TSAsExpression>(arg, nullptr, false);
-        arguments[i]->SetParent(cast);
-        cast->SetParent(const_cast<ir::CallExpression *>(expr));
-        cast->SetTsType(paramType);
-
-        if (paramType->IsETSPrimitiveType()) {
-            cast->AddBoxingUnboxingFlags(checker->GetBoxingFlag(paramType));
-        }
-
-        arguments[i] = cast;
-    }
-}
-
 void ETSCompiler::Compile(const ir::BlockExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -859,76 +832,48 @@ void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calle
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());
 }
 
-static checker::Signature *ConvertArgumentsForFunctionReference(ETSGen *etsg, const ir::CallExpression *expr)
-{
-    checker::Signature *origSignature = expr->Signature();
-
-    auto *funcType =
-        origSignature->Owner()
-            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
-            ->TsType()
-            ->AsETSFunctionType();
-    ES2PANDA_ASSERT(funcType->IsETSArrowType());
-    checker::Signature *signature = funcType->CallSignatures()[0];
-
-    if (signature->ReturnType()->IsETSPrimitiveType()) {
-        expr->AddBoxingUnboxingFlags(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker())
-                                         ->GetUnboxingFlag(signature->ReturnType()));
-    }
-
-    ConvertArgumentsForFunctionalCall(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()), expr);
-
-    return signature;
-}
-
 void ETSCompiler::Compile(const ir::CallExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
     compiler::RegScope rs(etsg);
     compiler::VReg calleeReg = etsg->AllocReg();
 
-    checker::Signature *signature = expr->Signature();
+    auto const callee = expr->Callee();
+    checker::Signature *const signature = expr->Signature();
 
-    if (signature->HasSignatureFlag(checker::SignatureFlags::PROXY) && expr->Callee()->IsMemberExpression()) {
+    if (signature->HasSignatureFlag(checker::SignatureFlags::PROXY) && callee->IsMemberExpression()) {
         if (IsSucceedCompilationProxyMemberExpr(expr)) {
             return;
         }
     }
 
-    bool isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
-    bool isReference = false;  // expr->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE);
-    bool isDynamic = expr->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG);
+    ASSERT(!callee->TsType()->IsETSArrowType());  // should have been lowered
 
-    if (isReference) {
-        signature = ConvertArgumentsForFunctionReference(etsg, expr);
-    }
+    bool const isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
 
     ConvertRestArguments(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()), expr, signature);
 
-    if (isDynamic) {
+    if (callee->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG)) {
         CompileDynamic(expr, calleeReg);
-    } else if (!isReference && expr->Callee()->IsIdentifier()) {
+    } else if (callee->IsIdentifier()) {
         if (!isStatic) {
             etsg->LoadThis(expr);
             etsg->StoreAccumulator(expr, calleeReg);
         }
         EmitCall(expr, calleeReg, signature);
-    } else if (!isReference && expr->Callee()->IsMemberExpression()) {
+    } else if (callee->IsMemberExpression()) {
         if (!isStatic) {
-            expr->Callee()->AsMemberExpression()->Object()->Compile(etsg);
+            callee->AsMemberExpression()->Object()->Compile(etsg);
             etsg->StoreAccumulator(expr, calleeReg);
         }
         EmitCall(expr, calleeReg, signature);
-    } else if (expr->Callee()->IsSuperExpression() || expr->Callee()->IsThisExpression()) {
-        ES2PANDA_ASSERT(!isReference && expr->IsETSConstructorCall());
-        expr->Callee()->Compile(etsg);  // ctor is not a value!
+    } else if (callee->IsSuperExpression() || callee->IsThisExpression()) {
+        ASSERT(expr->IsETSConstructorCall());
+        callee->Compile(etsg);  // ctor is not a value!
         etsg->StoreAccumulator(expr, calleeReg);
         EmitCall(expr, calleeReg, signature);
     } else {
-        ES2PANDA_ASSERT(isReference);
-        etsg->CompileAndCheck(expr->Callee());
-        etsg->StoreAccumulator(expr, calleeReg);
-        EmitCall(expr, calleeReg, signature);
+        UNREACHABLE();
     }
 
     if (expr->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG | ir::BoxingUnboxingFlags::BOXING_FLAG)) {
@@ -1138,8 +1083,8 @@ void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
     ES2PANDA_ASSERT(expr->TsType()->IsETSDynamicType());
 
     auto *signatureInfo = etsg->Allocator()->New<checker::SignatureInfo>(etsg->Allocator());
-    auto *createObjSig = etsg->Allocator()->New<checker::Signature>(
-        signatureInfo, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
+    auto *createObjSig = etsg->Allocator()->New<checker::Signature>(signatureInfo, nullptr, nullptr);
+    createObjSig->SetInternalName(compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
     compiler::VReg dummyReg = compiler::VReg::RegStart();
     etsg->CallDynamic(ETSGen::CallDynamicData {expr, dummyReg, dummyReg}, createObjSig,
                       ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
@@ -1313,11 +1258,14 @@ static void ThrowError(compiler::ETSGen *const etsg, const ir::AssertStatement *
     }
 
     const auto message = etsg->AllocReg();
+    const auto undefReg = etsg->AllocReg();
     etsg->StoreAccumulator(st, message);
+    etsg->LoadAccumulatorUndefined(st);
+    etsg->StoreAccumulator(st, undefReg);
 
     const auto assertionError = etsg->AllocReg();
-    etsg->NewObject(st, compiler::Signatures::BUILTIN_ASSERTION_ERROR, assertionError);
-    etsg->CallExact(st, compiler::Signatures::BUILTIN_ASSERTION_ERROR_CTOR, assertionError, message);
+    etsg->NewObject(st, Signatures::BUILTIN_ASSERTION_ERROR, assertionError);
+    etsg->CallExact(st, Signatures::BUILTIN_ASSERTION_ERROR_CTOR, assertionError, message, undefReg);
     etsg->EmitThrow(st, assertionError);
 }
 
@@ -1829,6 +1777,7 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
 
     switch (checker::ETSChecker::TypeKind(targetType)) {
         case checker::TypeFlag::ETS_ARRAY:
+        case checker::TypeFlag::FUNCTION:
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NONNULLISH:

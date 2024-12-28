@@ -29,9 +29,7 @@ class DeclareTest : public testing::Test {
 public:
     DeclareTest()
     {
-        const auto compilerSize = 268435456;
-
-        mem::MemConfig::Initialize(0, 0, compilerSize, 0, 0, 0);
+        mem::MemConfig::Initialize(0, 0, ark::es2panda::COMPILER_SIZE, 0, 0, 0);
         PoolManager::Initialize(PoolType::MMAP);
     }
     ~DeclareTest() override
@@ -143,7 +141,6 @@ TEST_F(DeclareTest, function_with_overloads_0)
         declare function foo(tmp?: double): string
     )");
     CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.Double;std.core.String;", true);
-    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.String;", true);
 }
 
 // === Method of class ===
@@ -155,7 +152,6 @@ TEST_F(DeclareTest, noImplclass_def_with_overload_0)
         }
     )");
     CheckFunctionExternalFlag("my_class.foo:std.core.Int;std.core.String;");
-    CheckFunctionExternalFlag("my_class.foo:std.core.String;");
 }
 
 // === Constructor of class ===
@@ -197,7 +193,6 @@ TEST_F(DeclareTest, noImplinterface_def_with_overload_0)
         }
     )");
     CheckFunctionExternalFlag("my_inter.foo:std.core.Int;void;");
-    CheckFunctionExternalFlag("my_inter.foo:void;");
 }
 
 TEST_F(DeclareTest, namespace_0)

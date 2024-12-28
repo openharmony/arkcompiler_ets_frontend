@@ -106,8 +106,8 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
     }
 
     [[maybe_unused]] auto const *const parent = expr->Parent();
-    ES2PANDA_ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
-                      parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)));
+    ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
+             !parent->AsCallExpression()->Signature()->HasFunction()));
     expr->SetPropVar(
         CreateNamedAccessProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
     ES2PANDA_ASSERT(expr->PropVar() != nullptr);
@@ -210,8 +210,8 @@ bool UnionLowering::PostconditionForModule(public_lib::Context *ctx, const parse
         auto *objType =
             checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
         auto *parent = ast->Parent();
-        if (!(parent->IsCallExpression() && parent->AsCallExpression()->Signature() != nullptr &&
-              parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE))) {
+        if (!parent->IsCallExpression() || parent->AsCallExpression()->Signature() == nullptr ||
+            parent->AsCallExpression()->Signature()->HasFunction()) {
             return false;
         }
         return objType->IsETSUnionType() && ast->AsMemberExpression()->PropVar() == nullptr;

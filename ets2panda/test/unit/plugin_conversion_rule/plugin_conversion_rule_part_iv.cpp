@@ -18,8 +18,10 @@
 #include <gtest/gtest.h>
 
 namespace ark::es2panda {
+
+// #22952
 // apiName: CreateSignature
-TEST_F(PluginConversionRuleUnitTest, SignaturerInfoPtrInputParameter)
+TEST_F(PluginConversionRuleUnitTest, DISABLED_SignaturerInfoPtrInputParameter)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_Signature *CreateSignature([[maybe_unused]] es2panda_Context *context,

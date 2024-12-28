@@ -18,5 +18,3 @@ interface G<T, U extends V, V extends /* @@ label */FunctioN> {}
 
 
 /* @@@ label Error TypeError: Cannot find type 'FunctioN'.  */
-/* @@? 17:53 Error TypeError: Extends constraint must be an object */
-/* @@? 17:53 Error TypeError: Extends constraint must be an object */

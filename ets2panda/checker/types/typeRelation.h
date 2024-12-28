@@ -288,12 +288,7 @@ public:
         return IsIdenticalTo(const_cast<Type *>(source), const_cast<Type *>(target));
     }
     bool IsIdenticalTo(Type *source, Type *target);
-    bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
-    bool IsCompatibleTo(Signature *source, Signature *target);
-    bool IsAssignableTo(Type const *source, Type const *target)
-    {
-        return IsAssignableTo(const_cast<Type *>(source), const_cast<Type *>(target));
-    }
+    bool SignatureIsIdenticalTo(Signature *source, Signature *target);
     bool IsAssignableTo(Type *source, Type *target);
     bool IsComparableTo(Type *source, Type *target);
     bool IsCastableTo(Type *const source, Type *const target);
@@ -303,6 +298,10 @@ public:
     }
     bool IsLegalBoxedPrimitiveConversion(Type *target, Type *source);
     bool IsSupertypeOf(Type *super, Type *sub);
+
+    bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
+    bool SignatureIsSupertypeOf(Signature *sub, Signature *super);
+
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
     void RaiseError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
     void LogError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;

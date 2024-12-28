@@ -260,6 +260,8 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/capturedVariables.cpp
   compiler/lowering/ets/constantExpressionLowering.cpp
+  compiler/lowering/ets/defaultParametersInConstructorLowering.cpp
+  compiler/lowering/ets/defaultParametersLowering.cpp
   compiler/lowering/ets/lambdaLowering.cpp
   compiler/lowering/ets/spreadLowering.cpp
   compiler/lowering/ets/localClassLowering.cpp
@@ -273,12 +275,12 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/recordLowering.cpp
   compiler/lowering/ets/tupleLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
+  compiler/lowering/ets/optionalArgumentsLowering.cpp
   compiler/lowering/ets/optionalLowering.cpp
   compiler/lowering/ets/expandBrackets.cpp
   compiler/lowering/ets/packageImplicitImport.cpp
   compiler/lowering/ets/partialExportClassGen.cpp
   compiler/lowering/ets/promiseVoid.cpp
-  compiler/lowering/ets/defaultParameterLowering.cpp
   compiler/lowering/ets/objectLiteralLowering.cpp
   compiler/lowering/ets/interfaceObjectLiteralLowering.cpp
   compiler/lowering/ets/stringComparison.cpp

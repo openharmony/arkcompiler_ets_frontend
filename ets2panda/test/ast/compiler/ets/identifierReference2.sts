@@ -15,5 +15,4 @@
 
 let a:(a: int, b: int) => void = max;
 
-/* @@? 16:34 Error TypeError: Overloaded function identifier "max" can not be used as value */
-/* @@? 16:34 Error TypeError: Type '(v: double, u: double) => double & (v: float, u: float) => float & (v: long, u: long) => long & (v: int, u: int) => int & (v: short, u: short) => short & (v: byte, u: byte) => byte & (v: char, u: char) => char' cannot be assigned to type '(p1: Int, p2: Int) => void' */
+/* @@? 16:34 Error TypeError: Overloaded method is used as value  */

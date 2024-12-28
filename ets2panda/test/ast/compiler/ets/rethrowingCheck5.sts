@@ -26,7 +26,5 @@ function d() throws{
 }
 
 function bar(c: () => void throws) rethrows {
-    /* @@ label */b(d);
+    b(d);
 }
-
-/* @@@ label Error TypeError: This statement can cause an exception, re-throwing functions can throw exception only by their parameters.  */

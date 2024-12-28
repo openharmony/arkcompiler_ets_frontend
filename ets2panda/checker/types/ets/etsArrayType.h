@@ -49,6 +49,7 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     void Cast(TypeRelation *relation, Type *target) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
+    void IsSubtypeOf(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
 

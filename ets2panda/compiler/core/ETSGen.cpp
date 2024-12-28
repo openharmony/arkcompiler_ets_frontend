@@ -604,6 +604,25 @@ void ETSGen::LoadElementDynamic(const ir::AstNode *node, VReg objectReg)
     SetAccumulatorType(Checker()->GlobalBuiltinDynamicType(lang));
 }
 
+void ETSGen::CallRangeFillUndefined(const ir::AstNode *const node, checker::Signature *const signature,
+                                    const VReg thisReg)
+{
+    RegScope rs(this);
+    ASSERT(signature->MinArgCount() == 0);
+
+    auto undef = AllocReg();
+    LoadAccumulatorUndefined(node);
+    StoreAccumulator(node, undef);
+
+    VReg const argStart = NextReg();
+    Ra().Emit<MovObj>(node, AllocReg(), thisReg);
+
+    for (size_t idx = 0; idx < signature->ArgCount(); idx++) {
+        Ra().Emit<MovObj>(node, AllocReg(), undef);
+    }
+    Rra().Emit<CallRange>(node, argStart, signature->ArgCount() + 1, signature->InternalName(), argStart);
+}
+
 void ETSGen::LoadUndefinedDynamic(const ir::AstNode *node, Language lang)
 {
     RegScope rs(this);
@@ -811,9 +830,11 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
             JumpTo(node, ifTrue);
             break;
         case checker::TypeFlag::ETS_ARRAY:
+        case checker::TypeFlag::FUNCTION: {
             Sa().Emit<Isinstance>(node, ToAssemblerType(target));
             BranchIfTrue(node, ifTrue);
             break;
+        }
         default:
             UNREACHABLE();  // other types must not appear here
     }
@@ -1785,7 +1806,7 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
     // the DefinitelyETSNullish function has been used to add handling for null and undefined cases,
     // and this function will need to be refactored in the future.
     if (targetType->IsETSArrayType() || targetType->IsETSObjectType() || targetType->IsETSTypeParameter() ||
-        targetType->IsETSUnionType() || targetType->DefinitelyETSNullish()) {
+        targetType->IsETSUnionType() || targetType->IsETSFunctionType() || targetType->DefinitelyETSNullish()) {
         auto lang = GetAccumulatorType()->AsETSDynamicType()->Language();
         auto methodName = compiler::Signatures::Dynamic::GetObjectBuiltin(lang);
 
@@ -1829,43 +1850,40 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
     std::string_view methodName {};
     auto typeKind = checker::ETSChecker::TypeKind(GetAccumulatorType());
     switch (typeKind) {
-        case checker::TypeFlag::ETS_BOOLEAN: {
+        case checker::TypeFlag::ETS_BOOLEAN:
             methodName = compiler::Signatures::Dynamic::NewBooleanBuiltin(type->Language());
             break;
-        }
         case checker::TypeFlag::CHAR:
         case checker::TypeFlag::BYTE:
         case checker::TypeFlag::SHORT:
         case checker::TypeFlag::INT:
         case checker::TypeFlag::LONG:
         case checker::TypeFlag::FLOAT:
-        case checker::TypeFlag::DOUBLE: {
+        case checker::TypeFlag::DOUBLE:
             CastToDouble(node);
             methodName = compiler::Signatures::Dynamic::NewDoubleBuiltin(type->Language());
             break;
-        }
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NONNULLISH:
         case checker::TypeFlag::ETS_PARTIAL_TYPE_PARAMETER:
-        case checker::TypeFlag::ETS_UNION: {  // NOTE(vpukhov): refine dynamic type cast rules
+        case checker::TypeFlag::ETS_UNION:  // NOTE(vpukhov): refine dynamic type cast rules
             if (GetAccumulatorType()->IsETSStringType()) {
                 methodName = compiler::Signatures::Dynamic::NewStringBuiltin(type->Language());
                 break;
             }
             [[fallthrough]];
-        }
-        case checker::TypeFlag::ETS_ARRAY: {
+        case checker::TypeFlag::FUNCTION:
+            ASSERT(!GetAccumulatorType()->IsETSMethodType());
+            [[fallthrough]];
+        case checker::TypeFlag::ETS_ARRAY:
             methodName = compiler::Signatures::Dynamic::NewObjectBuiltin(type->Language());
             break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE:
             SetAccumulatorType(type);
             return;
-        }
-        default: {
+        default:
             UNREACHABLE();
-        }
     }
 
     ES2PANDA_ASSERT(!methodName.empty());
@@ -2302,9 +2320,12 @@ void ETSGen::AssumeNonNullish(const ir::AstNode *node, checker::Type const *targ
 void ETSGen::EmitNullishException(const ir::AstNode *node)
 {
     RegScope ra(this);
+    VReg undef = AllocReg();
+    LoadAccumulatorUndefined(node);
+    StoreAccumulator(node, undef);
     VReg exception = AllocReg();
     NewObject(node, Signatures::BUILTIN_NULLPOINTER_ERROR, exception);
-    CallExact(node, Signatures::BUILTIN_NULLPOINTER_ERROR_CTOR, exception);
+    CallExact(node, Signatures::BUILTIN_NULLPOINTER_ERROR_CTOR, exception, undef, undef);
     EmitThrow(node, exception);
     SetAccumulatorType(nullptr);
 }

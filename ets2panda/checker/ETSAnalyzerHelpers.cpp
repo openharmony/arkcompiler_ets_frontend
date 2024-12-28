@@ -59,7 +59,7 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
     const auto *const funcType = methodVariable->TsType()->AsETSFunctionType();
     for (auto *funcSignature : funcType->CallSignatures()) {
         signature->SetReturnType(funcSignature->ReturnType());
-        if (!checker->Relation()->IsCompatibleTo(signature, funcSignature) &&
+        if (!checker->Relation()->SignatureIsSupertypeOf(signature, funcSignature) &&
             !checker->HasSameAssemblySignature(signature, funcSignature)) {
             continue;
         }
@@ -144,7 +144,6 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
             !thisType->Variable()->Declaration()->Node()->AsClassDefinition()->IsClassDefinitionChecked()) {
             thisType->Variable()->Declaration()->Node()->Check(checker);
         }
-
         // NOTE(gogabr): should be done in a lowering
         ReplaceThisInExtensionMethod(checker, extensionFunc);
         if (extensionFunc->IsArrow()) {
@@ -356,36 +355,6 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
         position);
 }
 
-checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expression *callee,
-                                         checker::Type *calleeType)
-{
-    auto *const arrowFunc = callee->AsArrowFunctionExpression()->Function();
-
-    ArenaVector<ir::Expression *> params {checker->Allocator()->Adapter()};
-    checker->CopyParams(arrowFunc->Params(), params);
-    checker::Type *funcReturnType = nullptr;
-
-    auto *typeAnnotation = arrowFunc->ReturnTypeAnnotation();
-    if (typeAnnotation != nullptr) {
-        typeAnnotation = typeAnnotation->Clone(checker->Allocator(), nullptr);
-        typeAnnotation->SetTsType(arrowFunc->ReturnTypeAnnotation()->TsType());
-    } else if (arrowFunc->Signature()->ReturnType() != nullptr) {
-        auto newTypeAnnotation = callee->AsArrowFunctionExpression()->CreateTypeAnnotation(checker);
-        typeAnnotation = arrowFunc->ReturnTypeAnnotation();
-        funcReturnType = newTypeAnnotation->GetType(checker);
-    }
-
-    auto signature = ir::FunctionSignature(nullptr, std::move(params), typeAnnotation);
-    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE,
-                                                             checker->Allocator());
-
-    funcType->SetScope(arrowFunc->Scope()->AsFunctionScope()->ParamScope());
-    auto *const funcIface = typeAnnotation != nullptr ? funcType->Check(checker) : funcReturnType;
-    checker->Relation()->SetNode(callee);
-    checker->Relation()->IsAssignableTo(calleeType, funcIface);
-    return funcIface;
-}
-
 static void SwitchMethodCallToFunctionCall(checker::ETSChecker *checker, ir::CallExpression *expr, Signature *signature)
 {
     ES2PANDA_ASSERT(expr->Callee()->IsMemberExpression());
@@ -403,13 +372,14 @@ static void SwitchMethodCallToFunctionCall(checker::ETSChecker *checker, ir::Cal
 }
 
 checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, checker::ETSChecker *checker,
-                                                 ir::CallExpression *expr, bool isFunctionalInterface,
-                                                 const TypeRelationFlag reportFlag)
+                                                 ir::CallExpression *expr, const TypeRelationFlag reportFlag)
 {
     // We have to ways to call ExtensionFunction `function foo(this: A, ...)`:
     // 1. Make ExtensionFunction as FunctionCall: `foo(a,...);`
     // 2. Make ExtensionFunction as MethodCall: `a.foo(...)`, here `a` is the receiver;
-    auto &signatures = ChooseSignatures(checker, functionType, false, isFunctionalInterface, false);
+    auto &signatures = expr->IsETSConstructorCall()
+                           ? functionType->AsETSObjectType()->ConstructSignatures()
+                           : functionType->AsETSFunctionType()->CallSignaturesOfMethodOrArrow();
     if (expr->Callee()->IsMemberExpression()) {
         // when handle extension function as MethodCall, we temporarily transfer the expr node from `a.foo(...)` to
         // `foo(a, ...)` and resolve the call. If we find the suitable signature, then switch the expr node to
@@ -421,7 +391,7 @@ checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, ch
             expr->Arguments().erase(expr->Arguments().begin());
             return nullptr;
         }
-        if (!signature->Function()->IsExtensionMethod() && !isFunctionalInterface) {
+        if (!signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION)) {
             checker->LogTypeError({"Property '", memberExpr->Property()->AsIdentifier()->Name(),
                                    "' does not exist on type '", memberExpr->ObjType()->Name(), "'"},
                                   memberExpr->Property()->Start());
@@ -569,52 +539,6 @@ ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, ch
     }
 
     return callSignatures;
-}
-
-ArenaVector<checker::Signature *> &ChooseSignatures(ETSChecker *checker, checker::Type *calleeType,
-                                                    bool isConstructorCall, bool isFunctionalInterface,
-                                                    bool isUnionTypeWithFunctionalInterface)
-{
-    static ArenaVector<checker::Signature *> unionSignatures(checker->Allocator()->Adapter());
-    unionSignatures.clear();
-    if (isConstructorCall) {
-        return calleeType->AsETSObjectType()->ConstructSignatures();
-    }
-    if (isFunctionalInterface) {
-        auto const *const variable =
-            calleeType->AsETSObjectType()->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
-                FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-        if (variable == nullptr || variable->TsType() == nullptr || !variable->TsType()->IsETSFunctionType()) {
-            ES2PANDA_ASSERT(checker->IsAnyError());
-            return unionSignatures;
-        }
-        return variable->TsType()->AsETSFunctionType()->CallSignatures();
-    }
-    if (isUnionTypeWithFunctionalInterface) {
-        unionSignatures = GetUnionTypeSignatures(checker, calleeType->AsETSUnionType());
-        return unionSignatures;
-    }
-    return calleeType->AsETSFunctionType()->CallSignatures();
-}
-
-checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression *expr, checker::Type *calleeType,
-                                        bool isConstructorCall)
-{
-    if (isConstructorCall) {
-        return calleeType->AsETSObjectType();
-    }
-
-    auto callee = expr->Callee();
-    if (callee->IsTSNonNullExpression()) {
-        callee = callee->AsTSNonNullExpression()->Expr();
-    }
-
-    if (callee->IsIdentifier() || callee->IsArrowFunctionExpression()) {
-        return checker->Context().ContainingClass();
-    }
-
-    ES2PANDA_ASSERT(callee->IsMemberExpression());
-    return callee->AsMemberExpression()->ObjType();
 }
 
 void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType)
@@ -782,16 +706,13 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
         }
     }
 
-    const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
-    const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
-
     if (!checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
                                     {}, checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
              // CC-OFFNXT(G.FMT.02) project code style
              .IsAssignable()) {
-        checker->LogTypeError(
-            {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
-            stArgument->Start());
+        checker->LogTypeError({"Type '", argumentType, "' is not compatible with the enclosing method's return type '",
+                               funcReturnType, "'"},
+                              stArgument->Start());
         return false;
     }
     return true;
@@ -820,17 +741,14 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
 
         auto *argumentType = arrowFunc->TsType();
         funcReturnType = typeAnnotation->GetType(checker);
-
-        const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
-        const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
-
         if (!checker::AssignmentContext(checker->Relation(), arrowFunc, argumentType, funcReturnType,
                                         stArgument->Start(), {},
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
-            checker->LogTypeError({"Type '", sourceType,
-                                   "' is not compatible with the enclosing method's return type '", targetType, "'"},
+            checker->LogTypeError({"Type '", argumentType,
+                                   "' is not compatible with the enclosing method's return type '", funcReturnType,
+                                   "'"},
                                   stArgument->Start());
             funcReturnType = checker->GlobalTypeError();
             return;
@@ -894,77 +812,4 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
     }
 }
 
-ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ETSFunctionType *node)
-{
-    auto *genericInterfaceType = checker->GlobalBuiltinFunctionType(node->Params().size(), node->Flags());
-    node->SetFunctionalInterface(genericInterfaceType->GetDeclNode()->AsTSInterfaceDeclaration());
-
-    if (auto *interfaceType = checker->GetCachedFunctionalInterface(node); interfaceType != nullptr) {
-        return interfaceType;
-    }
-
-    auto substitution = checker->NewSubstitution();
-    auto const &params = node->Params();
-    std::size_t const paramsNum = params.size();
-
-    if (params.size() < checker->GlobalBuiltinFunctionTypeVariadicThreshold()) {
-        for (std::size_t i = 0U; i < paramsNum; ++i) {
-            auto *const param = params[i]->AsETSParameterExpression();
-
-            auto *paramType = param->TypeAnnotation()->GetType(checker);
-            if (param->IsDefault()) {
-                paramType = CreateParamTypeWithDefaultParam(checker, param, paramType);
-            } else if (!param->IsRestParameter()) {
-                paramType = InstantiateBoxedPrimitiveType(checker, param, paramType);
-            }
-
-            checker->EmplaceSubstituted(
-                substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(), paramType);
-        }
-    }
-
-    Type *returnType = nullptr;
-    if (node->ReturnType()->IsTSThisType() && node->IsExtensionFunction()) {
-        returnType = node->Params()[0]->AsETSParameterExpression()->TypeAnnotation()->TsType();
-    } else {
-        returnType = node->ReturnType()->GetType(checker);
-    }
-
-    checker->EmplaceSubstituted(substitution,
-                                genericInterfaceType->TypeArguments()[paramsNum]->AsETSTypeParameter()->GetOriginal(),
-                                InstantiateBoxedPrimitiveType(checker, node->ReturnType(), returnType));
-
-    auto *interfaceType =
-        genericInterfaceType->Substitute(checker->Relation(), substitution, true, node->IsExtensionFunction());
-    if (node->IsExtensionFunction() && node->ReturnType()->IsTSThisType()) {
-        checker->AddThisReturnTypeFlagForInterfaceInvoke(interfaceType->AsETSObjectType());
-    }
-    return interfaceType->AsETSObjectType();
-}
-
-Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *param, Type *paramType)
-{
-    paramType = InstantiateBoxedPrimitiveType(checker, param, paramType);
-
-    if (param->AsETSParameterExpression()->Initializer()->IsUndefinedLiteral()) {
-        ArenaVector<Type *> types(checker->Allocator()->Adapter());
-        types.push_back(paramType);
-        types.push_back(checker->GlobalETSUndefinedType());
-        paramType = checker->CreateETSUnionType(Span<Type *const>(types));
-    }
-
-    return paramType;
-}
-
-Type *InstantiateBoxedPrimitiveType(ETSChecker *const checker, ir::Expression *const param, Type *paramType)
-{
-    if (paramType->IsETSPrimitiveType()) {
-        auto node = checker->Relation()->GetNode();
-        checker->Relation()->SetNode(param);
-        paramType = checker->MaybeBoxInRelation(paramType);
-        ES2PANDA_ASSERT(paramType && paramType->IsETSReferenceType());
-        checker->Relation()->SetNode(node);
-    }
-    return paramType;
-}
 }  // namespace ark::es2panda::checker

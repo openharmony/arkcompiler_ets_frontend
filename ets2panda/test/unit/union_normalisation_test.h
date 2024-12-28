@@ -34,7 +34,6 @@ public:
 
     static void SetUpTestCase()
     {
-        constexpr auto COMPILER_SIZE = operator""_MB(256ULL);
         mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
         PoolManager::Initialize();
     }

@@ -92,9 +92,9 @@ static void InferUntilFail(Signature const *const signature, const ArenaVector<i
                                       ? MaybeBoxedType(checker, arg->AsSpreadElement()->Argument()->Check(checker),
                                                        arg->AsSpreadElement()->Argument())
                                       : MaybeBoxedType(checker, arg->Check(checker), arg);
-            auto *const paramType = (ix < signature->Params().size()) ? sigInfo->params[ix]->TsType()
-                                    : sigInfo->restVar != nullptr     ? sigInfo->restVar->TsType()
-                                                                      : nullptr;
+            auto *const paramType = (ix < signature->ArgCount())  ? sigInfo->params[ix]->TsType()
+                                    : sigInfo->restVar != nullptr ? sigInfo->restVar->TsType()
+                                                                  : nullptr;
 
             if (paramType == nullptr) {
                 continue;

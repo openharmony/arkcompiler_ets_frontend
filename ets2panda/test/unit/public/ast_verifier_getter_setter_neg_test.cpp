@@ -189,7 +189,7 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
 
     // Create argument
     auto *ident = checker.AllocNode<Identifier>("ident", Allocator());
-    auto *param = checker.AllocNode<ETSParameterExpression>(ident, nullptr, Allocator());
+    auto *param = checker.AllocNode<ETSParameterExpression>(ident, false, Allocator());
 
     // Add argument to getter
     ast->IterateRecursively([param](ark::es2panda::ir::AstNode *child) {

@@ -34,13 +34,22 @@ public:
     NO_COPY_SEMANTIC(ETSParameterExpression);
     NO_MOVE_SEMANTIC(ETSParameterExpression);
 
-    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, Expression *initializer,
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, bool isOptional,
+                                    ArenaAllocator *const allocator);
+
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, ir::Expression *initializer,
                                     ArenaAllocator *const allocator);
 
     [[nodiscard]] const util::StringView &Name() const noexcept;
 
     [[nodiscard]] const Identifier *Ident() const noexcept;
     [[nodiscard]] Identifier *Ident() noexcept;
+
+    void SetIdent(Identifier *ident) noexcept
+    {
+        ident_ = ident;
+        ident_->SetParent(this);
+    }
 
     [[nodiscard]] const SpreadElement *RestParameter() const noexcept;
     [[nodiscard]] SpreadElement *RestParameter() noexcept;
@@ -54,18 +63,26 @@ public:
     [[nodiscard]] varbinder::Variable *Variable() const noexcept;
     void SetVariable(varbinder::Variable *variable) noexcept;
 
-    //=================================================================================//
-    //  Please use these methods to deal with expression's type annotation!
-    //  Don't try to access 'ident_' member directly!
     [[nodiscard]] TypeNode const *TypeAnnotation() const noexcept;
     [[nodiscard]] TypeNode *TypeAnnotation() noexcept;
 
-    void SetTsTypeAnnotation(TypeNode *typeAnnotation) noexcept;
-    //=================================================================================//
+    void SetTypeAnnotation(TypeNode *typeNode) noexcept;
 
-    [[nodiscard]] bool IsDefault() const noexcept
+    [[nodiscard]] bool IsOptional() const noexcept
     {
-        return initializer_ != nullptr;
+        return isOptional_;
+    }
+
+    void SetOptional(bool value) noexcept
+    {
+        isOptional_ = value;
+        ASSERT(isOptional_ || initializer_ == nullptr);
+    }
+
+    void SetInitializer(Expression *initExpr) noexcept
+    {
+        initializer_ = initExpr;
+        ASSERT(isOptional_ || initializer_ == nullptr);
     }
 
     [[nodiscard]] bool IsRestParameter() const noexcept
@@ -93,10 +110,6 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
-    void SetInitializer(Expression *initExpr = nullptr)
-    {
-        initializer_ = initExpr;
-    };
 
     void Accept(ASTVisitorT *v) override
     {
@@ -105,10 +118,11 @@ public:
 
 private:
     Identifier *ident_;
-    Expression *initializer_;
+    Expression *initializer_ = nullptr;
     SpreadElement *spread_ = nullptr;
     util::StringView savedLexer_ = "";
     std::size_t extraValue_ = 0U;
+    bool isOptional_ = false;
 };
 }  // namespace ark::es2panda::ir
 

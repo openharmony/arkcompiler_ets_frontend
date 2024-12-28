@@ -147,6 +147,11 @@ public:
         return isTrailingBlockInNewLine_;
     }
 
+    bool IsETSConstructorCall() const noexcept
+    {
+        return callee_->IsThisExpression() || callee_->IsSuperExpression();
+    }
+
     [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -176,11 +181,6 @@ protected:
     bool isTrailingBlockInNewLine_ {false};
     checker::Type *uncheckedType_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
-
-private:
-    bool IsETSConstructorCall() const;
-    checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, Expression *callee,
-                                             checker::Type *calleeType);
 };
 }  // namespace ark::es2panda::ir
 

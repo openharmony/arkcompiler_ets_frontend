@@ -359,7 +359,6 @@ private:
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
 
     void ReportIfVarDeclaration(VariableParsingFlags flags) override;
-    std::optional<lexer::SourcePosition> GetDefaultParamPosition(ArenaVector<ir::Expression *> params);
 
     ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
@@ -393,15 +392,13 @@ private:
     ir::AstNode *ParseAnnotationsInInterfaceBody();
     void ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport = false);
     bool CheckModuleAsModifier();
-    ir::Expression *ParseFunctionParameterExpression(ir::AnnotatedExpression *paramIdent,
-                                                     ir::ETSUndefinedType *defaultUndef);
+    ir::Expression *ParseFunctionParameterExpression(ir::AnnotatedExpression *paramIdent, bool isOptional);
     std::pair<ir::Expression *, std::string> TypeAnnotationValue(ir::TypeNode *typeAnnotation);
     ir::ETSParameterExpression *ParseFunctionParameterTail(ir::AnnotatedExpression *paramIdent, bool defaultUndefined);
     ir::Expression *ParseFunctionParameterAnnotations();
     ir::Expression *ParseFunctionParameter() override;
     ir::Expression *ParseFunctionReceiver();
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
-    ir::ETSUnionType *CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation, ir::ETSUndefinedType *defaultUndef);
     ir::Expression *ResolveArgumentUnaryExpr(ExpressionParseFlags flags);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(

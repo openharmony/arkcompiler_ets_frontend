@@ -261,49 +261,21 @@
                       "type": "Identifier",
                       "name": "exec",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSFunctionType",
-                            "params": [],
-                            "returnType": {
-                              "type": "ETSPrimitiveType",
-                              "loc": {
-                                "start": {
-                                  "line": 16,
-                                  "column": 27
-                                },
-                                "end": {
-                                  "line": 16,
-                                  "column": 31
-                                }
-                              }
+                        "type": "ETSFunctionType",
+                        "params": [],
+                        "returnType": {
+                          "type": "ETSPrimitiveType",
+                          "loc": {
+                            "start": {
+                              "line": 16,
+                              "column": 27
                             },
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 21
-                              },
-                              "end": {
-                                "line": 16,
-                                "column": 31
-                              }
-                            }
-                          },
-                          {
-                            "type": "ETSUndefinedType",
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 18
-                              },
-                              "end": {
-                                "line": 16,
-                                "column": 19
-                              }
+                            "end": {
+                              "line": 16,
+                              "column": 31
                             }
                           }
-                        ],
+                        },
                         "loc": {
                           "start": {
                             "line": 16,
@@ -589,174 +561,7 @@
                 }
               }
             },
-            "overloads": [
-              {
-                "type": "MethodDefinition",
-                "key": {
-                  "type": "Identifier",
-                  "name": "foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 16,
-                      "column": 10
-                    },
-                    "end": {
-                      "line": 16,
-                      "column": 13
-                    }
-                  }
-                },
-                "kind": "method",
-                "accessibility": "public",
-                "static": true,
-                "optional": false,
-                "computed": false,
-                "value": {
-                  "type": "FunctionExpression",
-                  "function": {
-                    "type": "ScriptFunction",
-                    "id": {
-                      "type": "Identifier",
-                      "name": "foo",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 16,
-                          "column": 10
-                        },
-                        "end": {
-                          "line": 16,
-                          "column": 13
-                        }
-                      }
-                    },
-                    "generator": false,
-                    "async": false,
-                    "expression": false,
-                    "params": [],
-                    "returnType": {
-                      "type": "ETSPrimitiveType",
-                      "loc": {
-                        "start": {
-                          "line": 16,
-                          "column": 34
-                        },
-                        "end": {
-                          "line": 16,
-                          "column": 38
-                        }
-                      }
-                    },
-                    "body": {
-                      "type": "BlockStatement",
-                      "statements": [
-                        {
-                          "type": "ReturnStatement",
-                          "argument": {
-                            "type": "CallExpression",
-                            "callee": {
-                              "type": "Identifier",
-                              "name": "foo",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 1,
-                                  "column": 1
-                                },
-                                "end": {
-                                  "line": 1,
-                                  "column": 1
-                                }
-                              }
-                            },
-                            "arguments": [
-                              {
-                                "type": "UndefinedLiteral",
-                                "value": "undefined",
-                                "loc": {
-                                  "start": {
-                                    "line": 1,
-                                    "column": 1
-                                  },
-                                  "end": {
-                                    "line": 1,
-                                    "column": 1
-                                  }
-                                }
-                              }
-                            ],
-                            "optional": false,
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 1
-                              },
-                              "end": {
-                                "line": 18,
-                                "column": 2
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 1,
-                              "column": 1
-                            },
-                            "end": {
-                              "line": 1,
-                              "column": 1
-                            }
-                          }
-                        }
-                      ],
-                      "loc": {
-                        "start": {
-                          "line": 1,
-                          "column": 1
-                        },
-                        "end": {
-                          "line": 1,
-                          "column": 1
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 611,
-                        "column": 1
-                      },
-                      "end": {
-                        "line": 611,
-                        "column": 1
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 1,
-                      "column": 1
-                    },
-                    "end": {
-                      "line": 1,
-                      "column": 1
-                    }
-                  }
-                },
-                "overloads": [],
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 16,
-                    "column": 1
-                  },
-                  "end": {
-                    "line": 1,
-                    "column": 1
-                  }
-                }
-              }
-            ],
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {

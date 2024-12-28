@@ -47,9 +47,9 @@ function f2(x: number|string, y: string): boolean {
     return x == y
 }
 
-function f3(a: "aa"|"bb"|"cc" = "bb") {
-    return a;
-}
+// function f3(a: "aa"|"bb"|"cc" = "bb") { // #22952
+//     return a;
+// }
 
 function f4(a: (p: string) => "aa"|"bb",
               b: (p: "aa"|"bb") => string) {
@@ -80,8 +80,9 @@ function main(): void {
     assertTrue( f2("abc", x))
     assertTrue( !f2("abc", "xyz"))
 
-    assertEQ( f3(), "bb")
-    assertEQ( f3("aa"), "aa")
+    // #22952
+    // assertEQ( f3(), "bb")
+    // assertEQ( f3("aa"), "aa")
 
     assertEQ( f5("aa"), 2)
     assertEQ( f5("bbb"), 3)

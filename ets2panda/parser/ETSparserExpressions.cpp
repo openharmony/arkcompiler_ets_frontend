@@ -58,8 +58,7 @@ static std::string GetArgumentsSourceView(lexer::Lexer *lexer, const util::Strin
     return value;
 }
 
-ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpression *const paramIdent,
-                                                            ir::ETSUndefinedType *defaultUndef)
+ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpression *const paramIdent, bool isOptional)
 {
     ir::ETSParameterExpression *paramExpression;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
@@ -74,7 +73,7 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
             LogError(diagnostic::DEFAULT_ONLY_FOR_OPTIONAL);
         }
 
-        if (defaultUndef != nullptr) {
+        if (isOptional) {
             LogError(diagnostic::DEFAULT_UNDEF_NOT_ALLOWED);
         }
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
@@ -94,24 +93,10 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         paramExpression->SetLexerSaved(util::UString(value, Allocator()).View());
         paramExpression->SetRange({paramIdent->Start(), paramExpression->Initializer()->End()});
     } else if (paramIdent->IsIdentifier()) {
-        auto *typeAnnotation = paramIdent->AsIdentifier()->TypeAnnotation();
-
-        const auto typeAnnotationValue = [this, typeAnnotation,
-                                          defaultUndef]() -> std::pair<ir::Expression *, std::string> {
-            if (typeAnnotation == nullptr) {
-                return std::make_pair(nullptr, "");
-            }
-            return std::make_pair(defaultUndef != nullptr ? AllocNode<ir::UndefinedLiteral>() : nullptr, "undefined");
-        }();
-
-        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(),
-                                                                std::get<0>(typeAnnotationValue), Allocator());
-        if (defaultUndef != nullptr) {
-            paramExpression->SetLexerSaved(util::UString(std::get<1>(typeAnnotationValue), Allocator()).View());
-        }
+        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), isOptional, Allocator());
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     } else {
-        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsRestElement(), nullptr, Allocator());
+        paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsRestElement(), false, Allocator());
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     }
     return paramExpression;

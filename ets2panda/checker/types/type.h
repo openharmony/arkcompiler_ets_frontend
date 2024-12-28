@@ -90,6 +90,7 @@ public:
     bool IsETSStringType() const;
     bool IsETSBigIntType() const;
     bool IsETSArrowType() const;
+    bool IsETSMethodType() const;
     bool IsETSPrimitiveType() const;
     bool IsETSReferenceType() const;
     bool IsETSAsyncFuncReturnType() const;

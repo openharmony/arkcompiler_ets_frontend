@@ -1046,7 +1046,7 @@ void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const
         bool isValid = function->Params().size() == 1U;
         if (isValid) {
             auto const *const param = function->Params()[0]->AsETSParameterExpression();
-            isValid = !param->IsDefault() && !param->IsRestParameter();
+            isValid = !param->IsOptional() && !param->IsRestParameter();
         }
 
         if (!isValid) {
@@ -1059,7 +1059,7 @@ void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const
         if (isValid) {
             auto const *const param1 = function->Params()[0]->AsETSParameterExpression();
             auto const *const param2 = function->Params()[1]->AsETSParameterExpression();
-            isValid = !param1->IsDefault() && !param1->IsRestParameter() && !param2->IsDefault() &&
+            isValid = !param1->IsOptional() && !param1->IsRestParameter() && !param2->IsOptional() &&
                       !param2->IsRestParameter();
         }
 

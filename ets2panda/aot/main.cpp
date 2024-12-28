@@ -36,8 +36,6 @@ class MemManager {
 public:
     explicit MemManager()
     {
-        constexpr auto COMPILER_SIZE = sizeof(size_t) <= 4 ? 2_GB : 32_GB;
-
         MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
         PoolManager::Initialize(PoolType::MMAP);
     }
