@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_ARROW_FUNCTION_EXPRESSION_H
 
 #include "ir/expression.h"
+#include "ir/annotationAllowed.h"
 
 namespace ark::es2panda::compiler {
 class ETSCompiler;
@@ -25,7 +26,7 @@ class ETSCompiler;
 namespace ark::es2panda::ir {
 class ScriptFunction;
 
-class ArrowFunctionExpression : public Expression {
+class ArrowFunctionExpression : public AnnotationAllowed<Expression> {
 public:
     ArrowFunctionExpression() = delete;
     ~ArrowFunctionExpression() override = default;
@@ -33,12 +34,12 @@ public:
     NO_COPY_SEMANTIC(ArrowFunctionExpression);
     NO_MOVE_SEMANTIC(ArrowFunctionExpression);
 
-    explicit ArrowFunctionExpression(ScriptFunction *const func)
-        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func)
+    explicit ArrowFunctionExpression(ScriptFunction *const func, ArenaAllocator *const allocator)
+        : AnnotationAllowed<Expression>(AstNodeType::ARROW_FUNCTION_EXPRESSION, allocator), func_(func)
     {
     }
 
-    explicit ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *allocator);
+    explicit ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator);
 
     [[nodiscard]] const ScriptFunction *Function() const noexcept
     {

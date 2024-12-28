@@ -829,7 +829,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
-
+    checker->CheckAnnotations(expr->Annotations());
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }

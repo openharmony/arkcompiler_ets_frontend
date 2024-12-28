@@ -12,5 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@@interface MyAnno {
+    testProperty1: string,
+    /* @@ label1 */testProperty2: number
+}
 
-declare namespace name {}
+
+/* @@? 15:1 Error SyntaxError: Unexpected token: '@@'.  */
+/* @@? 15:3 Error SyntaxError: Unexpected token 'interface'.  */

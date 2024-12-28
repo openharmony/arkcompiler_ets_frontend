@@ -17,7 +17,5 @@
     a: @Anno
 }
 
-/* @@? 17:8 Error SyntaxError: Invalid Type */
-/* @@? 17:8 Error SyntaxError: Identifier expected, got '@'. */
-/* @@? 17:9 Error SyntaxError: Missing type annotation for property. */
-/* @@? 18:1 Error SyntaxError: Missing type annotation for property 'Anno'. */
+/* @@? 18:1 Error SyntaxError: Invalid Type */
+/* @@? 18:1 Error SyntaxError: Annotations are not allowed on this type of declaration. */

@@ -74,8 +74,9 @@ ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderType()
 ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
 {
     if (insertingNodes_.empty()) {
-        LogSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        UNREACHABLE();
+        LogUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+        Lexer()->NextToken();
+        return AllocErrorType();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();

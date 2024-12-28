@@ -35,20 +35,36 @@ void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb, std::
         func_->SetTransformedNode(transformationName, transformedNode);
         func_ = transformedNode->AsScriptFunction();
     }
+
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ArrowFunctionExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(func_);
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void ArrowFunctionExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ArrowFunctionExpression"}, {"function", func_}});
+    dumper->Add({{"type", "ArrowFunctionExpression"},
+                 {"function", func_},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ArrowFunctionExpression::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("(");
     if (func_->IsScriptFunction() && func_->AsScriptFunction()->IsAsyncFunc()) {
         dumper->Add("async ");
@@ -78,7 +94,7 @@ checker::VerifiedType ArrowFunctionExpression::Check(checker::ETSChecker *checke
 }
 
 ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator)
-    : Expression(static_cast<Expression const &>(other))
+    : AnnotationAllowed<Expression>(static_cast<Expression const &>(other), allocator)
 {
     func_ = other.func_->Clone(allocator, this)->AsScriptFunction();
 }
@@ -88,6 +104,13 @@ ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const al
     if (auto *const clone = allocator->New<ArrowFunctionExpression>(*this, allocator); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
+        }
+        if (!Annotations().empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : Annotations()) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
         }
         return clone;
     }

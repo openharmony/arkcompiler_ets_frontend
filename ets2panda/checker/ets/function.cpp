@@ -2084,7 +2084,7 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
     callExpr->SetTrailingBlock(nullptr);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
     arrowFuncNode->SetRange(trailingBlock->Range());
     arrowFuncNode->SetParent(callExpr);
 
@@ -2108,7 +2108,7 @@ ArenaVector<ir::Expression *> ETSChecker::ExtendArgumentsWithFakeLamda(ir::CallE
                                                 ir::ScriptFunctionFlags::ARROW});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(funcNode, Allocator());
     arrowFuncNode->SetParent(callExpr);
 
     ArenaVector<ir::Expression *> fakeArguments = callExpr->Arguments();
