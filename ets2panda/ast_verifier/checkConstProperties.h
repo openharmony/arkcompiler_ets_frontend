@@ -23,7 +23,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 class CheckConstProperties : public RecursiveInvariant<VerifierInvariants::CHECK_CONST_PROPERTIES> {
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast) const;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

@@ -23,8 +23,8 @@ namespace ark::es2panda::compiler::ast_verifier {
 class ArithmeticOperationValid : public RecursiveInvariant<VerifierInvariants::ARITHMETIC_OPERATION_VALID> {
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
-    CheckResult CheckCompound(CheckContext &ctx, const ir::AstNode *ast);
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
+    CheckResult CheckCompound(const ir::AstNode *ast);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

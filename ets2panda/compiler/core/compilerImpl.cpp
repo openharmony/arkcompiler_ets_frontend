@@ -87,8 +87,6 @@ static public_lib::Context::CodeGenCb MakeCompileJob()
     };
 }
 
-#ifndef NDEBUG
-
 static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context &context,
                                  const std::vector<Phase *> &phases, parser::Program &program)
 {
@@ -111,18 +109,8 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
         verifier.Verify("AfterAllPhases");
     }
 
-    auto verifierResult = verifier.DumpMessages();
-    if (auto warnings = verifierResult.Warnings().Build(); warnings != "[]") {
-        LOG(WARNING, ES2PANDA) << warnings;
-    }
-
-    if (auto errors = verifierResult.Errors().Build(); errors != "[]") {
-        ASSERT_PRINT(false, errors);
-    }
-
     return true;
 }
-#endif
 
 static bool RunPhases(CompilerImpl *compilerImpl, public_lib::Context &context, const std::vector<Phase *> &phases,
                       parser::Program &program)
@@ -208,7 +196,6 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     if (!ParserErrorChecker(parser.ErrorLogger()->IsAnyError(), &program, compilerImpl, unit)) {
         return nullptr;
     }
-#ifndef NDEBUG
     if (unit.ext == ScriptExtension::STS) {
         if (!RunVerifierAndPhases(compilerImpl, context, getPhases(unit.ext), program)) {
             return nullptr;
@@ -216,11 +203,6 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     } else if (!RunPhases(compilerImpl, context, getPhases(unit.ext), program)) {
         return nullptr;
     }
-#else
-    if (!RunPhases(compilerImpl, context, getPhases(unit.ext), program)) {
-        return nullptr;
-    }
-#endif
 
     emitter.GenAnnotation();
 

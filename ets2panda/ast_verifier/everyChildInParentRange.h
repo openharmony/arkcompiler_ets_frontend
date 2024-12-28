@@ -23,7 +23,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 class EveryChildInParentRange : public RecursiveInvariant<VerifierInvariants::EVERY_CHILD_IN_PARENT_RANGE> {
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

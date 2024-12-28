@@ -21,7 +21,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult CheckConstProperties::operator()(CheckContext &ctx, const ir::AstNode *ast) const
+[[nodiscard]] CheckResult CheckConstProperties::operator()(const ir::AstNode *ast)
 {
     if (ast->IsClassProperty()) {
         auto parent = ast->Parent();
@@ -31,7 +31,7 @@ namespace ark::es2panda::compiler::ast_verifier {
         }
         auto property = ast->AsClassProperty();
         if (property->IsConst()) {
-            ctx.AddCheckMessage("Class property cannot be const", *ast, ast->Start());
+            AddCheckMessage("Class property cannot be const", *ast);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }

@@ -54,13 +54,25 @@
 #include "varbinder/variable.h"
 #include "public/public.h"
 
+#ifdef ASTV_ENABLE_LOGGING
+// CC-OFFNXT(G.PRE.02) macro to enable conditionally
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define LOG_ASTV(lvl, msg) LOG(lvl, ES2PANDA) << "[ASTV] " << msg
+#else
+// CC-OFFNXT(G.PRE.02) macro to enable conditionally
+#define LOG_ASTV(lvl, msg)
+#endif  // ASTV_ENABLE_LOGGING
+
 namespace ark::es2panda::compiler::ast_verifier {
 
 template <typename... Invs>
 class InvariantsRegistry {
 public:
+    using Invariants = std::tuple<Invs...>;
     template <VerifierInvariants ID>
-    using InvariantClass = std::remove_reference_t<decltype(std::get<ID>(std::declval<std::tuple<Invs...>>()))>;
+    using InvariantClass = std::tuple_element_t<ID, Invariants>;
+    template <typename T>
+    using InvArray = std::array<T, VerifierInvariants::COUNT>;
 
 private:
     template <typename T, T... INTS>
@@ -79,7 +91,7 @@ private:
     }
 
 protected:
-    std::tuple<Invs...> invariants_ {};
+    Invariants invariants_ {};
 
     static_assert(sizeof...(Invs) == VerifierInvariants::COUNT,
                   "Parameter-list is inconsistent with invaraints' declararation in 'options.yaml'");
@@ -100,39 +112,46 @@ class ASTVerifier
                                 VariableNameIdentifierNameSame, CheckAbstractMethod, GetterSetterValidation,
                                 CheckScopeDeclaration, CheckConstProperties> {
 public:
-    using AstPath = std::string;
-    using PhaseName = std::string;
-    using Source = std::tuple<AstPath, PhaseName>;
-    using GroupedMessages = std::map<Source, ast_verifier::Messages>;
+    using SourcePath = std::string_view;
+    using PhaseName = std::string_view;
+    using InvariantName = std::string_view;
+    using InvariantsMessages = std::map<InvariantName, Messages>;
+    using WarningsErrors = std::map<std::string_view, InvariantsMessages>;
+    using SourceMessages = std::map<SourcePath, WarningsErrors>;
+    using GroupedMessages = std::map<PhaseName, SourceMessages>;
 
+    NO_COPY_SEMANTIC(ASTVerifier);
+    NO_MOVE_SEMANTIC(ASTVerifier);
     ASTVerifier() = default;
     ASTVerifier(const public_lib::Context &context, const parser::Program &program)
-        : program_ {&program},
-          checkFullProgram_ {context.config->options->IsVerifierInvariantsFullProgram()},
-          treatAsWarnings_ {&context.config->options->GetVerifierInvariantsAsWarnings()},
-          treatAsErrors_ {&context.config->options->GetVerifierInvariantsAsErrors()}
+        : program_ {&program}, options_ {context.config->options}
     {
         for (size_t i = 0; i < VerifierInvariants::COUNT; i++) {
-            enabled_[i] = IsAsWarning(VerifierInvariants(i)) || IsAsError(VerifierInvariants(i));
+            enabled_[i] = TreatAsWarning(VerifierInvariants {i}) || TreatAsError(VerifierInvariants {i});
         }
+    }
+
+    ~ASTVerifier()
+    {
+        DumpMessages();
     }
 
     void Verify(std::string_view phaseName);
 
     template <typename Invariant>
-    Messages Verify(const ir::AstNode *ast)
+    Messages &&Verify(const ir::AstNode *ast)
     {
-        CheckContext ctx {};
-        std::get<Invariant>(invariants_).VerifyAst(&ctx, ast);
-        return ctx.GetMessages();
+        std::get<Invariant>(invariants_).Init();
+        std::get<Invariant>(invariants_).VerifyAst(ast);
+        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
     }
 
     template <typename Invariant>
-    Messages VerifyNode(const ir::AstNode *ast)
+    Messages &&VerifyNode(const ir::AstNode *ast)
     {
-        CheckContext ctx {};
-        std::get<Invariant>(invariants_).VerifyNode(&ctx, ast);
-        return ctx.GetMessages();
+        std::get<Invariant>(invariants_).Init();
+        std::get<Invariant>(invariants_).VerifyNode(ast);
+        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
     }
 
     void IntroduceNewInvariants(std::string_view phaseName)
@@ -144,79 +163,60 @@ public:
             }
         }
         if (phaseName == "CheckerPhase") {
-            for (size_t i = VerifierInvariants::AFTER_CHECHER_PHASE_FIRST;
-                 i <= VerifierInvariants::AFTER_CHECHER_PHASE_LAST; i++) {
+            for (size_t i = VerifierInvariants::AFTER_CHECKER_PHASE_FIRST;
+                 i <= VerifierInvariants::AFTER_CHECKER_PHASE_LAST; i++) {
                 allowed_[i] = true;
             }
         }
     }
 
-    class Result {
-    public:
-        explicit Result(JsonArrayBuilder &&warnings, JsonArrayBuilder &&errors)
-            : warnings_ {std::move(warnings)}, errors_ {std::move(errors)}
-        {
-        }
+    void DumpMessages() const;
 
-        JsonArrayBuilder &&Warnings()
-        {
-            return std::move(warnings_);
-        }
-
-        JsonArrayBuilder &&Errors()
-        {
-            return std::move(errors_);
-        }
-
-    private:
-        JsonArrayBuilder warnings_;
-        JsonArrayBuilder errors_;
-    };
-
-    Result DumpMessages();
+    bool TreatAsWarning(VerifierInvariants id) const
+    {
+        return options_->GetVerifierInvariantsAsWarnings()[id];
+    }
+    bool TreatAsError(VerifierInvariants id) const
+    {
+        return options_->GetVerifierInvariantsAsErrors()[id];
+    }
 
 private:
-    bool IsAsWarning(VerifierInvariants id)
-    {
-        return (*treatAsWarnings_)[id];
-    }
-    bool IsAsError(VerifierInvariants id)
-    {
-        return (*treatAsErrors_)[id];
-    }
     template <typename T, std::enable_if_t<std::is_base_of_v<InvariantBase<T::ID>, T>, void *> = nullptr>
-    bool NeedCheckVariant(const T & /*unused*/)
+    bool NeedCheckInvariant(const T & /*unused*/)
     {
         return enabled_[T::ID] && allowed_[T::ID];
     }
 
 private:
     const parser::Program *program_ {};
-    bool checkFullProgram_ {};
-    const std::array<bool, VerifierInvariants::COUNT> *treatAsWarnings_ {};
-    const std::array<bool, VerifierInvariants::COUNT> *treatAsErrors_ {};
-    std::array<bool, VerifierInvariants::COUNT> enabled_ {};
-    std::array<bool, VerifierInvariants::COUNT> allowed_ {};
+    const util::Options *options_ {};
+    InvArray<bool> enabled_ {};
+    InvArray<bool> allowed_ {};
+
+    bool hasErrors_ {false};
+    bool hasWarnings_ {false};
     GroupedMessages report_;
+
+    struct SinglePassVerifier;
 };
 
 template <VerifierInvariants ID>
-CheckResult InvariantBase<ID>::VerifyNode(CheckContext *ctx, const ir::AstNode *ast)
+CheckResult InvariantBase<ID>::VerifyNode(const ir::AstNode *ast)
 {
-    ctx->SetInvariantId(ID);
-    return (*static_cast<ASTVerifier::InvariantClass<ID> *>(this))(*ctx, ast);
+    auto [res, action] = (*static_cast<ASTVerifier::InvariantClass<ID> *>(this))(ast);
+    if (action == CheckAction::SKIP_SUBTREE) {
+        LOG_ASTV(DEBUG, util::gen::verifier_invariants::ToString(ID) << ": SKIP_SUBTREE");
+    }
+    return {res, action};
 }
 
 template <VerifierInvariants ID>
-void RecursiveInvariant<ID>::VerifyAst(CheckContext *ctx, const ir::AstNode *ast)
+void RecursiveInvariant<ID>::VerifyAst(const ir::AstNode *ast)
 {
-    std::function<void(const ir::AstNode *)> aux;
-    auto finalDecision = CheckDecision::CORRECT;
-    aux = [this, ctx, &aux, &finalDecision](const ir::AstNode *child) -> void {
-        const auto [decision, action] = this->VerifyNode(ctx, child);
-        if (decision == CheckDecision::INCORRECT) {
-            finalDecision = CheckDecision::INCORRECT;
-        }
+    std::function<void(const ir::AstNode *)> aux {};
+    aux = [this, &aux](const ir::AstNode *child) -> void {
+        const auto [_, action] = this->VerifyNode(child);
         if (action == CheckAction::SKIP_SUBTREE) {
             return;
         }

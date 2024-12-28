@@ -26,7 +26,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult ImportExportAccessValid::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult ImportExportAccessValid::operator()(const ir::AstNode *ast)
 {
     std::unordered_set<std::string> importedVariables {};
     if (ast->IsETSImportDeclaration()) {
@@ -49,12 +49,12 @@ namespace ark::es2panda::compiler::ast_verifier {
         const auto *callee = callExpr->Callee();
         if (callee != nullptr && callee->IsIdentifier() &&
             !HandleImportExportIdentifier(importedVariables, callee->AsIdentifier(), callExpr)) {
-            ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *callee, callee->Start());
+            AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *callee);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
     if (ast->IsIdentifier() && !HandleImportExportIdentifier(importedVariables, ast->AsIdentifier(), nullptr)) {
-        ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *ast, ast->Start());
+        AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};

@@ -20,62 +20,61 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::operator()(const ir::AstNode *ast)
 {
     if (ast->IsForInStatement()) {
-        return HandleForInStatement(ctx, ast);
+        return HandleForInStatement(ast);
     }
 
     if (ast->IsForOfStatement()) {
-        return HandleForOfStatement(ctx, ast);
+        return HandleForOfStatement(ast);
     }
 
     if (ast->IsForUpdateStatement()) {
-        return HandleForUpdateStatement(ctx, ast);
+        return HandleForUpdateStatement(ast);
     }
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::HandleForInStatement(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::HandleForInStatement(const ir::AstNode *ast)
 {
     auto const *left = ast->AsForInStatement()->Left();
     if (left == nullptr) {
-        ctx.AddCheckMessage("NULL FOR-IN-LEFT", *ast, ast->Start());
+        AddCheckMessage("NULL FOR-IN-LEFT", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 
     if (!left->IsIdentifier() && !left->IsVariableDeclaration()) {
-        ctx.AddCheckMessage("INCORRECT FOR-IN-LEFT", *ast, ast->Start());
+        AddCheckMessage("INCORRECT FOR-IN-LEFT", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::HandleForOfStatement(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::HandleForOfStatement(const ir::AstNode *ast)
 {
     auto const *left = ast->AsForOfStatement()->Left();
     if (left == nullptr) {
-        ctx.AddCheckMessage("NULL FOR-OF-LEFT", *ast, ast->Start());
+        AddCheckMessage("NULL FOR-OF-LEFT", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 
     if (!left->IsIdentifier() && !left->IsVariableDeclaration()) {
-        ctx.AddCheckMessage("INCORRECT FOR-OF-LEFT", *ast, ast->Start());
+        AddCheckMessage("INCORRECT FOR-OF-LEFT", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::HandleForUpdateStatement(CheckContext &ctx,
-                                                                                const ir::AstNode *ast)
+[[nodiscard]] CheckResult ForLoopCorrectlyInitialized::HandleForUpdateStatement(const ir::AstNode *ast)
 {
     auto const *test = ast->AsForUpdateStatement()->Test();
     if (test == nullptr) {
         auto const *body = ast->AsForUpdateStatement()->Body();
         if (body == nullptr) {
-            ctx.AddCheckMessage("NULL FOR-TEST AND FOR-BODY", *ast, ast->Start());
+            AddCheckMessage("NULL FOR-TEST AND FOR-BODY", *ast);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
 
@@ -83,7 +82,7 @@ namespace ark::es2panda::compiler::ast_verifier {
     }
 
     if (!test->IsExpression()) {
-        ctx.AddCheckMessage("NULL FOR VAR", *ast, ast->Start());
+        AddCheckMessage("NULL FOR VAR", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 

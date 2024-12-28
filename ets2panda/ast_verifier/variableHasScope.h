@@ -24,12 +24,12 @@ namespace ark::es2panda::compiler::ast_verifier {
 
 class VariableHasScope : public RecursiveInvariant<VerifierInvariants::VARIABLE_HAS_SCOPE> {
 public:
-    static std::optional<varbinder::LocalVariable *> GetLocalScopeVariable(CheckContext &ctx, const ir::AstNode *ast);
+    std::optional<varbinder::LocalVariable *> GetLocalScopeVariable(const ir::AstNode *ast);
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
 
-    bool ScopeEncloseVariable(CheckContext &ctx, const varbinder::LocalVariable *var);
+    bool ScopeEncloseVariable(const varbinder::LocalVariable *var);
     bool CheckAstExceptions(const ir::AstNode *ast);
 };
 

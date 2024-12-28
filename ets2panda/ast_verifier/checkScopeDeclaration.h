@@ -23,8 +23,8 @@ namespace ark::es2panda::compiler::ast_verifier {
 class CheckScopeDeclaration : public RecursiveInvariant<VerifierInvariants::CHECK_SCOPE_DECLARATION> {
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast) const;
-    CheckResult CheckScope(CheckContext &ctx, varbinder::Scope const *const scope) const;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
+    CheckResult CheckScope(varbinder::Scope const *const scope);
 };
 
 }  // namespace ark::es2panda::compiler::ast_verifier

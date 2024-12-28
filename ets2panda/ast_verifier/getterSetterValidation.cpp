@@ -22,19 +22,19 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-[[nodiscard]] CheckResult GetterSetterValidation::operator()(CheckContext &ctx, const ir::AstNode *ast)
+[[nodiscard]] CheckResult GetterSetterValidation::operator()(const ir::AstNode *ast)
 {
     if (!ast->IsMethodDefinition()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
     bool errorFound = false;
-    auto const validateMethod = [&ctx, &errorFound, this](ir::MethodDefinition const *const method) {
+    auto const validateMethod = [&errorFound, this](ir::MethodDefinition const *const method) {
         auto const kind = method->Kind();
         if (kind == ir::MethodDefinitionKind::GET) {
-            errorFound |= !ValidateGetter(ctx, method);
+            errorFound |= !ValidateGetter(method);
         } else if (kind == ir::MethodDefinitionKind::SET) {
-            errorFound |= !ValidateSetter(ctx, method);
+            errorFound |= !ValidateSetter(method);
         };
     };
 
@@ -51,15 +51,15 @@ namespace ark::es2panda::compiler::ast_verifier {
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-bool GetterSetterValidation::ValidateGetter(CheckContext &ctx, ir::MethodDefinition const *const method) const
+bool GetterSetterValidation::ValidateGetter(ir::MethodDefinition const *const method)
 {
     if (!method->Value()->IsFunctionExpression()) {
         return true;
     }
 
     bool result = true;
-    auto const report = [&ctx, &result, method](const std::string &msg) {
-        ctx.AddCheckMessage(msg, *method, method->Start());
+    auto const report = [this, &result, method](const std::string &msg) {
+        AddCheckMessage(msg, *method);
         result = false;
     };
 
@@ -109,15 +109,15 @@ bool GetterSetterValidation::ValidateGetter(CheckContext &ctx, ir::MethodDefinit
     return result;
 }
 
-bool GetterSetterValidation::ValidateSetter(CheckContext &ctx, ir::MethodDefinition const *const method) const
+bool GetterSetterValidation::ValidateSetter(ir::MethodDefinition const *const method)
 {
     if (!method->Value()->IsFunctionExpression()) {
         return true;
     }
 
     bool result = true;
-    auto const report = [&ctx, &result, method](const std::string &msg) {
-        ctx.AddCheckMessage(msg, *method, method->Start());
+    auto const report = [this, &result, method](const std::string &msg) {
+        AddCheckMessage(msg, *method);
         result = false;
     };
 

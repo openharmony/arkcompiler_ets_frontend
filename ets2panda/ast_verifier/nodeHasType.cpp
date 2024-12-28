@@ -24,7 +24,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-CheckResult NodeHasType::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult NodeHasType::operator()(const ir::AstNode *ast)
 {
     // NOTE(orlovskymaxim) In TS some ETS constructs are expressions (i.e. class/interface definition)
     // Because ETS uses some AST classes from TS this introduces semantical problem
@@ -42,7 +42,7 @@ CheckResult NodeHasType::operator()(CheckContext &ctx, const ir::AstNode *ast)
     if (ast->IsTSTypeAliasDeclaration()) {
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }
-    if (auto [decision, action] = CheckCompound(ctx, ast); action == CheckAction::SKIP_SUBTREE) {
+    if (auto [decision, action] = CheckCompound(ast); action == CheckAction::SKIP_SUBTREE) {
         return {decision, action};
     }
 
@@ -55,36 +55,36 @@ CheckResult NodeHasType::operator()(CheckContext &ctx, const ir::AstNode *ast)
         }
         const auto *typed = static_cast<const ir::TypedAstNode *>(ast);
         if (typed->TsType() == nullptr) {
-            ctx.AddCheckMessage("NULL_TS_TYPE", *ast, ast->Start());
+            AddCheckMessage("NULL_TS_TYPE", *ast);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
     }
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-CheckResult NodeHasType::CheckCompound(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult NodeHasType::CheckCompound(const ir::AstNode *ast)
 {
     if (ast->IsTSInterfaceDeclaration()) {
         for (const auto &member : ast->AsTSInterfaceDeclaration()->Body()->Body()) {
-            [[maybe_unused]] auto _ = (*this)(ctx, member);
+            [[maybe_unused]] auto _ = (*this)(member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }
     if (ast->IsTSEnumDeclaration()) {
         for (const auto &member : ast->AsTSEnumDeclaration()->Members()) {
-            [[maybe_unused]] auto _ = (*this)(ctx, member);
+            [[maybe_unused]] auto _ = (*this)(member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }
     if (ast->IsClassDefinition()) {
         for (const auto &member : ast->AsClassDefinition()->Body()) {
-            [[maybe_unused]] auto _ = (*this)(ctx, member);
+            [[maybe_unused]] auto _ = (*this)(member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }
     if (ast->IsAnnotationDeclaration()) {
         for (const auto &member : ast->AsAnnotationDeclaration()->Properties()) {
-            [[maybe_unused]] auto _ = (*this)(ctx, member);
+            [[maybe_unused]] auto _ = (*this)(member);
         }
         return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
     }

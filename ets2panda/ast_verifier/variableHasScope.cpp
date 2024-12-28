@@ -22,7 +22,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-CheckResult VariableHasScope::operator()(CheckContext &ctx, const ir::AstNode *ast)
+CheckResult VariableHasScope::operator()(const ir::AstNode *ast)
 {
     if (!ast->IsIdentifier()) {
         // Check invariant of Identifier only
@@ -30,16 +30,16 @@ CheckResult VariableHasScope::operator()(CheckContext &ctx, const ir::AstNode *a
     }
 
     // we will check invariant for only local variables of identifiers
-    if (const auto maybeVar = GetLocalScopeVariable(ctx, ast); maybeVar.has_value()) {
+    if (const auto maybeVar = GetLocalScopeVariable(ast); maybeVar.has_value()) {
         const auto var = *maybeVar;
         const auto scope = var->GetScope();
         if (scope == nullptr) {
-            ctx.AddCheckMessage("NULL_SCOPE_LOCAL_VAR", *ast, ast->Start());
+            AddCheckMessage("NULL_SCOPE_LOCAL_VAR", *ast);
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
 
         auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
-        if (!ScopeEncloseVariable(ctx, var)) {
+        if (!ScopeEncloseVariable(var)) {
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
 
@@ -49,15 +49,15 @@ CheckResult VariableHasScope::operator()(CheckContext &ctx, const ir::AstNode *a
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
 }
 
-std::optional<varbinder::LocalVariable *> VariableHasScope::GetLocalScopeVariable(CheckContext &ctx,
-                                                                                  const ir::AstNode *ast)
+std::optional<varbinder::LocalVariable *> VariableHasScope::GetLocalScopeVariable(const ir::AstNode *ast)
 {
     if (!ast->IsIdentifier()) {
         return std::nullopt;
     }
 
     auto invariantHasVariable = IdentifierHasVariable {};
-    const auto [decision, action] = invariantHasVariable.VerifyNode(&ctx, ast);
+    const auto [decision, action] = invariantHasVariable.VerifyNode(ast);
+    AppendMessages(std::move(invariantHasVariable).MoveMessages());
 
     const auto variable = ast->AsIdentifier()->Variable();
     if (variable == nullptr) {
@@ -77,7 +77,7 @@ std::optional<varbinder::LocalVariable *> VariableHasScope::GetLocalScopeVariabl
     return std::nullopt;
 }
 
-bool VariableHasScope::ScopeEncloseVariable(CheckContext &ctx, const varbinder::LocalVariable *var)
+bool VariableHasScope::ScopeEncloseVariable(const varbinder::LocalVariable *var)
 {
     ASSERT(var);
 
@@ -91,10 +91,9 @@ bool VariableHasScope::ScopeEncloseVariable(CheckContext &ctx, const varbinder::
         return true;
     }
 
-    const auto varStart = node->Start();
     bool isOk = true;
     if (scope->Bindings().count(var->Name()) == 0) {
-        ctx.AddCheckMessage("SCOPE_DO_NOT_ENCLOSE_LOCAL_VAR", *node, varStart);
+        AddCheckMessage("SCOPE_DO_NOT_ENCLOSE_LOCAL_VAR", *node);
         isOk = false;
     }
 
@@ -104,7 +103,7 @@ bool VariableHasScope::ScopeEncloseVariable(CheckContext &ctx, const varbinder::
 
     if (!IsContainedIn(varNode, scopeNode) || scopeNode == nullptr) {
         if (!skip) {
-            ctx.AddCheckMessage("SCOPE_NODE_DONT_DOMINATE_VAR_NODE", *node, varStart);
+            AddCheckMessage("SCOPE_NODE_DONT_DOMINATE_VAR_NODE", *node);
             isOk = false;
         }
     }
@@ -113,7 +112,7 @@ bool VariableHasScope::ScopeEncloseVariable(CheckContext &ctx, const varbinder::
     const auto declDominate = std::count(decls.begin(), decls.end(), var->Declaration());
     if (declDominate == 0) {
         if (!skip) {
-            ctx.AddCheckMessage("SCOPE_DECL_DONT_DOMINATE_VAR_DECL", *node, varStart);
+            AddCheckMessage("SCOPE_DECL_DONT_DOMINATE_VAR_DECL", *node);
             isOk = false;
         }
     }

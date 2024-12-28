@@ -20,7 +20,7 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-CheckResult CheckScopeDeclaration::operator()(CheckContext &ctx, const ir::AstNode *ast) const
+CheckResult CheckScopeDeclaration::operator()(const ir::AstNode *ast)
 {
     if (!ast->IsIdentifier()) {
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
@@ -39,10 +39,10 @@ CheckResult CheckScopeDeclaration::operator()(CheckContext &ctx, const ir::AstNo
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
-    return CheckScope(ctx, scope);
+    return CheckScope(scope);
 }
 
-CheckResult CheckScopeDeclaration::CheckScope(CheckContext &ctx, varbinder::Scope const *const scope) const
+CheckResult CheckScopeDeclaration::CheckScope(varbinder::Scope const *const scope)
 {
     auto const *const node = scope->Node();
     if (node == nullptr) {
@@ -51,7 +51,7 @@ CheckResult CheckScopeDeclaration::CheckScope(CheckContext &ctx, varbinder::Scop
     }
 
     if (!node->IsScopeBearer()) {
-        ctx.AddCheckMessage("NODE IS NOT SCOPE BEARER", *node, node->Start());
+        AddCheckMessage("NODE IS NOT SCOPE BEARER", *node);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 
@@ -83,7 +83,7 @@ CheckResult CheckScopeDeclaration::CheckScope(CheckContext &ctx, varbinder::Scop
         }
     }
 
-    ctx.AddCheckMessage("SCOPE IS NOT CONSISTENT WITH ITS DECLARING NODE", *node, node->Start());
+    AddCheckMessage("SCOPE IS NOT CONSISTENT WITH ITS DECLARING NODE", *node);
     return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
 }
 

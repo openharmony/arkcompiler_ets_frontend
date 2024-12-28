@@ -23,7 +23,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 class ReferenceTypeAnnotationIsNull : public RecursiveInvariant<VerifierInvariants::REFERENCE_TYPE_ANNOTATION_IS_NULL> {
     template <VerifierInvariants ID>
     friend class InvariantBase;
-    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast);
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
     bool CheckExceptions(ir::Identifier const *const id) const;
 };
 
