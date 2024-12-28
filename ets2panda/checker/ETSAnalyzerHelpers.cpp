@@ -17,17 +17,28 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 namespace ark::es2panda::checker {
+
 void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *checker, checker::ETSObjectType *objType,
                                                        ir::ScriptFunction *extensionFunc, checker::Signature *signature)
 {
     const auto methodName = extensionFunc->Id()->Name();
-    // Only check if there are class and interfaces' instance methods which would shadow instance extension method
-    auto *const variable = objType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(methodName);
-    if (variable == nullptr) {
+
+    // check if there are class and interfaces' instance fields with the same name as extensions.
+    auto *const fieldVariable = objType->GetOwnProperty<checker::PropertyType::INSTANCE_FIELD>(methodName);
+    if (fieldVariable != nullptr) {
+        checker->LogTypeError({"The extension accessor or extension function '", methodName,
+                               "' has the same name with field of class ", objType->Name()},
+                              extensionFunc->Body()->Start());
         return;
     }
 
-    const auto *const funcType = variable->TsType()->AsETSFunctionType();
+    // check if there are class and interfaces' instance methods with the same name as extensions.
+    auto *const methodVariable = objType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(methodName);
+    if (methodVariable == nullptr) {
+        return;
+    }
+
+    const auto *const funcType = methodVariable->TsType()->AsETSFunctionType();
     for (auto *funcSignature : funcType->CallSignatures()) {
         signature->SetReturnType(funcSignature->ReturnType());
         if (!checker->Relation()->IsCompatibleTo(signature, funcSignature) &&
@@ -35,7 +46,11 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
             continue;
         }
 
-        if (funcSignature->HasSignatureFlag(SignatureFlags::PUBLIC)) {
+        if (signature->Function()->IsGetter() || signature->Function()->IsSetter()) {
+            checker->LogTypeError({"The extension accessor '", funcType->Name(),
+                                   "' has the same name with method in class ", objType->Name()},
+                                  extensionFunc->Body()->Start());
+        } else if (funcSignature->HasSignatureFlag(SignatureFlags::PUBLIC)) {
             checker->LogTypeError({"The extension function '", funcType->Name(),
                                    "' has the same name with public method in class ", objType->Name()},
                                   extensionFunc->Body()->Start());
@@ -67,8 +82,18 @@ void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETS
 static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc)
 {
     ASSERT(!extensionFunc->Params().empty());
-    ASSERT(extensionFunc->Params()[0]->AsETSParameterExpression()->Name() ==
-           varbinder::TypedBinder::MANDATORY_PARAM_THIS);
+    ASSERT(extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->IsReceiver());
+
+    if (extensionFunc->ReturnTypeAnnotation() != nullptr && extensionFunc->ReturnTypeAnnotation()->IsTSThisType()) {
+        // when return `this` in extensionFunction, the type of `this` actually should be type of the receiver,
+        // so some substitution should be done
+        auto *const thisType = extensionFunc->Signature()->Params()[0]->TsType();
+        auto *const thisTypeAnnotation =
+            extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->TypeAnnotation();
+        extensionFunc->Signature()->SetReturnType(thisType);
+        extensionFunc->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker->Allocator(), extensionFunc));
+    }
+
     auto thisVariable = extensionFunc->Params()[0]->Variable();
     extensionFunc->Body()->TransformChildrenRecursively(
         [=](ir::AstNode *ast) {
@@ -370,6 +395,7 @@ checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *funct
                                   memberExpr->Property()->Start());
             return nullptr;
         }
+
         SwitchMethodCallToFunctionCall(checker, expr, signature);
         return signature;
     }

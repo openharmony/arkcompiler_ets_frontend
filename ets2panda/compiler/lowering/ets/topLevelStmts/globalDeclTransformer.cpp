@@ -42,10 +42,17 @@ void GlobalDeclTransformer::VisitFunctionDeclaration(ir::FunctionDeclaration *fu
     funcExpr->SetRange(funcDecl->Function()->Range());
     ir::MethodDefinitionKind methodKind;
     if (funcDecl->Function()->IsExtensionMethod()) {
-        methodKind = ir::MethodDefinitionKind::EXTENSION_METHOD;
+        if (funcDecl->Function()->IsGetter()) {
+            methodKind = ir::MethodDefinitionKind::EXTENSION_GET;
+        } else if (funcDecl->Function()->IsSetter()) {
+            methodKind = ir::MethodDefinitionKind::EXTENSION_SET;
+        } else {
+            methodKind = ir::MethodDefinitionKind::EXTENSION_METHOD;
+        }
     } else {
         methodKind = ir::MethodDefinitionKind::METHOD;
     }
+
     auto *method = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
         allocator_, methodKind, funcDecl->Function()->Id()->Clone(allocator_, nullptr), funcExpr,
         funcDecl->Function()->Modifiers(), allocator_, false);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -106,6 +106,10 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
 static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir::Expression *expr)
 {
     auto *lcType = expr->TsType();
+    if (checker->IsExtensionETSFunctionType(lcType) && expr->IsMemberExpression() &&
+        expr->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR)) {
+        lcType = expr->AsMemberExpression()->ExtensionAccessorReturnType();
+    }
     if (auto *lcTypeAsPrimitive = checker->MaybeUnboxInRelation(lcType); lcTypeAsPrimitive != nullptr) {
         lcType = lcTypeAsPrimitive;
     }
@@ -122,7 +126,7 @@ static std::string GenFormatForExpression(ir::Expression *expr, size_t ix1, size
 
     if (expr->IsMemberExpression()) {
         auto const kind = expr->AsMemberExpression()->Kind();
-        if (kind == ir::MemberExpressionKind::PROPERTY_ACCESS) {
+        if ((kind & ir::MemberExpressionKind::PROPERTY_ACCESS) != 0) {
             res += ".@@I" + std::to_string(ix2);
         } else if (kind == ir::MemberExpressionKind::ELEMENT_ACCESS) {
             res += "[@@I" + std::to_string(ix2) + "]";

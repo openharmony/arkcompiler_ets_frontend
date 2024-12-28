@@ -79,11 +79,16 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 
 bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
 {
-    if (expr->TsType()->PossiblyETSNullish()) {
-        LogTypeError("Value is possibly nullish.", expr->Start());
+    if (!expr->TsType()->PossiblyETSNullish()) {
+        return true;
+    }
+
+    if (HasStatus(checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)) {
         return false;
     }
-    return true;
+
+    LogTypeError("Value is possibly nullish.", expr->Start());
+    return false;
 }
 
 Type *ETSChecker::GetNonNullishType(Type *type)
@@ -414,6 +419,7 @@ Type *ETSChecker::GetTypeOfSetterGetter(varbinder::Variable *const var)
     if (propType->HasTypeFlag(checker::TypeFlag::GETTER)) {
         return propType->FindGetter()->ReturnType();
     }
+
     return propType->FindSetter()->Params()[0]->TsType();
 }
 
@@ -1350,12 +1356,27 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
 
 bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
 {
-    if (!type->IsETSFunctionType()) {
+    if (type == nullptr || !type->IsETSFunctionType()) {
         return false;
     }
 
     for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
         if (signature->Function() != nullptr && signature->Function()->IsExtensionMethod()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool ETSChecker::IsExtensionAccessorFunctionType(checker::Type *type)
+{
+    if (type == nullptr || !type->IsETSFunctionType()) {
+        return false;
+    }
+
+    for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
+        if (signature->Function()->IsExtensionAccessor()) {
             return true;
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_STATEMENT_EXPRESSION_STATEMENT_H
 
 #include "ir/statement.h"
+#include "ir/expression.h"
 
 namespace ark::es2panda::ir {
 class Expression;
@@ -33,6 +34,14 @@ public:
     Expression *GetExpression()
     {
         return expression_;
+    }
+
+    void SetExpression(Expression *expr)
+    {
+        expression_ = expr;
+        if (expression_ != nullptr) {
+            expression_->SetParent(this);
+        }
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

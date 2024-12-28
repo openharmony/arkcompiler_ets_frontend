@@ -31,6 +31,7 @@
 #include "compiler/lowering/ets/capturedVariables.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/spreadLowering.h"
+#include "compiler/lowering/ets/extensionAccessorLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
@@ -70,6 +71,7 @@ static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
 static EnumLoweringPhase g_enumLoweringPhase;
 static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
 static SpreadConstructionPhase g_spreadConstructionPhase;
+static ExtensionAccessorPhase g_extensionAccessorPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
 static BoxingForLocals g_boxingForLocals;
@@ -144,6 +146,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_spreadConstructionPhase,
         &g_bigintLowering,
         &g_opAssignmentLowering,
+        &g_extensionAccessorPhase,
         &g_constStringToCharLowering,
         &g_boxingForLocals,
         &g_recordLowering,

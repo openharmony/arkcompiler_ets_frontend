@@ -1610,7 +1610,7 @@ void ETSChecker::ValidateResolvedProperty(varbinder::LocalVariable **property, c
     const Utype x = (flagsNum ^ (flagsNum >> 3U)) & 7U;
     const auto newFlags = PropertySearchFlags {flagsNum ^ (x | (x << 3U))};
 
-    auto *const newProp = target->GetProperty(ident->Name(), newFlags);
+    auto *newProp = target->GetProperty(ident->Name(), newFlags);
     if (newProp == nullptr) {
         LogTypeError({"Property '", ident->Name(), "' does not exist on type '", target->Name(), "'"}, ident->Start());
         return;
@@ -1885,7 +1885,9 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     auto searchName = target->GetReExportAliasValue(memberExpr->Property()->AsIdentifier()->Name());
     auto *prop = target->GetProperty(searchName, searchFlag);
 
-    if (memberExpr->Parent()->IsCallExpression() && memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
+    if ((memberExpr->Parent()->IsCallExpression() &&
+         memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) ||
+        prop == nullptr) {
         globalFunctionVar = ResolveInstanceExtension(memberExpr);
     }
 
@@ -1909,8 +1911,11 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
             return resolveRes;
         }
     } else {
-        resolveRes.emplace_back(
-            Allocator()->New<ResolveResult>(globalFunctionVar, ResolvedKind::INSTANCE_EXTENSION_FUNCTION));
+        auto *const callSig = globalFunctionVar->TsType()->AsETSFunctionType()->CallSignatures()[0];
+        ResolvedKind resolvedKind = (callSig->Function()->IsGetter() || callSig->Function()->IsSetter())
+                                        ? ResolvedKind::INSTANCE_EXTENSION_ACCESSOR
+                                        : ResolvedKind::INSTANCE_EXTENSION_FUNCTION;
+        resolveRes.emplace_back(Allocator()->New<ResolveResult>(globalFunctionVar, resolvedKind));
 
         if (prop == nullptr) {
             // No matched property, but have possible matched global extension function

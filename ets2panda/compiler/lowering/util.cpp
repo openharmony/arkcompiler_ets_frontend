@@ -125,11 +125,14 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
 {
     auto *scope = Rebind(varBinder, node);
 
-    auto *containingClass = ContainingClass(node);
     // NOTE(gogabr: should determine checker status more finely.
-    auto checkerCtx = checker::SavedCheckerContext(
-        checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
-        containingClass);
+    auto *containingClass = ContainingClass(node);
+    checker::CheckerStatus newStatus =
+        (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS;
+    if ((checker->Context().Status() & checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) != 0) {
+        newStatus |= checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK;
+    }
+    auto checkerCtx = checker::SavedCheckerContext(checker, newStatus, containingClass);
     auto scopeCtx = checker::ScopeContext(checker, scope);
 
     node->Check(checker);
@@ -143,9 +146,12 @@ void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *chec
     varBinder->ResolveReferencesForScopeWithContext(node, scope);
 
     auto *containingClass = ContainingClass(node);
-    auto checkerCtx = checker::SavedCheckerContext(
-        checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
-        containingClass);
+    checker::CheckerStatus newStatus =
+        (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS;
+    if ((checker->Context().Status() & checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) != 0) {
+        newStatus |= checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK;
+    }
+    auto checkerCtx = checker::SavedCheckerContext(checker, newStatus, containingClass);
     auto scopeCtx = checker::ScopeContext(checker, scope);
 
     node->Check(checker);

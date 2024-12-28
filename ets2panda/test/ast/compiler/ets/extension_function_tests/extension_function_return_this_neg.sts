@@ -18,7 +18,7 @@ class B {
 }
 
 function foo(this: B): this {
-    /* @@ label */return 2;
+    return /* @@ label */2;
 }
 
-/* @@@ label Error TypeError: Only extension function or a class method can return 'this'  */
+/* @@@ label Error TypeError: Type 'int' is not compatible with the enclosing method's return type 'B'  */

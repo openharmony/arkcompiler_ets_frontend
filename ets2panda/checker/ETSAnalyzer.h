@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,6 +63,8 @@ private:
     void CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const;
 
     checker::Type *CheckEnumMemberExpression(ETSEnumType *const baseType, ir::MemberExpression *const expr) const;
+    checker::Type *ResolveMemberExpressionByBaseType(ETSChecker *checker, checker::Type *baseType,
+                                                     ir::MemberExpression *expr) const;
 
     void CheckVoidTypeExpression(ETSChecker *checker, const ir::Expression *expr) const
     {
@@ -77,6 +79,7 @@ private:
                 return;
             }
         }
+
         bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement() ||
                           parent->IsETSLaunchExpression() || parent->IsCallExpression();
         if (!acceptVoid) {

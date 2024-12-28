@@ -22,6 +22,8 @@
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 
+#include <checker/ETSAnalyzerHelpers.h>
+
 namespace ark::es2panda::checker {
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name,
                                                              const varbinder::ResolveBindingOptions options)
@@ -658,6 +660,12 @@ void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, co
     }
 }
 
+static bool IsOmitConstInit(ir::ModifierFlags const flags)
+{
+    return ((flags & ir::ModifierFlags::CONST) != 0) ||
+           (((flags & ir::ModifierFlags::READONLY) != 0) && ((flags & ir::ModifierFlags::STATIC) != 0));
+}
+
 static bool NeedWidening(ir::Expression *e)
 {
     // NOTE: need to be done by smart casts. Return true if we need to infer wider type.
@@ -736,18 +744,8 @@ static checker::Type *CreateAnnotationType(ETSChecker *checker, checker::Type *i
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
 {
-    const util::StringView &varName = ident->Name();
-    ASSERT(ident->Variable());
     varbinder::Variable *const bindingVar = ident->Variable();
     checker::Type *annotationType = nullptr;
-
-    const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
-    const bool isReadonly = (flags & ir::ModifierFlags::READONLY) != 0;
-    const bool isStatic = (flags & ir::ModifierFlags::STATIC) != 0;
-    // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
-    // are assigned with CONSTANT, which would not be correct. (After feature supported)
-    const bool omitConstInit = isConst || (isReadonly && isStatic);
-
     if (typeAnnotation != nullptr) {
         annotationType = typeAnnotation->GetType(this);
         bindingVar->SetTsType(annotationType);
@@ -758,18 +756,18 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
     CheckAssignForDeclare(ident, typeAnnotation, init, flags, this);
 
-    if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
-        return GlobalTypeError();
-    }
-
-    TypeStackElement typeStackElement(this, init, {"Circular dependency detected for identifier: ", varName},
+    TypeStackElement typeStackElement(this, init, {"Circular dependency detected for identifier: ", ident->Name()},
                                       init->Start());
     if (typeStackElement.HasTypeError()) {
         return GlobalTypeError();
     }
-    checker::Type *initType = init->Check(this);
+
+    if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
+        return GlobalTypeError();
+    }
 
     // initType should not be nullptr. If an error occurs during check, set it to GlobalTypeError().
+    checker::Type *initType = init->Check(this);
     if (initType == nullptr || initType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
         return GlobalTypeError();
     }
@@ -794,14 +792,14 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
             }
         }
 
-        if (omitConstInit && ShouldPreserveConstantTypeInVariableDeclaration(annotationType, initType)) {
+        if (IsOmitConstInit(flags) && ShouldPreserveConstantTypeInVariableDeclaration(annotationType, initType)) {
             bindingVar->SetTsType(init->TsType());
         }
     } else {
-        CheckEnumType(init, initType, varName);
+        CheckEnumType(init, initType, ident->Name());
 
         // NOTE: need to be done by smart casts
-        auto needWidening = !omitConstInit && typeAnnotation == nullptr && NeedWidening(init);
+        auto needWidening = !IsOmitConstInit(flags) && typeAnnotation == nullptr && NeedWidening(init);
         bindingVar->SetTsType(needWidening ? GetNonConstantType(initType) : initType);
     }
 
@@ -2698,6 +2696,34 @@ void ETSChecker::ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const
     if (declNode->IsClassDefinition() && !declNode->AsClassDefinition()->IsClassDefinitionChecked()) {
         checker->CheckClassDefinition(declNode->AsClassDefinition());
     }
+}
+
+checker::Type *ETSChecker::TryGetTypeFromExtensionAccessor(ir::Expression *expr)
+{
+    if (expr->TsType() == nullptr) {
+        expr->Check(this);
+    }
+
+    if (!expr->IsMemberExpression() ||
+        !expr->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR)) {
+        return expr->TsType();
+    }
+
+    return expr->AsMemberExpression()->GetExtensionAccessorReturnType(this);
+}
+
+ir::CallExpression *ETSChecker::CreateExtensionAccessorCall(ETSChecker *checker, ir::MemberExpression *expr,
+                                                            ArenaVector<ir::Expression *> &&args)
+{
+    ir::Expression *callExpr = nullptr;
+    if (expr->Object()->IsETSNewClassInstanceExpression()) {
+        args.insert(args.begin(), expr->Object());
+        callExpr = checker->AllocNode<ir::CallExpression>(expr->Property(), std::move(args), nullptr, false, false);
+    } else {
+        callExpr = checker->AllocNode<ir::CallExpression>(expr, std::move(args), nullptr, false, false);
+    }
+    callExpr->SetRange(expr->Range());
+    return callExpr->AsCallExpression();
 }
 
 }  // namespace ark::es2panda::checker

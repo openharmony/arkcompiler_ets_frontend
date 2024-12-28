@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -203,6 +203,12 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
                 checker->ValidatePropertyAccess(var, objType_, property_->Start());
                 return {checker->GetTypeOfVariable(var), var};
             }
+
+            if (resolveRes[0]->Kind() == checker::ResolvedKind::INSTANCE_EXTENSION_ACCESSOR) {
+                auto *callee = const_cast<ir::Expression *>(this->AsExpression());
+                callee->AsMemberExpression()->AddMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR);
+            }
+
             return {checker->GetTypeOfVariable(resolveRes[0]->Variable()), nullptr};
         }
         case 2U: {
@@ -253,6 +259,46 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
     return commonPropType;
 }
 
+// Note: extension accessor looks same as member expression in checker phase, but its return type is FunctionType,
+// we need to get type of extension accessor in checker. For getter, its type is the return type of the function.
+// and for setter, it was a member expression set as left child of an assignment expression, we temporarily set its
+// type the same as the right child type. Further work will be done in lowering.
+checker::Type *MemberExpression::GetExtensionAccessorReturnType(checker::ETSChecker *checker)
+{
+    ASSERT(checker->IsExtensionETSFunctionType(TsType()));
+
+    bool isExtensionSetter =
+        Parent()->IsAssignmentExpression() && (Parent()->AsAssignmentExpression()->Left() == this) &&
+        (Parent()->AsAssignmentExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+
+    if (ExtensionAccessorReturnType() != nullptr) {
+        return ExtensionAccessorReturnType();
+    }
+    auto *dummyCallee = this->Clone(checker->Allocator(), nullptr);
+    dummyCallee->SetTsType(TsType());
+    auto *dummyCallExpr = checker->CreateExtensionAccessorCall(
+        checker, dummyCallee, ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
+
+    if (dummyCallExpr->Callee()->IsMemberExpression()) {
+        dummyCallExpr->Arguments().insert(dummyCallExpr->Arguments().begin(), dummyCallee->Object());
+    }
+
+    if (isExtensionSetter) {
+        dummyCallExpr->Arguments().emplace_back(Parent()->AsAssignmentExpression()->Right());
+    }
+    auto *signature = checker->ResolveCallExpressionAndTrailingLambda(TsType()->AsETSFunctionType()->CallSignatures(),
+                                                                      dummyCallExpr, Start());
+    if (signature == nullptr) {
+        checker->LogTypeError("Can't find the extension accessor.", Start());
+        return checker->GlobalVoidType();
+    }
+
+    checker::Type *dummyCallReturnType =
+        isExtensionSetter ? Parent()->AsAssignmentExpression()->Right()->TsType() : signature->ReturnType();
+    SetExtensionAccessorReturnType(dummyCallReturnType);
+    return dummyCallReturnType;
+}
+
 checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
     auto *const objType = checker->GetApparentType(Object()->TsType());
@@ -260,6 +306,9 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
         uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
     } else if (IsComputed() && objType->IsETSArrayType()) {  // access erased array or tuple type
         uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
+    } else if (checker->IsExtensionAccessorFunctionType(type)) {
+        SetTsType(type);
+        return GetExtensionAccessorReturnType(checker);
     }
     SetTsType(type == nullptr ? checker->GlobalTypeError() : type);
     return TsType();

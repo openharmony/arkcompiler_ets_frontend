@@ -1944,6 +1944,47 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
     return funcDecl;
 }
 
+ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags modifiers)
+{
+    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
+           Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET);
+
+    bool isGetter = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET;
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
+
+    Lexer()->NextToken();
+    auto newStatus = ParserStatus::ALLOW_SUPER | ParserStatus::FUNCTION_DECLARATION | ParserStatus::ALLOW_RECEIVER |
+                     ParserStatus::EXTENSION_ACCESSOR;
+
+    ir::Identifier *funcIdentNode = ExpectIdentifier();
+    CheckRestrictedBinding(funcIdentNode->Name(), funcIdentNode->Start());
+
+    ir::ScriptFunction *func =
+        isGetter ? ParseFunction(newStatus | ParserStatus::NEED_RETURN_TYPE) : ParseFunction(newStatus);
+    size_t paramCount = func->Params().size();
+    size_t getterValidParamCount = 1;
+    size_t setterValidParamCount = 2;
+    if (isGetter) {
+        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD | ir::ScriptFunctionFlags::GETTER);
+        if (getterValidParamCount != paramCount) {
+            LogSyntaxError("Extension Getter can only have 1 parameter.", startLoc);
+        }
+    } else {
+        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD | ir::ScriptFunctionFlags::SETTER);
+        if (setterValidParamCount != paramCount) {
+            LogSyntaxError("Extension Setter can only have 2 parameters.", startLoc);
+        }
+    }
+
+    func->SetIdent(funcIdentNode);
+
+    auto *funcDecl = AllocNode<ir::FunctionDeclaration>(Allocator(), func);
+    funcDecl->SetRange(func->Range());
+    func->AddModifier(modifiers);
+    func->SetStart(startLoc);
+    return funcDecl;
+}
+
 void ETSParser::AddPackageSourcesToParseList()
 {
     importPathManager_->AddToParseList(GetProgram()->SourceFileFolder(), util::ImportFlags::IMPLICIT_PACKAGE_IMPORT);

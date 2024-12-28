@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_FUNCTION_TYPE_H
 
 #include "checker/types/type.h"
+#include "checker/types/ets/etsObjectTypeConstants.h"
 #include "checker/types/signature.h"
 #include "ir/base/scriptFunction.h"
 
