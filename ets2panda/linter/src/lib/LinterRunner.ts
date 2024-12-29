@@ -116,11 +116,12 @@ export function lint(config: LinterConfig, etsLoaderPath: string | undefined): L
   }
 
   const tscStrictDiagnostics = getTscDiagnostics(tscCompiledProgram, srcFiles);
-  LibraryTypeCallDiagnosticChecker.rebuildTscDiagnostics(tscStrictDiagnostics);
+  LibraryTypeCallDiagnosticChecker.instance.rebuildTscDiagnostics(tscStrictDiagnostics);
   const linter = !options.interopCheckMode ?
     new TypeScriptLinter(tsProgram.getTypeChecker(), options, tscStrictDiagnostics) :
     new InteropTypescriptLinter(tsProgram.getTypeChecker(), tsProgram.getCompilerOptions(), options, etsLoaderPath);
   const { errorNodes, problemsInfos } = lintFiles(srcFiles, linter);
+  LibraryTypeCallDiagnosticChecker.instance.clear();
   consoleLog(options, '\n\n\nFiles scanned: ', srcFiles.length);
   consoleLog(options, '\nFiles with problems: ', errorNodes);
 

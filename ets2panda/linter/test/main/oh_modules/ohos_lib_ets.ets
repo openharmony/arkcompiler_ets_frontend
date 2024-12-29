@@ -68,10 +68,6 @@ export class TestClassD {
   public ccc: string = '';
 }
 
-
-export declare function foo_lib(p1: number, p2: string): undefined;
-export declare function foo_lib(p1: string, p2: number): undefined;
-
 export class TestClassH {
   constructor(a: A) {
   }
@@ -91,4 +87,3 @@ export class TestClassK {
   constructor(func: () => void, a: number, b: string) {
   }
 }
-

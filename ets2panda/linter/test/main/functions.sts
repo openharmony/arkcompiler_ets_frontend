@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { foo, bar } from "./oh_modules/ohos_lib"
+import { foo, bar, TestClassJ, TestClassK } from "./oh_modules/ohos_lib"
+import { foo as foo_ets, bar as bar_ets, TestClassJ as TestClassJ_ets, TestClassK as TestClassK_ets } from "./oh_modules/ohos_lib_ets"
 
 function restSpread() {
   const arr = [1, 2, 3];
@@ -125,3 +125,50 @@ function buildSwiper() {
     .foo(null)
   }
 }
+
+foo_ets(f(null));
+foo_ets(null);
+foo_ets(() => {
+  f(null);
+});
+
+new TestClassJ(f(null));
+new TestClassJ(null);
+new TestClassJ(() => {
+  f(null);
+});
+
+new TestClassJ_ets(f(null));
+new TestClassJ_ets(null);
+new TestClassJ_ets(() => {
+  f(null);
+});
+
+bar_ets(() => {
+  f(null);
+}, null, f(null));
+bar_ets(() => {
+  bar_ets(() => {
+    f(null);
+  }, null, f(null));
+}, null, foo_ets(f(null)));
+
+new TestClassK(() => {
+  f(null);
+}, null, f(null));
+new TestClassK(() => {
+  new TestClassK(() => {
+    f(null);
+  }, null, f(null));
+}, null, foo(f(null)));
+
+new TestClassK_ets(() => {
+  f(null);
+}, null, f(null));
+new TestClassK_ets(() => {
+  new TestClassK_ets(() => {
+    f(null);
+  }, null, f(null));
+}, null, foo_ets(f(null)));
+
+
