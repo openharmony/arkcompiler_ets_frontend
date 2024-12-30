@@ -645,7 +645,6 @@ module Es2pandaLibApi
     @class_base_namespace = ''
 
     attr_reader :class_base_namespace
-
     attr_writer :class_base_namespace
 
     def class_name
@@ -783,82 +782,71 @@ module Es2pandaLibApi
     end
 
     def check_no_gen_constructor(constructor)
-      res = false
-      Es2pandaLibApi.no_gen_constructor_info['postfix_contains']&.each do |postfix|
-        res ||= constructor.postfix&.include?(postfix)
+      Es2pandaLibApi.ignored_info['postfix_contains']&.each do |postfix|
+        return false if constructor.postfix&.include?(postfix)
       end
-      Es2pandaLibApi.no_gen_constructor_info['name_starts_with']&.each do |name_starts_with|
-        res ||= constructor.name&.start_with?(name_starts_with)
+      Es2pandaLibApi.ignored_info['constructors']['name_starts_with']&.each do |name_starts_with|
+        return false if constructor.name&.start_with?(name_starts_with)
       end
       constructor.args&.each do |arg|
-        Es2pandaLibApi.no_gen_constructor_info['arg_type']&.each do |arg_type|
-          res ||= Es2pandaLibApi.check_fit(arg.type, arg_type)
+        Es2pandaLibApi.ignored_info['args']&.each do |banned_arg_pattern|
+          return false if Es2pandaLibApi.check_fit(arg, banned_arg_pattern)
         end
-        Es2pandaLibApi.no_gen_method_info['template_type']&.each do |template_type|
-          res ||= Es2pandaLibApi.check_fit_template_type(arg.type, template_type)
-        end
-        Es2pandaLibApi.no_gen_constructor_info['arg_name']&.each do |arg_name|
-          res ||= (arg['name'] == arg_name)
+        Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
+          return false if Es2pandaLibApi.check_fit_template_type(arg.type, template_type)
         end
       end
-      Es2pandaLibApi.no_gen_constructor_info['call_class']&.each do |call_class|
-        res ||= (call_class['name'] == class_name)
+      Es2pandaLibApi.ignored_info['constructors']['call_class']&.each do |call_class|
+        return false if (call_class['name'] == class_name)
       end
-      !res
+      return true
     end
 
     def check_no_gen_method(method)
-      res = false # = Will be generated
-      Es2pandaLibApi.no_gen_method_info['postfix_contains']&.each do |postfix|
-        res ||= method.postfix&.include?(postfix)
+      return true if Es2pandaLibApi.allowed_info[class_name]&.include?(method.name)
+
+      Es2pandaLibApi.ignored_info['postfix_contains']&.each do |postfix|
+        return false if method.postfix&.include?(postfix)
       end
-      Es2pandaLibApi.no_gen_method_info['name_starts_with']&.each do |name_starts_with|
-        res ||= method.name&.start_with?(name_starts_with)
+      Es2pandaLibApi.ignored_info['methods']['name_starts_with']&.each do |name_starts_with|
+        return false if method.name.start_with?(name_starts_with)
       end
       method.args&.each do |arg|
-        Es2pandaLibApi.no_gen_method_info['arg_type']&.each do |arg_type|
-          res ||= Es2pandaLibApi.check_fit(arg.type, arg_type)
+        Es2pandaLibApi.ignored_info['args']&.each do |banned_arg_pattern|
+          return false if Es2pandaLibApi.check_fit(arg, banned_arg_pattern)
         end
-        Es2pandaLibApi.no_gen_method_info['template_type']&.each do |template_type|
-          res ||= Es2pandaLibApi.check_fit_template_type(arg.type, template_type)
-        end
-        Es2pandaLibApi.no_gen_method_info['arg_name']&.each do |arg_name|
-          res ||= (arg['name'] == arg_name)
+        Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
+          return false if Es2pandaLibApi.check_fit_template_type(arg.type, template_type)
         end
       end
-      Es2pandaLibApi.no_gen_method_info['return_type']&.each do |return_type|
-        res ||= begin
-                  method.return_type['name'] == return_type['name'] && (!return_type.respond_to?('namespace') ||
-        return_type['namespace'] == method.return_type['namespace'])
-                end
+      Es2pandaLibApi.ignored_info['methods']['return_type']&.each do |return_type|
+        return false if (method.return_type['name'] == return_type['name'] && (!return_type.respond_to?('namespace') ||
+                            return_type['namespace'] == method.return_type['namespace']))
       end
-      Es2pandaLibApi.no_gen_method_info['call_class']&.each do |call_class|
-        res ||= (call_class['name'] == class_name)
+      Es2pandaLibApi.ignored_info['methods']['call_class']&.each do |call_class|
+        return false if (call_class['name'] == class_name)
       end
-      Es2pandaLibApi.no_gen_method_info['template_type']&.each do |template_type|
-        res ||= Es2pandaLibApi.check_fit_template_type(method.return_type, template_type)
+      Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
+        return false if Es2pandaLibApi.check_fit_template_type(method.return_type, template_type)
       end
-      !res
+      return true
     end
 
     def check_no_get_field(field)
-      res = false # = Will be generated
-      Es2pandaLibApi.no_gen_method_info['name_starts_with']&.each do |name_starts_with|
-        res ||= field.name&.start_with?(name_starts_with)
+      Es2pandaLibApi.ignored_info['methods']['name_starts_with']&.each do |name_starts_with|
+        return false if field.name&.start_with?(name_starts_with)
       end
-      Es2pandaLibApi.no_gen_method_info['return_type']&.each do |return_type|
-        res ||= begin
-                  field.type['name'] == return_type['name'] && (!return_type.respond_to?('namespace') ||
-        return_type['namespace'] == field.type['namespace'])
-                end
+      Es2pandaLibApi.ignored_info['methods']['return_type']&.each do |return_type|
+        return false if (field.type['name'] == return_type['name'] && (!return_type.respond_to?('namespace') ||
+        return_type['namespace'] == field.type['namespace']))
       end
-      Es2pandaLibApi.no_gen_method_info['call_class']&.each do |call_class|
-        res ||= (call_class['name'] == class_name)
+      Es2pandaLibApi.ignored_info['methods']['call_class']&.each do |call_class|
+        return false if (call_class['name'] == class_name)
       end
-      Es2pandaLibApi.no_gen_method_info['template_type']&.each do |template_type|
-        res ||= Es2pandaLibApi.check_fit_template_type(field.type, template_type)
+      Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
+        return false if Es2pandaLibApi.check_fit_template_type(field.type, template_type)
       end
-      !res
+      return true
     end
 
     def get_return_expr(return_type, call_cast, consts, method, args, function_type)
@@ -1013,6 +1001,8 @@ module Es2pandaLibApi
   @structs = {}
   @includes = Set.new
   @change_types = []
+  @ignored_info = {}
+  @allowed_info = {}
   @enums = Set.new(%w[AstNodeType ScopeType DeclType])
 
   @all_methods = 0.0
@@ -1054,95 +1044,6 @@ module Es2pandaLibApi
     { 'using types' => [
       { 'name' => 'function', 'namespace' => 'std' }
     ] }
-  end
-
-  def no_gen_constructor_info
-    { 'name_starts_with' =>
-      [],
-      'postfix_contains' =>
-      ['= delete', 'override'],
-      'arg_type' =>
-      [{ 'name' => 'Tag' }, { 'name' => 'T' }, { 'name' => 'K' },
-       { 'name' => 'Number', 'namespace' => 'lexer' }, { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' },
-       { 'name' => 'Property', 'namespace' => 'AstDumper' },
-       { 'name' => 'TSChecker', 'namespace' => 'checker' }, { 'name' => 'RelationHolder', 'namespace' => 'checker' },
-       { 'name' => 'initializer_list' }, { 'name' => 'stringstream' }, { 'name' => 'Holder' }, { 'name' => 'tuple' },
-       { 'name' => 'UnaryPredicate', 'namespace' => 'checker' }, { 'name' => 'ScopedDebugInfoPlugin' },
-       { 'name' => 'ModulesToExportedNamesWithAliases', 'namespace' => 'varbinder' }, { 'name' => 'SmartCastTypes' },
-       { 'name' => 'VariableType', 'namespace' => 'varbinder' }, { 'name' => 'Args', 'namespace' => 'varbinder' },
-       { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'auto' }, { 'name' => 'recursive_mutex' },
-       { 'name' => 'ConstraintCheckRecord' }, { 'name' => 'optional', 'namespace' => 'std' },
-       { 'name' => 'WrapperDesc' }, { 'name' => 'Args', 'namespace' => 'parser' }],
-      'template_type' =>
-      [{ 'name' => 'Checker' }, { 'name' => 'ETSChecker' }, { 'name' => 'Program' }, { 'name' => 'stringstream' },
-       { 'name' => 'TSChecker', 'namespace' => 'checker' }, { 'name' => 'T' }, { 'name' => 'K' }, { 'name' => 'tuple' },
-       { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'Args' },
-       { 'name' => 'ETSBinder' }, { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'pair' },
-       { 'name' => 'SmartCastTypes' }, { 'name' => 'ConstraintCheckRecord' }, { 'name' => 'ArenaVector' },
-       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'ScopedDebugInfoPlugin' }],
-      'call_class' =>
-      [{ 'name' => 'AstNode' }, { 'name' => 'ClassElement' }, { 'name' => 'TypedStatement' }, { 'name' => 'Annotated' },
-       { 'name' => 'Scope' }, { 'name' => 'Type' }, { 'name' => 'ObjectType' }, { 'name' => 'VarBinder' },
-       { 'name' => 'ETSBinder' }, { 'name' => 'BoundContext', 'namespace' => 'varbinder' },
-       { 'name' => 'Checker' }, { 'name' => 'ETSChecker' }, { 'name' => 'ETSParser' }],
-      'arg_name' =>
-      ['[N]'] }
-  end
-
-  def no_gen_method_info
-    { 'name_starts_with' =>
-      ['~', 'HasFloatingPoint', 'AddChildLambda', 'operator=', 'NumericConditionalCheck', 'CompileComputed',
-       'Result', 'GetConstOriginalBaseType', 'GetOwnProperty', 'AddProperty', 'RemoveProperty', 'ReduceSubtypes',
-       'CheckIdenticalVariable', 'CreatePropertyMap', 'AddSpecifiersToTopBindings', 'CheckForRedeclarationError',
-       'CheckExpressionsInConstructor', 'PerformArithmeticOperationOnTypes', 'PerformRelationOperationOnTypes',
-       'BindingsModuleObjectAddProperty', 'MakePropertyNonNullish', 'GetProxyMethodBody', 'GetFlagsForProxyLambda',
-       'ComputeProxyMethods', 'CheckValidUnionEqual', 'TestUnionType', 'IsValidSetterLeftSide', 'CreateProxyFunc',
-       'ApplyModifiersAndRemoveImplementedAbstracts', 'ValidateAbstractSignature', 'ValidateNonOverriddenFunction',
-       'InvalidateType', 'TypeError'],
-      'postfix_contains' =>
-      ['= delete', 'override'],
-      'return_type' =>
-      [{ 'name' => 'Checker' }, { 'name' => 'ETSChecker' }, { 'name' => 'ArenaAllocator' },
-       { 'name' => 'Allocator' }, { 'name' => 'Program' }, { 'name' => 'Tag' }, { 'name' => 'ConstraintCheckRecord' },
-       { 'name' => 'Number', 'namespace' => 'lexer' }, { 'name' => 'Property', 'namespace' => 'AstDumper' },
-       { 'name' => 'TSChecker', 'namespace' => 'checker' }, { 'name' => 'stringstream' }, { 'name' => 'Holder' },
-       { 'name' => 'tuple' }, { 'name' => 'UnaryPredicate', 'namespace' => 'checker' }, { 'name' => 'VarBinder' },
-       { 'name' => 'ModulesToExportedNamesWithAliases', 'namespace' => 'varbinder' }, { 'name' => 'T' },
-       { 'name' => 'K' }, { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'ETSBinder' },
-       { 'name' => 'Context', 'namespace' => 'public_lib' }, { 'name' => 'VariableType', 'namespace' => 'varbinder' },
-       { 'name' => 'Args', 'namespace' => 'varbinder' }, { 'name' => 'InsertResult', 'namespace' => 'varbinder' },
-       { 'name' => 'RelationHolder', 'namespace' => 'checker' }, { 'name' => 'auto' }, { 'name' => 'recursive_mutex' },
-       { 'name' => 'SmartCastArray' }, { 'name' => 'SmartCastTypes' }, { 'name' => 'SemanticAnalyzer' },
-       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'WrapperDesc' }, { 'name' => 'Language' },
-       { 'name' => 'ScopedDebugInfoPlugin' }, { 'name' => 'Args', 'namespace' => 'parser' }, { 'name' => 'ETSParser' },
-       { 'namespace' => 'std', 'name' => 'function' }, { 'name' => 'ScriptExtension' },
-       { 'name' => 'Result', 'namespace' => 'compiler::ast_verifier::' }],
-      'arg_type' =>
-      [{ 'name' => 'Tag' }, { 'name' => 'Number', 'namespace' => 'lexer' }, { 'name' => 'K' },
-       { 'name' => 'Property', 'namespace' => 'AstDumper' }, { 'name' => 'TSChecker', 'namespace' => 'checker' },
-       { 'name' => 'ArenaVector', 'template_args' => [{ 'type' => { 'name' => 'pair' } }] },
-       { 'name' => 'initializer_list' }, { 'name' => 'stringstream' }, { 'name' => 'Holder' }, { 'name' => 'tuple' },
-       { 'name' => 'UnaryPredicate', 'namespace' => 'checker' }, { 'name' => 'ScopedDebugInfoPlugin' },
-       { 'name' => 'ModulesToExportedNamesWithAliases', 'namespace' => 'varbinder' }, { 'name' => 'T' },
-       { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'Args', 'namespace' => 'varbinder' },
-       { 'name' => 'VariableType', 'namespace' => 'varbinder' }, { 'name' => 'Span' }, { 'name' => 'recursive_mutex' },
-       { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'auto' }, { 'name' => 'SmartCastArray' },
-       { 'name' => 'SmartCastTypes' }, { 'name' => 'ConstraintCheckRecord' }, { 'name' => 'WrapperDesc' },
-       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'RelationHolder', 'namespace' => 'checker' },
-       { 'name' => 'Args', 'namespace' => 'parser' }],
-      'template_type' =>
-      [{ 'name' => 'Checker' }, { 'name' => 'ETSChecker' }, { 'name' => 'Program' }, { 'name' => 'stringstream' },
-       { 'name' => 'TSChecker', 'namespace' => 'checker' }, { 'name' => 'T' }, { 'name' => 'K' },
-       { 'name' => 'ModuleEntry', 'namespace' => 'varbinder' }, { 'name' => 'Args' },
-       { 'name' => 'ETSBinder' }, { 'name' => 'InsertResult', 'namespace' => 'varbinder' }, { 'name' => 'pair' },
-       { 'name' => 'RelationHolder', 'namespace' => 'checker' }, { 'name' => 'recursive_mutex' }, { 'name' => 'tuple' },
-       { 'name' => 'SmartCastArray' }, { 'name' => 'SmartCastTypes' }, { 'name' => 'ConstraintCheckRecord' },
-       { 'name' => 'optional', 'namespace' => 'std' }, { 'name' => 'ArenaVector' }, { 'name' => 'WrapperDesc' },
-       { 'name' => 'ScopedDebugInfoPlugin' }],
-      'call_class' =>
-      [{ 'name' => 'Annotated' }],
-      'arg_name' =>
-      ['[N]'] }
   end
 
   def check_fit(data, pattern)
@@ -1268,22 +1169,6 @@ module Es2pandaLibApi
     )
   end
 
-  def ast_nodes
-    @ast_nodes
-  end
-
-  def ast_types
-    @ast_types
-  end
-
-  def scopes
-    @scopes
-  end
-
-  def declarations
-    @declarations
-  end
-
   def ast_variables
     [%w[NO Variable],
      %w[LOCAL LocalVariable],
@@ -1353,24 +1238,27 @@ module Es2pandaLibApi
     ]
   end
 
-  def classes
-    @classes
-  end
+  attr_reader :ast_nodes
+  attr_reader :ast_types
+  attr_reader :scopes
+  attr_reader :declarations
+  attr_reader :classes
+  attr_reader :structs
+  attr_reader :includes
+  attr_reader :enums
+  attr_reader :change_types
+  attr_reader :ignored_info
+  attr_reader :allowed_info
 
-  def structs
-    @structs
-  end
-
-  def includes
-    @includes
-  end
-
-  def change_types
-    @change_types
-  end
-
-  def enums
-    @enums
+  def deep_to_h(object)
+    case object
+    when OpenStruct
+      object.to_h.transform_keys(&:to_s).transform_values { |value| deep_to_h(value) }
+    when Array
+      object.map { |element| deep_to_h(element) }
+    else
+      object
+    end
   end
 
   def wrap_data(data)
@@ -1408,6 +1296,9 @@ module Es2pandaLibApi
     data.change_types&.each do |change_type|
       @change_types << change_type
     end
+
+    @ignored_info = deep_to_h(data.ignored_list) if data.ignored_list
+    @allowed_info = deep_to_h(data.allowed_list) if data.allowed_list
 
     @classes['ir'] = {} unless @classes['ir']
     data['ir']&.class_definitions&.each do |class_definition|
@@ -1457,9 +1348,9 @@ module Es2pandaLibApi
   end
 
   module_function :wrap_data, :classes, :ast_nodes, :includes, :change_types, :enums, :ast_types, :check_fit, :log,
-                  :stat_add_constructor, :stat_add_method, :print_stats, :no_gen_method_info, :no_gen_constructor_info,
+                  :stat_add_constructor, :stat_add_method, :print_stats, :ignored_info, :allowed_info,
                   :stat_add_class, :stat_add_unsupported_type, :ast_node_additional_children, :code_gen_children,
-                  :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables,
+                  :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables, :deep_to_h,
                   :no_usings_replace_info, :declarations, :check_fit_template_type, :structs, :structs_to_generate,
                   :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type
 end
