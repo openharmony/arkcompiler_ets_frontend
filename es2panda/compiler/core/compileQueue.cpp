@@ -157,6 +157,7 @@ void CompileAbcClassJob::Run()
     panda_file::File::EntityId recordId(classId_);
     auto *program = new panda::pandasm::Program();
     compiler_.CompileAbcClass(recordId, *program);
+    program->isGeneratedFromMergedAbc = true;
 
     // Update ohmurl for abc input when needed
     if (options_.compileContextInfo.needModifyRecord ||

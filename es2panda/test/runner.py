@@ -854,7 +854,16 @@ class CompilerProjectTest(Test):
 
     def gen_es2abc_cmd(self, runner, input_file, output_file):
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
-        es2abc_cmd.extend(self.flags)
+
+        new_flags = self.flags
+        if "--cache-file" in new_flags and len(self.test_paths) == 1:
+            # Generate cache-file test case in single thread 
+            new_flags.remove("--cache-file")
+            protobin_path = f"{self.test_paths[0].rsplit('.', 1)[0]}.protobin"
+            self.protoBin_file_path = protobin_path
+            es2abc_cmd.append('--cache-file=%s' % (protobin_path))
+
+        es2abc_cmd.extend(new_flags)
         es2abc_cmd.extend(['%s%s' % ("--output=", output_file)])
         es2abc_cmd.append(input_file)
         return es2abc_cmd
@@ -913,7 +922,17 @@ class CompilerProjectTest(Test):
             es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
         process = run_subprocess_with_beta3(self, es2abc_cmd)
         self.path = exec_file_path
-        out, err = process.communicate()
+        out, err = [None, None]
+
+        # Check single-thread execution timeout when required
+        if "--file-threads=0" in self.flags:
+            try:
+                out, err = process.communicate(timeout=60)
+            except:
+                process.kill()
+                print("Generating the abc file timed out.")
+        else:
+            out, err = process.communicate()
 
         # restore merge-abc flag
         if "merge_abc_consistence_check" in self.path and "--merge-abc" not in self.flags:
@@ -1575,6 +1594,8 @@ def add_directory_for_compiler(runners, args):
                                                 ["--debug-info", "--dump-debug-info", "--source-file", "debug-info.js"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/js/module-record-field-name-option.js", "js",
                                                 ["--module", "--module-record-field-name=abc"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/generateCache-projects", "ts",
+                                                ["--merge-abc", "--file-threads=0", "--cache-file"]))
     # Following directories of test cases are for dump-assembly comparison only, and is not executed.
     # Check CompilerProjectTest for more details.
     compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",

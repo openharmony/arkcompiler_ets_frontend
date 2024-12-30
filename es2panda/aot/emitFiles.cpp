@@ -33,7 +33,7 @@ void EmitFileQueue::ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob)
         auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
         if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
             auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, info.second);
-            emitProtoJob->DependsOn(emitMergedAbcJob);
+            emitMergedAbcJob->DependsOn(emitProtoJob);
             jobs_.push_back(emitProtoJob);
             jobsCount_++;
         }
@@ -51,14 +51,14 @@ void EmitFileQueue::Schedule()
         // generate merged abc
         auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(),
             options_->CompilerOptions().transformLib, progsInfo_, targetApi, targetSubApi);
+        //  One job should be placed before the jobs on which it depends to prevent blocking
+        jobs_.push_back(emitMergedAbcJob);
+        jobsCount_++;
         // Disable generating cached files when cross-program optimization is required, to prevent cached files from
         // not being invalidated when their dependencies are changed
         if (!options_->CompilerOptions().requireGlobalOptimization) {
             ScheduleEmitCacheJobs(emitMergedAbcJob);
         }
-        //  One job should be placed after those jobs which depend on it to prevent blocking
-        jobs_.push_back(emitMergedAbcJob);
-        jobsCount_++;
     } else {
         for (const auto &info: progsInfo_) {
             try {
@@ -93,6 +93,8 @@ void EmitSingleAbcJob::Run()
 
 void EmitMergedAbcJob::Run()
 {
+    std::unique_lock<std::mutex> lock(m_);
+    cond_.wait(lock, [this] { return dependencies_ == 0; });
     std::vector<panda::pandasm::Program*> progs;
     progs.reserve(progsInfo_.size());
     for (const auto &info: progsInfo_) {
@@ -102,11 +104,6 @@ void EmitMergedAbcJob::Run()
     bool success = panda::pandasm::AsmEmitter::EmitPrograms(
         panda::os::file::File::GetExtendedFilePath(outputFileName_), progs, true,
         targetApiVersion_, targetApiSubVersion_);
-
-    for (auto *dependant : dependants_) {
-        dependant->Signal();
-    }
-
     if (!success) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
             panda::pandasm::AsmEmitter::GetLastError() +
@@ -121,9 +118,10 @@ void EmitMergedAbcJob::Run()
 
 void EmitCacheJob::Run()
 {
-    std::unique_lock<std::mutex> lock(m_);
-    cond_.wait(lock, [this] { return dependencies_ == 0; });
     panda::proto::ProtobufSnapshotGenerator::UpdateCacheFile(progCache_, outputProtoName_);
+    for (auto *dependant : dependants_) {
+        dependant->Signal();
+    }
 }
 
 }  // namespace panda::es2panda::util
