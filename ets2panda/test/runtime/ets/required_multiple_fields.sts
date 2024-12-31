@@ -13,16 +13,26 @@
  * limitations under the License.
  */
 
-class B {
-    b_fld: number|undefined;
+interface I{
+    i: number;
+    j: string;
+    k: number;
 }
 
-class A<T> {
-    fld: Required<T>;
+interface I2{
+    i?: number;
+    j: string;
+    k?: number;
 }
 
-function main(): void {
-    let req_a: A<B> = {fld: /* @@ label */{}};
-}
+function main() {
+    let x: Required<I> = {i: 1.9, j :"some str", k:10};
+    assert(x.i == 1.9)
+    assert(x.j == "some str")
+    assert(x.k == 10)
 
-/* @@@ label Error TypeError: Class property 'b_fld' needs to be initialized for Required<B>.  */
+    let x2: Required<I2> = {i: 1.9, j :"some str", k:10};
+    assert(x2.i == 1.9)
+    assert(x2.j == "some str")
+    assert(x2.k  == 10)
+}

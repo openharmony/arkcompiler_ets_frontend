@@ -13,16 +13,17 @@
  * limitations under the License.
  */
 
-class B {
-    b_fld: number|undefined;
+class A {
+    i: number = 1;
+    j: string = "somestr";
+    static k: number = 10;
 }
 
-class A<T> {
-    fld: Required<T>;
+function main() {
+    let x: Required<A> = {i: 1.9, j :"somestr"};
+    let x2: Required<A> = {i: 1.9, j :"somestr", /* @@ label1 */K :100};
+    let x3: Required<A> = /* @@ label2 */{j :"somestr", j :"somestr"};
 }
 
-function main(): void {
-    let req_a: A<B> = {fld: /* @@ label */{}};
-}
-
-/* @@@ label Error TypeError: Class property 'b_fld' needs to be initialized for Required<B>.  */
+/* @@@ label1 Error TypeError: type A has no property named K  */
+/* @@@ label2 Error TypeError: Class property 'i' needs to be initialized for Required<A>.  */
