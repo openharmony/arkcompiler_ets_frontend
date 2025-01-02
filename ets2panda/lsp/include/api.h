@@ -25,6 +25,7 @@
 #include <variant>
 #include <vector>
 #include "utils/arena_containers.h"
+#include "public/es2panda_lib.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,6 +52,7 @@ typedef struct FileReferences {
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
     FileReferences *(*getFileReferences)(char const *fileName);
+    es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
 } LSPAPI;
 
 LSPAPI const *GetImpl();

@@ -88,4 +88,129 @@ void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *ref
     }
 }
 
+bool IsToken(const ir::AstNode *node)
+{
+    /**
+     * True if node is of some token node.
+     * For example, this is true for an IDENTIFIER or NUMBER_LITERAL but not for BLOCK_STATEMENT or CallExpression.
+     * Keywords like "if" and "of" exist as TOKEN_TYPE and cannot be recognized as AstNode, so returning nodes like
+     * IfKeyword or OfKeyword is not supported.
+     */
+    return node->Type() == ir::AstNodeType::BIGINT_LITERAL || node->Type() == ir::AstNodeType::BOOLEAN_LITERAL ||
+           node->Type() == ir::AstNodeType::CHAR_LITERAL || node->Type() == ir::AstNodeType::IDENTIFIER ||
+           node->Type() == ir::AstNodeType::NULL_LITERAL || node->Type() == ir::AstNodeType::UNDEFINED_LITERAL ||
+           node->Type() == ir::AstNodeType::NUMBER_LITERAL || node->Type() == ir::AstNodeType::REGEXP_LITERAL ||
+           node->Type() == ir::AstNodeType::STRING_LITERAL || node->Type() == ir::AstNodeType::TS_NUMBER_KEYWORD ||
+           node->Type() == ir::AstNodeType::TS_ANY_KEYWORD || node->Type() == ir::AstNodeType::TS_BOOLEAN_KEYWORD ||
+           node->Type() == ir::AstNodeType::TS_VOID_KEYWORD || node->Type() == ir::AstNodeType::TS_UNDEFINED_KEYWORD ||
+           node->Type() == ir::AstNodeType::TS_UNKNOWN_KEYWORD || node->Type() == ir::AstNodeType::TS_OBJECT_KEYWORD ||
+           node->Type() == ir::AstNodeType::TS_BIGINT_KEYWORD || node->Type() == ir::AstNodeType::TS_NEVER_KEYWORD ||
+           node->Type() == ir::AstNodeType::TS_NULL_KEYWORD || node->Type() == ir::AstNodeType::TEMPLATE_ELEMENT;
+}
+
+bool IsNonWhitespaceToken(const ir::AstNode *node)
+{
+    return IsToken(node);
+}
+
+bool NodeHasTokens(const ir::AstNode *node)
+{
+    return node->Start().index != node->End().index;
+}
+
+ir::AstNode *FindRightmostChildNodeWithTokens(const ArenaVector<ir::AstNode *> &nodes, int exclusiveStartPosition)
+{
+    for (int i = exclusiveStartPosition - 1; i >= 0; --i) {
+        if (NodeHasTokens(nodes[i])) {
+            return nodes[i];
+        }
+    }
+    return nullptr;
+}
+
+ArenaVector<ir::AstNode *> GetChildren(const ir::AstNode *node, ArenaAllocator *allocator)
+{
+    ArenaVector<ir::AstNode *> children(allocator->Adapter());
+    if (node->Type() == ir::AstNodeType::ETS_MODULE) {
+        // ETS_MODULE is the root node, need to get the definition of global class
+        auto globalClass =
+            node->FindChild([](ir::AstNode *child) { return child->IsClassDeclaration(); })->AsClassDeclaration();
+        node = globalClass->Definition();
+    }
+    node->Iterate([&children](ir::AstNode *child) { children.push_back(child); });
+    return children;
+}
+
+ir::AstNode *FindRightmostToken(const ir::AstNode *node, ArenaAllocator *allocator)
+{
+    if (node == nullptr) {
+        return nullptr;
+    }
+    if (IsNonWhitespaceToken(node)) {
+        return const_cast<ir::AstNode *>(node);
+    }
+    auto children = GetChildren(node, allocator);
+    if (children.empty()) {
+        return const_cast<ir::AstNode *>(node);
+    }
+    auto candidate = FindRightmostChildNodeWithTokens(children, children.size());
+    return FindRightmostToken(candidate, allocator);
+}
+
+ir::AstNode *FindNodeBeforePosition(const ArenaVector<ir::AstNode *> &children, size_t pos)
+{
+    if (children.empty()) {
+        return nullptr;
+    }
+    size_t left = 0;
+    size_t right = children.size() - 1;
+    size_t mid = 0;
+    while (left <= right) {
+        mid = left + ((right - left) >> 1U);
+        if (pos < children[mid]->End().index) {
+            if (mid == 0 || pos >= children[mid - 1]->End().index) {
+                break;
+            }
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return FindRightmostChildNodeWithTokens(children, mid);
+}
+
+ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator)
+{
+    auto checkFunc = [&pos](ir::AstNode *node) { return node->Start().index <= pos && pos <= node->End().index; };
+    auto found = startNode->FindChild(checkFunc);
+    if (found != nullptr) {
+        auto nestedFound = found->FindChild(checkFunc);
+        while (nestedFound != nullptr) {
+            // try to find the minimum node that embraces position
+            found = nestedFound;
+            nestedFound = found->FindChild(checkFunc);
+        }
+
+        // position is 0, found does not has any tokens
+        if (!NodeHasTokens(found)) {
+            return nullptr;
+        }
+
+        if (IsNonWhitespaceToken(found)) {
+            return found;
+        }
+
+        // found embraces the position, but none of its children do
+        // (ie: in a comment or whitespace preceding `child node`)
+        auto children = GetChildren(found, allocator);
+        auto candidate = FindNodeBeforePosition(children, pos);
+        return FindRightmostToken(candidate, allocator);
+    }
+
+    // position is in the global scope but not 0, found will be nullptr.
+    auto children = GetChildren(startNode, allocator);
+    auto candidate = FindNodeBeforePosition(children, pos);
+    return FindRightmostToken(candidate, allocator);
+}
+
 }  // namespace ark::es2panda::lsp
