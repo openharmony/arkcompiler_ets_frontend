@@ -13,10 +13,19 @@
  * limitations under the License.
  */
 
-struct A {
-    class B {
-        
-    }
-}
+#ifndef ES2PANDA_COMPILER_CORE_AST_VERIFIER_CHECKSTRUCTDECLARATION_H
+#define ES2PANDA_COMPILER_CORE_AST_VERIFIER_CHECKSTRUCTDECLARATION_H
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+#include "checkContext.h"
+
+namespace ark::es2panda::compiler::ast_verifier {
+
+class CheckStructDeclaration : public RecursiveInvariant<VerifierInvariants::CHECK_STRUCT_DECLARATION> {
+    template <VerifierInvariants ID>
+    friend class InvariantBase;
+    [[nodiscard]] CheckResult operator()(const ir::AstNode *ast);
+};
+
+}  // namespace ark::es2panda::compiler::ast_verifier
+
+#endif  // ES2PANDA_COMPILER_CORE_AST_VERIFIER_NODEHASPARENT_H

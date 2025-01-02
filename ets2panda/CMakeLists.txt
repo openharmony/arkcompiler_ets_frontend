@@ -135,6 +135,7 @@ set(ES2PANDA_LIB_SRC
   ast_verifier/checkConstProperties.cpp
   ast_verifier/checkInfiniteLoop.cpp
   ast_verifier/checkScopeDeclaration.cpp
+  ast_verifier/checkStructDeclaration.cpp
   ast_verifier/everyChildHasValidParent.cpp
   ast_verifier/everyChildInParentRange.cpp
   ast_verifier/getterSetterValidation.cpp
@@ -238,7 +239,6 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/packageImplicitImport.cpp
   compiler/lowering/ets/partialExportClassGen.cpp
   compiler/lowering/ets/promiseVoid.cpp
-  compiler/lowering/ets/structLowering.cpp
   compiler/lowering/ets/defaultParameterLowering.cpp
   compiler/lowering/ets/objectLiteralLowering.cpp
   compiler/lowering/ets/interfaceObjectLiteralLowering.cpp

@@ -290,6 +290,9 @@ void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::Annota
             case ir::AstNodeType::CLASS_DECLARATION:
                 node->AsClassDeclaration()->Definition()->SetAnnotations(std::move(annotations));
                 break;
+            case ir::AstNodeType::STRUCT_DECLARATION:
+                node->AsETSStructDeclaration()->Definition()->SetAnnotations(std::move(annotations));
+                break;
             case ir::AstNodeType::FUNCTION_DECLARATION:
                 node->AsFunctionDeclaration()->SetAnnotations(std::move(annotations));
                 break;

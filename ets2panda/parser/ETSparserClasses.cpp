@@ -509,6 +509,22 @@ void ETSParser::UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &
     }
 }
 
+std::pair<bool, bool> ETSParser::HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
+                                                             ir::ModifierFlags &memberModifiers)
+{
+    auto [modifierFlags, isStepToken] = ParseClassMemberAccessModifiers();
+    memberModifiers |= modifierFlags;
+
+    bool seenStatic = false;
+    UpdateMemberModifiers(memberModifiers, seenStatic);
+
+    if (!annotations.empty() && (memberModifiers & ir::ModifierFlags::ABSTRACT) != 0) {
+        LogSyntaxError("Annotations cannot be applied to an abstract class or method.", Lexer()->GetToken().Start());
+    }
+
+    return {seenStatic, isStepToken};
+}
+
 ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                           ir::ClassDefinitionModifiers modifiers,
                                           [[maybe_unused]] ir::ModifierFlags flags)
@@ -528,15 +544,8 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         return ParseClassStaticBlock();
     }
 
-    auto [modifierFlags, isStepToken] = ParseClassMemberAccessModifiers();
-    memberModifiers |= modifierFlags;
+    auto [seenStatic, isStepToken] = HandleClassElementModifiers(annotations, memberModifiers);
 
-    bool seenStatic = false;
-    UpdateMemberModifiers(memberModifiers, seenStatic);
-
-    if (!annotations.empty() && (memberModifiers & ir::ModifierFlags::ABSTRACT) != 0) {
-        LogSyntaxError("Annotations cannot be applied to an abstract class or method.", Lexer()->GetToken().Start());
-    }
     ir::AstNode *result = nullptr;
     auto delcStartLoc = Lexer()->GetToken().Start();
     switch (Lexer()->GetToken().Type()) {
@@ -545,6 +554,14 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         case lexer::TokenType::KEYW_ENUM:
             result = ParseInnerTypeDeclaration(memberModifiers, savedPos, isStepToken, seenStatic);
             break;
+        case lexer::TokenType::LITERAL_IDENT: {
+            if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT) {
+                result = ParseInnerTypeDeclaration(memberModifiers, savedPos, isStepToken, seenStatic);
+            } else {
+                result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
+            }
+            break;
+        }
         case lexer::TokenType::KEYW_CONSTRUCTOR:
             result = ParseInnerConstructorDeclaration(memberModifiers, startLoc);
             break;

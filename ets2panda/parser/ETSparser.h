@@ -413,6 +413,8 @@ private:
                                                    ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags) override;
+    std::pair<bool, bool> HandleClassElementModifiers(ArenaVector<ir::AnnotationUsage *> &annotations,
+                                                      ir::ModifierFlags &memberModifiers);
     void UpdateMemberModifiers(ir::ModifierFlags &memberModifiers, bool &seenStatic);
     ir::ModifierFlags ParseMemberAccessModifiers();
     template <bool IS_USAGE>

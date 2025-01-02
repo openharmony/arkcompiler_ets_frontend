@@ -14,9 +14,11 @@
  */
 
 struct A {
-    class B {
-        
+    y : number = 1
+    struct B {
+        x : string = ""
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+
+/* @@? 18:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */

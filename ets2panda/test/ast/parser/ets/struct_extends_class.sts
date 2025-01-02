@@ -13,10 +13,13 @@
  * limitations under the License.
  */
 
-struct A {
-    class B {
-        
-    }
+class A {
+
 }
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+struct B extends A {
+    
+}
+
+
+/* @@? 20:1 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase.  */

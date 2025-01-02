@@ -44,7 +44,6 @@
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/stringComparison.h"
-#include "compiler/lowering/ets/structLowering.h"
 #include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
@@ -87,7 +86,6 @@ static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
 static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
 static RecordLowering g_recordLowering;
-static StructLowering g_structLowering;
 static DefaultParameterLowering g_defaultParameterLowering;
 static TopLevelStatements g_topLevelStatements;
 static LocalClassConstructionPhase g_localClassLowering;
@@ -132,7 +130,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_initScopesPhaseEts,
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,
-        &g_structLowering,
         &g_expressionLambdaConstructionPhase,
         &g_interfacePropDeclPhase,
         &g_constantExpressionLowering,
