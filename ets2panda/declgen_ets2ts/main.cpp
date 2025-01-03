@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,14 +16,55 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "declgenEts2Ts.h"
-#include "util/options.h"
 
 namespace ark::es2panda::declgen_ets2ts {
 
+void FilterArgs(Span<const char *const> args, int &newArgc, const char **&newArgv)
+{
+    ASSERT(args.size() > 1);
+    std::vector<const char *> filteredArgs;
+    filteredArgs.push_back(args[0]);
+    for (size_t i = 1; i < args.size(); ++i) {
+        if (std::strcmp(args[i], "--export-all") == 0 ||
+            std::strncmp(args[i], "--output-dts", std::strlen("--output-dts")) == 0) {
+            continue;
+        }
+        filteredArgs.push_back(args[i]);
+    }
+
+    newArgc = static_cast<int>(filteredArgs.size());
+    if (newArgc <= 0 || static_cast<size_t>(newArgc) > args.size()) {
+        return;
+    }
+    newArgv = new const char *[newArgc];
+    std::copy(filteredArgs.begin(), filteredArgs.end(), newArgv);
+}
+
+static DeclgenOptions ParseOptions(Span<const char *const> args)
+{
+    ASSERT(args.size() > 1);
+    DeclgenOptions options;
+    for (size_t i = 1; i < args.size(); ++i) {
+        if (std::strcmp(args[i], "--export-all") == 0) {
+            options.exportAll = true;
+        } else if (std::strncmp(args[i], "--output-dts", std::strlen("--output-dts")) == 0 &&
+                   std::strchr(args[i], '=') != nullptr) {
+            std::string arg = args[i];
+            options.outputDts = arg.substr(std::strlen("--output-dts="));
+        }
+    }
+    return options;
+}
+
 static int Run(int argc, const char **argv)
 {
+    Span<const char *const> args(argv, static_cast<size_t>(argc));
+    auto declgenOptions = ParseOptions(args);
+    int newArgc = 0;
+    const char **newArgv = nullptr;
+    FilterArgs(args, newArgc, newArgv);
     const auto *impl = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
-    auto *cfg = impl->CreateConfig(argc, argv);
+    auto *cfg = impl->CreateConfig(newArgc, newArgv);
     if (cfg == nullptr) {
         return 1;
     }
@@ -38,12 +79,13 @@ static int Run(int argc, const char **argv)
     impl->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
 
     int res = 0;
-    if (!GenerateTsDeclarations(checker, ctxImpl->parserProgram, cfgImpl->options->GetOutput())) {
+    if (!GenerateTsDeclarations(checker, ctxImpl->parserProgram, cfgImpl->options, declgenOptions)) {
         res = 1;
     }
 
     impl->DestroyContext(ctx);
     impl->DestroyConfig(cfg);
+    delete[] newArgv;
 
     return res;
 }
