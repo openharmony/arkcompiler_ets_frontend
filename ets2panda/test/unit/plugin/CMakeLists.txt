@@ -25,6 +25,10 @@ set(EXPECTED_MODE "EXPECTED")
 set(LIBRARY_PLUGIN "LIB")
 set(EXECUTABLE_PLUGIN "EXE")
 
+set(COMMON_SOURCE_FILES
+    "util.cpp"
+)
+
 set(PLUGIN_TESTS
     #"test_name test_sts_file how_to_test_mode plugin_file_extension(c|cpp) how_to_compile_mode"
     "e2p_test_plugin_dump_json compile.sts ${RUNTIME_MODE} c ${LIBRARY_PLUGIN}"
@@ -42,6 +46,7 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_change_func runtime_change_func_call.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_change_call_lambda compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_annotation_change compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_test_print_err_msg_func compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
 
 set(RUNTIME_ARGUMENTS
@@ -58,9 +63,9 @@ foreach(TEST_DATA IN ITEMS ${PLUGIN_TESTS})
     list(GET TEST_DATA_ELEM 3 EXTENSION)
     list(GET TEST_DATA_ELEM 4 PLUGIN_MODE)
     if(${PLUGIN_MODE} STREQUAL ${LIBRARY_PLUGIN})
-        panda_add_library(${TEST_NAME} SHARED ${TEST_NAME}.${EXTENSION})
+        panda_add_library(${TEST_NAME} SHARED ${TEST_NAME}.${EXTENSION} ${COMMON_SOURCE_FILES})
     else()
-        panda_add_executable(${TEST_NAME} ${TEST_NAME}.${EXTENSION} OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+        panda_add_executable(${TEST_NAME} ${TEST_NAME}.${EXTENSION} ${COMMON_SOURCE_FILES} OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
         panda_add_sanitizers(TARGET ${TEST_NAME} SANITIZERS ${PANDA_SANITIZERS_LIST})
     endif()
     panda_target_include_directories(${TEST_NAME}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,43 +16,19 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include "public/es2panda_lib.h"
+
 #include "os/library_loader.h"
+
+#include "public/es2panda_lib.h"
+#include "util.h"
 
 // NOLINTBEGIN
 
-static const char *LIBNAME = "es2panda-public";
-constexpr int MIN_ARGC = 3;
 constexpr int NUMBER_OF_ANNO_DECLARATIONS = 2;
-constexpr int NULLPTR_IMPL_ERROR_CODE = 2;
 constexpr int PROCEED_ERROR_CODE = 3;
 constexpr int TEST_ERROR_CODE = 4;
 
 static es2panda_Impl *impl = nullptr;
-
-es2panda_Impl *GetImpl()
-{
-    std::string soName = ark::os::library_loader::DYNAMIC_LIBRARY_PREFIX + std::string(LIBNAME) +
-                         ark::os::library_loader::DYNAMIC_LIBRARY_SUFFIX;
-    auto libraryRes = ark::os::library_loader::Load(soName);
-    if (!libraryRes.HasValue()) {
-        std::cout << "Error in load lib" << std::endl;
-        return nullptr;
-    }
-
-    auto library = std::move(libraryRes.Value());
-    auto getImpl = ark::os::library_loader::ResolveSymbol(library, "es2panda_GetImpl");
-    if (!getImpl.HasValue()) {
-        std::cout << "Error in load func get impl" << std::endl;
-        return nullptr;
-    }
-
-    auto getImplFunc = reinterpret_cast<const es2panda_Impl *(*)(int)>(getImpl.Value());
-    if (getImplFunc != nullptr) {
-        return const_cast<es2panda_Impl *>(getImplFunc(ES2PANDA_LIB_VERSION));
-    }
-    return nullptr;
-}
 
 static std::string source = R"(
 // Annotation declaration:

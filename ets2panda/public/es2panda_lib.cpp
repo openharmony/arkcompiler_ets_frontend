@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -661,6 +661,31 @@ extern "C" es2panda_SourceRange *CreateSourceRange(es2panda_Context *context, es
     return reinterpret_cast<es2panda_SourceRange *>(allocator->New<lexer::SourceRange>(startE2p, endE2p));
 }
 
+extern "C" void LogTypeError(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos)
+{
+    auto ctx = reinterpret_cast<Context *>(context);
+    auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
+    ctx->checker->Initialize(ctx->parserProgram->VarBinder());
+    ctx->checker->ErrorLogger()->SetOstream(&std::cerr);
+    ctx->checker->LogTypeError(errorMsg, posE2p);
+}
+
+extern "C" void LogWarning(es2panda_Context *context, const char *warnMsg, es2panda_SourcePosition *pos)
+{
+    auto ctx = reinterpret_cast<Context *>(context);
+    auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
+    ctx->checker->Initialize(ctx->parserProgram->VarBinder());
+    ctx->checker->ErrorLogger()->SetOstream(&std::cout);
+    ctx->checker->Warning(warnMsg, posE2p);
+}
+
+extern "C" void LogSyntaxError(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos)
+{
+    auto *parser = reinterpret_cast<Context *>(context)->parser;
+    auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
+    parser->LogSyntaxError(errorMsg, posE2p);
+}
+
 extern "C" size_t SourcePositionIndex([[maybe_unused]] es2panda_Context *context, es2panda_SourcePosition *position)
 {
     return reinterpret_cast<lexer::SourcePosition *>(position)->index;
@@ -717,6 +742,9 @@ es2panda_Impl g_impl = {
     SourcePositionLine,
     SourceRangeStart,
     SourceRangeEnd,
+    LogTypeError,
+    LogWarning,
+    LogSyntaxError,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

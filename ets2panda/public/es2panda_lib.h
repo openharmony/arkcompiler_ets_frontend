@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -156,6 +156,9 @@ struct es2panda_Impl {
     size_t (*SourcePositionLine)(es2panda_Context *context, es2panda_SourcePosition *position);
     es2panda_SourcePosition *(*SourceRangeStart)(es2panda_Context *context, es2panda_SourceRange *range);
     es2panda_SourcePosition *(*SourceRangeEnd)(es2panda_Context *context, es2panda_SourceRange *range);
+    void (*LogTypeError)(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos);
+    void (*LogWarning)(es2panda_Context *context, const char *warnMsg, es2panda_SourcePosition *pos);
+    void (*LogSyntaxError)(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos);
 
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"
