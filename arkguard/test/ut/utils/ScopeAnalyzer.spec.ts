@@ -13,31 +13,49 @@
  * limitations under the License.
  */
 
-import {ListUtil} from '../../../src/utils/ListUtil';
-import {describe, it} from 'mocha';
-import {assert, expect} from 'chai';
+import { describe, it } from 'mocha';
+import { assert, expect } from 'chai';
 import * as fs from 'fs';
-import {TypeUtils} from '../../../src/utils/TypeUtils';
+import { TypeUtils } from '../../../src/utils/TypeUtils';
 import {
-  Label,
-  Scope,
-  ScopeKind,
-  ScopeManager,
   createLabel,
   createScopeManager,
+  getNameWithScopeLoc,
   isClassScope,
   isEnumScope,
   isFunctionScope,
   isGlobalScope,
   isInterfaceScope,
   isObjectLiteralScope,
-  getNameWithScopeLoc
+  Scope,
+  ScopeKind
 } from '../../../src/utils/ScopeAnalyzer';
-import { ScriptTarget, SourceFile, createSourceFile, isSourceFile, Symbol, __String, Declaration, JSDocTagInfo,
-   SymbolDisplayPart, SymbolFlags, TypeChecker, LabeledStatement, Identifier, SyntaxKind,
-   isIdentifier,
-   factory,
-   VariableStatement} from 'typescript';
+import type {
+  Label,
+  ScopeManager
+} from '../../../src/utils/ScopeAnalyzer';
+import {
+  createSourceFile,
+  factory,
+  ScriptTarget,
+  SyntaxKind,
+  SymbolFlags
+} from 'typescript';
+import type {
+  __String,
+  Declaration,
+  ExportDeclaration,
+  Identifier,
+  JSDocTagInfo,
+  LabeledStatement,
+  NamespaceExport,
+  ObjectBindingPattern,
+  SourceFile,
+  Symbol,
+  SymbolDisplayPart,
+  TypeChecker,
+  VariableStatement
+} from 'typescript';
 
 describe('ScopeAnalyzer ut', function () {
   let sourceFile: SourceFile;
@@ -88,7 +106,7 @@ describe('ScopeAnalyzer ut', function () {
     });
 
     it('is not Class Scope', function () {
-    let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
+      let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isClassScope(curScope));
     });
   });
@@ -100,7 +118,7 @@ describe('ScopeAnalyzer ut', function () {
     });
 
     it('is not Interface Scope', function () {
-    let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
+      let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isInterfaceScope(curScope));
     });
   });
@@ -112,7 +130,7 @@ describe('ScopeAnalyzer ut', function () {
     });
 
     it('is not Enum Scope', function () {
-    let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
+      let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isEnumScope(curScope));
     });
   });
@@ -124,7 +142,7 @@ describe('ScopeAnalyzer ut', function () {
     });
 
     it('is not ObjectLiteral Scope', function () {
-    let curScope = new Scope('curScope', sourceFile , ScopeKind.MODULE);
+      let curScope = new Scope('curScope', sourceFile, ScopeKind.MODULE);
       assert.isFalse(isObjectLiteralScope(curScope));
     });
   });
@@ -176,7 +194,7 @@ describe('ScopeAnalyzer ut', function () {
     describe('addLabel', function () {
       it('should add a label to the current scope', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
-        let label: Label = {name: 'testLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope};
+        let label: Label = { name: 'testLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope };
 
         curScope.addLabel(label);
         assert.include(curScope.labels, label);
@@ -230,7 +248,7 @@ describe('ScopeAnalyzer ut', function () {
     describe('getLabelLocation', function () {
       it('should return the correct location if label exists', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
-        let label: Label = {name: 'testLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope};
+        let label: Label = { name: 'testLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope };
 
         curScope.addLabel(label);
         assert.equal(curScope.getLabelLocation(label), 'testLabel');
@@ -238,7 +256,7 @@ describe('ScopeAnalyzer ut', function () {
 
       it('should return an empty string if label does not exist', function () {
         let curScope = new Scope('curScope', sourceFile, ScopeKind.GLOBAL);
-        let label: Label = {name: 'nonExistentLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope};
+        let label: Label = { name: 'nonExistentLabel', locInfo: 'locInfo', refs: [], parent: undefined, children: [], scope: curScope };
 
         assert.equal(curScope.getLabelLocation(label), '');
       });
@@ -497,6 +515,200 @@ describe('ScopeAnalyzer ut', function () {
           expect(nameSet.has('para2')).to.be.true;
           expect(nameSet.has('para3')).to.be.true;
           expect(nameSet.has('para4')).to.be.true;
+        });
+      });
+
+      describe('analyzeObjectBindingPatternRequire', function () {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeObjectBindingPatternRequire.ts';
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
+        let checker = TypeUtils.createChecker(sourceFile);
+        let scopeManager = createScopeManager();
+        scopeManager.analyze(sourceFile, checker, false);
+
+        it('getReservedNames', function () {
+          const reservedNames = scopeManager.getReservedNames();
+          assert.strictEqual(reservedNames.size === 0, true);
+        });
+        it('getRootScope', function () {
+          const rootScope = scopeManager.getRootScope();
+          assert.strictEqual(rootScope.parent, undefined);
+          assert.strictEqual(rootScope.fileImportNames?.size, 2);
+          assert.deepEqual(rootScope.fileImportNames, new Set(["x", "z"]));
+          assert.strictEqual(rootScope.importNames.size, 2);
+          assert.deepEqual(rootScope.fileImportNames, new Set(["x", "z"]));
+        });
+        describe('getScopeOfNode', function () {
+          it('node is not identifier', function () {
+            const node: SourceFile = sourceFile;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+
+          it('get the scope of node', function () {
+            const objectBindingPattern = (sourceFile.statements[1] as VariableStatement).declarationList.declarations[0].name;
+            assert.strictEqual(objectBindingPattern.kind, SyntaxKind.ObjectBindingPattern);
+            const node = (objectBindingPattern as ObjectBindingPattern).elements[0].name;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.notStrictEqual(scope, undefined);
+          });
+        });
+      });
+
+      describe('analyzeNamespaceExport', function () {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeNamespaceExport.ts';
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
+        let checker = TypeUtils.createChecker(sourceFile);
+        let scopeManager = createScopeManager();
+
+        it('exportObfuscation is false', function () {
+          scopeManager.analyze(sourceFile, checker, false);
+          const rootScope = scopeManager.getRootScope();
+          assert.deepEqual(rootScope.defs.size, 0);
+        });
+
+        it('exportObfuscation is true', function () {
+          scopeManager.analyze(sourceFile, checker, true);
+          const rootScope = scopeManager.getRootScope();
+          assert.strictEqual(rootScope.defs.size, 1);
+        });
+
+        it('getReservedNames', function () {
+          const reservedNames = scopeManager.getReservedNames();
+          assert.strictEqual(reservedNames.size === 0, true);
+        });
+        it('getRootScope', function () {
+          const rootScope = scopeManager.getRootScope();
+          assert.strictEqual(rootScope.parent, undefined);
+        });
+        describe('getScopeOfNode', function () {
+          it('node is not identifier', function () {
+            const node: SourceFile = sourceFile;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+
+          it('get the scope of node', function () {
+            const namespaceExport = (sourceFile.statements[0] as ExportDeclaration).exportClause;
+            assert.strictEqual((namespaceExport as NamespaceExport).kind, SyntaxKind.NamespaceExport);
+            const node = (namespaceExport as NamespaceExport).name;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.notStrictEqual(scope, undefined);
+          });
+        });
+      });
+
+      describe('analyzeBreakOrContinue', function () {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeBreakOrContinue.ts';
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
+        let checker = TypeUtils.createChecker(sourceFile);
+        let scopeManager = createScopeManager();
+        scopeManager.analyze(sourceFile, checker, false);
+
+        it('getReservedNames', function () {
+          const reservedNames = scopeManager.getReservedNames();
+          assert.strictEqual(reservedNames.size === 0, true);
+        });
+        it('getRootScope', function () {
+          const rootScope = scopeManager.getRootScope();
+          assert.strictEqual(rootScope.parent, undefined);
+          assert.strictEqual(rootScope.defs.size, 2);
+        });
+        describe('getScopeOfNode', function () {
+          it('node is not identifier', function () {
+            const node: SourceFile = sourceFile;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+
+          it('get the scope of node', function () {
+            const continueStatement = (sourceFile.statements[0] as any)
+                                      .body
+                                      .statements[0]
+                                      .statement
+                                      .statement
+                                      .statements[0]
+                                      .statement
+                                      .statement
+                                      .statements[0]
+                                      .thenStatement
+                                      .statements[0];
+            assert.strictEqual(continueStatement.kind, SyntaxKind.ContinueStatement);
+            const labelStatement = (sourceFile.statements[0] as any).body.statements[0];
+            assert.strictEqual(labelStatement.kind, SyntaxKind.LabeledStatement);
+          });
+        });
+      });
+
+      describe('analyzeCatchClause', function () {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeCatchClause.ts';
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
+        let checker = TypeUtils.createChecker(sourceFile);
+        let scopeManager = createScopeManager();
+        scopeManager.analyze(sourceFile, checker, false);
+
+        it('getReservedNames', function () {
+          const reservedNames = scopeManager.getReservedNames();
+          assert.strictEqual(reservedNames.size === 0, true);
+        });
+        it('getRootScope', function () {
+          const rootScope = scopeManager.getRootScope();
+          assert.strictEqual(rootScope.parent, undefined);
+          assert.strictEqual(rootScope.defs.size, 1);
+        });
+        describe('getScopeOfNode', function () {
+          it('node is not identifier', function () {
+            const node: SourceFile = sourceFile;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+
+          it('get the scope of node', function () {
+            const catchClause = (sourceFile.statements[0] as any).body.statements[0].catchClause;
+            assert.strictEqual(catchClause.kind, SyntaxKind.CatchClause);
+            const node = catchClause.variableDeclaration.name;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.notStrictEqual(scope, undefined);
+            assert.strictEqual(scope?.name, '$1');
+          });
+        });
+      });
+
+      describe('analyzeEnum', function () {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeEnum.ts';
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
+        let checker = TypeUtils.createChecker(sourceFile);
+        let scopeManager = createScopeManager();
+        scopeManager.analyze(sourceFile, checker, false);
+
+        it('getReservedNames', function () {
+          const reservedNames = scopeManager.getReservedNames();
+          assert.strictEqual(reservedNames.size === 0, true);
+        });
+        it('getRootScope', function () {
+          const rootScope = scopeManager.getRootScope();
+          assert.strictEqual(rootScope.parent, undefined);
+          assert.strictEqual(rootScope.defs.size, 1);
+        });
+        describe('getScopeOfNode', function () {
+          it('node is not identifier', function () {
+            const node: SourceFile = sourceFile;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.strictEqual(scope, undefined);
+          });
+
+          it('get the scope of node', function () {
+            const enumDeclaration = sourceFile.statements[0];
+            assert.strictEqual(enumDeclaration.kind, SyntaxKind.EnumDeclaration);
+            const node = (enumDeclaration as any).name;
+            const scope = scopeManager.getScopeOfNode(node);
+            assert.notStrictEqual(scope, undefined);
+            assert.strictEqual(scope?.name, '');
+          });
         });
       });
     });
