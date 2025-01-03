@@ -1753,7 +1753,7 @@ class ArkJsVmDownload:  # Obtain different versions of ark_js_vm and their depen
             return -1
 
     def git_clone(self, git_url, code_dir):
-        cmd = ["git", "clone", git_url, code_dir]
+        cmd = ["git", "clone", git_url, code_dir, "--depth=1"]
         retries = 1
         while retries <= self.max_retries:
             ret = self.run_cmd_cwd(cmd)
@@ -1937,7 +1937,7 @@ class TestAbcVersionControl(Test):
 
     def run_process(self, cmd):
         self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = self.process.communicate(timeout=10)
+        stdout, stderr = self.process.communicate()
         self.output = stdout.decode("utf-8", errors="ignore") + stderr.decode("utf-8", errors="ignore").split("\n")[0]
         if stderr:
             stderr = "Error executing command: %s\n%s" % (cmd, stderr)
