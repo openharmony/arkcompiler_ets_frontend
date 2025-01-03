@@ -466,7 +466,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "invoke",
+              "name": "$_invoke",
               "decorators": []
             },
             "kind": "method",
@@ -480,7 +480,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "invoke",
+                  "name": "$_invoke",
                   "decorators": []
                 },
                 "generator": false,
@@ -1060,7 +1060,7 @@
         "type": "MethodDefinition",
         "key": {
           "type": "Identifier",
-          "name": "invoke",
+          "name": "$_invoke",
           "decorators": []
         },
         "kind": "method",
@@ -1074,7 +1074,7 @@
             "type": "ScriptFunction",
             "id": {
               "type": "Identifier",
-              "name": "invoke",
+              "name": "$_invoke",
               "decorators": []
             },
             "generator": false,

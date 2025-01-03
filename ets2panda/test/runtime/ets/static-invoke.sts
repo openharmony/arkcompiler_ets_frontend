@@ -17,7 +17,7 @@ const num: int = 1;
 const param: int = 2;
 
 class A {
-    static invoke(): int {
+    static $_invoke(): int {
         return num;
     }
 }
@@ -27,13 +27,13 @@ class B extends A {
 }
 
 class C extends A {
-    static invoke(a: int): int {
+    static $_invoke(a: int): int {
         return a;
     }
 }
 
 class D extends A {
-    static invoke(cb: ()=>void): int {
+    static $_invoke(cb: ()=>void): int {
         cb();
         return num;
     }
@@ -54,7 +54,7 @@ class Z {
         return this.z_;
     }
 
-    static instantiate<T extends Z>(factory: ()=>T): T {
+    static $_instantiate<T extends Z>(factory: ()=>T): T {
         let z = factory();
         z.build();
         return z;
@@ -62,7 +62,7 @@ class Z {
 }
 
 class Y {
-    static instantiate<T extends Y>(factory: ()=>T, num: int): T {
+    static $_instantiate<T extends Y>(factory: ()=>T, num: int): T {
         num++;
         let y = factory();
         return y;

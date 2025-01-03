@@ -765,8 +765,8 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, ArenaVe
 
     for (auto it : lambdaSigs) {
         lciInfo.lambdaSignature = it;
-        CreateLambdaClassInvoke(ctx, info, &lciInfo, "invoke0", true);
-        CreateLambdaClassInvoke(ctx, info, &lciInfo, "invoke", false);
+        CreateLambdaClassInvoke(ctx, info, &lciInfo, checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME, true);
+        CreateLambdaClassInvoke(ctx, info, &lciInfo, compiler::Signatures::LAMBDA_OBJECT_INVOKE, false);
     }
 
     InitScopesPhaseETS::RunExternalNode(classDeclaration, varBinder);
@@ -1139,8 +1139,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
 
     auto const flag =
         checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
-    auto *methodName = checker::FUNCTIONAL_INTERFACE_SUBSTITUTED_INVOKE_METHOD_NAME;
-
+    util::StringView methodName = compiler::Signatures::LAMBDA_OBJECT_INVOKE;
     auto *prop = ifaceType->GetProperty(methodName, flag);
     if (prop == nullptr) {
         methodName = checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME;

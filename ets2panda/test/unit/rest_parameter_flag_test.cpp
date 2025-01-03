@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -263,7 +263,7 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_0)
             return 1;
         }
     )");
-    CheckNoRestParameterFlag("dummy.LambdaObject-ETSGLOBAL$lambda$invoke$0.invoke:i32;");
+    CheckNoRestParameterFlag("dummy.LambdaObject-ETSGLOBAL$lambda$invoke$0.$_invoke:i32;");
 }
 
 TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
@@ -273,7 +273,7 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
             return 1;
         }
     )");
-    CheckNoRestParameterFlag("dummy.LambdaObject-ETSGLOBAL$lambda$invoke$0.invoke:i64[];i32;");
+    CheckNoRestParameterFlag("dummy.LambdaObject-ETSGLOBAL$lambda$invoke$0.$_invoke:i64[];i32;");
 }
 
 // === Abstract method of abstract class ===

@@ -25,7 +25,7 @@ class X {
         return instance
     }
 
-    static invoke<T>(first: () => T, second: () => void): T {
+    static $_invoke<T>(first: () => T, second: () => void): T {
         const instance = first()
         second()
         return instance

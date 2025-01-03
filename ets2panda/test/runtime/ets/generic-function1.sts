@@ -14,7 +14,7 @@
  */
 
 class A {
-    static instantiate<T extends A>(factory: () => T, content: () => void): T {
+    static $_instantiate<T extends A>(factory: () => T, content: () => void): T {
         const instance = factory()
         instance.__initializeStruct()
         content()

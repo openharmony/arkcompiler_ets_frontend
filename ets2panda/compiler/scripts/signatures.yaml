@@ -124,11 +124,11 @@ defines:
     ref: DYNAMIC_MODULE_CLASS_INIT
   - name: $lambdaobject
     ref: LAMBDA_OBJECT
-  - name: invoke
+  - name: $_invoke
     ref: LAMBDA_OBJECT_INVOKE
-  - name: invoke
+  - name: $_invoke
     ref: STATIC_INVOKE_METHOD
-  - name: instantiate
+  - name: $_instantiate
     ref: STATIC_INSTANTIATE_METHOD
   - name: undefined
     ref: UNDEFINED

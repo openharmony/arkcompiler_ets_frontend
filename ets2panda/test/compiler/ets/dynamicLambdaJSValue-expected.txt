@@ -1276,7 +1276,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "invoke",
+              "name": "$_invoke",
               "decorators": [],
               "loc": {
                 "start": {
@@ -1300,7 +1300,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "invoke",
+                  "name": "$_invoke",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -1732,7 +1732,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "invoke",
+              "name": "$_invoke",
               "decorators": [],
               "loc": {
                 "start": {
@@ -1756,7 +1756,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "invoke",
+                  "name": "$_invoke",
                   "decorators": [],
                   "loc": {
                     "start": {

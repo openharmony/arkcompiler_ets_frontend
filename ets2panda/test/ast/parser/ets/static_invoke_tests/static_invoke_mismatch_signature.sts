@@ -14,7 +14,7 @@
  */
 
 class A {
-    static invoke(a: int): int {
+    static $_invoke(a: int): int {
         return a;
     }
 }

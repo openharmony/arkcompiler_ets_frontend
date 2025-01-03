@@ -15,7 +15,7 @@
 
 class DescribableFunction {
     description: string
-    public invoke(someArg: number): string {
+    public $_invoke(someArg: number): string {
         return someArg.toString()
     }
     constructor() {
@@ -24,7 +24,7 @@ class DescribableFunction {
 }
 
 function doSomething(fn: DescribableFunction): void {
-    console.log(fn.description + " returned " + fn.invoke(6))
+    console.log(fn.description + " returned " + fn.$_invoke(6))
 }
 
 doSomething(new DescribableFunction())
