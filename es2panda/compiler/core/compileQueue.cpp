@@ -117,6 +117,7 @@ void CompileFileJob::InsertAbcCachePrograms(uint32_t hashCode,
     Compiler::SetExpectedProgsCount(Compiler::GetExpectedProgsCount() + abcProgramsInfo.size() - 1);
     for (auto pair : abcProgramsInfo) {
         ASSERT(progsInfo_.find(pair.first) == progsInfo_.end());
+        pair.second->program.isGeneratedFromMergedAbc = true;
         auto *cache = allocator_->New<util::ProgramCache>(hashCode, std::move(pair.second->program), false);
         progsInfo_.insert({pair.first, cache});
     }

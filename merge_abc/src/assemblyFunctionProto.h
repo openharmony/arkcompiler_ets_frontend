@@ -37,8 +37,6 @@ public:
 class Parameter {
 public:
     static void Serialize(const panda::pandasm::Function::Parameter &param, protoPanda::Parameter &protoParam);
-    static void Deserialize(const protoPanda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
-                            panda::ArenaAllocator *allocator);
 };
 
 class Function {

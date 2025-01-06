@@ -92,6 +92,10 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
     }
     GenExpectedPropertyCountAnnotation();
+    GenSlotNumberAnnotation();
+    if (pg_->Context()->IsMergeAbc()) {
+        GenConcurrentModuleRequestsAnnotation();
+    }
 }
 
 const ArenaSet<util::StringView> &FunctionEmitter::Strings() const
@@ -607,8 +611,52 @@ void FunctionEmitter::GenExpectedPropertyCountAnnotation()
     func_->SetExpectedPropertyCount(pg_->GetExpectedPropertyCount());
 }
 
-// Emitter
+void FunctionEmitter::GenSlotNumberAnnotation()
+{
+    static const std::string SLOT_NUMBER = "_ESSlotNumberAnnotation";
+    static const std::string ELEMENT_NAME = "SlotNumber";
 
+    for (const auto &an : func_->metadata->GetAnnotations()) {
+        if (an.GetName() == SLOT_NUMBER) {
+            return;
+        }
+    }
+    pandasm::AnnotationData anno(SLOT_NUMBER);
+    pandasm::AnnotationElement ele(ELEMENT_NAME, std::make_unique<pandasm::ScalarValue>(
+        pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(static_cast<uint32_t>(func_->GetSlotsNum()))));
+    anno.AddElement(std::move(ele));
+    std::vector<pandasm::AnnotationData> annos;
+    annos.emplace_back(anno);
+    func_->metadata->AddAnnotations(annos);
+}
+
+void FunctionEmitter::GenConcurrentModuleRequestsAnnotation()
+{
+    static const std::string CONCURRENT_MODULE_REQUESTS = "_ESConcurrentModuleRequestsAnnotation";
+    static const std::string ELEMENT_NAME = "ConcurrentModuleRequest";
+    if (func_->GetFunctionKind() != panda::panda_file::FunctionKind::CONCURRENT_FUNCTION) {
+        return;
+    }
+
+    for (const auto &an : func_->metadata->GetAnnotations()) {
+        if (an.GetName() == CONCURRENT_MODULE_REQUESTS) {
+            return;
+        }
+    }
+
+    pandasm::AnnotationData anno(CONCURRENT_MODULE_REQUESTS);
+    for (auto &it : func_->concurrent_module_requests) {
+        panda::pandasm::AnnotationElement module_request(ELEMENT_NAME, std::make_unique<pandasm::ScalarValue>(
+            pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(static_cast<uint32_t>(it))));
+        anno.AddElement(std::move(module_request));
+    }
+
+    std::vector<pandasm::AnnotationData> annos;
+    annos.emplace_back(anno);
+    func_->metadata->AddAnnotations(annos);
+}
+
+// Emitter
 Emitter::Emitter(CompilerContext *context): source_lang_(context->SourceLang())
 {
     prog_ = new panda::pandasm::Program();
@@ -637,6 +685,10 @@ Emitter::Emitter(CompilerContext *context): source_lang_(context->SourceLang())
     AddSharedModuleRecord(context);
     AddScopeNamesRecord(context);
     AddExpectedPropertyCountRecord();
+    AddSlotNumberRecord();
+    if (context->IsMergeAbc()) {
+        AddConcurrentModuleRequestsRecord();
+    }
 }
 
 Emitter::~Emitter()
@@ -1255,6 +1307,26 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, util::PatchFix *p
 panda::pandasm::Program *Emitter::GetProgram() const
 {
     return prog_;
+}
+
+void Emitter::AddSlotNumberRecord()
+{
+    static const std::string SLOT_NUMBER = "_ESSlotNumberAnnotation";
+    // Source files with different file type will share the same slot number record.
+    // Thus the language of this record should be set as default.
+    pandasm::Record record(SLOT_NUMBER, pandasm::extensions::DEFAULT_LANGUAGE);
+    record.metadata->AddAccessFlags(panda::ACC_ANNOTATION);
+    prog_->record_table.emplace(SLOT_NUMBER, std::move(record));
+}
+
+void Emitter::AddConcurrentModuleRequestsRecord()
+{
+    static const std::string CONCURRENT_MODULE_REQUESTS = "_ESConcurrentModuleRequestsAnnotation";
+    // Source files with different file type will share the same slot number record.
+    // Thus the language of this record should be set as default.
+    pandasm::Record record(CONCURRENT_MODULE_REQUESTS, pandasm::extensions::DEFAULT_LANGUAGE);
+    record.metadata->AddAccessFlags(panda::ACC_ANNOTATION);
+    prog_->record_table.emplace(CONCURRENT_MODULE_REQUESTS, std::move(record));
 }
 
 }  // namespace panda::es2panda::compiler
