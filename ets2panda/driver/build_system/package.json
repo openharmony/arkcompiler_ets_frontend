@@ -1,0 +1,23 @@
+{
+    "name": "ArkTS2.0_build_system",
+    "version": "1.0.0",
+    "description": "Compile ArkTS 2.0 source code into bytecode, encompassing UI and kit syntax transformations.",
+    "private": true,
+    "scripts": {
+      "clean": "rimraf dist",
+      "build": "npm run clean && tsc",
+      "build_debug": "npm run clean && tsc --sourceMap",
+      "generate_abc": "npm run build && node ./dist/entry.js test/a.sts",
+      "run_abc": "./node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk/linux_host_tools/bin/ark --load-runtimes=ets --boot-panda-files=./node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk/ets/etsstdlib.abc test/a.abc ETSGLOBAL::main",
+      "run": "npm run generate_abc && npm run run_abc"
+    },
+    "devDependencies": {
+      "typescript": "^5.0.0",
+      "@types/node": "22.10.7",
+      "@tsconfig/recommended": "1.0.8",
+      "rimraf": "6.0.1"
+    },
+    "dependencies": {
+      "libarkts": "file:${absolute_path_to}/arkcompiler-sig/arkcompiler_ets_frontend"
+    }
+  }
