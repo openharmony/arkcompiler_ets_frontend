@@ -15,9 +15,6 @@
 
 #include "variableDeclaration.h"
 
-#include <binder/scope.h>
-#include <binder/variable.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/statements/variableDeclarator.h>
 

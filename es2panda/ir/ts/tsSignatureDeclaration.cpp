@@ -15,11 +15,8 @@
 
 #include "tsSignatureDeclaration.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
-#include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 #include <typescript/checker.h>
 

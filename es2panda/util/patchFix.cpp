@@ -14,16 +14,8 @@
  */
 
 #include "patchFix.h"
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <compiler/core/pandagen.h>
 #include <ir/expressions/literal.h>
-
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <unistd.h>
 
 namespace panda::es2panda::util {
 

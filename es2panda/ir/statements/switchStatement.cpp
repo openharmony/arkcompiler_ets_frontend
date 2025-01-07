@@ -15,14 +15,10 @@
 
 #include "switchStatement.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <compiler/core/labelTarget.h>
 #include <compiler/core/switchBuilder.h>
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
-#include <ir/expression.h>
 #include <ir/statements/switchCaseStatement.h>
 
 namespace panda::es2panda::ir {

@@ -15,17 +15,12 @@
 
 #include "scriptFunction.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/base/methodDefinition.h>
-#include <ir/expression.h>
 #include <ir/expressions/assignmentExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/expressionStatement.h>
-#include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 
 namespace panda::es2panda::ir {

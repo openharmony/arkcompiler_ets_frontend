@@ -15,10 +15,7 @@
 
 #include "arrayExpression.h"
 
-#include <util/helpers.h>
-#include <typescript/checker.h>
 #include <typescript/core/destructuringContext.h>
-#include <compiler/base/literals.h>
 #include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/base/spreadElement.h>

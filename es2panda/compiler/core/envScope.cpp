@@ -16,8 +16,6 @@
 #include "envScope.h"
 
 #include <compiler/core/pandagen.h>
-#include <ir/base/classDefinition.h>
-#include <ir/statement.h>
 
 namespace panda::es2panda::compiler {
 

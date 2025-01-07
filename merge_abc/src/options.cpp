@@ -15,8 +15,6 @@
 
 #include "options.h"
 
-#include <sstream>
-
 namespace panda::proto {
 // Options
 Options::Options() : argparser_(new panda::PandArgParser()) {}

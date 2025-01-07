@@ -15,14 +15,10 @@
 
 #include "catchClause.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <compiler/core/pandagen.h>
 #include <compiler/base/lreference.h>
 #include <typescript/checker.h>
-#include <typescript/types/type.h>
 #include <ir/astDump.h>
-#include <ir/expression.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/objectExpression.h>

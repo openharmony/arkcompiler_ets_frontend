@@ -16,7 +16,6 @@
 #include "awaitExpression.h"
 
 #include <compiler/core/pandagen.h>
-#include <compiler/core/regScope.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
 

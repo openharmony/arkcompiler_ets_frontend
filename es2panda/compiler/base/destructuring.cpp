@@ -15,10 +15,7 @@
 
 #include "destructuring.h"
 
-#include <util/helpers.h>
-#include <compiler/base/iterators.h>
 #include <compiler/base/lreference.h>
-#include <compiler/base/catchTable.h>
 #include <compiler/core/pandagen.h>
 #include <ir/base/property.h>
 #include <ir/base/spreadElement.h>

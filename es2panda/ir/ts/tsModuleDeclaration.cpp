@@ -15,8 +15,6 @@
 
 #include "tsModuleDeclaration.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/expression.h>
 

@@ -15,8 +15,6 @@
 
 #include "moduleHelpers.h"
 
-#include <util/helpers.h>
-#include <libpandabase/utils/hash.h>
 #include <protobufSnapshotGenerator.h>
 
 namespace panda::es2panda::util {

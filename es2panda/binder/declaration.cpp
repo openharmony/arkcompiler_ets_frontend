@@ -15,11 +15,9 @@
 
 #include "declaration.h"
 
-#include <binder/scope.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/ts/tsModuleDeclaration.h>
-#include <parser/program/program.h>
 
 namespace panda::es2panda::binder {
 

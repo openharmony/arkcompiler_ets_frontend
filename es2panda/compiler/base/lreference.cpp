@@ -15,7 +15,6 @@
 
 #include "lreference.h"
 
-#include <binder/declaration.h>
 #include <compiler/base/destructuring.h>
 #include <compiler/core/pandagen.h>
 #include <ir/base/classDefinition.h>

@@ -15,7 +15,6 @@
 
 #include "objectLiteralType.h"
 
-#include <binder/variable.h>
 #include <typescript/types/indexInfo.h>
 #include <typescript/types/signature.h>
 

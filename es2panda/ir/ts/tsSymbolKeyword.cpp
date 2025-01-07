@@ -16,7 +16,6 @@
 #include "tsSymbolKeyword.h"
 
 #include <ir/astDump.h>
-#include <typescript/checker.h>
 
 namespace panda::es2panda::ir {
 

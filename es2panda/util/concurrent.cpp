@@ -15,16 +15,7 @@
 
 #include "concurrent.h"
 
-#include <binder/scope.h>
-#include <compiler/core/compilerContext.h>
-#include <compiler/core/pandagen.h>
-#include <ir/astNode.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/expressions/literals/stringLiteral.h>
-#include <ir/statements/blockStatement.h>
-#include <ir/statements/expressionStatement.h>
-#include <lexer/token/sourceLocation.h>
-#include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::util {
 

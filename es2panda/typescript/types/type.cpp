@@ -15,10 +15,6 @@
 
 #include "type.h"
 
-#include <typescript/types/typeFlag.h>
-#include <typescript/types/typeFacts.h>
-#include <typescript/types/typeRelation.h>
-
 namespace panda::es2panda::checker {
 
 void Type::ToStringAsSrc(std::stringstream &ss) const

@@ -15,16 +15,10 @@
 
 #include "tsTypeReference.h"
 
-#include <binder/declaration.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/expressions/identifier.h>
-#include <ir/ts/tsInterfaceDeclaration.h>
-#include <ir/ts/tsTypeAliasDeclaration.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
-#include <ir/ts/tsEnumDeclaration.h>
 
 namespace panda::es2panda::ir {
 

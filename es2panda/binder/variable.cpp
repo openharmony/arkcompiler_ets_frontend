@@ -17,8 +17,6 @@
 
 #include <binder/scope.h>
 
-#include <utility>
-
 namespace panda::es2panda::binder {
 
 LocalVariable::LocalVariable(Decl *decl, VariableFlags flags) : Variable(decl, flags)

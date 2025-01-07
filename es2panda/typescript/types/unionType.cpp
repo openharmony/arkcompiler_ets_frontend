@@ -14,7 +14,6 @@
  */
 
 #include "unionType.h"
-#include <algorithm>
 
 #include <typescript/types/globalTypesHolder.h>
 

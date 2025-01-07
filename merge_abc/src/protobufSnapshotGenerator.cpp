@@ -13,10 +13,7 @@
  * limitations under the License.
  */
 
-#include "assemblyProgramProto.h"
-#include "assembly-program.h"
 #include "protobufSnapshotGenerator.h"
-#include "util/helpers.h"
 
 namespace panda::proto {
 void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &program, const std::string &outputName)

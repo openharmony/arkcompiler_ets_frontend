@@ -15,13 +15,8 @@
 
 #include "lexer.h"
 
-#include <es2panda.h>
 #include <gen/keywords.h>
-#include <lexer/token/letters.h>
-#include <lexer/token/tokenType.h>
 #include <parser/context/parserContext.h>
-
-#include <array>
 
 namespace panda::es2panda::lexer {
 

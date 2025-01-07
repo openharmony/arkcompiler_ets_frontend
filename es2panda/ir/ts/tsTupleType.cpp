@@ -15,12 +15,8 @@
 
 #include "tsTupleType.h"
 
-#include <util/helpers.h>
-#include <binder/scope.h>
 #include <typescript/checker.h>
-#include <typescript/types/indexInfo.h>
 #include <ir/astDump.h>
-#include <ir/typeNode.h>
 #include <ir/expressions/identifier.h>
 #include <ir/ts/tsNamedTupleMember.h>
 

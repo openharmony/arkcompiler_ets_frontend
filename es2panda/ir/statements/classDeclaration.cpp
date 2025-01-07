@@ -24,7 +24,6 @@
 #include <ir/base/decorator.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/identifier.h>
-#include <ir/module/exportDefaultDeclaration.h>
 
 namespace panda::es2panda::ir {
 

@@ -18,10 +18,8 @@
 #include <assembly-emitter.h>
 #include "utils/timers.h"
 
-#include <es2panda.h>
 #include <protobufSnapshotGenerator.h>
 #include <util/commonUtil.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda::aot {
 void EmitFileQueue::ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob)

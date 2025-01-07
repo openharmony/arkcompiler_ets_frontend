@@ -15,31 +15,22 @@
 
 #include "helpers.h"
 
-#include <binder/scope.h>
-#include <es2panda.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/classProperty.h>
-#include <ir/base/methodDefinition.h>
 #include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/booleanLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/unaryExpression.h>
-#include <ir/statement.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/expressionStatement.h>
-#include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/ts/tsParameterProperty.h>
-#include <lexer/token/sourceLocation.h>
-#include <parser/module/sourceTextModuleRecord.h>
 #include <util/concurrent.h>
 
 #ifdef ENABLE_BYTECODE_OPT
@@ -58,9 +49,6 @@
 #else
 #include <unistd.h>
 #endif
-#include <algorithm>
-#include <fstream>
-#include <iostream>
 
 namespace panda::es2panda::util {
 

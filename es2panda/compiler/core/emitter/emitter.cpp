@@ -15,25 +15,17 @@
 
 #include "emitter.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/pandagen.h>
 #include <compiler/debugger/debuginfoDumper.h>
 #include <compiler/base/catchTable.h>
-#include <es2panda.h>
-#include <gen/isa.h>
 #include <ir/base/annotation.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/methodDefinition.h>
 #include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/callExpression.h>
-#include <ir/expressions/functionExpression.h>
-#include <ir/expressions/literal.h>
 #include <ir/expressions/literals/booleanLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
@@ -46,14 +38,6 @@
 #include <ir/ts/tsEnumMember.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
 #include <ir/ts/tsTypeReference.h>
-#include <macros.h>
-#include <parser/program/program.h>
-#include <util/helpers.h>
-
-#include <string>
-#include <string_view>
-#include <tuple>
-#include <utility>
 
 namespace panda::es2panda::compiler {
 

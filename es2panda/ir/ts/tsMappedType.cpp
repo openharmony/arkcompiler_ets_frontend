@@ -16,7 +16,6 @@
 #include "tsMappedType.h"
 
 #include <ir/astDump.h>
-#include <ir/ts/tsTypeParameter.h>
 
 namespace panda::es2panda::ir {
 

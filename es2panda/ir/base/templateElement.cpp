@@ -16,9 +16,6 @@
 #include "templateElement.h"
 
 #include <ir/astDump.h>
-#include <util/ustring.h>
-
-#include <utility>
 
 namespace panda::es2panda::ir {
 

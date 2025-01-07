@@ -14,7 +14,6 @@
  */
 
 #include "assemblyFunctionProto.h"
-#include "libpandafile/file_items.h"
 
 namespace panda::proto {
 void CatchBlock::Serialize(const panda::pandasm::Function::CatchBlock &block, protoPanda::CatchBlock &protoBlock)

@@ -15,7 +15,6 @@
 
 #include "emitter.h"
 
-#include <assembly-program.h>
 #include <compiler/core/compilerContext.h>
 
 namespace panda::es2panda::compiler {

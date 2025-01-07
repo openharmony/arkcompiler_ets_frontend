@@ -16,12 +16,7 @@
 #include "tsTypeLiteral.h"
 
 #include <ir/astDump.h>
-#include <ir/ts/tsPropertySignature.h>
-#include <ir/expressions/identifier.h>
-#include <binder/variable.h>
-#include <binder/declaration.h>
 #include <typescript/checker.h>
-#include <typescript/types/signature.h>
 
 namespace panda::es2panda::ir {
 

@@ -15,14 +15,11 @@
 
 #include "typeElaborationContext.h"
 
-#include <util/helpers.h>
-#include <binder/scope.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
-#include <ir/base/spreadElement.h>
 #include <ir/base/property.h>
 
 namespace panda::es2panda::checker {

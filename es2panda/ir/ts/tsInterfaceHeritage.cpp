@@ -15,12 +15,7 @@
 
 #include "tsInterfaceHeritage.h"
 
-#include <binder/scope.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
-#include <ir/expressions/identifier.h>
-#include <ir/ts/tsTypeParameterInstantiation.h>
-#include <ir/ts/tsTypeReference.h>
 
 namespace panda::es2panda::ir {
 

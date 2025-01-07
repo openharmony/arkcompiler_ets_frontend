@@ -16,7 +16,6 @@
 #include "assertEntry.h"
 
 #include <ir/astDump.h>
-#include <ir/expression.h>
 #include <ir/expressions/literals/stringLiteral.h>
 
 namespace panda::es2panda::ir {

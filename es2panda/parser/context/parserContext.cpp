@@ -15,8 +15,6 @@
 
 #include "parserContext.h"
 
-#include <algorithm>
-
 namespace panda::es2panda::parser {
 const ParserContext *ParserContext::FindLabel(const util::StringView &label) const
 {
