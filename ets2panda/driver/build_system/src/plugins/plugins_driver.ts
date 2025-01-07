@@ -95,12 +95,10 @@ export class PluginDriver {
     return this.instance;
   }
 
-  public initPlugins(): void {
-    // parse json
-    const pluginConfigPath: string = path.resolve(__dirname, '../../plugin_config.json');
-    const pluginConfig = JSON.parse(fs.readFileSync(pluginConfigPath, 'utf-8'));
-
-    // load plugins
+  public initPlugins(pluginConfig: object): void {
+    if (!pluginConfig) {
+      return;
+    }
     const pluginResults: RawPlugins[] = Object.entries(pluginConfig).map(([key, value]) => {
       try {
         let pluginObject = require(value as string);

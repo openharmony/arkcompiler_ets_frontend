@@ -13,13 +13,4 @@
  * limitations under the License.
  */
 
-export const ARKTSCONFIG_JSON_FILE: string = 'arktsconfig.json';
-export const MERGED_ABC_FILE: string = 'modules_static.abc';
-export const LINKER_INPUT_FILE: string = 'fileInfo.txt';
-
-export const ETS_SUFFIX: string = '.ets';
-export const ABC_SUFFIX: string = '.abc';
-
-export const BUILD_TYPE_BUILD: string = 'build';
-
-export const PANDA_SDK_PATH_FROM_SDK: string = './node_modules/libarkts/arkoala-arkts/node_modules/@panda/sdk';
+export let strA = "hello world from harA!";

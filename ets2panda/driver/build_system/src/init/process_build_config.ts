@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
 import * as path from 'path';
 
 import {
@@ -21,30 +22,47 @@ import {
   isWindows,
 } from '../utils';
 import { PluginDriver } from '../plugins/plugins_driver';
+import { PANDA_SDK_PATH_FROM_SDK } from '../pre_define';
 
-export type BuildConfigType = string | string[];
-export let buildConfig: Record<string, BuildConfigType> = {};
+export type BuildConfigType = string | string[] | object;
 
-export function processBuildConfig(projectConfig: Record<string, BuildConfigType>): void {
-  buildConfig = { ...projectConfig };
-  initPlatformSpecificConfig();
-  PluginDriver.getInstance().initPlugins();
+export function processBuildConfig(projectConfig: Record<string, BuildConfigType>): Record<string, BuildConfigType> {
+  let buildConfig: Record<string, BuildConfigType> = { ...projectConfig };
+  let buildSdkPath: string = buildConfig.buildSdkPath as string;
+  buildConfig.pandaSdkPath = path.resolve(buildSdkPath, PANDA_SDK_PATH_FROM_SDK);
+
+  initPlatformSpecificConfig(buildConfig);
+  initBuildEnv(buildConfig);
+
+  PluginDriver.getInstance().initPlugins(buildConfig.plugins as object);
+
+  return buildConfig;
 }
 
-function initPlatformSpecificConfig(): void {
-  const arkPlatformPath: string = buildConfig.compileToolPath as string;
+function initPlatformSpecificConfig(buildConfig: Record<string, BuildConfigType>): void {
+  const arkPlatformPath: string = path.resolve(buildConfig.pandaSdkPath as string);
   if (isWindows()) {
-    buildConfig.abcLinkerPath = path.join(arkPlatformPath, 'bin', 'ark_link.exe');
-    buildConfig.depAnalyzerPath = path.join(arkPlatformPath, 'bin', 'dependency_analyzer.exe');
-    return;
+    buildConfig.abcLinkerPath = path.join(arkPlatformPath, 'windows_host_tools', 'bin', 'ark_link.exe');
   }
 
   if (isMac() || isLinux()) {
-    buildConfig.abcLinkerPath = path.join(arkPlatformPath, 'bin', 'ark_link');
-    buildConfig.depAnalyzerPath = path.join(arkPlatformPath, 'bin', 'dependency_analyzer');
+    buildConfig.abcLinkerPath = path.join(arkPlatformPath, 'linux_host_tools', 'bin', 'ark_link');
+  }
+
+  if (!fs.existsSync(buildConfig.abcLinkerPath as string)) {
+    console.error(`ERROR: ark_link not found in path: ${buildConfig.abcLinkerPath}`);
   }
 }
 
-export function cleanUpBuildConfig(): void {
-  buildConfig = {};
+export function initBuildEnv(buildConfig: Record<string, BuildConfigType>): void {
+  const arkPlatformPath: string = path.resolve(buildConfig.pandaSdkPath as string);
+  const currentPath: string | undefined = process.env.PATH;
+
+  let tsWrapperPath: string = path.resolve(arkPlatformPath, 'linux_host_tools', 'lib');
+  if (isWindows()) {
+    tsWrapperPath = path.resolve(arkPlatformPath, 'windows_host_tools', 'lib');
+  }
+
+  process.env.PATH = `${currentPath}${path.delimiter}${tsWrapperPath}`;
+  console.log('Updated PATH:', process.env.PATH);
 }
