@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,18 +13,28 @@
  * limitations under the License.
  */
 
-
-class Dog {
-    name: String;
-    legs: Int;
+class A {
+	X: number
+	Y: number
+    constructor(x:number, y:number) {
+        this.X = x;
+        this.Y = y;
+    }
 }
 
-let dog: Dog = {
-    name: "Scooby"
+class B {
+    a: A;
+    constructor(x:number, y:number) {
+        this.a = new A(1, 2);
+    }
+
+    foo() {
+        let getSum = (this: A): number => { return this.X + this.Y }
+        assert this.a.getSum() == 3;
+        assert getSum(this.a) == 3;
+    }
 }
 
-let hasSting = dog?.hasSting;
-
-/* @@? 26:5 Error TypeError: Circular dependency detected for identifier: hasSting  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
+function main(){
+    new B(1, 2).foo();
+}

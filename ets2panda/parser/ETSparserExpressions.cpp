@@ -372,6 +372,13 @@ bool IsPunctuartorSpecialCharacter(lexer::TokenType tokenType)
     }
 }
 
+// This function was created to reduce the size of `ETSParser::IsArrowFunctionExpressionStart`.
+static bool IsValidTokenTypeOfArrowFunctionStart(lexer::TokenType tokenType)
+{
+    return (tokenType == lexer::TokenType::LITERAL_IDENT ||
+            tokenType == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD || tokenType == lexer::TokenType::KEYW_THIS);
+}
+
 bool ETSParser::IsArrowFunctionExpressionStart()
 {
     const auto savedPos = Lexer()->Save();
@@ -405,8 +412,7 @@ bool ETSParser::IsArrowFunctionExpressionStart()
                 if (!expectIdentifier) {
                     break;
                 }
-                if (tokenType != lexer::TokenType::LITERAL_IDENT &&
-                    tokenType != lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+                if (!IsValidTokenTypeOfArrowFunctionStart(tokenType)) {
                     Lexer()->Rewind(savedPos);
                     return false;
                 }
@@ -429,8 +435,11 @@ bool ETSParser::IsArrowFunctionExpressionStart()
 
 ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()
 {
-    auto newStatus = ParserStatus::ARROW_FUNCTION;
+    auto newStatus = ParserStatus::ARROW_FUNCTION | ParserStatus::ALLOW_RECEIVER;
     auto *func = ParseFunction(newStatus);
+    if (func->HasReceiver()) {
+        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
+    }
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func, Allocator());
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;

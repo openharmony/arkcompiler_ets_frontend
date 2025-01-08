@@ -416,7 +416,7 @@ void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
     auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
 
     auto params = func->Scope()->ParamScope()->Params();
-    if (!params.empty() && params.front()->Name() == MANDATORY_PARAM_THIS) {
+    if (!params.empty() && params.front()->Name() == MANDATORY_PARAM_THIS && !func->IsExtensionMethod()) {
         return;  // Implicit this parameter is already inserted by ResolveReferences(), don't insert it twice.
     }
 

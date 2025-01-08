@@ -383,7 +383,8 @@ public:
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     void UpdateTypeProperties(checker::ETSChecker *checker, PropertyProcesser const &func);
     ETSObjectType *Substitute(TypeRelation *relation, const Substitution *substitution) override;
-    ETSObjectType *Substitute(TypeRelation *relation, const Substitution *substitution, bool cache);
+    ETSObjectType *Substitute(TypeRelation *relation, const Substitution *substitution, bool cache,
+                              bool isExtensionFunctionType = false);
     ETSObjectType *SubstituteArguments(TypeRelation *relation, ArenaVector<Type *> const &arguments);
     void Cast(TypeRelation *relation, Type *target) override;
     bool CastNumericObject(TypeRelation *relation, Type *target);

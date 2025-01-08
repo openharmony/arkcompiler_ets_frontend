@@ -1025,7 +1025,8 @@ Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo 
     }
 
     if (returnTypeAnnotation != nullptr && returnTypeAnnotation->IsTSThisType()) {
-        signature->AddSignatureFlag(SignatureFlags::THIS_RETURN_TYPE);
+        func->IsExtensionMethod() ? signature->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)
+                                  : signature->AddSignatureFlag(SignatureFlags::THIS_RETURN_TYPE);
     }
 
     if (func->IsAbstract()) {

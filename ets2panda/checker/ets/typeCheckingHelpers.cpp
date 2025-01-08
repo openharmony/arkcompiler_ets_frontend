@@ -576,7 +576,8 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
 // Determine if substituted method cast requires cast from erased type
 Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
 {
-    if (sig->HasSignatureFlag(checker::SignatureFlags::THIS_RETURN_TYPE)) {
+    if (sig->HasSignatureFlag(checker::SignatureFlags::THIS_RETURN_TYPE) ||
+        sig->HasSignatureFlag(checker::SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
         return sig->ReturnType();
     }
     auto *const baseSig = sig->Function() != nullptr ? sig->Function()->Signature() : nullptr;
@@ -1353,8 +1354,12 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
 
 bool ETSChecker::IsExtensionETSFunctionType(checker::Type *type)
 {
-    if (type == nullptr || !type->IsETSFunctionType()) {
+    if (type == nullptr || (!type->IsETSFunctionType() && !type->IsETSObjectType())) {
         return false;
+    }
+
+    if (type->IsETSObjectType()) {
+        return type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::EXTENSION_FUNCTION);
     }
 
     for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {

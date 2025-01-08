@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,18 +13,24 @@
  * limitations under the License.
  */
 
-
-class Dog {
-    name: String;
-    legs: Int;
+class A { name = "Bob" }
+let a = new A();
+let show = (this: A): string => {
+    return "Hi," + this.name;
 }
 
-let dog: Dog = {
-    name: "Scooby"
+function foo(this: A): string {
+    return "Hello," + this.name;
 }
 
-let hasSting = dog?.hasSting;
-
-/* @@? 26:5 Error TypeError: Circular dependency detected for identifier: hasSting  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
+let show2: (this: A) => string;
+show2 = show;
+assert show2(a) == "Hi,Bob";
+assert a.show2() == "Hi,Bob"; 
+assert show2(new A()) == "Hi,Bob";
+assert new A().show2() == "Hi,Bob"; 
+show2 = foo;
+assert show2(a) == "Hello,Bob";
+assert a.show2() == "Hello,Bob"; 
+assert show2(new A()) == "Hello,Bob";
+assert new A().show2() == "Hello,Bob"; 
