@@ -17,7 +17,6 @@
 /ets2panda/ @igelhaus @Prof1983
 /ets2panda/ast_verifier @mbolshov @igelhaus @Prof1983
 /ets2panda/lexer @chernykhsergey @igelhaus @zelentsovdmitry @Prof1983
-/ets2panda/lsp @igelhaus @Prof1983 @dreamdoomwalker @Ascnbio @yunusemrekarakaya
 /ets2panda/parser @chernykhsergey @igelhaus @Prof1983
 /ets2panda/public @mbolshov @igelhaus @Prof1983
 /ets2panda/test @igelhaus @Prof1983
@@ -29,13 +28,13 @@
 /test262/*.py			@shirunova_viktoria @gavin1012_hw @zhuheng27
 /test262/ignored*.txt		@shirunova_viktoria @gavin1012_hw @kuchkovairina @zhuheng27
 /test_ecma_bcopt/ @gavin1012_hw
-/ets2panda/checker/ETS*.* @zelentsovdmitry @igelhaus @Prof1983 @chernykhsergey
+/ets2panda/checker/ETS*.* @zelentsovdmitry
 /ets2panda/checker/ETSAnalyzer.cpp @akmaevaleksey @vpukhov @igelhaus @Prof1983
 /ets2panda/linter/              @ragnvald
-/ets2panda/parser/ETSparser*.* @zelentsovdmitry @igelhaus @Prof1983 @chernykhsergey
-/ets2panda/parser/expressionParser.cpp @zelentsovdmitry @igelhaus @Prof1983 @chernykhsergey
-/ets2panda/parser/parser*.* @zelentsovdmitry @igelhaus @Prof1983 @chernykhsergey
-/ets2panda/parser/statementParser.cpp @zelentsovdmitry @igelhaus @Prof1983 @chernykhsergey
+/ets2panda/parser/ETSparser*.* @zelentsovdmitry
+/ets2panda/parser/expressionParser.cpp @zelentsovdmitry
+/ets2panda/parser/parser*.* @zelentsovdmitry
+/ets2panda/parser/statementParser.cpp @zelentsovdmitry
 /test/workload/ignored*.txt     @shirunova_viktoria @kuchkovairina @gavin1012_hw @zhuheng27
 /ets2panda/checker/ets/dynamic.cpp @vpukhov @igelhaus @Prof1983
 /ets2panda/checker/ets/function.cpp @vpukhov @gogabr @igelhaus @Prof1983
@@ -49,7 +48,6 @@
 /ets2panda/compiler/core/ETSGen.* @zelentsovdmitry @igelhaus @Prof1983 @zelentsovdmitry
 /ets2panda/test/test-lists/astchecker @chernykhsergey @igelhaus @Prof1983
 /ets2panda/test/test-lists/parser @chernykhsergey @igelhaus @Prof1983
-/ets2panda/test/unit/lsp @igelhaus @Prof1983 @dreamdoomwalker @Ascnbio @yunusemrekarakaya
 /ets2panda/checker/types/ets/Nullish.* @vpukhov @gogabr @igelhaus @Prof1983
 /ets2panda/checker/types/ets/etsDynamicType.* @vpukhov @gogabr @igelhaus @Prof1983
 /ets2panda/checker/types/ets/etsFunctionType.* @vpukhov @gogabr @igelhaus @Prof1983
