@@ -41,8 +41,8 @@ import { LocalVariableCollections, UnobfuscationCollections } from '../utils/Com
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 import { WhitelistType } from '../utils/TransformUtil';
 import { endFilesEvent, startFilesEvent } from '../utils/PrinterUtils';
-import { MemoryDottingDefine } from '../utils/MemoryDottingDefine';
 import { initScanProjectConfigByMergeConfig, scanProjectConfig, resetScanProjectConfig } from '../common/ApiReader';
+import { MemoryDottingDefine } from '../utils/MemoryDottingDefine';
 import type { HvigorErrorInfo } from '../common/type';
 
 enum OptionType {
