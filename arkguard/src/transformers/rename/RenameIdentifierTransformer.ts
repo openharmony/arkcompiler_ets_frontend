@@ -844,7 +844,6 @@ namespace secharmony {
         });
       }
       LocalVariableCollections.reservedConfig = new Set(profile?.mReservedNames ?? []);
-      LocalVariableCollections.reservedStruct = new Set();
       profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
       profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
       isInitializedReservedList = true;

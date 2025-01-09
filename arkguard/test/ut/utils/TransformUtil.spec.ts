@@ -218,7 +218,6 @@ describe('test for TransformUtil', function () {
       UnobfuscationCollections.reservedSdkApiForLocal.add('isInLocalWhitelist');
       UnobfuscationCollections.reservedExportName.add('isInLocalWhitelist');
       LocalVariableCollections.reservedConfig.add('isInLocalWhitelist');
-      LocalVariableCollections.reservedStruct.add('isInLocalWhitelist');
 
       const reservedFlag: boolean = isInLocalWhitelist(originalName, recordMap, nameWithScope);
       assert.isTrue(reservedFlag);
@@ -235,6 +234,42 @@ describe('test for TransformUtil', function () {
 
       const isReservedLocalVariable: boolean = isInLocalWhitelist(originalName, recordMap, nameWithScope);
       assert.isFalse(isReservedLocalVariable);
+      UnobfuscationCollections.clear();
+    });
+
+    it('The local variables whitelist should be the same when printKeptName is enabled and disabled', function () {
+      const recordMap: Map<string, Set<string>> = new Map();
+      const nameWithScope: string = '246810';
+      UnobfuscationCollections.printKeptName = true;
+      LocalVariableCollections.reservedLangForLocal.add('isInLocalWhitelist1');
+      UnobfuscationCollections.reservedSdkApiForLocal.add('isInLocalWhitelist2');
+      UnobfuscationCollections.reservedExportName.add('isInLocalWhitelist3');
+      LocalVariableCollections.reservedConfig.add('isInLocalWhitelist4');
+      UnobfuscationCollections.reservedSdkApiForProp.add('notInLocalWhitelist');
+
+      const reservedFlag1: boolean = isInLocalWhitelist('isInLocalWhitelist1', recordMap, nameWithScope);
+      const reservedFlag2: boolean = isInLocalWhitelist('isInLocalWhitelist2', recordMap, nameWithScope);
+      const reservedFlag3: boolean = isInLocalWhitelist('isInLocalWhitelist3', recordMap, nameWithScope);
+      const reservedFlag4: boolean = isInLocalWhitelist('isInLocalWhitelist4', recordMap, nameWithScope);
+      const reservedFlag5: boolean = isInLocalWhitelist('notInLocalWhitelist', recordMap, nameWithScope);
+      assert.isTrue(reservedFlag1);
+      assert.isTrue(reservedFlag2);
+      assert.isTrue(reservedFlag3);
+      assert.isTrue(reservedFlag4);
+      assert.isFalse(reservedFlag5);
+
+      UnobfuscationCollections.printKeptName = false;
+      const isReservedLocalVariable1: boolean = isInLocalWhitelist('isInLocalWhitelist1', recordMap, nameWithScope);
+      const isReservedLocalVariable2: boolean = isInLocalWhitelist('isInLocalWhitelist2', recordMap, nameWithScope);
+      const isReservedLocalVariable3: boolean = isInLocalWhitelist('isInLocalWhitelist3', recordMap, nameWithScope);
+      const isReservedLocalVariable4: boolean = isInLocalWhitelist('isInLocalWhitelist4', recordMap, nameWithScope);
+      const isReservedLocalVariable5: boolean = isInLocalWhitelist('notInLocalWhitelist', recordMap, nameWithScope);
+      assert.isTrue(isReservedLocalVariable1);
+      assert.isTrue(isReservedLocalVariable2);
+      assert.isTrue(isReservedLocalVariable3);
+      assert.isTrue(isReservedLocalVariable4);
+      assert.isFalse(isReservedLocalVariable5);
+      LocalVariableCollections.clear();
       UnobfuscationCollections.clear();
     });
   });

@@ -159,8 +159,7 @@ export function handleReservedConfig(config: IOptions, optionName: string, reser
 export function isReservedLocalVariable(mangledName: string): boolean {
   return LocalVariableCollections.reservedLangForLocal.has(mangledName) ||
     LocalVariableCollections.reservedConfig?.has(mangledName) ||
-    LocalVariableCollections.reservedStruct?.has(mangledName) ||
-    UnobfuscationCollections.reservedSdkApiForProp?.has(mangledName) ||
+    UnobfuscationCollections.reservedSdkApiForLocal?.has(mangledName) ||
     UnobfuscationCollections.reservedExportName?.has(mangledName);
 }
 
@@ -252,11 +251,6 @@ function needToReservedLocal(originalName: string, recordMap: Map<string, Set<st
 
   if (LocalVariableCollections.reservedConfig?.has(originalName)) {
     recordReservedName(nameWithScope, WhitelistType.CONF, recordMap);
-    reservedFlag = true;
-  }
-
-  if (LocalVariableCollections.reservedStruct?.has(originalName)) {
-    recordReservedName(nameWithScope, WhitelistType.STRUCT, recordMap);
     reservedFlag = true;
   }
 
