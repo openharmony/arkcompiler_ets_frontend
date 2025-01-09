@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -26,6 +26,7 @@ set(ES2PANDA_API
 
 set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/varbinder/variableFlags.h
+    ${GENERATED_DIR}/options.h
     ${ES2PANDA_ROOT}/lexer/regexp/regexp.h
     ${ES2PANDA_ROOT}/util/language.h
     ${ES2PANDA_ROOT}/lexer/token/tokenType.h
@@ -284,10 +285,13 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/parser/ETSparser.h
     ${ES2PANDA_ROOT}/parser/parserFlags.h
     ${ES2PANDA_ROOT}/es2panda.h
+    ${ES2PANDA_ROOT}/ast_verifier/ASTVerifier.h
+    ${ES2PANDA_ROOT}/ast_verifier/checkContext.h
 )
 
 set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/typeMapping.yaml
+    ${LIBGEN_DIR}/gen/headers/options.yaml
     ${LIBGEN_DIR}/gen/headers/ir/astNodeMapping.yaml
     ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
     ${LIBGEN_DIR}/gen/headers/es2panda.yaml
@@ -546,6 +550,8 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/resolveResult.yaml
     ${LIBGEN_DIR}/gen/headers/parser/parserFlags.yaml
     ${LIBGEN_DIR}/gen/headers/parser/ETSparser.yaml
+    ${LIBGEN_DIR}/gen/headers/ast_verifier/ASTVerifier.yaml
+    ${LIBGEN_DIR}/gen/headers/ast_verifier/checkContext.yaml
     )
 
 
@@ -570,7 +576,7 @@ panda_gen(
     API ${RB_LIST}
     DESTINATION ${LIBGEN_DIR}
     SOURCE ${CMAKE_CURRENT_SOURCE_DIR}
-    EXTRA_DEPENDENCIES gen_yamls
+    EXTRA_DEPENDENCIES gen_yamls ${CMAKE_CURRENT_SOURCE_DIR}/enums.rb
 )
 
 set(HEADERS_PARSER_SOURCES
@@ -601,7 +607,7 @@ add_custom_command(
     DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES}
 )
 
-add_custom_target(gen_yamls DEPENDS ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
+add_custom_target(gen_yamls DEPENDS es2panda_options_gen ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
 
 
 set(ES2PANDA_PUBLIC_SOURCES

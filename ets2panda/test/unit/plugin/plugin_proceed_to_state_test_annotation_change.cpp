@@ -25,8 +25,6 @@
 // NOLINTBEGIN
 
 constexpr int NUMBER_OF_ANNO_DECLARATIONS = 2;
-constexpr int PROCEED_ERROR_CODE = 3;
-constexpr int TEST_ERROR_CODE = 4;
 
 static es2panda_Impl *impl = nullptr;
 

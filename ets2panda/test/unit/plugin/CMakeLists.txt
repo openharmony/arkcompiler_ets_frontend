@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -47,6 +47,12 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_change_call_lambda compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_test_annotation_change compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_test_print_err_msg_func compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_check_script_function_flags compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_find_import_declaration compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_test_number_literal compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_rerun_scopes_after_check compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_rerun_scopes_after_lowered compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_run_verifier compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
 
 set(RUNTIME_ARGUMENTS

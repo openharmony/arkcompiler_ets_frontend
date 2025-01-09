@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,6 +53,7 @@
 #include "parser/program/program.h"
 #include "util/generateBin.h"
 #include "util/options.h"
+#include "compiler/lowering/util.h"
 #include "generated/es2panda_lib/es2panda_lib_include.inc"
 
 // NOLINTBEGIN
@@ -639,6 +640,28 @@ SET_NUMBER_LITERAL_IMPL(Float, float)
 
 #undef SET_NUMBER_LITERAL_IMPL
 
+template <typename T>
+es2panda_AstNode *CreateNumberLiteral(es2panda_Context *ctx, T value)
+{
+    auto number = ark::es2panda::lexer::Number(value);
+    auto allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    auto node = allocator->New<ir::NumberLiteral>(number);
+    return reinterpret_cast<es2panda_AstNode *>(node);
+}
+
+template <typename T>
+es2panda_AstNode *UpdateNumberLiteral(es2panda_Context *ctx, es2panda_AstNode *original, T value)
+{
+    auto number = ark::es2panda::lexer::Number(value);
+    auto allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    auto node = allocator->New<ir::NumberLiteral>(number);
+    auto *e2pOriginal = reinterpret_cast<ir::AstNode *>(original);
+    node->SetOriginalNode(e2pOriginal);
+    node->SetParent(e2pOriginal->Parent());
+    node->SetRange(e2pOriginal->Range());
+    return reinterpret_cast<es2panda_AstNode *>(node);
+}
+
 extern "C" void *AllocMemory(es2panda_Context *context, size_t numberOfElements, size_t sizeOfElement)
 {
     auto *allocator = reinterpret_cast<Context *>(context)->allocator;
@@ -712,7 +735,41 @@ extern "C" es2panda_SourcePosition *SourceRangeEnd([[maybe_unused]] es2panda_Con
     return reinterpret_cast<es2panda_SourcePosition *>(allocator->New<lexer::SourcePosition>(E2pRange->end));
 }
 
+extern "C" void InitScopesPhaseETSRunExternalNode(es2panda_Context *ctx, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
+    auto context = reinterpret_cast<Context *>(ctx);
+    auto varbinder = context->parserProgram->VarBinder();
+    compiler::InitScopesPhaseETS::RunExternalNode(E2pNode, varbinder);
+}
+
+extern "C" es2panda_Scope *AstNodeFindNearestScope([[maybe_unused]] es2panda_Context *ctx, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
+    return reinterpret_cast<es2panda_Scope *>(compiler::NearestScope(E2pNode));
+}
+
+extern "C" void AstNodeRecheck(es2panda_Context *ctx, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
+    auto context = reinterpret_cast<Context *>(ctx);
+    auto varbinder = context->parserProgram->VarBinder()->AsETSBinder();
+    auto checker = context->checker->AsETSChecker();
+    return compiler::Recheck(varbinder, checker, E2pNode);
+}
+
 #include "generated/es2panda_lib/es2panda_lib_impl.inc"
+
+extern "C" Es2pandaEnum Es2pandaEnumFromString([[maybe_unused]] es2panda_Context *ctx, const char *str)
+{
+    return IrToE2pEnum(es2panda::util::gen::verifier_invariants::FromString(str));
+}
+
+extern "C" char *Es2pandaEnumToString(es2panda_Context *ctx, Es2pandaEnum id)
+{
+    auto *allocator = reinterpret_cast<Context *>(ctx)->allocator;
+    return StringViewToCString(allocator, es2panda::util::gen::verifier_invariants::ToString(E2pToIrEnum(id)));
+}
 
 es2panda_Impl g_impl = {
     ES2PANDA_LIB_VERSION,
@@ -735,6 +792,14 @@ es2panda_Impl g_impl = {
     SetNumberLiteralLong,
     SetNumberLiteralDouble,
     SetNumberLiteralFloat,
+    CreateNumberLiteral<int32_t>,
+    UpdateNumberLiteral<int32_t>,
+    CreateNumberLiteral<int64_t>,
+    UpdateNumberLiteral<int64_t>,
+    CreateNumberLiteral<double>,
+    UpdateNumberLiteral<double>,
+    CreateNumberLiteral<float>,
+    UpdateNumberLiteral<float>,
     AllocMemory,
     CreateSourcePosition,
     CreateSourceRange,
@@ -745,6 +810,11 @@ es2panda_Impl g_impl = {
     LogTypeError,
     LogWarning,
     LogSyntaxError,
+    InitScopesPhaseETSRunExternalNode,
+    AstNodeFindNearestScope,
+    AstNodeRecheck,
+    Es2pandaEnumFromString,
+    Es2pandaEnumToString,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

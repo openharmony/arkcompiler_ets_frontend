@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -82,7 +82,7 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
 
 def parse_declaration_without_postfix(data: str, start: int, res: Dict[str, Any]) -> int:
     # Arguments
-    start_of_args = find_first_of_characters("(", data, start)
+    start_of_args = smart_find_first_of_characters("(", data, start)
 
     if start_of_args >= len("operator") and data[start_of_args - len("operator") : start_of_args] == "operator":
         start_of_args = find_first_of_characters("(", data, start_of_args + 1)

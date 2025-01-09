@@ -20,8 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "os/library_loader.h"
-
 #include "public/es2panda_lib.h"
 #include "util.h"
 
@@ -117,7 +115,7 @@ int main(int argc, char **argv)
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
     CheckForErrors("PARSE", context);
 
-    impl->ProceedToState(context, ES2PANDA_BOUND);
+    impl->ProceedToState(context, ES2PANDA_STATE_BOUND);
     CheckForErrors("BOUND", context);
 
     impl->ProceedToState(context, ES2PANDA_STATE_CHECKED);
@@ -134,6 +132,9 @@ int main(int argc, char **argv)
 
     impl->ProceedToState(context, ES2PANDA_STATE_BIN_GENERATED);
     CheckForErrors("BIN", context);
+    if (impl->ContextState(context) == ES2PANDA_STATE_ERROR) {
+        return PROCEED_ERROR_CODE;
+    }
     impl->DestroyConfig(config);
 
     return 0;

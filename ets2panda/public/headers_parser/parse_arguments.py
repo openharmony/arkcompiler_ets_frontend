@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -51,20 +51,20 @@ def parse_type(data: str) -> dict:
 
             res["other_modifiers"] = f"{res['other_modifiers']} {modifier}".strip(" ")
 
-    # NOTE(@Zhelyapov Aleksey) Weakness (<>)
-    start_of_parenthes = data.find("(")
-    if start_of_parenthes != -1:
-        start_of_parenthes, end_of_parenthes = find_scope_borders(data, start_of_parenthes, "(")
-        res["cast_from"] = data[start_of_parenthes + 1 : end_of_parenthes]
-        current_pos = end_of_parenthes + 1
+    # Templates and other complex types
+    start_of_brackets = find_first_of_characters("({[<", data, current_pos)
+    if start_of_brackets != len(data):
+        opening_bracket = data[start_of_brackets]
+        start_of_brackets, end_of_brackets = find_scope_borders(data, start_of_brackets, opening_bracket)
+        offset, subtype = parse_arguments(data[start_of_brackets + 1 : end_of_brackets], 0, "types")
+        current_pos = start_of_brackets + 1 + offset + 1
 
-    # Template in arg
-    template_open_pos = data.find("<", current_pos)
-    if template_open_pos != -1:
-        template_open_pos, template_close_pos = find_scope_borders(data, 0, "<")
-
-        offset, res["template_args"] = parse_arguments(data[template_open_pos + 1 : template_close_pos], 0, "types")
-        current_pos = template_open_pos + 1 + offset + 1
+        if opening_bracket == "(":
+            res["cast_from"] = subtype
+        elif opening_bracket == "<":
+            res["template_args"] = subtype
+        else:
+            raise RuntimeError("Unreachable.")
 
     # Ptr
     ptr_start = data.find("*", current_pos)
