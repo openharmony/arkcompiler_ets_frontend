@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,48 +31,6 @@ void ImportExportDecls::ParseDefaultSources()
     varbinder_->SetDefaultImports(std::move(imports));
 }
 
-/**
- * @brief checks if `prog` matches with the path in `stmt` (an ImportDeclaration statement)
- *
- * @return true if `prog` is part of a package
- * @return false otherwise
- */
-bool ImportExportDecls::MatchResolvedPathWithProgram(std::string_view resolvedPath, parser::Program *prog)
-{
-    if (util::Helpers::IsStdLib(prog)) {
-        return false;
-    }
-    if (prog->IsDeclarationModule()) {
-        return false;
-    }
-    if (prog->AbsoluteName().Is(resolvedPath)) {
-        return true;
-    }
-    if (prog->IsPackageModule() && prog->SourceFileFolder().Is(resolvedPath)) {
-        return true;
-    }
-    return false;
-}
-
-/**
- * @brief Collects imported programs to initialize from the owner classes of the imported programs
- *
- * If match is found, `prog` is inserted into a container (`moduleDependencies`) that will be used when
- * calling the initializers inside the entrypoint's `_$init$_`.
- */
-void ImportExportDecls::CollectImportedProgramsFromStmts(ark::es2panda::ir::ETSImportDeclaration *stmt,
-                                                         parser::Program *program,
-                                                         GlobalClassHandler::ModuleDependencies *moduleDependencies)
-{
-    for (auto const &[_, programs] : program->DirectExternalSources()) {
-        (void)_;
-        parser::Program *first = programs.front();
-        if (MatchResolvedPathWithProgram(stmt->ResolvedSource()->Str().Utf8(), first)) {
-            moduleDependencies->insert(first);
-        }
-    }
-}
-
 GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(ArenaVector<parser::Program *> &programs)
 {
     VerifySingleExportDefault(programs);
@@ -86,12 +44,6 @@ GlobalClassHandler::ModuleDependencies ImportExportDecls::HandleGlobalStmts(Aren
         exportNameMap_.clear();
         exportedTypes_.clear();
         for (auto stmt : program->Ast()->Statements()) {
-            // note (hurton): Current implementation of triggering the imported programs top level statements does
-            // not support type imports and re-exports.
-            if (stmt->IsETSImportDeclaration() && !stmt->AsETSImportDeclaration()->IsTypeKind() &&
-                !util::Helpers::IsStdLib(program) && !program->IsDeclarationModule()) {
-                CollectImportedProgramsFromStmts(stmt->AsETSImportDeclaration(), program, &moduleDependencies);
-            }
             stmt->Accept(this);
             if (stmt->IsExportNamedDeclaration()) {
                 PopulateAliasMap(stmt->AsExportNamedDeclaration(), program->SourceFilePath());

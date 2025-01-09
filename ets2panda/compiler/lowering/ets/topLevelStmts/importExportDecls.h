@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,9 +70,6 @@ public:
     void PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path);
 
 private:
-    bool MatchResolvedPathWithProgram(std::string_view resolvedPath, parser::Program *prog);
-    void CollectImportedProgramsFromStmts(ark::es2panda::ir::ETSImportDeclaration *stmt, parser::Program *program,
-                                          GlobalClassHandler::ModuleDependencies *moduleDependencies);
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
     void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
