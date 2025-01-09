@@ -15,14 +15,14 @@
 
 package subpackage_a;
 
-export let a: String = "SubpackageA";
-
 import {myvar} from "./package_module"
 import {myvar2} from "./package_module"
 
-/* @@? 20:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
-/* @@? 21:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
-/* @@? 20:7 Error SyntaxError: Variable 'myvar' has already been declared. */
-/* @@? 21:40 Error SyntaxError: Variable 'myvar2' has already been declared. */
-/* @@? 20:21 Error SyntaxError: Cannot find import: ./package_module  */
-/* @@? 21:22 Error SyntaxError: Cannot find import: ./package_module  */
+export let a: String = "SubpackageA";
+
+/* @@? 18:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
+/* @@? 19:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
+/* @@? 20:1 Error SyntaxError: Variable 'myvar' has already been declared. */
+/* @@? 21:1 Error SyntaxError: Variable 'myvar2' has already been declared. */
+/* @@? 18:21 Error SyntaxError: Cannot find import: ./package_module  */
+/* @@? 19:22 Error SyntaxError: Cannot find import: ./package_module  */

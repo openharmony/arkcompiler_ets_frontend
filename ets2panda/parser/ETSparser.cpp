@@ -1558,6 +1558,12 @@ void ETSParser::ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpr
 
 ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
+    if ((flags & StatementParsingFlags::GLOBAL) == 0) {
+        LogSyntaxError(
+            "Import declarations can only be used on the top level and before any other declaration, top level "
+            "statement or directive");
+    }
+
     char32_t nextChar = Lexer()->Lookahead();
     if (nextChar == lexer::LEX_CHAR_LEFT_PAREN || nextChar == lexer::LEX_CHAR_DOT) {
         return ParseExpressionStatement();
