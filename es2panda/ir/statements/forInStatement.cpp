@@ -15,16 +15,11 @@
 
 #include "forInStatement.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <compiler/base/catchTable.h>
 #include <compiler/base/lreference.h>
-#include <compiler/core/labelTarget.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 
 #include <ir/astDump.h>
-#include <ir/expression.h>
 
 namespace panda::es2panda::ir {
 

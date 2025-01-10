@@ -13,16 +13,7 @@
  * limitations under the License.
  */
 
-#include <ir/expressions/literals/bigIntLiteral.h>
-#include <ir/expressions/literals/numberLiteral.h>
-#include <ir/expressions/literals/stringLiteral.h>
-#include <ir/expressions/functionExpression.h>
-#include <ir/expressions/memberExpression.h>
-#include <ir/expressions/identifier.h>
-#include <ir/statements/variableDeclarator.h>
-#include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/base/spreadElement.h>
 #include <ir/ts/tsIndexSignature.h>
 #include <ir/ts/tsMethodSignature.h>
 #include <ir/ts/tsTypeLiteral.h>
@@ -31,12 +22,8 @@
 #include <ir/ts/tsInterfaceDeclaration.h>
 #include <ir/ts/tsInterfaceHeritage.h>
 #include <ir/ts/tsInterfaceBody.h>
-#include <util/helpers.h>
-#include <binder/variable.h>
-#include <binder/scope.h>
 
 #include <typescript/checker.h>
-#include <typescript/types/indexInfo.h>
 
 namespace panda::es2panda::checker {
 

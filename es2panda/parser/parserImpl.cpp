@@ -14,42 +14,26 @@
  */
 
 #include "parserImpl.h"
-#include <functional>
 
-#include <binder/scope.h>
-#include <binder/tsBinding.h>
-#include <util/helpers.h>
-#include <ir/astDump.h>
-#include <ir/astNode.h>
 #include <ir/base/annotation.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/classProperty.h>
 #include <ir/base/classStaticBlock.h>
 #include <ir/base/decorator.h>
-#include <ir/base/methodDefinition.h>
-#include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
-#include <ir/expression.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/bigIntLiteral.h>
 #include <ir/expressions/literals/booleanLiteral.h>
-#include <ir/expressions/literals/nullLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/objectExpression.h>
-#include <ir/expressions/privateIdentifier.h>
 #include <ir/expressions/superExpression.h>
 #include <ir/expressions/templateLiteral.h>
 #include <ir/expressions/typeArgumentsExpression.h>
-#include <ir/module/exportDefaultDeclaration.h>
-#include <ir/module/exportNamedDeclaration.h>
-#include <ir/module/exportSpecifier.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/classDeclaration.h>
 #include <ir/statements/emptyStatement.h>
@@ -102,16 +86,12 @@
 #include <ir/ts/tsTypeParameterInstantiation.h>
 #include <ir/ts/tsTypePredicate.h>
 #include <ir/ts/tsTypeQuery.h>
-#include <ir/ts/tsTypeReference.h>
 #include <ir/ts/tsUndefinedKeyword.h>
 #include <ir/ts/tsUnionType.h>
 #include <ir/ts/tsUnknownKeyword.h>
 #include <ir/ts/tsVoidKeyword.h>
 #include <ir/ts/tsNonNullExpression.h>
 #include <lexer/lexer.h>
-#include <lexer/token/letters.h>
-#include <lexer/token/sourceLocation.h>
-#include <mem/pool_manager.h>
 
 namespace panda::es2panda::parser {
 

@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include "arena_allocator.h"
 #include "mergeProgram.h"
 #include "options.h"
 #include "protobufSnapshotGenerator.h"

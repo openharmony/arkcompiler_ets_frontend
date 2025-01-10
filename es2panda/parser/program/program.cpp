@@ -15,7 +15,6 @@
 
 #include "program.h"
 
-#include <binder/binder.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::parser {

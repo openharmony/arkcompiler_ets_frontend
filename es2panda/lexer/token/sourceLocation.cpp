@@ -17,8 +17,6 @@
 
 #include <lexer/token/letters.h>
 
-#include <cstdint>
-
 namespace panda::es2panda::lexer {
 
 void OffsetEntry::AddCol(size_t offset)

@@ -16,7 +16,6 @@
 #include "tsImportEqualsDeclaration.h"
 
 #include <ir/astDump.h>
-#include <ir/expression.h>
 #include <ir/expressions/identifier.h>
 
 namespace panda::es2panda::ir {

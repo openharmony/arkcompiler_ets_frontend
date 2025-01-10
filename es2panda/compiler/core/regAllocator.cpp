@@ -17,8 +17,6 @@
 
 #include <compiler/core/pandagen.h>
 
-#include <algorithm>
-
 namespace panda::es2panda::compiler {
 
 // FrontAllocator

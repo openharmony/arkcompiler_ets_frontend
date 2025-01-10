@@ -18,8 +18,6 @@
 #include <lexer/token/letters.h>
 #include <unicode/uchar.h>
 
-#include <iostream>
-
 namespace panda::es2panda::lexer {
 
 RegExpError::RegExpError(const std::string_view &m) : message(m) {}

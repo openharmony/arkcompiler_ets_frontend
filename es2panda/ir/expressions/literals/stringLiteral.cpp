@@ -19,8 +19,6 @@
 #include <typescript/checker.h>
 #include <ir/astDump.h>
 
-#include <utility>
-
 namespace panda::es2panda::ir {
 
 void StringLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}

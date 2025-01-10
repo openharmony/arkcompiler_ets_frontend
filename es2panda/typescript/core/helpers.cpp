@@ -13,24 +13,14 @@
  * limitations under the License.
  */
 
-#include <ir/typeNode.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/binaryExpression.h>
-#include <ir/expressions/memberExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/statements/variableDeclarator.h>
-#include <ir/statements/functionDeclaration.h>
-#include <ir/ts/tsQualifiedName.h>
-#include <ir/ts/tsTypeParameterDeclaration.h>
-#include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeReference.h>
 #include <ir/ts/tsTypeAliasDeclaration.h>
 #include <ir/ts/tsPropertySignature.h>
 #include <ir/base/scriptFunction.h>
-#include <binder/variable.h>
-#include <binder/scope.h>
 
-#include <typescript/checker.h>
 #include <typescript/core/typeElaborationContext.h>
 
 namespace panda::es2panda::checker {

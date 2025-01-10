@@ -15,37 +15,22 @@
 
 #include "pandagen.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <compiler/base/catchTable.h>
 #include <compiler/base/lexenv.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/compilerContext.h>
-#include <compiler/core/labelTarget.h>
-#include <compiler/core/regAllocator.h>
-#include <compiler/function/asyncFunctionBuilder.h>
 #include <compiler/function/asyncGeneratorFunctionBuilder.h>
-#include <compiler/function/functionBuilder.h>
 #include <compiler/function/generatorFunctionBuilder.h>
-#include <es2panda.h>
-#include <gen/isa.h>
 #include <ir/base/classDefinition.h>
-#include <ir/base/methodDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/newExpression.h>
 #include <ir/module/importSpecifier.h>
 #include <ir/module/importDefaultSpecifier.h>
-#include <ir/statement.h>
-#include <util/concurrent.h>
-#include <util/helpers.h>
-#include <util/patchFix.h>
 
 namespace panda::es2panda::compiler {
 

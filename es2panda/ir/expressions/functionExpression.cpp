@@ -19,7 +19,6 @@
 #include <typescript/checker.h>
 #include <ir/astDump.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/expressions/identifier.h>
 #include <ir/statements/variableDeclarator.h>
 
 namespace panda::es2panda::ir {

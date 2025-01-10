@@ -17,8 +17,6 @@
 
 #include <ir/astDump.h>
 
-#include <utility>
-
 namespace panda::es2panda::ir {
 void TaggedLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 

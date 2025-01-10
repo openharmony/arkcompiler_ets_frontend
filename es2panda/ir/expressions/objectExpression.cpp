@@ -15,10 +15,8 @@
 
 #include "objectExpression.h"
 
-#include <util/helpers.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <typescript/core/destructuringContext.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
@@ -30,15 +28,11 @@
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/classExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/nullLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/literals/taggedLiteral.h>
 #include <ir/expressions/unaryExpression.h>
-#include <ir/statements/classDeclaration.h>
-#include <ir/validationInfo.h>
-#include <util/bitset.h>
 
 namespace panda::es2panda::ir {
 

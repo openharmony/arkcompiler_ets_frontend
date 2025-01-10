@@ -16,11 +16,6 @@
 #include "bitset.h"
 #include "securec.h"
 
-#include <macros.h>
-
-#include <cstring>
-#include <utility>
-
 namespace panda::es2panda::util {
 BitSet::BitSet(size_t size) : size_(size)
 {

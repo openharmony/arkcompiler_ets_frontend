@@ -15,8 +15,6 @@
 
 #include "destructuringContext.h"
 
-#include <util/helpers.h>
-#include <binder/scope.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/assignmentExpression.h>

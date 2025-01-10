@@ -15,21 +15,14 @@
 
 #include "compileQueue.h"
 
-#include <mem/arena_allocator.h>
-#include <mem/pool_manager.h>
 #include "utils/timers.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/emitter/emitter.h>
 #include <compiler/core/function.h>
 #include <compiler/core/pandagen.h>
-#include <es2panda.h>
 #include <protobufSnapshotGenerator.h>
 #include <util/commonUtil.h>
-#include <util/dumper.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 

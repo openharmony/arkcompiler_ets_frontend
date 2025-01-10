@@ -15,15 +15,9 @@
 
 #include "classProperty.h"
 
-#include <cstdint>
-#include <string>
-
-#include "binder/binder.h"
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
 #include "ir/base/scriptFunction.h"
-#include "ir/expression.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 

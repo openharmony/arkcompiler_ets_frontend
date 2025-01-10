@@ -15,29 +15,9 @@
 
 #include "scope.h"
 
-#include <binder/declaration.h>
-#include <util/helpers.h>
 #include <binder/tsBinding.h>
-#include <binder/variable.h>
-#include <binder/variableFlags.h>
-#include <ir/astNode.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/classDefinition.h>
-#include <ir/expressions/identifier.h>
-#include <ir/expressions/literals/stringLiteral.h>
-#include <ir/expressions/privateIdentifier.h>
-#include <ir/module/exportAllDeclaration.h>
-#include <ir/module/exportNamedDeclaration.h>
-#include <ir/module/exportSpecifier.h>
-#include <ir/module/importDeclaration.h>
-#include <ir/ts/tsModuleDeclaration.h>
-#include <ir/ts/tsEnumDeclaration.h>
-#include <macros.h>
-#include <util/concurrent.h>
-#include <util/ustring.h>
-
-#include <algorithm>
-#include <sstream>
 
 namespace panda::es2panda::binder {
 

@@ -15,38 +15,28 @@
 
 #include "transformer.h"
 
-#include <util/ustring.h>
-
-#include "binder/scope.h"
 #include "ir/base/catchClause.h"
-#include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/decorator.h"
-#include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
-#include "ir/base/templateElement.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/classExpression.h"
 #include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/sequenceExpression.h"
-#include "ir/expressions/superExpression.h"
 #include "ir/expressions/templateLiteral.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/module/exportDefaultDeclaration.h"
 #include "ir/module/exportNamedDeclaration.h"
-#include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/classDeclaration.h"
 #include "ir/statements/doWhileStatement.h"
-#include "ir/statements/emptyStatement.h"
 #include "ir/statements/expressionStatement.h"
 #include "ir/statements/forInStatement.h"
 #include "ir/statements/forOfStatement.h"
@@ -71,7 +61,6 @@
 #include "ir/ts/tsQualifiedName.h"
 #include "ir/ts/tsSignatureDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::parser {
 

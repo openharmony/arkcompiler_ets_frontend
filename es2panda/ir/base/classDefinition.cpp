@@ -15,21 +15,14 @@
 
 #include "classDefinition.h"
 
-#include "binder/binder.h"
-#include "binder/scope.h"
 #include "compiler/base/literals.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "typescript/checker.h"
 #include "ir/astDump.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
-#include "ir/expression.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/nullLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/literals/taggedLiteral.h"
@@ -42,7 +35,6 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "ir/ts/tsUnionType.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 

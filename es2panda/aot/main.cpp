@@ -13,25 +13,16 @@
  * limitations under the License.
  */
 
-#include <iostream>
-
 #include <abc2program/program_dump.h>
-#include <assembly-program.h>
-#include <assembly-emitter.h>
-#include <mem/arena_allocator.h>
 #include <mem/pool_manager.h>
 #include "utils/timers.h"
 
 #include <emitFiles.h>
-#include <es2panda.h>
-#include <options.h>
 #include <protobufSnapshotGenerator.h>
 #include <resolveDepsRelation.h>
 #include <util/commonUtil.h>
 #include <util/dumper.h>
 #include <util/moduleHelpers.h>
-#include <util/programCache.h>
-#include <util/workerQueue.h>
 
 namespace panda::es2panda::aot {
 using mem::MemConfig;

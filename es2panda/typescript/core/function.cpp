@@ -15,9 +15,7 @@
 
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/assignmentExpression.h>
-#include <ir/expressions/callExpression.h>
 #include <ir/expressions/objectExpression.h>
-#include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/literals/bigIntLiteral.h>
@@ -29,22 +27,8 @@
 
 #include <ir/statements/returnStatement.h>
 #include <ir/statements/functionDeclaration.h>
-#include <binder/variable.h>
-#include <binder/scope.h>
-#include <binder/declaration.h>
 
-#include <util/helpers.h>
-
-#include <typescript/checker.h>
 #include <typescript/core/destructuringContext.h>
-#include <typescript/types/objectDescriptor.h>
-#include <typescript/types/objectType.h>
-
-#include <cstddef>
-#include <cstdint>
-#include <memory>
-#include <utility>
-#include <vector>
 
 namespace panda::es2panda::checker {
 Type *Checker::HandleFunctionReturn(const ir::ScriptFunction *func)

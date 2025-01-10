@@ -15,11 +15,7 @@
 
 #include "regScope.h"
 
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
 #include <compiler/base/hoisting.h>
-#include <compiler/core/compilerContext.h>
 #include <compiler/core/pandagen.h>
 
 namespace panda::es2panda::compiler {

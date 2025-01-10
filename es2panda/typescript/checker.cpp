@@ -17,16 +17,6 @@
 
 #include <ir/expression.h>
 #include <ir/statements/blockStatement.h>
-#include <parser/program/program.h>
-#include <util/helpers.h>
-#include <binder/binder.h>
-#include <binder/scope.h>
-#include <binder/variable.h>
-#include <es2panda.h>
-
-#include <cstdint>
-#include <initializer_list>
-#include <memory>
 
 namespace panda::es2panda::checker {
 

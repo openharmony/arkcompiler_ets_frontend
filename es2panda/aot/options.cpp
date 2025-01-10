@@ -15,11 +15,6 @@
 
 #include "options.h"
 
-#include <fstream>
-#include <set>
-#include <sstream>
-#include <utility>
-
 #if defined(PANDA_TARGET_WINDOWS)
 #include <io.h>
 #else
@@ -28,12 +23,9 @@
 
 #include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler_options.h"
-#include "os/file.h"
-#include "utils/pandargs.h"
 #include "utils/timers.h"
 
 #include "mergeProgram.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::aot {
 constexpr char PROCESS_AS_LIST_MARK = '@';

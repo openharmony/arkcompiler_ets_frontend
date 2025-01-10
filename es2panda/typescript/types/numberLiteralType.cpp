@@ -15,7 +15,6 @@
 
 #include "numberLiteralType.h"
 
-#include <util/helpers.h>
 #include <binder/variable.h>
 #include <typescript/types/enumType.h>
 

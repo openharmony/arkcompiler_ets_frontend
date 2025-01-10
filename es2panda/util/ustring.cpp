@@ -15,8 +15,6 @@
 
 #include "ustring.h"
 
-#include <iterator>
-
 namespace panda::es2panda::util {
 
 std::string StringView::Mutf8() const noexcept

@@ -15,8 +15,6 @@
 
 #include "indexInfo.h"
 
-#include <utility>
-
 namespace panda::es2panda::checker {
 
 IndexInfo *IndexInfo::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)

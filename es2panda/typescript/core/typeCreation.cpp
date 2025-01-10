@@ -14,7 +14,6 @@
  */
 
 #include <typescript/checker.h>
-#include <typescript/types/indexInfo.h>
 
 namespace panda::es2panda::checker {
 

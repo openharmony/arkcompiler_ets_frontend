@@ -16,8 +16,6 @@
 #include "typeRelation.h"
 
 #include <typescript/checker.h>
-#include <typescript/types/indexInfo.h>
-#include <typescript/types/signature.h>
 
 namespace panda::es2panda::checker {
 

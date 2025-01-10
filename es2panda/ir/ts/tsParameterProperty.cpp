@@ -16,7 +16,6 @@
 #include "tsParameterProperty.h"
 
 #include <ir/astDump.h>
-#include <ir/expression.h>
 
 namespace panda::es2panda::ir {
 void TSParameterProperty::Iterate(const NodeTraverser &cb) const

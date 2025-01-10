@@ -13,17 +13,13 @@
  * limitations under the License.
  */
 
-#include <util/helpers.h>
 #include <binder/tsBinding.h>
-#include <ir/astNode.h>
 #include <ir/base/annotation.h>
 #include <ir/base/catchClause.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/decorator.h>
 #include <ir/base/scriptFunction.h>
-#include <ir/expression.h>
 #include <ir/expressions/arrayExpression.h>
-#include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/binaryExpression.h>
 #include <ir/expressions/conditionalExpression.h>
 #include <ir/expressions/literals/stringLiteral.h>
@@ -69,16 +65,8 @@
 #include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsNamespaceExportDeclaration.h>
 #include <ir/ts/tsTypeAliasDeclaration.h>
-#include <ir/ts/tsTypeParameter.h>
-#include <ir/ts/tsTypeParameterDeclaration.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
-#include <ir/ts/tsTypeReference.h>
 #include <lexer/lexer.h>
-#include <lexer/token/letters.h>
-#include <lexer/token/sourceLocation.h>
-#include <util/ustring.h>
-
-#include <tuple>
 
 #include "parserImpl.h"
 

@@ -15,17 +15,9 @@
 
 #include "identifier.h"
 
-#include <binder/scope.h>
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
-#include <ir/typeNode.h>
-#include <ir/base/decorator.h>
-#include <ir/base/scriptFunction.h>
-#include <ir/expressions/assignmentExpression.h>
-#include <ir/statements/functionDeclaration.h>
-#include <ir/statements/variableDeclarator.h>
-#include <ir/expression.h>
 
 namespace panda::es2panda::ir {
 

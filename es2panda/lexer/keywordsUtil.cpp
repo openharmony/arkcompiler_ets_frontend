@@ -16,9 +16,7 @@
 #include "keywordsUtil.h"
 
 #include <gen/keywords.h>
-#include <lexer/lexer.h>
 #include <unicode/uchar.h>
-#include <util/enumbitops.h>
 
 namespace panda::es2panda::lexer {
 

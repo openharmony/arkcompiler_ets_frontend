@@ -18,7 +18,6 @@
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
-#include <ir/base/templateElement.h>
 
 namespace panda::es2panda::ir {
 

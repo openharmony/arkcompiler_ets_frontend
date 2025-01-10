@@ -16,10 +16,8 @@
 #include "tsPropertySignature.h"
 
 #include <typescript/checker.h>
-#include <ir/expressions/literals/numberLiteral.h>
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
-#include <binder/scope.h>
 
 namespace panda::es2panda::ir {
 

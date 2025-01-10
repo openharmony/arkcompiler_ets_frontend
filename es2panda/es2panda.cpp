@@ -15,8 +15,6 @@
 
 #include "es2panda.h"
 
-#include <iostream>
-
 #include "utils/timers.h"
 
 #include <compiler/core/compileQueue.h>
@@ -24,11 +22,8 @@
 #include <compiler/core/compilerImpl.h>
 #include <compiler/core/emitter/emitter.h>
 #include <parser/parserImpl.h>
-#include <parser/program/program.h>
 #include <parser/transformer/transformer.h>
 #include <typescript/checker.h>
-#include <util/commonUtil.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda {
 // Compiler

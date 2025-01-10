@@ -15,7 +15,6 @@
 
 #include "unaryExpression.h"
 
-#include <binder/variable.h>
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
