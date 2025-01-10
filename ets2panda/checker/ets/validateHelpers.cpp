@@ -47,7 +47,7 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
             return;
         }
 
-        std::ignore = TypeError(var, FormatMsg({"Property ", var->Name(), " is not visible here."}), pos);
+        std::ignore = TypeError(var, {"Property ", var->Name(), " is not visible here."}, pos);
     }
 }
 
@@ -55,9 +55,8 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
 {
     if (ident->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
         ident->Parent()->AsCallExpression()->Callee() != ident) {
-        std::ignore =
-            TypeError(ident->Variable(),
-                      FormatMsg({"Class or interface '", ident->Name(), "' cannot be used as object"}), ident->Start());
+        std::ignore = TypeError(ident->Variable(),
+                                {"Class or interface '", ident->Name(), "' cannot be used as object"}, ident->Start());
     }
 
     if (ident->Parent()->AsCallExpression()->Callee() != ident) {
@@ -66,9 +65,8 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
     if (ident->Variable() != nullptr &&  // It should always be true!
         ident->Variable()->Declaration()->Node() != nullptr &&
         ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
-        std::ignore =
-            TypeError(ident->Variable(), FormatMsg({"Namespace style identifier ", ident->Name(), " is not callable."}),
-                      ident->Start());
+        std::ignore = TypeError(ident->Variable(), {"Namespace style identifier ", ident->Name(), " is not callable."},
+                                ident->Start());
     }
     if (type->IsETSFunctionType() || type->IsETSDynamicType() ||  // NOTE(vpukhov): #19822
         (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
@@ -79,7 +77,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
         return;
     }
 
-    std::ignore = TypeError(ident->Variable(), FormatMsg({"This expression is not callable."}), ident->Start());
+    std::ignore = TypeError(ident->Variable(), {"This expression is not callable."}, ident->Start());
 }
 
 void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident)
@@ -142,10 +140,9 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     bool isFinished = false;
     if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Right() == ident) {
         if (!IsReferenceType(type)) {
-            std::ignore = TypeError(
-                ident->Variable(),
-                FormatMsg({R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""}),
-                ident->Start());
+            std::ignore = TypeError(ident->Variable(),
+                                    {R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""},
+                                    ident->Start());
         }
         isFinished = true;
     }
@@ -241,14 +238,13 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         std::string_view fieldType = variable->Declaration()->IsConstDecl() ? "constant" : "readonly";
         if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
             !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
-            std::ignore = TypeError(variable, FormatMsg({"Cannot reassign ", fieldType, " ", variable->Name()}),
+            std::ignore = TypeError(variable, {"Cannot reassign ", fieldType, " ", variable->Name()},
                                     variable->Declaration()->Node()->Start());
             return;
         }
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
-            std::ignore =
-                TypeError(variable, FormatMsg({"Cannot assign to a ", fieldType, " variable ", variable->Name()}),
-                          variable->Declaration()->Node()->Start());
+            std::ignore = TypeError(variable, {"Cannot assign to a ", fieldType, " variable ", variable->Name()},
+                                    variable->Declaration()->Node()->Start());
         }
     }
 }

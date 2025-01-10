@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,8 +57,8 @@ export default /* @@ label6 */function TestFunc(): void {}
 export default /* @@ label7 */function TestFuncToo(): void {}
 
 /*-----------------*/
-/* @@@ label6 Error SyntaxError: Only one default export is allowed in a module  */
-/* @@@ label7 Error SyntaxError: Only one default export is allowed in a module  */
+/* @@@ label6 Error TypeError: Only one default export is allowed in a module  */
+/* @@@ label7 Error TypeError: Only one default export is allowed in a module  */
 /* @@@ label3 Error SyntaxError: Name 'A' cannot be exported and type exported at the same time. */
 /* @@@ label4 Error SyntaxError: Cannot export the same 'MyI' type twice.  */
 /* @@@ label5 Error SyntaxError: Can only type export class or interface!  */

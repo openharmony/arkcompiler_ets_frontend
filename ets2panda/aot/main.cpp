@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,14 +20,16 @@
 #include "mem/pool_manager.h"
 #include "es2panda.h"
 #include "util/arktsconfig.h"
+#include "util/diagnosticEngine.h"
 #include "util/generateBin.h"
 #include "util/options.h"
 #include "util/plugin.h"
+#include "libpandabase/os/stacktrace.h"
 
 #include <iostream>
 #include <memory>
 #include <optional>
-
+#include <csignal>
 namespace ark::es2panda::aot {
 using mem::MemConfig;
 
@@ -51,9 +53,10 @@ public:
     }
 };
 
-static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile &input, const util::Options &options)
+static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile &input, const util::Options &options,
+                             util::DiagnosticEngine &diagnosticEngine)
 {
-    auto program = std::unique_ptr<pandasm::Program> {compiler.Compile(input, options)};
+    auto program = std::unique_ptr<pandasm::Program> {compiler.Compile(input, options, diagnosticEngine)};
     if (program == nullptr) {
         const auto &err = compiler.GetError();
 
@@ -64,23 +67,20 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
             // Intentional exit or --parse-only option usage.
             return 0;
         }
-
-        std::cout << err.TypeString() << ": " << err.Message();
-        std::cout << " ["
-                  << (err.File().empty() ? util::BaseName(options.SourceFileName()) : util::BaseName(err.File())) << ":"
-                  << err.Line() << ":" << err.Col() << "]" << std::endl;
-
-        return err.ErrorCode();
+        diagnosticEngine.Log(err);
+        return 1;
     }
 
-    return util::GenerateProgram(program.get(), options, [](std::string const &str) { std::cerr << str << std::endl; });
+    return util::GenerateProgram(program.get(), options,
+                                 [&diagnosticEngine](std::string const &str) { diagnosticEngine.LogFatalError(str); });
 }
 
-static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options)
+static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options,
+                             util::DiagnosticEngine &diagnosticEngine)
 {
     auto compilationList = FindProjectSources(options->ArkTSConfig());
     if (compilationList.empty()) {
-        std::cerr << "Error: No files to compile" << std::endl;
+        diagnosticEngine.LogFatalError("No files to compile");
         return 1;
     }
 
@@ -88,7 +88,7 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
     for (auto &[src, dst] : compilationList) {
         std::ifstream inputStream(src);
         if (inputStream.fail()) {
-            std::cerr << "Error: Failed to open file: " << src << std::endl;
+            diagnosticEngine.LogFatalError({"Failed to open file: ", util::StringView(src)});
             return 1;
         }
 
@@ -98,12 +98,13 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
         inputStream.close();
         es2panda::SourceFile input(src, parserInput, options->IsModule());
         options->SetOutput(dst);
+        LOG_IF(options->IsListFiles(), INFO, ES2PANDA)
+            << "> es2panda: compiling from '" << src << "' to '" << dst << "'";
 
-        options->IsListFiles() && std::cout << "> es2panda: compiling from '" << src << "' to '" << dst << "'"
-                                            << std::endl;
-        auto res = CompileFromSource(compiler, input, *options);
+        auto res = CompileFromSource(compiler, input, *options, diagnosticEngine);
         if (res != 0) {
-            std::cout << "> es2panda: failed to compile from " << src << " to " << dst << std::endl;
+            diagnosticEngine.LogFatalError(
+                {"Failed to compile from ", util::StringView(src), " to ", util::StringView(dst)});
             overallRes |= static_cast<unsigned>(res);
         }
     }
@@ -111,13 +112,14 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
     return overallRes;
 }
 
-static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<std::string> const &names)
+static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<std::string> const &names,
+                                                                  util::DiagnosticEngine &diagnosticEngine)
 {
     std::vector<util::Plugin> res;
     for (auto &name : names) {
         auto plugin = util::Plugin(util::StringView {name});
         if (!plugin.IsOk()) {
-            std::cerr << "Error: Failed to load plugin " << name << std::endl;
+            diagnosticEngine.LogFatalError({"Failed to load plugin ", util::StringView(name)});
             return {};
         }
         plugin.Initialize();
@@ -126,23 +128,40 @@ static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<st
     return {std::move(res)};
 }
 
+static void InitializeSignalHandlers()
+{
+    auto sigHandler = []([[maybe_unused]] int sig) {
+        if (g_diagnosticEngine != nullptr) {
+            g_diagnosticEngine->FlushDiagnostic();
+        }
+        std::cerr << "PLEASE submit a bug report to https://gitee.com/openharmony/arkcompiler_ets_frontend/issues";
+        std::cerr << std::endl;
+        // NOTE(schernykh): it's print only ark::PrintStack. Need to investigate how to dump full stack.
+        ark::PrintStack(std::cerr);
+        std::abort();  // CC-OFF(G.STD.16-CPP) fatal error
+    };
+    std::signal(SIGSEGV, sigHandler);
+}
+
 static int Run(Span<const char *const> args)
 {
-    auto options = std::make_unique<util::Options>(args[0]);
+    auto diagnosticEngine = util::DiagnosticEngine();
+    auto options = std::make_unique<util::Options>(args[0], diagnosticEngine);
     if (!options->Parse(args)) {
-        std::cerr << options->ErrorMsg() << std::endl;
         return 1;
     }
-
+    diagnosticEngine.SetWError(options->IsEtsWarningsWerror());
     ark::Logger::ComponentMask mask {};
     mask.set(ark::Logger::Component::ES2PANDA);
     ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
-    auto pluginsOpt = InitializePlugins(options->GetPlugins());
+    InitializeSignalHandlers();
+
+    auto pluginsOpt = InitializePlugins(options->GetPlugins(), diagnosticEngine);
     if (!pluginsOpt.has_value()) {
         return 1;
     }
-    es2panda::Compiler compiler(options->GetExtension(), options->GetThread(), std::move(pluginsOpt.value()));
 
+    es2panda::Compiler compiler(options->GetExtension(), options->GetThread(), std::move(pluginsOpt.value()));
     if (options->IsListPhases()) {
         std::cerr << "Available phases:" << std::endl;
         std::cerr << compiler.GetPhasesList();
@@ -150,7 +169,7 @@ static int Run(Span<const char *const> args)
     }
 
     if (options->GetCompilationMode() == CompilationMode::PROJECT) {
-        return CompileFromConfig(compiler, options.get());
+        return CompileFromConfig(compiler, options.get(), diagnosticEngine);
     }
 
     std::string sourceFile;
@@ -164,7 +183,7 @@ static int Run(Span<const char *const> args)
         parserInput = std::string_view(buf, size);
     }
     es2panda::SourceFile input(sourceFile, parserInput, options->IsModule());
-    return CompileFromSource(compiler, input, *options.get());
+    return CompileFromSource(compiler, input, *options.get(), diagnosticEngine);
 }
 }  // namespace ark::es2panda::aot
 

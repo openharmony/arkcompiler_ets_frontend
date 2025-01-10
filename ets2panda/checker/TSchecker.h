@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -121,7 +121,7 @@ struct TupleTypeInfo {
 class TSChecker : public Checker {
 public:
     // NOLINTNEXTLINE(readability-redundant-member-init)
-    explicit TSChecker() : Checker() {}
+    explicit TSChecker(util::DiagnosticEngine &diagnosticEngine) : Checker(diagnosticEngine) {}
 
     Type *GlobalNumberType()
     {
@@ -281,7 +281,7 @@ public:
     bool FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
     bool IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
     [[noreturn]] void ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    [[noreturn]] void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list,
+    [[noreturn]] void ThrowTypeError(std::initializer_list<DiagnosticMessageElement> list,
                                      const lexer::SourcePosition &pos);
     [[noreturn]] void ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
                                            lexer::SourcePosition lineInfo);

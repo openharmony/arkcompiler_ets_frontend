@@ -107,10 +107,11 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options &options, uint32_t parseStatus)
+pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options &options,
+                                    util::DiagnosticEngine &diagnosticEngine, uint32_t parseStatus)
 {
     try {
-        return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_});
+        return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_, diagnosticEngine});
     } catch (const class Error &e) {
         error_ = e;
         return nullptr;
@@ -131,4 +132,6 @@ void Compiler::DumpAsm(const pandasm::Program *prog)
 {
     compiler::CompilerImpl::DumpAsm(prog);
 }
+
+util::DiagnosticEngine *g_diagnosticEngine = nullptr;
 }  // namespace ark::es2panda

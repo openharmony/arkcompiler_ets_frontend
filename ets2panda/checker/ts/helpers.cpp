@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -276,24 +276,21 @@ bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbi
     return false;
 }
 
-void TSChecker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void TSChecker::ThrowTypeError(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &pos)
 {
-    ThrowTypeError(FormatMsg(list), pos);
+    DiagnosticEngine().ThrowSemanticError(Program(), list, pos);
 }
 
 void TSChecker::ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos)
 {
-    lexer::LineIndex index(Program()->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    throw Error {ErrorType::TYPE, Program()->SourceFilePath().Utf8(), message, loc.line, loc.col};
+    DiagnosticEngine().ThrowSemanticError(Program(), message, pos);
 }
 
 void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
                                      lexer::SourcePosition lineInfo)
 {
     if (!HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
-        ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", AsSrc(rightType)},
+        ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", util::AsSrc(rightType)},
                        lineInfo);
     }
 
@@ -303,7 +300,7 @@ void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *
 void TSChecker::ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo, bool isAsSrcLeftType)
 {
     if (isAsSrcLeftType || !target->HasTypeFlag(TypeFlag::LITERAL)) {
-        ThrowTypeError({"Type '", AsSrc(source), "' is not assignable to type '", target, "'."}, lineInfo);
+        ThrowTypeError({"Type '", util::AsSrc(source), "' is not assignable to type '", target, "'."}, lineInfo);
     }
 
     ThrowTypeError({"Type '", source, "' is not assignable to type '", target, "'."}, lineInfo);
@@ -488,7 +485,7 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
 
     TypeStackElement tse(
         this, decl->Node(),
-        std::initializer_list<TypeErrorMessageElement> {
+        std::initializer_list<DiagnosticMessageElement> {
             "'", var->Name(), "' is referenced directly or indirectly in its ", "own initializer ot type annotation."},
         decl->Node()->Start());
     if (tse.HasTypeError()) {

@@ -20,6 +20,7 @@
 #include "lexer/token/tokenType.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
+#include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::ir {
 class Expression;
@@ -79,6 +80,7 @@ struct enumbitops::IsAllowedType<ark::es2panda::checker::TypeRelationFlag> : std
 };
 
 namespace ark::es2panda::checker {
+using DiagnosticMessageElement = util::DiagnosticMessageElement;
 
 class RelationKey {
 public:
@@ -115,22 +117,6 @@ public:
     RelationMap cached;
     RelationType type {};
 };
-
-class AsSrc {
-public:
-    explicit AsSrc(const Type *type) : type_(const_cast<Type *>(type)) {}
-
-    const Type *GetType() const
-    {
-        return type_;
-    }
-
-private:
-    Type *type_;
-};
-
-using TypeErrorMessageElement =
-    std::variant<const Type *, AsSrc, char *, util::StringView, lexer::TokenType, size_t, const Signature *>;
 
 class TypeRelation {
 public:
@@ -318,8 +304,8 @@ public:
     bool IsLegalBoxedPrimitiveConversion(Type *target, Type *source);
     bool IsSupertypeOf(Type *super, Type *sub);
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
-    void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
-    void LogError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
+    void RaiseError(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &loc) const;
+    void LogError(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &loc) const;
 
     bool Result(bool res)
     {

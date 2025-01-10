@@ -202,11 +202,9 @@ extern "C" es2panda_Config *CreateConfig(int args, char const *const *argv)
 
     mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
     PoolManager::Initialize(PoolType::MMAP);
-
-    auto *options = new util::Options(argv[0]);
+    auto diagnosticEngine = new util::DiagnosticEngine();
+    auto *options = new util::Options(argv[0], *diagnosticEngine);
     if (!options->Parse(Span(argv, args))) {
-        // NOTE: gogabr. report option errors properly.
-        std::cerr << options->ErrorMsg() << std::endl;
         return nullptr;
     }
     ark::Logger::ComponentMask mask {};
@@ -215,6 +213,7 @@ extern "C" es2panda_Config *CreateConfig(int args, char const *const *argv)
 
     auto *res = new ConfigImpl;
     res->options = options;
+    res->diagnosticEngine = diagnosticEngine;
     return reinterpret_cast<es2panda_Config *>(res);
 }
 
@@ -229,6 +228,7 @@ extern "C" void DestroyConfig(es2panda_Config *config)
     }
 
     delete cfg->options;
+    delete cfg->diagnosticEngine;
     delete cfg;
 }
 
@@ -271,9 +271,10 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
 
         auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator);
         res->parserProgram = new parser::Program(res->allocator, varbinder);
-        res->parser = new parser::ETSParser(res->parserProgram, *cfg->options, parser::ParserStatus::NO_OPTS);
-        res->checker = new checker::ETSChecker();
-        res->checker->ErrorLogger()->SetOstream(nullptr);
+        res->diagnosticEngine = cfg->diagnosticEngine;
+        res->parser = new parser::ETSParser(res->parserProgram, *cfg->options, *cfg->diagnosticEngine,
+                                            parser::ParserStatus::NO_OPTS);
+        res->checker = new checker::ETSChecker(*res->diagnosticEngine);
         res->analyzer = new checker::ETSAnalyzer(res->checker);
         res->checker->SetAnalyzer(res->analyzer);
 
@@ -288,7 +289,8 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
         res->state = ES2PANDA_STATE_NEW;
     } catch (Error &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         res->errorMessage = ss.str();
         res->state = ES2PANDA_STATE_ERROR;
     }
@@ -333,7 +335,8 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
     }
     auto handleError = [ctx](Error const &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     };
@@ -342,12 +345,13 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         ctx->parser->ParseScript(*ctx->sourceFile,
                                  ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
         ctx->state = ES2PANDA_STATE_PARSED;
-        if (ctx->parser->ErrorLogger()->IsAnyError()) {
-            handleError(ctx->parser->ErrorLogger()->Log()[0]);
+        if (ctx->parser->DiagnosticEngine().IsAnyError()) {
+            handleError(ctx->parser->DiagnosticEngine().GetAnyError());
         }
     } catch (Error &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
@@ -377,7 +381,8 @@ __attribute__((unused)) static Context *Bind(Context *ctx)
         ctx->state = ES2PANDA_STATE_BOUND;
     } catch (Error &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
@@ -398,7 +403,8 @@ __attribute__((unused)) static Context *Check(Context *ctx)
 
     auto handleError = [ctx](Error const &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     };
@@ -411,10 +417,10 @@ __attribute__((unused)) static Context *Check(Context *ctx)
 
             ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
         } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::CheckerPhase::NAME);
-        if (ctx->checker->ErrorLogger()->IsAnyError()) {
-            handleError(ctx->checker->ErrorLogger()->Log()[0]);
-        } else if (ctx->parser->ErrorLogger()->IsAnyError()) {
-            handleError(ctx->parser->ErrorLogger()->Log()[0]);
+        if (ctx->checker->DiagnosticEngine().IsAnyError()) {
+            handleError(ctx->checker->DiagnosticEngine().GetAnyError());
+        } else if (ctx->parser->DiagnosticEngine().IsAnyError()) {
+            handleError(ctx->parser->DiagnosticEngine().GetAnyError());
         } else {
             ctx->state = ES2PANDA_STATE_CHECKED;
         }
@@ -444,7 +450,8 @@ __attribute__((unused)) static Context *Lower(Context *ctx)
         ctx->state = ES2PANDA_STATE_LOWERED;
     } catch (Error &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
@@ -487,7 +494,8 @@ __attribute__((unused)) static Context *GenerateAsm(Context *ctx)
         ctx->state = ES2PANDA_STATE_ASM_GENERATED;
     } catch (Error &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
@@ -514,7 +522,8 @@ __attribute__((unused)) Context *GenerateBin(Context *ctx)
         ctx->state = ES2PANDA_STATE_BIN_GENERATED;
     } catch (Error &e) {
         std::stringstream ss;
-        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+           << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
@@ -700,7 +709,6 @@ extern "C" void LogTypeError(es2panda_Context *context, const char *errorMsg, es
     auto ctx = reinterpret_cast<Context *>(context);
     auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
     ctx->checker->Initialize(ctx->parserProgram->VarBinder());
-    ctx->checker->ErrorLogger()->SetOstream(&std::cerr);
     ctx->checker->LogTypeError(errorMsg, posE2p);
 }
 
@@ -709,7 +717,6 @@ extern "C" void LogWarning(es2panda_Context *context, const char *warnMsg, es2pa
     auto ctx = reinterpret_cast<Context *>(context);
     auto posE2p = *(reinterpret_cast<lexer::SourcePosition *>(pos));
     ctx->checker->Initialize(ctx->parserProgram->VarBinder());
-    ctx->checker->ErrorLogger()->SetOstream(&std::cout);
     ctx->checker->Warning(warnMsg, posE2p);
 }
 

@@ -59,7 +59,7 @@ function g(x: int): int {
 /* @@? 46:15 Error SyntaxError: Unexpected token ':'. */
 /* @@? 46:15 Error SyntaxError: Unexpected token ':'. */
 /* @@? 48:9 Error SyntaxError: Multiple default clauses. */
-/* @@? 16:10 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
-/* @@? 20:10 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
+/* @@? 16:10 Error TypeError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
+/* @@? 20:10 Error TypeError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
 /* @@? 40:8 Error TypeError: All return statements in the function should be empty or have a value. */
 /* @@? 20:27 Error TypeError: struct B is not extensible. */

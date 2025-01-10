@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,6 +37,7 @@ class Phase;
 namespace ark::es2panda::public_lib {
 struct ConfigImpl {
     const util::Options *options;
+    util::DiagnosticEngine *diagnosticEngine;
 };
 
 struct Context {
@@ -61,6 +62,7 @@ struct Context {
     checker::SemanticAnalyzer *analyzer = nullptr;
     compiler::Emitter *emitter = nullptr;
     pandasm::Program *program = nullptr;
+    util::DiagnosticEngine *diagnosticEngine = nullptr;
 
     es2panda_ContextState state = ES2PANDA_STATE_NEW;
     std::string errorMessage;

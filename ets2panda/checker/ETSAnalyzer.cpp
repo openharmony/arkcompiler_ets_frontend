@@ -1536,10 +1536,9 @@ std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *
 static void TypeErrorOnMissingProperty(ir::MemberExpression *expr, checker::Type *baseType,
                                        checker::ETSChecker *checker)
 {
-    std::ignore = checker->TypeError(expr,
-                                     checker->FormatMsg({"Property '", expr->Property()->AsIdentifier()->Name(),
-                                                         "' does not exist on type '", baseType, "'"}),
-                                     expr->Object()->Start());
+    std::ignore = checker->TypeError(
+        expr, {"Property '", expr->Property()->AsIdentifier()->Name(), "' does not exist on type '", baseType, "'"},
+        expr->Object()->Start());
 }
 
 checker::Type *ETSAnalyzer::CheckEnumMemberExpression(ETSEnumType *const baseType,
@@ -2907,7 +2906,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     const checker::CastingContext ctx(
         checker->Relation(),
-        std::initializer_list<TypeErrorMessageElement> {"Cannot cast type '", sourceType, "' to '", targetType, "'"},
+        std::initializer_list<DiagnosticMessageElement> {"Cannot cast type '", sourceType, "' to '", targetType, "'"},
         checker::CastingContext::ConstructorData {expr->Expr(), sourceType, targetType, expr->Expr()->Start()});
 
     if (sourceType->IsETSDynamicType() && targetType->IsLambdaObject()) {

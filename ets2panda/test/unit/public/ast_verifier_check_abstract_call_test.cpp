@@ -18,7 +18,7 @@
 #include "ir/expressions/callExpression.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/signature.h"
-
+#include "util/diagnosticEngine.h"
 #include <gtest/gtest.h>
 
 using ark::es2panda::checker::SignatureFlags;
@@ -33,7 +33,8 @@ namespace {
 
 TEST_F(ASTVerifierTest, LabelsHaveReferences)
 {
-    ark::es2panda::checker::ETSChecker checker;
+    ark::es2panda::util::DiagnosticEngine de;
+    ark::es2panda::checker::ETSChecker checker(de);
 
     char const *text = R"(
         abstract class A {

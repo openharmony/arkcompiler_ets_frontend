@@ -16,7 +16,7 @@
 interface MyAnno {}
 /* @@ label */enum MyAnno {one, two, three}
 
-/* @@@ label Error SyntaxError: Variable 'MyAnno' has already been declared.  */
+/* @@@ label Error TypeError: Variable 'MyAnno' has already been declared.  */
 /* @@? 1:1 Error TypeError: Property 'one' does not exist on type 'MyAnno' */
 /* @@? 1:1 Error TypeError: Property 'two' does not exist on type 'MyAnno' */
 /* @@? 1:1 Error TypeError: Property 'three' does not exist on type 'MyAnno' */

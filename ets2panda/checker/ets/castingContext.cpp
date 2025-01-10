@@ -18,7 +18,7 @@
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {
-CastingContext::CastingContext(TypeRelation *relation, std::initializer_list<TypeErrorMessageElement> list,
+CastingContext::CastingContext(TypeRelation *relation, std::initializer_list<DiagnosticMessageElement> list,
                                ConstructorData &&data)
 {
     flags_ |= data.extraFlags;

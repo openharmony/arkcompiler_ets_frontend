@@ -20,12 +20,12 @@
 namespace ark::es2panda::lexer {
 LexerPosition::LexerPosition(const util::StringView &source) : iterator_(source) {}
 
-Lexer::Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger, bool startLexer)
+Lexer::Lexer(const parser::ParserContext *parserContext, util::DiagnosticEngine &diagnosticEngine, bool startLexer)
     : allocator_(parserContext->GetProgram()->Allocator()),
       parserContext_(parserContext),
       source_(parserContext->GetProgram()->SourceCode()),
       pos_(source_),
-      errorLogger_(errorLogger)
+      diagnosticEngine_(diagnosticEngine)
 {
     if (startLexer) {
         SkipWhiteSpaces();
@@ -204,10 +204,8 @@ void Lexer::SkipSingleLineComment()
 
 void Lexer::LogSyntaxError(std::string_view const errorMessage) const
 {
-    lexer::LineIndex index(source_);
-    lexer::SourceLocation loc = index.GetLocation(SourcePosition(Iterator().Index(), pos_.line_));
-    errorLogger_->WriteLog(Error {ErrorType::SYNTAX, parserContext_->GetProgram()->SourceFilePath().Utf8(),
-                                  errorMessage, loc.line, loc.col});
+    diagnosticEngine_.LogSyntaxError(parserContext_->GetProgram(), errorMessage,
+                                     SourcePosition(Iterator().Index(), pos_.line_));
 }
 
 void Lexer::LogUnexpectedToken(lexer::TokenType const tokenType) const

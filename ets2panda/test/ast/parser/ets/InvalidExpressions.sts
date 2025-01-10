@@ -105,11 +105,11 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 55:27 Error SyntaxError: Unexpected token ':'. */
 /* @@? 55:27 Error SyntaxError: Unexpected token ':'. */
 /* @@? 57:26 Error SyntaxError: Default value is allowed only for optional parameters */
-/* @@? 37:5 Error SyntaxError: Variable 'x' has already been declared. */
-/* @@? 38:5 Error SyntaxError: Variable 'x' has already been declared. */
-/* @@? 39:5 Error SyntaxError: Variable 'x' has already been declared. */
-/* @@? 16:40 Error SyntaxError: Cannot find type 'bool'. */
-/* @@? 18:14 Error SyntaxError: Variable 'x' is accessed before it's initialization. */
+/* @@? 37:5 Error TypeError: Variable 'x' has already been declared. */
+/* @@? 38:5 Error TypeError: Variable 'x' has already been declared. */
+/* @@? 39:5 Error TypeError: Variable 'x' has already been declared. */
+/* @@? 16:40 Error TypeError: Cannot find type 'bool'. */
+/* @@? 18:14 Error TypeError: Variable 'x' is accessed before it's initialization. */
 /* @@? 38:9 Error TypeError: This expression is not constructible. */
 /* @@? 39:9 Error TypeError: This expression is not constructible. */
 /* @@? 55:29 Error TypeError: Unresolved reference void */

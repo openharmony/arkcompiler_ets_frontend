@@ -18,7 +18,6 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/util.h"
 #include "lexer/token/token.h"
-#include "util/errorHandler.h"
 
 namespace ark::es2panda::compiler {
 
@@ -26,7 +25,7 @@ using AstNodePtr = ir::AstNode *;
 
 void ConstantExpressionLowering::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    util::ErrorHandler::LogSyntaxError(context_->parser->ErrorLogger(), program_, errorMessage, pos);
+    context_->diagnosticEngine->LogSyntaxError(program_, errorMessage, pos);
 }
 
 static bool IsSupportedLiteralForNumeric(ir::Literal *const node)

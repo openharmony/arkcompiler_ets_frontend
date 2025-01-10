@@ -25,7 +25,7 @@ class AssignmentContext {
 public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     AssignmentContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                      const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
+                      const lexer::SourcePosition &pos, std::initializer_list<DiagnosticMessageElement> list,
                       TypeRelationFlag flags = TypeRelationFlag::NONE)
     {
         flags_ |= ((flags & TypeRelationFlag::NO_BOXING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::BOXING;
@@ -93,7 +93,7 @@ class InvocationContext {
 public:
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
     InvocationContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                      const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
+                      const lexer::SourcePosition &pos, std::initializer_list<DiagnosticMessageElement> list,
                       TypeRelationFlag initialFlags = TypeRelationFlag::NONE)
     {
         flags_ |=

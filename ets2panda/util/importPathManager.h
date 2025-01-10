@@ -25,7 +25,6 @@
 #include "util/enumbitops.h"
 #include "util/path.h"
 #include "util/options.h"
-#include "util/errorLogger.h"
 
 namespace ark::es2panda::util {
 namespace gen::extension {
@@ -53,14 +52,16 @@ public:
         bool isImplicitPackageImported = false;
     };
 
-    ImportPathManager(ark::ArenaAllocator *allocator, util::ErrorLogger *errorLogger, const util::Options &options)
+    ImportPathManager(ark::ArenaAllocator *allocator, const util::Options &options, const parser::Program *program,
+                      util::DiagnosticEngine &diagnosticEngine)
         : allocator_(allocator),
-          errorLogger_(errorLogger),
           arktsConfig_(options.ArkTSConfig()),
           absoluteEtsPath_(
               options.GetEtsPath().empty() ? "" : util::Path(options.GetEtsPath(), allocator_).GetAbsolutePath()),
           stdLib_(options.GetStdlib()),
-          parseList_(allocator->Adapter())
+          parseList_(allocator->Adapter()),
+          program_(program),
+          diagnosticEngine_ {diagnosticEngine}
     {
     }
 
@@ -74,28 +75,32 @@ public:
         return parseList_;
     }
 
-    util::StringView ResolvePath(const StringView &currentModulePath, const StringView &importPath) const;
-    void AddToParseList(const StringView &resolvedPath, ImportFlags importFlags);
+    util::StringView ResolvePath(const StringView &currentModulePath, const StringView &importPath,
+                                 const lexer::SourcePosition &srcPos) const;
+    void AddToParseList(const StringView &resolvedPath, ImportFlags importFlags, const lexer::SourcePosition &srcPos);
     ImportData GetImportData(const util::StringView &path, util::gen::extension::Enum extension) const;
     void MarkAsParsed(const StringView &path);
 
-    util::StringView FormModuleName(const util::Path &path);
+    util::StringView FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos);
 
 private:
     bool IsRelativePath(const StringView &path) const;
-    StringView ResolveAbsolutePath(const StringView &importPath) const;
+    StringView ResolveAbsolutePath(const StringView &importPath, const lexer::SourcePosition &srcPos) const;
     StringView GetRealPath(const StringView &path) const;
-    StringView AppendExtensionOrIndexFileIfOmitted(const StringView &basePath) const;
+    StringView AppendExtensionOrIndexFileIfOmitted(const StringView &basePath,
+                                                   const lexer::SourcePosition &srcPos) const;
 #ifdef USE_UNIX_SYSCALL
-    void UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, ImportFlags importFlags);
+    void UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, ImportFlags importFlags,
+                                                   const lexer::SourcePosition &srcPos);
 #endif
 
     ark::ArenaAllocator *const allocator_;
-    util::ErrorLogger *const errorLogger_;
     std::shared_ptr<ArkTsConfig> const arktsConfig_;
     std::string absoluteEtsPath_;
     std::string stdLib_;
     ArenaVector<ParseInfo> parseList_;
+    const parser::Program *program_;
+    util::DiagnosticEngine &diagnosticEngine_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
 };
 

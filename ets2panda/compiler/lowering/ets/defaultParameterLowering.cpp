@@ -16,13 +16,18 @@
 #include "defaultParameterLowering.h"
 
 #include "checker/ETSchecker.h"
-#include "util/errorHandler.h"
+#include "parser/ETSparser.h"
+#include "parser/parserImpl.h"
+#include "lexer.h"
+#include "utils/arena_containers.h"
+#include "ir/statement.h"
+#include "varbinder/ETSBinder.h"
 
 namespace ark::es2panda::compiler {
 
 std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir::ScriptFunction *function,
                                                                        parser::Program *program,
-                                                                       util::ErrorLogger *logger)
+                                                                       util::DiagnosticEngine &diagnosticEngine)
 {
     bool hasDefaultParameter = false;
     bool hasRestParameter = false;
@@ -42,8 +47,7 @@ std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir:
         }
 
         if (hasRestParameter) {
-            util::ErrorHandler::LogSyntaxError(logger, program, "Rest parameter should be the last one.",
-                                               param->Start());
+            diagnosticEngine.LogSyntaxError(program, "Rest parameter should be the last one.", param->Start());
         }
 
         if (param->IsDefault()) {
@@ -52,16 +56,16 @@ std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir:
         }
 
         if (hasDefaultParameter) {
-            util::ErrorHandler::LogSyntaxError(logger, program, "Required parameter follows default parameter(s).",
-                                               param->Start());
+            diagnosticEngine.LogSyntaxError(program, "Required parameter follows default parameter(s).",
+                                            param->Start());
         }
 
         ++requiredParametersNumber;
     }
 
     if (hasDefaultParameter && hasRestParameter) {
-        util::ErrorHandler::LogSyntaxError(
-            logger, program, "Both optional and rest parameters are not allowed in function's parameter list.",
+        diagnosticEngine.LogSyntaxError(
+            program, "Both optional and rest parameters are not allowed in function's parameter list.",
             function->Start());
     }
 
@@ -355,12 +359,12 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinit
 bool DefaultParameterLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
-    util::ErrorLogger *logger = ctx->parser->ErrorLogger();
+    util::DiagnosticEngine *logger = ctx->diagnosticEngine;
     ArenaVector<ir::MethodDefinition *> foundNodes(checker->Allocator()->Adapter());
     program->Ast()->IterateRecursively([&foundNodes, program, logger](ir::AstNode *ast) {
         if (ast->IsMethodDefinition()) {
             auto [hasDefaultParam, requiredParamsCount] =
-                HasDefaultParam(ast->AsMethodDefinition()->Function(), program, logger);
+                HasDefaultParam(ast->AsMethodDefinition()->Function(), program, *logger);
             if (hasDefaultParam) {
                 // store all nodes (which is function definition with default/optional parameters)
                 // to specific list, to process them later, as for now we can't modify AST in the

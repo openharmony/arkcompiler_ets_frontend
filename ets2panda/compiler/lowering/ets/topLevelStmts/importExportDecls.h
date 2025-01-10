@@ -16,7 +16,6 @@
 #ifndef PANDA_IMPORTEXPORTDECLS_H
 #define PANDA_IMPORTEXPORTDECLS_H
 
-#include "util/errorHandler.h"
 #include <parser/ETSparser.h>
 #include "varbinder/ETSBinder.h"
 #include "compiler/lowering/phase.h"

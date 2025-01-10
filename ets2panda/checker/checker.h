@@ -18,7 +18,7 @@
 
 #include "checker/checkerContext.h"
 #include "checker/SemanticAnalyzer.h"
-#include "util/errorLogger.h"
+#include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::util {
 class Options;
@@ -59,10 +59,11 @@ using TypeOrNode = std::variant<Type *, ir::AstNode *>;
 using IndexInfoTypePair = std::pair<Type *, Type *>;
 using PropertyMap = std::unordered_map<util::StringView, varbinder::LocalVariable *>;
 using ArgRange = std::pair<uint32_t, uint32_t>;
+using DiagnosticMessageElement = util::DiagnosticMessageElement;
 
 class Checker {
 public:
-    explicit Checker();
+    explicit Checker(util::DiagnosticEngine &diagnosticEngine);
     virtual ~Checker() = default;
 
     NO_COPY_SEMANTIC(Checker);
@@ -165,26 +166,25 @@ public:
     virtual Type *GetTypeOfVariable(varbinder::Variable *var) = 0;
     virtual void ResolveStructuredTypeMembers(Type *type) = 0;
 
-    std::string FormatMsg(std::initializer_list<TypeErrorMessageElement> list);
-    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams = {});
-    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams = {});
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
                   const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    void LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
+    void LogTypeError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos);
     void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
-    void ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
+    void ReportWarning(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos);
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
     bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+    bool IsTypeIdenticalTo(Type *source, Type *target, util::DiagnosticMessageParams list,
                            const lexer::SourcePosition &errPos);
     bool IsTypeAssignableTo(Type *source, Type *target);
     bool IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+    bool IsTypeAssignableTo(Type *source, Type *target, util::DiagnosticMessageParams list,
                             const lexer::SourcePosition &errPos);
     bool IsTypeComparableTo(Type *source, Type *target);
     bool IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+    bool IsTypeComparableTo(Type *source, Type *target, util::DiagnosticMessageParams list,
                             const lexer::SourcePosition &errPos);
     bool AreTypesComparable(Type *source, Type *target);
     bool IsTypeEqualityComparableTo(Type *source, Type *target);
@@ -200,9 +200,9 @@ public:
 
     varbinder::VarBinder *VarBinder() const;
 
-    util::ErrorLogger *ErrorLogger()
+    util::DiagnosticEngine &DiagnosticEngine()
     {
-        return &errorLogger_;
+        return diagnosticEngine_;
     }
 
     // NOTE: required only for evaluate.
@@ -223,7 +223,7 @@ private:
     varbinder::VarBinder *varbinder_ {};
     parser::Program *program_ {};
     varbinder::Scope *scope_ {};
-    util::ErrorLogger errorLogger_;
+    util::DiagnosticEngine &diagnosticEngine_;
 
     RelationHolder identicalResults_ {{}, RelationType::IDENTICAL};
     RelationHolder assignableResults_ {{}, RelationType::ASSIGNABLE};
@@ -256,7 +256,7 @@ private:
 
 class TypeStackElement {
 public:
-    explicit TypeStackElement(Checker *checker, void *element, std::initializer_list<TypeErrorMessageElement> list,
+    explicit TypeStackElement(Checker *checker, void *element, util::DiagnosticMessageParams list,
                               const lexer::SourcePosition &pos, bool isRecursive = false)
         : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
     {

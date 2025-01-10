@@ -16,6 +16,7 @@
 #include "importPathManager.h"
 #include "es2panda.h"
 #include <libpandabase/os/filesystem.h>
+#include "util/diagnosticEngine.h"
 
 #ifdef USE_UNIX_SYSCALL
 #include <dirent.h>
@@ -40,10 +41,11 @@ static bool IsCompatibleExtension(const std::string &extension)
     return extension == ".sts" || extension == ".ts" || extension == ".ets";
 }
 
-util::StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath) const
+util::StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath,
+                                                const lexer::SourcePosition &srcPos) const
 {
     if (importPath.Empty()) {
-        errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Import path cannot be empty"});
+        diagnosticEngine_.LogFatalError(program_, "Import path cannot be empty", srcPos);
         return importPath;
     }
 
@@ -56,25 +58,26 @@ util::StringView ImportPathManager::ResolvePath(const StringView &currentModuleP
         resolvedPath.Append(pathDelimiter_);
         resolvedPath.Append(importPath.Mutf8());
 
-        return AppendExtensionOrIndexFileIfOmitted(resolvedPath.View());
+        return AppendExtensionOrIndexFileIfOmitted(resolvedPath.View(), srcPos);
     }
 
-    return ResolveAbsolutePath(importPath);
+    return ResolveAbsolutePath(importPath, srcPos);
 }
 
-util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &importPath) const
+util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &importPath,
+                                                        const lexer::SourcePosition &srcPos) const
 {
     ASSERT(!IsRelativePath(importPath));
 
     if (importPath.Mutf8()[0] == pathDelimiter_.at(0)) {
         std::string baseUrl = arktsConfig_->BaseUrl();
         baseUrl.append(importPath.Mutf8(), 0, importPath.Mutf8().length());
-        return AppendExtensionOrIndexFileIfOmitted(UString(baseUrl, allocator_).View());
+        return AppendExtensionOrIndexFileIfOmitted(UString(baseUrl, allocator_).View(), srcPos);
     }
 
     auto &dynamicPaths = arktsConfig_->DynamicPaths();
     if (auto it = dynamicPaths.find(importPath.Mutf8()); it != dynamicPaths.cend() && !it->second.HasDecl()) {
-        return AppendExtensionOrIndexFileIfOmitted(importPath);
+        return AppendExtensionOrIndexFileIfOmitted(importPath, srcPos);
     }
 
     const size_t pos = importPath.Mutf8().find_first_of("/\\");
@@ -94,21 +97,24 @@ util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &import
     ASSERT(arktsConfig_ != nullptr);
     auto resolvedPath = arktsConfig_->ResolvePath(importPath.Mutf8());
     if (!resolvedPath) {
-        errorLogger_->WriteLog(
-            Error {ErrorType::GENERIC, "",
-                   "Can't find prefix for '" + importPath.Mutf8() + "' in " + arktsConfig_->ConfigPath()});
+        diagnosticEngine_.LogFatalError(program_,
+                                        {"Can't find prefix for ", util::StringView(importPath.Mutf8()), "' in ",
+                                         util::StringView(arktsConfig_->ConfigPath())},
+                                        srcPos);
         return "";
     }
-    return AppendExtensionOrIndexFileIfOmitted(UString(resolvedPath.value(), allocator_).View());
+    return AppendExtensionOrIndexFileIfOmitted(UString(resolvedPath.value(), allocator_).View(), srcPos);
 }
 
 #ifdef USE_UNIX_SYSCALL
 void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath,
-                                                                  const ImportFlags importFlags)
+                                                                  const ImportFlags importFlags,
+                                                                  const lexer::SourcePosition &srcPos)
 {
     DIR *dir = opendir(directoryPath.Mutf8().c_str());
     if (dir == nullptr) {
-        errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Cannot open folder: " + directoryPath.Mutf8()});
+        diagnosticEngine_.LogFatalError(program_, {"Cannot open folder: ", util::StringView(directoryPath.Mutf8())},
+                                        srcPos);
         return;
     }
 
@@ -125,7 +131,7 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringVi
         }
 
         std::string filePath = directoryPath.Mutf8() + "/" + entry->d_name;
-        AddToParseList(UString(filePath, allocator_).View(), importFlags);
+        AddToParseList(UString(filePath, allocator_).View(), importFlags, srcPos);
     }
 
     closedir(dir);
@@ -133,7 +139,8 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringVi
 }
 #endif
 
-void ImportPathManager::AddToParseList(const StringView &resolvedPath, const ImportFlags importFlags)
+void ImportPathManager::AddToParseList(const StringView &resolvedPath, const ImportFlags importFlags,
+                                       const lexer::SourcePosition &srcPos)
 {
     const bool isDefaultImport = (importFlags & ImportFlags::DEFAULT_IMPORT) != 0;
     const bool isImplicitPackageImport = (importFlags & ImportFlags::IMPLICIT_PACKAGE_IMPORT) != 0;
@@ -141,14 +148,14 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, const Imp
 
     if (ark::os::file::File::IsDirectory(resolvedPath.Mutf8())) {
 #ifdef USE_UNIX_SYSCALL
-        UnixWalkThroughDirectoryAndAddToParseList(resolvedPath, importFlags);
+        UnixWalkThroughDirectoryAndAddToParseList(resolvedPath, importFlags, srcPos);
 #else
         for (auto const &entry : fs::directory_iterator(resolvedPath.Mutf8())) {
             if (!fs::is_regular_file(entry) || !IsCompatibleExtension(entry.path().extension().string())) {
                 continue;
             }
 
-            AddToParseList(UString(entry.path().string(), allocator_).View(), importFlags);
+            AddToParseList(UString(entry.path().string(), allocator_).View(), importFlags, srcPos);
         }
         return;
 #endif
@@ -183,7 +190,8 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, const Imp
     }
 
     if (!ark::os::file::File::IsRegularFile(resolvedPath.Mutf8())) {
-        errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Not an available source path: " + resolvedPath.Mutf8()});
+        diagnosticEngine_.LogFatalError(
+            program_, {"Not an available source path: ", util::StringView(resolvedPath.Mutf8())}, srcPos);
         return;
     }
 
@@ -255,7 +263,8 @@ StringView ImportPathManager::GetRealPath(const StringView &path) const
     return UString(realPath, allocator_).View();
 }
 
-StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringView &basePath) const
+StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringView &basePath,
+                                                                  const lexer::SourcePosition &srcPos) const
 {
     std::string fixedPath = std::string(basePath.Utf8());
     char delim = pathDelimiter_.at(0);
@@ -296,8 +305,7 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
     if (auto it = dynamicPaths.find(path.Mutf8()); it != dynamicPaths.cend()) {
         return path;
     }
-
-    errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Not supported path: " + path.Mutf8()});
+    diagnosticEngine_.LogFatalError(program_, {"Not supported path: ", util::StringView(path.Mutf8())}, srcPos);
     return "";
 }
 
@@ -323,12 +331,13 @@ static std::string FormRelativeModuleName(std::string relPath)
     return relPath;
 }
 
-util::StringView ImportPathManager::FormModuleName(const util::Path &path)
+util::StringView ImportPathManager::FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos)
 {
     if (!absoluteEtsPath_.empty()) {
         std::string filePath(path.GetAbsolutePath());
         if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
-            errorLogger_->WriteLog(Error {ErrorType::GENERIC, filePath, "Source file outside ets-path"});
+            diagnosticEngine_.LogFatalError(program_, {"Source file ", util::StringView(filePath), " outside ets-path"},
+                                            srcPos);
             return "";
         }
         auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
@@ -369,8 +378,7 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
             return util::UString(res.value(), allocator_).View();
         }
     }
-
-    errorLogger_->WriteLog(Error {ErrorType::GENERIC, filePath, "Unresolved module name"});
+    diagnosticEngine_.LogFatalError(program_, {"Unresolved module name", util::StringView(filePath)}, srcPos);
     return "";
 }
 

@@ -17,7 +17,7 @@ interface Document {
   createElement(tagName: "div"):  /* @@ label */HTMLDivElement;
   createElement(tagName: "span"): HTMLSpanElement;
 }
-/* @@@ label Error SyntaxError: Cannot find type 'HTMLDivElement'. */
-/* @@? 18:35 Error SyntaxError: Cannot find type 'HTMLSpanElement'. */
-/* @@? 18:35 Error SyntaxError: Cannot find type 'HTMLSpanElement'. */
+/* @@@ label Error TypeError: Cannot find type 'HTMLDivElement'. */
+/* @@? 18:35 Error TypeError: Cannot find type 'HTMLSpanElement'. */
+/* @@? 18:35 Error TypeError: Cannot find type 'HTMLSpanElement'. */
 /* @@? 18:3 Error TypeError: Function createElement is already declared. */

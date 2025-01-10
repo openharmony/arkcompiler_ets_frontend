@@ -1,4 +1,3 @@
-SyntaxError: Variable 'a' has already been declared. [subpackage_module_1.sts:19:12]
 {
   "type": "Program",
   "statements": [
@@ -503,3 +502,4 @@ SyntaxError: Variable 'a' has already been declared. [subpackage_module_1.sts:19
     }
   }
 }
+TypeError: Variable 'a' has already been declared. [subpackage_module_1.sts:19:12]

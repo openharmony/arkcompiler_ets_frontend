@@ -2335,7 +2335,7 @@ change_types:
   - es2panda_arg:
       name: '|arg_name|'
       type:
-        name: 'ErrorLogger'
+        name: 'DiagnosticEngine'
         namespace: 'util'
       min_ptr_depth: 1
     new_args:
@@ -2347,7 +2347,7 @@ change_types:
     cast:
         expression: >-
           auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
-          reinterpret_cast<util::ErrorLogger |es2panda_arg.type.ptr_depth|>(|arg_name|);
+          reinterpret_cast<util::DiagnosticEngine |es2panda_arg.type.ptr_depth|>(|arg_name|);
         reverse_cast:
           start : >-
             reinterpret_cast<?const? es2panda_ErrorLogger |es2panda_arg.type.ptr_depth|>
@@ -2358,17 +2358,17 @@ change_types:
               name: es2panda_ErrorLogger
               ptr_depth: 1
           start: >-
-            (reinterpret_cast<?const? util::ErrorLogger *>(classInstance))->
+            (reinterpret_cast<?const? util::DiagnosticEngine &>(ast))->
         constructor_cast:
           start: >-
-            ctxAllocator->New<util::ErrorLogger>(
+            ctxAllocator->New<util::DiagnosticEngine>(
           end: )
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:
       name: '|arg_name|'
       type:
-        name: 'ErrorLogger'
+        name: 'DiagnosticEngine'
         namespace: 'util'
       max_ptr_depth: 0
     new_args:
@@ -2379,7 +2379,7 @@ change_types:
       namespace: 'util::'
     cast:
         expression: >-
-          auto |arg_name|E2p = *reinterpret_cast<util::ErrorLogger *>(|arg_name|);
+          auto |arg_name|E2p = *reinterpret_cast<util::DiagnosticEngine &>(|arg_name|);
         var_name: '|arg_name|E2p'
 
   - es2panda_arg:

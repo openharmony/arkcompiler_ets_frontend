@@ -42,7 +42,10 @@ T BaseName(T const &path)
 
 class Options : public gen::Options {
 public:
-    explicit Options(std::string_view execPath) : gen::Options(std::string(execPath)) {}
+    explicit Options(std::string_view execPath, util::DiagnosticEngine &diagnosticEngine)
+        : gen::Options(std::string(execPath)), diagnosticEngine_(diagnosticEngine)
+    {
+    }
     NO_COPY_SEMANTIC(Options);
     NO_MOVE_SEMANTIC(Options);
     ~Options() = default;
@@ -107,11 +110,6 @@ public:
         return inputFile_.GetValue();
     }
 
-    const std::string &ErrorMsg() const
-    {
-        return errorMsg_;
-    }
-
     bool IsDynamic() const
     {
         return extension_ != ScriptExtension::STS;
@@ -173,7 +171,8 @@ public:
 
 private:
     template <typename T>
-    static bool CallPandArgParser(const std::vector<std::string> &args, T &options);
+    static bool CallPandArgParser(const std::vector<std::string> &args, T &options,
+                                  util::DiagnosticEngine &diagnosticEngine);
     bool CallPandArgParser(const std::vector<std::string> &args);
     bool ParseInputOutput();
     bool DetermineExtension();
@@ -201,9 +200,9 @@ private:
     std::set<std::string> dumpEtsSrcAfterPhases_ {};
     std::vector<ETSWarnings> etsWarningCollection_ = {};
     std::string parserInputContents_;
-    std::string errorMsg_;
     Logger::Level logLevel_ {Logger::Level::ERROR};
     EvalMode evalMode_ = {EvalMode::NONE};
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 }  // namespace ark::es2panda::util
 

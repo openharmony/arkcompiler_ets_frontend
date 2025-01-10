@@ -27,8 +27,9 @@ class CompileQueue;
 
 class CompilationUnit {
 public:
-    explicit CompilationUnit(const SourceFile &i, const util::Options &o, uint32_t s, ScriptExtension e)
-        : input(i), options(o), rawParserStatus(s), ext(e)
+    explicit CompilationUnit(const SourceFile &i, const util::Options &o, uint32_t s, ScriptExtension e,
+                             util::DiagnosticEngine &de)
+        : input(i), options(o), rawParserStatus(s), ext(e), diagnosticEngine(de)
     {
     }
 
@@ -37,6 +38,7 @@ public:
     const util::Options &options;
     uint32_t rawParserStatus;
     ScriptExtension ext;
+    util::DiagnosticEngine &diagnosticEngine;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 

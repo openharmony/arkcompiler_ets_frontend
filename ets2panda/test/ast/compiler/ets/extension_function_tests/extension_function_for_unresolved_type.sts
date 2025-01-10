@@ -17,5 +17,5 @@ function name(this: /* @@label */Fruit): int {
     return 1;
 }
 
-/* @@@ label Error SyntaxError: Cannot find type 'Fruit'.  */
+/* @@@ label Error TypeError: Cannot find type 'Fruit'.  */
 /* @@? 16:1 Error TypeError: Extension function can only defined for class, interface or array. */

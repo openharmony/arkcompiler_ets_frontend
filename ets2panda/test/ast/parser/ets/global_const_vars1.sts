@@ -14,9 +14,8 @@
  */
 
 const date: Date = new Date();
-const a: int/* @@ label */;
+const a: int;
 
 function main(): void {}
 
-/* @@@ label Error SyntaxError: Missing initializer in const declaration  */
-/* @@? 17:8 Error SyntaxError: Missing initializer in const declaration */
+/* @@? 17:8 Error TypeError: Missing initializer in const declaration  */

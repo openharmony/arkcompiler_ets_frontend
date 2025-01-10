@@ -213,7 +213,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return false;
     }
 
-    if (ctx->checker->ErrorLogger()->IsAnyError() || ctx->parser->ErrorLogger()->IsAnyError()) {
+    if (ctx->diagnosticEngine->IsAnyError()) {
         return false;
     }
 

@@ -34,6 +34,6 @@ foo<@Anno T>()
 /* @@? 23:22 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
 /* @@? 28:11 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
 /* @@? 28:11 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 28:11 Error SyntaxError: Cannot find type 'T'. */
-/* @@? 22:17 Error SyntaxError: Cannot find type 'T'. */
-/* @@? 23:22 Error SyntaxError: Cannot find type 'T'. */
+/* @@? 28:11 Error TypeError: Cannot find type 'T'. */
+/* @@? 22:17 Error TypeError: Cannot find type 'T'. */
+/* @@? 23:22 Error TypeError: Cannot find type 'T'. */

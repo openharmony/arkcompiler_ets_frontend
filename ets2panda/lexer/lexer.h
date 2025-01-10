@@ -115,7 +115,8 @@ class TemplateLiteralParserContext;
 
 class Lexer {
 public:
-    explicit Lexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger, bool startLexer = true);
+    explicit Lexer(const parser::ParserContext *parserContext, util::DiagnosticEngine &diagnosticEngine,
+                   bool startLexer = true);
     NO_COPY_SEMANTIC(Lexer);
     NO_MOVE_SEMANTIC(Lexer);
     virtual ~Lexer() = default;
@@ -138,9 +139,9 @@ public:
         return false;
     }
 
-    const util::ErrorLogger *ErrorLogger()
+    util::DiagnosticEngine &DiagnosticEngine()
     {
-        return errorLogger_;
+        return diagnosticEngine_;
     }
 
     std::optional<Token> TryEatTokenKeyword(lexer::TokenType type)
@@ -345,7 +346,7 @@ private:
     const parser::ParserContext *parserContext_;
     util::StringView source_;
     LexerPosition pos_;
-    util::ErrorLogger *const errorLogger_;
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 
 class TemplateLiteralParserContext {

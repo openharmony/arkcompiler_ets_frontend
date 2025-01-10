@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,8 +21,9 @@
 namespace ark::es2panda::checker {
 class ETSWarningAnalyzer {
 public:
-    ETSWarningAnalyzer(const ir::AstNode *node, parser::Program *program, const ETSWarnings warning, bool etsWerror)
-        : program_(program), etsWerror_(etsWerror)
+    ETSWarningAnalyzer(const ir::AstNode *node, parser::Program *program, const ETSWarnings warning,
+                       util::DiagnosticEngine &diagnosticEngine)
+        : program_(program), diagnosticEngine_(diagnosticEngine)
     {
         if (node == nullptr) {
             return;
@@ -53,7 +54,7 @@ public:
     }
 
 private:
-    void ETSThrowWarning(const std::string &message, const lexer::SourcePosition &position);
+    void LogWarning(const std::string &message, const lexer::SourcePosition &position);
 
     void AnalyzeClassDefForFinalModifier(const ir::ClassDefinition *classDef);
     void AnalyzeClassMethodForFinalModifier(const ir::MethodDefinition *methodDef, const ir::ClassDefinition *classDef);
@@ -72,7 +73,7 @@ private:
     void ETSWarningImplicitBoxingUnboxing(const ir::AstNode *node);
 
     parser::Program *program_;
-    bool etsWerror_;
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 }  // namespace ark::es2panda::checker
 

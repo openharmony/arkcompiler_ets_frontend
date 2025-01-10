@@ -23,7 +23,7 @@ namespace ark::es2panda::parser {
 
 class ETSNolintParser {
 public:
-    explicit ETSNolintParser(const ParserImpl *mainParser);
+    explicit ETSNolintParser(ParserImpl *mainParser);
     void CollectETSNolints();
     void ApplyETSNolintsToStatements(ArenaVector<ir::Statement *> &statements) const;
 
@@ -52,7 +52,7 @@ private:
 
     void ApplyETSNolintsToNodesRecursively(ir::AstNode *node) const;
 
-    const ParserImpl *parser_;
+    ParserImpl *parser_;
     std::size_t startPos_ = 0;
     std::size_t posOffset_ = 0;
     std::size_t line_ = 0;

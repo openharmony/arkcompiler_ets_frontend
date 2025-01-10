@@ -2410,7 +2410,7 @@ ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(varbinder::LocalVaria
     implicitInstantiateArgument.append("}");
 
     parser::Program program(Allocator(), VarBinder());
-    auto parser = parser::ETSParser(&program, nullptr);
+    auto parser = parser::ETSParser(&program, nullptr, DiagnosticEngine());
     auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
     compiler::InitScopesPhaseETS::RunExternalNode(argExpr, &program);
 

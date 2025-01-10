@@ -35,10 +35,10 @@ public:
     static std::unique_ptr<ark::pandasm::Program> GetProgram(int argc, char const *const *argv,
                                                              std::string_view fileName, std::string_view src)
     {
-        auto options =
-            std::make_unique<util_alias::Options>(argv[0]);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        auto de = util_alias::DiagnosticEngine();
+        auto options = std::make_unique<util_alias::Options>(
+            argv[0], de);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         if (!options->Parse(ark::Span(argv, argc))) {
-            std::cerr << options->ErrorMsg() << std::endl;
             return nullptr;
         }
 
@@ -49,7 +49,7 @@ public:
         ark::es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
         ark::es2panda::SourceFile input(fileName, src, options->IsModule());
 
-        return std::unique_ptr<ark::pandasm::Program>(compiler.Compile(input, *options));
+        return std::unique_ptr<ark::pandasm::Program>(compiler.Compile(input, *options, de));
     }
 
     ark::pandasm::Function *GetFunction(std::string_view functionName,

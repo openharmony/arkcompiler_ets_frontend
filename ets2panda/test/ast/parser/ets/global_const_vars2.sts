@@ -17,5 +17,4 @@ const date: Date/* @@ label */;
 
 function main(): void {}
 
-/* @@@ label Error SyntaxError: Missing initializer in const declaration  */
-/* @@? 16:10 Error SyntaxError: Missing initializer in const declaration */
+/* @@? 16:10 Error TypeError: Missing initializer in const declaration  */

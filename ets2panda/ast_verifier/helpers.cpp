@@ -66,20 +66,16 @@ bool IsBooleanType(const ir::AstNode *ast)
 bool IsValidTypeForBinaryOp(const ir::AstNode *ast, bool isBitwise)
 {
     if (ast == nullptr) {
-        std::cout << __LINE__ << std::endl;
         return false;
     }
 
     if (!ast->IsTyped()) {
-        std::cout << __LINE__ << std::endl;
         return false;
     }
 
     auto typedAst = static_cast<const ir::TypedAstNode *>(ast);
 
     if (typedAst->TsType() == nullptr) {
-        // std::cout << typedAst
-        std::cout << __LINE__ << std::endl;
         return false;
     }
 

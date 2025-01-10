@@ -27,8 +27,9 @@ enum class TSTupleKind;
 namespace ark::es2panda::parser {
 class TSParser : public ThrowingTypedParser {
 public:
-    TSParser(Program *program, const util::Options &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : ThrowingTypedParser(program, &options, status)
+    TSParser(Program *program, const util::Options &options, util::DiagnosticEngine &diagnosticEngine,
+             ParserStatus status = ParserStatus::NO_OPTS)
+        : ThrowingTypedParser(program, &options, diagnosticEngine, status)
     {
     }
 

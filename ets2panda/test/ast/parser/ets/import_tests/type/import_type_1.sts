@@ -17,5 +17,5 @@ import {/* @@ label */A} from "./type"
 
 let aa:A;
 
-/* @@@ label Error SyntaxError: Cannot find imported element 'A'  */
-/* @@? 18:8 Error SyntaxError: Cannot find type 'A'. */
+/* @@@ label Error TypeError: Cannot find imported element 'A'  */
+/* @@? 18:8 Error TypeError: Cannot find type 'A'. */

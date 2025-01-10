@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -228,7 +228,8 @@ varbinder::Variable *DebugInfoDeserializer::CreateLocalVarDecl(ir::Identifier *i
     auto statementScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, topStatement->Scope());
 
     parser::Program p(checker->Allocator(), varBinder);
-    auto parser = parser::ETSParser(&p, *varBinder->GetContext()->config->options, parser::ParserStatus::NO_OPTS);
+    auto parser = parser::ETSParser(&p, *varBinder->GetContext()->config->options,
+                                    *varBinder->GetContext()->diagnosticEngine, parser::ParserStatus::NO_OPTS);
 
     auto *varDecl = parser.CreateFormattedStatement(varDeclSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
     ASSERT(varDecl != nullptr);

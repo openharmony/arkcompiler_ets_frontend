@@ -56,7 +56,7 @@ for (let i = 1 in [0, 1, 2]) {}
 /* @@? 38:5 Error SyntaxError: Unexpected token 'private'. */
 /* @@? 42:16 Error SyntaxError: for-in loop variable declaration may not have an initializer */
 /* @@? 42:16 Error SyntaxError: Unexpected token: 'in'. */
-/* @@? 18:12 Error SyntaxError: Cannot find type 'exception'. */
-/* @@? 38:14 Error SyntaxError: Cannot find type 'annotate'. */
+/* @@? 18:12 Error TypeError: Cannot find type 'exception'. */
+/* @@? 38:14 Error TypeError: Cannot find type 'annotate'. */
 /* @@? 18:9 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */
 /* @@? 27:7 Error TypeError: need to specify target type for class composite */

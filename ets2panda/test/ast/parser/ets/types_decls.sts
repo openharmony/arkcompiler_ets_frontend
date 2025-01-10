@@ -56,9 +56,9 @@ let non_prim_c: Char = c'b';
 // see 3.1.5 Void type
 function v(): void {}
 
-/* @@@ label Error SyntaxError: Variable 'prim_b' has already been declared.  */
-/* @@? 46:5 Error SyntaxError: Variable 'non_prim_b' has already been declared. */
-/* @@? 45:27 Error SyntaxError: Cannot find type 'bool'. */
-/* @@? 46:17 Error SyntaxError: Cannot find type 'Bool'. */
+/* @@@ label Error TypeError: Variable 'prim_b' has already been declared.  */
+/* @@? 46:5 Error TypeError: Variable 'non_prim_b' has already been declared. */
+/* @@? 45:27 Error TypeError: Cannot find type 'bool'. */
+/* @@? 46:17 Error TypeError: Cannot find type 'Bool'. */
 /* @@? 45:34 Error TypeError: Type 'boolean' cannot be assigned to type 'byte' */
 /* @@? 46:24 Error TypeError: Type 'boolean' cannot be assigned to type 'Byte' */

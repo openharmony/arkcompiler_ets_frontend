@@ -75,12 +75,12 @@ let a = [1, 2, 3);
 /* @@? 38:17 Error SyntaxError: Unexpected token, expected ',' or ']'. */
 /* @@? 38:17 Error SyntaxError: Unexpected token ')'. */
 /* @@? 38:17 Error SyntaxError: Unexpected token ')'. */
-/* @@? 24:5 Error SyntaxError: Variable 'a' has already been declared. */
-/* @@? 28:5 Error SyntaxError: Variable 'a' has already been declared. */
-/* @@? 30:5 Error SyntaxError: Variable 'a' has already been declared. */
-/* @@? 32:10 Error SyntaxError: Variable 'f' has already been declared. */
-/* @@? 32:10 Error SyntaxError: Variable 'f' has already been declared. */
-/* @@? 38:5 Error SyntaxError: Variable 'a' has already been declared. */
+/* @@? 24:5 Error TypeError: Variable 'a' has already been declared. */
+/* @@? 28:5 Error TypeError: Variable 'a' has already been declared. */
+/* @@? 30:5 Error TypeError: Variable 'a' has already been declared. */
+/* @@? 32:10 Error TypeError: Variable 'f' has already been declared. */
+/* @@? 32:10 Error TypeError: Variable 'f' has already been declared. */
+/* @@? 38:5 Error TypeError: Variable 'a' has already been declared. */
 /* @@? 20:5 Error TypeError: Unresolved reference x */
 /* @@? 24:18 Error TypeError: The type of parameter 'y' cannot be determined */
 /* @@? 26:5 Error TypeError: Unresolved reference x */

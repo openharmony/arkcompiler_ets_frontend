@@ -618,8 +618,8 @@ static void PostprocessLambdaClassInvoke(public_lib::Context *ctx, LambdaClassIn
     invokeMethod->SetParent(lciInfo->classDefinition);
 
     bool hasOptionalParameters;
-    std::tie(hasOptionalParameters, std::ignore) = DefaultParameterLowering::HasDefaultParam(
-        invokeMethod->Function(), ctx->parserProgram, ctx->parser->ErrorLogger());
+    std::tie(hasOptionalParameters, std::ignore) =
+        DefaultParameterLowering::HasDefaultParam(invokeMethod->Function(), ctx->parserProgram, *ctx->diagnosticEngine);
     if (hasOptionalParameters) {
         DefaultParameterLowering::ProcessGlobalFunctionDefinition(invokeMethod, ctx);
     }
@@ -952,7 +952,7 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
     }
 
     if (!ast->Parent()->IsCallExpression()) {
-        checker->LogTypeError(std::initializer_list<checker::TypeErrorMessageElement> {"Cannot deduce call signature"},
+        checker->LogTypeError(std::initializer_list<checker::DiagnosticMessageElement> {"Cannot deduce call signature"},
                               ast->Start());
         return nullptr;
     }

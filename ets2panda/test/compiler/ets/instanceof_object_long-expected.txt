@@ -1,4 +1,3 @@
-TypeError: Bad operand type, the types of the operands must be same type. [instanceof_object_long.sts:21:12]
 {
   "type": "Program",
   "statements": [
@@ -479,3 +478,4 @@ TypeError: Bad operand type, the types of the operands must be same type. [insta
     }
   }
 }
+TypeError: Bad operand type, the types of the operands must be same type. [instanceof_object_long.sts:21:12]
