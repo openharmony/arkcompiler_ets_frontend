@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -627,10 +627,12 @@ panda_add_sanitizers(TARGET es2panda-lib SANITIZERS
   ${PANDA_SANITIZERS_LIST})
 
 SET(ES2PANDA_LIB_DIR public)
+SET(LSP_LIB "es2panda_lsp")
 add_subdirectory(${ES2PANDA_LIB_DIR})
 
 add_subdirectory(aot)
 add_subdirectory(declgen_ets2ts)
+add_subdirectory(lsp)
 
 if(PANDA_WITH_TESTS)
   add_subdirectory(test)
