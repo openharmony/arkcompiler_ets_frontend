@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -33,7 +33,11 @@ module Enums
     end
 
     def namespace
-      dig(:namespace)
+      if Enums.change_namespace.include?(dig(:namespace))
+        return Enums.change_namespace[dig(:namespace)]
+      else
+        return dig(:namespace)
+      end
     end
 
     def parent_class_name
@@ -48,10 +52,13 @@ module Enums
   end
 
   @enums = {}
+  @change_namespace = {
+    'ast_verifier' => 'compiler::ast_verifier', 'verifier_invariants' => 'util::gen::verifier_invariants'
+  }
 
-  def enums
-    @enums
-  end
+  attr_reader :change_namespace
+
+  attr_reader :enums
 
   def wrap_data(data)
     return unless data
@@ -98,7 +105,7 @@ module Enums
                                                        'namespace' => 'varbinder', 'name' => 'DeclType' }))
   end
 
-  module_function :wrap_data, :enums
+  module_function :wrap_data, :enums, :change_namespace
 end
 
 def Gen.on_require(data)

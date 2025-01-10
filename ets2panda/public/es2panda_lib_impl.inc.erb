@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -105,7 +105,7 @@ end %>::<%= name %>::<%= flag %>:
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define IS(public_name, e2p_name)                                               \
-    extern "C" bool Is##public_name(es2panda_AstNode *ast)                  \
+    extern "C" bool Is##public_name(es2panda_AstNode *ast)                      \
     {                                                                           \
         auto *node = reinterpret_cast<ir::AstNode *>(ast);                      \
         return node->Is##e2p_name();                                            \

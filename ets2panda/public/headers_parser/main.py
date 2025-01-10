@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -81,6 +81,8 @@ if __name__ == "__main__":
 
     for header in args.headers:
         dst = os.path.join(result_dir, f"{os.path.splitext(os.path.relpath(header, args.es2panda_root))[0]}.yaml")
+        if ".." in dst:
+            dst = os.path.join(result_dir, f"{os.path.splitext(os.path.basename(header))[0]}.yaml")
         parse_header(header, dst)
 
     save_custom_yamls()

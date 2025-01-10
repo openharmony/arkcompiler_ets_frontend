@@ -22,8 +22,10 @@
 
 #include "public/es2panda_lib.h"
 
-const int MIN_ARGC = 3;
-const int NULLPTR_IMPL_ERROR_CODE = 2;
+constexpr int MIN_ARGC = 3;
+constexpr int NULLPTR_IMPL_ERROR_CODE = 2;
+constexpr int PROCEED_ERROR_CODE = 3;
+constexpr int TEST_ERROR_CODE = 4;
 
 es2panda_Impl *GetImpl();
 

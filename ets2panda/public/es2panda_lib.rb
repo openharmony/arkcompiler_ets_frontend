@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -165,7 +165,10 @@ module Es2pandaLibApi
         'es2panda_BindingProps',
         'es2panda_BoundContext',
         'es2panda_ErrorLogger',
-        'es2panda_ArkTsConfig'
+        'es2panda_ArkTsConfig',
+        'es2panda_VerificationContext',
+        'es2panda_AstVerifier',
+        'es2panda_VerifierMessage'
       ]
       @es2panda_arg = arg_info
 
@@ -402,6 +405,7 @@ module Es2pandaLibApi
       @lib_args = tmp.lib_args
       @lib_cast = tmp.lib_cast
       @return_args = tmp.return_args || nil
+      return unless !tmp.check_allowed_type(@lib_args[0])
       nested_arg_transform
     end
 
@@ -764,9 +768,9 @@ module Es2pandaLibApi
               args << Arg.new(arg, class_base_namespace)
             end
           rescue StandardError => e
-            error_catch_log('Constructor', constructor, e, "Create" + class_name)
+            error_catch_log('Constructor', constructor, e, 'Create' + class_name)
           else
-            Es2pandaLibApi.stat_add_constructor(1, class_name, class_base_namespace, "Create" + class_name)
+            Es2pandaLibApi.stat_add_constructor(1, class_name, class_base_namespace, 'Create' + class_name)
             Es2pandaLibApi.stat_add_class(1, class_name)
 
             Es2pandaLibApi.log('info', "Supported constructor for class '#{class_name}'\n")
@@ -799,6 +803,13 @@ module Es2pandaLibApi
       Es2pandaLibApi.ignored_info['constructors']['call_class']&.each do |call_class|
         return false if (call_class['name'] == class_name)
       end
+      Es2pandaLibApi.ignored_info['template_names']&.each do |template_name|
+        return false if constructor.respond_to?('template') && (constructor['template'].include?(template_name['name']))
+      end
+      # NOTE(nikozer) Need to ban ast verifier default condtructor, will be removed later
+      if class_name == "ASTVerifier" && constructor.args&.size == 0
+        return false
+      end
       return true
     end
 
@@ -828,6 +839,9 @@ module Es2pandaLibApi
       end
       Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
         return false if Es2pandaLibApi.check_fit_template_type(method.return_type, template_type)
+      end
+      Es2pandaLibApi.ignored_info['template_names']&.each do |template_name|
+        return false if method.respond_to?('template') && (method['template'].include?(template_name['name']))
       end
       return true
     end
@@ -1079,30 +1093,32 @@ module Es2pandaLibApi
 
   def check_class_type(class_name, class_base_namespace)
     type = ''
-    if ast_nodes.include?(class_name) && class_base_namespace == "ir"
-      type = "AST manipulation"
-    elsif ast_node_additional_children.include?(class_name) && class_base_namespace == "ir"
-      type = "AST manipulation"
-    elsif class_base_namespace == "ir"
-      type = "AST manipulation"
-    elsif ast_types.include?(class_name) && class_base_namespace == "checker"
-      type = "Type manipulation"
-    elsif ast_type_additional_children.include?(class_name) && class_base_namespace == "checker"
-      type = "Type manipulation"
-    elsif class_base_namespace == "checker"
-      type = "Type check"
-    elsif ast_variables.find { |x| x[1] == class_name } && class_base_namespace == "varbinder"
-      type = "Variable manipulation"
-    elsif scopes.include?(class_name) && class_base_namespace == "varbinder"
-      type = "Scope manipulation"
-    elsif declarations.include?(class_name) && class_base_namespace == "varbinder"
-      type = "Declaration"
-    elsif class_base_namespace == "varbinder"
-      type = "Varbinder manipulation"
-    elsif class_base_namespace == "parser"
-      type = "Parser manipulation"
-    elsif class_base_namespace == "es2panda"
-      type = "Getters for compiler options"
+    if ast_nodes.include?(class_name) && class_base_namespace == 'ir'
+      type = 'AST manipulation'
+    elsif ast_node_additional_children.include?(class_name) && class_base_namespace == 'ir'
+      type = 'AST manipulation'
+    elsif class_base_namespace == 'ir'
+      type = 'AST manipulation'
+    elsif ast_types.include?(class_name) && class_base_namespace == 'checker'
+      type = 'Type manipulation'
+    elsif ast_type_additional_children.include?(class_name) && class_base_namespace == 'checker'
+      type = 'Type manipulation'
+    elsif class_base_namespace == 'checker'
+      type = 'Type check'
+    elsif ast_variables.find { |x| x[1] == class_name } && class_base_namespace == 'varbinder'
+      type = 'Variable manipulation'
+    elsif scopes.include?(class_name) && class_base_namespace == 'varbinder'
+      type = 'Scope manipulation'
+    elsif declarations.include?(class_name) && class_base_namespace == 'varbinder'
+      type = 'Declaration'
+    elsif class_base_namespace == 'varbinder'
+      type = 'Varbinder manipulation'
+    elsif class_base_namespace == 'parser'
+      type = 'Parser manipulation'
+    elsif class_base_namespace == 'es2panda'
+      type = 'Getters for compiler options'
+    elsif class_base_namespace == 'compiler::ast_verifier'
+      type = 'AST Verifier functions'
     else
       raise "Unsupported class type for stats class name: \"" +
       class_name + "\" class namespace: \"" + class_base_namespace + "\""
@@ -1209,6 +1225,8 @@ module Es2pandaLibApi
       RecordTable
       BoundContext
       ETSParser
+      ASTVerifier
+      CheckMessage
     ]
   end
 
@@ -1330,6 +1348,14 @@ module Es2pandaLibApi
       if additional_classes_to_generate.include?(class_definition.name)
         @classes['parser'][class_definition.name] = ClassData.new(class_definition&.public)
         @classes['parser'][class_definition.name].class_base_namespace = 'parser'
+      end
+    end
+
+    @classes['ast_verifier'] = {} unless @classes['ast_verifier']
+    data['ast_verifier']&.class_definitions&.each do |class_definition|
+      if additional_classes_to_generate.include?(class_definition.name)
+        @classes['ast_verifier'][class_definition.name] = ClassData.new(class_definition&.public)
+        @classes['ast_verifier'][class_definition.name].class_base_namespace = 'compiler::ast_verifier'
       end
     end
 
