@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +30,8 @@ void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept;
 ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept;
 void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range);
 
+// Rerun varbinder on the node.
+varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node);
 // Rerun varbinder and checker on the node.
 void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
 

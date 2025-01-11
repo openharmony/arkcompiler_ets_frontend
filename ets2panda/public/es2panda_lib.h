@@ -173,8 +173,8 @@ struct es2panda_Impl {
     void (*LogTypeError)(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos);
     void (*LogWarning)(es2panda_Context *context, const char *warnMsg, es2panda_SourcePosition *pos);
     void (*LogSyntaxError)(es2panda_Context *context, const char *errorMsg, es2panda_SourcePosition *pos);
-    void (*InitScopesPhaseETSRunExternalNode)(es2panda_Context *ctx, es2panda_AstNode *node);
     es2panda_Scope *(*AstNodeFindNearestScope)(es2panda_Context *ctx, es2panda_AstNode *node);
+    es2panda_Scope *(*AstNodeRebind)(es2panda_Context *ctx, es2panda_AstNode *node);
     void (*AstNodeRecheck)(es2panda_Context *ctx, es2panda_AstNode *node);
     Es2pandaEnum (*Es2pandaEnumFromString)(es2panda_Context *ctx, const char *str);
     char *(*Es2pandaEnumToString)(es2panda_Context *ctx, Es2pandaEnum id);
