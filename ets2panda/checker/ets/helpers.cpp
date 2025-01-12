@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -893,8 +893,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSArrayType *tes
     if (actualType->IsETSArrayType()) {
         auto *const arrayType = actualType->AsETSArrayType();
 
-        if (Relation()->IsIdenticalTo(arrayType, testedType) ||
-            arrayType->AssemblerName() == testedType->AssemblerName()) {
+        if (Relation()->IsIdenticalTo(arrayType, testedType)) {
             return {testedType, GetGlobalTypesHolder()->GlobalNeverType()};
         }
 
@@ -2045,7 +2044,7 @@ void ETSChecker::CheckRethrowingFunction(ir::ScriptFunction *func)
 ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *const child, ETSObjectType *const target)
 {
     if (child->GetDeclNode() == target->GetDeclNode()) {
-        auto *relevantType = CreateNewETSObjectType(child->Name(), child->GetDeclNode(), child->ObjectFlags());
+        auto *relevantType = CreateETSObjectType(child->GetDeclNode(), child->ObjectFlags());
 
         ArenaVector<Type *> params = child->TypeArguments();
 
@@ -2625,21 +2624,6 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     return true;
 }
 
-checker::ETSObjectType *ETSChecker::CreateSyntheticType(util::StringView const &syntheticName,
-                                                        checker::ETSObjectType *lastObjectType, ir::Identifier *id)
-{
-    auto *syntheticObjType = Allocator()->New<checker::ETSObjectType>(Allocator(), syntheticName, syntheticName, id,
-                                                                      checker::ETSObjectFlags::NO_OPTS);
-
-    auto *classDecl = Allocator()->New<varbinder::ClassDecl>(syntheticName);
-    varbinder::LocalVariable *var =
-        Allocator()->New<varbinder::LocalVariable>(classDecl, varbinder::VariableFlags::CLASS);
-    var->SetTsType(syntheticObjType);
-    lastObjectType->AddProperty<checker::PropertyType::STATIC_FIELD>(var);
-    syntheticObjType->SetEnclosingType(lastObjectType);
-    return syntheticObjType;
-}
-
 void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
                                                           checker::ETSObjectType *lastObjectType, ir::Identifier *ident)
 {
@@ -2663,40 +2647,35 @@ ETSObjectType *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration
     auto importPath = importDecl->ResolvedSource()->Str();
     parser::Program *program =
         SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(VarBinder()), importPath);
-    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(program->ModuleName());
-    ASSERT(!syntheticNames.empty());
-    auto assemblerName = syntheticNames[0];
 
-    if (!program->OmitModuleName()) {
-        assemblerName = util::UString(assemblerName.Mutf8()
-                                          .append(compiler::Signatures::METHOD_SEPARATOR)
-                                          .append(compiler::Signatures::ETS_GLOBAL),
-                                      Allocator())
-                            .View();
-    }
+    auto const moduleName = program->ModuleName();
+    auto const internalName =
+        util::UString(
+            moduleName.Mutf8().append(compiler::Signatures::METHOD_SEPARATOR).append(compiler::Signatures::ETS_GLOBAL),
+            Allocator())
+            .View();
 
-    auto *moduleObjectType =
-        Allocator()->New<checker::ETSObjectType>(Allocator(), syntheticNames[0], assemblerName,
-                                                 std::make_tuple(ident, checker::ETSObjectFlags::CLASS, Relation()));
+    auto *moduleObjectType = Allocator()->New<ETSObjectType>(
+        Allocator(), moduleName, internalName, std::make_tuple(ident, checker::ETSObjectFlags::CLASS, Relation()));
 
-    auto *rootDecl = Allocator()->New<varbinder::ClassDecl>(syntheticNames[0]);
+    auto *rootDecl = Allocator()->New<varbinder::ClassDecl>(moduleName);
     varbinder::LocalVariable *rootVar =
         Allocator()->New<varbinder::LocalVariable>(rootDecl, varbinder::VariableFlags::NONE);
     rootVar->SetTsType(moduleObjectType);
 
-    syntheticNames.erase(syntheticNames.begin());
-    checker::ETSObjectType *lastObjectType(moduleObjectType);
-
-    for (const auto &syntheticName : syntheticNames) {
-        lastObjectType = CreateSyntheticType(syntheticName, lastObjectType, ident);
-    }
-
-    ImportNamespaceObjectTypeAddReExportType(importDecl, lastObjectType, ident);
-    SetPropertiesForModuleObject(lastObjectType, importPath,
+    ImportNamespaceObjectTypeAddReExportType(importDecl, moduleObjectType, ident);
+    SetPropertiesForModuleObject(moduleObjectType, importPath,
                                  importDecl->Specifiers()[0]->IsImportNamespaceSpecifier() ? nullptr : importDecl);
-    SetrModuleObjectTsType(ident, lastObjectType);
+    SetrModuleObjectTsType(ident, moduleObjectType);
 
     return moduleObjectType;
+}
+
+ETSChecker::NamedAccessMeta ETSChecker::FormNamedAccessMetadata(varbinder::Variable const *prop)
+{
+    const auto *field = prop->Declaration()->Node()->AsClassProperty();
+    const auto *owner = field->Parent()->AsClassDefinition();
+    return {owner->TsType()->AsETSObjectType(), field->TsType(), field->Id()->Name()};
 }
 
 void ETSChecker::ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const objectType)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1073,7 +1073,7 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     } else if (objectType->IsETSDynamicType()) {
         etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, propName);
     } else if (objectType->IsETSUnionType()) {
-        etsg->LoadUnionProperty(expr, expr->TsType(), objReg, propName);
+        etsg->LoadPropertyByName(expr, objReg, checker::ETSChecker::FormNamedAccessMetadata(expr->PropVar()));
     } else {
         const auto fullName = etsg->FormClassPropReference(objectType->AsETSObjectType(), propName);
         etsg->LoadProperty(expr, variableType, objReg, fullName);

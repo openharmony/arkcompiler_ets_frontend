@@ -80,7 +80,6 @@ libes2panda_sources = [
   "checker/ets/narrowingConverter.cpp",
   "checker/ets/narrowingWideningConverter.cpp",
   "checker/ets/object.cpp",
-  "checker/ets/primitiveWrappers.cpp",
   "checker/ets/typeCheckingHelpers.cpp",
   "checker/ets/typeConverter.cpp",
   "checker/ets/typeCreation.cpp",

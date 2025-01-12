@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -67,9 +67,35 @@ Type *ETSChecker::HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstan
     LogTypeError("This utility type is not yet implemented.", typeParams->Start());
     return bareType;
 }
+
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 // Partial utility type
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+static std::pair<util::StringView, util::StringView> GetPartialClassName(ETSChecker *checker, ir::AstNode *typeNode)
+{
+    // Partial class name for class 'T' will be 'T$partial'
+    auto const addSuffix = [checker](util::StringView name) {
+        return util::UString(name.Mutf8() + PARTIAL_CLASS_SUFFIX, checker->Allocator()).View();
+    };
+
+    auto declIdent = typeNode->IsClassDefinition() ? typeNode->AsClassDefinition()->Ident()
+                                                   : typeNode->AsTSInterfaceDeclaration()->Id();
+    auto internalName = typeNode->IsClassDefinition() ? typeNode->AsClassDefinition()->InternalName()
+                                                      : typeNode->AsTSInterfaceDeclaration()->InternalName();
+    return {addSuffix(declIdent->Name()), addSuffix(internalName)};
+}
+
+static std::pair<parser::Program *, varbinder::RecordTable *> GetPartialClassProgram(ETSChecker *checker,
+                                                                                     ir::AstNode *typeNode)
+{
+    auto classDefProgram = typeNode->GetTopStatement()->AsETSScript()->Program();
+    if (classDefProgram == checker->VarBinder()->Program()) {
+        return {classDefProgram, checker->VarBinder()->AsETSBinder()->GetGlobalRecordTable()};
+    }
+    return {classDefProgram, checker->VarBinder()->AsETSBinder()->GetExternalRecordTable().at(classDefProgram)};
+}
+
 template <typename T>
 static T *CloneNodeIfNotNullptr(T *node, ArenaAllocator *allocator)
 {
@@ -99,33 +125,27 @@ Type *ETSChecker::CreatePartialTypeParameter(ETSTypeParameter *typeToBePartial)
 
 Type *ETSChecker::CreatePartialTypeClass(ETSObjectType *typeToBePartial, ir::AstNode *typeDeclNode)
 {
-    auto *declIdent = typeDeclNode->IsClassDefinition() ? typeDeclNode->AsClassDefinition()->Ident()
-                                                        : typeDeclNode->AsTSInterfaceDeclaration()->Id();
-    const auto partialClassName = util::UString(declIdent->Name(), Allocator()).Append(PARTIAL_CLASS_SUFFIX).View();
-    auto *const classDefProgram = typeDeclNode->GetTopStatement()->AsETSScript()->Program();
-    const bool isClassDeclaredInCurrentFile = classDefProgram == VarBinder()->Program();
-    auto *const programToUse = isClassDeclaredInCurrentFile ? VarBinder()->Program() : classDefProgram;
-    const auto qualifiedClassName = GetQualifiedClassName(programToUse, partialClassName);
+    auto const [partialName, partialQualifiedName] = GetPartialClassName(this, typeDeclNode);
+    auto const [partialProgram, recordTable] = GetPartialClassProgram(this, typeDeclNode);
 
     // Check if we've already generated the partial class, then don't do it again
     const auto classNameToFind =
-        isClassDeclaredInCurrentFile || VarBinder()->IsGenStdLib() ? partialClassName : qualifiedClassName;
+        partialProgram == VarBinder()->Program() || VarBinder()->IsGenStdLib() ? partialName : partialQualifiedName;
     if (auto *var =
-            SearchNamesInMultiplePrograms({programToUse, VarBinder()->Program()}, {classNameToFind, partialClassName});
+            SearchNamesInMultiplePrograms({partialProgram, VarBinder()->Program()}, {classNameToFind, partialName});
         var != nullptr) {
         return var->TsType();
     }
 
     if (typeDeclNode->IsTSInterfaceDeclaration()) {
-        return HandlePartialInterface(typeDeclNode->AsTSInterfaceDeclaration(), isClassDeclaredInCurrentFile,
-                                      partialClassName, programToUse, typeToBePartial);
+        return HandlePartialInterface(typeDeclNode->AsTSInterfaceDeclaration(), typeToBePartial);
     }
 
-    ir::ClassDefinition *partialClassDef = CreateClassPrototype(partialClassName, programToUse);
+    ir::ClassDefinition *partialClassDef = CreateClassPrototype(partialName, partialProgram);
+    partialClassDef->SetInternalName(partialQualifiedName);
 
-    partialClassDef->SetInternalName(
-        util::UString(typeDeclNode->AsClassDefinition()->InternalName().Mutf8() + PARTIAL_CLASS_SUFFIX, Allocator())
-            .View());
+    // Create only class 'header' (no properties and methods, but base type created)
+    BuildBasicClassProperties(partialClassDef);
 
     // If class prototype was created before, then we cached it's type. In that case return it.
     // This handles cases where a Partial<T> presents in class T, because during generating T$partial we'd need the
@@ -135,44 +155,36 @@ Type *ETSChecker::CreatePartialTypeClass(ETSObjectType *typeToBePartial, ir::Ast
         return *found;
     }
 
-    auto *const recordTableToUse = isClassDeclaredInCurrentFile
-                                       ? VarBinder()->AsETSBinder()->GetGlobalRecordTable()
-                                       : VarBinder()->AsETSBinder()->GetExternalRecordTable().at(programToUse);
-    const varbinder::BoundContext boundCtx(recordTableToUse, partialClassDef);
+    const varbinder::BoundContext boundCtx(recordTable, partialClassDef);
 
     NamedTypeStackElement ntse(this, partialClassDef->TsType());
 
     // If class is external, put partial of it in global scope for the varbinder
-    if (!isClassDeclaredInCurrentFile) {
+    if (partialProgram != VarBinder()->Program()) {
         VarBinder()->Program()->GlobalScope()->InsertBinding(partialClassDef->Ident()->Name(),
                                                              partialClassDef->Variable());
     }
 
-    return CreatePartialTypeClassDef(partialClassDef, typeDeclNode->AsClassDefinition(), typeToBePartial,
-                                     recordTableToUse);
+    return CreatePartialTypeClassDef(partialClassDef, typeDeclNode->AsClassDefinition(), typeToBePartial, recordTable);
 }
 
-Type *ETSChecker::HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDecl, bool isClassDeclaredInCurrentFile,
-                                         util::StringView const &partialClassName, parser::Program *const programToUse,
-                                         ETSObjectType *const typeToBePartial)
+Type *ETSChecker::HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDecl, ETSObjectType *typeToBePartial)
 {
-    auto *const partialInterDecl = CreateInterfaceProto(partialClassName, interfaceDecl->IsStatic(),
-                                                        isClassDeclaredInCurrentFile, interfaceDecl->Modifiers());
+    auto const [partialName, partialQualifiedName] = GetPartialClassName(this, interfaceDecl);
+    auto const [partialProgram, recordTable] = GetPartialClassProgram(this, interfaceDecl);
 
-    const auto qualifiedName = GetQualifiedClassName(programToUse, partialClassName);
-    partialInterDecl->SetInternalName(qualifiedName);
+    auto *const partialInterDecl =
+        CreateInterfaceProto(partialName, partialProgram, interfaceDecl->IsStatic(), interfaceDecl->Modifiers());
+    partialInterDecl->SetInternalName(partialQualifiedName);
 
     if (const auto found = NamedTypeStack().find(partialInterDecl->TsType()); found != NamedTypeStack().end()) {
         return *found;
     }
 
-    auto *const recordTable = isClassDeclaredInCurrentFile
-                                  ? VarBinder()->AsETSBinder()->GetGlobalRecordTable()
-                                  : VarBinder()->AsETSBinder()->GetExternalRecordTable().at(programToUse);
     const varbinder::BoundContext boundCtx(recordTable, partialInterDecl);
 
     // If class is external, put partial of it in global scope for the varbinder
-    if (!isClassDeclaredInCurrentFile) {
+    if (partialProgram != VarBinder()->Program()) {
         VarBinder()->Program()->GlobalScope()->InsertBinding(partialInterDecl->Id()->Name(),
                                                              partialInterDecl->Variable());
     }
@@ -261,7 +273,7 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
     // Set value to nullptr to prevent cloning it (as for arrow functions that is not possible yet), we set it
     // to 'undefined' anyway
     prop->SetValue(nullptr);
-    auto *const propClone = prop->Clone(Allocator(), newTSInterfaceDefinition)->AsClassProperty();
+    auto *const propClone = prop->Clone(Allocator(), newTSInterfaceDefinition->Body())->AsClassProperty();
 
     // Revert original property value
     prop->SetValue(propSavedValue);
@@ -283,7 +295,7 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
 
     // Set new parents
     unionType->SetParent(propClone);
-    propClone->SetParent(newTSInterfaceDefinition);
+    propClone->SetParent(newTSInterfaceDefinition->Body());
 
     return propClone;
 }
@@ -516,12 +528,12 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
     return nullishAccessor;
 }
 
-ir::TSInterfaceDeclaration *ETSChecker::CreateInterfaceProto(util::StringView name, const bool isStatic,
-                                                             const bool isClassDeclaredInCurrentFile,
-                                                             const ir::ModifierFlags flags)
+ir::TSInterfaceDeclaration *ETSChecker::CreateInterfaceProto(util::StringView name,
+                                                             parser::Program *const interfaceDeclProgram,
+                                                             const bool isStatic, const ir::ModifierFlags flags)
 {
     const auto globalCtx =
-        varbinder::LexicalScope<varbinder::GlobalScope>::Enter(VarBinder(), VarBinder()->Program()->GlobalScope());
+        varbinder::LexicalScope<varbinder::GlobalScope>::Enter(VarBinder(), interfaceDeclProgram->GlobalScope());
 
     auto *const interfaceId = AllocNode<ir::Identifier>(name, Allocator());
     const auto [decl, var] =
@@ -536,13 +548,19 @@ ir::TSInterfaceDeclaration *ETSChecker::CreateInterfaceProto(util::StringView na
     auto partialInterface = AllocNode<ir::TSInterfaceDeclaration>(
         Allocator(), std::move(extends),
         ir::TSInterfaceDeclaration::ConstructorData {interfaceId, newTypeParams, body, isStatic,
-                                                     !isClassDeclaredInCurrentFile, Language(Language::Id::ETS)});
+                                                     interfaceDeclProgram != VarBinder()->Program(),
+                                                     Language(Language::Id::ETS)});
 
     const auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
     partialInterface->TypeParams()->SetParent(partialInterface);
     partialInterface->SetScope(classCtx.GetScope());
     partialInterface->SetVariable(var);
     decl->BindNode(partialInterface);
+
+    // Put class declaration in global scope, and in program AST
+    partialInterface->SetParent(interfaceDeclProgram->Ast());
+    interfaceDeclProgram->Ast()->Statements().push_back(partialInterface);
+    interfaceDeclProgram->GlobalScope()->InsertBinding(name, var);
 
     partialInterface->AddModifier(flags);
 
@@ -622,7 +640,6 @@ Type *ETSChecker::CreatePartialTypeInterfaceDecl(ir::TSInterfaceDeclaration *con
     }
 
     auto *const partialType = partialInterface->Check(this)->AsETSObjectType();
-    partialType->SetAssemblerName(partialInterface->InternalName());
     partialType->SetBaseType(typeToBePartial);
 
     return partialType;
@@ -687,9 +704,6 @@ ir::ClassDefinition *ETSChecker::CreateClassPrototype(util::StringView name, par
     classDeclProgram->Ast()->Statements().push_back(classDecl);
     classDeclProgram->GlobalScope()->InsertBinding(name, var);
 
-    // Create only class 'header' (no properties and methods, but base type created)
-    BuildBasicClassProperties(classDef);
-
     return classDef;
 }
 
@@ -712,17 +726,6 @@ varbinder::Variable *ETSChecker::SearchNamesInMultiplePrograms(const std::set<co
     }
 
     return nullptr;
-}
-
-util::StringView ETSChecker::GetQualifiedClassName(const parser::Program *const classDefProgram,
-                                                   const util::StringView className)
-{
-    auto packageName = classDefProgram->ModuleName().Mutf8();
-    if (!packageName.empty()) {
-        packageName.append(".");
-    }
-
-    return util::UString(packageName + className.Mutf8(), Allocator()).View();
 }
 
 Type *ETSChecker::HandleUnionForPartialType(ETSUnionType *const typeToBePartial)
@@ -756,7 +759,6 @@ Type *ETSChecker::CreatePartialTypeClassDef(ir::ClassDefinition *const partialCl
         partialType->AddInterface(CreatePartialType(interface)->AsETSObjectType());
     }
 
-    partialType->SetAssemblerName(partialClassDef->InternalName());
     partialType->SetBaseType(typeToBePartial);
 
     CreateConstructorForPartialType(partialClassDef, partialType, recordTableToUse);

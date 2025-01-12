@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,8 +59,6 @@ checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression 
                                         bool isConstructorCall);
 void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType);
 void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType);
-checker::ETSObjectType *CreateSyntheticType(ETSChecker *checker, util::StringView const &syntheticName,
-                                            checker::ETSObjectType *lastObjectType, ir::Identifier *id);
 checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir::AstNode *left);
 bool CheckArgumentVoidType(checker::Type *&funcReturnType, ETSChecker *checker, const std::string &name,
                            ir::ReturnStatement *st);

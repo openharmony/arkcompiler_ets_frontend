@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 - Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 - Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -364,7 +364,7 @@ ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclarat
 
     checker::ETSObjectType *interfaceType {};
     if (var->TsType() == nullptr) {
-        interfaceType = CreateETSObjectType(var->Name(), interfaceDecl, checker::ETSObjectFlags::INTERFACE);
+        interfaceType = CreateETSObjectTypeOrBuiltin(interfaceDecl, checker::ETSObjectFlags::INTERFACE);
         interfaceType->SetVariable(var);
         var->SetTsType(interfaceType);
     } else {
@@ -392,11 +392,9 @@ ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classD
     auto *var = classDef->Ident()->Variable();
     ASSERT(var);
 
-    const util::StringView &className = classDef->Ident()->Name();
-
     checker::ETSObjectType *classType {};
     if (var->TsType() == nullptr) {
-        classType = CreateETSObjectType(className, classDef, checker::ETSObjectFlags::CLASS);
+        classType = CreateETSObjectTypeOrBuiltin(classDef, checker::ETSObjectFlags::CLASS);
         classType->SetVariable(var);
         var->SetTsType(classType);
         if (classDef->IsAbstract()) {
@@ -435,7 +433,7 @@ ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classD
 
 ETSObjectType *ETSChecker::BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType)
 {
-    auto classType = CreateETSObjectType(classDef->Ident()->Name(), classDef, checker::ETSObjectFlags::CLASS);
+    auto classType = CreateETSObjectType(classDef, checker::ETSObjectFlags::CLASS);
     classDef->SetTsType(classType);
     classType->SetSuperType(superType);
     classType->AddObjectFlag(checker::ETSObjectFlags::RESOLVED_SUPER);
@@ -2153,6 +2151,7 @@ void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util:
         if (name.Is(str.Mutf8()) || name.Is(compiler::Signatures::ETS_GLOBAL)) {
             continue;
         }
+        ASSERT(name.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
 
         if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
             moduleObj->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());

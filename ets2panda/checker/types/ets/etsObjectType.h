@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,28 +37,16 @@ public:
     using PropertyTraverser = std::function<void(const varbinder::LocalVariable *)>;
     using PropertyHolder = std::array<PropertyMap, static_cast<size_t>(PropertyType::COUNT)>;
 
-    explicit ETSObjectType(ArenaAllocator *allocator) : ETSObjectType(allocator, ETSObjectFlags::NO_OPTS) {}
-
-    explicit ETSObjectType(ArenaAllocator *allocator, ETSObjectFlags flags)
-        : ETSObjectType(allocator, "", "", std::make_tuple(nullptr, flags, nullptr))
-    {
-    }
-
-    explicit ETSObjectType(ArenaAllocator *allocator, ETSObjectFlags flags, TypeRelation *relation)
-        : ETSObjectType(allocator, "", "", std::make_tuple(nullptr, flags, relation))
-    {
-    }
-
-    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
+    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView internalName,
                            ir::AstNode *declNode, ETSObjectFlags flags)
-        : ETSObjectType(allocator, name, assemblerName, std::make_tuple(declNode, flags, nullptr),
+        : ETSObjectType(allocator, name, internalName, std::make_tuple(declNode, flags, nullptr),
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
     {
     }
 
-    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
+    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView internalName,
                            std::tuple<ir::AstNode *, ETSObjectFlags, TypeRelation *> info)
-        : ETSObjectType(allocator, name, assemblerName, info,
+        : ETSObjectType(allocator, name, internalName, info,
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
     {
     }
@@ -253,17 +241,7 @@ public:
 
     const util::StringView &AssemblerName() const
     {
-        return assemblerName_;
-    }
-
-    void SetName(const util::StringView &newName)
-    {
-        name_ = newName;
-    }
-
-    void SetAssemblerName(const util::StringView &newName)
-    {
-        assemblerName_ = newName;
+        return internalName_;
     }
 
     ETSObjectFlags ObjectFlags() const
@@ -413,7 +391,7 @@ public:
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
     Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar) override;
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override;
-    static void DebugInfoTypeFromName(std::stringstream &ss, util::StringView asmName);
+    static std::string NameToDescriptor(util::StringView name);
     void ToDebugInfoType(std::stringstream &ss) const override;
     void ToDebugInfoSignatureType(std::stringstream &ss) const;
 
@@ -451,7 +429,7 @@ private:
         : Type(TypeFlag::ETS_OBJECT),
           allocator_(allocator),
           name_(name),
-          assemblerName_(assemblerName),
+          internalName_(assemblerName),
           declNode_(std::get<ir::AstNode *>(info)),
           interfaces_(allocator->Adapter()),
           reExports_(allocator->Adapter()),
@@ -496,10 +474,10 @@ private:
 
     ir::TSTypeParameterDeclaration *GetTypeParams() const;
 
-    ArenaAllocator *allocator_;
-    util::StringView name_;
-    util::StringView assemblerName_;
-    ir::AstNode *declNode_;
+    ArenaAllocator *const allocator_;
+    util::StringView const name_;
+    util::StringView const internalName_;
+    ir::AstNode *const declNode_;
     ArenaVector<ETSObjectType *> interfaces_;
     ArenaVector<ETSObjectType *> reExports_;
     ArenaMap<util::StringView, util::StringView> reExportAlias_;

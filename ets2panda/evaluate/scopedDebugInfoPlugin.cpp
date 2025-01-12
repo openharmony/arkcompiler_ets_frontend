@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -96,8 +96,6 @@ ScopedDebugInfoPlugin::ScopedDebugInfoPlugin(parser::Program *globalProgram, che
 {
     ASSERT(globalProgram_);
     ASSERT(checker_);
-
-    ValidateEvaluationOptions(options);
 
     auto isContextValid = debugInfoStorage_.FillEvaluateContext(context_);
     if (!isContextValid) {
@@ -392,13 +390,6 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindLocalVariable(ir::Identifier *id
     return debugInfoDeserializer_.CreateIrLocalVariable(ident, localVariableTable, context_.bytecodeOffset);
 }
 
-void ScopedDebugInfoPlugin::ValidateEvaluationOptions(const util::Options &options)
-{
-    if (!options.IsEtsModule()) {
-        LOG(FATAL, ES2PANDA) << "Evaluation mode must be used in conjunction with ets-module option.";
-    }
-}
-
 void ScopedDebugInfoPlugin::CreateContextPrograms()
 {
     debugInfoStorage_.EnumerateContextFiles([this](auto sourceFilePath, auto, auto, auto moduleName) {
@@ -413,9 +404,8 @@ parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sour
 
     // Checker doesn't yet have `VarBinder`, must retrieve it from `globalProgram_`.
     parser::Program *program = allocator->New<parser::Program>(allocator, GetETSBinder());
-    auto omitModuleName = moduleName.empty();
-    program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), !omitModuleName});
-    program->SetModuleInfo(moduleName, false, omitModuleName);
+    program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), true});
+    program->SetPackageInfo(moduleName, parser::ModuleKind::MODULE);
     auto *etsScript =
         allocator->New<ir::ETSScript>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()), program);
     program->SetAst(etsScript);

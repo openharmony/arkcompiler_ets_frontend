@@ -55,7 +55,7 @@ BoundContext::BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration 
     recordTable_->boundCtx_ = this;
     recordTable_->record_ = interfaceDecl;
     recordIdent_ = interfaceDecl->Id();
-    if (interfaceDecl->InternalName() == "") {
+    if (interfaceDecl->InternalName().Empty()) {
         interfaceDecl->SetInternalName(FormRecordName());
     }
 }
@@ -73,7 +73,7 @@ BoundContext::BoundContext(RecordTable *recordTable, ir::AnnotationDeclaration *
     recordTable_->boundCtx_ = this;
     recordTable_->record_ = annotationDecl;
     recordIdent_ = annotationDecl->GetBaseName();
-    if (annotationDecl->InternalName() == "") {
+    if (annotationDecl->InternalName().Empty()) {
         annotationDecl->SetInternalName(FormRecordName());
     }
 }
@@ -87,17 +87,10 @@ BoundContext::~BoundContext()
 util::StringView BoundContext::FormRecordName() const
 {
     if (prev_ == nullptr) {
-        if (recordTable_->program_->OmitModuleName()) {
-            return recordIdent_->Name();
-        }
-
-        const auto &moduleName = recordTable_->program_->ModuleName();
-
-        // concatenate the module name with the record ident
-        return util::UString(moduleName.Mutf8() + compiler::Signatures::METHOD_SEPARATOR.data() +
-                                 recordIdent_->Name().Mutf8(),
-                             recordTable_->program_->Allocator())
-            .View();
+        util::UString recordName(recordTable_->program_->Allocator());
+        recordName.Append(recordTable_->program_->ModulePrefix());
+        recordName.Append(recordIdent_->Name());
+        return recordName.View();
     }
 
     util::UString recordName(recordTable_->program_->Allocator());

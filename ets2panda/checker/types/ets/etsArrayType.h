@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,16 +40,6 @@ public:
 
     void ToString(std::stringstream &ss, bool precise) const override;
 
-    const util::StringView &AssemblerName() const
-    {
-        return assemblerName_;
-    }
-
-    void SetAssemblerName(const util::StringView &newName)
-    {
-        assemblerName_ = newName;
-    }
-
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToAssemblerTypeWithRank(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;
@@ -64,7 +54,6 @@ public:
 
 private:
     Type *element_;
-    util::StringView assemblerName_;
 };
 }  // namespace ark::es2panda::checker
 

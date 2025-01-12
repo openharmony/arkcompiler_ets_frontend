@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,7 +41,7 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
 {
     const auto throwErrorIfPackagesConflict = [&ctx](const parser::Program *const prog1,
                                                      const parser::Program *const prog2) {
-        if ((prog1 == prog2) || !(prog1->IsPackageModule() && prog2->IsPackageModule())) {
+        if ((prog1 == prog2) || !prog1->IsPackage() || !prog2->IsPackage()) {
             return;
         }
 
@@ -106,7 +106,7 @@ static void ValidateNoImportComesFromSamePackage(const public_lib::Context *cons
 
 bool PackageImplicitImport::Perform(public_lib::Context *const ctx, parser::Program *const program)
 {
-    if (!program->IsPackageModule() || program->VarBinder()->IsGenStdLib()) {
+    if (!program->IsPackage() || program->VarBinder()->IsGenStdLib()) {
         // Only run for package module files
         return true;
     }

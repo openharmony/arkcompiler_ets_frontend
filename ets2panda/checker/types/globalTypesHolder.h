@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -71,7 +71,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_EXCEPTION_BUILTIN,
     ETS_FLOAT_BUILTIN,
     ETS_FLOATING_BUILTIN,
-    ETS_INTEGER_BUILTIN,
+    ETS_INT_BUILTIN,
     ETS_INTEGRAL_BUILTIN,
     ETS_LONG_BUILTIN,
     ETS_MAP_BUILTIN,
@@ -305,6 +305,14 @@ public:
     const Holder &GlobalTypes() const
     {
         return globalTypes_;
+    }
+
+    std::optional<GlobalTypeId> NameToId(util::StringView name) const
+    {
+        if (auto it = builtinNameMappings_.find(name); it != builtinNameMappings_.end()) {
+            return it->second;
+        }
+        return std::nullopt;
     }
 
 private:

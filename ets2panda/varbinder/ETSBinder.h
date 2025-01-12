@@ -23,7 +23,6 @@
 #include "ir/expressions/identifier.h"
 #include "ir/module/importSpecifier.h"
 #include "parser/program/program.h"
-#include "util/importPathManager.h"
 
 namespace ark::es2panda::varbinder {
 using AliasesByExportedNames = ArenaMap<util::StringView, util::StringView>;

@@ -27,6 +27,6 @@ class B extends A {
 }
 
 /* @@? 25:9 Error TypeError: Expected 0 arguments, got 1. */
-/* @@? 25:9 Error TypeError: No matching call signature for B(int)  */
+/* @@? 25:9 Error TypeError: No matching call signature for cycle_constructor.B(int)  */
 /* @@? 25:9 Error TypeError: No matching call signature for constructor  */
 /* @@? 25:14 Error TypeError: Using super is not allowed in constructor  */

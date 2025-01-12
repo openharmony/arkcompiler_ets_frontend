@@ -93,7 +93,7 @@ foreach(TEST_DATA IN ITEMS ${PLUGIN_TESTS})
         add_custom_target(es2panda-plugin-test-compile-${TEST_NAME}
             COMMAND ${CMAKE_COMMAND} -E env
                 LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda>
-                --plugins=${TEST_NAME} --extension=sts --output="${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.abc"
+                --plugins=${TEST_NAME} --extension=sts --ets-unnamed --output="${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.abc"
                 "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_STS_FILE}" > "${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.out"
         )
     endif()
@@ -102,7 +102,7 @@ foreach(TEST_DATA IN ITEMS ${PLUGIN_TESTS})
             COMMAND ${CMAKE_COMMAND} -E env
                 LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX}
                 ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME} $<TARGET_FILE:es2panda>
-                --extension=sts --output="${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.abc"
+                --extension=sts --ets-unnamed --output="${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.abc"
                 "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_STS_FILE}" > "${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.out"
         )
     endif()
@@ -143,7 +143,7 @@ foreach(TEST_DATA IN ITEMS ${PLUGIN_TESTS})
             add_custom_target(update-es2panda-plugin-test-expected-${TEST_NAME}
                 COMMAND ${CMAKE_COMMAND} -E env
                     LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda>
-                    --plugins=${TEST_NAME} --extension=sts "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_STS_FILE}" >
+                    --plugins=${TEST_NAME} --extension=sts --ets-unnamed "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_STS_FILE}" >
                     "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}-expected.txt")
         else()
             add_custom_target(update-es2panda-plugin-test-expected-${TEST_NAME}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -135,8 +135,8 @@ void ScopesInitPhase::HandleBlockStmt(ir::BlockStatement *block, varbinder::Scop
 void ScopesInitPhase::VisitClassDefinition(ir::ClassDefinition *classDef)
 {
     auto classCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), classDef);
-    AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), classDef->PrivateId(), classDef, classDef->Start(),
-                                       classDef->PrivateId());
+    AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), classDef->InternalName(), classDef, classDef->Start(),
+                                       classDef->InternalName());
     BindClassName(classDef);
 
     auto *classScope = classCtx.GetScope();
@@ -658,8 +658,8 @@ void ScopeInitTyped::VisitClassDefinition(ir::ClassDefinition *classDef)
 
     auto classCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), classDef);
     BindClassName(classDef);
-    AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), classDef->PrivateId(), classDef, classDef->Start(),
-                                       classDef->PrivateId());
+    AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), classDef->InternalName(), classDef, classDef->Start(),
+                                       classDef->InternalName());
     BindScopeNode(classCtx.GetScope(), classDef);
     IterateNoTParams(classDef);
 }
@@ -1034,9 +1034,9 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
             parentClassScope = parentClassScope->Parent();
         }
         auto classCtx = LexicalScopeCreateOrEnter<varbinder::ClassScope>(VarBinder(), newClassExpr->ClassDefinition());
-        util::UString anonymousName(util::StringView("#"), Allocator());
+        util::UString anonymousName(classDef->Ident()->Name(), Allocator());
+        anonymousName.Append("#");
         anonymousName.Append(std::to_string(parentClassScope->AsClassScope()->GetAndIncrementAnonymousClassIdx()));
-        classDef->SetInternalName(anonymousName.View());
         classDef->Ident()->SetName(anonymousName.View());
         AddOrGetDecl<varbinder::ClassDecl>(VarBinder(), anonymousName.View(), classDef, classDef->Start(),
                                            anonymousName.View(), classDef);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,14 +70,13 @@ public:
     NO_COPY_SEMANTIC(ClassDefinition);
     NO_MOVE_SEMANTIC(ClassDefinition);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
-    explicit ClassDefinition(const util::StringView &privateId, Identifier *ident,
-                             TSTypeParameterDeclaration *typeParams, TSTypeParameterInstantiation *superTypeParams,
+    explicit ClassDefinition(Identifier *ident, TSTypeParameterDeclaration *typeParams,
+                             TSTypeParameterInstantiation *superTypeParams,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *superClass, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
         : AnnotationAllowed<TypedAstNode>(AstNodeType::CLASS_DEFINITION, flags,
                                           ArenaVector<AnnotationUsage *>(body.get_allocator())),
-          privateId_(privateId),
           ident_(ident),
           typeParams_(typeParams),
           superTypeParams_(superTypeParams),
@@ -157,19 +156,14 @@ public:
 
     void SetIdent(ir::Identifier *ident) noexcept;
 
-    [[nodiscard]] const util::StringView &PrivateId() const noexcept
-    {
-        return privateId_;
-    }
-
     [[nodiscard]] const util::StringView &InternalName() const noexcept
     {
-        return privateId_;
+        return internalName_;
     }
 
     void SetInternalName(util::StringView internalName) noexcept
     {
-        privateId_ = internalName;
+        internalName_ = internalName;
     }
 
     [[nodiscard]] Expression *Super() noexcept
@@ -421,7 +415,7 @@ private:
     void DumpBody(ir::SrcDumper *dumper) const;
 
     varbinder::LocalScope *scope_ {nullptr};
-    util::StringView privateId_ {};
+    util::StringView internalName_ {};
     Identifier *ident_ {};
     TSTypeParameterDeclaration *typeParams_ {};
     TSTypeParameterInstantiation *superTypeParams_ {};

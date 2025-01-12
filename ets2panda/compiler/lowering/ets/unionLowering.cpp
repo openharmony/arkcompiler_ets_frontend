@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,15 +41,26 @@
 #include "util/options.h"
 
 namespace ark::es2panda::compiler {
-static ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
+
+static std::string GetAccessClassName(checker::Type *fieldType)
+{
+    std::stringstream ss;
+    ss << "$NamedAccessMeta-";
+    fieldType->ToAssemblerTypeWithRank(ss);
+    std::string res(ss.str());
+    std::replace(res.begin(), res.end(), '.', '-');
+    return res;
+}
+
+static ir::ClassDefinition *GetUnionAccessClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
+                                                std::string const &name)
 {
     // Create the name for the synthetic class node
-    util::UString unionFieldClassName(util::StringView(panda_file::GetDummyClassName()), checker->Allocator());
-    varbinder::Variable *foundVar = nullptr;
-    if ((foundVar = checker->Scope()->FindLocal(unionFieldClassName.View(),
-                                                varbinder::ResolveBindingOptions::BINDINGS)) != nullptr) {
-        return foundVar->Declaration()->Node()->AsClassDeclaration()->Definition();
+    if (auto foundVar = checker->Scope()->FindLocal(util::StringView(name), varbinder::ResolveBindingOptions::BINDINGS);
+        foundVar != nullptr) {
+        return foundVar->Declaration()->Node()->AsClassDefinition();
     }
+    util::UString unionFieldClassName(util::StringView(name), checker->Allocator());
     auto *ident = checker->AllocNode<ir::Identifier>(unionFieldClassName.View(), checker->Allocator());
     auto [decl, var] = varbinder->NewVarDecl<varbinder::ClassDecl>(ident->Start(), ident->Name());
     ident->SetVariable(var);
@@ -60,28 +71,32 @@ static ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, var
                                                 ir::ModifierFlags::FINAL, Language(Language::Id::ETS));
     classDef->SetScope(classCtx.GetScope());
     auto *classDecl = checker->AllocNode<ir::ClassDeclaration>(classDef, checker->Allocator());
-    classDef->Scope()->BindNode(classDecl);
-    classDef->SetTsType(checker->GlobalETSObjectType());
-    decl->BindNode(classDecl);
+    classDef->Scope()->BindNode(classDecl->Definition());
+    decl->BindNode(classDef);
     var->SetScope(classDef->Scope());
 
     varbinder->AsETSBinder()->BuildClassDefinition(classDef);
+
+    auto globalBlock = varbinder->Program()->Ast();
+    classDecl->SetParent(globalBlock);
+    globalBlock->Statements().push_back(classDecl);
+    classDecl->Check(checker);
     return classDef;
 }
 
-static varbinder::LocalVariable *CreateUnionFieldClassProperty(checker::ETSChecker *checker,
-                                                               varbinder::VarBinder *varbinder,
-                                                               checker::Type *fieldType,
-                                                               const util::StringView &propName)
+static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *checker,
+                                                           varbinder::VarBinder *varbinder, checker::Type *fieldType,
+                                                           const util::StringView &propName)
 {
     auto *const allocator = checker->Allocator();
-    auto *const dummyClass = GetUnionFieldClass(checker, varbinder);
-    auto *classScope = dummyClass->Scope()->AsClassScope();
+    auto *const accessClass = GetUnionAccessClass(checker, varbinder, GetAccessClassName(fieldType));
+    auto *classScope = accessClass->Scope()->AsClassScope();
 
     // Enter the union filed class instance field scope
     auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, classScope->InstanceFieldScope());
 
     if (auto *var = classScope->FindLocal(propName, varbinder::ResolveBindingOptions::VARIABLES); var != nullptr) {
+        ASSERT(var->TsType() == fieldType);
         return var->AsLocalVariable();
     }
 
@@ -102,7 +117,7 @@ static varbinder::LocalVariable *CreateUnionFieldClassProperty(checker::ETSCheck
 
     ArenaVector<ir::AstNode *> fieldDecl {allocator->Adapter()};
     fieldDecl.push_back(field);
-    dummyClass->AddProperties(std::move(fieldDecl));
+    accessClass->AddProperties(std::move(fieldDecl));
     return var->AsLocalVariable();
 }
 
@@ -116,7 +131,7 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
     ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
              parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)));
     expr->SetPropVar(
-        CreateUnionFieldClassProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
+        CreateNamedAccessProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
     ASSERT(expr->PropVar() != nullptr);
 }
 

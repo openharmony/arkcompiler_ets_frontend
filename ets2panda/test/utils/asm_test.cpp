@@ -208,10 +208,11 @@ void AsmTest::SetCurrentProgram(std::string_view src)
 
 std::unique_ptr<ark::pandasm::Program> AsmTest::GetCurrentProgram(std::string_view src)
 {
-    int argc = 1;
-    const char *argv = "../../../../../bin/es2panda";
     static constexpr std::string_view FILE_NAME = "annotation.sts";
-    auto program = GetProgram(argc, &argv, FILE_NAME, src);
+    std::array<char const *, 2> args = {"../../../../../bin/es2panda",
+                                        "--ets-unnamed"};  // NOLINT(modernize-avoid-c-arrays)
+
+    auto program = GetProgram(args.size(), args.data(), FILE_NAME, src);
     return program;
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -406,13 +406,12 @@ void ETSChecker::ClassInitializerFromImport(ir::ETSImportDeclaration *import, Ar
         AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
     // Note(rsipka): this check could be avoided with appropriate language extensions
-    ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
-    if (ark::os::file::File::IsRegularFile(import->ResolvedSource()->Str().Mutf8())) {
-        callParams.push_back(AllocNode<ir::StringLiteral>(
-            util::UString(ark::os::RemoveExtension(import->ResolvedSource()->Str().Mutf8()), Allocator()).View()));
-    } else {
-        callParams.push_back(import->ResolvedSource());
+    util::StringView sourceStr = import->ResolvedSource()->Str();
+    if (ark::os::file::File::IsRegularFile(sourceStr.Mutf8())) {
+        sourceStr = util::UString(ark::os::RemoveExtension(sourceStr.Mutf8()), Allocator()).View();
     }
+    ArenaVector<ir::Expression *> callParams({AllocNode<ir::StringLiteral>(sourceStr)}, Allocator()->Adapter());
+
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *loadCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

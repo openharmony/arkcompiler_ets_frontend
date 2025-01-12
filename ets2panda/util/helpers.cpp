@@ -699,7 +699,7 @@ std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::strin
     return {className, methodName};
 }
 
-std::vector<std::string> &Helpers::StdLib()
+std::vector<std::string> const &Helpers::StdLib()
 {
     static std::vector<std::string> stdlib {"std/core",       "std/math",       "std/containers",        "std/time",
                                             "std/interop/js", "std/debug",      "std/debug/concurrency", "std/testing",
@@ -709,18 +709,20 @@ std::vector<std::string> &Helpers::StdLib()
 
 bool Helpers::IsStdLib(const parser::Program *program)
 {
-    auto stdlib = StdLib();
-
-    // NOTE(rsipka): early check: if program is not a package module then it is not part of the stdlib either
-    if (!program->IsPackageModule()) {
+    // NOTE(rsipka): early check: if program is not in a package then it is not part of the stdlib either
+    if (!program->IsPackage()) {
         return false;
     }
-
-    stdlib.emplace_back("std/math/consts");
 
     auto fileFolder = program->ModuleName().Mutf8();
     std::replace(fileFolder.begin(), fileFolder.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
                  *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
+
+    if (fileFolder == "std/math/consts") {
+        return true;
+    }
+
+    auto const &stdlib = StdLib();
     return std::count(stdlib.begin(), stdlib.end(), fileFolder) != 0;
 }
 

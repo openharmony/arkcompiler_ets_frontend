@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -184,7 +184,7 @@ checker::VerifiedType Identifier::Check(checker::ETSChecker *checker)
 bool Identifier::IsDeclaration(ScriptExtension ext) const
 {
     // GLOBAL class is not a reference
-    if (Name() == "ETSGLOBAL") {
+    if (Name() == compiler::Signatures::ETS_GLOBAL) {
         return true;
     }
 

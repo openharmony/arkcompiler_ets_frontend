@@ -1,3 +1,12 @@
 # Issue: ##20531
 compiler/ets/import_tests/enum_export.sts
 parser/ets/declare_enum.sts
+
+# Issue: #20990
+compiler/ets/instanceof_dyndecl_dynvalue.sts
+compiler/ets/instanceof_dyndecl_jsvalue.sts
+compiler/ets/instanceof_x_dyndecl.sts
+compiler/ets/instanceof_x_etstype.sts
+compiler/ets/instanceof_x_object.sts
+parser/ets/dynamic_import_tests/dynamic_decl_import.sts
+parser/ets/dynamic_import_tests/dynamic_iface_decl_bad.sts

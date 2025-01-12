@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -65,7 +65,9 @@ void TSDeclGen::Generate()
     Out(license.str());
     Out("declare const exports: any;");
     OutEndl();
-    Out("let ETSGLOBAL: any = (globalThis as any).Panda.getClass('LETSGLOBAL;');");
+    auto globalDesc =
+        checker::ETSObjectType::NameToDescriptor(program_->GlobalClass()->TsType()->AsETSObjectType()->AssemblerName());
+    Out("let ETSGLOBAL: any = (globalThis as any).Panda.getClass('", globalDesc, "');");
     OutEndl(2U);
 
     for (auto *globalStatement : program_->Ast()->Statements()) {

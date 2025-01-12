@@ -185,7 +185,7 @@ public:
 
     static std::pair<std::string_view, std::string_view> SplitSignature(std::string_view signature);
 
-    static std::vector<std::string> &StdLib();
+    static std::vector<std::string> const &StdLib();
     static bool IsStdLib(const parser::Program *program);
     [[nodiscard]] static checker::Type *CheckReturnTypeOfCheck([[maybe_unused]] const ir::AstNode *const node,
                                                                checker::Type *const type);

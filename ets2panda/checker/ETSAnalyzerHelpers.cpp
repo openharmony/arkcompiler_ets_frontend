@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -624,22 +624,6 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
             break;
         }
     }
-}
-
-checker::ETSObjectType *CreateSyntheticType(ETSChecker *checker, util::StringView const &syntheticName,
-                                            checker::ETSObjectType *lastObjectType, ir::Identifier *id)
-{
-    auto *syntheticObjType = checker->Allocator()->New<checker::ETSObjectType>(
-        checker->Allocator(), syntheticName, syntheticName,
-        std::make_tuple(id, checker::ETSObjectFlags::NO_OPTS, checker->Relation()));
-
-    auto *classDecl = checker->Allocator()->New<varbinder::ClassDecl>(syntheticName);
-    varbinder::LocalVariable *var =
-        checker->Allocator()->New<varbinder::LocalVariable>(classDecl, varbinder::VariableFlags::CLASS);
-    var->SetTsType(syntheticObjType);
-    lastObjectType->AddProperty<checker::PropertyType::STATIC_FIELD>(var);
-    syntheticObjType->SetEnclosingType(lastObjectType);
-    return syntheticObjType;
 }
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)

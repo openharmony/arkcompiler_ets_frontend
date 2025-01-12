@@ -37,4 +37,4 @@ function main(): int {
 /* @@? 29:38 Error TypeError: No Matching Parameterless Constructor, parameter count 1  */
 /* @@? 29:38 Error TypeError: No matching parameterless constructor  */
 /* @@? 29:38 Error TypeError: Signature is not available here.  */
-/* @@? 29:24 Error TypeError: No matching construct signature for A(A<Y>[])  */
+/* @@? 29:24 Error TypeError: No matching construct signature for type_argument_conversion.A(A<Y>[])  */

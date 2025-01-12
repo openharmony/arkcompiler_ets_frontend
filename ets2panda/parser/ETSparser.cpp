@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -81,8 +81,7 @@ using namespace std::literals::string_literals;
 ETSParser::ETSParser(Program *program, const util::Options &options, ParserStatus status)
     : TypedParser(program, &options, status), globalProgram_(GetProgram())
 {
-    importPathManager_ =
-        std::make_unique<util::ImportPathManager>(Allocator(), GetOptions().ArkTSConfig(), GetOptions().GetStdlib());
+    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), options);
 }
 
 ETSParser::ETSParser(Program *program, std::nullptr_t)
@@ -95,10 +94,6 @@ bool ETSParser::IsETSParser() const noexcept
     return true;
 }
 
-bool ETSParser::IsETSModule() const
-{
-    return GetOptions().IsEtsModule();
-}
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
@@ -129,7 +124,6 @@ void ETSParser::ParseProgram(ScriptKind kind)
 
     AddExternalSource(ParseSources(true));
     GetProgram()->SetAst(script);
-    GetProgram()->SetDeclarationModuleInfo();
 }
 
 ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
@@ -155,12 +149,12 @@ void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
     auto &extSources = globalProgram_->ExternalSources();
 
     for (auto *newProg : programs) {
-        const util::StringView moduleName = newProg->ModuleName();
-        if (extSources.count(moduleName) == 0) {
-            extSources.try_emplace(moduleName, Allocator()->Adapter());
+        const util::StringView name = newProg->ModuleName();
+        if (extSources.count(name) == 0) {
+            extSources.try_emplace(name, Allocator()->Adapter());
         }
 
-        extSources.at(moduleName).emplace_back(newProg);
+        extSources.at(name).emplace_back(newProg);
     }
 }
 
@@ -204,7 +198,7 @@ void ETSParser::ParseSourceList(const util::ImportPathManager::ParseInfo &parseL
     parser::Program *newProg =
         ParseSource({parseListIdx.sourcePath.Utf8(), extSrc->View().Utf8(), parseListIdx.sourcePath.Utf8(), false});
 
-    if (!parseListIdx.isImplicitPackageImported || newProg->IsPackageModule()) {
+    if (!parseListIdx.isImplicitPackageImported || newProg->IsPackage()) {
         AddDirectImportsToDirectExternalSources(directImportsFromMainSource, newProg);
         // don't insert the separate modules into the programs, when we collect implicit package imports
         programs.emplace_back(newProg);
@@ -301,7 +295,6 @@ parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
     }
     auto script = ParseETSGlobalScript(startLoc, statements);
     program->SetAst(script);
-    GetProgram()->SetDeclarationModuleInfo();
     return program;
 }
 
@@ -1033,10 +1026,10 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
     auto startLoc = Lexer()->GetToken().Start();
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PACKAGE) {
-        // NOTE(rsipka): Unclear behavior/code. Currently, all entry programs omit the module name if it is not a
-        // package module and the '--ets-module' option is not specified during compilation
-        GetProgram()->SetModuleInfo(GetProgram()->FileName(), false, GetProgram()->IsEntryPoint() && !IsETSModule());
-        GetProgram()->SetPackageStart(startLoc);
+        // NOTE(vpukhov): the *unnamed* modules are to be removed entirely
+        bool isUnnamed = GetOptions().IsEtsUnnamed() && GetProgram() == globalProgram_;
+        util::StringView moduleName = isUnnamed ? "" : importPathManager_->FormModuleName(GetProgram()->SourceFile());
+        GetProgram()->SetPackageInfo(moduleName, ModuleKind::MODULE);
         return nullptr;
     }
 
@@ -1051,8 +1044,7 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
     auto packageName =
         name->IsIdentifier() ? name->AsIdentifier()->Name() : name->AsTSQualifiedName()->ToString(Allocator());
 
-    GetProgram()->SetModuleInfo(packageName, true);
-    GetProgram()->SetPackageStart(startLoc);
+    GetProgram()->SetPackageInfo(packageName, ModuleKind::PACKAGE);
 
     return packageDeclaration;
 }
@@ -1078,11 +1070,6 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
                                            (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U
                                                ? util::ImportFlags::DEFAULT_IMPORT
                                                : util::ImportFlags::NONE);
-    } else if (!IsETSModule()) {
-        LogGenericError("Please compile `" + globalProgram_->FileName().Mutf8() + "." +
-                        globalProgram_->SourceFile().GetExtension().Mutf8() +
-                        "` with `--ets-module` option. It is being imported by another file.");
-        return nullptr;  // Error processing.
     }
 
     auto *resolvedSource = AllocNode<ir::StringLiteral>(resolvedImportPath);

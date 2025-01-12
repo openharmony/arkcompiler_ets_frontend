@@ -17,4 +17,5 @@
 
 export let a: String = "SubpackageA";
 
-/* @@@ label Error SyntaxError: Files 'subpackage_module_1' and 'subpackage_module_2' are in the same folder, but have different package names.  */
+/* @@? 1:1 Error SyntaxError: Files 'subpackage_module_1' and 'subpackage_module_2' are in the same folder, but have different package names.  */
+

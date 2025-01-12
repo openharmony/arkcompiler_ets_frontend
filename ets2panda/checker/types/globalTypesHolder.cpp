@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -161,7 +161,7 @@ void GlobalTypesHolder::AddEtsSpecificBuiltinTypes()
     builtinNameMappings_.emplace("Exception", GlobalTypeId::ETS_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("Float", GlobalTypeId::ETS_FLOAT_BUILTIN);
     builtinNameMappings_.emplace("Floating", GlobalTypeId::ETS_FLOATING_BUILTIN);
-    builtinNameMappings_.emplace("Int", GlobalTypeId::ETS_INTEGER_BUILTIN);
+    builtinNameMappings_.emplace("Int", GlobalTypeId::ETS_INT_BUILTIN);
     builtinNameMappings_.emplace("Integral", GlobalTypeId::ETS_INTEGRAL_BUILTIN);
     builtinNameMappings_.emplace("Long", GlobalTypeId::ETS_LONG_BUILTIN);
     builtinNameMappings_.emplace("Object", GlobalTypeId::ETS_OBJECT_BUILTIN);
@@ -472,7 +472,7 @@ Type *GlobalTypesHolder::GlobalFloatingBuiltinType()
 
 Type *GlobalTypesHolder::GlobalIntegerBuiltinType()
 {
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_INTEGER_BUILTIN));
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_INT_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalIntegralBuiltinType()

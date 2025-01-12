@@ -591,6 +591,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
                                             const bool isDynamic)
 {
     if (!isDynamic && isForeign && !var->Declaration()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
+        ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
 
         if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {

@@ -102,7 +102,6 @@ public:
         compiler_alias::CompilationUnit unit {input, *options, 0, options->GetExtension()};
         auto getPhases = compiler_alias::GetPhaseList(ark::es2panda::ScriptExtension::STS);
 
-        program->MarkEntry();
         auto parser = Parser(program, unit.options, static_cast<parser_alias::ParserStatus>(unit.rawParserStatus));
         auto analyzer = Analyzer(checker);
         checker->SetAnalyzer(&analyzer);

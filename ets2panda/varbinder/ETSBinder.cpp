@@ -535,19 +535,6 @@ std::string RedeclarationErrorMessageAssembler(const Variable *const var, const 
     return str;
 }
 
-static const util::StringView &GetPackageName(varbinder::Variable *var)
-{
-    Scope *scope = var->GetScope();
-
-    while (scope->Parent() != nullptr) {
-        scope = scope->Parent();
-    }
-
-    ASSERT(scope->Node()->IsETSScript());
-
-    return scope->Node()->AsETSScript()->Program()->ModuleName();
-}
-
 void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variable *importedVar,
                      varbinder::Variable *variable)
 {
@@ -555,7 +542,10 @@ void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variab
     auto *const method = importedVar->Declaration()->Node()->AsMethodDefinition();
 
     // Necessary because stdlib and escompat handled as same package, it can be removed after fixing package handling
-    if (isStdLib && (GetPackageName(importedVar) != GetPackageName(variable))) {
+    auto const getPackageName = [](Variable *var) {
+        return var->GetScope()->Node()->GetTopStatement()->AsETSScript()->Program()->ModuleName();
+    };
+    if (isStdLib && (getPackageName(importedVar) != getPackageName(variable))) {
         return;
     }
 
@@ -591,6 +581,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             ImportGlobalProperties(classDef);
             continue;
         }
+        ASSERT(bindingName.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
 
         if (!importGlobalScope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported() &&
             (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
@@ -1094,6 +1085,12 @@ void ETSBinder::BuildProgram()
 
     auto &stmts = Program()->Ast()->Statements();
     const auto etsGlobal = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
+        if (stmt->IsClassDeclaration() &&
+            !stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
+            ASSERT(stmt->AsClassDeclaration()->Definition()->Ident()->Name().Utf8().find(
+                       // CC-OFFNXT(G.FMT.06-CPP,G.FMT.05-CPP) project code style
+                       compiler::Signatures::ETS_GLOBAL) == std::string::npos);
+        }
         return stmt->IsClassDeclaration() &&
                stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL);
     });
@@ -1314,21 +1311,22 @@ const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var)
 
 ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &path) const
 {
-    for (const auto &extRecords : globalRecordTable_.Program()->ExternalSources()) {
+    auto const *globalProgram = globalRecordTable_.Program();
+
+    for (const auto &extRecords : globalProgram->ExternalSources()) {
         for (const auto &program : extRecords.second) {
             if (program->AbsoluteName() == path) {
                 return extRecords.second;
             }
 
             // in case of importing a package folder, the path could not be resolved to a specific file
-            if (program->IsPackageModule() && program->SourceFileFolder() == path) {
+            if (program->IsPackage() && program->SourceFileFolder() == path) {
                 return extRecords.second;
             }
         }
     }
 
-    bool globalIsPackage = globalRecordTable_.Program()->IsPackageModule();
-    if (globalIsPackage && path.Compare(globalRecordTable_.Program()->SourceFileFolder()) == 0) {
+    if (globalProgram->IsPackage() && path.Compare(globalProgram->SourceFileFolder()) == 0) {
         return ArenaVector<parser::Program *>({GetContext()->parserProgram}, Allocator()->Adapter());
     }
 

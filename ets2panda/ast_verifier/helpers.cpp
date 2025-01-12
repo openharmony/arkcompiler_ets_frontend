@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -134,23 +134,21 @@ bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *objTypeDec
     if (!ast->GetTopStatement()->IsETSScript()) {
         return false;
     }
-    auto *currentTopStatement = (static_cast<const ir::ETSScript *>(ast->GetTopStatement()));
+    auto *currentTopStatement = ast->GetTopStatement()->AsETSScript();
     auto *currentProgram = currentTopStatement->Program();
     if (currentProgram == nullptr) {
         return false;
     }
-    util::StringView moduleNameCurrent = currentProgram->ModuleName();
     // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
     if (!objTypeDeclNode->GetTopStatement()->IsETSScript()) {
         return false;
     }
-    auto *objectTopStatement = (static_cast<const ir::ETSScript *>(objTypeDeclNode->GetTopStatement()));
+    auto *objectTopStatement = objTypeDeclNode->GetTopStatement()->AsETSScript();
     auto *objectProgram = objectTopStatement->Program();
     if (objectProgram == nullptr) {
         return false;
     }
-    util::StringView moduleNameObject = objectProgram->ModuleName();
-    return currentTopStatement == objectTopStatement || moduleNameCurrent == moduleNameObject;
+    return currentTopStatement == objectTopStatement || currentProgram->ModuleName() == objectProgram->ModuleName();
 }
 
 const checker::Type *GetClassDefinitionType(const ir::AstNode *ast)

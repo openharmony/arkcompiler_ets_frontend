@@ -23,6 +23,8 @@
 #include "util/arktsconfig.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
+#include "util/path.h"
+#include "util/options.h"
 
 namespace ark::es2panda::util {
 namespace gen::extension {
@@ -50,10 +52,12 @@ public:
         bool isImplicitPackageImported = false;
     };
 
-    ImportPathManager(ark::ArenaAllocator *allocator, std::shared_ptr<ArkTsConfig> arktsConfig, std::string stdLib)
+    ImportPathManager(ark::ArenaAllocator *allocator, const util::Options &options)
         : allocator_(allocator),
-          arktsConfig_(std::move(arktsConfig)),
-          stdLib_(std::move(stdLib)),
+          arktsConfig_(options.ArkTSConfig()),
+          absoluteEtsPath_(
+              options.GetEtsPath().empty() ? "" : util::Path(options.GetEtsPath(), allocator_).GetAbsolutePath()),
+          stdLib_(options.GetStdlib()),
           parseList_(allocator->Adapter())
     {
     }
@@ -68,13 +72,16 @@ public:
         return parseList_;
     }
 
-    StringView ResolvePath(const StringView &currentModulePath, const StringView &importPath) const;
+    util::StringView ResolvePath(const StringView &currentModulePath, const StringView &importPath) const;
     void AddToParseList(const StringView &resolvedPath, ImportFlags importFlags);
     ImportData GetImportData(const util::StringView &path, util::gen::extension::Enum extension) const;
     void MarkAsParsed(const StringView &path);
 
+    util::StringView FormModuleName(const util::Path &path);
+
 private:
     bool IsRelativePath(const StringView &path) const;
+    StringView ResolveAbsolutePath(const StringView &importPath) const;
     StringView GetRealPath(const StringView &path) const;
     StringView AppendExtensionOrIndexFileIfOmitted(const StringView &basePath) const;
 #ifdef USE_UNIX_SYSCALL
@@ -83,7 +90,8 @@ private:
 
     ArenaAllocator *allocator_ {nullptr};
     std::shared_ptr<ArkTsConfig> arktsConfig_ {nullptr};
-    std::string stdLib_ {};
+    std::string absoluteEtsPath_;
+    std::string stdLib_;
     ArenaVector<ParseInfo> parseList_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
 };
