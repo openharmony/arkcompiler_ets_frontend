@@ -21,8 +21,6 @@
 //
 
 #include <stddef.h>
-#include <iostream>
-#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -35,8 +33,19 @@ typedef struct DefinitionInfo {
     char *fileName;
 } DefinitionInfo;
 
+typedef struct FileReferenceInfo {
+    char const *fileName;
+    size_t start;
+    size_t length;
+} FileReferenceInfo;
+
+typedef struct FileReferences {
+    std::vector<FileReferenceInfo *> referenceInfos;
+} FileReferences;
+
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
+    FileReferences *(*getFileReferences)(char const *fileName);
 } LSPAPI;
 
 LSPAPI const *GetImpl();
