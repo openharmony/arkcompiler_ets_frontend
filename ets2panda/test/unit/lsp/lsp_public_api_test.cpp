@@ -55,3 +55,49 @@ TEST_F(LSPPublicAPITests, GetCurrentTokenValue1)
     std::string result = lspApi->getCurrentTokenValue(filePaths[0].c_str(), offset);
     ASSERT_EQ(result, "ab");
 }
+
+TEST_F(LSPPublicAPITests, getSpanOfEnclosingComment1)
+{
+    std::vector<std::string> files = {"file1.sts"};
+    std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  // add\n}\nA(1, 2);"};
+    auto filePaths = CreateTempFile(files, texts);
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 60;
+    auto result = lspApi->getSpanOfEnclosingComment(filePaths[0].c_str(), offset, false);
+    ASSERT_EQ(result, nullptr);
+    auto result1 = lspApi->getSpanOfEnclosingComment(filePaths[0].c_str(), offset, true);
+    ASSERT_EQ(result1, nullptr);
+}
+
+TEST_F(LSPPublicAPITests, getSpanOfEnclosingComment2)
+{
+    std::vector<std::string> files = {"file2.sts"};
+    std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  // add\n}\nA(1, 2);"};
+    auto filePaths = CreateTempFile(files, texts);
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 54;
+    auto result = lspApi->getSpanOfEnclosingComment(filePaths[0].c_str(), offset, false);
+    size_t const startPostion = 50;
+    size_t const length = 6;
+    ASSERT_EQ(result->start, startPostion);
+    ASSERT_EQ(result->length, length);
+    auto result1 = lspApi->getSpanOfEnclosingComment(filePaths[0].c_str(), offset, true);
+    ASSERT_EQ(result1, nullptr);
+}
+
+TEST_F(LSPPublicAPITests, getSpanOfEnclosingComment3)
+{
+    std::vector<std::string> files = {"file3.sts"};
+    std::vector<std::string> texts = {"function A(a:number, b:number) {\n  return a + b;  /* add */\n}\nA(1, 2);"};
+    auto filePaths = CreateTempFile(files, texts);
+    LSPAPI const *lspApi = GetImpl();
+    size_t const offset = 54;
+    auto result = lspApi->getSpanOfEnclosingComment(filePaths[0].c_str(), offset, false);
+    size_t const startPostion = 50;
+    size_t const length = 9;
+    ASSERT_EQ(result->start, startPostion);
+    ASSERT_EQ(result->length, length);
+    auto result1 = lspApi->getSpanOfEnclosingComment(filePaths[0].c_str(), offset, true);
+    ASSERT_EQ(result1->start, startPostion);
+    ASSERT_EQ(result1->length, length);
+}

@@ -248,4 +248,109 @@ std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position)
     return node != nullptr ? ReplaceQuotation(program->SourceCode().Substr(node->Start().index, position)) : "";
 }
 
+ir::AstNode *FindLeftToken(const size_t pos, const ArenaVector<ir::AstNode *> &nodes)
+{
+    int left = 0;
+    int right = nodes.size() - 1;
+    ir::AstNode *result = nullptr;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nodes[mid]->End().index <= pos) {
+            result = nodes[mid];
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return result;
+}
+
+ir::AstNode *FindRightToken(const size_t pos, const ArenaVector<ir::AstNode *> &nodes)
+{
+    int left = 0;
+    int right = nodes.size() - 1;
+    ir::AstNode *result = nullptr;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nodes[mid]->Start().index > pos) {
+            result = nodes[mid];
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return result;
+}
+
+CommentRange *GetRangeOfCommentFromContext(std::string const &sourceCode, size_t leftPos, size_t rightPos, size_t pos,
+                                           ArenaAllocator *allocator)
+{
+    constexpr size_t BLOCK_COMMENT_START_LENGTH = 2;
+    std::vector<CommentRange> commentRanges;
+    size_t startIndex = 0;
+    while (startIndex < sourceCode.size()) {
+        size_t blockCommentStart = sourceCode.find("/*", startIndex);
+        size_t lineCommentStart = sourceCode.find("//", startIndex);
+        if (blockCommentStart == std::string::npos && lineCommentStart == std::string::npos) {
+            break;
+        }
+        if (blockCommentStart < lineCommentStart || lineCommentStart == std::string::npos) {
+            if (blockCommentStart > rightPos) {
+                break;
+            }
+            size_t blockCommentEnd = sourceCode.find("*/", blockCommentStart + BLOCK_COMMENT_START_LENGTH);
+            if (blockCommentEnd == std::string::npos) {
+                break;
+            }
+            commentRanges.emplace_back(
+                CommentRange(blockCommentStart, blockCommentEnd + BLOCK_COMMENT_START_LENGTH, CommentKind::MULTI_LINE));
+            startIndex = blockCommentEnd + BLOCK_COMMENT_START_LENGTH;
+            continue;
+        }
+        if (lineCommentStart > rightPos) {
+            break;
+        }
+        size_t lineCommentEnd = sourceCode.find('\n', lineCommentStart);
+        if (lineCommentEnd == std::string::npos) {
+            lineCommentEnd = sourceCode.size();
+        }
+        commentRanges.emplace_back(CommentRange(lineCommentStart, lineCommentEnd, CommentKind::SINGLE_LINE));
+        startIndex = lineCommentEnd;
+    }
+    for (const auto &range : commentRanges) {
+        if (range.GetPos() <= pos && range.GetEnd() >= pos && range.GetPos() >= leftPos && range.GetEnd() <= rightPos) {
+            return allocator->New<CommentRange>(range.GetPos(), range.GetEnd(), range.GetKind());
+        }
+    }
+    return nullptr;
+}
+
+CommentRange *GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, ArenaAllocator *allocator)
+{
+    auto touchingNode = GetTouchingToken(context, pos, false);
+    if (touchingNode != nullptr && IsToken(touchingNode)) {
+        return nullptr;
+    }
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto ast = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
+    ir::AstNode *parent = touchingNode != nullptr ? touchingNode : ast;
+    auto children = GetChildren(parent, allocator);
+    std::sort(children.begin(), children.end(), [](ir::AstNode *a, ir::AstNode *b) {
+        if (a->Start().index < b->Start().index) {
+            return true;
+        }
+        if (a->Start().index == b->Start().index) {
+            return a->End().index < b->End().index;
+        }
+        return false;
+    });
+    ir::AstNode *leftToken = FindLeftToken(pos, children);
+    ir::AstNode *rightToken = FindRightToken(pos, children);
+    size_t leftPos = leftToken != nullptr ? leftToken->End().index : parent->Start().index;
+    size_t rightPos = rightToken != nullptr ? rightToken->Start().index : parent->End().index;
+    std::string sourceCode(ctx->parserProgram->SourceCode());
+    CommentRange *result = GetRangeOfCommentFromContext(sourceCode, leftPos, rightPos, pos, allocator);
+    return result;
+}
+
 }  // namespace ark::es2panda::lsp

@@ -49,11 +49,18 @@ typedef struct FileReferences {
     }
 } FileReferences;
 
+typedef struct TextSpan {
+    size_t start;
+    size_t length;
+    TextSpan(size_t s, size_t l) : start(s), length(l) {}
+} TextSpan;
+
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
     FileReferences *(*getFileReferences)(char const *fileName);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(char const *fileName, size_t position);
+    TextSpan *(*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
 } LSPAPI;
 
 LSPAPI const *GetImpl();
@@ -126,6 +133,38 @@ typedef struct Diagnostic {
     {
     }
 } Diagnostic;
+
+enum class CommentKind { SINGLE_LINE, MULTI_LINE };
+
+typedef struct CommentRange {
+private:
+    size_t pos_;
+    size_t end_;
+    CommentKind kind_;
+
+public:
+    CommentRange(size_t p, size_t e, CommentKind k) : pos_(p), end_(e), kind_(k) {}
+    size_t GetPos() const
+    {
+        return pos_;
+    }
+    size_t GetEnd() const
+    {
+        return end_;
+    }
+    CommentKind GetKind() const
+    {
+        return kind_;
+    }
+    void SetPos(size_t p)
+    {
+        pos_ = p;
+    }
+    void SetKind(CommentKind k)
+    {
+        kind_ = k;
+    }
+} CommentRange;
 
 // NOLINTEND
 
