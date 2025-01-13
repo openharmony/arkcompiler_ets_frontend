@@ -21,6 +21,11 @@
 //
 
 #include <stddef.h>
+#include <iostream>
+#include <optional>
+#include <string>
+#include <variant>
+#include <vector>
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +40,75 @@ typedef struct LSPAPI {
 } LSPAPI;
 
 LSPAPI const *GetImpl();
+
+typedef struct Position {
+    unsigned int line_;       // Line number
+    unsigned int character_;  // Character position in the line
+
+    Position(unsigned int line_num = 0, unsigned int character_pos = 0) : line_(line_num), character_(character_pos) {}
+} Position;
+
+typedef struct Range {
+    Position start;  // Start position
+    Position end;    // End position
+
+    Range(Position start_pos = Position(), Position end_pos = Position()) : start(start_pos), end(end_pos) {}
+} Range;
+
+typedef struct Location {
+    std::string uri_;  // The URI of the document
+    Range range_;      // The range of the diagnostic in the document
+    Location(const std::string &uri = "", const Range &range = Range()) : uri_(uri), range_(range) {}
+} Location;
+
+enum class DiagnosticSeverity { Error = 1, Warning = 2, Information = 3, Hint = 4 };
+
+enum class DiagnosticTag { Unnecessary = 1, Deprecated = 2 };
+
+typedef struct CodeDescription {
+    std::string href_;
+    CodeDescription(const std::string &href = "") : href_(href) {}
+} CodeDescription;
+
+typedef struct DiagnosticRelatedInformation {
+    Location location_;
+    std::string message_;
+
+    DiagnosticRelatedInformation(const Location &location = Location(), const std::string &message = "")
+        : location_(location), message_(message)
+    {
+    }
+} DiagnosticRelatedInformation;
+
+typedef struct Diagnostic {
+    Range range_;                                                   // The range at which the message applies.
+    DiagnosticSeverity severity_;                                   // The diagnostic's severity.
+    std::variant<int, std::string> code_;                           // The diagnostic's code.
+    CodeDescription codeDescription_;                               // The error code description.
+    std::string source_;                                            // The source of the diagnostic.
+    std::string message_;                                           // The diagnostic's message.
+    std::vector<DiagnosticTag> tags_;                               // Additional metadata about the diagnostic.
+    std::vector<DiagnosticRelatedInformation> relatedInformation_;  // Related diagnostics.
+    std::variant<int, std::string> data_;                           // Additional data.
+
+    Diagnostic(const Range &range, DiagnosticSeverity severity = DiagnosticSeverity::Warning,
+               const std::variant<int, std::string> &code = 100, const std::string &message = "default message",
+               const CodeDescription &codeDescription = {}, const std::string &source = "default source",
+               const std::vector<DiagnosticTag> &tags = {},
+               const std::vector<DiagnosticRelatedInformation> &relatedInformation = {},
+               const std::variant<int, std::string> &data = {})
+        : range_(range),
+          severity_(severity),
+          code_(code),
+          codeDescription_(codeDescription),
+          source_(source),
+          message_(message),
+          tags_(tags),
+          relatedInformation_(relatedInformation),
+          data_(data)
+    {
+    }
+} Diagnostic;
 
 // NOLINTEND
 
