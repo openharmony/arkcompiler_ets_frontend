@@ -409,7 +409,7 @@ public:
     Signature *ValidateSignature(
         std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
         const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
-        const std::vector<bool> &argTypeInferenceRequired);
+        const std::vector<bool> &argTypeInferenceRequired, const bool unique);
     bool ValidateSignatureRequiredParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                          TypeRelationFlag flags, const std::vector<bool> &argTypeInferenceRequired,
                                          bool reportError);
@@ -419,7 +419,7 @@ public:
                                      TypeRelationFlag flags);
     bool ValidateArgumentAsIdentifier(const ir::Identifier *identifier);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
-                                     TypeRelationFlag flags, bool reportError);
+                                     TypeRelationFlag flags, bool reportError, const bool unique);
     void ThrowSignatureMismatch(ArenaVector<Signature *> &signatures, const ArenaVector<ir::Expression *> &arguments,
                                 const lexer::SourcePosition &pos, std::string_view signatureKind);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
@@ -646,7 +646,7 @@ public:
     bool ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
-    Type const *TryGettingFunctionTypeFromInvokeFunction(Type const *type);
+    Type *TryGettingFunctionTypeFromInvokeFunction(Type *type);
 
     ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
