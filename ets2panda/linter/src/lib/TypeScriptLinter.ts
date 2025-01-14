@@ -769,7 +769,8 @@ export class TypeScriptLinter {
     }
     const typeNode = node.type;
     if (!typeNode) {
-      this.incrementCounters(node, FaultID.SendableExplicitFieldType);
+      const autofix = this.autofixer?.fixSendableExplicitFieldType(node);
+      this.incrementCounters(node, FaultID.SendableExplicitFieldType, autofix);
       return;
     }
     TsUtils.getDecoratorsIfInSendableClass(node)?.forEach((decorator) => {
@@ -1009,7 +1010,8 @@ export class TypeScriptLinter {
         this.incrementCounters(decorator, FaultID.SendableFunctionDecorator);
       });
       if (!TsUtils.hasSendableDecorator(tsFunctionDeclaration)) {
-        this.incrementCounters(tsFunctionDeclaration, FaultID.SendableFunctionOverloadDecorator);
+        const autofix = this.autofixer?.addSendableDecorator(tsFunctionDeclaration);
+        this.incrementCounters(tsFunctionDeclaration, FaultID.SendableFunctionOverloadDecorator, autofix);
       }
       this.scanCapturedVarsInSendableScope(
         tsFunctionDeclaration,
@@ -1438,7 +1440,8 @@ export class TypeScriptLinter {
       if (!isSendableClass) {
         // Non-Sendable class can not implements sendable interface / extends sendable class
         if (isSendableBaseType) {
-          this.incrementCounters(tsTypeExpr, FaultID.SendableClassInheritance);
+          const autofix = this.autofixer?.addClassSendableDecorator(hClause, tsTypeExpr);
+          this.incrementCounters(tsTypeExpr, FaultID.SendableClassInheritance, autofix);
         }
         continue;
       }
@@ -1452,33 +1455,11 @@ export class TypeScriptLinter {
           this.incrementCounters(tsTypeExpr, FaultID.SendableClassInheritance);
           continue;
         }
-        if (!this.isValidSendableClassExtends(tsTypeExpr)) {
+        if (!this.tsUtils.isValidSendableClassExtends(tsTypeExpr)) {
           this.incrementCounters(tsTypeExpr, FaultID.SendableClassInheritance);
         }
       }
     }
-  }
-
-  private isValidSendableClassExtends(tsTypeExpr: ts.ExpressionWithTypeArguments): boolean {
-    const expr = tsTypeExpr.expression;
-    const sym = this.tsTypeChecker.getSymbolAtLocation(expr);
-    if (sym && (sym.flags & ts.SymbolFlags.Class) === 0) {
-      // handle non-class situation(local / import)
-      if ((sym.flags & ts.SymbolFlags.Alias) !== 0) {
-
-        /*
-         * Sendable class can not extends imported sendable class variable
-         * Sendable class can extends imported sendable class
-         */
-        const realSym = this.tsTypeChecker.getAliasedSymbol(sym);
-        if (realSym && (realSym.flags & ts.SymbolFlags.Class) === 0) {
-          return false;
-        }
-        return true;
-      }
-      return false;
-    }
-    return true;
   }
 
   private checkSendableTypeParameter(typeParamDecl: ts.TypeParameterDeclaration): void {

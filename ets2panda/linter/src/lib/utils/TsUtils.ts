@@ -3035,4 +3035,26 @@ export class TsUtils {
     // Ambient flag is not exposed, so we apply dirty hack to make it visible
     return !!(node.flags & (ts.NodeFlags as any).Ambient);
   }
+
+  isValidSendableClassExtends(tsTypeExpr: ts.ExpressionWithTypeArguments): boolean {
+    const expr = tsTypeExpr.expression;
+    const sym = this.tsTypeChecker.getSymbolAtLocation(expr);
+    if (sym && (sym.flags & ts.SymbolFlags.Class) === 0) {
+      // handle non-class situation(local / import)
+      if ((sym.flags & ts.SymbolFlags.Alias) !== 0) {
+
+        /*
+         * Sendable class can not extends imported sendable class variable
+         * Sendable class can extends imported sendable class
+         */
+        const realSym = this.tsTypeChecker.getAliasedSymbol(sym);
+        if (realSym && (realSym.flags & ts.SymbolFlags.Class) === 0) {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
 }
