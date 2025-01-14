@@ -42,3 +42,11 @@ test262/data/test_es2021/language/statements/async-generator/dstr/ary-ptrn-elem-
 
 #19208
 test262/data/test/language/module-code/instn-iee-err-circular-as.js
+
+#21423
+test262/data/test/built-ins/TypedArray/prototype/slice/results-with-empty-length.js
+test262/data/test/built-ins/TypedArray/prototype/copyWithin/negative-start.js
+
+#21819
+test262/data/test/built-ins/TypedArray/prototype/slice/BigInt/results-with-different-length.js
+test262/data/test/built-ins/TypedArray/prototype/subarray/results-with-empty-length.js
