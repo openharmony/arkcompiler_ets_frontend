@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1638,13 +1638,6 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
                                        checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
         expr->SetTsType(objType);
         return objType;
-    }
-
-    if (objType->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
-        checker->LogTypeError({"target type for class composite ", objType->Name(), " is not instantiable"},
-                              expr->Start());
-        expr->SetTsType(checker->GlobalTypeError());
-        return expr->TsType();
     }
 
     if (expr->PreferredType()->ToAssemblerName().str() == "escompat.Record" ||

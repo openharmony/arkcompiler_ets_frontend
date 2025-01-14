@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -378,6 +378,16 @@ public:
         return origEnumDecl_;
     }
 
+    ClassDeclaration *GetAnonClass() noexcept
+    {
+        return anonClass_;
+    }
+
+    void SetAnonClass(ClassDeclaration *anonClass) noexcept
+    {
+        anonClass_ = anonClass;
+    }
+
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
     bool HasComputedInstanceField() const;
@@ -434,6 +444,7 @@ private:
     ArenaSet<varbinder::Variable *> capturedVars_;
     ArenaSet<varbinder::Variable *> localVariableIsNeeded_;
     TSEnumDeclaration *origEnumDecl_ {};
+    ClassDeclaration *anonClass_ {nullptr};
     static int classCounter_;
     const int localIndex_ {};
     const std::string localPrefix_ {};

@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+abstract class C{
+    field1:number = 100;
+    private field2:string = "some str";
+}
+
+abstract class C2{
+    constructor(x:number){}
+    field1:number = 100;
+    field2:string = "some str";
+}
+
+abstract class C3{
+    private constructor(){}
+    field1:number = 100;
+    field2:string = "some str";
+}
+
+function main(){
+    let x:C = {field1:1000, /* @@ label */field3:2000};
+    let x2:C = {field1:1000, /* @@ label2 */field2:2000};
+    let x3:C = {field1: /* @@ label3 */"some str"};
+    let x4:C2 = /* @@ label4 */{field1:1000, field2:"some str"};
+    let x5:C3 = /* @@ label5 */{field1:1000, field2:"some str"};
+}
+
+/* @@@ label Error TypeError: type C has no property named field3  */
+/* @@@ label2 Error TypeError: Property field2 is not visible here.  */
+/* @@@ label3 Error TypeError: Type '"some str"' is not compatible with type 'double' at property 'field1'  */
+/* @@@ label4 Error TypeError: type C2 has no parameterless constructor  */
+/* @@@ label5 Error TypeError: Signature constructor(): void is not visible here.  */
