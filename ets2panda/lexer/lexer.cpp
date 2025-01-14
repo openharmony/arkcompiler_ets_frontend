@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -506,6 +506,56 @@ LexerTemplateString Lexer::ScanTemplateString()
     return templateStr;
 }
 
+util::StringView Lexer::ScanMultilineString()
+{
+    util::UString str(Allocator());
+    size_t cpSize = 0U;
+    bool isreturn = false;
+
+    while (!isreturn) {
+        char32_t cp = Iterator().PeekCp(&cpSize);
+        switch (cp) {
+            case util::StringView::Iterator::INVALID_CP:
+                LogSyntaxError("Unexpected token, expected '`'");
+                [[fallthrough]];
+            case LEX_CHAR_BACK_TICK:
+                isreturn = true;
+                break;
+            case LEX_CHAR_CR: {
+                Iterator().Forward(1);
+                if (Iterator().Peek() != LEX_CHAR_LF) {
+                    Iterator().Backward(1);
+                }
+                [[fallthrough]];
+            }
+            case LEX_CHAR_LF:
+                pos_.line_++;
+                str.Append(LEX_CHAR_LF);
+                Iterator().Forward(1);
+                continue;
+            case LEX_CHAR_BACKSLASH: {
+                Iterator().Forward(1);
+                char32_t nextCp = ScanUnicodeCharacter();
+                str.Append(nextCp);
+                continue;
+            }
+            default: {
+                break;
+            }
+        }
+
+        if (isreturn) {
+            return str.View();
+        }
+
+        str.Append(cp);
+        Iterator().Forward(cpSize);
+    }
+
+    UNREACHABLE();
+    return str.View();
+}
+
 void Lexer::ResetTokenEnd()
 {
     SetTokenStart();
@@ -588,7 +638,7 @@ char32_t Lexer::ScanUnicodeCharacter()
         }
         default:
             if (IsDecimalDigit(Iterator().Peek())) {
-                LogSyntaxError("Invalid character escape sequence in strict mode");
+                LogSyntaxError("Invalid character escape sequence");
                 cp = UNICODE_INVALID_CP;
             }
             break;

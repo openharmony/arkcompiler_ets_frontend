@@ -224,6 +224,8 @@ ast/parser/ets/extension_function_tests/extension_function_array3.sts
 ast/parser/ets/extension_function_tests/extension_function_array3_primitive.sts
 ast/parser/ets/extension_function_tests/extension_function_array_primitive.sts
 ast/compiler/ets/extension_function_tests/extension_function_primitive.sts
+runtime/ets/Multiline_string_escape_char.sts
+runtime/ets/Multiline_string.sts
 
 # FailKind.ES2PANDA_FAIL
 runtime/ets/objectEquality.sts

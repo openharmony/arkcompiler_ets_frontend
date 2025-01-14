@@ -99,7 +99,7 @@ const n5 = 02n
 /* @@? 42:1 Error SyntaxError: Invalid BigInt number  */
 /* @@? 44:1 Error SyntaxError: Invalid numeric literal  */
 /* @@? 44:1 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 46:1 Error SyntaxError: Invalid character escape sequence in strict mode  */
+/* @@? 46:1 Error SyntaxError: Invalid character escape sequence  */
 /* @@? 46:1 Error SyntaxError: Octal escape sequences are not allowed in template strings  */
 /* @@? 48:1 Error SyntaxError: Invalid octal digit  */
 /* @@? 48:1 Error SyntaxError: Invalid numeric literal  */

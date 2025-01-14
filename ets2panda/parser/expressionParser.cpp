@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -728,12 +728,16 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
+    auto startPos = lexer_->Save();
+    auto multilineStr = Lexer()->ScanMultilineString();
+    lexer_->Rewind(startPos);
+
     ArenaVector<ir::TemplateElement *> quasis(Allocator()->Adapter());
     ArenaVector<ir::Expression *> expressions(Allocator()->Adapter());
 
     while (true) {
         lexer_->ResetTokenEnd();
-        const auto startPos = lexer_->Save();
+        startPos = lexer_->Save();
         lexer_->ScanString<lexer::LEX_CHAR_BACK_TICK>();
         const util::StringView cooked = lexer_->GetToken().String();
         lexer_->Rewind(startPos);
@@ -767,7 +771,7 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
         expressions.push_back(expression);
     }
 
-    auto *templateNode = AllocNode<ir::TemplateLiteral>(std::move(quasis), std::move(expressions));
+    auto *templateNode = AllocNode<ir::TemplateLiteral>(std::move(quasis), std::move(expressions), multilineStr);
     templateNode->SetRange({startLoc, lexer_->GetToken().End()});
 
     lexer_->NextToken();
