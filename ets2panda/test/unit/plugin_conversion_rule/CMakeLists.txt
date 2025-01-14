@@ -18,4 +18,6 @@ endif()
 ets2panda_add_gtest(plugin_conversion_rule_test CPP_SOURCES 
     plugin_conversion_rule_part_i.cpp
     plugin_conversion_rule_part_ii.cpp
+    plugin_conversion_rule_part_iii.cpp
+    plugin_conversion_rule_part_iv.cpp
 )
