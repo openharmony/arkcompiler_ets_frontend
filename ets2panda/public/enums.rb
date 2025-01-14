@@ -26,6 +26,22 @@ module Enums
       dig(:flags) || []
     end
 
+    def all_flags_with_value
+      res = {}
+      dig(:flags)&.each_with_index do |flag, index|
+        if type == 'int'
+          res[flag] = index
+        else
+          res[flag] = 1 << (index - 1)
+        end
+      end
+
+      dig(:flag_unions)&.each do |union|
+        res[union.name] = union.flags.reduce(0) { |result, key| result | res[key] }
+      end
+      res
+    end
+
     def flag_unions
       res = {}
       dig(:flag_unions)&.each { |union| res[union.name] = union.flags }
@@ -51,13 +67,16 @@ module Enums
     end
   end
 
+  def get_astnodetype_value(class_name)
+    enums['AstNodeType'].all_flags_with_value[class_name]
+  end
+
   @enums = {}
   @change_namespace = {
     'ast_verifier' => 'compiler::ast_verifier', 'verifier_invariants' => 'util::gen::verifier_invariants'
   }
 
   attr_reader :change_namespace
-
   attr_reader :enums
 
   def wrap_data(data)
@@ -105,7 +124,7 @@ module Enums
                                                        'namespace' => 'varbinder', 'name' => 'DeclType' }))
   end
 
-  module_function :wrap_data, :enums, :change_namespace
+  module_function :wrap_data, :enums, :change_namespace, :get_astnodetype_value
 end
 
 def Gen.on_require(data)

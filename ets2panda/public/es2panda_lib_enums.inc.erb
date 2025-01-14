@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,7 +33,7 @@ enum Es2panda<%= name %> {
 %   end
 % end
 % enum.flag_unions&.each do |union_name, flags|
-    <%= enum.name_to_upper_snake %>_<%= union_name %> = <%= flags.each_with_index { |flag, index| flags[index] = "#{enum.name_to_upper_snake}_#{flag}"}.join(' | ') %>,
+    <%= enum.name_to_upper_snake %>_<%= union_name %> = <%= flags.map { |flag| "#{enum.name_to_upper_snake}_#{flag}"}.join(' | ') %>,
 % end
 };
 // NOLINTNEXTLINE(modernize-use-using)
