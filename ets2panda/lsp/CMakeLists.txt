@@ -19,9 +19,9 @@ set(ES2PANDA_LSP_SRC
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
 
 panda_target_include_directories(${LSP_LIB}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE ${ES2PANDA_ROOT}
-    PRIVATE ${OUTPUT_DIR}
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+  PRIVATE ${ES2PANDA_ROOT}
+  PRIVATE ${OUTPUT_DIR}
 )
 
 panda_target_compile_options(${LSP_LIB}
@@ -29,7 +29,7 @@ panda_target_compile_options(${LSP_LIB}
 )
 
 panda_target_link_libraries(${LSP_LIB}
-  PUBLIC arkbase es2panda-lib
+  PUBLIC arkbase es2panda-lib es2panda-public
   PRIVATE arkbytecodeopt
 )
 

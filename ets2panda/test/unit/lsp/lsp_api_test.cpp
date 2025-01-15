@@ -22,9 +22,29 @@
 #include <vector>
 
 #include "public/es2panda_lib.h"
+#include "public/public.h"
 #include "test/utils/ast_verifier_test.h"
 
-using LSPAPITests = test::utils::AstVerifierTest;
+class LSPAPITests : public test::utils::AstVerifierTest {
+public:
+    std::vector<std::string> CreateTempFile(std::vector<std::string> files, std::vector<std::string> texts)
+    {
+        std::vector<std::string> result = {};
+        auto tempDir = testing::TempDir();
+        for (size_t i = 0; i < files.size(); i++) {
+            auto outPath = tempDir + files[i];
+            std::ofstream outStream(outPath);
+            if (outStream.fail()) {
+                std::cerr << "Failed to open file: " << outPath << std::endl;
+                return result;
+            }
+            outStream << texts[i];
+            outStream.close();
+            result.push_back(outPath);
+        }
+        return result;
+    }
+};
 
 TEST_F(LSPAPITests, GetTouchingToken1)
 {
@@ -167,4 +187,133 @@ TEST_F(DiagnosticTest, DataField)
 
     const auto &diagnosticData = diagnostic.data_;
     EXPECT_EQ(std::get<int>(diagnosticData), dataResult);
+}
+
+TEST_F(LSPAPITests, GetFileReferencesImpl1)
+{
+    using ark::es2panda::public_lib::Context;
+    std::vector<std::string> files = {"export1.sts", "ref-file.sts"};
+    std::vector<std::string> texts = {
+        R"(export function A(a:number, b:number): number {
+  return a + b;
+}
+export function B(a:number, b:number): number {
+  return a + b;
+})",
+        R"(import {A} from "./export1";
+import {B} from "./export1.sts";
+A(1, 2);
+B(1, 2);)"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 2;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    char const *searchFileName = filePaths[0].c_str();
+    char const *referenceFileName = filePaths[1].c_str();
+    auto ctx = impl_->CreateContextFromFile(cfg_, searchFileName);
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto isPackageModule = reinterpret_cast<Context *>(ctx)->parserProgram->IsPackage();
+    ASSERT_FALSE(isPackageModule);
+    impl_->DestroyContext(ctx);
+
+    auto ctx1 = impl_->CreateContextFromFile(cfg_, referenceFileName);
+    impl_->ProceedToState(ctx1, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx1), ES2PANDA_STATE_CHECKED);
+
+    auto result = reinterpret_cast<Context *>(ctx1)->allocator->New<FileReferences>();
+    ark::es2panda::lsp::GetFileReferencesImpl(allocator_, ctx1, searchFileName, isPackageModule, result);
+    auto expectedFileName1 = filePaths[1];
+    size_t const expectedStartPos1 = 16;
+    size_t const expectedLength1 = 11;
+    auto expectedFileName2 = filePaths[1];
+    size_t const expectedStartPos2 = 45;
+    size_t const expectedLength2 = 15;
+    ASSERT_EQ(std::string(result->referenceInfos[0]->fileName), expectedFileName1);
+    ASSERT_EQ(result->referenceInfos[0]->start, expectedStartPos1);
+    ASSERT_EQ(result->referenceInfos[0]->length, expectedLength1);
+    ASSERT_EQ(std::string(result->referenceInfos[1]->fileName), expectedFileName2);
+    ASSERT_EQ(result->referenceInfos[1]->start, expectedStartPos2);
+    ASSERT_EQ(result->referenceInfos[1]->length, expectedLength2);
+    impl_->DestroyContext(ctx1);
+}
+
+TEST_F(LSPAPITests, GetFileReferencesImpl2)
+{
+    using ark::es2panda::public_lib::Context;
+    std::vector<std::string> files = {"export2.ts", "ref-file.sts"};
+    std::vector<std::string> texts = {
+        R"(export function A(a:number, b:number): number {
+  return a + b;
+}
+export function B(a:number, b:number): number {
+  return a + b;
+})",
+        R"(import {A} from "./export2";
+import {B} from "./export2.ts";
+A(1, 2);
+B(1, 2);)"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 2;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    char const *searchFileName = filePaths[0].c_str();
+    char const *referenceFileName = filePaths[1].c_str();
+    auto ctx = impl_->CreateContextFromFile(cfg_, searchFileName);
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+
+    auto isPackageModule = reinterpret_cast<Context *>(ctx)->parserProgram->IsPackage();
+    ASSERT_FALSE(isPackageModule);
+    impl_->DestroyContext(ctx);
+
+    auto ctx1 = impl_->CreateContextFromFile(cfg_, referenceFileName);
+    impl_->ProceedToState(ctx1, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx1), ES2PANDA_STATE_CHECKED);
+
+    auto result = reinterpret_cast<Context *>(ctx1)->allocator->New<FileReferences>();
+    ark::es2panda::lsp::GetFileReferencesImpl(allocator_, ctx1, searchFileName, isPackageModule, result);
+    auto expectedFileName1 = filePaths[1];
+    size_t const expectedStartPos1 = 16;
+    size_t const expectedLength1 = 11;
+    auto expectedFileName2 = filePaths[1];
+    size_t const expectedStartPos2 = 45;
+    size_t const expectedLength2 = 14;
+    ASSERT_EQ(std::string(result->referenceInfos[0]->fileName), expectedFileName1);
+    ASSERT_EQ(result->referenceInfos[0]->start, expectedStartPos1);
+    ASSERT_EQ(result->referenceInfos[0]->length, expectedLength1);
+    ASSERT_EQ(std::string(result->referenceInfos[1]->fileName), expectedFileName2);
+    ASSERT_EQ(result->referenceInfos[1]->start, expectedStartPos2);
+    ASSERT_EQ(result->referenceInfos[1]->length, expectedLength2);
+    impl_->DestroyContext(ctx1);
+}
+
+TEST_F(LSPAPITests, GetFileReferencesImpl3)
+{
+    using ark::es2panda::public_lib::Context;
+    std::vector<std::string> files = {"package-module.sts"};
+    std::vector<std::string> texts = {R"(import { PI } from "std/math";
+console.log(PI);)"};
+    auto filePaths = CreateTempFile(files, texts);
+    int const expectedFileCount = 1;
+    ASSERT_EQ(filePaths.size(), expectedFileCount);
+
+    char const *referenceFileName = filePaths[0].c_str();
+    auto ctx = impl_->CreateContextFromFile(cfg_, referenceFileName);
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto baseUrl = reinterpret_cast<Context *>(ctx)->config->options->ArkTSConfig()->BaseUrl();
+    auto searchFileName = baseUrl + "/plugins/ets/stdlib/std/math/math.sts";
+    auto result = reinterpret_cast<Context *>(ctx)->allocator->New<FileReferences>();
+    ark::es2panda::lsp::GetFileReferencesImpl(allocator_, ctx, searchFileName.c_str(), true, result);
+    auto expectedFileName = filePaths[0];
+    size_t const expectedStartPos = 19;
+    size_t const expectedLength = 10;
+
+    ASSERT_EQ(result->referenceInfos[0]->fileName, expectedFileName);
+    ASSERT_EQ(result->referenceInfos[0]->start, expectedStartPos);
+    ASSERT_EQ(result->referenceInfos[0]->length, expectedLength);
+    impl_->DestroyContext(ctx);
 }

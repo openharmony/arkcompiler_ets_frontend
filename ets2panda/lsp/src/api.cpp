@@ -14,6 +14,10 @@
  */
 
 #include "api.h"
+#include "internal_api.h"
+#include "public/es2panda_lib.h"
+#include "public/public.h"
+#include "util/options.h"
 
 namespace ark::es2panda::lsp {
 
@@ -23,8 +27,29 @@ extern "C" DefinitionInfo *GetDefinitionAtPosition([[maybe_unused]] char const *
     return nullptr;
 }
 
+extern "C" FileReferences *GetFileReferences(char const *fileName)
+{
+    Initializer &initializer = Initializer::GetInstance();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    bool isPackageModule = reinterpret_cast<public_lib::Context *>(context)->parserProgram->IsPackage();
+    auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
+    auto files = options->ArkTSConfig()->Files();
+    initializer.DestroyContext(context);
+
+    auto allocator = initializer.Allocator();
+    auto result = allocator->New<FileReferences>();
+    for (auto const &referenceFile : files) {
+        auto referenceContext = initializer.CreateContext(referenceFile.c_str(), ES2PANDA_STATE_CHECKED);
+        GetFileReferencesImpl(allocator, referenceContext, fileName, isPackageModule, result);
+        initializer.DestroyContext(referenceContext);
+    }
+
+    return result;
+}
+
 LSPAPI g_lspImpl = {
     GetDefinitionAtPosition,
+    GetFileReferences,
 };
 }  // namespace ark::es2panda::lsp
 
