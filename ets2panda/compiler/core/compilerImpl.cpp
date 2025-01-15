@@ -87,41 +87,102 @@ static public_lib::Context::CodeGenCb MakeCompileJob()
     };
 }
 
+static bool CheckOptionsBeforePhase(const util::Options &options, const parser::Program &program,
+                                    const std::string &name)
+{
+    if (options.GetDumpBeforePhases().count(name) > 0U) {
+        std::cout << "Before phase " << name << ":\n";
+        std::cout << program.Dump() << std::endl;
+    }
+
+    if (options.GetDumpEtsSrcBeforePhases().count(name) > 0U) {
+        std::cout << "Before phase " << name << " ets source:\n";
+        std::cout << program.Ast()->DumpEtsSrc() << std::endl;
+    }
+
+    return options.GetExitBeforePhase() == name;
+}
+
+static bool CheckOptionsAfterPhase(const util::Options &options, const parser::Program &program,
+                                   const std::string &name)
+{
+    if (options.GetDumpAfterPhases().count(name) > 0U) {
+        std::cout << "After phase " << name << ":\n";
+        std::cout << program.Dump() << std::endl;
+    }
+
+    if (options.GetDumpEtsSrcAfterPhases().count(name) > 0U) {
+        std::cout << "After phase " << name << " ets source:\n";
+        std::cout << program.Ast()->DumpEtsSrc() << std::endl;
+    }
+
+    return options.GetExitAfterPhase() == name;
+}
+
 static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context &context,
                                  const std::vector<Phase *> &phases, parser::Program &program)
 {
     auto verifier = ast_verifier::ASTVerifier(context, program);
-    const auto verifierEachPhase = context.config->options->IsVerifierInvariantsEachPhase();
+    const auto &options = *context.config->options;
+    const auto verifierEachPhase = options.IsVerifierInvariantsEachPhase();
 
     for (auto *phase : phases) {
-        if (!phase->Apply(&context, &program)) {
-            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError() ||
-                                        context.parser->ErrorLogger()->IsAnyError());
+        const auto name = std::string {phase->Name()};
+        if (options.GetSkipPhases().count(name) > 0) {
+            continue;
+        }
+
+        if (CheckOptionsBeforePhase(options, program, name)) {
             return false;
         }
-        if (verifierEachPhase) {
-            verifier.Verify(phase->Name());
+
+        if (phase->Apply(&context, &program)) {
+            if (context.checker->ErrorLogger()->IsAnyError()) {
+                compilerImpl->SetIsAnyError(true);
+            }
+            if (!compilerImpl->IsAnyError() && verifierEachPhase) {
+                verifier.Verify(phase->Name());
+            }
+            verifier.IntroduceNewInvariants(phase->Name());
+        } else {
+            compilerImpl->SetIsAnyError(true);
         }
-        verifier.IntroduceNewInvariants(phase->Name());
+
+        if (CheckOptionsAfterPhase(options, program, name)) {
+            return false;
+        }
     }
 
-    if (!verifierEachPhase) {
+    if (!compilerImpl->IsAnyError() && !verifierEachPhase) {
         verifier.Verify("AfterAllPhases");
     }
 
     return true;
 }
 
-static bool RunPhases(CompilerImpl *compilerImpl, public_lib::Context &context, const std::vector<Phase *> &phases,
-                      parser::Program &program)
+static bool RunPhases(public_lib::Context &context, const std::vector<Phase *> &phases, parser::Program &program)
 {
+    const auto &options = *context.config->options;
+
     for (auto *phase : phases) {
+        const auto name = std::string {phase->Name()};
+        if (options.GetSkipPhases().count(name) > 0) {
+            continue;
+        }
+
+        if (CheckOptionsBeforePhase(options, program, name)) {
+            return false;
+        }
+
         if (!phase->Apply(&context, &program)) {
-            compilerImpl->SetIsAnyError(context.checker->ErrorLogger()->IsAnyError() ||
-                                        context.parser->ErrorLogger()->IsAnyError());
+            return false;
+        }
+
+        if (CheckOptionsAfterPhase(options, program, name)) {
             return false;
         }
     }
+
     return true;
 }
 
@@ -138,19 +199,6 @@ static void CreateDebuggerEvaluationPlugin(checker::ETSChecker &checker, ArenaAl
 
 using EmitCb = std::function<pandasm::Program *(public_lib::Context *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
-
-static bool ParserErrorChecker(bool isAnyError, parser::Program *program, CompilerImpl *compilerImpl,
-                               const CompilationUnit &unit)
-{
-    if (isAnyError) {
-        compilerImpl->SetIsAnyError(isAnyError);
-        if (unit.options.IsDumpAst()) {
-            std::cout << program->Dump() << std::endl;
-        }
-        return false;
-    }
-    return true;
-}
 
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
@@ -192,19 +240,25 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     varbinder->SetContext(&context);
 
     parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
-    if (!ParserErrorChecker(parser.ErrorLogger()->IsAnyError(), &program, compilerImpl, unit)) {
-        return nullptr;
-    }
+    compilerImpl->SetIsAnyError(parser.ErrorLogger()->IsAnyError());
+
     if (unit.ext == ScriptExtension::STS) {
         if (!RunVerifierAndPhases(compilerImpl, context, getPhases(unit.ext), program)) {
             return nullptr;
         }
-    } else if (!RunPhases(compilerImpl, context, getPhases(unit.ext), program)) {
+    } else if (compilerImpl->IsAnyError()) {
+        if (unit.options.IsDumpAst()) {
+            std::cout << program.Dump() << std::endl;
+        }
+    } else {
+        compilerImpl->SetIsAnyError(!RunPhases(context, getPhases(unit.ext), program));
+    }
+
+    if (compilerImpl->IsAnyError()) {
         return nullptr;
     }
 
     emitter.GenAnnotation();
-
     return compilerImpl->Emit(&context);
 }
 

@@ -15,8 +15,9 @@
 
 import {foo flt} from "import_tests/packages";
 
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 16:13 Error SyntaxError: Unexpected token, expected: 'from'.  */
-/* @@? 16:16 Error SyntaxError: Unexpected token, expected string literal.  */
-/* @@? 16:18 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 16:23 Error SyntaxError: Unexpected token 'string literal'.  */
+/* @@? 16:13 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 16:13 Error SyntaxError: Unexpected token, expected: 'from'. */
+/* @@? 16:16 Error SyntaxError: Unexpected token, expected string literal. */
+/* @@? 16:18 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 16:23 Error SyntaxError: Unexpected token 'string literal'. */
+/* @@? 16:18 Error TypeError: Unresolved reference from */

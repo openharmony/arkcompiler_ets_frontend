@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,3 +19,6 @@ let x: (i: int, n: number) => A;
 x = (i: int, n: number): /* @@ label */this => { return new A(); };
 
 /* @@@ label Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct and extension functions.  */
+/* @@? 19:50 Error TypeError: Only extension function or a class method can return 'this' */
+/* @@? 19:5 Error TypeError: Type '(i: int, n: double) => ETSGLOBAL' cannot be assigned to type '(p1: Int, p2: Double) => A' */
+/* @@? 19:57 Error TypeError: Type 'A' is not compatible with the enclosing method's return type 'ETSGLOBAL' */

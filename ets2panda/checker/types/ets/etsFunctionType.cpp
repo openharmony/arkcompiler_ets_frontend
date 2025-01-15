@@ -19,7 +19,7 @@
 #include "ir/base/scriptFunction.h"
 
 namespace ark::es2panda::checker {
-//  NOTE (DZ) use this constructor in the internal class methods ONLY!
+//  Use this constructor in the internal class methods ONLY!
 ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView const &name,
                                  ArenaVector<Signature *> &&signatures)
     : Type(TypeFlag::FUNCTION),
@@ -256,7 +256,7 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
 
     ASSERT(IsETSArrowType() && CallSignature()->IsTypeAnnotation());
 
-    // NOTE (DZ): as the source function a class method can used which can be overloaded
+    // As the source function a class method can be used which can be overloaded - loop required
     for (auto signature : sourceFnType->CallSignatures()) {
         if (IsCompatibleSignature(relation, CallSignature(), signature)) {
             relation->Result(true);

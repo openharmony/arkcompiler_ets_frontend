@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,14 +26,16 @@ new B
 WeakSet [12] = new undefined()
 
 // *NOTE* error has printed twice, that is known issue #20560
-/* @@? 16:9 Error TypeError: Type 'null' is not constructible. */
 
+
+/* @@? 16:9 Error TypeError: Type 'null' is not constructible. */
+/* @@? 16:9 Error TypeError: Type 'null' is not constructible. */
 /* @@? 17:1 Error TypeError: Type 'null' is not constructible. */
 /* @@? 18:1 Error TypeError: Type 'undefined' is not constructible. */
-/* @@? 19:1 Error TypeError: Type 'never'  is not constructible. */
-/* @@? 20:1 Error TypeError: This expression is not constructible.  */
-
+/* @@? 19:1 Error TypeError: Type 'never' is not constructible. */
+/* @@? 20:1 Error TypeError: This expression is not constructible. */
 /* @@? 23:1 Error TypeError: The union type is not constructible. */
-/* @@? 26:1 Error TypeError: Class name "WeakSet" used in the wrong context  */
+/* @@? 26:1 Error TypeError: Class name "WeakSet" used in the wrong context */
 /* @@? 26:1 Error TypeError: Object type doesn't have proper index access method. */
 /* @@? 26:16 Error TypeError: Type 'undefined' is not constructible. */
+/* @@? 1:3 Error TypeError: Property '$_set' does not exist on type 'WeakSet' */

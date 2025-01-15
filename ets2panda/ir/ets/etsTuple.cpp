@@ -16,7 +16,6 @@
 #include "etsTuple.h"
 
 #include "checker/types/ets/etsTupleType.h"
-#include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
 
@@ -148,14 +147,20 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
         typeList.emplace_back(checkedType);
     }
 
+    checker::Type *spreadElementType = nullptr;
+
     if (HasSpreadType()) {
-        ASSERT(spreadType_->IsTSArrayType());
-        auto *const arrayType = spreadType_->GetType(checker);
-        ASSERT(arrayType->IsETSArrayType());
-        spreadType_->SetTsType(arrayType->AsETSArrayType()->ElementType());
+        if (spreadType_->IsTSArrayType()) {
+            auto *const arrayType = spreadType_->GetType(checker);
+            spreadType_->SetTsType(arrayType->IsETSArrayType() ? arrayType->AsETSArrayType()->ElementType()
+                                                               : checker->GlobalTypeError());
+        } else {
+            spreadType_->SetTsType(checker->GlobalTypeError());
+        }
+        spreadElementType = spreadType_->TsType();
     }
 
-    auto *spreadElementType = spreadType_ != nullptr ? spreadType_->TsType() : nullptr;
+    ASSERT(spreadElementType == nullptr || !spreadElementType->IsTypeError() || checker->IsAnyError());
 
     checker::Type *tupleType = checker->Allocator()->New<checker::ETSTupleType>(
         typeList, CalculateLUBForTuple(checker, typeList, &spreadElementType), spreadElementType);
@@ -169,37 +174,36 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 
 ETSTuple *ETSTuple::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ETSTuple>(allocator, size_); clone != nullptr) {
-        clone->AddModifier(flags_);
+    auto *const clone = allocator->New<ETSTuple>(allocator, size_);
 
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
+    clone->AddModifier(flags_);
 
-        if (spreadType_ != nullptr) {
-            auto *const spreadType = spreadType_->Clone(allocator, clone)->AsTypeNode();
-            clone->SetSpreadType(spreadType);
-        }
-
-        ArenaVector<TypeNode *> typeList(allocator->Adapter());
-        for (auto *const type : typeAnnotationList_) {
-            auto *const t = type->Clone(allocator, clone);
-            typeList.push_back(t);
-        }
-
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-
-        clone->SetTypeAnnotationsList(std::move(typeList));
-        return clone;
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (spreadType_ != nullptr) {
+        auto *const spreadType = spreadType_->Clone(allocator, clone)->AsTypeNode();
+        clone->SetSpreadType(spreadType);
+    }
+
+    ArenaVector<TypeNode *> typeList(allocator->Adapter());
+    for (auto *const type : typeAnnotationList_) {
+        auto *const t = type->Clone(allocator, clone);
+        typeList.push_back(t);
+    }
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+    clone->SetTypeAnnotationsList(std::move(typeList));
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 }  // namespace ark::es2panda::ir

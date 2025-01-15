@@ -22,10 +22,11 @@ let f: undefined;
 let func3: (f: (a: number, b: string) => number[]): number[] => (a: number, b: boolean) => true;
 // let func3: (f: (a: number, b: string) => number[]): number[]) => (a: number, b: boolean) => true;
 
+
 /* @@? 22:51 Error SyntaxError: Unexpected token, expected: '=>'.  */
 /* @@? 22:51 Error SyntaxError: Unexpected token, expected: '('.  */
 /* @@? 22:51 Error SyntaxError: Invalid Type  */
 /* @@? 22:51 Error SyntaxError: Unexpected token '('.  */
 /* @@? 22:62 Error SyntaxError: Unexpected token: '=>'.  */
 /* @@? 22:62 Error SyntaxError: Unexpected token, arrow (=>)  */
-/* @@? 22:96 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 22:96 Error SyntaxError: Unexpected token, expected: ')'.  *//* @@? 19:8 Error TypeError: 'void' used as type annotation. */

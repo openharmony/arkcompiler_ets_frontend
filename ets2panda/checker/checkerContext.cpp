@@ -399,6 +399,11 @@ checker::Type *CheckerContext::GetSmartCast(varbinder::Variable const *const var
 
 void CheckerContext::OnBreakStatement(ir::BreakStatement const *breakStatement)
 {
+    if (breakStatement->Target() == nullptr) {
+        ASSERT(parent_->IsAnyError());
+        return;
+    }
+
     ir::Statement const *targetStatement = breakStatement->Target()->AsStatement();
     ASSERT(targetStatement != nullptr);
     if (targetStatement->IsLabelledStatement()) {

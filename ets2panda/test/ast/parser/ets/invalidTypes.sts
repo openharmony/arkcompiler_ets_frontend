@@ -50,3 +50,4 @@ let var6: [a0: , a1: ];
 /* @@? 35:21 Error SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct and extension functions. */
 /* @@? 38:16 Error SyntaxError: Invalid Type */
 /* @@? 38:22 Error SyntaxError: Invalid Type */
+/* @@? 32:19 Error TypeError: Unresolved reference number */

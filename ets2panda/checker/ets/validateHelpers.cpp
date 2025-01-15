@@ -14,40 +14,8 @@
  */
 
 #include "varbinder/variableFlags.h"
-#include "checker/checker.h"
-#include "checker/checkerContext.h"
-#include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
-#include "ir/astNode.h"
-#include "lexer/token/tokenType.h"
-#include "ir/base/catchClause.h"
-#include "ir/expression.h"
-#include "ir/typeNode.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/statements/switchCaseStatement.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/binaryExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/statements/labelledStatement.h"
-#include "ir/ets/etsFunctionType.h"
-#include "ir/ets/etsNewClassInstanceExpression.h"
-#include "ir/ts/tsTypeAliasDeclaration.h"
-#include "ir/ts/tsEnumMember.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "varbinder/variable.h"
-#include "varbinder/scope.h"
-#include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
-#include "checker/ets/typeRelationContext.h"
-#include "util/helpers.h"
 
 namespace ark::es2panda::checker {
 void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos)
@@ -250,9 +218,11 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
 
 bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
 {
-    if (type->IsTypeError()) {
+    if (type == nullptr || type->IsTypeError()) {
+        ASSERT(IsAnyError());
         return false;
     }
+
     if (type->IsETSArrayType()) {
         return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
     }

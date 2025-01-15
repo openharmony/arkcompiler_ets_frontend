@@ -22,7 +22,6 @@
 #include "ir/ets/etsReExportDeclaration.h"
 #include "ir/expressions/identifier.h"
 #include "ir/module/importSpecifier.h"
-#include "parser/program/program.h"
 
 namespace ark::es2panda::varbinder {
 using AliasesByExportedNames = ArenaMap<util::StringView, util::StringView>;
@@ -173,6 +172,8 @@ public:
     bool BuildInternalNameWithCustomRecordTable(ir::ScriptFunction *scriptFunc, RecordTable *recordTable);
     void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal);
     void AddFunctionThisParam(ir::ScriptFunction *func);
+
+    void ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const override;
 
     void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports)
     {

@@ -15,18 +15,9 @@
 
 #include "ETSAnalyzer.h"
 #include "generated/diagnostic.h"
-#include "types/signature.h"
-#include "util/helpers.h"
-#include "checker/ETSchecker.h"
-#include "checker/ets/castingContext.h"
-#include "checker/ets/typeRelationContext.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
-#include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
-#include "compiler/lowering/util.h"
-
-#include <ir/ets/etsUnionType.h>
 
 namespace ark::es2panda::checker {
 
@@ -39,22 +30,26 @@ ETSChecker *ETSAnalyzer::GetETSChecker() const
 checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker::ETSObjectType *exceptionType = checker->GlobalETSObjectType();
+
+    if (st->Param() == nullptr) {
+        ASSERT(checker->IsAnyError());
+        return st->SetTsType(checker->GlobalTypeError());
+    }
 
     ir::Identifier *paramIdent = st->Param()->AsIdentifier();
+    checker::ETSObjectType *exceptionType = checker->GlobalETSObjectType();
 
     if (paramIdent->TypeAnnotation() != nullptr) {
         checker::Type *catchParamAnnotationType = paramIdent->TypeAnnotation()->GetType(checker);
-
         exceptionType = checker->CheckExceptionOrErrorType(catchParamAnnotationType, st->Param()->Start());
     }
 
     paramIdent->Variable()->SetTsType(exceptionType);
+    paramIdent->SetTsType(exceptionType);
 
     st->Body()->Check(checker);
 
-    st->SetTsType(exceptionType);
-    return exceptionType;
+    return st->SetTsType(exceptionType);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ClassDefinition *node) const
@@ -78,8 +73,14 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
         return st->TsType();
     }
 
-    ASSERT(st->Id() != nullptr && st->Id()->Variable() != nullptr);
     ETSChecker *checker = GetETSChecker();
+
+    ASSERT(st->Id() != nullptr);
+    if (st->Id()->IsErrorPlaceHolder() || st->Id()->Variable() == nullptr) {
+        st->Id()->SetTsType(checker->GlobalTypeError());
+        return st->SetTsType(checker->GlobalTypeError());
+    }
+
     checker->CheckAnnotations(st->Annotations());
     if (st->TypeAnnotation() != nullptr) {
         st->TypeAnnotation()->Check(checker);
@@ -108,10 +109,13 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 
     auto *func = st->Function();
     checker->BuildFunctionSignature(func);
-    if (func->Signature() == nullptr) {
-        return checker->InvalidateType(st->AsTyped());
+
+    if (func->Signature() == nullptr || func->Id()->Variable() == nullptr) {
+        st->SetTsType(checker->GlobalTypeError());
+    } else {
+        st->SetTsType(checker->BuildNamedFunctionType(func));
     }
-    st->SetTsType(checker->BuildNamedFunctionType(func));
+
     checker::ScopeContext scopeCtx(checker, func->Scope());
     checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                               checker->Context().ContainingClass());
@@ -129,7 +133,10 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             checker->LogTypeError("'Native' method should have explicit return type", scriptFunc->Start());
             node->SetTsType(checker->GlobalTypeError());
         }
-        ASSERT(!scriptFunc->IsGetter() && !scriptFunc->IsSetter());
+        if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
+            ASSERT(checker->IsAnyError());
+            return;
+        }
     }
 
     if (IsAsyncMethod(node)) {
@@ -1471,13 +1478,15 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
 {
-    if (expr->IsErrorPlaceHolder()) {
-        return GetETSChecker()->GlobalTypeError();
-    }
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
+
     ETSChecker *checker = GetETSChecker();
+
+    if (expr->IsErrorPlaceHolder()) {
+        return expr->SetTsType(checker->GlobalTypeError());
+    }
 
     auto *identType = checker->ResolveIdentifier(expr);
     if (expr->Variable() != nullptr && (expr->Parent() == nullptr || !expr->Parent()->IsAssignmentExpression() ||
@@ -1487,6 +1496,7 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
             identType = smartType;
         }
     }
+
     expr->SetTsType(identType);
     if (!identType->IsTypeError()) {
         checker->Context().CheckIdentifierSmartCastCondition(expr);
@@ -1550,6 +1560,10 @@ checker::Type *ETSAnalyzer::CheckEnumMemberExpression(ETSEnumType *const baseTyp
 checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checker, checker::Type *baseType,
                                                               ir::MemberExpression *expr) const
 {
+    if (baseType->IsTypeError()) {
+        return checker->InvalidateType(expr);
+    }
+
     if (baseType->IsETSArrayType()) {
         if (expr->Property()->AsIdentifier()->Name().Is("length")) {
             return expr->AdjustType(checker, checker->GlobalIntType());
@@ -2025,6 +2039,10 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
     }
 
     checker::Type *operandType = expr->argument_->Check(checker);
+    if (operandType->IsTypeError()) {
+        return checker->InvalidateType(expr);
+    }
+
     if (expr->Argument()->IsIdentifier()) {
         checker->ValidateUnaryOperatorOperand(expr->Argument()->AsIdentifier()->Variable());
     } else if (expr->Argument()->IsTSAsExpression()) {
@@ -2036,25 +2054,26 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
             nonNullExprVar != nullptr) {
             checker->ValidateUnaryOperatorOperand(nonNullExprVar);
         }
-    } else {
-        ASSERT(expr->Argument()->IsMemberExpression());
+    } else if (expr->Argument()->IsMemberExpression()) {
         varbinder::LocalVariable *propVar = expr->argument_->AsMemberExpression()->PropVar();
         if (propVar != nullptr) {
             checker->ValidateUnaryOperatorOperand(propVar);
         }
+    } else {
+        ASSERT(checker->IsAnyError());
+        expr->Argument()->SetTsType(checker->GlobalTypeError());
+        return expr->SetTsType(checker->GlobalTypeError());
     }
 
     if (operandType->IsETSBigIntType()) {
-        expr->SetTsType(operandType);
-        return expr->TsType();
+        return expr->SetTsType(operandType);
     }
 
     auto unboxedType = checker->MaybeUnboxInRelation(operandType);
     if (unboxedType == nullptr || !unboxedType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
         checker->LogTypeError("Bad operand type, the type of the operand must be numeric type.",
                               expr->Argument()->Start());
-        expr->SetTsType(checker->GlobalTypeError());
-        return expr->TsType();
+        return expr->SetTsType(checker->GlobalTypeError());
     }
 
     if (operandType->IsETSObjectType()) {
@@ -2062,8 +2081,7 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
                                                  checker->GetBoxingFlag(unboxedType));
     }
 
-    expr->SetTsType(operandType);
-    return expr->TsType();
+    return expr->SetTsType(operandType);
 }
 
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
@@ -2213,15 +2231,19 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
         checker->GetDebugInfoPlugin()->AddPrologueEpilogue(st);
     }
 
+    auto const *const scope = st->Scope();
+    if (scope == nullptr) {
+        return ReturnTypeForStatement(st);
+    }
+
     //  Remove possible smart casts for variables declared in inner scope:
-    if (auto const *const scope = st->Scope();
-        scope->IsFunctionScope() && st->Parent()->Parent()->Parent()->IsMethodDefinition()) {
+    if (scope->IsFunctionScope() && st->Parent()->Parent()->Parent()->IsMethodDefinition()) {
         // When exiting method definition, just clear all smart casts
         checker->Context().ClearSmartCasts();
     } else if (!scope->IsGlobalScope()) {
         // otherwise only check inner declarations
         for (auto const *const decl : scope->Decls()) {
-            if (decl->IsLetOrConstDecl() && decl->Node()->IsIdentifier()) {
+            if (decl->IsLetOrConstDecl() && decl->Node() != nullptr && decl->Node()->IsIdentifier()) {
                 checker->Context().RemoveSmartCast(decl->Node()->AsIdentifier()->Variable());
             }
         }
@@ -2280,7 +2302,8 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
-    if (!st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+    if (st->GetBaseName()->Variable() == nullptr ||
+        !st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
         checker->LogTypeError({"'", st->GetBaseName()->Name(), "' is not an annotation."}, st->GetBaseName()->Start());
         return ReturnTypeForStatement(st);
     }
@@ -2305,7 +2328,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
         checker->CheckSinglePropertyAnnotation(st, annoDecl);
         fieldMap.clear();
     } else {
-        checker->CheckMultiplePropertiesAnnotation(st, annoDecl, fieldMap);
+        checker->CheckMultiplePropertiesAnnotation(st, st->GetBaseName()->Name(), fieldMap);
     }
 
     checker->ProcessRequiredFields(fieldMap, st, checker);
@@ -2618,7 +2641,12 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
 
     ir::AstNode *ancestor = util::Helpers::FindAncestorGivenByType(st, ir::AstNodeType::SCRIPT_FUNCTION);
     ASSERT(ancestor && ancestor->IsScriptFunction());
+
     auto *containingFunc = ancestor->AsScriptFunction();
+    if (containingFunc->Signature() == nullptr) {
+        ASSERT(checker->IsAnyError());
+        return ReturnTypeForStatement(st);
+    }
 
     checker->AddStatus(CheckerStatus::MEET_RETURN);
 
@@ -2752,7 +2780,7 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
     }
 
     ETSChecker *checker = GetETSChecker();
-    ASSERT(st->Id()->IsIdentifier() && st->Id()->Variable() != nullptr);
+    ASSERT(st->Id()->IsIdentifier());
     auto *const ident = st->Id()->AsIdentifier();
     ir::ModifierFlags flags = ir::ModifierFlags::NONE;
 
@@ -2766,10 +2794,17 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
     }
 
     auto *const variableType = checker->CheckVariableDeclaration(ident, ident->TypeAnnotation(), st->Init(), flags);
-    auto *smartType = variableType;
+
+    // Processing possible parser errors
+    if (ident->Variable() == nullptr) {
+        ASSERT(checker->IsAnyError());
+        ident->SetTsType(checker->GlobalTypeError());
+        return st->SetTsType(variableType);
+    }
 
     //  Now try to define the actual type of Identifier so that smart cast can be used in further checker processing
     //  NOTE: T_S and K_o_t_l_i_n don't act in such way, but we can try - why not? :)
+    auto *smartType = variableType;
     if (auto *const initType = st->Init() != nullptr ? st->Init()->TsType() : nullptr; initType != nullptr) {
         smartType = checker->ResolveSmartType(initType, variableType);
         //  Set smart type for identifier if it differs from annotated type
@@ -2780,8 +2815,7 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
         }
     }
 
-    st->SetTsType(smartType);
-    return smartType;
+    return st->SetTsType(smartType);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::VariableDeclaration *st) const
@@ -2834,6 +2868,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     checker->CheckAnnotations(expr->TypeAnnotation()->Annotations());
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
+    if (targetType->IsTypeError()) {
+        return checker->InvalidateType(expr);
+    }
+
     // Object expression requires that its type be set by the context before checking. in this case, the target type
     // provides that context.
     if (expr->Expr()->IsObjectExpression()) {
@@ -2894,18 +2932,27 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
     varbinder::Variable *enumVar = st->Key()->Variable();
-    ASSERT(enumVar != nullptr);
+    if (enumVar == nullptr) {
+        ASSERT(checker->IsAnyError());
+        return st->SetTsType(checker->GlobalTypeError());
+    }
 
     if (enumVar->TsType() == nullptr) {
-        Check(st->BoxedClass());
+        if (st->BoxedClass() == nullptr) {
+            ASSERT(checker->IsAnyError());
+            enumVar->SetTsType(checker->GlobalTypeError());
+            return st->SetTsType(checker->GlobalTypeError());
+        }
+
+        st->BoxedClass()->Check(checker);
         if (auto *const itemInit = st->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
             checker->CreateEnumIntTypeFromEnumDeclaration(st);
         } else if (itemInit->IsStringLiteral()) {
             checker->CreateEnumStringTypeFromEnumDeclaration(st);
         } else {
             checker->LogTypeError("Invalid enumeration value type.", st->Start());
+            enumVar->SetTsType(checker->GlobalTypeError());
             st->SetTsType(checker->GlobalTypeError());
-            return st->TsType();
         }
     } else if (st->TsType() == nullptr) {
         st->SetTsType(enumVar->TsType());
@@ -2919,14 +2966,21 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     if (st->TsType() != nullptr) {
         return st->TsType();
     }
-    ETSChecker *checker = GetETSChecker();
-    checker::ETSObjectType *interfaceType = checker->BuildBasicInterfaceProperties(st);
-    ASSERT(interfaceType != nullptr);
 
+    ETSChecker *checker = GetETSChecker();
+    auto *stmtType = checker->BuildBasicInterfaceProperties(st);
+    ASSERT(stmtType != nullptr);
+
+    if (stmtType->IsTypeError()) {
+        return st->SetTsType(stmtType);
+    }
+
+    auto *interfaceType = stmtType->AsETSObjectType();
     checker->CheckInterfaceAnnotations(st);
 
     interfaceType->SetSuperType(checker->GlobalETSObjectType());
     checker->CheckInvokeMethodsLegitimacy(interfaceType);
+
     st->SetTsType(interfaceType);
 
     checker::ScopeContext scopeCtx(checker, st->Scope());

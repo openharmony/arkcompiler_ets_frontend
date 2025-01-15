@@ -55,8 +55,8 @@ public:
     void SetVariable(varbinder::Variable *variable) noexcept;
 
     //=================================================================================//
-    //  NOTE (DZ):  Please use these methods to deal with expression's type annotation!
-    //              Don't try to access 'ident_' member directly!
+    //  Please use these methods to deal with expression's type annotation!
+    //  Don't try to access 'ident_' member directly!
     [[nodiscard]] TypeNode const *TypeAnnotation() const noexcept;
     [[nodiscard]] TypeNode *TypeAnnotation() noexcept;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,7 @@
  * limitations under the License.
  */
 
-#include "ETSparser.h"
 #include "ETSNolintParser.h"
-
-#include "lexer/lexer.h"
-#include "ir/module/importNamespaceSpecifier.h"
 
 namespace ark::es2panda::parser {
 ETSNolintParser::ETSNolintParser(const ParserImpl *mainParser) : parser_(mainParser)
@@ -213,6 +209,9 @@ bool ETSNolintParser::ValidETSNolintArg(const std::string &warningName) const
     return util::gen::ets_warnings::FromString(warningName) != ETSWarnings::INVALID;
 }
 
+static constexpr char const UNEXPECTED_CHAR[] = "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].";
+static constexpr char const INVALID_ARGUMENT[] = "Invalid argument for ETSNOLINT!";
+
 std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
 {
     std::set<ETSWarnings> warningsCollection;
@@ -232,12 +231,14 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
         cp = PeekSymbol();
         if (cp != lexer::LEX_CHAR_MINUS && cp != lexer::LEX_CHAR_COMMA && cp != lexer::LEX_CHAR_RIGHT_PAREN &&
             (cp < lexer::LEX_CHAR_LOWERCASE_A || cp > lexer::LEX_CHAR_LOWERCASE_Z)) {
-            const std::string msg = "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].";
-            throw Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), msg.c_str(), line_ + 1, 0};
+            const_cast<util::ErrorLogger &>(parser_->errorLogger_)
+                .WriteLog(Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), UNEXPECTED_CHAR,
+                                 line_ + 1, 0});
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && !ValidETSNolintArg(warningName)) {
-            const std::string msg = "Invalid argument for ETSNOLINT!";
-            throw Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), msg.c_str(), line_ + 1, 0};
+            const_cast<util::ErrorLogger &>(parser_->errorLogger_)
+                .WriteLog(Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), INVALID_ARGUMENT,
+                                 line_ + 1, 0});
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && ValidETSNolintArg(warningName)) {
             warningsCollection.insert(MapETSNolintArg(warningName));

@@ -39,3 +39,5 @@ function labeledTest01(): int {
 /* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@@ label1 Error SyntaxError: Unexpected token '^'.  */
 /* @@@ label1 Error SyntaxError: Unexpected token '^'.  */
+/* @@? 27:40 Error TypeError: Unresolved reference *ERROR_LITERAL* */
+/* @@? 27:57 Error TypeError: Unresolved reference label1 */

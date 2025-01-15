@@ -58,19 +58,25 @@ enum MissingLeftBrace
 }
 
 
-/* @@? 16:5 Error SyntaxError: Variable declaration expected.  */
-/* @@? 22:22 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 32:1 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 32:1 Error SyntaxError: Unexpected token ']'.  */
-/* @@? 38:1 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 43:10 Error SyntaxError: Unexpected token '?'.  */
-/* @@? 44:1 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 44:1 Error SyntaxError: Unexpected token, expected: ':'.  */
-/* @@? 46:1 Error SyntaxError: Unexpected token 'enum'.  */
-/* @@? 46:1 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 48:3 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 49:1 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 56:3 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 56:10 Error SyntaxError: Identifier expected, got ','.  */
-/* @@? 57:3 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 58:1 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 16:5 Error SyntaxError: Variable declaration expected. */
+/* @@? 22:22 Error SyntaxError: Unexpected token, expected: '{'. */
+/* @@? 32:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 32:1 Error SyntaxError: Unexpected token ']'. */
+/* @@? 38:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 43:10 Error SyntaxError: Unexpected token '?'. */
+/* @@? 44:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 44:1 Error SyntaxError: Unexpected token, expected: ':'. */
+/* @@? 46:1 Error SyntaxError: Unexpected token 'enum'. */
+/* @@? 46:1 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 48:3 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 49:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 56:3 Error SyntaxError: Unexpected token, expected: '{'. */
+/* @@? 56:10 Error SyntaxError: Identifier expected, got ','. */
+/* @@? 57:3 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 58:1 Error SyntaxError: Unexpected token '}'. */
+/* @@? 37:10 Error SyntaxError: Only constant expression is expected in the field */
+/* @@? 1:1 Error SyntaxError: Only constant expression is expected in the field */
+/* @@? 37:10 Error SyntaxError: Invalid enum initialization value */
+/* @@? 1:1 Error SyntaxError: Invalid enum initialization value */
+/* @@? 48:3 Error TypeError: Unresolved reference Member2 */
+/* @@? 57:3 Error TypeError: Unresolved reference Member2 */

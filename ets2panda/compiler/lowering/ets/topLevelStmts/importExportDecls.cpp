@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,9 +14,6 @@
  */
 
 #include "compiler/lowering/ets/topLevelStmts/importExportDecls.h"
-#include "ir/ets/etsReExportDeclaration.h"
-#include "parser/program/program.h"
-#include "util/importPathManager.h"
 
 namespace ark::es2panda::compiler {
 
@@ -265,6 +262,7 @@ void ImportExportDecls::VerifyType(ir::Statement *stmt, parser::Program *program
     if (!stmt->IsExportNamedDeclaration()) {
         util::ErrorHandler::LogSyntaxError(parser_->ErrorLogger(), program, "Can only type export class or interface!",
                                            stmt->Start());
+        return;
     }
 
     for (auto spec : stmt->AsExportNamedDeclaration()->Specifiers()) {

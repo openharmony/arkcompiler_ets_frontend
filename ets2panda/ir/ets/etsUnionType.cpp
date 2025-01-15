@@ -16,9 +16,6 @@
 #include "etsUnionType.h"
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "utils/arena_containers.h"
 
 namespace ark::es2panda::ir {
 void ETSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -123,6 +120,7 @@ ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *cons
         types.push_back(type);
     }
     ETSUnionType *const clone = allocator->New<ir::ETSUnionType>(std::move(types), allocator);
+
     if (parent != nullptr) {
         clone->SetParent(parent);
     }
@@ -136,6 +134,8 @@ ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *cons
     for (auto *it : clone->types_) {
         it->SetParent(clone);
     }
+
+    clone->SetRange(Range());
     return clone;
 }
 }  // namespace ark::es2panda::ir

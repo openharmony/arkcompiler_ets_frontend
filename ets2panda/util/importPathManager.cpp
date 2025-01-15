@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,8 @@ static bool IsCompatibleExtension(const std::string &extension)
 util::StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath) const
 {
     if (importPath.Empty()) {
-        throw Error(ErrorType::GENERIC, "", "Import path cannot be empty");
+        errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Import path cannot be empty"});
+        return importPath;
     }
 
     if (IsRelativePath(importPath)) {
@@ -93,8 +94,10 @@ util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &import
     ASSERT(arktsConfig_ != nullptr);
     auto resolvedPath = arktsConfig_->ResolvePath(importPath.Mutf8());
     if (!resolvedPath) {
-        throw Error(ErrorType::GENERIC, "",
-                    "Can't find prefix for '" + importPath.Mutf8() + "' in " + arktsConfig_->ConfigPath());
+        errorLogger_->WriteLog(
+            Error {ErrorType::GENERIC, "",
+                   "Can't find prefix for '" + importPath.Mutf8() + "' in " + arktsConfig_->ConfigPath()});
+        return "";
     }
     return AppendExtensionOrIndexFileIfOmitted(UString(resolvedPath.value(), allocator_).View());
 }
@@ -105,7 +108,8 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringVi
 {
     DIR *dir = opendir(directoryPath.Mutf8().c_str());
     if (dir == nullptr) {
-        throw Error(ErrorType::GENERIC, "", "Cannot open folder: " + directoryPath.Mutf8());
+        errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Cannot open folder: " + directoryPath.Mutf8()});
+        return;
     }
 
     struct dirent *entry;
@@ -179,7 +183,8 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, const Imp
     }
 
     if (!ark::os::file::File::IsRegularFile(resolvedPath.Mutf8())) {
-        throw Error(ErrorType::GENERIC, "", "Not an available source path: " + resolvedPath.Mutf8());
+        errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Not an available source path: " + resolvedPath.Mutf8()});
+        return;
     }
 
     // 'Object.sts' must be the first in the parse list
@@ -290,7 +295,8 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
         return path;
     }
 
-    throw Error(ErrorType::GENERIC, "", "Not supported path: " + path.Mutf8());
+    errorLogger_->WriteLog(Error {ErrorType::GENERIC, "", "Not supported path: " + path.Mutf8()});
+    return "";
 }
 
 static std::string FormUnitName(std::string name)
@@ -320,7 +326,8 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
     if (!absoluteEtsPath_.empty()) {
         std::string filePath(path.GetAbsolutePath());
         if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
-            throw Error(ErrorType::GENERIC, filePath, "Source file outside ets-path");
+            errorLogger_->WriteLog(Error {ErrorType::GENERIC, filePath, "Source file outside ets-path"});
+            return "";
         }
         auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
         return util::UString(name, allocator_).View();
@@ -361,7 +368,8 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path)
         }
     }
 
-    throw Error(ErrorType::GENERIC, filePath, "Unresolved module name");
+    errorLogger_->WriteLog(Error {ErrorType::GENERIC, filePath, "Unresolved module name"});
+    return "";
 }
 
 }  // namespace ark::es2panda::util

@@ -14,6 +14,7 @@
  */
 
 #include "defaultParameterLowering.h"
+
 #include "checker/ETSchecker.h"
 #include "util/errorHandler.h"
 
@@ -28,6 +29,11 @@ std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir:
     std::size_t requiredParametersNumber = 0U;
 
     for (auto *const it : function->Params()) {
+        //  Check possibly invalid parameter
+        if (!it->IsETSParameterExpression()) {
+            continue;
+        }
+
         auto const *const param = it->AsETSParameterExpression();
 
         if (param->IsRestParameter()) {

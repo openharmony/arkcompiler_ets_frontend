@@ -321,11 +321,7 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
     ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
 
-    if (ErrorLogger()->IsAnyError()) {
-        return;
-    }
-
-    if (runAnalysis) {
+    if (runAnalysis && !IsAnyError()) {
         AliveAnalyzer aliveAnalyzer(Program()->Ast(), this);
         AssignAnalyzer(this).Analyze(Program()->Ast());
     }
@@ -559,8 +555,7 @@ Type *ETSChecker::GlobalTypeError() const
 
 Type *ETSChecker::InvalidateType(ir::Typed<ir::AstNode> *node)
 {
-    node->SetTsType(GlobalTypeError());
-    return node->TsType();
+    return node->SetTsType(GlobalTypeError());
 }
 
 Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view message, const lexer::SourcePosition &at)

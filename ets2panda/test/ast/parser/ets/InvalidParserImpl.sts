@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,3 +25,4 @@ class /* @@ label2 */int {}
 /* @@@ label Error SyntaxError: Getter must not have formal parameters */
 /* @@@ label1 Error SyntaxError: Setter must have exactly one formal parameter */
 /* @@@ label2 Error SyntaxError: Cannot be used as user-defined type. */
+/* @@? 17:12 Error TypeError: Getter must return a value */

@@ -20,9 +20,6 @@
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/type.h"
-#include "checker/types/typeFlag.h"
-#include "ir/astNode.h"
-#include "ir/typeNode.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -163,7 +160,7 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
     for (size_t ix = 0; ix < params.size(); ++ix) {
         instArgs.push_back(MaybeBoxedType(checker, params[ix]->GetType(checker), params[ix]));
         if (ix < sigParams.size()) {
-            ETSChecker::EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
+            checker->EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
         }
     }
     for (size_t ix = instArgs.size(); ix < sigParams.size(); ++ix) {
@@ -174,7 +171,7 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
 
         dflt = dflt->Substitute(checker->Relation(), constraintsSubstitution);
         instArgs.push_back(dflt);
-        ETSChecker::EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
+        checker->EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
     }
     if (sigParams.size() != instArgs.size()) {
         if ((flags & TypeRelationFlag::NO_THROW) == static_cast<std::underlying_type_t<TypeRelationFlag>>(0U)) {
@@ -188,7 +185,7 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
                                                constraintsSubstitution)) {
             return nullptr;
         }
-        ETSChecker::EmplaceSubstituted(substitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
+        checker->EmplaceSubstituted(substitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
     }
     return substitution;
 }

@@ -27,3 +27,4 @@
 /* @@? 20:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:21 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 20:21 Error SyntaxError: Unexpected token: '=>'. */
+/* @@? 20:2 Error SyntaxError: Cannot find type 'ClassAuthor'. */

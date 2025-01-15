@@ -272,3 +272,6 @@ ast/compiler/ets/namespace_tests/namespace_ambient_export01.sts
 ast/compiler/ets/namespace_tests/namespace_ambient_export02.sts
 ast/compiler/ets/namespace_tests/namespace_ambient_export03.sts
 ast/compiler/ets/namespace_tests/namespace_default_import.sts
+
+#Issue 22182
+ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.sts

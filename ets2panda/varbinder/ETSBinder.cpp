@@ -15,58 +15,6 @@
 
 #include "ETSBinder.h"
 
-#include "ir/expressions/blockExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/expressions/thisExpression.h"
-#include "ir/expressions/typeofExpression.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/functionExpression.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/classElement.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/classStaticBlock.h"
-#include "ir/base/decorator.h"
-#include "ir/statements/annotationDeclaration.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/statements/functionDeclaration.h"
-#include "ir/statements/returnStatement.h"
-#include "ir/ets/etsPrimitiveType.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsNewClassInstanceExpression.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsFunctionType.h"
-#include "ir/ets/etsNeverType.h"
-#include "ir/ets/etsModule.h"
-#include "ir/ets/etsImportDeclaration.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
-#include "ir/ts/tsClassImplements.h"
-#include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ts/tsEnumMember.h"
-#include "ir/ts/tsInterfaceHeritage.h"
-#include "ir/ts/tsInterfaceBody.h"
-#include "ir/ts/tsFunctionType.h"
-#include "ir/ts/tsQualifiedName.h"
-#include "ir/module/importDefaultSpecifier.h"
-#include "ir/module/importNamespaceSpecifier.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/module/importSpecifier.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "mem/arena_allocator.h"
-#include "os/filesystem.h"
-#include "recordTable.h"
-#include "util/helpers.h"
-#include "util/ustring.h"
-#include "checker/ETSchecker.h"
-#include "checker/types/type.h"
-#include "checker/types/ets/types.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "public/public.h"
 
@@ -182,6 +130,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
         return;
     }
 
+    ident->SetTsType(GetContext()->checker->AsETSChecker()->GlobalTypeError());
     ThrowUnresolvableType(ident->Start(), name);
 }
 
@@ -235,6 +184,10 @@ void ETSBinder::ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *s
 
 void ETSBinder::LookupIdentReference(ir::Identifier *ident)
 {
+    if (ident->IsErrorPlaceHolder()) {
+        return;
+    }
+
     const auto &name = ident->Name();
     auto res = GetScope()->Find(name, ResolveBindingOptions::ALL);
     if (res.level != 0) {
@@ -480,14 +433,22 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
         if (!stmt->IsClassProperty()) {
             continue;
         }
+        auto *const prop = stmt->AsClassProperty();
 
-        auto fieldScope = ResolvePropertyReference(stmt->AsClassProperty(), classDef->Scope()->AsClassScope());
-        auto fieldName = stmt->AsClassProperty()->Id()->Name();
-        auto fieldVar = fieldScope->FindLocal(fieldName, varbinder::ResolveBindingOptions::BINDINGS);
-        fieldVar->AddFlag(VariableFlags::INITIALIZED);
-        if ((fieldVar->Declaration()->IsConstDecl() || fieldVar->Declaration()->IsReadonlyDecl()) &&
-            stmt->AsClassProperty()->Value() == nullptr) {
-            fieldVar->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);
+        auto fieldScope = ResolvePropertyReference(prop, classDef->Scope()->AsClassScope());
+        auto fieldName = prop->Id()->Name();
+        if (auto fieldVar = fieldScope->FindLocal(fieldName, varbinder::ResolveBindingOptions::BINDINGS);
+            fieldVar != nullptr) {
+            fieldVar->AddFlag(VariableFlags::INITIALIZED);
+            if ((fieldVar->Declaration()->IsConstDecl() || fieldVar->Declaration()->IsReadonlyDecl()) &&
+                prop->Value() == nullptr) {
+                fieldVar->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);
+            }
+        } else {
+            auto *checker = GetContext()->checker->AsETSChecker();
+            ASSERT(checker->IsAnyError());
+            prop->SetTsType(checker->GlobalTypeError());
+            prop->Id()->SetTsType(checker->GlobalTypeError());
         }
     }
 
@@ -624,6 +585,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             }
             if (variable != nullptr && var != variable) {
                 ThrowError(import->Source()->Start(), RedeclarationErrorMessageAssembler(var, variable, bindingName));
+                continue;
             }
             InsertForeignBinding(specifier, import, bindingName, var);
         }
@@ -737,6 +699,9 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
         } else {
             ArenaVector<parser::Program *> record =
                 GetExternalProgram(item->GetETSImportDeclarations()->ResolvedSource()->Str(), importPath);
+            if (record.empty()) {
+                continue;
+            }
             auto *const var = FindImportSpecifiersVariable(imported, record.front()->GlobalScope()->Bindings(), record);
             if (var != nullptr) {
                 implDecl = item->GetETSImportDeclarations();
@@ -759,14 +724,10 @@ void ETSBinder::ValidateImportVariable(varbinder::Variable *const var, const ir:
 {
     if (var->Declaration()->Node()->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
-    }
-
-    if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
+    } else if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
         ThrowError(importPath->Start(),
                    "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
-    }
-
-    if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType()) {
+    } else if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType()) {
         ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
     }
 }
@@ -810,8 +771,10 @@ bool ETSBinder::DetectNameConflict(const util::StringView localName, Variable *c
     }
 
     ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, otherVar, localName));
+    return true;
 }
 
+// CC-OFFNXT(huge_method, G.FUN.01-CPP) solid logic
 bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                  const varbinder::Scope::VariableMap &globalBindings,
                                                  const ir::ETSImportDeclaration *const import,
@@ -856,6 +819,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         }
 
         ThrowError(importPath->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
+        return false;
     }
 
     ValidateImportVariable(var, import, imported, importPath);
@@ -871,12 +835,14 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         var->Declaration()->Node()->AsAnnotationDeclaration()->GetBaseName()->Name() != localName) {
         ThrowError(importPath->Start(), "Can not rename annotation '" + var->Declaration()->Name().Mutf8() +
                                             "' in export or import statements.");
+        return false;
     }
 
     // The first part of the condition will be true, if something was given an alias when exported, but we try
     // to import it using its original name.
     if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias()) {
         ThrowError(specifier->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
+        return false;
     }
 
     InsertForeignBinding(specifier, import, localName, var);
@@ -894,6 +860,7 @@ varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Prog
         result = std::find_if(staticFieldBindings.begin(), staticFieldBindings.end(), predicateFunc);
         if (result == staticFieldBindings.end()) {
             ThrowError(importPath->Start(), "Cannot find default imported element in the target");
+            return nullptr;
         }
     }
     return result->second;
@@ -911,13 +878,12 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
 
     auto programList = GetProgramList(sourceName);
     if (programList.empty()) {
-        // NOTE(rsipka): it is not clear that an error should be thrown in these cases
         if (ark::os::file::File::IsDirectory(sourceName.Mutf8())) {
             ThrowError(importPath->Start(),
                        "Cannot find index.[sts|ts] or package module in folder: " + importPath->Str().Mutf8());
+        } else {
+            ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());
         }
-
-        ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());
     }
 
     return programList;
@@ -935,8 +901,11 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
     }
 
     const util::StringView sourceName = import->ResolvedSource()->Str();
-
     auto record = GetExternalProgram(sourceName, importPath);
+    if (record.empty()) {
+        return;
+    }
+
     const auto *const importProgram = record.front();
     const auto *const importGlobalScope = importProgram->GlobalScope();
     const auto &globalBindings = importGlobalScope->Bindings();
@@ -944,22 +913,21 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
     if (AddImportNamespaceSpecifiersToTopBindings(specifier, globalBindings, importProgram, importGlobalScope,
                                                   import) ||
         AddImportSpecifiersToTopBindings(specifier, globalBindings, import, record, std::move(viewedReExport))) {
-        return;
+    } else if (specifier->IsImportDefaultSpecifier()) {
+        auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
+
+        auto item = std::find_if(globalBindings.begin(), globalBindings.end(), predicateFunc);
+        if (item == globalBindings.end()) {
+            if (auto var = FindStaticBinding(record, importPath); var != nullptr) {
+                specifier->AsImportDefaultSpecifier()->Local()->SetVariable(var);
+                InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), var);
+            }
+            return;
+        }
+
+        specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item->second);
+        InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
     }
-
-    ASSERT(specifier->IsImportDefaultSpecifier());
-    auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
-
-    auto item = std::find_if(globalBindings.begin(), globalBindings.end(), predicateFunc);
-    if (item == globalBindings.end()) {
-        auto var = FindStaticBinding(record, importPath);
-        specifier->AsImportDefaultSpecifier()->Local()->SetVariable(var);
-        InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), var);
-        return;
-    }
-
-    specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item->second);
-    InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
 }
 
 void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
@@ -1192,7 +1160,11 @@ Variable *ETSBinder::ValidateImportSpecifier(const ir::ImportSpecifier *const sp
                                              std::vector<ir::ETSImportDeclaration *> viewedReExport)
 {
     const auto sourceName = import->ResolvedSource()->Str();
-    const auto &record = GetExternalProgram(sourceName, import->Source());
+    const auto record = GetExternalProgram(sourceName, import->Source());
+    if (record.empty()) {
+        return nullptr;
+    }
+
     const auto *const importProgram = record.front();
     const auto *const importGlobalScope = importProgram->GlobalScope();
     const auto &globalBindings = importGlobalScope->Bindings();
@@ -1254,6 +1226,7 @@ void ETSBinder::ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl)
                 ValidateImportSpecifier(importSpecifier, import, std::vector<ir::ETSImportDeclaration *>());
             if (var == nullptr) {
                 ThrowError(import->Start(), "Incorrect export \"" + reexported.Mutf8() + "\"");
+                continue;
             }
 
             importSpecifier->Imported()->SetVariable(var);
@@ -1262,6 +1235,7 @@ void ETSBinder::ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl)
             // Remember reexported name to check for ambiguous reexports
             if (!reexportedNames_.insert(reexported).second) {
                 ThrowError(import->Start(), "Ambiguous export \"" + reexported.Mutf8() + "\"");
+                continue;
             }
         }
 
@@ -1304,6 +1278,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
     }
 
     ThrowError(classElement->Id()->Start(), RedeclarationErrorMessageAssembler(var, insRes.first->second, name.Utf8()));
+    return false;
 }
 
 void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef)
@@ -1380,6 +1355,15 @@ bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const
     }
 
     return data->specifier->IsImportNamespaceSpecifier();
+}
+
+void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
+{
+    lexer::LineIndex index(Program()->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    GetContext()->checker->ErrorLogger()->WriteLog(
+        Error {ErrorType::SYNTAX, Program()->SourceFilePath().Utf8(), msg, loc.line, loc.col});
 }
 
 }  // namespace ark::es2panda::varbinder

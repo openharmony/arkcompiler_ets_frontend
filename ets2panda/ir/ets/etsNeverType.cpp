@@ -16,7 +16,6 @@
 #include "etsNeverType.h"
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
 void ETSNeverType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
@@ -73,20 +72,21 @@ checker::Type *ETSNeverType::GetType([[maybe_unused]] checker::ETSChecker *check
 
 ETSNeverType *ETSNeverType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSNeverType>(allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<ir::ETSNeverType>(allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    return nullptr;
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

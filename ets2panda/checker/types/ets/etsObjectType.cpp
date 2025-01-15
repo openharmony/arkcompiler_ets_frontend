@@ -949,8 +949,7 @@ static Substitution *ComputeEffectiveSubstitution(TypeRelation *const relation,
     auto *effectiveSubstitution = checker->NewSubstitution();
 
     for (size_t ix = 0; ix < baseTypeParams.size(); ix++) {
-        ETSChecker::EmplaceSubstituted(effectiveSubstitution, baseTypeParams[ix]->AsETSTypeParameter(),
-                                       newTypeArgs[ix]);
+        checker->EmplaceSubstituted(effectiveSubstitution, baseTypeParams[ix]->AsETSTypeParameter(), newTypeArgs[ix]);
     }
 
     return effectiveSubstitution;

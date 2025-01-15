@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,15 +22,6 @@
 #include "checker/ts/destructuringContext.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/base/decorator.h"
-#include "ir/srcDump.h"
-#include "ir/typeNode.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/objectExpression.h"
-#include "util/helpers.h"
 
 namespace ark::es2panda::ir {
 ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression const &other,
@@ -55,13 +46,12 @@ ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression
 
 ArrayExpression *ArrayExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ArrayExpression>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ArrayExpression>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 bool ArrayExpression::ConvertibleToArrayPattern()

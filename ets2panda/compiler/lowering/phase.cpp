@@ -107,16 +107,6 @@ static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
 
-enum class ActionAfterCheckPhase {
-    NONE,
-    EXIT,
-};
-
-static ActionAfterCheckPhase CheckOptionsBeforePhase(const util::Options &options, const parser::Program *program,
-                                                     const std::string &name);
-static ActionAfterCheckPhase CheckOptionsAfterPhase(const util::Options &options, const parser::Program *program,
-                                                    const std::string &name);
-
 std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off
@@ -208,16 +198,6 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
 
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
-    const auto &options = *ctx->config->options;
-    const auto name = std::string {Name()};
-    if (options.GetSkipPhases().count(name) > 0) {
-        return true;
-    }
-
-    if (CheckOptionsBeforePhase(options, program, name) == ActionAfterCheckPhase::EXIT) {
-        return false;
-    }
-
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
         ctx->checker->LogTypeError({"Precondition check failed for ", util::StringView {Name()}},
@@ -230,7 +210,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return false;
     }
 
-    if (CheckOptionsAfterPhase(options, program, name) == ActionAfterCheckPhase::EXIT) {
+    if (ctx->checker->ErrorLogger()->IsAnyError() || ctx->parser->ErrorLogger()->IsAnyError()) {
         return false;
     }
 
@@ -242,49 +222,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     }
 #endif
 
-    return !ctx->checker->ErrorLogger()->IsAnyError() && !ctx->parser->ErrorLogger()->IsAnyError();
-}
-
-static ActionAfterCheckPhase CheckOptionsBeforePhase(const util::Options &options, const parser::Program *program,
-                                                     const std::string &name)
-{
-    if (options.GetDumpBeforePhases().count(name) > 0) {
-        std::cout << "Before phase " << name << ":" << std::endl;
-        std::cout << program->Dump() << std::endl;
-    }
-
-    if (options.GetDumpEtsSrcBeforePhases().count(name) > 0) {
-        std::cout << "Before phase " << name << " ets source"
-                  << ":" << std::endl;
-        std::cout << program->Ast()->DumpEtsSrc() << std::endl;
-    }
-
-    if (options.GetExitBeforePhase() == name) {
-        return ActionAfterCheckPhase::EXIT;
-    }
-
-    return ActionAfterCheckPhase::NONE;
-}
-
-static ActionAfterCheckPhase CheckOptionsAfterPhase(const util::Options &options, const parser::Program *program,
-                                                    const std::string &name)
-{
-    if (options.GetDumpAfterPhases().count(name) > 0) {
-        std::cout << "After phase " << name << ":" << std::endl;
-        std::cout << program->Dump() << std::endl;
-    }
-
-    if (options.GetDumpEtsSrcAfterPhases().count(name) > 0) {
-        std::cout << "After phase " << name << " ets source"
-                  << ":" << std::endl;
-        std::cout << program->Ast()->DumpEtsSrc() << std::endl;
-    }
-
-    if (options.GetExitAfterPhase() == name) {
-        return ActionAfterCheckPhase::EXIT;
-    }
-
-    return ActionAfterCheckPhase::NONE;
+    return true;
 }
 
 bool PhaseForDeclarations::Precondition(public_lib::Context *ctx, const parser::Program *program)

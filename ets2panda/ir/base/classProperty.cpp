@@ -19,8 +19,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void ClassProperty::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -172,39 +170,36 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
     auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const typeAnnotation = typeAnnotation_ != nullptr ? typeAnnotation_->Clone(allocator, nullptr) : nullptr;
 
-    if (auto *const clone = allocator->New<ClassProperty>(key, value, typeAnnotation, flags_, allocator, isComputed_);
-        clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
+    auto *const clone = allocator->New<ClassProperty>(key, value, typeAnnotation, flags_, allocator, isComputed_);
 
-        key->SetParent(clone);
-        if (value != nullptr) {
-            value->SetTsType(value_->TsType());
-            value->SetParent(clone);
-        }
-        if (typeAnnotation != nullptr) {
-            typeAnnotation->SetTsType(typeAnnotation->TsType());
-            typeAnnotation->SetParent(clone);
-        }
-
-        for (auto *const decorator : decorators_) {
-            clone->AddDecorator(decorator->Clone(allocator, clone));
-        }
-
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-
-        clone->SetRange(range_);
-
-        return clone;
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    key->SetParent(clone);
+    if (value != nullptr) {
+        value->SetTsType(value_->TsType());
+        value->SetParent(clone);
+    }
+    if (typeAnnotation != nullptr) {
+        typeAnnotation->SetTsType(typeAnnotation->TsType());
+        typeAnnotation->SetParent(clone);
+    }
+
+    for (auto *const decorator : decorators_) {
+        clone->AddDecorator(decorator->Clone(allocator, clone));
+    }
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(range_);
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

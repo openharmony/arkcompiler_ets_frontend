@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,17 +14,10 @@
  */
 
 #include "spreadElement.h"
-#include "es2panda.h"
 
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/decorator.h"
-#include "ir/typeNode.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/objectExpression.h"
 
 namespace ark::es2panda::ir {
 SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const &other,
@@ -44,13 +37,11 @@ SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const
 
 SpreadElement *SpreadElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<SpreadElement>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<SpreadElement>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    return clone;
 }
 
 ValidationInfo SpreadElement::ValidateExpression()

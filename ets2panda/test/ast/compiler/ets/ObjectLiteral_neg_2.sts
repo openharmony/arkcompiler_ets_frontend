@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
- 
+
 class A {
     back(){}
 }
 let a:A = {back:()=>{}}
 
 
-/* @@? 20:12 Error TypeError: Method 'back' cannot be used as a key of object literal.  */
+/* @@? 20:12 Error TypeError: Method 'back' cannot be used as a key of object literal. */
+/* @@? 20:12 Error TypeError: Method used in wrong context */
+/* @@? 20:12 Error TypeError: Type 'LambdaObject-ETSGLOBAL$lambda$invoke$0' cannot be assigned to type '() => void' */

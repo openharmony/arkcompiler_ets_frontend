@@ -42,5 +42,14 @@ interface I {
 /* @@@ label7 Error SyntaxError: Unexpected token: '{'.  */
 /* @@@ label8 Error SyntaxError: Interface declaration cannot have 'implements' clause.  */
 /* @@@ label9 Error SyntaxError: 'override' modifier cannot appear in interfaces  */
-/* @@@ label10 Error SyntaxError: Unexpected token, expected: '}'.  */
-/* @@ label10 */
+/* @@? 56:1 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@? 18:1 Error SyntaxError: Variable 'C' has already been declared. */
+/* @@? 20:1 Error SyntaxError: Variable 'C' has already been declared. */
+/* @@? 24:7 Error SyntaxError: Variable 'A' has already been declared. */
+/* @@? 28:1 Error SyntaxError: Variable 'I' has already been declared. */
+/* @@? 1:1 Error SyntaxError: Cannot find type '*ERROR_LITERAL*'. */
+/* @@? 1:1 Error SyntaxError: Cannot find type '*ERROR_LITERAL*'. */
+/* @@? 1:1 Error SyntaxError: Cannot find type '*ERROR_LITERAL*'. */
+/* @@? 1:1 Error SyntaxError: Cannot find type '*ERROR_LITERAL*'. */
+/* @@? 16:35 Error TypeError: Interface expected here. */
+/* @@? 16:52 Error TypeError: Interface expected here. */

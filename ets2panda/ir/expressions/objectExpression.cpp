@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,26 +15,9 @@
 
 #include "objectExpression.h"
 
-#include "ir/base/decorator.h"
-#include "util/helpers.h"
-#include "compiler/base/literals.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "checker/ets/typeRelationContext.h"
 #include "checker/ts/destructuringContext.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/typeNode.h"
-#include "ir/base/property.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/validationInfo.h"
 
 namespace ark::es2panda::ir {
 ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpression const &other,
@@ -59,13 +42,12 @@ ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpress
 
 ObjectExpression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 static std::pair<ValidationInfo, bool> ValidateProperty(Property *prop, bool &foundProto)

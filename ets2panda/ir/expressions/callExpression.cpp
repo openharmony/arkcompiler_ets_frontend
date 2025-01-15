@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void CallExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -143,16 +141,13 @@ CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *cons
 
 CallExpression *CallExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<CallExpression>(*this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<CallExpression>(*this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 void CallExpression::SetTypeParams(TSTypeParameterInstantiation *typeParams) noexcept

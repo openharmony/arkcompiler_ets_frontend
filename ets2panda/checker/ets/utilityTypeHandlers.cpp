@@ -1001,7 +1001,7 @@ void ETSChecker::ValidateObjectLiteralForRequiredType(const ETSObjectType *const
 
     if (requiredType->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         for (const auto *method : requiredType->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body()) {
-            if (!method->AsMethodDefinition()->Function()->IsGetter()) {
+            if (!method->IsMethodDefinition() || !method->AsMethodDefinition()->Function()->IsGetter()) {
                 continue;
             }
 

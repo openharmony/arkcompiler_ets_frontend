@@ -35,7 +35,6 @@
 #include "ir/expressions/blockExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/expressionStatement.h"
-#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -363,10 +362,17 @@ bool OpAssignmentLowering::PerformForModule(public_lib::Context *ctx, parser::Pr
         [ctx](ir::AstNode *ast) {
             if (ast->IsAssignmentExpression() &&
                 ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-                return HandleOpAssignment(ctx, ast->AsAssignmentExpression());
-            }
-            if (ast->IsUpdateExpression()) {
-                return HandleUpdate(ctx, ast->AsUpdateExpression());
+                auto *const expr = ast->AsAssignmentExpression();
+                auto *const exprType = expr->TsType();
+                if (exprType != nullptr && !exprType->IsTypeError()) {
+                    return HandleOpAssignment(ctx, expr);
+                }
+            } else if (ast->IsUpdateExpression()) {
+                auto *const expr = ast->AsUpdateExpression();
+                auto *const exprType = expr->TsType();
+                if (exprType != nullptr && !exprType->IsTypeError()) {
+                    return HandleUpdate(ctx, expr);
+                }
             }
 
             return ast;

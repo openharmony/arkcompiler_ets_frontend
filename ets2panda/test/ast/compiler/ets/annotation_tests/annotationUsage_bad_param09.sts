@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,12 +35,10 @@ class B{
     foo(){}
 }
 
-/* @@? 29:24 Error TypeError: Type 'int' cannot be assigned to type 'String'  */
-/* @@? 30:24 Error TypeError: Type '"false"' cannot be assigned to type 'boolean'  */
-/* @@? 31:25 Error TypeError: Array element type 'double' is not assignable to explicit type 'int'  */
-/* @@? 31:30 Error TypeError: Array element type 'double' is not assignable to explicit type 'int'  */
-/* @@? 31:9 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
-/* @@? 32:24 Error TypeError: Type 'Size' cannot be assigned to type 'Color'  */
-/* @@? 33:25 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size'  */
-/* @@? 33:38 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size'  */
-/* @@? 33:9 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
+/* @@? 29:24 Error TypeError: Type 'int' cannot be assigned to type 'String' */
+/* @@? 30:24 Error TypeError: Type '"false"' cannot be assigned to type 'boolean' */
+/* @@? 31:25 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 31:30 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 32:24 Error TypeError: Type 'Size' cannot be assigned to type 'Color' */
+/* @@? 33:25 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
+/* @@? 33:38 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */

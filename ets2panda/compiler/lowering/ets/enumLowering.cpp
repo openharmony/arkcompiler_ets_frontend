@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -403,14 +403,19 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
     program->Ast()->IterateRecursively([this, &isPerformedSuccess](ir::AstNode *ast) -> void {
         if (ast->IsTSEnumDeclaration()) {
             auto *enumDecl = ast->AsTSEnumDeclaration();
+            auto const flags = GetDeclFlags(enumDecl);
+            //  Skip processing possibly invalid enum declaration (for multi-error reporting)
+            if (!flags.IsValid() || enumDecl->Members().empty()) {
+                return;
+            }
             bool hasLoggedError = false;
             if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
                 itemInit->IsNumberLiteral() &&
                 CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError)) {
-                CreateEnumIntClassFromEnumDeclaration(enumDecl, GetDeclFlags(enumDecl));
+                CreateEnumIntClassFromEnumDeclaration(enumDecl, flags);
             } else if (itemInit->IsStringLiteral() &&
                        CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError)) {
-                CreateEnumStringClassFromEnumDeclaration(enumDecl, GetDeclFlags(enumDecl));
+                CreateEnumStringClassFromEnumDeclaration(enumDecl, flags);
             } else if (!hasLoggedError) {
                 LogSyntaxError("Invalid enum initialization value", itemInit->Start());
                 isPerformedSuccess = false;

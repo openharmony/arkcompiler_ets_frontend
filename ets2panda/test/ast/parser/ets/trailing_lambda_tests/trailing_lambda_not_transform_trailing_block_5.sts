@@ -31,3 +31,7 @@ function main(): void {
 /* @@? 24:29 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 24:29 Error SyntaxError: Unexpected token: 'number literal'. */
 /* @@? 24:30 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */
+/* @@? 24:28 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 24:5 Error TypeError: Expected 1 arguments, got 0. */
+/* @@? 24:5 Error TypeError: No matching construct signature */

@@ -365,8 +365,7 @@ void ETSCompiler::Compile(const ir::ETSTypeReferencePart *node) const
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) const
 {
-    ETSGen *etsg = GetETSGen();
-    etsg->Unimplemented();
+    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ArrayExpression *expr) const

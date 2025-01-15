@@ -20,10 +20,20 @@ function main(): void {
   }
 }
 
-/* @@? 18:25 Error SyntaxError: Unexpected token 'let'.  */
-/* @@? 18:25 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 18:29 Error SyntaxError: Unexpected token 'identification literal', expected: ';'.  */
-/* @@? 18:70 Error SyntaxError: Unexpected token ';', expected: ')'.  */
-/* @@? 19:1 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 18:25 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 18:25 Error SyntaxError: Unexpected token, expected: ')'. */
+/* @@? 18:29 Error SyntaxError: Unexpected token 'identification literal', expected: ';'. */
+/* @@? 18:70 Error SyntaxError: Unexpected token ';', expected: ')'. */
+/* @@? 19:1 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:38 Error SyntaxError: Cannot find type 'A'. */
+/* @@? 18:68 Error SyntaxError: Cannot find type 'A'. */
+/* @@? 18:78 Error SyntaxError: Cannot find type 'A'. */
+/* @@? 18:19 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 18:29 Error TypeError: Unresolved reference f */
+/* @@? 18:72 Error TypeError: Unresolved reference f */
+/* @@? 19:4 Error TypeError: Unresolved reference i */
+/* @@? 18:38 Error SyntaxError: Cannot find type 'A'. */
+/* @@? 18:68 Error SyntaxError: Cannot find type 'A'. */
+/* @@? 18:63 Error TypeError: Unexpected return value, enclosing method return type is void. */

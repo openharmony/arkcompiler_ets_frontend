@@ -116,6 +116,7 @@ public:
 
     void AddOverload(MethodDefinition *const overload)
     {
+        ASSERT(overload != nullptr);
         overloads_.emplace_back(overload);
         overload->SetBaseOverloadMethod(this);
     }

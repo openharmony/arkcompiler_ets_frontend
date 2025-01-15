@@ -16,22 +16,7 @@
 #include "checker/ETSchecker.h"
 
 #include "checker/types/globalTypesHolder.h"
-#include "checker/types/ets/byteType.h"
-#include "checker/types/ets/charType.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
-#include "checker/types/ets/etsDynamicType.h"
-#include "checker/types/ets/etsStringType.h"
-#include "checker/types/ets/etsUnionType.h"
-#include "checker/types/ets/shortType.h"
-#include "generated/signatures.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/ets/etsModule.h"
-#include "ir/expressions/identifier.h"
-#include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ts/tsEnumMember.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "util/helpers.h"
 
 namespace ark::es2panda::checker {
 ByteType *ETSChecker::CreateByteType(int8_t value)
@@ -223,6 +208,7 @@ ETSEnumType::Method ETSChecker::MakeMethod(ir::TSEnumDeclaration const *const en
 }
 
 template <typename EnumType>
+// CC-OFFNXT(huge_method, G.FUN.01-CPP) solid logic
 EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
 {
     static_assert(std::is_same_v<EnumType, ETSIntEnumType> || std::is_same_v<EnumType, ETSStringEnumType>);
@@ -261,7 +247,7 @@ EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration co
     enumType->SetToStringMethod(toStringMethod);
 
     ETSEnumType::Method valueOfMethod = toStringMethod;
-    if (std::is_same_v<EnumType, ETSIntEnumType>) {
+    if constexpr (std::is_same_v<EnumType, ETSIntEnumType>) {
         valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, false, GlobalIntType());
     }
     enumType->SetValueOfMethod(valueOfMethod);
@@ -271,19 +257,22 @@ EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration co
     enumType->SetValuesMethod(valuesMethod);
 
     for (auto *const member : enumType->GetMembers()) {
-        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enumLiteralType = Allocator()->New<EnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
-        enumLiteralType->SetVariable(memberVar);
-        memberVar->SetTsType(enumLiteralType);
+        if (auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable(); memberVar != nullptr) {
+            auto *const enumLiteralType = Allocator()->New<EnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
+            enumLiteralType->SetVariable(memberVar);
+            memberVar->SetTsType(enumLiteralType);
 
-        enumLiteralType->SetGetNameMethod(getNameMethod);
-        enumLiteralType->SetGetValueOfMethod(getValueOfMethod);
-        enumLiteralType->SetFromIntMethod(fromIntMethod);
-        enumLiteralType->SetBoxedFromIntMethod(boxedFromIntMethod);
-        enumLiteralType->SetUnboxMethod(unboxMethod);
-        enumLiteralType->SetValueOfMethod(valueOfMethod);
-        enumLiteralType->SetToStringMethod(toStringMethod);
-        enumLiteralType->SetValuesMethod(valuesMethod);
+            enumLiteralType->SetGetNameMethod(getNameMethod);
+            enumLiteralType->SetGetValueOfMethod(getValueOfMethod);
+            enumLiteralType->SetFromIntMethod(fromIntMethod);
+            enumLiteralType->SetBoxedFromIntMethod(boxedFromIntMethod);
+            enumLiteralType->SetUnboxMethod(unboxMethod);
+            enumLiteralType->SetValueOfMethod(valueOfMethod);
+            enumLiteralType->SetToStringMethod(toStringMethod);
+            enumLiteralType->SetValuesMethod(valuesMethod);
+        } else {
+            ASSERT(IsAnyError());
+        }
     }
     return enumType;
 }
@@ -393,18 +382,20 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
     auto const create = [checker, declNode, flags](ETSObjectFlags addFlags = ETSObjectFlags::NO_OPTS) {
         return checker->CreateETSObjectType(declNode, flags | addFlags);
     };
+
     auto const setType = [checker](GlobalTypeId slotId, Type *type) {
         auto &slot = checker->GetGlobalTypesHolder()->GlobalTypes()[helpers::ToUnderlying(slotId)];
-        ASSERT(slot == nullptr);
-        slot = type;
+        if (slot == nullptr) {
+            slot = type;
+        }
+        return slot;
     };
 
-    auto const allocator = checker->Allocator();
+    auto *const allocator = checker->Allocator();
 
     switch (globalId) {
         case GlobalTypeId::ETS_OBJECT_BUILTIN: {
-            auto objType = create();
-            setType(GlobalTypeId::ETS_OBJECT_BUILTIN, objType);
+            auto *objType = setType(GlobalTypeId::ETS_OBJECT_BUILTIN, create())->AsETSObjectType();
             auto null = checker->GlobalETSNullType();
             auto undef = checker->GlobalETSUndefinedType();
             setType(GlobalTypeId::ETS_NULLISH_OBJECT, checker->CreateETSUnionType({objType, null, undef}));
@@ -412,14 +403,15 @@ static ETSObjectType *InitializeGlobalBuiltinObjectType(ETSChecker *checker, Glo
             return objType;
         }
         case GlobalTypeId::ETS_STRING_BUILTIN: {
-            auto stringObj = create(ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING);
-            setType(GlobalTypeId::ETS_STRING_BUILTIN, stringObj);
+            auto *stringObj = setType(GlobalTypeId::ETS_STRING_BUILTIN,
+                                      create(ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING))
+                                  ->AsETSObjectType();
             setType(GlobalTypeId::ETS_STRING, allocator->New<ETSStringType>(allocator, stringObj, checker->Relation()));
             return stringObj;
         }
         case GlobalTypeId::ETS_BIG_INT_BUILTIN: {
-            auto bigIntObj = create(ETSObjectFlags::BUILTIN_BIGINT);
-            setType(GlobalTypeId::ETS_BIG_INT_BUILTIN, bigIntObj);
+            auto *bigIntObj =
+                setType(GlobalTypeId::ETS_BIG_INT_BUILTIN, create(ETSObjectFlags::BUILTIN_BIGINT))->AsETSObjectType();
             setType(GlobalTypeId::ETS_BIG_INT, allocator->New<ETSBigIntType>(allocator, bigIntObj));
             return bigIntObj;
         }
@@ -602,10 +594,10 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
 ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
 {
     ETSObjectType *const promiseType = GlobalBuiltinPromiseType();
-    ASSERT(promiseType->TypeArguments().size() == 1);
+    ASSERT(promiseType->TypeArguments().size() == 1U);
+
     Substitution *substitution = NewSubstitution();
-    ETSChecker::EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(),
-                                   type);
+    EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), type);
 
     return promiseType->Substitute(Relation(), substitution);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 
@@ -122,29 +120,26 @@ ForOfStatement *ForOfStatement::Clone(ArenaAllocator *const allocator, AstNode *
     auto *const left = left_ != nullptr ? left_->Clone(allocator, nullptr) : nullptr;
     auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const body = body_ != nullptr ? body_->Clone(allocator, nullptr)->AsStatement() : nullptr;
+    auto *const clone = allocator->New<ForOfStatement>(left, right, body, isAwait_);
 
-    if (auto *const clone = allocator->New<ForOfStatement>(left, right, body, isAwait_); clone != nullptr) {
-        if (left != nullptr) {
-            left->SetParent(clone);
-        }
-
-        if (right != nullptr) {
-            right->SetParent(clone);
-        }
-
-        if (body != nullptr) {
-            body->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    if (left != nullptr) {
+        left->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (right != nullptr) {
+        right->SetParent(clone);
+    }
+
+    if (body != nullptr) {
+        body->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker *checker,

@@ -41,18 +41,22 @@ function foo() {
 
 for (let i = 1 in [0, 1, 2]) {}
 
-/* @@? 19:1 Error SyntaxError: Unexpected token '}', expected '{'.  */
-/* @@? 19:1 Error SyntaxError: Unexpected token '}', expected: '{'.  */
-/* @@? 22:5 Error SyntaxError: Unexpected token 'let', expected: '{'.  */
-/* @@? 23:11 Error SyntaxError: Unexpected token '(', expected: '{'.  */
-/* @@? 27:7 Error SyntaxError: Unexpected token '{', expected: '('.  */
-/* @@? 29:1 Error SyntaxError: Unexpected token 'while', expected: ')'.  */
-/* @@? 29:7 Error SyntaxError: Unexpected token 'identification literal', expected: '('.  */
-/* @@? 29:13 Error SyntaxError: Unexpected token '{', expected: ')'.  */
-/* @@? 31:9 Error SyntaxError: Unexpected token 'let'.  */
-/* @@? 31:9 Error SyntaxError: Unexpected token 'let'.  */
-/* @@? 34:5 Error SyntaxError: Illegal 'use strict' directive in function with non-simple parameter list  */
-/* @@? 38:5 Error SyntaxError: Annotation declaration can not have access modifier  */
-/* @@? 38:5 Error SyntaxError: Unexpected token 'private'.  */
-/* @@? 42:16 Error SyntaxError: for-in loop variable declaration may not have an initializer  */
-/* @@? 42:16 Error SyntaxError: Unexpected token: 'in'.  */
+/* @@? 19:1 Error SyntaxError: Unexpected token '}', expected '{'. */
+/* @@? 19:1 Error SyntaxError: Unexpected token '}', expected: '{'. */
+/* @@? 22:5 Error SyntaxError: Unexpected token 'let', expected: '{'. */
+/* @@? 23:11 Error SyntaxError: Unexpected token '(', expected: '{'. */
+/* @@? 27:7 Error SyntaxError: Unexpected token '{', expected: '('. */
+/* @@? 29:1 Error SyntaxError: Unexpected token 'while', expected: ')'. */
+/* @@? 29:7 Error SyntaxError: Unexpected token 'identification literal', expected: '('. */
+/* @@? 29:13 Error SyntaxError: Unexpected token '{', expected: ')'. */
+/* @@? 31:9 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 31:9 Error SyntaxError: Unexpected token 'let'. */
+/* @@? 34:5 Error SyntaxError: Illegal 'use strict' directive in function with non-simple parameter list */
+/* @@? 38:5 Error SyntaxError: Annotation declaration can not have access modifier */
+/* @@? 38:5 Error SyntaxError: Unexpected token 'private'. */
+/* @@? 42:16 Error SyntaxError: for-in loop variable declaration may not have an initializer */
+/* @@? 42:16 Error SyntaxError: Unexpected token: 'in'. */
+/* @@? 18:12 Error SyntaxError: Cannot find type 'exception'. */
+/* @@? 38:14 Error SyntaxError: Cannot find type 'annotate'. */
+/* @@? 18:9 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */
+/* @@? 27:7 Error TypeError: need to specify target type for class composite */

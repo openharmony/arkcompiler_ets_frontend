@@ -18,9 +18,6 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/util.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "parser/ETSparser.h"
-#include "varbinder/ETSBinder.h"
-#include "varbinder/scope.h"
 
 namespace ark::es2panda::compiler {
 
@@ -49,7 +46,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
     if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
         dimType = unboxed;
     }
-    if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+    if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
         return newInstanceExpression;
     }
 
@@ -98,7 +95,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
         if (auto *unboxed = checker->MaybeUnboxInRelation(dimType); unboxed != nullptr) {
             dimType = unboxed;
         }
-        if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+        if (dimType == nullptr || !dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
             continue;
         }
 

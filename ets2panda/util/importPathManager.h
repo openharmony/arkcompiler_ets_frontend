@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,6 +25,7 @@
 #include "util/enumbitops.h"
 #include "util/path.h"
 #include "util/options.h"
+#include "util/errorLogger.h"
 
 namespace ark::es2panda::util {
 namespace gen::extension {
@@ -52,8 +53,9 @@ public:
         bool isImplicitPackageImported = false;
     };
 
-    ImportPathManager(ark::ArenaAllocator *allocator, const util::Options &options)
+    ImportPathManager(ark::ArenaAllocator *allocator, util::ErrorLogger *errorLogger, const util::Options &options)
         : allocator_(allocator),
+          errorLogger_(errorLogger),
           arktsConfig_(options.ArkTSConfig()),
           absoluteEtsPath_(
               options.GetEtsPath().empty() ? "" : util::Path(options.GetEtsPath(), allocator_).GetAbsolutePath()),
@@ -88,8 +90,9 @@ private:
     void UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, ImportFlags importFlags);
 #endif
 
-    ArenaAllocator *allocator_ {nullptr};
-    std::shared_ptr<ArkTsConfig> arktsConfig_ {nullptr};
+    ark::ArenaAllocator *const allocator_;
+    util::ErrorLogger *const errorLogger_;
+    std::shared_ptr<ArkTsConfig> const arktsConfig_;
     std::string absoluteEtsPath_;
     std::string stdLib_;
     ArenaVector<ParseInfo> parseList_;

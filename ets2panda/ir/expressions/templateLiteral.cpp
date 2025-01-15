@@ -19,9 +19,6 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/templateElement.h"
 
 namespace ark::es2panda::ir {
 TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral const &other,
@@ -43,13 +40,12 @@ TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral
 
 TemplateLiteral *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<TemplateLiteral>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<TemplateLiteral>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 
 void TemplateLiteral::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");W
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,3 +14,5 @@ export a /* @@ label */from /* @@ label1 */"./type"
 
 /* @@@ label Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@@ label1 Error SyntaxError: Unexpected token 'string literal'. */
+/* @@? 13:8 Error SyntaxError: Cannot find name 'a' to export */
+/* @@? 13:24 Error TypeError: Unresolved reference from */

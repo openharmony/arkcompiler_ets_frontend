@@ -81,7 +81,7 @@ ETSParser::ETSParser(Program *program, const util::Options &options, ParserStatu
     : TypedParser(program, &options, status), globalProgram_(GetProgram())
 {
     namespaceNestedRank_ = 0;
-    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), options);
+    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), ErrorLogger(), options);
 }
 
 ETSParser::ETSParser(Program *program, std::nullptr_t)

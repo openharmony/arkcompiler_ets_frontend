@@ -26,4 +26,10 @@ let y: G<{a:String}, B> // Error
 /* @@? 19:12 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:19 Error SyntaxError: Unexpected token '}'. */
 /* @@? 19:20 Error SyntaxError: Unexpected token ','. */
-/* @@? 30:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 36:1 Error SyntaxError: Unexpected token 'eos'. */
+/* @@? 18:8 Error SyntaxError: Cannot find type 'G'. */
+/* @@? 19:8 Error SyntaxError: Cannot find type 'G'. */
+/* @@? 19:11 Error TypeError: Unresolved reference a */
+/* @@? 19:13 Error TypeError: Class name "String" used in the wrong context */
+/* @@? 19:22 Error TypeError: Unresolved reference B */
+/* @@? 19:22 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */

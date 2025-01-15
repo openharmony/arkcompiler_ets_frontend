@@ -15,22 +15,9 @@
 
 #include "checker.h"
 
-#include "checker/types/type.h"
-#include "ir/expression.h"
-#include "ir/statements/blockStatement.h"
-#include "parser/program/program.h"
-#include "util/helpers.h"
-#include "varbinder/varbinder.h"
-#include "varbinder/scope.h"
-#include "varbinder/variable.h"
-#include "es2panda.h"
+#include "public/public.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ts/unionType.h"
-#include "checker/types/signature.h"
-
-#include <cstdint>
-#include <initializer_list>
-#include <memory>
 
 namespace ark::es2panda::checker {
 Checker::Checker()
@@ -234,6 +221,11 @@ void Checker::SetAnalyzer(SemanticAnalyzer *analyzer)
 checker::SemanticAnalyzer *Checker::GetAnalyzer() const
 {
     return analyzer_;
+}
+
+bool Checker::IsAnyError()
+{
+    return ErrorLogger()->IsAnyError() || VarBinder()->GetContext()->parser->ErrorLogger()->IsAnyError();
 }
 
 }  // namespace ark::es2panda::checker

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,8 @@ function foo() {
     void = [([...asyncGenerator])]
 }
 
+/* @@? 21:9 Error TypeError: Unresolved reference a */
+/* @@? 21:17 Error TypeError: Unresolved reference c */
 /* @@? 16:1 Error TypeError: Unresolved reference a */
 /* @@? 17:1 Error TypeError: Unresolved reference a */
 /* @@? 18:1 Error TypeError: Unresolved reference a */
@@ -33,3 +35,6 @@ function foo() {
 /* @@? 24:5 Error TypeError: Unresolved reference void */
 /* @@? 24:18 Error TypeError: Unresolved reference asyncGenerator */
 /* @@? 24:15 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
+/* @@? 24:15 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
+/* @@? 24:13 Error TypeError: Unresolved reference asyncGenerator */
+/* @@? 24:13 Error TypeError: 'For-of' statement source expression is not of iterable type. */

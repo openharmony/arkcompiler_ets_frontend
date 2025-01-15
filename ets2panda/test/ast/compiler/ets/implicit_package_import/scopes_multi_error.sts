@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,6 +26,10 @@ function main(i : string[], g : int): void {
 }
 
 export default function TestFunc(): void {}
-export default /* @@ label */function TestFuncToo(): void {}
+export default function TestFuncToo(): void {}
 
-/* @@@ label Error SyntaxError: Only one default export is allowed in a module  */
+/* @@? 29:16 Error SyntaxError: Only one default export is allowed in a module  */
+/* @@? 20:10 Error SyntaxError: Main overload is not enabled */
+/* @@? 24:10 Error SyntaxError: Main overload is not enabled */
+/* @@? 29:16 Error SyntaxError: Only one default export is allowed in a module */
+/* @@? 24:10 Error TypeError: 0 or 1 argument are allowed */

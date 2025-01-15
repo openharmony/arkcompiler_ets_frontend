@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,12 +24,10 @@ enum Size{S, M, L, XL, XXL}
     testProperty5: Size[] = [Color.GREEN, Color.BLUE]
 }
 
-/* @@? 20:29 Error TypeError: Type 'int' cannot be assigned to type 'String'  */
-/* @@? 21:30 Error TypeError: Type '"false"' cannot be assigned to type 'boolean'  */
-/* @@? 22:29 Error TypeError: Array element type 'double' is not assignable to explicit type 'int'  */
-/* @@? 22:34 Error TypeError: Array element type 'double' is not assignable to explicit type 'int'  */
-/* @@? 22:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
-/* @@? 23:28 Error TypeError: Type 'Size' cannot be assigned to type 'Color'  */
-/* @@? 24:30 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size'  */
+/* @@? 20:29 Error TypeError: Type 'int' cannot be assigned to type 'String' */
+/* @@? 21:30 Error TypeError: Type '"false"' cannot be assigned to type 'boolean' */
+/* @@? 22:29 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 22:34 Error TypeError: Array element type 'double' is not assignable to explicit type 'int' */
+/* @@? 23:28 Error TypeError: Type 'Size' cannot be assigned to type 'Color' */
+/* @@? 24:30 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
 /* @@? 24:43 Error TypeError: Array element type 'Color' is not assignable to explicit type 'Size' */
-/* @@? 24:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */

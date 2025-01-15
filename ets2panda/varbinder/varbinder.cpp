@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,50 +14,6 @@
  */
 
 #include "varbinder.h"
-#include "varbinder/privateBinding.h"
-#include "parser/program/program.h"
-#include "util/helpers.h"
-#include "util/options.h"
-#include "varbinder/scope.h"
-#include "varbinder/tsBinding.h"
-#include "es2panda.h"
-#include "ir/astNode.h"
-#include "ir/base/catchClause.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/classStaticBlock.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/property.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/blockExpression.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/doWhileStatement.h"
-#include "ir/statements/forInStatement.h"
-#include "ir/statements/forOfStatement.h"
-#include "ir/statements/forUpdateStatement.h"
-#include "ir/statements/ifStatement.h"
-#include "ir/statements/switchStatement.h"
-#include "ir/statements/variableDeclaration.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/statements/whileStatement.h"
-#include "ir/module/exportNamedDeclaration.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/ts/tsFunctionType.h"
-#include "ir/ts/tsConstructorType.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-#include "ir/ts/tsTypeAliasDeclaration.h"
-#include "ir/ts/tsTypeReference.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "ir/ets/etsNewClassInstanceExpression.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/base/tsSignatureDeclaration.h"
-#include "ir/base/tsMethodSignature.h"
 #include "public/public.h"
 
 namespace ark::es2panda::varbinder {
@@ -78,11 +34,10 @@ std::tuple<ParameterDecl *, Variable *> VarBinder::AddParamDecl(ir::AstNode *par
     ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
     auto [decl, node, var] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
 
-    if (node == nullptr) {
-        return {decl, var};
+    if (node != nullptr) {
+        ThrowRedeclaration(node->Start(), decl->Name());
     }
-
-    ThrowRedeclaration(node->Start(), decl->Name());
+    return {decl, var};
 }
 
 void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const

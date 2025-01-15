@@ -51,3 +51,17 @@ function foo(MyAnno({testProperty1: ""}) x: int, MyAnno({testProperty1: ""}) y: 
 /* @@? 25:81 Error SyntaxError: Label must be followed by a loop statement */
 /* @@? 25:87 Error SyntaxError: Unexpected token ')'. */
 /* @@? 25:87 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:14 Error TypeError: The type of parameter 'MyAnno' cannot be determined */
+/* @@? 19:20 Error TypeError: need to specify target type for class composite */
+/* @@? 19:45 Error TypeError: Unresolved reference int */
+/* @@? 22:20 Error TypeError: need to specify target type for class composite */
+/* @@? 22:45 Error TypeError: Unresolved reference int */
+/* @@? 22:50 Error TypeError: Annotation missing '@' symbol before annotation name. */
+/* @@? 22:50 Error TypeError: This expression is not callable. */
+/* @@? 22:81 Error TypeError: Unresolved reference string */
+/* @@? 25:20 Error TypeError: need to specify target type for class composite */
+/* @@? 25:45 Error TypeError: Unresolved reference int */
+/* @@? 25:50 Error TypeError: Annotation missing '@' symbol before annotation name. */
+/* @@? 25:50 Error TypeError: This expression is not callable. */
+/* @@? 25:81 Error TypeError: Unresolved reference string */
+/* @@? 19:10 Error TypeError: Only abstract or native methods can't have body. */

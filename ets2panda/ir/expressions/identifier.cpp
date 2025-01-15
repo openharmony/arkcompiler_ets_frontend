@@ -19,9 +19,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "parser/parserImpl.h"
 
 namespace ark::es2panda::ir {
 Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
@@ -61,17 +58,15 @@ void Identifier::SetName(const util::StringView &newName) noexcept
 
 Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
-        clone->SetTsType(TsType());
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
+    auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator);
 
-        clone->SetRange(Range());
-
-        return clone;
+    clone->SetTsType(TsType());
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 Identifier *Identifier::CloneReference(ArenaAllocator *const allocator, AstNode *const parent)

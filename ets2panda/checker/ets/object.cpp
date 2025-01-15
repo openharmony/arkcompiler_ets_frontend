@@ -13,15 +13,12 @@
  * limitations under the License.
  */
 
-#include "boxingConverter.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsDynamicType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
-#include "ir/astNode.h"
-#include "ir/typeNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classElement.h"
 #include "ir/base/classProperty.h"
@@ -245,12 +242,17 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
     }
 
     std::function<void(ir::AstNode *)> checkDefault = [&typeParameterDecls, this, &checkDefault,
-                                                       &ok](ir::AstNode *node) {
+                                                       &ok](ir::AstNode *node) -> void {
         if (node->IsETSTypeReferencePart()) {
             ir::ETSTypeReferencePart *defaultTypePart = node->AsETSTypeReferencePart();
-            if (defaultTypePart->Name()->Variable()->TsType() == nullptr &&
-                (defaultTypePart->Name()->Variable()->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
-                typeParameterDecls.count(defaultTypePart->Name()->Variable()) == 0U) {
+            auto *const variable = defaultTypePart->Name()->Variable();
+            if (variable == nullptr) {
+                ASSERT(IsAnyError());
+                ok = false;
+                return;
+            }
+            if (variable->TsType() == nullptr && (variable->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
+                typeParameterDecls.count(variable) == 0U) {
                 LogTypeError({"Type Parameter ", defaultTypePart->Name()->AsIdentifier()->Name().Utf8(),
                               " should be defined before use."},
                              node->Start());
@@ -357,10 +359,13 @@ void ETSChecker::CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type
     type->AddObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION);
 }
 
-ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl)
+Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl)
 {
     auto *var = interfaceDecl->Id()->Variable();
-    ASSERT(var);
+    if (var == nullptr) {
+        ASSERT(IsAnyError());
+        return GlobalTypeError();
+    }
 
     checker::ETSObjectType *interfaceType {};
     if (var->TsType() == nullptr) {
@@ -383,14 +388,17 @@ ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclarat
     return interfaceType;
 }
 
-ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
+Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
 {
     if (classDef->IsFinal() && classDef->IsAbstract()) {
         LogTypeError("Cannot use both 'final' and 'abstract' modifiers.", classDef->Start());
     }
 
     auto *var = classDef->Ident()->Variable();
-    ASSERT(var);
+    if (var == nullptr) {
+        ASSERT(IsAnyError());
+        return GlobalTypeError();
+    }
 
     checker::ETSObjectType *classType {};
     if (var->TsType() == nullptr) {
@@ -472,8 +480,10 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
 
         it->AddFlag(checker->GetAccessFlagFromNode(method));
         auto *funcType = checker->BuildMethodSignature(method);
+        if (!funcType->IsTypeError()) {
+            funcType->SetVariable(it);
+        }
         it->SetTsType(funcType);
-        funcType->SetVariable(it);
         method->SetTsType(funcType);
         type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
     }
@@ -493,12 +503,14 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
 
         it->AddFlag(checker->GetAccessFlagFromNode(method));
         auto *funcType = checker->BuildMethodSignature(method);
+        if (!funcType->IsTypeError()) {
+            funcType->SetVariable(it);
+        }
         it->SetTsType(funcType);
-        funcType->SetVariable(it);
         method->SetTsType(funcType);
 
-        if (method->IsConstructor()) {
-            type->AddConstructSignature(funcType->CallSignatures());
+        if (method->IsConstructor() && funcType->IsETSFunctionType()) {
+            type->AddConstructSignature(funcType->AsETSFunctionType()->CallSignatures());
             continue;
         }
 
@@ -526,20 +538,21 @@ static void ResolveDeclaredDeclsOfObject(ETSChecker *checker, const ETSObjectTyp
     }
 }
 
-void ETSChecker::ResolveDeclaredMembersOfObject(const ETSObjectType *type)
+void ETSChecker::ResolveDeclaredMembersOfObject(const Type *type)
 {
-    if (type->IsPropertiesInstantiated()) {
+    if (!type->IsETSObjectType() || type->AsETSObjectType()->IsPropertiesInstantiated()) {
         return;
     }
 
-    auto *declNode = type->GetDeclNode();
+    auto *objectType = type->AsETSObjectType();
+    auto *declNode = objectType->GetDeclNode();
 
     if (declNode == nullptr || !(declNode->IsClassDefinition() || declNode->IsTSInterfaceDeclaration())) {
         return;
     }
 
-    if (type->IsGeneric() && type != type->GetOriginalBaseType()) {
-        const auto *baseType = type->GetOriginalBaseType();
+    if (objectType->IsGeneric() && objectType != objectType->GetOriginalBaseType()) {
+        const auto *baseType = objectType->GetOriginalBaseType();
         auto *baseDeclNode = baseType->GetDeclNode();
         checker::CheckerStatus baseStatus = baseDeclNode->IsTSInterfaceDeclaration()
                                                 ? checker::CheckerStatus::IN_INTERFACE
@@ -556,12 +569,12 @@ void ETSChecker::ResolveDeclaredMembersOfObject(const ETSObjectType *type)
         declNode->IsTSInterfaceDeclaration() ? checker::CheckerStatus::IN_INTERFACE : checker::CheckerStatus::IN_CLASS;
     auto *scope = declNode->IsTSInterfaceDeclaration() ? declNode->AsTSInterfaceDeclaration()->Scope()
                                                        : declNode->AsClassDefinition()->Scope();
-    auto savedContext = checker::SavedCheckerContext(this, status, type);
+    auto savedContext = checker::SavedCheckerContext(this, status, objectType);
     checker::ScopeContext scopeCtx(this, scope);
 
-    ResolveDeclaredFieldsOfObject(this, type, scope->AsClassScope());
-    ResolveDeclaredMethodsOfObject(this, type, scope->AsClassScope());
-    ResolveDeclaredDeclsOfObject(this, type, scope->AsClassScope());
+    ResolveDeclaredFieldsOfObject(this, objectType, scope->AsClassScope());
+    ResolveDeclaredMethodsOfObject(this, objectType, scope->AsClassScope());
+    ResolveDeclaredDeclsOfObject(this, objectType, scope->AsClassScope());
 }
 
 bool ETSChecker::HasETSFunctionType(ir::TypeNode *typeAnnotation)
@@ -1040,6 +1053,16 @@ void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &c
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
     classDef->SetClassDefinitionChecked();
+
+    if (classDef->TsType() == nullptr) {
+        ASSERT(IsAnyError());
+        classDef->SetTsType(GlobalTypeError());
+    }
+
+    if (classDef->TsType()->IsTypeError()) {
+        return;
+    }
+
     auto *classType = classDef->TsType()->AsETSObjectType();
     if (classType->SuperType() != nullptr) {
         classType->SuperType()->GetDeclNode()->Check(this);
@@ -1103,6 +1126,10 @@ void ETSChecker::CheckClassElement(ir::ClassDefinition *classDef)
 
     for (auto *it : classDef->Body()) {
         if (!it->IsClassProperty()) {
+            if (it->IsETSModule() && it->AsETSModule()->IsNamespace()) {
+                ASSERT(IsAnyError());
+                continue;
+            }
             it->Check(this);
         }
     }

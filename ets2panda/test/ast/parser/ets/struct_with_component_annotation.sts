@@ -25,4 +25,5 @@ struct A {
 }
 
 
-/* @@? 22:1 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase.  */
+/* @@? 22:1 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
+/* @@? 20:2 Error SyntaxError: Cannot find type 'Component'. */

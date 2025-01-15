@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,9 +17,6 @@
 #define ES2PANDA_VARBINDER_VARBINDER_H
 
 #include "varbinder/scope.h"
-#include "varbinder/variableFlags.h"
-#include "lexer/token/sourceLocation.h"
-#include "macros.h"
 
 namespace ark::es2panda::parser {
 class Program;
@@ -151,13 +148,13 @@ public:
         return reinterpret_cast<ETSBinder *>(this);
     }
 
-    [[noreturn]] void ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    [[noreturn]] void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    [[noreturn]] void ThrowUnresolvableVariable(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    [[noreturn]] void ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    [[noreturn]] void ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    [[noreturn]] void ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    [[noreturn]] void ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const;
+    void ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    void ThrowUnresolvableVariable(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    void ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    void ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    void ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const;
+    virtual void ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const;
 
     void PropagateDirectEval() const;
 
@@ -365,11 +362,11 @@ T *VarBinder::AddTsDecl(const lexer::SourcePosition &pos, Args &&...args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
 
-    if (scope_->AddTsDecl(Allocator(), decl, Extension()) != nullptr) {
-        return decl;
+    if (scope_->AddTsDecl(Allocator(), decl, Extension()) == nullptr) {
+        ThrowRedeclaration(pos, decl->Name());
     }
 
-    ThrowRedeclaration(pos, decl->Name());
+    return decl;
 }
 
 template <typename T, typename... Args>
@@ -377,11 +374,11 @@ T *VarBinder::AddDecl(const lexer::SourcePosition &pos, Args &&...args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
 
-    if (scope_->AddDecl(Allocator(), decl, Extension()) != nullptr) {
-        return decl;
+    if (scope_->AddDecl(Allocator(), decl, Extension()) == nullptr) {
+        ThrowRedeclaration(pos, decl->Name());
     }
 
-    ThrowRedeclaration(pos, decl->Name());
+    return decl;
 }
 
 template <typename T, typename... Args>
@@ -390,11 +387,11 @@ std::tuple<T *, varbinder::Variable *> VarBinder::NewVarDecl(const lexer::Source
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
     varbinder::Variable *var = scope_->AddDecl(Allocator(), decl, Extension());
 
-    if (var != nullptr) {
-        return {decl, var};
+    if (var == nullptr) {
+        ThrowRedeclaration(pos, decl->Name());
     }
 
-    ThrowRedeclaration(pos, decl->Name());
+    return {decl, var};
 }
 }  // namespace ark::es2panda::varbinder
 
