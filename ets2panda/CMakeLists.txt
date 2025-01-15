@@ -108,6 +108,27 @@ panda_gen(
     API ${PANDA_ROOT}/templates/common.rb
 )
 
+set(DIAGNOSTIC_DIR
+   ${CMAKE_CURRENT_SOURCE_DIR}/util/diagnostic/
+)
+
+panda_gen(
+    DATA
+        ${DIAGNOSTIC_DIR}/syntax.yaml
+        ${DIAGNOSTIC_DIR}/semantic.yaml
+        ${DIAGNOSTIC_DIR}/warning.yaml
+        ${DIAGNOSTIC_DIR}/fatal.yaml
+    TARGET_NAME es2panda_diagnostic_gen
+    TEMPLATES diagnostic.h.erb
+    SOURCE ${DIAGNOSTIC_DIR}
+    DESTINATION ${GENERATED_DIR}
+    API
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+        ${DIAGNOSTIC_DIR}/diagnostic.rb
+)
+
 panda_gen(
     DATA ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.yaml
     TARGET_NAME es2panda_keywords
@@ -583,7 +604,7 @@ set(ES2PANDA_LIB_SRC
 # libes2panda does not include bytecode optimizer, because it is used in
 # libarkruntime, and conflict with JIT setup ensues
 panda_add_library(es2panda-lib ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_LIB_SRC})
-add_dependencies(es2panda-lib isa_gen_es2panda es2panda_options_gen es2panda_keywords es2panda_signatures)
+add_dependencies(es2panda-lib isa_gen_es2panda es2panda_options_gen es2panda_diagnostic_gen es2panda_keywords es2panda_signatures)
 
 set(ICU_INCLUDE_DIRS
     ${PANDA_THIRD_PARTY_SOURCES_DIR}/icu/icu4c/source/common

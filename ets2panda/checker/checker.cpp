@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -73,6 +73,16 @@ std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> li
     }
 
     return ss.str();
+}
+
+void Checker::LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+                       const lexer::SourcePosition &pos)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    errorLogger_.WriteLog(
+        Error {program_->SourceFilePath().Utf8(), &diagnostic, std::move(diagnosticParams), loc.line, loc.col});
 }
 
 void Checker::LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)

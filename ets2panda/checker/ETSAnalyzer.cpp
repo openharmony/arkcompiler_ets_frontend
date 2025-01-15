@@ -14,6 +14,7 @@
  */
 
 #include "ETSAnalyzer.h"
+#include "generated/diagnostic.h"
 #include "types/signature.h"
 #include "util/helpers.h"
 #include "checker/ETSchecker.h"
@@ -137,7 +138,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
 
             if (!asyncFuncReturnType->IsETSObjectType() ||
                 asyncFuncReturnType->AsETSObjectType()->GetOriginalBaseType() != checker->GlobalBuiltinPromiseType()) {
-                checker->LogTypeError("Return type of async function must be 'Promise'.", scriptFunc->Start());
+                checker->LogError(diagnostic::ASYNC_FUNCTION_RETURN_TYPE, {}, scriptFunc->Start());
                 scriptFunc->Signature()->SetReturnType(checker->GlobalTypeError());
                 return;
             }

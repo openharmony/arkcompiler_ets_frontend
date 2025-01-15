@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "compiler/core/compilerImpl.h"
+#include "generated/diagnostic.h"
 
 #include <iostream>
 #include <thread>
@@ -24,6 +25,41 @@ constexpr size_t DEFAULT_THREAD_COUNT = 2;
 namespace util {
 class Options;
 }  // namespace util
+
+std::string Format(std::string_view formatString, const std::vector<std::string> &params)
+{
+    std::string result;
+    size_t pos = 0;
+    size_t paramIndex = 0;
+    while (pos < formatString.size()) {
+        auto nextPos = formatString.find("{}", pos);
+        if (nextPos == std::string::npos) {
+            break;
+        }
+        result.append(formatString.substr(pos, nextPos - pos));
+        result.append(params.at(paramIndex++));
+        pos = nextPos + 2U;
+    }
+    ASSERT(paramIndex == params.size());
+    result.append(formatString.substr(pos));
+    return result;
+}
+
+ErrorType Error::Type() const noexcept
+{
+    if (diagnosticKind_ != nullptr) {
+        return diagnosticKind_->Type();
+    }
+    return type_;
+}
+
+std::string Error::Message() const
+{
+    if (diagnosticKind_ != nullptr) {
+        return Format(diagnosticKind_->Message(), diagnosticParams_);
+    }
+    return message_;
+}
 
 template <class T>
 T DirName(T const &path, T const &delims = ark::os::file::File::GetPathDelim())

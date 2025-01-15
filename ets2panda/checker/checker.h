@@ -166,6 +166,9 @@ public:
     virtual void ResolveStructuredTypeMembers(Type *type) = 0;
 
     std::string FormatMsg(std::initializer_list<TypeErrorMessageElement> list);
+    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams = {});
+    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+                  const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
     void LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
     void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
