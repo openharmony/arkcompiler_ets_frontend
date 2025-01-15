@@ -981,8 +981,6 @@ static bool StringEqualsPropertyName(const util::StringView pname1, const ir::Ex
 void ETSChecker::ValidateObjectLiteralForRequiredType(const ETSObjectType *const requiredType,
                                                       const ir::ObjectExpression *const initObjExpr)
 {
-    const std::size_t classPropertyCount = requiredType->InstanceFields().size() + requiredType->StaticFields().size();
-
     auto initObjExprContainsField = [&initObjExpr](const util::StringView pname1) {
         return std::find_if(initObjExpr->Properties().begin(), initObjExpr->Properties().end(),
                             [&pname1](const ir::Expression *const initProp) {
@@ -990,24 +988,28 @@ void ETSChecker::ValidateObjectLiteralForRequiredType(const ETSObjectType *const
                             }) != initObjExpr->Properties().end();
     };
 
-    if (classPropertyCount > initObjExpr->Properties().size()) {
-        std::string_view missingProp;
+    if (requiredType->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
+        for (const auto *method : requiredType->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->Body()) {
+            if (!method->AsMethodDefinition()->Function()->IsGetter()) {
+                continue;
+            }
 
-        for (const auto &[propName, _] : requiredType->InstanceFields()) {
-            if (!initObjExprContainsField(propName)) {
-                missingProp = propName.Utf8();
+            auto fieldname = method->AsMethodDefinition()->Key()->AsIdentifier()->Name();
+            if (!initObjExprContainsField(fieldname)) {
+                LogTypeError({"Class property '", fieldname, "' needs to be initialized for Required<",
+                              requiredType->Name(), ">."},
+                             initObjExpr->Start());
             }
         }
 
-        for (const auto &[propName, _] : requiredType->StaticFields()) {
-            if (!initObjExprContainsField(propName)) {
-                missingProp = propName.Utf8();
-            }
-        }
+        return;
+    }
 
-        if (!missingProp.empty()) {
-            LogTypeError({"Class property '", missingProp, "' needs to be initialized for required type."},
-                         initObjExpr->Start());
+    for (const auto &[propName, _] : requiredType->InstanceFields()) {
+        if (!initObjExprContainsField(propName)) {
+            LogTypeError(
+                {"Class property '", propName, "' needs to be initialized for Required<", requiredType->Name(), ">."},
+                initObjExpr->Start());
         }
     }
 }
