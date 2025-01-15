@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,8 @@ import { forEachNodeInSubtree } from '../utils/functions/ForEachNodeInSubtree';
 import { NameGenerator } from '../utils/functions/NameGenerator';
 import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { SymbolCache } from './SymbolCache';
+
+const UNDEFINED_NAME = 'undefined';
 
 const GENERATED_OBJECT_LITERAL_INTERFACE_NAME = 'GeneratedObjectLiteralInterface_';
 const GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD = 1000;
@@ -1914,4 +1916,42 @@ export class Autofixer {
   );
 
   private readonly symbolCache: SymbolCache;
+
+  fixVoidOperator(voidExpr: ts.VoidExpression): Autofix[] {
+    let newExpr = voidExpr.expression;
+
+    if (Autofixer.needParenthesesForVoidOperator(newExpr)) {
+      newExpr = ts.factory.createParenthesizedExpression(newExpr);
+    }
+
+    const funcBody = ts.factory.createBlock(
+      [
+        ts.factory.createExpressionStatement(newExpr),
+        ts.factory.createReturnStatement(ts.factory.createIdentifier(UNDEFINED_NAME))
+      ],
+      true
+    );
+
+    const arrowFunc = ts.factory.createArrowFunction(
+      undefined,
+      undefined,
+      [],
+      undefined,
+      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      funcBody
+    );
+
+    const callExpr = ts.factory.createCallExpression(
+      ts.factory.createParenthesizedExpression(arrowFunc),
+      undefined,
+      undefined
+    );
+
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, callExpr, voidExpr.getSourceFile());
+    return [{ start: voidExpr.getStart(), end: voidExpr.getEnd(), replacementText: text }];
+  }
+
+  private static needParenthesesForVoidOperator(expr: ts.Expression): boolean {
+    return ts.isObjectLiteralExpression(expr) || ts.isFunctionExpression(expr) || ts.isClassExpression(expr);
+  }
 }

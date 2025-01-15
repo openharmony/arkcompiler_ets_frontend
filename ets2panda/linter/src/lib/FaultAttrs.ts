@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -145,3 +145,4 @@ faultsAttrs[FaultID.ObjectLiteralProperty] = new FaultAttributes(183);
 faultsAttrs[FaultID.OptionalMethod] = new FaultAttributes(184);
 faultsAttrs[FaultID.ImportType] = new FaultAttributes(185);
 faultsAttrs[FaultID.DynamicCtorCall] = new FaultAttributes(186);
+faultsAttrs[FaultID.VoidOperator] = new FaultAttributes(193);

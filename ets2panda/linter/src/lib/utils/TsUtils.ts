@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1270,7 +1270,8 @@ export class TsUtils {
     [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange],
     [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange],
     [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange],
-    [FaultID.StructuralIdentity, TsUtils.getStructuralIdentityHighlightRange]
+    [FaultID.StructuralIdentity, TsUtils.getStructuralIdentityHighlightRange],
+    [FaultID.VoidOperator, TsUtils.getVoidOperatorHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1422,6 +1423,10 @@ export class TsUtils {
     }
 
     return undefined;
+  }
+
+  static getVoidOperatorHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'void');
   }
 
   isStdRecordType(type: ts.Type): boolean {

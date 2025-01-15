@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -201,7 +201,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ExportDeclaration, this.handleExportDeclaration],
     [ts.SyntaxKind.ReturnStatement, this.handleReturnStatement],
     [ts.SyntaxKind.Decorator, this.handleDecorator],
-    [ts.SyntaxKind.ImportType, this.handleImportType]
+    [ts.SyntaxKind.ImportType, this.handleImportType],
+    [ts.SyntaxKind.VoidExpression, this.handleVoidExpression]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -2921,5 +2922,13 @@ export class TypeScriptLinter {
       return;
     }
     this.incrementCounters(node, FaultID.ImportType);
+  }
+
+  private handleVoidExpression(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const autofix = this.autofixer?.fixVoidOperator(node as ts.VoidExpression);
+    this.incrementCounters(node, FaultID.VoidOperator, autofix);
   }
 }
