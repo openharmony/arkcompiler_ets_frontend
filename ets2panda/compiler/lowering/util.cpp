@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -107,8 +107,8 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
     return result;
 }
 
-// Rerun varbinder and checker on the node. (First clear typesVariables and scopes)
-void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+// Rerun varbinder on the node. (First clear typesVariables and scopes)
+varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node)
 {
     auto *scope = NearestScope(node->Parent());
     auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
@@ -116,6 +116,14 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
     ClearTypesVariablesAndScopes(node);
     InitScopesPhaseETS::RunExternalNode(node, varBinder);
     varBinder->ResolveReferencesForScopeWithContext(node, scope);
+
+    return scope;
+}
+
+// Rerun varbinder and checker on the node.
+void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+{
+    auto *scope = Rebind(varBinder, node);
 
     auto *containingClass = ContainingClass(node);
     // NOTE(gogabr: should determine checker status more finely.

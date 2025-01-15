@@ -734,18 +734,18 @@ extern "C" es2panda_SourcePosition *SourceRangeEnd([[maybe_unused]] es2panda_Con
     return reinterpret_cast<es2panda_SourcePosition *>(allocator->New<lexer::SourcePosition>(E2pRange->end));
 }
 
-extern "C" void InitScopesPhaseETSRunExternalNode(es2panda_Context *ctx, es2panda_AstNode *node)
-{
-    auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
-    auto context = reinterpret_cast<Context *>(ctx);
-    auto varbinder = context->parserProgram->VarBinder();
-    compiler::InitScopesPhaseETS::RunExternalNode(E2pNode, varbinder);
-}
-
 extern "C" es2panda_Scope *AstNodeFindNearestScope([[maybe_unused]] es2panda_Context *ctx, es2panda_AstNode *node)
 {
     auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
     return reinterpret_cast<es2panda_Scope *>(compiler::NearestScope(E2pNode));
+}
+
+extern "C" es2panda_Scope *AstNodeRebind(es2panda_Context *ctx, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<ir::AstNode *>(node);
+    auto context = reinterpret_cast<Context *>(ctx);
+    auto varbinder = context->parserProgram->VarBinder()->AsETSBinder();
+    return reinterpret_cast<es2panda_Scope *>(compiler::Rebind(varbinder, E2pNode));
 }
 
 extern "C" void AstNodeRecheck(es2panda_Context *ctx, es2panda_AstNode *node)
@@ -809,8 +809,8 @@ es2panda_Impl g_impl = {
     LogTypeError,
     LogWarning,
     LogSyntaxError,
-    InitScopesPhaseETSRunExternalNode,
     AstNodeFindNearestScope,
+    AstNodeRebind,
     AstNodeRecheck,
     Es2pandaEnumFromString,
     Es2pandaEnumToString,
