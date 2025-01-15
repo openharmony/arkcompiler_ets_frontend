@@ -24,6 +24,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include "utils/arena_containers.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +41,11 @@ typedef struct FileReferenceInfo {
 } FileReferenceInfo;
 
 typedef struct FileReferences {
-    std::vector<FileReferenceInfo *> referenceInfos;
+    ark::ArenaVector<FileReferenceInfo *> *referenceInfos;
+    FileReferences(ark::ArenaVector<FileReferenceInfo *> *referenceInfos_)
+    {
+        this->referenceInfos = referenceInfos_;
+    }
 } FileReferences;
 
 typedef struct LSPAPI {
