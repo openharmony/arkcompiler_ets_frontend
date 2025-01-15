@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,9 +15,9 @@
 
 #include "boxingForLocals.h"
 
+#include "compiler/lowering/util.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
-#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -140,12 +140,15 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     newInitArgs.push_back(initId);
     auto *newInit = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
         allocator, allocator->New<ir::OpaqueTypeNode>(boxedType), std::move(newInitArgs), nullptr);
-    auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
-        allocator, ir::VariableDeclaratorFlag::CONST, allocator->New<ir::Identifier>(id->Name(), allocator), newInit);
-    ArenaVector<ir::VariableDeclarator *> declVec {allocator->Adapter()};
-    declVec.push_back(newDeclarator);
 
-    auto *newDecl = allocator->New<varbinder::ConstDecl>(id->Name(), newDeclarator);
+    auto const newVarName = GenName(allocator);
+    auto *newDeclarator = util::NodeAllocator::ForceSetParent<ir::VariableDeclarator>(
+        allocator, ir::VariableDeclaratorFlag::CONST, allocator->New<ir::Identifier>(newVarName.View(), allocator),
+        newInit);
+    ArenaVector<ir::VariableDeclarator *> declVec {allocator->Adapter()};
+    declVec.emplace_back(newDeclarator);
+
+    auto *newDecl = allocator->New<varbinder::ConstDecl>(newVarName.View(), newDeclarator);
     auto *newVar = allocator->New<varbinder::LocalVariable>(newDecl, oldVar->Flags());
     newVar->SetTsType(boxedType);
 

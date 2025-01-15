@@ -18,9 +18,6 @@ ast/parser/ets/method_override_throw_4.sts
 ast/parser/ets/method_override_throw_6.sts
 ast/parser/ets/TypeInferFunc.sts
 
-# Issue: #20167
-ast/compiler/ets/union_string_literals_6.sts
-
 # Issue: #19700
 ast/compiler/ets/returnStatementClone.sts
 
@@ -37,7 +34,6 @@ ast/parser/ets/extension_function_tests/extension_function_class.sts
 ast/parser/ets/extension_function_tests/extension_function_class_typealias.sts
 
 # Issue: #20874
-ast/parser/ets/function_implicit_return_type.sts
 ast/parser/ets/unexpected_token_16.sts
 ast/parser/ets/unexpected_token_17.sts
 ast/parser/ets/unexpected_token_34.sts
