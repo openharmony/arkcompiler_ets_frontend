@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,6 +37,8 @@ TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral
     for (auto *expression : other.expressions_) {
         expressions_.emplace_back(expression->Clone(allocator, this)->AsExpression());
     }
+
+    multilineString_ = util::StringView(other.multilineString_);
 }
 
 TemplateLiteral *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -120,5 +122,10 @@ void TemplateLiteral::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 checker::VerifiedType TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+util::StringView TemplateLiteral::GetMultilineString() const
+{
+    return multilineString_;
 }
 }  // namespace ark::es2panda::ir

@@ -2572,7 +2572,7 @@ void ETSGen::BuildTemplateString(const ir::TemplateLiteral *node)
 
     CallExact(node, Signatures::BUILTIN_STRING_BUILDER_TO_STRING, builder);
 
-    SetAccumulatorType(Checker()->GlobalBuiltinETSStringType());
+    SetAccumulatorType(node->TsType());
 }
 
 void ETSGen::NewObject(const ir::AstNode *const node, const util::StringView name, VReg athis)

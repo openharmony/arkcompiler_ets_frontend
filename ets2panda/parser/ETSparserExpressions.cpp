@@ -398,6 +398,7 @@ bool ETSParser::IsArrowFunctionExpressionStart()
                 flag = lexer::NextTokenFlags::UNARY_MINUS;
                 break;
             case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
+            case lexer::TokenType::PUNCTUATOR_BACK_TICK:
                 Lexer()->Rewind(savedPos);
                 return false;
             default:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -371,6 +371,9 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
         }
+        case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
+            return std::make_pair(ParseMultilineString(), true);
+        }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             return GetTypeAnnotationFromParentheses(options);
         }
@@ -519,6 +522,19 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
     }
     ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos);
+    return typeAnnotation;
+}
+
+ir::TypeNode *ETSParser::ParseMultilineString()
+{
+    const auto startPos = Lexer()->GetToken().Start();
+    const auto multilineStr = Lexer()->ScanMultilineString();
+    Lexer()->ScanTemplateStringEnd();
+
+    auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(multilineStr);
+    typeAnnotation->SetRange({startPos, Lexer()->GetToken().End()});
+    Lexer()->NextToken();
+
     return typeAnnotation;
 }
 
