@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -759,25 +759,15 @@ ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifier(ir::AstNode *node
         resNode = prop->Value()->Clone(context_->allocator, originNode->Parent());
         resNode->SetRange(originNode->Range());
     }
+    if (node->Parent()->IsVariableDeclarator()) {
+        resNode = node->Parent()->AsVariableDeclarator()->Init()->Clone(context_->allocator, originNode->Parent());
+        resNode->SetRange(originNode->Range());
+    }
     if (resNode != nullptr) {
         return UnfoldConstIdentifiers(resNode);
     }
 
     return node;
-}
-
-ir::AstNode *ConstantExpressionLowering::UnfoldConstMemberExpression(ir::MemberExpression *member)
-{
-    auto *object = member->Object();
-    if (object->IsIdentifier()) {
-        auto variable = FindIdentifier(object->AsIdentifier());
-        // Constant expression
-        if (!variable->Declaration()->IsNameSpaceDecl()) {
-            return member;
-        }
-        return UnfoldConstIdentifiers(member->Property());
-    }
-    return member;
 }
 
 ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifiers(ir::AstNode *constantNode)
@@ -793,11 +783,6 @@ ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifiers(ir::AstNode *con
                 return node;
             }
             return UnfoldConstIdentifier(resolved->Declaration()->Node(), node);
-        }
-        // For namespace constant expression
-        if (node->IsMemberExpression()) {
-            auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(node));
-            return UnfoldConstMemberExpression(node->AsMemberExpression());
         }
         return node;
     };
@@ -842,15 +827,8 @@ ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
     return constantNode;
 }
 
-bool ConstantExpressionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool ConstantExpressionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *extProg : ext_programs) {
-            Perform(ctx, extProg);
-        }
-    }
-
     context_ = ctx;
     program_ = program;
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,14 +29,14 @@ enum class TypeRank {
     DOUBLE
 };
 
-class ConstantExpressionLowering : public Phase {
+class ConstantExpressionLowering : public PhaseForDeclarations {
 public:
     std::string_view Name() const override
     {
         return "ConstantExpressionLowering";
     }
 
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
 private:
     void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
@@ -94,8 +94,6 @@ private:
     varbinder::Variable *FindIdentifier(ir::Identifier *ident);
 
     ir::AstNode *UnfoldConstIdentifier(ir::AstNode *node, ir::AstNode *originNode);
-
-    ir::AstNode *UnfoldConstMemberExpression(ir::MemberExpression *member);
 
     ir::AstNode *UnfoldConstIdentifiers(ir::AstNode *constantNode);
 
