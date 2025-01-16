@@ -2790,18 +2790,4 @@ util::StringView ETSGen::ToAssemblerType(const es2panda::checker::Type *type) co
     type->ToAssemblerTypeWithRank(ss);
     return util::UString(ss.str(), Allocator()).View();
 }
-void ETSGen::CastUnionToFunctionType(const ir::AstNode *node, const checker::ETSUnionType *unionType,
-                                     checker::Signature *signatureTarget)
-{
-    for (auto it : unionType->ConstituentTypes()) {
-        for (auto prop : it->AsETSObjectType()->GetAllProperties()) {
-            if (prop->TsType()->IsETSFunctionType() &&
-                prop->TsType()->AsETSFunctionType()->CallSignatures().front() == signatureTarget) {
-                InternalCheckCast(node, it);
-                break;
-            }
-        }
-    }
-}
-
 }  // namespace ark::es2panda::compiler

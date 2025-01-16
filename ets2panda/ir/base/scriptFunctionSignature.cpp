@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -60,7 +60,7 @@ void FunctionSignature::TransformChildren(const NodeTransformer &cb, std::string
 
 FunctionSignature FunctionSignature::Clone(ArenaAllocator *allocator)
 {
-    ArenaVector<Expression *> clonedParams(allocator->Adapter());
+    ArenaVector<ir::Expression *> clonedParams(allocator->Adapter());
 
     for (auto *const param : params_) {
         clonedParams.emplace_back(param->Clone(allocator, param->Parent())->AsExpression());
@@ -71,6 +71,6 @@ FunctionSignature FunctionSignature::Clone(ArenaAllocator *allocator)
     auto *const returnTypeAnnotationClone =
         returnTypeAnnotation_ != nullptr ? returnTypeAnnotation_->Clone(allocator, nullptr) : nullptr;
 
-    return {typeParamClone, std::move(clonedParams), returnTypeAnnotationClone};
+    return FunctionSignature(typeParamClone, std::move(clonedParams), returnTypeAnnotationClone);
 }
 }  // namespace ark::es2panda::ir

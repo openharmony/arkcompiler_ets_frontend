@@ -67,7 +67,7 @@ void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETS
 static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc)
 {
     ASSERT(!extensionFunc->Params().empty());
-    ASSERT(extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->Name() ==
+    ASSERT(extensionFunc->Params()[0]->AsETSParameterExpression()->Name() ==
            varbinder::TypedBinder::MANDATORY_PARAM_THIS);
     auto thisVariable = extensionFunc->Params()[0]->Variable();
     extensionFunc->Body()->TransformChildrenRecursively(
@@ -104,22 +104,22 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
 
         checker::SignatureInfo *originalExtensionSigInfo = checker->Allocator()->New<checker::SignatureInfo>(
             extensionFunc->Signature()->GetSignatureInfo(), checker->Allocator());
-        originalExtensionSigInfo->minArgCount -= 1;
+        originalExtensionSigInfo->minArgCount -= 1U;
         originalExtensionSigInfo->params.erase(originalExtensionSigInfo->params.begin());
-        checker::Signature *originalExtensionSigature =
+        checker::Signature *originalExtensionSignature =
             checker->CreateSignature(originalExtensionSigInfo, extensionFunc->Signature()->ReturnType(), extensionFunc);
 
         // The shadowing check is only relevant for classes and interfaces,
         // since for arrays there are no other ways to declare a method other than "Extension Functions".
         if (thisType->IsETSObjectType()) {
             CheckExtensionIsShadowedByMethod(checker, thisType->AsETSObjectType(), extensionFunc,
-                                             originalExtensionSigature);
+                                             originalExtensionSignature);
         }
 
         // etsArrayType may extends method from GlobalETSObjectType
         if (thisType->IsETSArrayType()) {
             CheckExtensionIsShadowedByMethod(checker, checker->GlobalETSObjectType(), extensionFunc,
-                                             originalExtensionSigature);
+                                             originalExtensionSignature);
         }
     } else {
         checker->LogTypeError("Extension function can only defined for class, interface or array.", node->Start());
@@ -540,9 +540,10 @@ checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression 
         callee = callee->AsTSNonNullExpression()->Expr();
     }
 
-    if (callee->IsIdentifier()) {
+    if (callee->IsIdentifier() || callee->IsArrowFunctionExpression()) {
         return checker->Context().ContainingClass();
     }
+
     ASSERT(callee->IsMemberExpression());
     return callee->AsMemberExpression()->ObjType();
 }
@@ -824,88 +825,66 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
     }
 }
 
-ETSObjectType *CreateOptionalSignaturesForFunctionalType(ETSChecker *checker, ir::ETSFunctionType *node,
-                                                         ETSObjectType *genericInterfaceType,
-                                                         size_t optionalParameterIndex)
+ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ETSFunctionType *node)
 {
+    auto *genericInterfaceType = checker->GlobalBuiltinFunctionType(node->Params().size(), node->Flags());
+    node->SetFunctionalInterface(genericInterfaceType->GetDeclNode()->AsTSInterfaceDeclaration());
+
+    if (auto *interfaceType = checker->GetCachedFunctionalInterface(node); interfaceType != nullptr) {
+        return interfaceType;
+    }
+
     auto substitution = checker->NewSubstitution();
-    const auto &params = node->Params();
-    auto returnType = node->ReturnType()->GetType(checker);
+    auto const &params = node->Params();
+    std::size_t const paramsNum = params.size();
 
-    for (size_t i = 0; i < optionalParameterIndex; i++) {
-        checker::ETSChecker::EmplaceSubstituted(
-            substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(),
-            InstantiateBoxedPrimitiveType(checker, params[i],
-                                          params[i]->AsETSParameterExpression()->TypeAnnotation()->GetType(checker)));
+    if (params.size() < checker->GlobalBuiltinFunctionTypeVariadicThreshold()) {
+        for (std::size_t i = 0U; i < paramsNum; ++i) {
+            auto *const param = params[i]->AsETSParameterExpression();
+
+            auto *paramType = param->TypeAnnotation()->GetType(checker);
+            if (param->IsDefault()) {
+                paramType = CreateParamTypeWithDefaultParam(checker, param, paramType);
+            } else if (!param->IsRestParameter()) {
+                paramType = InstantiateBoxedPrimitiveType(checker, param, paramType);
+            }
+
+            checker::ETSChecker::EmplaceSubstituted(
+                substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(), paramType);
+        }
     }
 
-    for (size_t i = optionalParameterIndex; i < params.size(); i++) {
-        checker::ETSChecker::EmplaceSubstituted(
-            substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(),
-            CreateParamTypeWithDefaultParam(checker, params[i]));
-    }
-
+    auto *returnType = node->ReturnType()->GetType(checker);
     checker::ETSChecker::EmplaceSubstituted(
-        substitution,
-        genericInterfaceType->TypeArguments()[genericInterfaceType->TypeArguments().size() - 1]
-            ->AsETSTypeParameter()
-            ->GetOriginal(),
+        substitution, genericInterfaceType->TypeArguments()[paramsNum]->AsETSTypeParameter()->GetOriginal(),
         InstantiateBoxedPrimitiveType(checker, node->ReturnType(), returnType));
 
     return genericInterfaceType->Substitute(checker->Relation(), substitution)->AsETSObjectType();
 }
 
-ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ETSFunctionType *node,
-                                                     ETSObjectType *genericInterfaceType)
+Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *param, Type *paramType)
 {
-    auto substitution = checker->NewSubstitution();
-    size_t i = 0;
-    if (auto const &params = node->Params(); params.size() < checker->GlobalBuiltinFunctionTypeVariadicThreshold()) {
-        for (; i < params.size(); i++) {
-            checker::ETSChecker::EmplaceSubstituted(
-                substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(),
-                InstantiateBoxedPrimitiveType(
-                    checker, params[i], params[i]->AsETSParameterExpression()->TypeAnnotation()->GetType(checker)));
-        }
-    }
-
-    checker::ETSChecker::EmplaceSubstituted(
-        substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(),
-        InstantiateBoxedPrimitiveType(checker, node->ReturnType(), node->ReturnType()->GetType(checker)));
-    return genericInterfaceType->Substitute(checker->Relation(), substitution)->AsETSObjectType();
-}
-
-Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *param)
-{
-    if (!param->AsETSParameterExpression()->IsDefault()) {
-        checker->LogTypeError({"Expected initializer for ", param->AsETSParameterExpression()->Ident()->Name()},
-                              param->Start());
-    }
-
-    ArenaVector<Type *> types(checker->Allocator()->Adapter());
-    types.push_back(InstantiateBoxedPrimitiveType(
-        checker, param, param->AsETSParameterExpression()->TypeAnnotation()->GetType(checker)));
+    paramType = InstantiateBoxedPrimitiveType(checker, param, paramType);
 
     if (param->AsETSParameterExpression()->Initializer()->IsUndefinedLiteral()) {
+        ArenaVector<Type *> types(checker->Allocator()->Adapter());
+        types.push_back(paramType);
         types.push_back(checker->GlobalETSUndefinedType());
+        paramType = checker->CreateETSUnionType(Span<Type *const>(types));
     }
 
-    return checker->CreateETSUnionType(Span<Type *const>(types));
+    return paramType;
 }
 
-Type *InstantiateBoxedPrimitiveType(ETSChecker *checker, ir::Expression *param, Type *paramType)
+Type *InstantiateBoxedPrimitiveType(ETSChecker *const checker, ir::Expression *const param, Type *paramType)
 {
-    if (paramType->IsETSReferenceType()) {
-        return paramType;
+    if (paramType->IsETSPrimitiveType()) {
+        auto node = checker->Relation()->GetNode();
+        checker->Relation()->SetNode(param);
+        paramType = checker->MaybeBoxInRelation(paramType);
+        ASSERT(paramType && paramType->IsETSReferenceType());
+        checker->Relation()->SetNode(node);
     }
-
-    auto node = checker->Relation()->GetNode();
-    checker->Relation()->SetNode(param);
-    auto boxedTypeArg = checker->MaybeBoxInRelation(paramType);
-    paramType = boxedTypeArg->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
-    checker->Relation()->SetNode(node);
-    ASSERT(paramType->IsETSReferenceType());
-
     return paramType;
 }
 }  // namespace ark::es2panda::checker

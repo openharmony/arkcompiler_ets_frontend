@@ -70,13 +70,8 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
                              ir::ReturnStatement *st, ir::Expression *stArgument);
 bool IsAsyncMethod(ir::AstNode *node);
 
-ETSObjectType *CreateOptionalSignaturesForFunctionalType(ETSChecker *checker, ir::ETSFunctionType *node,
-                                                         ETSObjectType *genericInterfaceType,
-                                                         size_t optionalParameterIndex);
-ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ETSFunctionType *node,
-                                                     ETSObjectType *genericInterfaceType);
-Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *params);
-
+ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ETSFunctionType *node);
+Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *param, Type *paramType);
 Type *InstantiateBoxedPrimitiveType(ETSChecker *checker, ir::Expression *param, Type *paramType);
 }  // namespace ark::es2panda::checker
 

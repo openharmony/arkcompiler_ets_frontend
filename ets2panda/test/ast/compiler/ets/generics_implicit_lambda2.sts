@@ -16,8 +16,8 @@
 function foo<T, U>(first: (a: U, b: T, c: U) => T): T {}
 
 function main() {
-    /* @@ label */foo(/* @@ label1 */(a: int, b: String, c: String): String => { return "XXX" });
+    foo((a: int, b: String, c: String): String => { return "XXX" });
 }
 
-/* @@@ label1 Error TypeError: Type '(a: int, b: String, c: String) => String' is not compatible with type '(p1: Int, p2: String, p3: Int) => String' at index 1  */
-/* @@@ label Error TypeError: No matching call signature  */
+/* @@? 19:9 Error TypeError: Type '(a: int, b: String, c: String) => String' is not compatible with type '(p1: Int, p2: String, p3: Int) => String' at index 1  */
+/* @@? 19:9 Error TypeError: Type '(a: int, b: String, c: String) => String' is not compatible with type '(p1: Int, p2: String, p3: Int) => String' at index 1  */

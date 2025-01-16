@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -95,9 +95,9 @@ static void InferUntilFail(Signature const *const signature, const ArenaVector<i
                                       ? MaybeBoxedType(checker, arg->AsSpreadElement()->Argument()->Check(checker),
                                                        arg->AsSpreadElement()->Argument())
                                       : MaybeBoxedType(checker, arg->Check(checker), arg);
-            auto *const paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType()
-                                    : sigInfo->restVar != nullptr   ? sigInfo->restVar->TsType()
-                                                                    : nullptr;
+            auto *const paramType = (ix < signature->Params().size()) ? sigInfo->params[ix]->TsType()
+                                    : sigInfo->restVar != nullptr     ? sigInfo->restVar->TsType()
+                                                                      : nullptr;
 
             if (paramType == nullptr) {
                 continue;
@@ -177,10 +177,9 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
         ETSChecker::EmplaceSubstituted(constraintsSubstitution, sigParams[ix]->AsETSTypeParameter(), instArgs[ix]);
     }
     if (sigParams.size() != instArgs.size()) {
-        if ((flags & TypeRelationFlag::NO_THROW) != 0) {
-            return nullptr;
+        if ((flags & TypeRelationFlag::NO_THROW) == static_cast<std::underlying_type_t<TypeRelationFlag>>(0U)) {
+            checker->LogTypeError({"Expected ", sigParams.size(), " type arguments, got ", instArgs.size(), " ."}, pos);
         }
-        checker->LogTypeError({"Expected ", sigParams.size(), " type arguments, got ", instArgs.size(), " ."}, pos);
         return nullptr;
     }
 

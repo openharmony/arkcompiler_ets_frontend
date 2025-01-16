@@ -2,7 +2,12 @@
 compiler/ets/import_tests/enum_export.sts
 parser/ets/declare_enum.sts
 
-# Issue: #20990
+# Issue: ##21522
+compiler/ts/interfaceAssignment.ts
+compiler/ts/memberExpTests.ts
+compiler/ts/objectLiteralAssignability.ts
+
+# Issue: ##20990
 compiler/ets/instanceof_dyndecl_dynvalue.sts
 compiler/ets/instanceof_dyndecl_jsvalue.sts
 compiler/ets/instanceof_x_dyndecl.sts

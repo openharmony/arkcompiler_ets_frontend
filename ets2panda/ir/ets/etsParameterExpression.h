@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,8 +37,7 @@ public:
     explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, Expression *initializer,
                                     ArenaAllocator *const allocator);
 
-    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
+    [[nodiscard]] const util::StringView &Name() const noexcept;
 
     [[nodiscard]] const Identifier *Ident() const noexcept;
     [[nodiscard]] Identifier *Ident() noexcept;
@@ -55,8 +54,14 @@ public:
     [[nodiscard]] varbinder::Variable *Variable() const noexcept;
     void SetVariable(varbinder::Variable *variable) noexcept;
 
+    //=================================================================================//
+    //  NOTE (DZ):  Please use these methods to deal with expression's type annotation!
+    //              Don't try to access 'ident_' member directly!
     [[nodiscard]] TypeNode const *TypeAnnotation() const noexcept;
     [[nodiscard]] TypeNode *TypeAnnotation() noexcept;
+
+    void SetTsTypeAnnotation(TypeNode *typeAnnotation) noexcept;
+    //=================================================================================//
 
     [[nodiscard]] bool IsDefault() const noexcept
     {

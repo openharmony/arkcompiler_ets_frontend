@@ -5475,3 +5475,4 @@
     }
   }
 }
+TypeError: This overload signature is not compatible with its implementation signature [functionCall.ts:73:10]

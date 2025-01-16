@@ -3662,7 +3662,7 @@ change_types:
     cast:
       expression: "
         auto *|arg_name|bodyE2p = reinterpret_cast<ir::AstNode *>(|arg_name|body);\n
-        auto |arg_name|signatureE2p = (*reinterpret_cast<ir::FunctionSignature *>(|arg_name|signature));\n
+        auto |arg_name|signatureE2p = std::move(*reinterpret_cast<ir::FunctionSignature *>(|arg_name|signature));\n
         auto |arg_name|funcFlagsE2p = E2pToIrScriptFunctionFlags((Es2pandaScriptFunctionFlags)|arg_name|funcFlags);\n
         auto |arg_name|flagsE2p = E2pToIrModifierFlags((Es2pandaModifierFlags)|arg_name|flags);\n
         ark::es2panda::Language |arg_name|lang {Language::Id::ETS};\n

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,10 +14,12 @@
  */
 
 #include "lambdaLowering.h"
+#include "defaultParameterLowering.h"
 
 #include "checker/ets/typeRelationContext.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
+#include "ir/base/scriptFunctionSignature.h"
 #include "util/options.h"
 
 namespace ark::es2panda::compiler {
@@ -155,6 +157,7 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
 
 using ParamsAndVarMap =
     std::pair<ArenaVector<ir::Expression *>, ArenaMap<varbinder::Variable *, varbinder::Variable *>>;
+
 ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const CalleeParameterInfo &calleeParameterInfo)
 {
     auto allocator = ctx->allocator;
@@ -189,10 +192,10 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
             break;
         }
 
-        auto *oldParamType = oldParam->AsETSParameterExpression()->Ident()->TypeAnnotation()->TsType();
+        auto *oldParamType = oldParam->AsETSParameterExpression()->TypeAnnotation()->GetType(checker);
         auto *newParamType = oldParamType->Substitute(checker->Relation(), calleeParameterInfo.substitution);
         auto *newParam = oldParam->AsETSParameterExpression()->Clone(allocator, nullptr);
-        newParam->Ident()->SetVariable(nullptr);  // Remove the cloned variable.
+        newParam->SetVariable(nullptr);  // Remove the cloned variable.
         auto [_, var] = varBinder->AddParamDecl(newParam);
         (void)_;
         var->SetTsType(newParamType);
@@ -200,6 +203,7 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
         newParam->SetVariable(var);
         newParam->SetTsType(newParamType);
         newParam->Ident()->SetTsType(newParamType);
+        newParam->TypeAnnotation()->SetTsType(newParamType);
         resParams.push_back(newParam);
         varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
         i++;
@@ -441,20 +445,19 @@ static void ValidateDefaultParameters(public_lib::Context *ctx, ir::ArrowFunctio
 {
     auto *checker = ctx->checker->AsETSChecker();
 
-    size_t i = 0;
+    std::size_t i = 0U;
     for (auto *param : defaultMethod->Function()->Params()) {
         if (param->AsETSParameterExpression()->IsDefault()) {
             break;
         }
 
-        i++;
+        ++i;
     }
 
-    for (; i < lambda->Function()->Params().size(); i++) {
+    for (; i < lambda->Function()->Params().size(); ++i) {
         auto *param = lambda->Function()->Params()[i]->AsETSParameterExpression();
         if (param->Initializer() == nullptr) {
-            checker->LogTypeError({"Expected initializer for parameter ", param->Ident()->Name(), "."}, param->Start());
-            break;
+            checker->LogTypeError({"Expected initializer for parameter ", param->Name(), "."}, param->Start());
         }
     }
 }
@@ -596,6 +599,31 @@ static ir::CallExpression *CreateCallForLambdaClassInvoke(public_lib::Context *c
     return call;
 }
 
+//  Extracted from 'CreateLambdaClassInvoke(...)' to reduce its size.
+static void PostprocessLambdaClassInvoke(public_lib::Context *ctx, LambdaClassInvokeInfo const *lciInfo,
+                                         util::StringView methodName, ir::ScriptFunction *func)
+{
+    auto *invokeId = ctx->allocator->New<ir::Identifier>(methodName, ctx->allocator);
+    func->SetIdent(invokeId);
+
+    auto *funcExpr = util::NodeAllocator::ForceSetParent<ir::FunctionExpression>(ctx->allocator, func);
+
+    auto *invokeIdClone = invokeId->Clone(ctx->allocator, nullptr);
+    auto *invokeMethod = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
+        ctx->allocator, ir::MethodDefinitionKind::METHOD, invokeIdClone, funcExpr, ir::ModifierFlags::NONE,
+        ctx->allocator, false);
+
+    lciInfo->classDefinition->Body().push_back(invokeMethod);
+    invokeMethod->SetParent(lciInfo->classDefinition);
+
+    bool hasOptionalParameters;
+    std::tie(hasOptionalParameters, std::ignore) = DefaultParameterLowering::HasDefaultParam(
+        invokeMethod->Function(), ctx->parserProgram, ctx->parser->ErrorLogger());
+    if (hasOptionalParameters) {
+        DefaultParameterLowering::ProcessGlobalFunctionDefinition(invokeMethod, ctx);
+    }
+}
+
 static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *info,
                                     LambdaClassInvokeInfo const *lciInfo, util::StringView methodName,
                                     bool wrapToObject)
@@ -605,13 +633,21 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
     auto *checker = ctx->checker->AsETSChecker();
     auto *anyType = checker->GlobalETSNullishObjectType();
 
+    ASSERT(lciInfo->lambdaSignature->Function() != nullptr);
+    auto *function = lciInfo->lambdaSignature->Function();
+
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
-    for (auto *lparam : lciInfo->lambdaSignature->Params()) {
+    for (std::size_t i = 0U; i < lciInfo->lambdaSignature->Params().size(); ++i) {
+        auto *lparam = lciInfo->lambdaSignature->Params()[i];
         auto *type = wrapToObject ? anyType : lparam->TsType()->Substitute(checker->Relation(), lciInfo->substitution);
         auto *id = util::NodeAllocator::ForceSetParent<ir::Identifier>(
             allocator, lparam->Name(), allocator->New<ir::OpaqueTypeNode>(type), allocator);
+        auto *initializer = function->Params()[i]->AsETSParameterExpression()->Initializer();
+        if (initializer != nullptr) {
+            initializer = initializer->Clone(ctx->allocator, nullptr)->AsExpression();
+        }
         auto *param =
-            util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, nullptr, allocator);
+            util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, id, initializer, allocator);
         params.push_back(param);
     }
 
@@ -641,18 +677,7 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), returnType2),
                                                 ir::ScriptFunctionFlags::METHOD});
 
-    auto *invokeId = allocator->New<ir::Identifier>(methodName, allocator);
-    func->SetIdent(invokeId);
-
-    auto *funcExpr = util::NodeAllocator::ForceSetParent<ir::FunctionExpression>(allocator, func);
-
-    auto *invokeIdClone = invokeId->Clone(allocator, nullptr);
-    auto *invokeMethod = util::NodeAllocator::ForceSetParent<ir::MethodDefinition>(
-        allocator, ir::MethodDefinitionKind::METHOD, invokeIdClone, funcExpr, ir::ModifierFlags::NONE, allocator,
-        false);
-
-    lciInfo->classDefinition->Body().push_back(invokeMethod);
-    invokeMethod->SetParent(lciInfo->classDefinition);
+    PostprocessLambdaClassInvoke(ctx, lciInfo, methodName, func);
 }
 
 static std::string BuildLambdaClass(public_lib::Context *ctx, ArenaVector<checker::Signature *> &lambdaSigs,
@@ -660,13 +685,26 @@ static std::string BuildLambdaClass(public_lib::Context *ctx, ArenaVector<checke
 {
     auto *checker = ctx->checker->AsETSChecker();
 
-    std::string stringBuilder = "final class @@I1 implements ";
-    constexpr uint8_t OFF_SET = 2;
+    auto generateSignatures = [checker](checker::Signature *signature) -> std::vector<checker::Signature *> {
+        std::vector<checker::Signature *> signatures {};
+        for (size_t i = signature->MinArgCount(); i < signature->Params().size(); ++i) {
+            auto *sig = signature->Clone(checker);
+            sig->Params().resize(i);
+            signatures.emplace_back(sig);
+        }
+        signatures.emplace_back(signature);
+        return signatures;
+    };
 
-    for (size_t i = 0; i < lambdaSigs.size(); i++) {
-        funcInterfaces.push_back(checker->FunctionTypeToFunctionalInterfaceType(
-            lambdaSigs[i]->Substitute(checker->Relation(), substitution)));
-        stringBuilder += "@@T" + std::to_string(i + OFF_SET) + ", ";
+    std::string stringBuilder = "final class @@I1 implements ";
+    std::size_t number = 2U;
+
+    for (auto *signature : lambdaSigs) {
+        signature = signature->Substitute(checker->Relation(), substitution);
+        for (auto *sig : generateSignatures(signature)) {
+            funcInterfaces.push_back(checker->FunctionTypeToFunctionalInterfaceType(sig));
+            stringBuilder += "@@T" + std::to_string(number++) + ", ";
+        }
     }
 
     stringBuilder.pop_back();
@@ -803,6 +841,59 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     return constructorCall;
 }
 
+static checker::Signature *CheckAssignableSignatures(checker::ETSChecker *checker, ir::Expression *ast,
+                                                     checker::Type *argType,
+                                                     ArenaVector<checker::Signature *> const &signatures)
+{
+    std::map<checker::Signature *, checker::Type *> assignableSignatures {};
+    std::vector<checker::Type *> parameterTypes {};
+    if (argType->IsETSUnionType()) {
+        for (auto *type : argType->AsETSUnionType()->ConstituentTypes()) {
+            parameterTypes.emplace_back(
+                const_cast<checker::Type *>(checker->TryGettingFunctionTypeFromInvokeFunction(type)));
+        }
+    } else {
+        parameterTypes.emplace_back(
+            const_cast<checker::Type *>(checker->TryGettingFunctionTypeFromInvokeFunction(argType)));
+    }
+
+    for (auto *sig : signatures) {
+        auto *tmpFunType = checker->CreateETSFunctionType(sig, "");
+        for (auto *type : parameterTypes) {
+            checker::AssignmentContext actx {
+                checker->Relation(), ast, tmpFunType, type, ast->Start(), {}, checker::TypeRelationFlag::NO_THROW};
+            if (actx.IsAssignable()) {
+                assignableSignatures.emplace(sig, type);
+            }
+        }
+    }
+
+    if (assignableSignatures.empty()) {
+        return nullptr;
+    }
+
+    auto const number = assignableSignatures.size();
+    if (number == 1U) {
+        return assignableSignatures.begin()->first;
+    }
+
+    argType = assignableSignatures.begin()->second;
+    ASSERT(argType->IsETSFunctionType());
+    auto const minArgs = argType->AsETSFunctionType()->CallSignature()->MinArgCount();
+
+    checker::Signature *sigFound = nullptr;
+    for (auto [sig, type] : assignableSignatures) {
+        if (type != argType) {
+            return nullptr;  // ambiguity
+        }
+        if (sig->MinArgCount() == minArgs) {
+            sigFound = sig;
+        }
+    }
+
+    return sigFound;
+}
+
 static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expression *ast)
 {
     ASSERT(ast->TsType()->IsETSFunctionType());
@@ -824,25 +915,8 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
             continue;
         }
 
-        auto *argType = ast->Parent()->AsCallExpression()->Signature()->Params()[ix]->TsType();
-        checker::Signature *sigFound = nullptr;
-
-        for (auto *sig : type->CallSignatures()) {
-            auto *tmpFunType = checker->Allocator()->New<checker::ETSFunctionType>("", sig, checker->Allocator());
-            checker::AssignmentContext actx {
-                checker->Relation(), ast, tmpFunType, argType, ast->Start(), {}, checker::TypeRelationFlag::NO_THROW};
-            if (!actx.IsAssignable()) {
-                continue;
-            }
-            if (sigFound != nullptr) {
-                // ambiguiuty
-                checker->LogTypeError(
-                    std::initializer_list<checker::TypeErrorMessageElement> {"Cannot deduce call signature"},
-                    ast->Start());
-                break;
-            }
-            sigFound = sig;
-        }
+        checker::Type *argType = ast->Parent()->AsCallExpression()->Signature()->Params()[ix]->TsType();
+        checker::Signature *sigFound = CheckAssignableSignatures(checker, ast, argType, type->CallSignatures());
         if (sigFound != nullptr) {
             return sigFound;
         }
@@ -1011,34 +1085,10 @@ static bool IsFunctionOrMethodCall(ir::AstNode const *node)
            (var->Flags() & varbinder::VariableFlags::METHOD) != 0;
 }
 
-static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpression *call)
+static ir::AstNode *InsertInvokeArguments(public_lib::Context *ctx, ir::CallExpression *call)
 {
-    auto *allocator = ctx->allocator;
     auto *checker = ctx->checker->AsETSChecker();
     auto *varBinder = checker->VarBinder()->AsETSBinder();
-
-    auto *oldCallee = call->Callee();
-    auto *ifaceType = oldCallee->TsType() != nullptr && oldCallee->TsType()->IsETSObjectType()
-                          ? oldCallee->TsType()->AsETSObjectType()
-                          : checker->FunctionTypeToFunctionalInterfaceType(call->Signature());
-    if (ifaceType->IsETSDynamicType()) {
-        return call;
-    }
-    auto *prop = ifaceType->GetProperty(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
-                                        checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
-                                            checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
-    ASSERT(prop != nullptr);
-    auto *invoke0Id = allocator->New<ir::Identifier>(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME, allocator);
-    invoke0Id->SetTsType(prop->TsType());
-    invoke0Id->SetVariable(prop);
-
-    auto *newCallee = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
-        allocator, oldCallee, invoke0Id, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-    newCallee->SetTsType(prop->TsType());
-    newCallee->SetObjectType(ifaceType);
-
-    call->SetCallee(newCallee);
-    call->SetSignature(prop->TsType()->AsETSFunctionType()->CallSignatures()[0]);
 
     /* NOTE(gogabr): argument types may have been spoiled by widening/narrowing conversions.
        Repair them here.
@@ -1050,7 +1100,72 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         arg->SetBoxingUnboxingFlags(boxingFlags);
     }
 
+    auto const argumentNumber = call->Arguments().size();
+    auto const parameterNumber = call->Signature()->Params().size();
+    if (argumentNumber < parameterNumber) {
+        //  Add default or 'undefined' values for the parameters which argument values were not specified
+        for (std::size_t i = argumentNumber; i < parameterNumber; ++i) {
+            auto param = call->Signature()->Function()->Params()[i]->AsETSParameterExpression();
+            ir::Expression *newParameter;
+            if (param->IsDefault()) {
+                newParameter = param->Initializer()->Clone(ctx->allocator, call)->AsExpression();
+                newParameter->Check(checker);
+                checker->MaybeBoxExpression(newParameter);
+            } else {
+                newParameter = checker->AllocNode<ir::UndefinedLiteral>();
+                newParameter->SetParent(call);
+            }
+            call->Arguments().emplace_back(newParameter);
+        }
+    }
+
     return call;
+}
+
+static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpression *call)
+{
+    auto *allocator = ctx->allocator;
+    auto *checker = ctx->checker->AsETSChecker();
+
+    auto *oldCallee = call->Callee();
+    auto *ifaceType = oldCallee->TsType() != nullptr && oldCallee->TsType()->IsETSObjectType()
+                          ? oldCallee->TsType()->AsETSObjectType()
+                          : checker->FunctionTypeToFunctionalInterfaceType(call->Signature());
+    if (ifaceType->IsETSDynamicType()) {
+        return call;
+    }
+
+    auto const flag =
+        checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
+    auto *methodName = checker::FUNCTIONAL_INTERFACE_SUBSTITUTED_INVOKE_METHOD_NAME;
+
+    auto *prop = ifaceType->GetProperty(methodName, flag);
+    if (prop == nullptr) {
+        methodName = checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME;
+        prop = ifaceType->GetProperty(methodName, flag);
+    }
+
+    ASSERT(prop != nullptr);
+    auto *invoke0Id = allocator->New<ir::Identifier>(methodName, allocator);
+    auto *const propType = prop->TsType();
+    invoke0Id->SetTsType(propType);
+    invoke0Id->SetVariable(prop);
+
+    auto *newCallee = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
+        allocator, oldCallee, invoke0Id, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    newCallee->SetTsType(propType);
+
+    auto *propSignature = propType->AsETSFunctionType()->CallSignature();
+    ifaceType = propType->IsETSObjectType() ? propType->AsETSObjectType()
+                                            : checker->FunctionTypeToFunctionalInterfaceType(propSignature);
+    newCallee->SetObjectType(ifaceType);
+
+    call->SetCallee(newCallee);
+    call->SetSignature(propSignature);
+    ASSERT(propSignature->ReturnType() != nullptr);
+    call->SetTsType(propSignature->ReturnType());
+
+    return InsertInvokeArguments(ctx, call);
 }
 
 static bool IsRedirectingConstructorCall(ir::CallExpression *expr)

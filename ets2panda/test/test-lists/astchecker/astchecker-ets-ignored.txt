@@ -46,11 +46,8 @@ ast/parser/js/unexpected_token_8.js
 # Issue: #20876
 ast/parser/js/rest_params_1.js
 
-#Issue: #18866
-ast/compiler/ets/annotation_tests/annotationDecl_bad_initializer08.sts
-ast/parser/ets/SmartCast_3.sts
-ast/parser/ets/lambdaWithWrongOptionalParameter.sts
-ast/parser/ets/lambda_optional_param_2.sts
+# Issue: #21522
+ast/compiler/ts/varRedeclaration9.ts
 
 # Fail with SEGV. Issue: #21730
 ast/parser/js/test-private-field5.js

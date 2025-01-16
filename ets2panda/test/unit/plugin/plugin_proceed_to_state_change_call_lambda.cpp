@@ -54,9 +54,9 @@ static void UpdateCall(es2panda_AstNode *ast, es2panda_Context *ctx)
     auto *arrowFunc = impl->CallExpressionArgumentsConst(ctx, callExpr, &n)[0];
     auto *body = const_cast<es2panda_AstNode *>(
         impl->ScriptFunctionBodyConst(ctx, impl->ArrowFunctionExpressionFunction(ctx, arrowFunc)));
-    auto *funcSignature = impl->CreateFunctionSignature(
+    auto funcSignature = impl->CreateFunctionSignature(
         ctx, nullptr, nullptr, 0, impl->CreateETSPrimitiveType(ctx, Es2pandaPrimitiveType::PRIMITIVE_TYPE_VOID), false);
-    auto *scriptFunc = impl->CreateScriptFunction(ctx, body, funcSignature,
+    auto *scriptFunc = impl->CreateScriptFunction(ctx, body, std::move(funcSignature),
                                                   Es2pandaScriptFunctionFlags::SCRIPT_FUNCTION_FLAGS_ARROW, 0);
     impl->AstNodeSetParent(ctx, body, scriptFunc);
     auto *newArrowFunc = impl->CreateArrowFunctionExpression(ctx, scriptFunc);
