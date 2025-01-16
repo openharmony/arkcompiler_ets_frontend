@@ -91,6 +91,7 @@ private:
     void CompileProgram();
     void OptimizeAndCacheProgram(panda::pandasm::Program *prog);
     bool RetrieveProgramFromCacheFiles(const std::string &buffer, bool isAbcFile = false);
+    void CompileAbcFileJobInParallel(es2panda::Compiler &compiler);
     void InsertAbcCachePrograms(uint32_t hashCode,
                                 std::map<std::string, panda::es2panda::util::ProgramCache *> &abcProgramsInfo);
 
@@ -130,9 +131,9 @@ public:
 private:
     void UpdateImportOhmurl(panda::pandasm::Program *prog, const CompilerOptions &options);
     void UpdateDynamicImport(panda::pandasm::Program *prog,
-        const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
+        const std::map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
     void UpdateStaticImport(panda::pandasm::Program *prog,
-        const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
+        const std::map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo);
     void UpdateBundleNameOfOhmurl(std::string &ohmurl);
 
     es2panda::SourceFile *src_;

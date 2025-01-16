@@ -77,29 +77,13 @@ private:
     panda::es2panda::util::ProgramCache *progCache_;
 };
 
-class EmitAbcCacheJob : public util::WorkerJob {
-public:
-    explicit EmitAbcCacheJob(const std::string &outputProtoName,
-                             panda::es2panda::util::AbcProgramsCache *abcProgsCache)
-        : outputProtoName_(outputProtoName), abcProgsCache_(abcProgsCache) {};
-    NO_COPY_SEMANTIC(EmitAbcCacheJob);
-    NO_MOVE_SEMANTIC(EmitAbcCacheJob);
-    ~EmitAbcCacheJob() override = default;
-
-    void Run() override;
-private:
-    std::string outputProtoName_;
-    panda::es2panda::util::AbcProgramsCache *abcProgsCache_;
-};
-
 class EmitFileQueue : public util::WorkerQueue {
 public:
     explicit EmitFileQueue(const std::unique_ptr<panda::es2panda::aot::Options> &options,
                            std::map<std::string, size_t> *statp,
-                           const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-                           panda::ArenaAllocator *allocator)
+                           const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo)
         : WorkerQueue(options->CompilerOptions().fileThreadCount), options_(options), statp_(statp),
-        progsInfo_(progsInfo), allocator_(allocator) {
+        progsInfo_(progsInfo) {
             mergeAbc_ = options_->CompilerOptions().mergeAbc;
         }
 
@@ -110,14 +94,11 @@ public:
     void Schedule() override;
 
 private:
-    void FillAbcProgramsMap(std::unordered_map<std::string, util::AbcProgramsCache *> &abcprogsCacheMap,
-                            std::string progKey, panda::es2panda::util::ProgramCache *progCache);
     void ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob);
     const std::unique_ptr<panda::es2panda::aot::Options> &options_;
     std::map<std::string, size_t> *statp_;
     const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     bool mergeAbc_ { false };
-    panda::ArenaAllocator *allocator_;
 };
 }  // namespace panda::es2panda::aot
 

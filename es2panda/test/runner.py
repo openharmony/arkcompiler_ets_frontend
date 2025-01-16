@@ -417,8 +417,6 @@ class Runner:
         success_list = []
 
         for test in self.tests:
-            if not test.passed:
-                print(test.path, "--------")
             assert(test.passed is not None)
             if not test.passed:
                 fail_list.append(test)
@@ -788,6 +786,7 @@ class CompilerProjectTest(Test):
         self.project = project
         self.test_paths = test_paths
         self.files_info_path = os.path.join(os.path.join(self.projects_path, self.project), 'filesInfo.txt')
+        self.files_info_mod_path = os.path.join(os.path.join(self.projects_path, self.project), 'filesInfoModify.txt')
         # Skip execution if --dump-assembly exists in flags
         self.requires_execution = "--dump-assembly" not in self.flags
         self.file_record_mapping = None
@@ -796,6 +795,8 @@ class CompilerProjectTest(Test):
         self.protoBin_file_path = ""
         self.record_names_path = os.path.join(os.path.join(self.projects_path, self.project), 'recordnames.txt')
         self.abc_inputs_path = os.path.join(os.path.join(self.projects_path, self.project), 'abcinputs')
+        # Modify the hap file path
+        self.project_mod_path = os.path.join(os.path.join(self.projects_path, self.project), 'mod')
         self.modules_cache_path = os.path.join(os.path.join(self.projects_path, self.project), 'modulescache.cache')
 
     def remove_project(self, runner):
@@ -804,6 +805,8 @@ class CompilerProjectTest(Test):
             shutil.rmtree(project_path)
         if path.exists(self.files_info_path):
             os.remove(self.files_info_path)
+        if path.exists(self.files_info_mod_path):
+            os.remove(self.files_info_mod_path)
         if path.exists(self.generated_abc_inputs_path):
             shutil.rmtree(self.generated_abc_inputs_path)
         if path.exists(self.protoBin_file_path):
@@ -893,7 +896,7 @@ class CompilerProjectTest(Test):
             return self.abc_input_filenames[filename]
         return None
 
-    def gen_abc_input_files_infos(self, runner, abc_files_infos, final_file_info_f):
+    def gen_abc_input_files_infos(self, runner, abc_files_infos, final_file_info_f, mod_files_info):
         for abc_files_info_name in abc_files_infos:
             abc_files_info = abc_files_infos[abc_files_info_name]
             if len(abc_files_info) != 0:
@@ -902,7 +905,9 @@ class CompilerProjectTest(Test):
                 abc_files_info_fd = os.open(abc_files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
                 abc_files_info_f = os.fdopen(abc_files_info_fd, 'w')
                 abc_files_info_f.writelines(abc_files_info)
-                final_file_info_f.writelines('%s-abcinput.abc;;;;%s;\n' % (abc_input_path, abc_files_info_name))
+                abc_line = '%s-abcinput.abc;;;;%s;\n' % (abc_input_path, abc_files_info_name)
+                mod_files_info.append(abc_line)
+                final_file_info_f.writelines(abc_line)
 
 
     def gen_files_info(self, runner):
@@ -913,6 +918,7 @@ class CompilerProjectTest(Test):
 
         fd = os.open(self.files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
         f = os.fdopen(fd, 'w')
+        mod_files_info = []
         abc_files_infos = {}
         for test_path in self.test_paths:
             record_name = self.get_record_name(test_path)
@@ -930,10 +936,19 @@ class CompilerProjectTest(Test):
                 if not belonging_abc_input in abc_files_infos:
                     abc_files_infos[belonging_abc_input] = []
                 abc_files_infos[belonging_abc_input].append(file_info)
+            elif test_path.startswith(self.project_mod_path):
+                mod_files_info.append(file_info)
             else:
+                mod_files_info.append(file_info)
                 f.writelines(file_info)
-        self.gen_abc_input_files_infos(runner, abc_files_infos, f)
+        self.gen_abc_input_files_infos(runner, abc_files_infos, f, mod_files_info)
         f.close()
+        if (os.path.exists(self.project_mod_path)):
+            mod_fd = os.open(self.files_info_mod_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
+            mod_f = os.fdopen(mod_fd, 'w')
+            for file_line in mod_files_info:
+                mod_f.writelines(file_line)
+            mod_f.close()
 
     def gen_modules_cache(self, runner):
         if "--cache-file" not in self.flags or "--file-threads=0" in self.flags:
@@ -1049,8 +1064,16 @@ class CompilerProjectTest(Test):
         
         if "--cache-file" in self.flags:
             # Firstly generate cache file, and generate abc from cache file
-            process = run_subprocess_with_beta3(self, es2abc_cmd)
-            out, err = process.communicate()
+            if (os.path.exists(self.project_mod_path)):
+                es2abc_cmd = self.gen_es2abc_cmd(runner, '@' + self.files_info_mod_path, output_abc_name)
+                compile_context_info_path = path.join(path.join(self.projects_path, self.project), "compileContextInfo.json")
+                if path.exists(compile_context_info_path):
+                    es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
+                process = run_subprocess_with_beta3(self, es2abc_cmd)
+                out, err = process.communicate()
+            else:
+                process = run_subprocess_with_beta3(self, es2abc_cmd)
+                out, err = process.communicate()
 
         # restore merge-abc flag
         if "merge_abc_consistence_check" in self.path and "--merge-abc" not in self.flags:
