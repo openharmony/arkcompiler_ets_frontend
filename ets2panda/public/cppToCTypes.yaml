@@ -1229,6 +1229,38 @@ change_types:
         expression: ""
         var_name: '*reinterpret_cast<checker::|es2panda_arg.type.name| *>(|arg_name|)'
 
+  - es2panda_arg:
+      name: '|arg_name|'
+      type:
+        name: 'VerifiedType'
+        namespace: 'checker'
+      max_ptr_depth: 0
+    new_args:
+    - type:
+        name: "es2panda_Type"
+        ptr_depth: 1
+      name: '|arg_name|'
+      namespace: 'checker::'
+    cast:
+        expression: >-
+          auto |arg_name|E2p =
+          static_cast<checker::VerifiedType>(
+          reinterpret_cast<checker::Type *>(|arg_name|));
+        reverse_cast:
+          start : >-
+            reinterpret_cast<?const? es2panda_Type *>(
+            static_cast<?const? checker::Type *>
+          end: )
+        call_cast:
+          call_var:
+            name: classInstance
+            type:
+              name: es2panda_Type
+              ptr_depth: 1
+          start: >-
+            (static_cast<?const? checker::VerifiedType>(
+            reinterpret_cast<?const? checker::Type *>(classInstance)))->
+        var_name: '|arg_name|E2p'
 
   - es2panda_arg:
       name: '|arg_name|'

@@ -53,6 +53,7 @@ set(PLUGIN_TESTS
     "plugin_proceed_to_state_rerun_scopes_after_check compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_rerun_scopes_after_lowered compile.sts ${RUNTIME_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_run_verifier compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
+    "plugin_proceed_to_state_ast_node_check compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
     "plugin_proceed_to_state_rebind compile.sts ${COMPILE_MODE} cpp ${EXECUTABLE_PLUGIN}"
 )
 
