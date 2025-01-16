@@ -15,12 +15,6 @@
 
 #include "options.h"
 
-#if defined(PANDA_TARGET_WINDOWS)
-#include <io.h>
-#else
-#include <dirent.h>
-#endif
-
 #include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler_options.h"
 #include "utils/timers.h"

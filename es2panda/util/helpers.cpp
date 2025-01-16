@@ -34,7 +34,6 @@
 #include <util/concurrent.h>
 
 #ifdef ENABLE_BYTECODE_OPT
-#include <bytecode_optimizer/bytecodeopt_options.h>
 #include <bytecode_optimizer/bytecode_analysis_results.h>
 #include <bytecode_optimizer/optimize_bytecode.h>
 #else
