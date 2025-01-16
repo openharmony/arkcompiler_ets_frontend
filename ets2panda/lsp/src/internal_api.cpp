@@ -83,7 +83,7 @@ void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *ref
             fileRef->fileName = StdStringToCString(allocator, ctx->sourceFileName);
             fileRef->start = start;
             fileRef->length = end - start;
-            fileReferences->referenceInfos.push_back(fileRef);
+            fileReferences->referenceInfos->push_back(fileRef);
         }
     }
 }

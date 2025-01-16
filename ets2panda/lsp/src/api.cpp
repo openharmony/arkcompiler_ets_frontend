@@ -18,6 +18,7 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "util/options.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::lsp {
 
@@ -37,7 +38,8 @@ extern "C" FileReferences *GetFileReferences(char const *fileName)
     initializer.DestroyContext(context);
 
     auto allocator = initializer.Allocator();
-    auto result = allocator->New<FileReferences>();
+    FileReferences *result =
+        allocator->New<FileReferences>(allocator->New<ArenaVector<FileReferenceInfo *>>(allocator->Adapter()));
     for (auto const &referenceFile : files) {
         auto referenceContext = initializer.CreateContext(referenceFile.c_str(), ES2PANDA_STATE_CHECKED);
         GetFileReferencesImpl(allocator, referenceContext, fileName, isPackageModule, result);

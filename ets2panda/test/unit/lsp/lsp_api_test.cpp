@@ -24,6 +24,7 @@
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "test/utils/ast_verifier_test.h"
+#include "utils/arena_containers.h"
 
 class LSPAPITests : public test::utils::AstVerifierTest {
 public:
@@ -222,7 +223,11 @@ B(1, 2);)"};
     impl_->ProceedToState(ctx1, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx1), ES2PANDA_STATE_CHECKED);
 
-    auto result = reinterpret_cast<Context *>(ctx1)->allocator->New<FileReferences>();
+    ark::ArenaVector<FileReferenceInfo *> *referencesInfo =
+        reinterpret_cast<Context *>(ctx1)->allocator->New<ark::ArenaVector<FileReferenceInfo *>>(
+            reinterpret_cast<Context *>(ctx1)->allocator->Adapter());
+    FileReferences *result = reinterpret_cast<Context *>(ctx1)->allocator->New<FileReferences>(referencesInfo);
+
     ark::es2panda::lsp::GetFileReferencesImpl(allocator_, ctx1, searchFileName, isPackageModule, result);
     auto expectedFileName1 = filePaths[1];
     size_t const expectedStartPos1 = 16;
@@ -230,12 +235,12 @@ B(1, 2);)"};
     auto expectedFileName2 = filePaths[1];
     size_t const expectedStartPos2 = 45;
     size_t const expectedLength2 = 15;
-    ASSERT_EQ(std::string(result->referenceInfos[0]->fileName), expectedFileName1);
-    ASSERT_EQ(result->referenceInfos[0]->start, expectedStartPos1);
-    ASSERT_EQ(result->referenceInfos[0]->length, expectedLength1);
-    ASSERT_EQ(std::string(result->referenceInfos[1]->fileName), expectedFileName2);
-    ASSERT_EQ(result->referenceInfos[1]->start, expectedStartPos2);
-    ASSERT_EQ(result->referenceInfos[1]->length, expectedLength2);
+    ASSERT_EQ(std::string(result->referenceInfos->at(0)->fileName), expectedFileName1);
+    ASSERT_EQ(result->referenceInfos->at(0)->start, expectedStartPos1);
+    ASSERT_EQ(result->referenceInfos->at(0)->length, expectedLength1);
+    ASSERT_EQ(std::string(result->referenceInfos->at(1)->fileName), expectedFileName2);
+    ASSERT_EQ(result->referenceInfos->at(1)->start, expectedStartPos2);
+    ASSERT_EQ(result->referenceInfos->at(1)->length, expectedLength2);
     impl_->DestroyContext(ctx1);
 }
 
@@ -272,7 +277,10 @@ B(1, 2);)"};
     impl_->ProceedToState(ctx1, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx1), ES2PANDA_STATE_CHECKED);
 
-    auto result = reinterpret_cast<Context *>(ctx1)->allocator->New<FileReferences>();
+    ark::ArenaVector<FileReferenceInfo *> *referencesInfo =
+        reinterpret_cast<Context *>(ctx1)->allocator->New<ark::ArenaVector<FileReferenceInfo *>>(
+            reinterpret_cast<Context *>(ctx1)->allocator->Adapter());
+    FileReferences *result = reinterpret_cast<Context *>(ctx1)->allocator->New<FileReferences>(referencesInfo);
     ark::es2panda::lsp::GetFileReferencesImpl(allocator_, ctx1, searchFileName, isPackageModule, result);
     auto expectedFileName1 = filePaths[1];
     size_t const expectedStartPos1 = 16;
@@ -280,12 +288,12 @@ B(1, 2);)"};
     auto expectedFileName2 = filePaths[1];
     size_t const expectedStartPos2 = 45;
     size_t const expectedLength2 = 14;
-    ASSERT_EQ(std::string(result->referenceInfos[0]->fileName), expectedFileName1);
-    ASSERT_EQ(result->referenceInfos[0]->start, expectedStartPos1);
-    ASSERT_EQ(result->referenceInfos[0]->length, expectedLength1);
-    ASSERT_EQ(std::string(result->referenceInfos[1]->fileName), expectedFileName2);
-    ASSERT_EQ(result->referenceInfos[1]->start, expectedStartPos2);
-    ASSERT_EQ(result->referenceInfos[1]->length, expectedLength2);
+    ASSERT_EQ(std::string(result->referenceInfos->at(0)->fileName), expectedFileName1);
+    ASSERT_EQ(result->referenceInfos->at(0)->start, expectedStartPos1);
+    ASSERT_EQ(result->referenceInfos->at(0)->length, expectedLength1);
+    ASSERT_EQ(std::string(result->referenceInfos->at(1)->fileName), expectedFileName2);
+    ASSERT_EQ(result->referenceInfos->at(1)->start, expectedStartPos2);
+    ASSERT_EQ(result->referenceInfos->at(1)->length, expectedLength2);
     impl_->DestroyContext(ctx1);
 }
 
@@ -306,14 +314,17 @@ console.log(PI);)"};
 
     auto baseUrl = reinterpret_cast<Context *>(ctx)->config->options->ArkTSConfig()->BaseUrl();
     auto searchFileName = baseUrl + "/plugins/ets/stdlib/std/math/math.sts";
-    auto result = reinterpret_cast<Context *>(ctx)->allocator->New<FileReferences>();
+    ark::ArenaVector<FileReferenceInfo *> *referencesInfo =
+        reinterpret_cast<Context *>(ctx)->allocator->New<ark::ArenaVector<FileReferenceInfo *>>(
+            reinterpret_cast<Context *>(ctx)->allocator->Adapter());
+    FileReferences *result = reinterpret_cast<Context *>(ctx)->allocator->New<FileReferences>(referencesInfo);
     ark::es2panda::lsp::GetFileReferencesImpl(allocator_, ctx, searchFileName.c_str(), true, result);
     auto expectedFileName = filePaths[0];
     size_t const expectedStartPos = 19;
     size_t const expectedLength = 10;
 
-    ASSERT_EQ(result->referenceInfos[0]->fileName, expectedFileName);
-    ASSERT_EQ(result->referenceInfos[0]->start, expectedStartPos);
-    ASSERT_EQ(result->referenceInfos[0]->length, expectedLength);
+    ASSERT_EQ(result->referenceInfos->at(0)->fileName, expectedFileName);
+    ASSERT_EQ(result->referenceInfos->at(0)->start, expectedStartPos);
+    ASSERT_EQ(result->referenceInfos->at(0)->length, expectedLength);
     impl_->DestroyContext(ctx);
 }
