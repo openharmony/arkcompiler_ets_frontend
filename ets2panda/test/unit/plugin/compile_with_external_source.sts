@@ -13,26 +13,10 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_TEST_UNIT_PLUGIN_UTIL_H
-#define ES2PANDA_TEST_UNIT_PLUGIN_UTIL_H
+import { foo } from "./x.sts"
+import { too } from "./y.sts"
 
-#include <iostream>
-
-#include "os/library_loader.h"
-
-#include "public/es2panda_lib.h"
-
-constexpr int MIN_ARGC = 3;
-
-// error code number
-constexpr int NULLPTR_IMPL_ERROR_CODE = 2;
-constexpr int PROCEED_ERROR_CODE = 3;
-constexpr int TEST_ERROR_CODE = 4;
-constexpr int INVALID_ARGC_ERROR_CODE = 5;
-constexpr int NULLPTR_CONTEXT_ERROR_CODE = 6;
-
-es2panda_Impl *GetImpl();
-
-void CheckForErrors(const std::string &stateName, es2panda_Context *context);
-
-#endif
+function main () {
+    foo()
+    too()
+}

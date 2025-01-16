@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,9 +30,8 @@ static struct es2panda_Impl const *impl = NULL;
 void HasScope(es2panda_AstNode *ast, void *arg)
 {
     es2panda_Context *ctx = reinterpret_cast<es2panda_Context *>(arg);
-    const ark::es2panda::ir::AstNode *astNode = reinterpret_cast<const ark::es2panda::ir::AstNode *>(ast);
-    auto scope = ark::es2panda::compiler::NearestScope(astNode);
-    if (scope != nullptr && scope->IsGlobalScope()) {
+    auto scope = impl->AstNodeFindNearestScope(ctx, ast);
+    if (scope != nullptr && impl->ScopeIsGlobalScope(scope)) {
         puts(impl->AstNodeDumpJSONConst(ctx, ast));
     }
 }

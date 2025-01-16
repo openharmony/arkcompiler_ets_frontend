@@ -36,7 +36,7 @@ static auto source = std::string(
 int main(int argc, char **argv)
 {
     if (argc < MIN_ARGC) {
-        return 1;
+        return INVALID_ARGC_ERROR_CODE;
     }
 
     if (GetImpl() == nullptr) {
@@ -47,8 +47,9 @@ int main(int argc, char **argv)
     const char **args = const_cast<const char **>(&(argv[1]));
     auto config = impl->CreateConfig(argc - 1, args);
     auto context = impl->CreateContextFromString(config, source.data(), argv[argc - 1]);
-    if (context != nullptr) {
-        std::cout << "CREATE CONTEXT SUCCESS" << std::endl;
+    if (context == nullptr) {
+        std::cerr << "FAILED TO CREATE CONTEXT" << std::endl;
+        return NULLPTR_CONTEXT_ERROR_CODE;
     }
 
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
