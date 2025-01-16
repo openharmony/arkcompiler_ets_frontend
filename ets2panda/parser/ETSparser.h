@@ -213,6 +213,21 @@ public:
     void ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                 lexer::SourcePosition pos);
 
+    uint32_t GetNamespaceNestedRank()
+    {
+        return namespaceNestedRank_;
+    }
+
+    void IncrementNamespaceNestedRank()
+    {
+        namespaceNestedRank_++;
+    }
+
+    void DecrementNamespaceNestedRank()
+    {
+        namespaceNestedRank_--;
+    }
+
 private:
     NodeFormatType GetFormatPlaceholderType();
 
@@ -273,7 +288,7 @@ private:
                                                            ir::ImportKinds importKind);
     parser::Program *ParseSource(const SourceFile &sourceFile);
     void AddExternalSource(const std::vector<Program *> &programs);
-    ir::ETSScript *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
+    ir::ETSModule *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
 
     void *ApplyAnnotationsToClassElement(ir::AstNode *property, ArenaVector<ir::AnnotationUsage *> &&annotations,
@@ -449,8 +464,9 @@ private:
     ir::ClassDefinition *ParseClassDefinition(ir::ClassDefinitionModifiers modifiers,
                                               ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
     bool CheckInNamespaceContextIsExported();
-    ir::NamespaceDeclaration *ParseNamespaceDeclaration(ir::ModifierFlags flags);
-    ir::NamespaceDefinition *ParseNamespaceDefinition(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
+    ir::ETSModule *ParseNamespaceStatement(ir::ModifierFlags memberModifiers);
+    ir::ETSModule *ParseNamespace(ir::ModifierFlags flags);
+    ir::ETSModule *ParseNamespaceImp(ir::ModifierFlags flags);
     using NamespaceBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
     NamespaceBody ParseNamespaceBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
     // NOLINTNEXTLINE(google-default-arguments)
@@ -490,6 +506,7 @@ private:
 
     ir::ModifierFlags ParseTypeVarianceModifier(TypeAnnotationParsingOptions *const options);
 
+    bool IsExportedDeclaration(ir::ModifierFlags memberModifiers);
     ir::Statement *ParseTopLevelDeclStatement(StatementParsingFlags flags);
     ir::Statement *ParseTopLevelStatement();
 
@@ -501,6 +518,7 @@ private:
     friend class InnerSourceParser;
 
 private:
+    uint32_t namespaceNestedRank_;
     std::optional<ir::Expression *> GetPostPrimaryExpression(ir::Expression *returnExpression,
                                                              lexer::SourcePosition startLoc, bool ignoreCallExpression,
                                                              [[maybe_unused]] bool *isChainExpression);

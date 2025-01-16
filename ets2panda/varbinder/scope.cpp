@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -179,20 +179,21 @@ Scope::VariableMap::size_type Scope::EraseBinding(const util::StringView &name)
 ConstScopeFindResult Scope::FindInGlobal(const util::StringView &name, const ResolveBindingOptions options) const
 {
     const auto *scopeIter = this;
-    const auto *scopeParent = this->Parent();
-    // One scope below true global is ETSGLOBAL
-    while (scopeParent != nullptr && !scopeParent->IsGlobalScope()) {
-        scopeIter = scopeParent;
-        scopeParent = scopeIter->Parent();
+    Variable *resolved = nullptr;
+    while (scopeIter != nullptr && !scopeIter->IsGlobalScope()) {
+        bool isModule = scopeIter->Node() != nullptr && scopeIter->Node()->IsClassDefinition() &&
+                        scopeIter->Node()->AsClassDefinition()->IsModule();
+        if (isModule) {
+            resolved = scopeIter->FindLocal(name, options);
+            if (resolved != nullptr) {
+                break;
+            }
+        }
+        scopeIter = scopeIter->Parent();
     }
-
-    auto *resolved = scopeIter->FindLocal(name, options);
-    if (resolved == nullptr && scopeParent != nullptr) {
-        // If the variable cannot be found in the scope of the local ETSGLOBAL, than we still need to check the true
-        // global scope which contains all the imported ETSGLOBALs
-        resolved = scopeParent->FindLocal(name, options);
+    if (resolved == nullptr && scopeIter != nullptr && scopeIter->IsGlobalScope()) {
+        resolved = scopeIter->FindLocal(name, options);
     }
-
     return {name, scopeIter, 0, 0, resolved};
 }
 
@@ -293,9 +294,9 @@ Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, 
                 .first->second;
         }
         case DeclType::CLASS: {
-            auto *var =
-                bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS)})
-                    .first->second;
+            auto isNamespaceTransformed = newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed();
+            VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE : VariableFlags::CLASS;
+            auto *var = bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, flag)}).first->second;
             newDecl->Node()->AsClassDefinition()->Ident()->SetVariable(var);
             return var;
         }
@@ -503,8 +504,10 @@ Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *current
             break;
         }
         case DeclType::CLASS: {
+            auto isNamespaceTransformed = newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed();
+            VariableFlags flag = isNamespaceTransformed ? VariableFlags::NAMESPACE : VariableFlags::CLASS;
             ident = newDecl->Node()->AsClassDefinition()->Ident();
-            var = InsertBindingIfAbsentInScope(allocator, currentVariable, newDecl, VariableFlags::CLASS);
+            var = InsertBindingIfAbsentInScope(allocator, currentVariable, newDecl, flag);
             break;
         }
         case DeclType::TYPE_ALIAS: {
@@ -915,7 +918,11 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
             break;
         }
         case DeclType::CLASS: {
-            props->SetBindingProps(VariableFlags::CLASS, newDecl->Node()->AsClassDefinition()->Ident(),
+            VariableFlags flag = VariableFlags::CLASS;
+            if (newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
+                flag = VariableFlags::NAMESPACE;
+            }
+            props->SetBindingProps(flag, newDecl->Node()->AsClassDefinition()->Ident(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
         }

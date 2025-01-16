@@ -51,7 +51,9 @@ enum class ClassDefinitionModifiers : uint32_t {
     FROM_EXTERNAL = 1U << 10U,
     LOCAL = 1U << 11U,
     CLASSDEFINITION_CHECKED = 1U << 12U,
-    DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED
+    NAMESPACE_TRANSFORMED = 1U << 13U,
+    DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED,
+    ETS_MODULE = NAMESPACE_TRANSFORMED | GLOBAL
 };
 
 }  // namespace ark::es2panda::ir
@@ -223,6 +225,16 @@ public:
         return (modifiers_ & ClassDefinitionModifiers::ANONYMOUS) != 0;
     }
 
+    [[nodiscard]] bool IsNamespaceTransformed() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::NAMESPACE_TRANSFORMED) != 0;
+    }
+
+    [[nodiscard]] bool IsModule() const noexcept
+    {
+        return IsGlobal() || IsNamespaceTransformed();
+    }
+
     [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return lang_;
@@ -246,6 +258,11 @@ public:
     void SetAnonymousModifier() noexcept
     {
         modifiers_ |= ClassDefinitionModifiers::ANONYMOUS;
+    }
+
+    void SetNamespaceTransformed() noexcept
+    {
+        modifiers_ |= ClassDefinitionModifiers::NAMESPACE_TRANSFORMED;
     }
 
     [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept

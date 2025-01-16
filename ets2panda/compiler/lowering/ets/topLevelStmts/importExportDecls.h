@@ -56,6 +56,8 @@ public:
      * @param global_stmts program global statements
      */
     GlobalClassHandler::ModuleDependencies HandleGlobalStmts(ArenaVector<parser::Program *> &programs);
+    void ProcessProgramStatements(parser::Program *program, const ArenaVector<ir::Statement *> &statements,
+                                  GlobalClassHandler::ModuleDependencies &moduleDependencies);
     void VerifyTypeExports(const ArenaVector<parser::Program *> &programs);
     void VerifyType(ir::Statement *stmt, parser::Program *program, std::set<util::StringView> &exportedTypes,
                     std::set<util::StringView> &exportedStatements,
@@ -78,6 +80,7 @@ private:
     void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl) override;
     void VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl) override;
     void VisitAnnotationDeclaration(ir::AnnotationDeclaration *annotationDecl) override;
+    void VisitETSModule(ir::ETSModule *etsModule) override;
 
 private:
     varbinder::ETSBinder *varbinder_ {nullptr};

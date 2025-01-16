@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #include "checker/ETSchecker.h"
 
 using ark::es2panda::compiler::ast_verifier::ModifierAccessValid;
-using ark::es2panda::ir::ETSScript;
+using ark::es2panda::ir::ETSModule;
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
 {
@@ -33,9 +33,9 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -65,9 +65,9 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative2)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -98,9 +98,9 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -131,9 +131,9 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSModule *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -165,9 +165,9 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto ast = GetAstFromContext<ETSScript>(impl_, ctx);
+    auto ast = GetAstFromContext<ETSModule>(impl_, ctx);
 
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -211,9 +211,9 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto ast = GetAstFromContext<ETSScript>(impl_, ctx);
+    auto ast = GetAstFromContext<ETSModule>(impl_, ctx);
 
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -257,9 +257,9 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto ast = GetAstFromContext<ETSScript>(impl_, ctx);
+    auto ast = GetAstFromContext<ETSModule>(impl_, ctx);
 
-    ast->AsETSScript()
+    ast->AsETSModule()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()

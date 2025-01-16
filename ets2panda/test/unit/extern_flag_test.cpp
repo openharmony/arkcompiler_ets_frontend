@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include <gtest/gtest.h>
 
 #include "assembler/assembly-program.h"
-#include "es2panda.h"
 #include "generated/signatures.h"
 #include "libpandabase/mem/mem.h"
 #include "macros.h"
@@ -51,14 +50,21 @@ public:
         ASSERT_NE(program_.get(), nullptr);
     }
 
-    void CheckExternalFlag(std::string_view functionName)
+    void CheckRecordExternalFlag(std::string_view recordName)
+    {
+        pandasm::Record *record = GetRecord(recordName, program_);
+        ASSERT_TRUE(record != nullptr) << "Record '" << recordName << "' not found";
+        ASSERT_TRUE(HasExternalFlag(record)) << "Record '" << record->name << "' doesn't have External flag";
+    }
+
+    void CheckFunctionExternalFlag(std::string_view functionName)
     {
         pandasm::Function *fn = GetFunction(functionName);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
         ASSERT_TRUE(HasExternalFlag(fn)) << "Function '" << fn->name << "' doesn't have External flag";
     }
 
-    void CheckNoExternalFlag(std::string_view functionName)
+    void CheckFunctionNoExternalFlag(std::string_view functionName)
     {
         pandasm::Function *fn = GetFunction(functionName);
         ASSERT_TRUE(fn != nullptr) << "Function '" << functionName << "' not found";
@@ -69,6 +75,11 @@ private:
     bool HasExternalFlag(pandasm::Function *fn)
     {
         return (fn->metadata->GetAttribute("external"));
+    }
+
+    bool HasExternalFlag(pandasm::Record *record)
+    {
+        return (record->metadata->GetAttribute("external"));
     }
 
     NO_COPY_SEMANTIC(DeclareTest);
@@ -102,6 +113,15 @@ private:
         return &it->second;
     }
 
+    pandasm::Record *GetRecord(std::string_view recordName, const std::unique_ptr<ark::pandasm::Program> &program)
+    {
+        auto it = program->recordTable.find(recordName.data());
+        if (it == program->recordTable.end()) {
+            return nullptr;
+        }
+        return &it->second;
+    }
+
 private:
     std::unique_ptr<pandasm::Program> program_ {};
 };
@@ -112,7 +132,7 @@ TEST_F(DeclareTest, function_without_overloads_0)
     SetCurrentProgram(R"(
         declare function foo(tmp: double): string
     )");
-    CheckExternalFlag("ETSGLOBAL.foo:f64;std.core.String;");
+    CheckFunctionExternalFlag("ETSGLOBAL.foo:f64;std.core.String;");
 }
 
 TEST_F(DeclareTest, function_with_overloads_0)
@@ -120,8 +140,8 @@ TEST_F(DeclareTest, function_with_overloads_0)
     SetCurrentProgram(R"(
         declare function foo(tmp?: double): string
     )");
-    CheckExternalFlag("ETSGLOBAL.foo:std.core.Object;std.core.String;");
-    CheckExternalFlag("ETSGLOBAL.foo:std.core.String;");
+    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.Object;std.core.String;");
+    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.String;");
 }
 
 // === Method of class ===
@@ -132,8 +152,8 @@ TEST_F(DeclareTest, noImplclass_def_with_overload_0)
             public foo(arg?: int): string
         }
     )");
-    CheckExternalFlag("my_class.foo:std.core.Object;std.core.String;");
-    CheckExternalFlag("my_class.foo:std.core.String;");
+    CheckFunctionExternalFlag("my_class.foo:std.core.Object;std.core.String;");
+    CheckFunctionExternalFlag("my_class.foo:std.core.String;");
 }
 
 // === Constructor of class ===
@@ -144,7 +164,7 @@ TEST_F(DeclareTest, class_constructor_without_parameters_0)
             static x: double
         }
     )");
-    CheckExternalFlag("A_class.<ctor>:void;");
+    CheckFunctionExternalFlag("A_class.<ctor>:void;");
 }
 
 TEST_F(DeclareTest, class_constructor_without_parameters_1)
@@ -154,7 +174,7 @@ TEST_F(DeclareTest, class_constructor_without_parameters_1)
             constructor();
         }
     )");
-    CheckExternalFlag("A.<ctor>:void;");
+    CheckFunctionExternalFlag("A.<ctor>:void;");
 }
 
 TEST_F(DeclareTest, class_implicit_constructor_0)
@@ -163,7 +183,7 @@ TEST_F(DeclareTest, class_implicit_constructor_0)
         declare class A {
         }
     )");
-    CheckExternalFlag("A.<ctor>:void;");
+    CheckFunctionExternalFlag("A.<ctor>:void;");
 }
 
 // === Method of interface ===
@@ -174,8 +194,17 @@ TEST_F(DeclareTest, noImplinterface_def_with_overload_0)
             foo(arg?: int): void
         }
     )");
-    CheckExternalFlag("my_inter.foo:std.core.Object;void;");
-    CheckExternalFlag("my_inter.foo:void;");
+    CheckFunctionExternalFlag("my_inter.foo:std.core.Object;void;");
+    CheckFunctionExternalFlag("my_inter.foo:void;");
+}
+
+TEST_F(DeclareTest, namespace_0)
+{
+    SetCurrentProgram(R"(
+        declare namespace A {
+        }
+    )");
+    CheckRecordExternalFlag("A");
 }
 
 }  // namespace ark::es2panda::compiler::test

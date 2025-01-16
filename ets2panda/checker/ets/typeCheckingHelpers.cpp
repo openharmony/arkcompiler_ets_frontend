@@ -684,7 +684,9 @@ Type *ETSChecker::GetTypeFromClassReference(varbinder::Variable *var)
         return var->TsType();
     }
 
-    auto *classType = BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
+    auto classDef = var->Declaration()->Node()->AsClassDefinition();
+
+    auto *classType = BuildBasicClassProperties(classDef);
     var->SetTsType(classType);
     return classType;
 }
@@ -822,7 +824,8 @@ void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir:
         }
 
         auto *fieldDecl = fieldDeclIter->second;
-        if (field->TsType() != fieldDecl->TsType()) {
+        fieldDecl->Check(this);
+        if (!Relation()->IsIdenticalTo(field->TsType(), fieldDecl->TsType())) {
             LogTypeError({"Field '", fieldName, "' has a type mismatch with the ambient annotation '",
                           annoDecl->GetBaseName()->Name(), "'."},
                          field->TypeAnnotation()->Start());

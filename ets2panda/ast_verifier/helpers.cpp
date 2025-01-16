@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/statements/blockStatement.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "parser/program/program.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/callExpression.h"
@@ -130,20 +130,18 @@ bool IsStringType(const ir::AstNode *ast)
 
 bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *objTypeDeclNode)
 {
-    // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
-    if (!ast->GetTopStatement()->IsETSScript()) {
+    if (!ast->GetTopStatement()->IsETSModule()) {
         return false;
     }
-    auto *currentTopStatement = ast->GetTopStatement()->AsETSScript();
+    auto *currentTopStatement = ast->GetTopStatement()->AsETSModule();
     auto *currentProgram = currentTopStatement->Program();
     if (currentProgram == nullptr) {
         return false;
     }
-    // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
-    if (!objTypeDeclNode->GetTopStatement()->IsETSScript()) {
+    if (!objTypeDeclNode->GetTopStatement()->IsETSModule()) {
         return false;
     }
-    auto *objectTopStatement = objTypeDeclNode->GetTopStatement()->AsETSScript();
+    auto *objectTopStatement = objTypeDeclNode->GetTopStatement()->AsETSModule();
     auto *objectProgram = objectTopStatement->Program();
     if (objectProgram == nullptr) {
         return false;

@@ -17,27 +17,33 @@
 #include <gtest/gtest.h>
 
 namespace ark::es2panda {
-// apiName: CreateETSScript
+// apiName: CreateETSModule
 TEST_F(PluginConversionRuleUnitTest, ParserProgramPtrInputParameter)
 {
     std::string targetCAPI {R"(
-    extern "C" es2panda_AstNode *CreateETSScript([[maybe_unused]] es2panda_Context *context,
-    [[maybe_unused]] es2panda_AstNode **statementList, size_t statementListLen)
+    explicit ETSModule(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, Identifier *ident,
+                        ModuleFlag flag, parser::Program *program) */
+    extern "C" es2panda_AstNode *CreateETSModule([[maybe_unused]] es2panda_Context *context,
+                                                 [[maybe_unused]] es2panda_AstNode **statementList,
+                                                 size_t statementListLen, [[maybe_unused]] es2panda_AstNode *ident,
+                                                 [[maybe_unused]] Es2pandaModuleFlag flag)
     {
         auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
-        ArenaVector<ir::Statement *> statementListArenaVector {reinterpret_cast<Context *>(context)
-        ->allocator->Adapter()};
- 	    for (size_t i = 0; i < statementListLen; ++i) {
- 	    	auto *statementListElement1 = statementList[i];
- 	    	auto *statementListElement1E2p = reinterpret_cast<ir::Statement *>(statementListElement1);
+        ArenaVector<ir::Statement *> statementListArenaVector {
+            reinterpret_cast<Context *>(context)->allocator->Adapter()};
+        for (size_t i = 0; i < statementListLen; ++i) {
+            auto *statementListElement1 = statementList[i];
+            auto *statementListElement1E2p = reinterpret_cast<ir::Statement *>(statementListElement1);
 
- 	    	statementListArenaVector.push_back(statementListElement1E2p);
- 	    }
+            statementListArenaVector.push_back(statementListElement1E2p);
+        }
+        auto *identE2p = reinterpret_cast<ir::Identifier *>(ident);
+        auto flagE2p = E2pToIrModuleFlag(flag);
         auto *programE2p = reinterpret_cast<Context *>(context)->parserProgram;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSScript>(allocatorE2p,
-               std::move(statementListArenaVector), programE2p));
+        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSModule>(
+            allocatorE2p, std::move(statementListArenaVector), identE2p, flagE2p, programE2p));
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,9 +21,9 @@ namespace ark::es2panda::compiler::ast_verifier {
 
 CheckResult NodeHasParent::operator()(const ir::AstNode *ast)
 {
-    const auto isEtsScript = ast->IsETSScript() || (ast->IsBlockStatement() && ast->AsBlockStatement()->IsProgram());
+    const auto isETSModule = ast->IsETSModule() || (ast->IsBlockStatement() && ast->AsBlockStatement()->IsProgram());
     const auto hasParent = ast->Parent() != nullptr;
-    if (!isEtsScript && !hasParent) {
+    if (!isETSModule && !hasParent) {
         AddCheckMessage("NULL_PARENT", *ast);
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }

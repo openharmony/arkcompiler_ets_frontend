@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -68,8 +68,6 @@
     _(META_PROPERTY_EXPRESSION, MetaProperty)                                             \
     _(METHOD_DEFINITION, MethodDefinition)                                                \
     _(NAMED_TYPE, NamedType)                                                              \
-    _(NAMESPACE_DECLARATION, NamespaceDeclaration)                                        \
-    _(NAMESPACE_DEFINITION, NamespaceDefinition)                                          \
     _(NEW_EXPRESSION, NewExpression)                                                      \
     _(NULL_LITERAL, NullLiteral)                                                          \
     _(UNDEFINED_LITERAL, UndefinedLiteral)                                                \
@@ -102,7 +100,7 @@
     _(ETS_IMPORT_DECLARATION, ETSImportDeclaration)                                       \
     _(ETS_PARAMETER_EXPRESSION, ETSParameterExpression)                                   \
     _(ETS_TUPLE, ETSTuple)                                                                \
-    _(ETS_SCRIPT, ETSScript)                                                              \
+    _(ETS_MODULE, ETSModule)                                                              \
     _(SUPER_EXPRESSION, SuperExpression)                                                  \
     _(STRUCT_DECLARATION, ETSStructDeclaration)                                           \
     _(SWITCH_CASE_STATEMENT, SwitchCaseStatement)                                         \

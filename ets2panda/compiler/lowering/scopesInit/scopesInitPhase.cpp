@@ -801,7 +801,7 @@ void InitScopesPhaseETS::HandleProgram(parser::Program *program)
     }
     ASSERT(program->Ast() != nullptr);
 
-    HandleETSScript(program->Ast());
+    HandleETSModule(program->Ast());
 }
 
 void InitScopesPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
@@ -1113,7 +1113,7 @@ void InitScopesPhaseETS::AddGlobalToBinder(parser::Program *program)
     globalId->SetVariable(var);
 }
 
-void InitScopesPhaseETS::HandleETSScript(ir::BlockStatement *script)
+void InitScopesPhaseETS::HandleETSModule(ir::BlockStatement *script)
 {
     for (auto decl : script->Statements()) {
         if (decl->IsETSImportDeclaration()) {

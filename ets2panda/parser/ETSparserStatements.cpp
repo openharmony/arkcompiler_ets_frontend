@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -89,7 +89,7 @@
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsNewMultiDimArrayInstanceExpression.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsModule.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNullishTypes.h"
@@ -148,6 +148,9 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
                                                   lexer::SourcePosition pos)
 {
     if (stmt != nullptr) {
+        if (stmt->IsETSModule()) {
+            return stmt;
+        }
         if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
             !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
             parser->LogSyntaxError("Can only type export class or interface!", stmt->Start());
@@ -167,13 +170,17 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
 
     return stmt;
 }
+bool ETSParser::IsExportedDeclaration(ir::ModifierFlags memberModifiers)
+{
+    return (memberModifiers & ir::ModifierFlags::EXPORTED) != 0U &&
+           (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
+            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+}
 
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
-    if ((memberModifiers & (ir::ModifierFlags::EXPORTED)) != 0U &&
-        (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
-         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE)) {
+    if (IsExportedDeclaration(memberModifiers)) {
         return ParseExport(startLoc, memberModifiers);
     }
 
@@ -191,7 +198,10 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
         case lexer::TokenType::KEYW_LET:
             result = ParseStatement(flags);
             break;
-        case lexer::TokenType::KEYW_NAMESPACE:
+        case lexer::TokenType::KEYW_NAMESPACE: {
+            result = ParseNamespaceStatement(memberModifiers);
+            break;
+        }
         case lexer::TokenType::KEYW_STATIC:
         case lexer::TokenType::KEYW_ABSTRACT:
         case lexer::TokenType::KEYW_FINAL:

@@ -60,3 +60,6 @@ lambdaWithLocalClassAccess.sts
 #Issue 21065
 implementsClassPropertyUnionType1.sts
 implementsClassPropertyUnionType2.sts
+
+#Issue 21188
+namespace_tests/nested_namespace_plus_equal.sts

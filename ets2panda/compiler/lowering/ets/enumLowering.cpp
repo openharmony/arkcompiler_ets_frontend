@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -166,25 +166,29 @@ ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclarat
     // clang-format on
 }
 
-ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *const enumDecl)
+ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *const enumDecl,
+                                                     const DeclarationFlags flags)
 {
     auto *ident = Allocator()->New<ir::Identifier>(GetEnumClassName(checker_, enumDecl).View(), Allocator());
-
-    bool localDeclaration = (enumDecl->Parent() != nullptr && enumDecl->Parent()->IsBlockStatement());
     auto *classDef = checker_->AllocNode<ir::ClassDefinition>(
         Allocator(), ident,
-        localDeclaration ? ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL
-                         : ir::ClassDefinitionModifiers::CLASS_DECL,
+        flags.isLocal ? ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL
+                      : ir::ClassDefinitionModifiers::CLASS_DECL,
         enumDecl->IsDeclare() ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE, Language(Language::Id::ETS));
 
     auto *classDecl = checker_->AllocNode<ir::ClassDeclaration>(classDef, Allocator());
 
-    if (localDeclaration) {
+    if (flags.isLocal) {
         enumDecl->Parent()->AsBlockStatement()->Statements().push_back(classDecl);
         classDecl->SetParent(enumDecl->Parent());
-    } else {
+    } else if (flags.isNamespace) {
+        enumDecl->Parent()->AsClassDefinition()->Body().push_back(classDecl);
+        classDecl->SetParent(enumDecl->Parent());
+    } else if (flags.isTopLevel) {
         program_->Ast()->Statements().push_back(classDecl);
         classDecl->SetParent(program_->Ast());
+    } else {  // Maybe support local enums in the future
+        UNREACHABLE();
     }
 
     classDef->SetOrigEnumDecl(enumDecl);
@@ -290,9 +294,33 @@ void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumCl
     enumClass->Body().push_back(methodDef);
 }
 
-void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
+void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const enumDecl,
+                                                    const DeclarationFlags &flags, ir::ClassDeclaration *enumClassDecl)
 {
-    auto *const enumClassDecl = CreateClass(enumDecl);
+    if (flags.isLocal) {
+        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(enumDecl->Parent()));
+        InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
+    } else if (flags.isTopLevel) {
+        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, program_->GlobalScope());
+        InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
+        auto *ident = enumClassDecl->Definition()->Ident();
+        auto *var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::BINDINGS);
+        ident->SetVariable(var);
+    } else if (flags.isNamespace) {
+        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, enumDecl->Parent()->Scope());
+        InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
+        auto *ident = enumClassDecl->Definition()->Ident();
+        auto *var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::DECLARATION);
+        ident->SetVariable(var);
+    } else {
+        UNREACHABLE();
+    }
+}
+
+void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
+                                                              const DeclarationFlags flags)
+{
+    auto *const enumClassDecl = CreateClass(enumDecl, flags);
     auto *const enumClass = enumClassDecl->Definition();
 
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
@@ -319,21 +347,13 @@ void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclarat
     CreateEnumFromIntMethod(enumDecl, enumClass, boxedItemsArrayIdent, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
                             GetEnumClassName(checker_, enumDecl).View());
 
-    if (enumDecl->Parent() != nullptr && enumDecl->Parent()->IsBlockStatement()) {
-        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(enumDecl->Parent()));
-        InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
-    } else {
-        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, program_->GlobalScope());
-        InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
-        auto *ident = enumClass->Ident();
-        auto *var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::BINDINGS);
-        ident->SetVariable(var);
-    }
+    ProcessEnumClassDeclaration(enumDecl, flags, enumClassDecl);
 }
 
-void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
+void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
+                                                                 const DeclarationFlags flags)
 {
-    auto *const enumClassDecl = CreateClass(enumDecl);
+    auto *const enumClassDecl = CreateClass(enumDecl, flags);
     auto *const enumClass = enumClassDecl->Definition();
 
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
@@ -357,16 +377,16 @@ void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDecla
     CreateEnumFromIntMethod(enumDecl, enumClass, boxedItemsArrayIdent, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
                             GetEnumClassName(checker_, enumDecl).View());
 
-    if (enumDecl->Parent() != nullptr && enumDecl->Parent()->IsBlockStatement()) {
-        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(enumDecl->Parent()));
-        InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
-    } else {
-        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, program_->GlobalScope());
-        InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
-        auto *ident = enumClass->Ident();
-        auto *var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::BINDINGS);
-        ident->SetVariable(var);
-    }
+    ProcessEnumClassDeclaration(enumDecl, flags, enumClassDecl);
+}
+
+static EnumLoweringPhase::DeclarationFlags GetDeclFlags(ir::TSEnumDeclaration *const enumDecl)
+{
+    return {enumDecl->Parent() != nullptr && enumDecl->Parent()->IsETSModule() &&
+                enumDecl->Parent()->AsETSModule()->IsETSScript(),
+            enumDecl->Parent() != nullptr && enumDecl->Parent()->IsBlockStatement(),
+            enumDecl->Parent() != nullptr && enumDecl->Parent()->IsClassDefinition() &&
+                enumDecl->Parent()->AsClassDefinition()->IsNamespaceTransformed()};
 }
 
 bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Program *program)
@@ -387,10 +407,10 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
             if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
                 itemInit->IsNumberLiteral() &&
                 CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError)) {
-                CreateEnumIntClassFromEnumDeclaration(enumDecl);
+                CreateEnumIntClassFromEnumDeclaration(enumDecl, GetDeclFlags(enumDecl));
             } else if (itemInit->IsStringLiteral() &&
                        CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError)) {
-                CreateEnumStringClassFromEnumDeclaration(enumDecl);
+                CreateEnumStringClassFromEnumDeclaration(enumDecl, GetDeclFlags(enumDecl));
             } else if (!hasLoggedError) {
                 LogSyntaxError("Invalid enum initialization value", itemInit->Start());
                 isPerformedSuccess = false;

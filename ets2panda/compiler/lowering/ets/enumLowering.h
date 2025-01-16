@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,12 @@ namespace ark::es2panda::compiler {
 
 class EnumLoweringPhase : public PhaseForDeclarations {
 public:
+    struct DeclarationFlags {
+        bool isTopLevel;
+        bool isLocal;
+        bool isNamespace;
+    };
+
     EnumLoweringPhase() noexcept = default;
     std::string_view Name() const override
     {
@@ -55,14 +61,16 @@ private:
     bool CheckEnumMemberType(const ArenaVector<ir::AstNode *> &enumMembers, bool &hasLoggedError);
 
     [[nodiscard]] ir::ScriptFunction *MakeFunction(FunctionInfo &&functionInfo);
-    ir::ClassDeclaration *CreateClass(ir::TSEnumDeclaration *const enumDecl);
+    ir::ClassDeclaration *CreateClass(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags flags);
     ir::ClassProperty *CreateOrdinalField(ir::ClassDefinition *const enumClass);
     void CreateCCtorForEnumClass(ir::ClassDefinition *const enumClass);
     void CreateCtorForEnumClass(ir::ClassDefinition *const enumClass);
     ir::ScriptFunction *CreateFunctionForCtorOfEnumClass(ir::ClassDefinition *const enumClass);
 
-    void CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
-    void CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
+    void ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags &flags,
+                                     ir::ClassDeclaration *enumClassDecl);
+    void CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags flags);
+    void CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl, const DeclarationFlags flags);
     static void AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const node);
     template <typename ElementMaker>
     [[nodiscard]] ir::Identifier *MakeArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass,

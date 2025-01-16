@@ -31,10 +31,157 @@
 #include "ir/statements/blockStatement.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
+#include "utils/arena_containers.h"
 
 namespace ark::es2panda::compiler {
 
 using util::NodeAllocator;
+
+void GlobalClassHandler::AddStaticBlockToClass(ir::AstNode *node)
+{
+    if (node->IsClassDefinition() && !node->AsClassDefinition()->IsDeclare()) {
+        auto classDef = node->AsClassDefinition();
+        if (auto staticBlock = CreateStaticBlock(classDef); staticBlock != nullptr) {
+            classDef->Body().emplace_back(staticBlock);  // NOTE(vpukhov): inserted to end for some reason
+            staticBlock->SetParent(classDef);
+        }
+    }
+}
+
+ir::ClassDeclaration *GlobalClassHandler::CreateTransformedClass(ir::ETSModule *ns)
+{
+    auto className = ns->Ident()->Name();
+    auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, className, allocator_);
+    ident->SetRange(ns->Ident()->Range());
+
+    auto *classDef = NodeAllocator::Alloc<ir::ClassDefinition>(
+        allocator_, allocator_, ident, ir::ClassDefinitionModifiers::CLASS_DECL, ir::ModifierFlags::ABSTRACT,
+        Language(Language::Id::ETS));
+    classDef->SetRange(ns->Range());
+    classDef->AddModifier(ns->Modifiers());
+    auto *classDecl = NodeAllocator::Alloc<ir::ClassDeclaration>(allocator_, classDef, allocator_);
+    classDecl->AddModifier(ns->Modifiers());
+    classDef->SetNamespaceTransformed();
+    ArenaVector<ir::AnnotationUsage *> annotations {allocator_->Adapter()};
+    for (auto *anno : ns->Annotations()) {
+        auto clone = anno->Clone(allocator_, classDef);
+        annotations.push_back(clone);
+    }
+    classDef->SetAnnotations(std::move(annotations));
+    return classDecl;
+}
+
+void GlobalClassHandler::SetupGlobalMethods(ir::ClassDefinition *globalClass,
+                                            ArenaVector<ir::Statement *> &&initStatements, bool isDeclare)
+{
+    auto const insertInGlobal = [globalClass](ir::AstNode *node) {
+        globalClass->Body().insert(globalClass->Body().begin(), node);
+        node->SetParent(globalClass);
+    };
+
+    if (!isDeclare) {
+        ir::MethodDefinition *initMethod =
+            CreateGlobalMethod(compiler::Signatures::INIT_METHOD, std::move(initStatements));
+        insertInGlobal(initMethod);
+        if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
+            AddInitCallFromStaticBlock(globalClass, initMethod);
+        }
+    }
+}
+
+void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces, parser::ETSParser *parser)
+{
+    ArenaUnorderedMap<util::StringView, ir::ETSModule *> nsMap {allocator_->Adapter()};
+    for (auto it = namespaces.begin(); it != namespaces.end();) {
+        auto *ns = *it;
+        auto res = nsMap.find(ns->Ident()->Name());
+        if (res != nsMap.end()) {
+            if (res->second->Modifiers() != ns->Modifiers()) {
+                parser->LogSyntaxError("Unable to merge namespaces '" + ns->Ident()->Name().Mutf8() +
+                                           "', because their modifiers are different.",
+                                       ns->Start());
+            }
+            if (!res->second->Annotations().empty() && !ns->Annotations().empty()) {
+                parser->LogSyntaxError("Annotation conflict! Multiple namespace declarations for '" +
+                                           ns->Ident()->Name().Mutf8() + "' cannot each have annotations.",
+                                       ns->Start());
+            } else if (!ns->Annotations().empty()) {
+                ASSERT(res->second->Annotations().empty());
+                res->second->SetAnnotations(std::move(ns->Annotations()));
+            }
+            for (auto *statement : ns->Statements()) {
+                res->second->Statements().emplace_back(statement);
+            }
+            namespaces.erase(it);
+        } else {
+            nsMap.insert({ns->Ident()->Name(), ns});
+            ++it;
+        }
+    }
+}
+
+ArenaVector<ir::ClassDeclaration *> GlobalClassHandler::TransformNamespaces(ArenaVector<ir::ETSModule *> &namespaces,
+                                                                            parser::Program *program)
+{
+    ArenaVector<ir::ClassDeclaration *> classDecls {allocator_->Adapter()};
+    MergeNamespace(namespaces, program->VarBinder()->GetContext()->parser->AsETSParser());
+    for (auto ns : namespaces) {
+        classDecls.emplace_back(TransformNamespace(ns, program));
+    }
+    return classDecls;
+}
+
+ir::ClassDeclaration *GlobalClassHandler::TransformNamespace(ir::ETSModule *ns, parser::Program *program)
+{
+    ir::ClassDeclaration *const globalDecl = CreateTransformedClass(ns);
+    ir::ClassDefinition *const globalClass = globalDecl->Definition();
+
+    ArenaVector<GlobalStmts> statements(allocator_->Adapter());
+    ArenaVector<ir::ETSModule *> namespaces(allocator_->Adapter());
+    auto &body = ns->Statements();
+    for (auto *statement : body) {
+        statement->Iterate([this](ir::AstNode *node) { AddStaticBlockToClass(node); });
+    }
+
+    auto stmts = CollectProgramGlobalStatements(body, globalClass);
+    statements.emplace_back(GlobalStmts {program, std::move(stmts)});
+    AddStaticBlockToClass(globalClass);
+    const ModuleDependencies md {allocator_->Adapter()};
+    auto initStatements = FormInitMethodStatements(program, &md, std::move(statements));
+    SetupGlobalMethods(globalClass, std::move(initStatements), ns->IsDeclare());
+
+    // remove namespaceDecl from orginal node
+    auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
+        if (node->IsETSModule()) {
+            namespaces.emplace_back(node->AsETSModule());
+            return true;
+        }
+        return false;
+    });
+    body.erase(end, body.end());
+    auto globalClasses = TransformNamespaces(namespaces, program);
+    for (auto *cls : globalClasses) {
+        globalClass->Body().emplace_back(cls);
+        cls->SetParent(globalClass);
+    }
+
+    // Add rest statement, such as type declaration
+    for (auto *statement : body) {
+        globalClass->Body().emplace_back(statement);
+        statement->SetParent(globalClass);
+    }
+    body.clear();
+    return globalDecl;
+}
+
+void GlobalClassHandler::CollectProgramGlobalClasses(parser::Program *program, ArenaVector<ir::ETSModule *> namespaces)
+{
+    auto classDecls = TransformNamespaces(namespaces, program);
+    for (auto cls : classDecls) {
+        program->Ast()->Statements().push_back(cls);
+        cls->SetParent(program->Ast());
+    }
+}
 
 void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &programs,
                                           const ModuleDependencies *moduleDependencies)
@@ -45,25 +192,25 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     ir::ClassDeclaration *const globalDecl = CreateGlobalClass();
     ir::ClassDefinition *const globalClass = globalDecl->Definition();
 
-    auto addStaticBlock = [this](ir::AstNode *node) {
-        if (node->IsClassDefinition() && !node->AsClassDefinition()->IsDeclare()) {
-            auto classDef = node->AsClassDefinition();
-            if (auto staticBlock = CreateStaticBlock(classDef); staticBlock != nullptr) {
-                classDef->Body().emplace_back(staticBlock);  // NOTE(vpukhov): inserted to end for some reason
-                staticBlock->SetParent(classDef);
-            }
-        }
-    };
-
     parser::Program *const globalProgram = programs.front();
     // NOTE(vpukhov): a clash inside program list is possible
     ASSERT(globalProgram->IsPackage() || programs.size() == 1);
 
     ArenaVector<GlobalStmts> statements(allocator_->Adapter());
+    ArenaVector<ir::ETSModule *> namespaces(allocator_->Adapter());
 
     for (auto program : programs) {
-        program->Ast()->IterateRecursively(addStaticBlock);
-        auto stmts = CollectProgramGlobalStatements(program, globalClass);
+        program->Ast()->IterateRecursively([this](ir::AstNode *node) { AddStaticBlockToClass(node); });
+        auto &body = program->Ast()->Statements();
+        auto stmts = CollectProgramGlobalStatements(body, globalClass);
+        auto end = std::remove_if(body.begin(), body.end(), [&namespaces](ir::AstNode *node) {
+            if (node->IsETSModule() && node->AsETSModule()->IsNamespace()) {
+                namespaces.emplace_back(node->AsETSModule());
+                return true;
+            }
+            return false;
+        });
+        body.erase(end, body.end());
         statements.emplace_back(GlobalStmts {program, std::move(stmts)});
         program->SetGlobalClass(globalClass);
     }
@@ -72,9 +219,11 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
     globalDecl->SetParent(globalProgram->Ast());
     globalClass->SetGlobalInitialized();
 
+    CollectProgramGlobalClasses(globalProgram, namespaces);
+
     // NOTE(vpukhov): stdlib checks are to be removed - do not extend the existing logic
     if (globalProgram->Kind() != parser::ScriptKind::STDLIB) {
-        addStaticBlock(globalClass);
+        AddStaticBlockToClass(globalClass);
         if (!util::Helpers::IsStdLib(globalProgram)) {
             auto initStatements = FormInitMethodStatements(globalProgram, moduleDependencies, std::move(statements));
             SetupGlobalMethods(globalProgram, std::move(initStatements));
@@ -240,7 +389,7 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
         }
     }
 
-    if (!hasStaticField && !classDef->IsGlobal()) {
+    if (!hasStaticField && !classDef->IsModule()) {
         return nullptr;
     }
 
@@ -266,21 +415,19 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
     return staticBlock;
 }
 
-ArenaVector<ir::Statement *> GlobalClassHandler::CollectProgramGlobalStatements(parser::Program *program,
+ArenaVector<ir::Statement *> GlobalClassHandler::CollectProgramGlobalStatements(ArenaVector<ir::Statement *> &stmts,
                                                                                 ir::ClassDefinition *classDef)
 {
-    auto ast = program->Ast();
     auto globalDecl = GlobalDeclTransformer(allocator_);
-    auto statements = globalDecl.TransformStatements(ast->Statements());
+    auto statements = globalDecl.TransformStatements(stmts);
     classDef->AddProperties(util::Helpers::ConvertVector<ir::AstNode>(statements.classProperties));
-    globalDecl.FilterDeclarations(ast->Statements());
+    globalDecl.FilterDeclarations(stmts);
     return std::move(statements.initStatements);
 }
 
 ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass()
 {
     auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator_, compiler::Signatures::ETS_GLOBAL, allocator_);
-
     auto *classDef =
         NodeAllocator::Alloc<ir::ClassDefinition>(allocator_, allocator_, ident, ir::ClassDefinitionModifiers::GLOBAL,
                                                   ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));

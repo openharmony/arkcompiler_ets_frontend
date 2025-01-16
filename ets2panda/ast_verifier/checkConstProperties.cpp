@@ -25,8 +25,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 {
     if (ast->IsClassProperty()) {
         auto parent = ast->Parent();
-        if (parent != nullptr && parent->IsClassDefinition() &&
-            parent->AsClassDefinition()->Ident()->Name() == Signatures::ETS_GLOBAL) {
+        if (parent != nullptr && parent->IsClassDefinition() && parent->AsClassDefinition()->IsModule()) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
         auto property = ast->AsClassProperty();

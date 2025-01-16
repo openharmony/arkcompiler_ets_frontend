@@ -323,7 +323,7 @@ public:
 private:
     void HandleProgram(parser::Program *program);
 
-    void HandleETSScript(ir::BlockStatement *script);
+    void HandleETSModule(ir::BlockStatement *script);
 
     void ParseGlobalClass(ir::ClassDefinition *global);
 

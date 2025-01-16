@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -253,6 +253,23 @@ ArenaVector<ir::AnnotationUsage *> ETSParser::ParseAnnotations(bool isTopLevelSt
     return annotations;
 }
 
+static bool ApplyAnnotationsToNamespace(ir::ETSModule *ns, ArenaVector<ir::AnnotationUsage *> &annotations)
+{
+    if (ns->IsNamespaceChainLastNode()) {
+        ns->SetAnnotations(std::move(annotations));
+        return true;
+    }
+
+    for (auto *node : ns->Statements()) {
+        if (node->IsETSModule()) {
+            if (ApplyAnnotationsToNamespace(node->AsETSModule(), annotations)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
                                        lexer::SourcePosition pos)
 {
@@ -293,6 +310,9 @@ void ETSParser::ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::Annota
                 break;
             case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION:
                 node->AsArrowFunctionExpression()->SetAnnotations(std::move(annotations));
+                break;
+            case ir::AstNodeType::ETS_MODULE:
+                ApplyAnnotationsToNamespace(node->AsETSModule(), annotations);
                 break;
             default:
                 LogSyntaxError("Annotations are not allowed on this type of declaration.", pos);

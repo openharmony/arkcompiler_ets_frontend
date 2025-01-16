@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
     std::cout << impl->AstNodeDumpJSONConst(context, programNode) << std::endl;
 
-    std::cout << impl->IsETSScript(programNode) << std::endl;
+    std::cout << impl->IsETSModule(programNode) << std::endl;
 
     std::size_t n = 0;
     es2panda_AstNode **statements = impl->BlockStatementStatements(context, programNode, &n);

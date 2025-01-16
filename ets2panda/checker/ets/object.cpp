@@ -520,6 +520,11 @@ static void ResolveDeclaredDeclsOfObject(ETSChecker *checker, const ETSObjectTyp
         it->AddFlag(checker->GetAccessFlagFromNode(it->Declaration()->Node()));
         type->AddProperty<PropertyType::STATIC_DECL>(it->AsLocalVariable());
     }
+    for (auto &[_, it] : scope->TypeAliasScope()->Bindings()) {
+        (void)_;
+        it->AddFlag(checker->GetAccessFlagFromNode(it->Declaration()->Node()));
+        type->AddProperty<PropertyType::STATIC_DECL>(it->AsLocalVariable());
+    }
 }
 
 void ETSChecker::ResolveDeclaredMembersOfObject(const ETSObjectType *type)
@@ -1051,7 +1056,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         classType->AddObjectFlag(checker::ETSObjectFlags::INNER);
     }
 
-    classDef->IsGlobal() ? classType->AddObjectFlag(checker::ETSObjectFlags::GLOBAL)
+    classDef->IsModule() ? classType->AddObjectFlag(checker::ETSObjectFlags::GLOBAL)
                          : CheckLocalClass(classDef, newStatus);
 
     checker::ScopeContext scopeCtx(this, classDef->Scope());
@@ -1590,10 +1595,41 @@ Type *ETSChecker::TryToInstantiate(Type *const type, ArenaAllocator *const alloc
     return returnType;
 }
 
+void ETSChecker::ValidateNamespaceProperty(varbinder::Variable *property, const ETSObjectType *target,
+                                           const ir::Identifier *ident)
+{
+    ir::AstNode *parent = nullptr;
+    if (property->TsType() != nullptr && property->TsType()->IsETSFunctionType()) {
+        auto funcType = property->TsType()->AsETSFunctionType();
+        property = funcType->CallSignatures()[0]->OwnerVar();
+    }
+
+    if (property->Declaration() == nullptr) {
+        return;
+    }
+
+    auto node = property->Declaration()->Node();
+    if (node == nullptr) {
+        return;
+    }
+
+    if (node->IsClassDefinition()) {
+        parent = node->Parent()->Parent();
+    } else if (node->Parent() != nullptr) {
+        parent = node->Parent();
+    }
+
+    if (parent != nullptr && parent->IsClassDefinition() && parent->AsClassDefinition()->IsNamespaceTransformed() &&
+        !(node->IsExported() || node->IsExportedType() || node->IsDefaultExported())) {
+        LogTypeError({"'", ident->Name(), "' is not exported in '", target->Name(), "'"}, ident->Start());
+    }
+}
+
 void ETSChecker::ValidateResolvedProperty(varbinder::LocalVariable **property, const ETSObjectType *const target,
                                           const ir::Identifier *const ident, const PropertySearchFlags flags)
 {
     if (*property != nullptr) {
+        ValidateNamespaceProperty(*property, target, ident);
         return;
     }
 
@@ -1704,6 +1740,12 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
 {
     auto searchFlag = GetInitialSearchFlags(memberExpr);
     searchFlag |= PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES;
+    if (targetRef != nullptr && targetRef->Declaration() != nullptr &&
+        targetRef->Declaration()->Node()->IsClassDefinition() &&
+        targetRef->Declaration()->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
+        return searchFlag;
+    }
+
     if (targetRef != nullptr &&
         (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) ||
          (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) && targetRef->TsType()->Variable() != nullptr &&
@@ -2059,8 +2101,12 @@ void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *
             targetType = "class";
         } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
             targetType = "interface";
-        } else {
+        } else if (it->HasFlag(varbinder::VariableFlags::NAMESPACE)) {
+            targetType = "namespace";
+        } else if (it->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
             targetType = "enum";
+        } else {
+            UNREACHABLE();
         }
 
         if (interfaceFound != nullptr) {
