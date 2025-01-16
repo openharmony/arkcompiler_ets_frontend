@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_ETS_ARITHMETIC_H
 
 #include "checker/ETSchecker.h"
+#include "checker/ETSAnalyzer.h"
 
 namespace ark::es2panda::checker {
 

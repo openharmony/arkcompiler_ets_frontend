@@ -979,6 +979,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     if (checker->HasStatus(CheckerStatus::IN_SETTER) && expr->Left()->IsMemberExpression()) {
         checker->WarnForEndlessLoopInGetterSetter(expr->Left()->AsMemberExpression());
     }
+
     auto const leftType = expr->Left()->Check(checker);
 
     if (IsInvalidArrayMemberAssignment(expr, checker)) {
@@ -1176,9 +1177,23 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     if (calleeType->IsETSExtensionFuncHelperType()) {
         return ResolveCallForETSExtensionFuncHelperType(calleeType->AsETSExtensionFuncHelperType(), checker, expr);
     }
+
     if (checker->IsExtensionETSFunctionType(calleeType)) {
-        return ResolveCallExtensionFunction(calleeType->AsETSFunctionType(), checker, expr);
+        auto *signature = ResolveCallExtensionFunction(calleeType->AsETSFunctionType(), checker, expr);
+        bool isReturnTypeLambda = (signature != nullptr) && signature->ReturnType()->IsETSObjectType() &&
+                                  signature->ReturnType()->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL);
+        bool isSignatureExtensionAccessor = (signature != nullptr) && (signature->Function()->IsExtensionAccessor());
+        if (isSignatureExtensionAccessor && !isReturnTypeLambda &&
+            !checker->HasStatus(CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)) {
+            checker->LogTypeError({"Extension accessor can't be used as a method call or function call."},
+                                  expr->Start());
+            return nullptr;
+        }
+        // NOTE(xingshunxiang): we can't use extension accessor as a call,
+        // except when the return type of the extension getter is a function type, such a feature is to be completed.
+        return signature;
     }
+
     auto &signatures = ChooseSignatures(checker, calleeType, expr->IsETSConstructorCall(), isFunctionalInterface,
                                         isUnionTypeWithFunctionalInterface);
     // Remove static signatures if the callee is a member expression and the object is initialized
@@ -1245,10 +1260,9 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
     }
 
     auto *returnType = signature->ReturnType();
-
     if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
         returnType = signature->Function()->IsExtensionMethod()
-                         ? signature->Params()[0]->TsType()
+                         ? expr->Arguments()[0]->TsType()
                          : ChooseCalleeObj(checker, expr, calleeType, isConstructorCall);
     }
 
@@ -1451,7 +1465,8 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
     auto *identType = checker->ResolveIdentifier(expr);
     if (expr->Variable() != nullptr && (expr->Parent() == nullptr || !expr->Parent()->IsAssignmentExpression() ||
                                         expr != expr->Parent()->AsAssignmentExpression()->Left())) {
-        if (auto *const smartType = checker->Context().GetSmartCast(expr->Variable()); smartType != nullptr) {
+        auto *const smartType = checker->Context().GetSmartCast(expr->Variable());
+        if (smartType != nullptr) {
             identType = smartType;
         }
     }
@@ -1515,13 +1530,42 @@ checker::Type *ETSAnalyzer::CheckEnumMemberExpression(ETSEnumType *const baseTyp
     return expr->AdjustType(checker, expr->Property()->TsType());
 }
 
+checker::Type *ETSAnalyzer::ResolveMemberExpressionByBaseType(ETSChecker *checker, checker::Type *baseType,
+                                                              ir::MemberExpression *expr) const
+{
+    if (baseType->IsETSArrayType()) {
+        if (expr->Property()->AsIdentifier()->Name().Is("length")) {
+            return expr->AdjustType(checker, checker->GlobalIntType());
+        }
+
+        return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
+    }
+
+    if (baseType->IsETSObjectType()) {
+        checker->ETSObjectTypeDeclNode(checker, baseType->AsETSObjectType());
+        auto *originType = expr->SetAndAdjustType(checker, baseType->AsETSObjectType());
+
+        return originType;
+    }
+
+    // NOTE(vpukhov): #20510 member access
+    if (baseType->IsETSEnumType()) {
+        return CheckEnumMemberExpression(baseType->AsETSEnumType(), expr);
+    }
+
+    if (baseType->IsETSUnionType()) {
+        return expr->AdjustType(checker, expr->CheckUnionMember(checker, baseType));
+    }
+    TypeErrorOnMissingProperty(expr, baseType, checker);
+    return expr->TsType();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
     ASSERT(!expr->IsOptional());
-
     ETSChecker *checker = GetETSChecker();
     auto *baseType = checker->GetNonConstantType(checker->GetApparentType(expr->Object()->Check(checker)));
     //  Note: don't use possible smart cast to null-like types.
@@ -1541,38 +1585,18 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
             expr->property_->AsIdentifier()->SetName(reExportType.second);
         }
     }
-
     if (!checker->CheckNonNullish(expr->Object())) {
-        return checker->InvalidateType(expr);
+        auto *invalidType = checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)
+                                ? checker->GlobalETSNullishType()
+                                : checker->InvalidateType(expr);
+        return invalidType;
     }
 
     if (expr->IsComputed()) {
         return expr->AdjustType(checker, expr->CheckComputed(checker, baseType));
     }
 
-    if (baseType->IsETSArrayType()) {
-        if (expr->Property()->AsIdentifier()->Name().Is("length")) {
-            return expr->AdjustType(checker, checker->GlobalIntType());
-        }
-
-        return expr->SetAndAdjustType(checker, checker->GlobalETSObjectType());
-    }
-
-    if (baseType->IsETSObjectType()) {
-        checker->ETSObjectTypeDeclNode(checker, baseType->AsETSObjectType());
-        return expr->SetAndAdjustType(checker, baseType->AsETSObjectType());
-    }
-
-    // NOTE(vpukhov): #20510 member access
-    if (baseType->IsETSEnumType()) {
-        return CheckEnumMemberExpression(baseType->AsETSEnumType(), expr);
-    }
-
-    if (baseType->IsETSUnionType()) {
-        return expr->AdjustType(checker, expr->CheckUnionMember(checker, baseType));
-    }
-    TypeErrorOnMissingProperty(expr, baseType, checker);
-    return expr->TsType();
+    return ResolveMemberExpressionByBaseType(checker, baseType, expr);
 }
 
 checker::Type *ETSAnalyzer::PreferredType(ir::ObjectExpression *expr) const
@@ -2137,8 +2161,8 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
 checker::Type *ETSAnalyzer::Check(ir::AssertStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    if (!(st->Test()->Check(checker)->HasTypeFlag(TypeFlag::ETS_BOOLEAN | TypeFlag::BOOLEAN_LIKE) ||
-          st->Test()->Check(checker)->ToString() == "Boolean")) {
+    Type *testType = st->Test()->Check(checker);
+    if (!(testType->HasTypeFlag(TypeFlag::ETS_BOOLEAN | TypeFlag::BOOLEAN_LIKE) || testType->ToString() == "Boolean")) {
         checker->LogTypeError("Bad operand type, the type of the operand must be boolean type.", st->Test()->Start());
     }
 
@@ -2519,15 +2543,6 @@ bool ETSAnalyzer::CheckInferredFunctionReturnType(ir::ReturnStatement *st, ir::S
         return false;
     }
 
-    if (containingFunc->IsExtensionMethod() && containingFunc->ReturnTypeAnnotation()->IsTSThisType()) {
-        // when return `this` in extensionFunction, the type of `this` actually should be type of the receiver,
-        // so some substitution should be done
-        auto *const thisType = containingFunc->Signature()->Params()[0]->TsType();
-        auto *const thisTypeAnnotation =
-            containingFunc->Params()[0]->AsETSParameterExpression()->Ident()->TypeAnnotation();
-        containingFunc->Signature()->SetReturnType(thisType);
-        containingFunc->SetReturnTypeAnnotation(thisTypeAnnotation->Clone(checker->Allocator(), containingFunc));
-    }
     funcReturnType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
 
     // Case when function's return type is defined explicitly:

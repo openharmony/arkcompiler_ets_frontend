@@ -187,6 +187,11 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::SETTER) != 0;
     }
 
+    [[nodiscard]] bool IsExtensionAccessor() const noexcept
+    {
+        return IsExtensionMethod() && (IsGetter() || IsSetter());
+    }
+
     [[nodiscard]] bool IsMethod() const noexcept
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::METHOD) != 0;

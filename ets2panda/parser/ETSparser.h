@@ -457,6 +457,7 @@ private:
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers);
+    ir::FunctionDeclaration *ParseAccessorWithReceiver(ir::ModifierFlags modifiers);
     ir::TypeNode *ParseExtensionFunctionsTypeAnnotation();
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement() override;
     ir::TypeNode *ParseInterfaceExtendsElement() override;

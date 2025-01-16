@@ -52,12 +52,12 @@ ETSFunctionType::ETSFunctionType(ETSChecker *checker, util::StringView const &na
 
 void ETSFunctionType::AddCallSignature(Signature *signature)
 {
-    if (signature->Function()->IsGetter()) {
+    if (signature->Function()->IsGetter() && !signature->Function()->IsExtensionMethod()) {
         AddTypeFlag(TypeFlag::GETTER);
-    } else if (signature->Function()->IsSetter()) {
+    } else if (signature->Function()->IsSetter() && !signature->Function()->IsExtensionMethod()) {
         AddTypeFlag(TypeFlag::SETTER);
     }
-    callSignatures_.emplace_back(signature);
+    callSignatures_.push_back(signature);
 }
 
 void ETSFunctionType::ToString(std::stringstream &ss, bool precise) const

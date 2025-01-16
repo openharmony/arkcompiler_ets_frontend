@@ -27,8 +27,8 @@ struct BinaryArithmOperands {
 
 static inline BinaryArithmOperands GetBinaryOperands(ETSChecker *checker, ir::BinaryExpression *expr)
 {
-    auto typeL = expr->Left()->TsType();
-    auto typeR = expr->Right()->TsType();
+    auto typeL = checker->TryGetTypeFromExtensionAccessor(expr->Left());
+    auto typeR = checker->TryGetTypeFromExtensionAccessor(expr->Right());
     auto unboxedL = checker->MaybeUnboxType(typeL);
     auto unboxedR = checker->MaybeUnboxType(typeR);
     return {expr, typeL, typeR, unboxedL, unboxedR};
@@ -1068,11 +1068,25 @@ std::tuple<Type *, Type *> ETSChecker::CheckArithmeticOperations(
                                      {leftType, rightType, unboxedL, unboxedR});
 }
 
+static std::tuple<Type *, Type *> ResolveCheckBinaryOperatorForBigInt(ETSChecker *checker, Type *leftType,
+                                                                      Type *rightType, lexer::TokenType operationType)
+{
+    switch (operationType) {
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+            return {checker->GlobalETSBooleanType(), checker->GlobalETSBooleanType()};
+        default:
+            return {leftType, rightType};
+    }
+}
+
 std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left, ir::Expression *right,
                                                            ir::Expression *expr, lexer::TokenType operationType,
                                                            lexer::SourcePosition pos, bool forcePromotion)
 {
-    checker::Type *leftType = left->Check(this);
+    checker::Type *leftType = TryGetTypeFromExtensionAccessor(left);
 
     if (leftType == nullptr) {
         LogTypeError("Unexpected type error in binary expression", left->Start());
@@ -1085,8 +1099,12 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     }
 
     Context().CheckTestSmartCastCondition(operationType);
+    checker::Type *rightType = TryGetTypeFromExtensionAccessor(right);
 
-    checker::Type *rightType = right->Check(this);
+    if (rightType == nullptr) {
+        rightType = right->Check(this);
+    }
+
     if (right->IsTypeNode()) {
         rightType = right->AsTypeNode()->GetType(this);
     }
@@ -1110,15 +1128,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
                      !forcePromotion;
 
     if (CheckBinaryOperatorForBigInt(leftType, rightType, operationType)) {
-        switch (operationType) {
-            case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
-            case lexer::TokenType::PUNCTUATOR_LESS_THAN:
-            case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
-                return {GlobalETSBooleanType(), GlobalETSBooleanType()};
-            default:
-                return {leftType, rightType};
-        }
+        return ResolveCheckBinaryOperatorForBigInt(this, leftType, rightType, operationType);
     }
 
     return CheckArithmeticOperations(expr, std::make_tuple(left, right, operationType, pos), isEqualOp,

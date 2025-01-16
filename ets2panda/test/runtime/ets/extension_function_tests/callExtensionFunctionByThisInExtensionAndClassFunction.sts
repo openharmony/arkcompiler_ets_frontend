@@ -18,15 +18,15 @@ class Fruit {
         return 2 + this.amount();
     }
 
-    public price: int = 5;
+    public price_: int = 5;
 }
 
 function name(this:Fruit, id: int): int {
-    return id + this.name() + this.price;
+    return id + this.name() + this.price_;
 }
 
 function price(this:Fruit): int {
-    return this.name() + this.price + this.name(2);
+    return this.name() + this.price_ + this.name(2);
 }
 
 function amount(this:Fruit): int {

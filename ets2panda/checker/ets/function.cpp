@@ -424,7 +424,8 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
                                                     std::size_t index, TypeRelationFlag flags)
 {
     Type *targetType = substitutedSig->Params()[index]->TsType();
-    Type *argumentType = const_cast<Type *>(TryGettingFunctionTypeFromInvokeFunction(argument->Check(this)));
+    Type *argumentType = TryGetTypeFromExtensionAccessor(argument);
+    argumentType = const_cast<Type *>(TryGettingFunctionTypeFromInvokeFunction(argumentType));
 
     flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
 

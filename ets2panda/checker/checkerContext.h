@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,6 +57,7 @@ enum class CheckerStatus : uint32_t {
     IN_BRIDGE_TEST = 1U << 25U,
     IN_GETTER = 1U << 26U,
     IN_SETTER = 1U << 27U,
+    IN_EXTENSION_ACCESSOR_CHECK = 1U << 28U,
 };
 
 }  // namespace ark::es2panda::checker
@@ -235,6 +236,7 @@ public:
     void OnBreakStatement(ir::BreakStatement const *breakStatement);
     void AddBreakSmartCasts(ir::Statement const *targetStatement, SmartCastArray &&smartCasts);
     void CombineBreakSmartCasts(ir::Statement const *targetStatement);
+    friend class SavedCheckerContextStatus;
 
 private:
     Checker *parent_;
@@ -260,6 +262,28 @@ private:
     [[nodiscard]] std::optional<SmartCastTuple> ResolveSmartCastTypes();
     [[nodiscard]] bool CheckTestOrSmartCastCondition(SmartCastTuple const &types);
     void CheckAssignments(ir::AstNode const *node, SmartVariables &changedVariables) noexcept;
+};
+
+class SavedCheckerContextStatus final {
+public:
+    explicit SavedCheckerContextStatus(CheckerContext *context, CheckerStatus status)
+        : context_(context), storedStatus_(status), preStatus_(context_->status_)
+    {
+        context_->status_ = context_->status_ | storedStatus_;
+    }
+
+    ~SavedCheckerContextStatus()
+    {
+        context_->status_ = preStatus_;
+    }
+
+    NO_COPY_SEMANTIC(SavedCheckerContextStatus);
+    DEFAULT_MOVE_SEMANTIC(SavedCheckerContextStatus);
+
+private:
+    CheckerContext *context_;
+    CheckerStatus storedStatus_;
+    CheckerStatus preStatus_;
 };
 }  // namespace ark::es2panda::checker
 

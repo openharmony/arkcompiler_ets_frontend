@@ -211,6 +211,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/enumPostCheckLowering.cpp",
   "compiler/lowering/ets/expandBrackets.cpp",
   "compiler/lowering/ets/expressionLambdaLowering.cpp",
+  "compiler/lowering/ets/extensionAccessorLowering.cpp",
   "compiler/lowering/ets/genericBridgesLowering.cpp",
   "compiler/lowering/ets/interfaceObjectLiteralLowering.cpp",
   "compiler/lowering/ets/interfacePropertyDeclarations.cpp",

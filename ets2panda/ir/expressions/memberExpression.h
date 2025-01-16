@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 
+#include "checker/checkerContext.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/expression.h"
 
@@ -43,6 +44,7 @@ enum class MemberExpressionKind : uint32_t {
     PROPERTY_ACCESS = 1U << 1U,
     GETTER = 1U << 2U,
     SETTER = 1U << 3U,
+    EXTENSION_ACCESSOR = 1U << 4U,
 };
 
 }  // namespace ark::es2panda::ir
@@ -96,6 +98,12 @@ public:
     {
         object_ = object;
         object_->SetParent(this);
+    }
+
+    void SetProperty(Expression *prop) noexcept
+    {
+        property_ = prop;
+        property_->SetParent(this);
     }
 
     [[nodiscard]] Expression *Property() noexcept
@@ -154,6 +162,18 @@ public:
         return objType_;
     }
 
+    [[nodiscard]] checker::Type *ExtensionAccessorReturnType() const
+    {
+        ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
+        return extensionAccessorReturnType_;
+    }
+
+    void SetExtensionAccessorReturnType(checker::Type *eaccReturnType)
+    {
+        ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
+        extensionAccessorReturnType_ = eaccReturnType;
+    }
+
     void SetPropVar(varbinder::LocalVariable *propVar) noexcept
     {
         ASSERT(Property());
@@ -183,6 +203,7 @@ public:
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+    checker::Type *GetExtensionAccessorReturnType(checker::ETSChecker *checker);
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -216,7 +237,6 @@ private:
     std::pair<checker::Type *, varbinder::LocalVariable *> ResolveEnumMember(checker::ETSChecker *checker,
                                                                              checker::ETSEnumType *type) const;
     std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
-
     checker::Type *AdjustType(checker::ETSChecker *checker, checker::Type *type);
     checker::Type *SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType);
     checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *baseType);
@@ -237,6 +257,7 @@ private:
     bool ignoreBox_ {false};
     checker::Type *uncheckedType_ {};
     checker::ETSObjectType *objType_ {};
+    checker::Type *extensionAccessorReturnType_ {};
 };
 }  // namespace ark::es2panda::ir
 

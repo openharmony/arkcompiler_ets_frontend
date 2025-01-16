@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +27,16 @@ namespace ark::es2panda::ir {
 class Expression;
 class ScriptFunction;
 
-enum class MethodDefinitionKind { NONE, CONSTRUCTOR, METHOD, EXTENSION_METHOD, GET, SET };
+enum class MethodDefinitionKind {
+    NONE,
+    CONSTRUCTOR,
+    METHOD,
+    EXTENSION_METHOD,
+    GET,
+    SET,
+    EXTENSION_GET,
+    EXTENSION_SET,
+};
 
 class MethodDefinition : public ClassElement {
 public:
@@ -66,7 +75,8 @@ public:
 
     [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
-        return kind_ == MethodDefinitionKind::EXTENSION_METHOD;
+        return (kind_ == MethodDefinitionKind::EXTENSION_METHOD) || (kind_ == MethodDefinitionKind::EXTENSION_GET) ||
+               (kind_ == MethodDefinitionKind::EXTENSION_SET);
     }
 
     [[nodiscard]] const OverloadsT &Overloads() const noexcept

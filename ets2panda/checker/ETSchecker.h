@@ -642,6 +642,7 @@ public:
     static ETSObjectType *GetOriginalBaseType(Type *object);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotationType);
     bool IsExtensionETSFunctionType(checker::Type *type);
+    bool IsExtensionAccessorFunctionType(checker::Type *type);
     bool ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
@@ -663,7 +664,9 @@ public:
     bool CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
     void ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const objectType);
-
+    ir::CallExpression *CreateExtensionAccessorCall(ETSChecker *checker, ir::MemberExpression *expr,
+                                                    ArenaVector<ir::Expression *> &&args);
+    checker::Type *TryGetTypeFromExtensionAccessor(ir::Expression *expr);
     // Utility type handler functions
     std::optional<ir::TypeNode *> GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,
                                                               const std::string_view &utilityTypeName);
