@@ -17,6 +17,7 @@
 #define ES2PANDA_LSP_INCLUDE_INTERNAL_API_H
 
 #include "api.h"
+#include "checker/types/type.h"
 #include "ir/astNode.h"
 #include "public/es2panda_lib.h"
 
@@ -64,6 +65,8 @@ ir::AstNode *GetTouchingToken(es2panda_Context *context, size_t pos, bool flagFi
 void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *referenceFileContext,
                            char const *searchFileName, bool isPackageModule, FileReferences *fileReferences);
 ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator);
+ir::AstNode *GetOriginalNode(ir::AstNode *astNode);
+checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode);
 
 }  // namespace ark::es2panda::lsp
 
