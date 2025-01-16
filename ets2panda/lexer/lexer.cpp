@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1405,13 +1405,7 @@ void Lexer::NextToken(Keywords *kws)
             ScanAtPunctuator();
             break;
         }
-        case LEX_CHAR_DOLLAR_SIGN: {
-            if (ScanDollarPunctuator()) {
-                break;
-            }
-
-            [[fallthrough]];
-        }
+        case LEX_CHAR_DOLLAR_SIGN:
         case LEX_CHAR_UPPERCASE_A:
         case LEX_CHAR_UPPERCASE_B:
         case LEX_CHAR_UPPERCASE_C:

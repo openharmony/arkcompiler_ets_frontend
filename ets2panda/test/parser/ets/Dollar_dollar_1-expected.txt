@@ -171,7 +171,7 @@
                         "operator": "=",
                         "left": {
                           "type": "Identifier",
-                          "name": "a",
+                          "name": "$$a",
                           "decorators": [],
                           "loc": {
                             "start": {
@@ -180,32 +180,17 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 6
+                              "column": 8
                             }
                           }
                         },
                         "right": {
-                          "type": "UnaryExpression",
-                          "operator": "$$",
-                          "prefix": true,
-                          "argument": {
-                            "type": "BooleanLiteral",
-                            "value": true,
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 11
-                              },
-                              "end": {
-                                "line": 16,
-                                "column": 15
-                              }
-                            }
-                          },
+                          "type": "BooleanLiteral",
+                          "value": true,
                           "loc": {
                             "start": {
                               "line": 16,
-                              "column": 9
+                              "column": 11
                             },
                             "end": {
                               "line": 16,
@@ -286,7 +271,7 @@
             "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "a",
+              "name": "$$a",
               "decorators": [],
               "loc": {
                 "start": {
@@ -295,32 +280,17 @@
                 },
                 "end": {
                   "line": 16,
-                  "column": 6
+                  "column": 8
                 }
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "$$",
-              "prefix": true,
-              "argument": {
-                "type": "BooleanLiteral",
-                "value": true,
-                "loc": {
-                  "start": {
-                    "line": 16,
-                    "column": 11
-                  },
-                  "end": {
-                    "line": 16,
-                    "column": 15
-                  }
-                }
-              },
+              "type": "BooleanLiteral",
+              "value": true,
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 9
+                  "column": 11
                 },
                 "end": {
                   "line": 16,

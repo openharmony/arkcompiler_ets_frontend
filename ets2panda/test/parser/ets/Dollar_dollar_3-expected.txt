@@ -308,7 +308,7 @@
                         "operator": "=",
                         "left": {
                           "type": "Identifier",
-                          "name": "a",
+                          "name": "$$a",
                           "decorators": [],
                           "loc": {
                             "start": {
@@ -317,7 +317,7 @@
                             },
                             "end": {
                               "line": 17,
-                              "column": 6
+                              "column": 8
                             }
                           }
                         },
@@ -334,33 +334,33 @@
                                 "loc": {
                                   "start": {
                                     "line": 17,
-                                    "column": 13
+                                    "column": 15
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 14
+                                    "column": 16
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 17,
-                                  "column": 13
+                                  "column": 15
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 15
+                                  "column": 17
                                 }
                               }
                             },
                             "loc": {
                               "start": {
                                 "line": 17,
-                                "column": 13
+                                "column": 15
                               },
                               "end": {
                                 "line": 17,
-                                "column": 15
+                                "column": 17
                               }
                             }
                           },
@@ -368,7 +368,7 @@
                           "loc": {
                             "start": {
                               "line": 17,
-                              "column": 9
+                              "column": 11
                             },
                             "end": {
                               "line": 18,
@@ -419,24 +419,9 @@
                           }
                         },
                         "right": {
-                          "type": "UnaryExpression",
-                          "operator": "$$",
-                          "prefix": true,
-                          "argument": {
-                            "type": "Identifier",
-                            "name": "a",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 18,
-                                "column": 11
-                              },
-                              "end": {
-                                "line": 18,
-                                "column": 12
-                              }
-                            }
-                          },
+                          "type": "Identifier",
+                          "name": "$$a",
+                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 18,
@@ -521,7 +506,7 @@
             "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "a",
+              "name": "$$a",
               "decorators": [],
               "loc": {
                 "start": {
@@ -530,7 +515,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 6
+                  "column": 8
                 }
               }
             },
@@ -547,33 +532,33 @@
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 13
+                        "column": 15
                       },
                       "end": {
                         "line": 17,
-                        "column": 14
+                        "column": 16
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 13
+                      "column": 15
                     },
                     "end": {
                       "line": 17,
-                      "column": 15
+                      "column": 17
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 13
+                    "column": 15
                   },
                   "end": {
                     "line": 17,
-                    "column": 15
+                    "column": 17
                   }
                 }
               },
@@ -581,7 +566,7 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 9
+                  "column": 11
                 },
                 "end": {
                   "line": 18,
@@ -626,24 +611,9 @@
               }
             },
             "value": {
-              "type": "UnaryExpression",
-              "operator": "$$",
-              "prefix": true,
-              "argument": {
-                "type": "Identifier",
-                "name": "a",
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 11
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 12
-                  }
-                }
-              },
+              "type": "Identifier",
+              "name": "$$a",
+              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,

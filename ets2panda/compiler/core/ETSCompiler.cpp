@@ -1241,12 +1241,7 @@ void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
     etsg->ApplyConversion(expr->Argument(), nullptr);
     etsg->ApplyCast(expr->Argument(), expr->TsType());
 
-    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR) {
-        UnimplementedPathError(expr, "$$ operator can only be used with ARKUI plugin");
-        etsg->SetAccumulatorType(expr->TsType());  // dead code
-    } else {
-        etsg->Unary(expr, expr->OperatorType());
-    }
+    etsg->Unary(expr, expr->OperatorType());
 
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
