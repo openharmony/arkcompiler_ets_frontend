@@ -21,7 +21,6 @@
 
 using ark::es2panda::checker::ETSChecker;
 using ark::es2panda::compiler::ast_verifier::GetterSetterValidation;
-using ark::es2panda::ir::AstNode;
 using ark::es2panda::util::DiagnosticEngine;
 
 namespace {
@@ -44,16 +43,10 @@ TEST_F(ASTVerifierTest, ValidateCorrectGetterSetter)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<GetterSetterValidation>());
+    }
 }
 
 TEST_F(ASTVerifierTest, ValidateAbstractGettersSetters)
@@ -70,16 +63,10 @@ TEST_F(ASTVerifierTest, ValidateAbstractGettersSetters)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<GetterSetterValidation>());
+    }
 }
 
 TEST_F(ASTVerifierTest, ValidateAmbientGettersSetters)
@@ -95,15 +82,9 @@ TEST_F(ASTVerifierTest, ValidateAmbientGettersSetters)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<GetterSetterValidation>(ast);
-
-    // Expecting no warnings
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<GetterSetterValidation>());
+    }
 }
 }  // anonymous namespace

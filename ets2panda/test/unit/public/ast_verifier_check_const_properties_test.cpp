@@ -20,7 +20,6 @@
 #include "checker/ETSchecker.h"
 
 using ark::es2panda::compiler::ast_verifier::CheckConstProperties;
-using ark::es2panda::ir::AstNode;
 
 namespace {
 
@@ -41,26 +40,21 @@ TEST_F(ASTVerifierTest, CheckConstProperties)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    ast->IterateRecursively([](ark::es2panda::ir::AstNode *node) {
+    auto addConst = [](ark::es2panda::ir::AstNode *node) {
         if (node->IsClassProperty()) {
             auto property = node->AsClassProperty();
             if (property->IsReadonly()) {
                 property->AddModifier(ark::es2panda::ir::ModifierFlags::CONST);
             }
         }
-    });
+    };
 
-    const auto &messages = Verify<CheckConstProperties>(ast);
-    ASSERT_EQ(messages.size(), 1);
-    auto cause = messages[0].Cause();
-    ASSERT_EQ(cause, "Class property cannot be const");
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        GetAst()->IterateRecursively(addConst);
 
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<CheckConstProperties>(ExpectVerifierMessage {"Class property cannot be const"}));
+    }
 }
 
 }  // namespace

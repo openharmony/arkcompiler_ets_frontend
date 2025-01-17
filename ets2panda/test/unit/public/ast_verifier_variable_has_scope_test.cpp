@@ -19,7 +19,6 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::compiler::ast_verifier::VariableHasScope;
-using ark::es2panda::ir::AstNode;
 
 namespace {
 TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
@@ -34,14 +33,10 @@ TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, TestUnions)
@@ -67,14 +62,10 @@ TEST_F(ASTVerifierTest, TestUnions)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
@@ -90,14 +81,10 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, AsyncLambda1)
@@ -121,14 +108,10 @@ TEST_F(ASTVerifierTest, AsyncLambda1)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, AsyncLambda2)
@@ -149,14 +132,10 @@ TEST_F(ASTVerifierTest, AsyncLambda2)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasScope>());
+    }
 }
 
 }  // namespace

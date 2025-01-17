@@ -23,22 +23,15 @@ using Es2PandaLibTest = test::utils::AstVerifierTest;
 
 TEST_F(Es2PandaLibTest, NoError)
 {
-    es2panda_Context *ctx =
-        CreateContextAndProceedToState(impl_, cfg_, "function main() {}", "no-error.sts", ES2PANDA_STATE_ASM_GENERATED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ASM_GENERATED);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, "function main() {}", "no-error.sts") {}
 }
 
 TEST_F(Es2PandaLibTest, TypeError)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "function main() { let x: int = \"\" }",
-                                                           "type-error.sts", ES2PANDA_STATE_ASM_GENERATED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ERROR);
-
-    ASSERT_EQ(std::string(impl_->ContextErrorMessage(ctx)),
-              "TypeError: Type '\"\"' cannot be assigned to type 'int'[type-error.sts:1,32]");
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_ASM_GENERATED, ES2PANDA_STATE_ERROR, "function main() { let x: int = \"\" }", "error.sts")
+    {
+        ASSERT_EQ(ContextErrorMessage(), "TypeError: Type '\"\"' cannot be assigned to type 'int'[error.sts:1,32]");
+    }
 }
 
 TEST_F(Es2PandaLibTest, ListIdentifiers)
@@ -54,16 +47,11 @@ function main() {
 }
 )XXX";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "list-ids.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
     struct Arg {
-        es2panda_Impl const *impl = nullptr;
-        es2panda_Context *ctx = nullptr;
-        std::vector<std::string> ids;
-    } arg;
-    arg.impl = impl_;
-    arg.ctx = ctx;
+        es2panda_Impl const *impl;
+        es2panda_Context *ctx;
+        std::vector<std::string> ids {};
+    };
 
     auto func = [](es2panda_AstNode *ast, void *argp) {
         auto *a = reinterpret_cast<Arg *>(argp);
@@ -71,12 +59,13 @@ function main() {
             a->ids.emplace_back(a->impl->IdentifierName(a->ctx, ast));
         }
     };
+    CONTEXT(ES2PANDA_STATE_PARSED, text, "list-ids.sts")
+    {
+        Arg arg {GetImpl(), GetContext()};
+        AstNodeForEach(func, &arg);
 
-    impl_->AstNodeForEach(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)), func, &arg);
-
-    std::vector<std::string> expected {"C", "n", "string",  "constructor", "constructor", "main",
-                                       "c", "C", "console", "log",         "c",           "n"};
-    ASSERT_EQ(arg.ids, expected);
-
-    impl_->DestroyContext(ctx);
+        std::vector<std::string> expected {"C", "n", "string",  "constructor", "constructor", "main",
+                                           "c", "C", "console", "log",         "c",           "n"};
+        ASSERT_EQ(arg.ids, expected);
+    }
 }

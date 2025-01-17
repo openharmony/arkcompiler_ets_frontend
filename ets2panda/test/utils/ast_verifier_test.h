@@ -24,7 +24,17 @@
 namespace ir_alias = ark::es2panda::ir;
 namespace verifier_alias = ark::es2panda::compiler::ast_verifier;
 
+class LSPAPITests;
+
 namespace test::utils {
+
+// CC-OFFNXT(G.PRE.02) macro to improve readability
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define CONTEXT(...) if (ContextHolder<ContextFromStringExtractor> h {this, __VA_ARGS__}; true)
+
+// CC-OFFNXT(G.PRE.02) macro to improve readability
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define CONTEXT_FROM_FILE(...) if (ContextHolder<ContextFromFileExtractor> h {this, __VA_ARGS__}; true)
 
 // NOLINTNEXTLINE(fuchsia-multiple-inheritance)
 class AstVerifierTest : public testing::Test, public verifier_alias::InvariantsRegistry {
@@ -34,44 +44,152 @@ public:
     NO_MOVE_SEMANTIC(AstVerifierTest);
     ~AstVerifierTest() override;
 
-    ark::ArenaAllocator *Allocator()
+    ark::ArenaAllocator *Allocator() const
     {
         return allocator_;
     }
 
-    es2panda_Context *CreateContextAndProceedToState(const es2panda_Impl *impl, es2panda_Config *config,
-                                                     char const *source, char const *fileName,
-                                                     es2panda_ContextState state);
-
-    template <typename Ast>
-    Ast *GetAstFromContext(const es2panda_Impl *impl, es2panda_Context *ctx)
+    auto *GetChecker()
     {
-        auto ast = reinterpret_cast<Ast *>(impl->ProgramAst(ctx, impl->ContextProgram(ctx)));
-        return ast;
+        return reinterpret_cast<ark::es2panda::public_lib::Context *>(ctx_)->checker->AsETSChecker();
+    }
+
+    auto *GetAst()
+    {
+        return reinterpret_cast<ir_alias::AstNode *>(impl_->ProgramAst(ctx_, impl_->ContextProgram(ctx_)));
+    }
+
+    auto *GetImpl()
+    {
+        return impl_;
+    }
+
+    auto *GetContext()
+    {
+        return ctx_;
+    }
+
+    void AstNodeForEach(void (*func)(es2panda_AstNode *, void *), void *arg)
+    {
+        impl_->AstNodeForEach(reinterpret_cast<es2panda_AstNode *>(GetAst()), func, arg);
+    }
+
+    auto ContextErrorMessage()
+    {
+        return std::string(impl_->ContextErrorMessage(ctx_));
+    }
+
+    struct ContextFromStringExtractor {
+        ContextFromStringExtractor(AstVerifierTest *fixture, char const *source, char const *fileName = "dummy.sts")
+        {
+            ASSERT(fixture->ctx_ == nullptr);
+            fixture->ctx_ = fixture->impl_->CreateContextFromString(fixture->cfg_, source, fileName);
+        }
+    };
+
+    struct ContextFromFileExtractor {
+        ContextFromFileExtractor(AstVerifierTest *fixture, char const *fileName)
+        {
+            ASSERT(fixture->ctx_ == nullptr);
+            fixture->ctx_ = fixture->impl_->CreateContextFromFile(fixture->cfg_, fileName);
+        }
+    };
+
+    template <typename ContextExtractor>
+    class ContextHolder : private ContextExtractor {
+    public:
+        NO_COPY_SEMANTIC(ContextHolder);
+        NO_MOVE_SEMANTIC(ContextHolder);
+
+        template <typename... ExtractorArgs>
+        ContextHolder(AstVerifierTest *fixture, es2panda_ContextState state, ExtractorArgs &&...args)
+            : ContextHolder(fixture, state, state, std::forward<ExtractorArgs>(args)...)
+        {
+        }
+
+        template <typename... ExtractorArgs>
+        ContextHolder(AstVerifierTest *fixture, es2panda_ContextState target, es2panda_ContextState expected,
+                      ExtractorArgs &&...args)
+            : ContextExtractor(fixture, std::forward<ExtractorArgs>(args)...), fixture_ {fixture}
+        {
+            ASSERT(target != ES2PANDA_STATE_ERROR);
+            fixture_->impl_->ProceedToState(fixture_->ctx_, target);
+            EXPECT_EQ(fixture_->impl_->ContextState(fixture_->ctx_), expected)
+                << fixture_->impl_->ContextErrorMessage(fixture_->ctx_);
+            ;
+        }
+
+        ~ContextHolder()
+        {
+            ASSERT(fixture_->ctx_ != nullptr);
+            fixture_->impl_->DestroyContext(fixture_->ctx_);
+            fixture_->ctx_ = nullptr;
+        }
+
+    private:
+        AstVerifierTest *fixture_ {};
+    };
+
+    class ExpectVerifierMessage {
+    public:
+        ExpectVerifierMessage() = default;
+        // NOLINTNEXTLINE(*-explicit-constructor)
+        explicit ExpectVerifierMessage(std::initializer_list<std::string> l) : l_(l) {}
+
+        bool CheckMessages(const verifier_alias::Messages &messages)
+        {
+            if (messages.size() != l_.size()) {
+                std::cerr << "Expected " << l_.size() << " messages, got " << messages.size() << std::endl;
+                if (!messages.empty()) {
+                    std::cerr << "Got messages:" << std::endl;
+                }
+                for (const auto &msg : messages) {
+                    std::cerr << " " << msg.ToString() << std::endl;
+                }
+                return false;
+            }
+            auto res = true;
+            // NOLINTNEXTLINE(modernize-loop-convert)
+            for (size_t i = 0; i < messages.size(); i++) {
+                if (messages[i].ToString().find(l_.begin()[i]) == std::string::npos) {
+                    std::cerr << "Expected '" << l_.begin()[i] << "', got '" << messages[i].ToString() << "'"
+                              << std::endl;
+                    res = false;
+                }
+            }
+            return res;
+        }
+
+    private:
+        std::initializer_list<std::string> l_;
+    };
+
+    template <typename Invariant>
+    [[nodiscard]] auto Verify(ExpectVerifierMessage expected = {})
+    {
+        ASSERT(ctx_ != nullptr);
+        auto *inv = &std::get<Invariant>(invariants_);
+        inv->Init();
+        inv->VerifyAst(GetAst());
+        return expected.CheckMessages(inv->ViewMessages());
     }
 
     template <typename Invariant>
-    verifier_alias::Messages &&Verify(const ir_alias::AstNode *ast)
+    [[nodiscard]] auto VerifyNode(const ir_alias::AstNode *ast, ExpectVerifierMessage expected = {})
     {
-        std::get<Invariant>(invariants_).Init();
-        std::get<Invariant>(invariants_).VerifyAst(ast);
-        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
+        auto *inv = &std::get<Invariant>(invariants_);
+        inv->Init();
+        inv->VerifyNode(ast);
+        return expected.CheckMessages(inv->ViewMessages());
     }
 
-    template <typename Invariant>
-    verifier_alias::Messages &&VerifyNode(const ir_alias::AstNode *ast)
-    {
-        std::get<Invariant>(invariants_).Init();
-        std::get<Invariant>(invariants_).VerifyNode(ast);
-        return std::move(std::get<Invariant>(invariants_)).MoveMessages();
-    }
+private:
+    es2panda_Impl const *impl_ {};
+    es2panda_Config *cfg_ {};
+    es2panda_Context *ctx_ {};
+    ark::ArenaAllocator *allocator_ {};
 
-protected:
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    es2panda_Impl const *impl_;
-    es2panda_Config *cfg_;
-    ark::ArenaAllocator *allocator_;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
+    friend class ::LSPAPITests;
 };
 
 }  // namespace test::utils

@@ -19,7 +19,6 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::compiler::ast_verifier::CheckStructDeclaration;
-using ark::es2panda::ir::AstNode;
 
 namespace {
 
@@ -31,17 +30,10 @@ TEST_F(ASTVerifierTest, StructDeclaration)
         }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructWithAnnotation)
@@ -56,18 +48,10 @@ TEST_F(ASTVerifierTest, StructWithAnnotation)
         a : number = 1
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructWithComponent)
@@ -78,18 +62,10 @@ TEST_F(ASTVerifierTest, StructWithComponent)
         a : number = 1
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructExtendsStruct)
@@ -100,18 +76,11 @@ TEST_F(ASTVerifierTest, StructExtendsStruct)
     struct B extends A {
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_GT(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(
+            ExpectVerifierMessage {"Struct declaration should", "Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructExtendsClass)
@@ -122,18 +91,10 @@ TEST_F(ASTVerifierTest, StructExtendsClass)
     struct B extends A {
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructExtendsEnum)
@@ -147,18 +108,10 @@ TEST_F(ASTVerifierTest, StructExtendsEnum)
     struct B extends Color {
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructImplementInterface)
@@ -169,18 +122,10 @@ TEST_F(ASTVerifierTest, StructImplementInterface)
     struct B implements A {
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_EQ(messages.size(), 1);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructExtendsInterface)
@@ -191,18 +136,10 @@ TEST_F(ASTVerifierTest, StructExtendsInterface)
     struct B extends A {
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_GT(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructExport)
@@ -211,18 +148,10 @@ TEST_F(ASTVerifierTest, StructExport)
     export struct A {
     }
     )";
-
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
-
-    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(ctx, impl_->ContextProgram(ctx)));
-
-    const auto &messages = Verify<CheckStructDeclaration>(ast);
-
-    ASSERT_GT(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, text)
+    {
+        ASSERT_TRUE(Verify<CheckStructDeclaration>(ExpectVerifierMessage {"Struct declaration should"}));
+    }
 }
 
 TEST_F(ASTVerifierTest, StructInStruct)
@@ -234,11 +163,7 @@ TEST_F(ASTVerifierTest, StructInStruct)
     }
     )";
 
-    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.sts");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ERROR);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_PARSED, ES2PANDA_STATE_ERROR, text) {}
 }
 
 }  // namespace

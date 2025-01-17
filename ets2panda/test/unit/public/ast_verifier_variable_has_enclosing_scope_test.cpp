@@ -19,7 +19,6 @@
 #include <gtest/gtest.h>
 
 using ark::es2panda::compiler::ast_verifier::VariableHasEnclosingScope;
-using ark::es2panda::ir::AstNode;
 
 namespace {
 TEST_F(ASTVerifierTest, CatchClause)
@@ -34,14 +33,10 @@ TEST_F(ASTVerifierTest, CatchClause)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasEnclosingScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasEnclosingScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
@@ -57,14 +52,10 @@ TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasEnclosingScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasEnclosingScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
@@ -77,14 +68,10 @@ TEST_F(ASTVerifierTest, ParametersInArrowFunctionExpression)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasEnclosingScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasEnclosingScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, LambdaAsParameter)
@@ -97,14 +84,10 @@ TEST_F(ASTVerifierTest, LambdaAsParameter)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasEnclosingScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasEnclosingScope>());
+    }
 }
 
 TEST_F(ASTVerifierTest, PartialClassDeclaration)
@@ -116,13 +99,9 @@ TEST_F(ASTVerifierTest, PartialClassDeclaration)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_LOWERED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_LOWERED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<VariableHasEnclosingScope>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_LOWERED, text)
+    {
+        EXPECT_TRUE(Verify<VariableHasEnclosingScope>());
+    }
 }
 }  // namespace

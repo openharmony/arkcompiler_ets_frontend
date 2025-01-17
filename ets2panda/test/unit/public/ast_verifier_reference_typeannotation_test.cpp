@@ -31,26 +31,19 @@ TEST_F(ASTVerifierTest, RefAnnotationNullNegative)
         let trueRef = refNull;
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-
-    auto *type = new ark::es2panda::ir::ETSPrimitiveType(ark::es2panda::ir::PrimitiveType::CHAR, Allocator());
-
-    ast->IterateRecursively([type](AstNode *astT) {
-        if (astT->IsIdentifier()) {
-            if (astT->AsIdentifier()->Name() == "trueRef") {
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        auto *type = new ark::es2panda::ir::ETSPrimitiveType(ark::es2panda::ir::PrimitiveType::CHAR, Allocator());
+        GetAst()->IterateRecursively([type](AstNode *astT) {
+            if (astT->IsIdentifier() && astT->AsIdentifier()->Name() == "trueRef") {
                 astT->AsIdentifier()->SetTsTypeAnnotation(type);
             }
-        }
-    });
+        });
 
-    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
-    ASSERT_EQ(messages.size(), 1);
+        EXPECT_TRUE(Verify<ReferenceTypeAnnotationIsNull>(ExpectVerifierMessage {"TYPE_ANNOTATION_NOT_NULLPTR"}));
 
-    delete type;
-    impl_->DestroyContext(ctx);
+        delete type;
+    }
 }
 
 TEST_F(ASTVerifierTest, RefAnnotationNullDefaultParam)
@@ -65,14 +58,10 @@ TEST_F(ASTVerifierTest, RefAnnotationNullDefaultParam)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<ReferenceTypeAnnotationIsNull>());
+    }
 }
 
 TEST_F(ASTVerifierTest, RefAnnotationNullInterface)
@@ -89,14 +78,10 @@ TEST_F(ASTVerifierTest, RefAnnotationNullInterface)
         }
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<ReferenceTypeAnnotationIsNull>());
+    }
 }
 
 TEST_F(ASTVerifierTest, RefAnnotationNull1)
@@ -106,14 +91,10 @@ TEST_F(ASTVerifierTest, RefAnnotationNull1)
         let trueRef = refNull;
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<ReferenceTypeAnnotationIsNull>());
+    }
 }
 
 TEST_F(ASTVerifierTest, RefAnnotationNull2)
@@ -122,12 +103,8 @@ TEST_F(ASTVerifierTest, RefAnnotationNull2)
         let refNull = 10;
     )";
 
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<ReferenceTypeAnnotationIsNull>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text)
+    {
+        EXPECT_TRUE(Verify<ReferenceTypeAnnotationIsNull>());
+    }
 }

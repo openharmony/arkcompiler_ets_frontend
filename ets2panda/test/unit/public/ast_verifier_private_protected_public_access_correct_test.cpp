@@ -17,7 +17,6 @@
 #include "checker/ETSchecker.h"
 
 using ark::es2panda::compiler::ast_verifier::ModifierAccessValid;
-using ark::es2panda::ir::AstNode;
 
 constexpr char const *PRIVATE_PROTECTED_PUBLIC_TEST =
     R"(
@@ -65,13 +64,8 @@ constexpr char const *PRIVATE_PROTECTED_PUBLIC_TEST =
 
 TEST_F(ASTVerifierTest, PrivateProtectedPublicAccessTestCorrect)
 {
-    es2panda_Context *ctx =
-        CreateContextAndProceedToState(impl_, cfg_, PRIVATE_PROTECTED_PUBLIC_TEST, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-
-    ASSERT_EQ(messages.size(), 0);
-    impl_->DestroyContext(ctx);
+    CONTEXT(ES2PANDA_STATE_CHECKED, PRIVATE_PROTECTED_PUBLIC_TEST)
+    {
+        EXPECT_TRUE(Verify<ModifierAccessValid>());
+    }
 }

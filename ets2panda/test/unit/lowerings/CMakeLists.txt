@@ -21,27 +21,6 @@ ets2panda_add_gtest(scopes_initialization_test
 ets2panda_add_gtest(string_constants_test
     CPP_SOURCES string_constants.cpp
 )
-ets2panda_add_gtest(const_expression_1_test
-    CPP_SOURCES const_expression_1.cpp
-)
-ets2panda_add_gtest(const_expression_2_test
-    CPP_SOURCES const_expression_2.cpp
-)
-ets2panda_add_gtest(const_expression_3_test
-    CPP_SOURCES const_expression_3.cpp
-)
-ets2panda_add_gtest(const_expression_4_test
-    CPP_SOURCES const_expression_4.cpp
-)
-ets2panda_add_gtest(const_expression_5_test
-    CPP_SOURCES const_expression_5.cpp
-)
-ets2panda_add_gtest(const_expression_6_test
-    CPP_SOURCES const_expression_6.cpp
-)
-ets2panda_add_gtest(const_expression_7_test
-    CPP_SOURCES const_expression_7.cpp
-)
-ets2panda_add_gtest(const_expression_8_test
-    CPP_SOURCES const_expression_8.cpp
+ets2panda_add_gtest(const_expression_test
+    CPP_SOURCES const_expression.cpp
 )

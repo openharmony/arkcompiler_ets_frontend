@@ -17,7 +17,6 @@
 #include "checker/ETSchecker.h"
 
 using ark::es2panda::compiler::ast_verifier::ModifierAccessValid;
-using ark::es2panda::ir::ETSModule;
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
 {
@@ -29,22 +28,18 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
             public b: int = this.a;
         }
     )";
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    CONTEXT(ES2PANDA_STATE_CHECKED, text, "dummy.sts")
+    {
+        GetAst()
+            ->AsETSModule()
+            ->Statements()[1]
+            ->AsClassDeclaration()
+            ->Definition()
+            ->AsClassDefinition()
+            ->Body()[0]
+            ->AsClassProperty()
+            ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto ast = GetAstFromContext<ETSModule>(impl_, ctx);
-
-    ast->AsETSModule()
-        ->Statements()[1]
-        ->AsClassDeclaration()
-        ->Definition()
-        ->AsClassDefinition()
-        ->Body()[0]
-        ->AsClassProperty()
-        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
-
-    const auto &messages = Verify<ModifierAccessValid>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
+        EXPECT_TRUE(Verify<ModifierAccessValid>());
+    }
 }
