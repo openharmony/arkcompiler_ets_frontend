@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,17 +13,11 @@
  * limitations under the License.
  */
 
-function foo(callback: (x: boolean) => void): void {
+class Base<T> {
+	foo(p: Base<T>) {}
+	/* @@ label */foo(p: Base<Number>) {}
+	foo(p: Derived<Number>) {}
 }
+class Derived<T> extends Base<T> {}
 
-/* @@ label */function foo(callback: (x: int) => void): void {
-}
-
-function main(): void {
-    /* @@ label1 */foo((x) => {
-    });
-}
-
-
-/* @@@ label Error TypeError: Function foo is already declared.  */
-/* @@@ label1 Error TypeError: Reference to foo is ambiguous  */
+/* @@@ label Error TypeError: Function foo is already declared. */

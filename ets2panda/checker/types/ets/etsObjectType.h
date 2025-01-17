@@ -400,6 +400,7 @@ public:
     util::StringView GetReExportAliasValue(util::StringView const &key) const;
     bool IsReExportHaveAliasValue(util::StringView const &key) const;
     const ArenaVector<ETSObjectType *> &ReExports() const;
+    bool IsSameBasedGeneric(TypeRelation *relation, Type const *other) const;
 
     ArenaAllocator *Allocator() const
     {
