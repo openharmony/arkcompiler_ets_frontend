@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
+var json = require('./deps-json.json')
 function hi() {
-    return "hello require";
+    return "hello require" + json.test;
 }
 
 module.exports.hi = hi

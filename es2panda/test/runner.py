@@ -798,6 +798,7 @@ class CompilerProjectTest(Test):
         # Modify the hap file path
         self.project_mod_path = os.path.join(os.path.join(self.projects_path, self.project), 'mod')
         self.modules_cache_path = os.path.join(os.path.join(self.projects_path, self.project), 'modulescache.cache')
+        self.deps_json_path = os.path.join(os.path.join(self.projects_path, self.project), 'deps-json.json')
 
     def remove_project(self, runner):
         project_path = runner.build_dir + "/" + self.project
@@ -941,6 +942,12 @@ class CompilerProjectTest(Test):
             else:
                 mod_files_info.append(file_info)
                 f.writelines(file_info)
+        if (os.path.exists(self.deps_json_path)):
+            record_name = self.get_record_name(self.deps_json_path)
+            file_info = ('%s;%s;%s;%s;%s;%s\n' % (self.deps_json_path, record_name, 'esm',
+                                               os.path.relpath(self.deps_json_path, self.projects_path), record_name,
+                                               'false'))
+            f.writelines(file_info)
         self.gen_abc_input_files_infos(runner, abc_files_infos, f, mod_files_info)
         f.close()
         if (os.path.exists(self.project_mod_path)):

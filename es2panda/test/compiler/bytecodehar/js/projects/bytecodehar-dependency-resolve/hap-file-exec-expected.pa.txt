@@ -5,6 +5,8 @@ program_file: bytecodehar2-abcinput.abc
 record_name: &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0
 program_file: commonjs-say.js
 record_name: commonjs-say
+program_file: deps-json.json
+record_name: &myapp/deps-json&
 program_file: hap-file-exec.js
 record_name: &myapp/hap-file-exec&
 program_file: sourcehar-file1.js
@@ -362,29 +364,41 @@ slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1223
 ======> literal array buffer <======
 ======> strings <======
 
-slotNum = 0x5
+slotNum = 0x7
 .language ECMAScript
 .function any commonjs-say.#*#(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
 label_1: 
 label_0: 
+	newlexenv 0x1
 	definefunc 0x0, commonjs-say.#**#hi, 0x0
 	sta v0
+	ldundefined
+	stlexvar 0x0, 0x0
+	lda.str ./deps-json.json
+	sta v1
+	lda a4
+	callarg1 0x1, v1
+	stlexvar 0x0, 0x0
 	lda a5
-	ldobjbyname 0x1, exports
+	ldobjbyname 0x3, exports
 	sta v1
 	lda v0
-	stobjbyname 0x3, hi, v1
+	stobjbyname 0x5, hi, v1
 	ldundefined
 	returnundefined
 label_2: 
 }
 
-slotNum = 0x0
+slotNum = 0x3
 .language ECMAScript
 .function any commonjs-say.#**#hi(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	lda.str hello require
+	sta v0
+	ldlexvar 0x0, 0x0
+	ldobjbyname 0x0, test
+	add2 0x2, v0
 	return
 label_2: 
 }
@@ -424,7 +438,11 @@ label_2:
 ------------------------------------
 slot commonjs-say_0
 ======> strings <======
-"Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; 
+"./deps-json.json"; "Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; "test"; 
+
+======> literal array buffer <======
+======> strings <======
+
 slotNum = 0x4
 .language ECMAScript
 .function any &myapp/hap-file-exec&.#*#main(any a0, any a1, any a2) {
@@ -954,29 +972,41 @@ slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_1183
 },
 ======> strings <======
 "&@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test"; "bytecodehar2.file1.test"; "print"; 
-slotNum = 0x5
+slotNum = 0x7
 .language ECMAScript
 .function any commonjs-say.#*#(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
 label_1: 
 label_0: 
+	newlexenv 0x1
 	definefunc 0x0, commonjs-say.#**#hi, 0x0
 	sta v0
+	ldundefined
+	stlexvar 0x0, 0x0
+	lda.str ./deps-json.json
+	sta v1
+	lda a4
+	callarg1 0x1, v1
+	stlexvar 0x0, 0x0
 	lda a5
-	ldobjbyname 0x1, exports
+	ldobjbyname 0x3, exports
 	sta v1
 	lda v0
-	stobjbyname 0x3, hi, v1
+	stobjbyname 0x5, hi, v1
 	ldundefined
 	returnundefined
 label_2: 
 }
 
-slotNum = 0x0
+slotNum = 0x3
 .language ECMAScript
 .function any commonjs-say.#**#hi(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	lda.str hello require
+	sta v0
+	ldlexvar 0x0, 0x0
+	ldobjbyname 0x0, test
+	add2 0x2, v0
 	return
 label_2: 
 }
@@ -1016,7 +1046,11 @@ label_2:
 ------------------------------------
 slot commonjs-say_0
 ======> strings <======
-"Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; 
+"./deps-json.json"; "Reflect"; "apply"; "commonjs-say.#*#"; "commonjs-say.#**#hi"; "exports"; "hello require"; "hi"; "test"; 
+
+======> literal array buffer <======
+======> strings <======
+
 slotNum = 0x4
 .language ECMAScript
 .function any &myapp/hap-file-exec&.#*#main(any a0, any a1, any a2) {

@@ -36,6 +36,7 @@ struct PkgInfo;
 namespace panda::es2panda::util {
 const std::string NPM_ENTRIES = "npmEntries.txt";
 const std::string IS_COMMONJS = "isCommonjs";
+const std::string JSON_FilE_CONTENT = "jsonFileContent";
 // The format of ohmurl for non-SO files are start with '@normalized:N'.
 const std::string NORMALIZED_OHMURL_NOT_SO = "@normalized:N";
 const std::string NORMALIZED = "@normalized:";

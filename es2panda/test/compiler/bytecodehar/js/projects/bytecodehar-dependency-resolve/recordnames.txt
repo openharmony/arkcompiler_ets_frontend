@@ -7,3 +7,4 @@ sourcehar-file2:&sourcehar/sourcehar-file2&2.0.0
 hap-file-exec:&myapp/hap-file-exec&
 test-require:&myapp/test-require&
 say:&myapp/say&
+deps-json:&myapp/deps-json&
