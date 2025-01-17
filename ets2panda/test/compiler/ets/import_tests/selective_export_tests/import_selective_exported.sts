@@ -18,7 +18,9 @@ import {func} from "./selective_export";
 
 function main(): void {
     func();
+    all.afunc();
     console.print(all.msg);
+    console.print(all.amsg);
 
     let test_var: all.tc = new all.tc();
     console.print(test_var.test_member);

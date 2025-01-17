@@ -1103,7 +1103,7 @@ bool ETSCompiler::HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg
 
 bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGen *etsg) const
 {
-    auto &propName = expr->Property()->AsIdentifier()->Name();
+    auto &propName = expr->PropVar()->Name();
     auto const *const variable = expr->PropVar();
     if (etsg->Checker()->IsVariableStatic(variable)) {
         auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());

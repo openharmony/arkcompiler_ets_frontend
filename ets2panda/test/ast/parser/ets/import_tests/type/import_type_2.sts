@@ -17,4 +17,4 @@ import * as B from "./type"
 
 let aa:B./* @@ label */A;
 
-/* @@@ label Error TypeError: Cannot find imported element 'A' exported with alias  */
+/* @@@ label Error TypeError: 'A' type does not exist.  */

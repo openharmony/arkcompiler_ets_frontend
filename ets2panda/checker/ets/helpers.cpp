@@ -1298,7 +1298,8 @@ std::pair<bool, util::StringView> FindSpecifierForModuleObject(ir::ETSImportDecl
 template <checker::PropertyType TYPE>
 void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleObjType,
                                                  ir::ETSImportDeclaration *importDecl,
-                                                 const varbinder::Scope::VariableMap &bindings)
+                                                 const varbinder::Scope::VariableMap &bindings,
+                                                 const util::StringView &importPath)
 {
     for (auto [_, var] : bindings) {
         (void)_;
@@ -1309,17 +1310,18 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
             if (!aliasedName.Empty()) {
                 moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
             }
-            moduleObjType->AddProperty<TYPE>(var->AsLocalVariable(),
-                                             FindPropNameForNamespaceImport(var->AsLocalVariable()->Name()));
+            moduleObjType->AddProperty<TYPE>(
+                var->AsLocalVariable(), FindPropNameForNamespaceImport(var->AsLocalVariable()->Name(), importPath));
         }
     }
 }
 
-util::StringView ETSChecker::FindPropNameForNamespaceImport(const util::StringView &originalName)
+util::StringView ETSChecker::FindPropNameForNamespaceImport(const util::StringView &originalName,
+                                                            const util::StringView &importPath)
 {
-    if (auto relatedMapItem =
-            VarBinder()->AsETSBinder()->GetSelectiveExportAliasMultimap().find(Program()->SourceFilePath());
-        relatedMapItem != VarBinder()->AsETSBinder()->GetSelectiveExportAliasMultimap().end()) {
+    auto exportAliases = VarBinder()->AsETSBinder()->GetSelectiveExportAliasMultimap();
+    auto relatedMapItem = exportAliases.find(importPath);
+    if (relatedMapItem != exportAliases.end()) {
         if (auto result = std::find_if(relatedMapItem->second.begin(), relatedMapItem->second.end(),
                                        [originalName](const auto &item) { return item.second == originalName; });
             result != relatedMapItem->second.end()) {
@@ -1356,19 +1358,19 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
     }
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
-        moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticFieldScope()->Bindings(), importPath);
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
-        moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticMethodScope()->Bindings(), importPath);
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->StaticDeclScope()->Bindings(), importPath);
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->InstanceDeclScope()->Bindings(), importPath);
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings());
+        moduleObjType, importDecl, program->GlobalClassScope()->TypeAliasScope()->Bindings(), importPath);
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType)

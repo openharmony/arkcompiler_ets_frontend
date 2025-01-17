@@ -2961,15 +2961,9 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     checker::Type *baseType = expr->Left()->Check(checker);
-
     if (baseType->IsETSObjectType()) {
-        auto importDecl = baseType->AsETSObjectType()->GetDeclNode()->Parent()->Parent();
         // clang-format off
-        auto searchName =
-            importDecl->IsETSImportDeclaration()
-                ? checker->VarBinder()->AsETSBinder()->FindNameInAliasMap(
-                    importDecl->AsETSImportDeclaration()->ResolvedSource()->Str(), expr->Right()->Name())
-                : expr->Right()->Name();
+        auto searchName = expr->Right()->Name();
         // clang-format on
         // NOTE (oeotvos) This should be done differently in the follow-up patch.
         if (searchName.Empty()) {
@@ -2978,20 +2972,12 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
         varbinder::Variable *prop =
             baseType->AsETSObjectType()->GetProperty(searchName, checker::PropertySearchFlags::SEARCH_DECL);
         // NOTE(dslynko): in debugger evaluation mode must lazily generate module's properties here.
-
         if (prop == nullptr) {
             checker->LogTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());
             return checker->GlobalTypeError();
         }
 
         checker->ValidateNamespaceProperty(prop, baseType->AsETSObjectType(), expr->Right());
-
-        if (expr->Right()->Name().Is(searchName.Mutf8()) && prop->Declaration()->Node()->HasExportAlias()) {
-            checker->LogTypeError({"Cannot find imported element '", searchName, "' exported with alias"},
-                                  expr->Right()->Start());
-            return checker->GlobalTypeError();
-        }
-
         expr->Right()->SetVariable(prop);
         return checker->GetTypeOfVariable(prop);
     }
