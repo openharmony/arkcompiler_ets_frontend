@@ -28,6 +28,7 @@ class ETSNolintParser;
 
 namespace ark::es2panda::lexer {
 class Keywords;
+class KeywordsUtil;
 
 using ENUMBITOPS_OPERATORS;
 
@@ -280,7 +281,7 @@ protected:
     void ScanMinusPunctuator();
     void ScanSlashPunctuator();
     void ScanPercentPunctuator();
-    void ScanDotPunctuator();
+    void ScanDotPunctuator(KeywordsUtil &kwu);
     void ScanColonPunctuator();
     virtual bool ScanDollarPunctuator();
     void ScanAtPunctuator();

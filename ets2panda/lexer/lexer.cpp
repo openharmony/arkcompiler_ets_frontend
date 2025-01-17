@@ -951,7 +951,7 @@ void Lexer::ScanSlashPunctuator()
     }
 }
 
-void Lexer::ScanDotPunctuator()
+void Lexer::ScanDotPunctuator(KeywordsUtil &kwu)
 {
     GetToken().type_ = TokenType::PUNCTUATOR_PERIOD;
 
@@ -966,7 +966,7 @@ void Lexer::ScanDotPunctuator()
         case LEX_CHAR_7:
         case LEX_CHAR_8:
         case LEX_CHAR_9: {
-            ScanNumber();
+            ScanNumber((kwu.Flags() & NextTokenFlags::UNARY_MINUS) != std::underlying_type_t<NextTokenFlags>(0U));
             break;
         }
         case LEX_CHAR_QUESTION: {
@@ -1400,7 +1400,7 @@ void Lexer::NextToken(Keywords *kws)
             break;
         }
         case LEX_CHAR_DOT: {
-            ScanDotPunctuator();
+            ScanDotPunctuator(kwu);
             break;
         }
         case LEX_CHAR_SLASH: {
