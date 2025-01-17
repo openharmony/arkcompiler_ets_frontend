@@ -93,7 +93,7 @@ static bool ChangeAnnotationName(es2panda_Context *context)
 int main(int argc, char **argv)
 {
     if (argc < MIN_ARGC) {
-        return 1;
+        return INVALID_ARGC_ERROR_CODE;
     }
 
     impl = GetImpl();
@@ -103,7 +103,8 @@ int main(int argc, char **argv)
     auto config = impl->CreateConfig(argc - 1, argv + 1);
     auto context = impl->CreateContextFromString(config, source.data(), argv[argc - 1]);
     if (context == nullptr) {
-        return NULLPTR_IMPL_ERROR_CODE;
+        std::cerr << "FAILED TO CREATE CONTEXT" << std::endl;
+        return NULLPTR_CONTEXT_ERROR_CODE;
     }
 
     impl->ProceedToState(context, ES2PANDA_STATE_PARSED);
