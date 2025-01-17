@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,6 +34,13 @@ static inline bool IsInterfaceType(const checker::Type *type)
 {
     return type != nullptr && type->IsETSObjectType() &&
            type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE) &&
+           !type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
+}
+
+static inline bool IsAbstractClassType(const checker::Type *type)
+{
+    return type != nullptr && type->IsETSObjectType() &&
+           type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) &&
            !type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC);
 }
 
@@ -234,14 +241,73 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
     return classType;
 }
 
+static checker::Type *GenerateAnonClassTypeFromAbstractClass(public_lib::Context *ctx,
+                                                             ir::ClassDefinition *abstractClassNode,
+                                                             ir::ObjectExpression *objExpr)
+{
+    auto *checker = ctx->checker->AsETSChecker();
+
+    if (abstractClassNode->GetAnonClass() != nullptr) {
+        return abstractClassNode->GetAnonClass()->Definition()->TsType()->AsETSObjectType();
+    }
+
+    auto classBodyBuilder = [checker, abstractClassNode, objExpr](ArenaVector<ir::AstNode *> *classBody) {
+        checker::ETSChecker::ClassInitializerBuilder initBuilder =
+            [checker]([[maybe_unused]] ArenaVector<ir::Statement *> *statements,
+                      [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
+                checker->AddParam(varbinder::VarBinder::MANDATORY_PARAM_THIS, nullptr);
+            };
+
+        auto ctor = checker->CreateClassInstanceInitializer(initBuilder);
+        classBody->push_back(ctor);
+
+        for (auto *it : abstractClassNode->Body()) {
+            if (it->IsMethodDefinition() && it->AsMethodDefinition()->IsAbstract()) {
+                checker->LogTypeError({"Abstract class has abstract method ", it->AsMethodDefinition()->Id()->Name()},
+                                      objExpr->Start());
+            }
+        }
+    };
+
+    auto anonClassName = GenName(checker->Allocator());
+    auto *classDecl = checker->BuildClass(anonClassName.View(), classBodyBuilder);
+    auto *classDef = classDecl->Definition();
+    auto *classType = classDef->TsType()->AsETSObjectType();
+
+    classDecl->SetRange(abstractClassNode->Range());
+    classDef->SetAnonymousModifier();
+    classDef->SetRange(abstractClassNode->Range());
+
+    // Class type params
+    if (abstractClassNode->TypeParams() != nullptr) {
+        ArenaVector<checker::Type *> typeArgs(checker->Allocator()->Adapter());
+        for (auto param : abstractClassNode->TypeParams()->Params()) {
+            auto *var = param->Name()->Variable();
+            ASSERT(var && var->TsType()->IsETSTypeParameter());
+            typeArgs.push_back(var->TsType());
+        }
+        classType->SetTypeArguments(std::move(typeArgs));
+    }
+
+    abstractClassNode->SetAnonClass(classDecl);
+    classType->SetSuperType(objExpr->TsType()->AsETSObjectType());
+    return classType;
+}
+
 static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpression *objExpr)
 {
     auto *checker = ctx->checker->AsETSChecker();
     auto *targetType = objExpr->TsType();
     checker->CheckObjectLiteralKeys(objExpr->Properties());
-    ASSERT(targetType->AsETSObjectType()->GetDeclNode()->IsTSInterfaceDeclaration());
-    auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
-    checker::Type *resultType = GenerateAnonClassTypeFromInterface(ctx, ifaceNode, objExpr);
+    checker::Type *resultType;
+    if (targetType->AsETSObjectType()->GetDeclNode()->IsTSInterfaceDeclaration()) {
+        auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
+        resultType = GenerateAnonClassTypeFromInterface(ctx, ifaceNode, objExpr);
+    } else {
+        ASSERT(targetType->AsETSObjectType()->GetDeclNode()->AsClassDefinition()->IsAbstract());
+        auto *abstractClassNode = targetType->AsETSObjectType()->GetDeclNode()->AsClassDefinition();
+        resultType = GenerateAnonClassTypeFromAbstractClass(ctx, abstractClassNode, objExpr);
+    }
 
     if (targetType->AsETSObjectType()->IsPartial()) {
         resultType->AsETSObjectType()->SetBaseType(targetType->AsETSObjectType()->GetBaseType());
@@ -269,7 +335,8 @@ static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpressi
 bool InterfaceObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     program->Ast()->IterateRecursivelyPostorder([ctx](ir::AstNode *ast) -> void {
-        if (ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType())) {
+        if (ast->IsObjectExpression() && (IsInterfaceType(ast->AsObjectExpression()->TsType()) ||
+                                          IsAbstractClassType(ast->AsObjectExpression()->TsType()))) {
             HandleInterfaceLowering(ctx, ast->AsObjectExpression());
         }
     });
@@ -281,7 +348,8 @@ bool InterfaceObjectLiteralLowering::PostconditionForModule([[maybe_unused]] pub
                                                             const parser::Program *program)
 {
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) -> bool {
-        return ast->IsObjectExpression() && IsInterfaceType(ast->AsObjectExpression()->TsType());
+        return ast->IsObjectExpression() && (IsInterfaceType(ast->AsObjectExpression()->TsType()) ||
+                                             IsAbstractClassType(ast->AsObjectExpression()->TsType()));
     });
 }
 }  // namespace ark::es2panda::compiler

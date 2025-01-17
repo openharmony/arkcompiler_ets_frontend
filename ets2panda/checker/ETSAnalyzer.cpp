@@ -1681,13 +1681,6 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         return objType;
     }
 
-    if (objType->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
-        checker->LogTypeError({"target type for class composite ", objType->Name(), " is not instantiable"},
-                              expr->Start());
-        expr->SetTsType(checker->GlobalTypeError());
-        return expr->TsType();
-    }
-
     if (expr->PreferredType()->ToAssemblerName().str() == "escompat.Record" ||
         expr->PreferredType()->ToAssemblerName().str() == "escompat.Map") {
         // 7.6.3 Object Literal of Record Type

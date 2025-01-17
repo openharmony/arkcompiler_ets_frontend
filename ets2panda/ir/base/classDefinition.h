@@ -389,6 +389,16 @@ public:
         return origEnumDecl_;
     }
 
+    ClassDeclaration *GetAnonClass() noexcept
+    {
+        return anonClass_;
+    }
+
+    void SetAnonClass(ClassDeclaration *anonClass) noexcept
+    {
+        anonClass_ = anonClass;
+    }
+
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
     bool HasComputedInstanceField() const;
@@ -445,6 +455,7 @@ private:
     ArenaSet<varbinder::Variable *> capturedVars_;
     ArenaSet<varbinder::Variable *> localVariableIsNeeded_;
     TSEnumDeclaration *origEnumDecl_ {};
+    ClassDeclaration *anonClass_ {nullptr};
     static int classCounter_;
     const int localIndex_ {};
     const std::string localPrefix_ {};
