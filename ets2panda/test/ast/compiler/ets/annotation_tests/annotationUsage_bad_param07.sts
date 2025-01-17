@@ -18,8 +18,8 @@
     testProperty2: number
 }
 
-@MyAnno({/* @@ label */testProperty1: 1, /* @@ label1 */testProperty2: ""})
+@MyAnno({testProperty1: /* @@ label */1, testProperty2: /* @@ label1 */""})
 function foo(){}
 
-/* @@@ label Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'int', but expected type is 'String'.  */
-/* @@@ label1 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty2' is of type 'String', but expected type is 'double'.  */
+/* @@@ label Error TypeError: Type 'int' cannot be assigned to type 'String'  */
+/* @@@ label1 Error TypeError: Type '""' cannot be assigned to type 'double'  */

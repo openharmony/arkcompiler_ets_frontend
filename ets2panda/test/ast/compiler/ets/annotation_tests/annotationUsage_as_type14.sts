@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 @interface Anno{
-    /* @@ label */a: /* @@ label1 */Anno
+    /* @@ label2 */a: /* @@ label */Anno
 }
 
-function foo(a: /* @@ label2 */Anno) {}
+function foo(a: /* @@ label1 */Anno) {}
 
-/* @@@ label2 Error TypeError: Annotations cannot be used as a type.  */
+/* @@@ label Error TypeError: Annotations cannot be used as a type.  */
 /* @@@ label1 Error TypeError: Annotations cannot be used as a type.  */
-/* @@@ label Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
+/* @@@ label2 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */

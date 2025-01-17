@@ -250,6 +250,9 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
 
 bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
 {
+    if (type->IsTypeError()) {
+        return false;
+    }
     if (type->IsETSArrayType()) {
         return ValidateAnnotationPropertyType(type->AsETSArrayType()->ElementType());
     }

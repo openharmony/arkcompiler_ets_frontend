@@ -18,8 +18,8 @@
     testProperty2: number
 }
 
-@MyAnno({/* @@ label */testProperty2: "Bob", /* @@ label1 */testProperty1: 1})
+@MyAnno({testProperty2: /* @@ label */"Bob", testProperty1: /* @@ label1 */1})
 class A{}
 
-/* @@@ label Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty2' is of type 'String', but expected type is 'double'.  */
-/* @@@ label1 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'int', but expected type is 'String'.  */
+/* @@@ label Error TypeError: Type '"Bob"' cannot be assigned to type 'double'  */
+/* @@@ label1 Error TypeError: Type 'int' cannot be assigned to type 'String'  */

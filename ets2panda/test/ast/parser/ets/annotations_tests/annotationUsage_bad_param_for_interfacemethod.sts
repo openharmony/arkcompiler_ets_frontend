@@ -26,5 +26,5 @@ interface itf {
 
 
 /* @@? 23:29 Error TypeError: Unresolved reference A  */
+/* @@? 23:29 Error TypeError: Type 'A' cannot be assigned to type 'String'  */
 /* @@? 23:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
-/* @@? 23:14 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'A', but expected type is 'String'.  */

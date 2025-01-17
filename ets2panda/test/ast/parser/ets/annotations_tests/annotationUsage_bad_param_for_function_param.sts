@@ -23,5 +23,5 @@ function foo(@MyAnno({testProperty1: A}) x: int) {
 }
 
 /* @@? 22:38 Error TypeError: Unresolved reference A  */
+/* @@? 22:38 Error TypeError: Type 'A' cannot be assigned to type 'String'  */
 /* @@? 22:38 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
-/* @@? 22:23 Error TypeError: The value provided for annotation 'MyAnno' field 'testProperty1' is of type 'A', but expected type is 'String'.  */

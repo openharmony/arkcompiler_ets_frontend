@@ -22,4 +22,5 @@ class B{}
 
 
 /* @@@ label Error TypeError: Unresolved reference a  */
+/* @@@ label Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields.  */
 /* @@@ label Error TypeError: Invalid value for annotation field, expected a constant literal.  */
