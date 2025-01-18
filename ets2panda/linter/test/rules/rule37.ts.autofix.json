@@ -1,0 +1,191 @@
+{
+    "result": [
+        {
+            "line": 16,
+            "column": 22,
+            "endLine": 16,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 631,
+                    "end": 637,
+                    "replacementText": "new RegExp(\"bc*d\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 17,
+            "endLine": 20,
+            "endColumn": 82,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 699,
+                    "end": 764,
+                    "replacementText": "new RegExp(\"^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*(\\\\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)*$\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 23,
+            "endLine": 23,
+            "endColumn": 31,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 892,
+                    "end": 900,
+                    "replacementText": "new RegExp(\"bc*d\", \"ig\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 34,
+            "endLine": 27,
+            "endColumn": 41,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 985,
+                    "end": 992,
+                    "replacementText": "new RegExp(\"bc*d\", \"i\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 23,
+            "endLine": 31,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1088,
+                    "end": 1093,
+                    "replacementText": "new RegExp(\"a\\\\\\\\\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 44,
+            "endLine": 36,
+            "endColumn": 50,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1195,
+                    "end": 1201,
+                    "replacementText": "new RegExp(\"bc*d\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 36,
+            "endLine": 38,
+            "endColumn": 101,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1239,
+                    "end": 1304,
+                    "replacementText": "new RegExp(\"^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*(\\\\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)*$\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 22,
+            "endLine": 43,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1410,
+                    "end": 1416,
+                    "replacementText": "new RegExp(\"bc*d\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 22,
+            "endLine": 51,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1558,
+                    "end": 1564,
+                    "replacementText": "new RegExp(\"bc*d\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 17,
+            "endLine": 59,
+            "endColumn": 82,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1695,
+                    "end": 1760,
+                    "replacementText": "new RegExp(\"^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*(\\\\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)*$\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 28,
+            "endLine": 63,
+            "endColumn": 93,
+            "problem": "RegularExpressionLiteral",
+            "autofix": [
+                {
+                    "start": 1800,
+                    "end": 1865,
+                    "replacementText": "new RegExp(\"^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*(\\\\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)*$\")"
+                }
+            ],
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        }
+    ]
+}

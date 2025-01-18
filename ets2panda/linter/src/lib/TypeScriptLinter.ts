@@ -202,7 +202,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ReturnStatement, this.handleReturnStatement],
     [ts.SyntaxKind.Decorator, this.handleDecorator],
     [ts.SyntaxKind.ImportType, this.handleImportType],
-    [ts.SyntaxKind.VoidExpression, this.handleVoidExpression]
+    [ts.SyntaxKind.VoidExpression, this.handleVoidExpression],
+    [ts.SyntaxKind.RegularExpressionLiteral, this.handleRegularExpressionLiteral]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -2911,5 +2912,13 @@ export class TypeScriptLinter {
     }
     const autofix = this.autofixer?.fixVoidOperator(node as ts.VoidExpression);
     this.incrementCounters(node, FaultID.VoidOperator, autofix);
+  }
+
+  private handleRegularExpressionLiteral(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const autofix = this.autofixer?.fixRegularExpressionLiteral(node as ts.RegularExpressionLiteral);
+    this.incrementCounters(node, FaultID.RegularExpressionLiteral, autofix);
   }
 }

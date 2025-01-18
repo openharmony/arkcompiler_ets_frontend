@@ -135,6 +135,7 @@ export enum FaultID {
   ImportType,
   DynamicCtorCall,
   VoidOperator,
+  RegularExpressionLiteral,
   // this should always be last enum
   LAST_ID
 }

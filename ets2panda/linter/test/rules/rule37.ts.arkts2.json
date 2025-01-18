@@ -1,0 +1,114 @@
+{
+    "result": [
+        {
+            "line": 16,
+            "column": 22,
+            "endLine": 16,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 20,
+            "column": 17,
+            "endLine": 20,
+            "endColumn": 82,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 23,
+            "column": 23,
+            "endLine": 23,
+            "endColumn": 31,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 27,
+            "column": 34,
+            "endLine": 27,
+            "endColumn": 41,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 31,
+            "column": 23,
+            "endLine": 31,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 36,
+            "column": 44,
+            "endLine": 36,
+            "endColumn": 50,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 38,
+            "column": 36,
+            "endLine": 38,
+            "endColumn": 101,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 43,
+            "column": 22,
+            "endLine": 43,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 51,
+            "column": 22,
+            "endLine": 51,
+            "endColumn": 28,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 59,
+            "column": 17,
+            "endLine": 59,
+            "endColumn": 82,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        },
+        {
+            "line": 63,
+            "column": 28,
+            "endLine": 63,
+            "endColumn": 93,
+            "problem": "RegularExpressionLiteral",
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)",
+            "severity": "ERROR"
+        }
+    ]
+}
