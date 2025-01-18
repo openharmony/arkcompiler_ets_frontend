@@ -1127,9 +1127,7 @@ export function printWhitelist(obfuscationOptions: ObOptions, nameOptions: IName
 
   let structSet: Set<string>;
   if (enableProperty) {
-    structSet = mergeSet(UnobfuscationCollections.reservedStruct, LocalVariableCollections.reservedStruct);
-  } else {
-    structSet = LocalVariableCollections.reservedStruct;
+    structSet = UnobfuscationCollections.reservedStruct;
   }
   whitelistObj.struct = convertSetToArray(structSet);
 

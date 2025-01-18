@@ -485,7 +485,6 @@ export declare function findElement<T>(arr: T[], callback: (item: T) => boolean)
       UnobfuscationCollections.reservedEnum.add('enum1');  
       UnobfuscationCollections.unobfuscatedPropMap.set('age', new Set(['key', 'value']));
       UnobfuscationCollections.unobfuscatedNamesMap.set('name1', new Set(['key1', 'value2']));  
-      LocalVariableCollections.reservedStruct.add('localStruct1');
       LocalVariableCollections.reservedConfig.add('localConfig1');
     });
   
@@ -502,7 +501,6 @@ export declare function findElement<T>(arr: T[], callback: (item: T) => boolean)
       expect(UnobfuscationCollections.reservedStruct.size).to.equal(0);
       expect(UnobfuscationCollections.reservedExportName.size).to.equal(0);
       expect(UnobfuscationCollections.printKeptName).to.be.false;
-      expect(LocalVariableCollections.reservedStruct.size).to.equal(0);  
       expect(LocalVariableCollections.reservedConfig.size).to.equal(0);
     });
   });

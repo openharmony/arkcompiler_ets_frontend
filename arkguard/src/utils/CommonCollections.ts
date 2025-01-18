@@ -81,12 +81,10 @@ export namespace UnobfuscationCollections {
 }
 
 export namespace LocalVariableCollections {
-  export let reservedStruct: Set<string> = new Set(); 
   export let reservedConfig: Set<string> = new Set(); // Obtain the name from the user-configured .d.ts file
   export let reservedLangForLocal: Set<string> = new Set(['this', '__global']); // Will not add new elements anymore
 
   export function clear(): void {
-    reservedStruct.clear();
     reservedConfig.clear();
   }
 }
