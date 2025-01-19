@@ -19,10 +19,14 @@
 
 namespace panda::es2panda::aot {
 
-bool DepsRelationResolver::CollectCommonjsRecords(const std::vector<panda::pandasm::Field> &fieldList,
-                                                  const std::string &progKey, const std::string &recordName)
+bool DepsRelationResolver::CollectCommonjsAndJsonRecords(const std::vector<panda::pandasm::Field> &fieldList,
+                                                         const std::string &progKey, const std::string &recordName)
 {
     for (const auto &field: fieldList) {
+        if (field.name == util::JSON_FilE_CONTENT) {
+            resolvedDepsRelation_[progKey].insert(recordName);
+            return true;
+        }
         if (field.name.find(util::IS_COMMONJS) == std::string::npos) {
             continue;
         }
@@ -50,7 +54,7 @@ void DepsRelationResolver::FillRecord2ProgramMap(std::unordered_map<std::string,
 
             // All commonjs files will be include as dependencies for compilation without resolve. Since commonjs files
             // will only have commonjs as dependencies, there'll be no dependencies missing.
-            if (CollectCommonjsRecords(record.second.field_list, progInfo.first, record.second.name)) {
+            if (CollectCommonjsAndJsonRecords(record.second.field_list, progInfo.first, record.second.name)) {
                 break;
             }
             record2ProgramMap[record.second.name] = progInfo.first;
