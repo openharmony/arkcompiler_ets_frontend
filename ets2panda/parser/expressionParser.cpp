@@ -322,13 +322,9 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
         body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
         body->SetRange({bodyStart, lexer_->GetToken().End()});
 
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            // This check is redundant since we have ParseStatementList()
-            // It is impossible to leave without eos/} or error.
-            LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
-        }
-
-        lexer_->NextToken();
+        // This check is redundant since we have ParseStatementList()
+        // It is impossible to leave without eos/} or error.
+        ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
         endLoc = body->End();
     }
 
@@ -482,15 +478,10 @@ ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterLi
     ir::Expression *expr = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA | ExpressionParseFlags::ACCEPT_REST |
                                            ExpressionParseFlags::POTENTIALLY_IN_PATTERN);
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        // test exists for js extension only
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-    }
-
     expr->SetGrouped();
     expr->SetRange({start, lexer_->GetToken().End()});
 
-    lexer_->NextToken();
+    ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
 
     return expr;
 }
@@ -764,9 +755,7 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
             expression = ParseExpression();
         }
 
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
-        }
+        ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, false);
 
         expressions.push_back(expression);
     }
@@ -2363,21 +2352,12 @@ ir::Expression *ParserImpl::ParseImportExpression()
         return metaProperty;
     }
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
-    }
-
-    lexer_->NextToken();  // eat left parentheses
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
 
     ir::Expression *source = ParseExpression();
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        // test exists for ts extension only
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-    }
-
     lexer::SourcePosition endImportLoc = lexer_->GetToken().End();
-    lexer_->NextToken();  // eat right paren
+    ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
 
     auto *importExpression = AllocNode<ir::ImportExpression>(source);
     importExpression->SetRange({startLoc, endImportLoc});

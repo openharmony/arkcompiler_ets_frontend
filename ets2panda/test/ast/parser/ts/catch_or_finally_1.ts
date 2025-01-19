@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,22 @@
  * limitations under the License.
  */
 
-try {} ss (fgf) {}
-try {} sfsfsf (fgf) {} finally {}
-try {} catch (fgf) {} aaaaaaa {}
+try {} /* @@ label */ss (fgf) /* @@ label1 */{}
+try {} /* @@ label2 */sfsfsf (fgf) /* @@ label3 */{} /* @@ label4 */finally {}
+try {} catch (fgf) {} aaaaaaa /* @@ label5 */{}
 
-try [] finally {}
+try /* @@ label6 */[] /* @@ label7 */finally {}
 
-/* @@? 16:8 Error SyntaxError: Missing catch or finally clause. */
-/* @@? 16:17 Error SyntaxError: Unexpected token '{'. */
-/* @@? 17:8 Error SyntaxError: Missing catch or finally clause. */
-/* @@? 17:21 Error SyntaxError: Unexpected token '{'. */
-/* @@? 17:24 Error SyntaxError: Unexpected token: 'finally'. */
-/* @@? 18:31 Error SyntaxError: Unexpected token '{'. */
-/* @@? 20:5 Error SyntaxError: Unexpected token '[', expected '{'. */
-/* @@? 20:5 Error SyntaxError: Expected a '{', got '['. */
-/* @@? 20:8 Error SyntaxError: Unexpected token 'finally'. */
-/* @@? 20:8 Error SyntaxError: Unexpected token: 'finally'. */
-/* @@? 34:1 Error SyntaxError: Expected a '}' got 'eos'. */
-/* @@? 34:1 Error SyntaxError: Missing catch or finally clause. */
+/* @@@ label Error SyntaxError: Missing catch or finally clause.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label2 Error SyntaxError: Missing catch or finally clause.  */
+/* @@@ label3 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label4 Error SyntaxError: Unexpected token: 'finally'.  */
+/* @@@ label5 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label6 Error SyntaxError: Unexpected token '[', expected '{'.  */
+/* @@@ label6 Error SyntaxError: Unexpected token '[', expected: '{'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token 'finally'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token: 'finally'.  */
+/* @@@ label8 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@@ label8 Error SyntaxError: Missing catch or finally clause.  */
+/* @@ label8 */

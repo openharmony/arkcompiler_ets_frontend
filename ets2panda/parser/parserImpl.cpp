@@ -570,11 +570,9 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 
     ArenaVector<ir::Statement *> statements = ParseStatementList();
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        // redundant check -> we have it in parse statements
-        // we even do not do lexer_->NextToken() trying to eat '}' after
-        LogExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
-    }
+    // redundant check -> we have it in parse statements
+    // we even do not consume '}' after
+    ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, false);
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     // clang-format off
@@ -835,7 +833,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
 
     lexer::SourcePosition endLoc = lexer_->GetToken().End();
     CreateImplicitConstructor(ctor, properties, modifiers, flags, endLoc);
-    lexer_->NextToken();
+    ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_BRACE);
 
     return {ctor, std::move(properties), lexer::SourceRange {startLoc, endLoc}};
 }
@@ -869,9 +867,7 @@ bool ParserImpl::ValidateContinueLabel(util::StringView label)
 
 ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 {
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        lexer_->NextToken();  // eat '('
-    }
+    ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
@@ -898,10 +894,6 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
     } else {
         ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS, lexer::NextTokenFlags::NONE, parseFunc, nullptr,
                   true);
-    }
-
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {  // Error processing.
-        lexer_->NextToken();
     }
 
     return params;
@@ -1258,16 +1250,27 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
 
 void ParserImpl::ExpectToken(lexer::TokenType tokenType, bool consumeToken)
 {
-    if (lexer_->GetToken().Type() == tokenType) {
+    auto actualType = lexer_->GetToken().Type();
+    if (actualType == tokenType) {
         if (consumeToken) {
             lexer_->NextToken();
         }
         return;
     }
-    LogExpectedToken(tokenType);
-    if (consumeToken) {
-        lexer_->NextToken();
+    LogSyntaxError({"Unexpected token '", TokenToString(actualType), "', expected: '", TokenToString(tokenType), "'."});
+    if (!consumeToken) {
+        return;
     }
+    if (!lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
+        return;
+    }
+    auto savedPos = lexer_->Save();
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() == tokenType) {
+        lexer_->NextToken();
+        return;
+    }
+    lexer_->Rewind(savedPos);
 }
 
 void ParserImpl::LogUnexpectedToken(lexer::TokenType tokenType)

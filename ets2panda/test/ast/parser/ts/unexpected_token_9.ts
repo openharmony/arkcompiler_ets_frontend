@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,5 +20,5 @@ declare namespace /* @@ label */^/* @@ label1 */a {
 
 /* @@@ label Error SyntaxError: Unexpected token, expected an identifier.  */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
 /* @@ label2 */

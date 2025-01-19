@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,33 +13,34 @@
  * limitations under the License.
  */
 
-interface C extends ] {}
+interface C extends /* @@ label */] /* @@ label1 */{}
 
-interface C extends A B {}
+interface C extends A /* @@ label2 */B /* @@ label3 */{}
 
-interface C extends {}
+interface C extends /* @@ label4 */{}
 
-class A implements {}
+class A implements /* @@ label5 */{}
 
-class A implements I; {}
+class A implements I/* @@ label6 */; /* @@ label7 */{}
 
-interface I implements A {}
+interface I /* @@ label8 */implements A {}
 
 interface I {
-    override f(): void {}
+    /* @@ label9 */override f(): void {}
 // This should be the last test to show the absent of the '}'.
 
 
-/* @@? 16:21 Error SyntaxError: Identifier expected  */
-/* @@? 16:21 Error SyntaxError: Unexpected token, expected: ','.  */
-/* @@? 16:23 Error SyntaxError: Identifier expected  */
-/* @@? 18:23 Error SyntaxError: Unexpected token, expected: ','.  */
-/* @@? 18:25 Error SyntaxError: Identifier expected  */
-/* @@? 20:21 Error SyntaxError: Identifier expected  */
-/* @@? 22:20 Error SyntaxError: Implements clause can not be empty  */
-/* @@? 24:21 Error SyntaxError: Unexpected token, expected: ','.  */
-/* @@? 24:21 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 24:23 Error SyntaxError: Unexpected token: '{'.  */
-/* @@? 26:13 Error SyntaxError: Interface declaration cannot have 'implements' clause.  */
-/* @@? 29:5 Error SyntaxError: 'override' modifier cannot appear in interfaces  */
-/* @@? 46:1 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@@ label Error SyntaxError: Identifier expected  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@@ label1 Error SyntaxError: Identifier expected  */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@@ label3 Error SyntaxError: Identifier expected  */
+/* @@@ label4 Error SyntaxError: Identifier expected  */
+/* @@@ label5 Error SyntaxError: Implements clause can not be empty  */
+/* @@@ label6 Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@@ label6 Error SyntaxError: Unexpected token ',', expected: '{'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token: '{'.  */
+/* @@@ label8 Error SyntaxError: Interface declaration cannot have 'implements' clause.  */
+/* @@@ label9 Error SyntaxError: 'override' modifier cannot appear in interfaces  */
+/* @@@ label10 Error SyntaxError: Unexpected token, expected: '}'.  */
+/* @@ label10 */

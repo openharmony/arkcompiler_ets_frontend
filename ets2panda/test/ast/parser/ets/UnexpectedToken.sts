@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,11 +20,10 @@ function main(): void {
   }
 }
 
-/* @@? 18:25 Error SyntaxError: Unexpected token 'let'. */
-/* @@? 18:25 Error SyntaxError: Unexpected token, expected: ')'. */
-/* @@? 18:29 Error SyntaxError: Unexpected token, expected: ';'. */
-/* @@? 18:31 Error SyntaxError: Unexpected token '='. */
-/* @@? 18:70 Error SyntaxError: Missing right parenthesis in 'for' statement. */
-/* @@? 19:1 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
-/* @@? 19:10 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:25 Error SyntaxError: Unexpected token 'let'.  */
+/* @@? 18:25 Error SyntaxError: Unexpected token, expected: ')'.  */
+/* @@? 18:29 Error SyntaxError: Unexpected token 'identification literal', expected: ';'.  */
+/* @@? 18:70 Error SyntaxError: Unexpected token ';', expected: ')'.  */
+/* @@? 19:1 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 19:10 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 19:10 Error SyntaxError: Unexpected token ')'.  */

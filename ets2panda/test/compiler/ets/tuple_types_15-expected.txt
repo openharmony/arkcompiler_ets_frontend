@@ -84,7 +84,7 @@
           },
           "end": {
             "line": 16,
-            "column": 38
+            "column": 37
           }
         }
       },
@@ -353,7 +353,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 47
+                      "column": 45
                     }
                   }
                 },
@@ -462,7 +462,7 @@
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 32
+                                  "column": 30
                                 }
                               }
                             },
@@ -837,7 +837,7 @@
                                 },
                                 "end": {
                                   "line": 24,
-                                  "column": 58
+                                  "column": 56
                                 }
                               }
                             },
@@ -1922,7 +1922,7 @@
                                 },
                                 "end": {
                                   "line": 37,
-                                  "column": 34
+                                  "column": 32
                                 }
                               }
                             },

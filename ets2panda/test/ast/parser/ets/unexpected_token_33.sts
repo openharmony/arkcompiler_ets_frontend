@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-class G T, S extends T> {}
+class G /* @@ label */T/* @@ label1 */, S /* @@ label2 */extends T/* @@ label3 */> /* @@ label4 */{}
 
-/* @@? 16:9 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 16:10 Error SyntaxError: Unexpected token: ','.  */
-/* @@? 16:14 Error SyntaxError: Field type annotation expected  */
-/* @@? 16:14 Error SyntaxError: Unexpected token: ''.  */
-/* @@? 16:23 Error SyntaxError: Field type annotation expected  */
-/* @@? 16:23 Error SyntaxError: Unexpected token: '>'.  */
-/* @@? 16:25 Error SyntaxError: Unexpected token: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token 'identification literal', expected: '{'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token: ','.  */
+/* @@@ label2 Error SyntaxError: Field type annotation expected  */
+/* @@@ label2 Error SyntaxError: Unexpected token: ''.  */
+/* @@@ label3 Error SyntaxError: Field type annotation expected  */
+/* @@@ label3 Error SyntaxError: Unexpected token: '>'.  */
+/* @@@ label4 Error SyntaxError: Unexpected token: '{'.  */

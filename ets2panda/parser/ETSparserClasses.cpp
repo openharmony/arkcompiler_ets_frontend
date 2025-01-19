@@ -633,6 +633,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
     Lexer()->NextToken();  // eat get/set
     ExpectToken(lexer::TokenType::LITERAL_IDENT, false);
     ir::MethodDefinition *method = ParseInterfaceMethod(modifiers, methodKind);
+    if (method == nullptr) {
+        return nullptr;
+    }
     method->AddModifier(ir::ModifierFlags::PUBLIC);
     method->SetRange({Lexer()->GetToken().Start(), method->Id()->End()});
     if (methodKind == ir::MethodDefinitionKind::GET) {

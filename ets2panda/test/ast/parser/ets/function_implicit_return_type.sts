@@ -24,5 +24,5 @@ let void6: (i: int  )       /* @@ label */= void1; // CTE; need return type
 
 function main() {}
 
-/* @@@ label Error SyntaxError: Unexpected token, expected: '=>'. */
-
+/* @@@ label Error SyntaxError: Unexpected token '=', expected: '=>'. */
+/* @@@ label Error SyntaxError: Invalid Type */

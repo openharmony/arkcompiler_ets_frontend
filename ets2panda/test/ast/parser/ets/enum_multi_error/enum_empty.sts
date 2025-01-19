@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-class A 
-/* @@ label */}
+enum
 
-/* @@@ label Error SyntaxError: Unexpected token '}', expected: '{'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label1 */
+// Printed two errors about eos, because there are two attempts to read identifiers: name enum and name property
+/* @@@ label Error SyntaxError: Identifier expected, got 'eos'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@ label */
