@@ -20,7 +20,7 @@
 #include <string_view>
 
 #include "parser/TypedParser.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 
 namespace ark::es2panda::parser {
 

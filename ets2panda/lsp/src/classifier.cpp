@@ -18,10 +18,10 @@
 #include <vector>
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
+#include "generated/tokenType.h"
 #include "internal_api.h"
 #include "ir/astNode.h"
 #include "lexer/lexer.h"
-#include "lexer/token/tokenType.h"
 #include "macros.h"
 #include "mem/arena_allocator.h"
 #include "public/es2panda_lib.h"
@@ -61,10 +61,6 @@ ClassificationType AstNodeTypeToClassificationType(ir::AstNodeType type)
 
 ClassificationType GetClassificationType(const lexer::Token &token, ir::AstNode *astNode)
 {
-    if (token.IsKeyword() || token.KeywordType() >= lexer::TokenType::FIRST_KEYW) {
-        return ClassificationType::KEYWORD;
-    }
-
     if (token.IsPunctuatorToken(token.Type())) {
         return ClassificationType::PUNCTUATION;
     }
@@ -83,6 +79,11 @@ ClassificationType GetClassificationType(const lexer::Token &token, ir::AstNode 
 
     if (token.Type() == lexer::TokenType::LITERAL_NULL) {
         return ClassificationType::NULL_LITERAL;
+    }
+
+    // don't use token.IsKeyword() here because token.type_ is LITERAL_IDENT for "keyword_like" keywords
+    if (token.KeywordType() >= lexer::TokenType::FIRST_KEYW) {
+        return ClassificationType::KEYWORD;
     }
 
     if (token.Type() == lexer::TokenType::LITERAL_IDENT) {

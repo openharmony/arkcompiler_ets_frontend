@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_RELATION_H
 
 #include "lexer/token/sourceLocation.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 #include "util/ustring.h"
 #include "util/enumbitops.h"
 #include "util/diagnosticEngine.h"

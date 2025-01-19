@@ -29,7 +29,7 @@ set (HEADERS_TO_BE_PARSED
     ${GENERATED_DIR}/options.h
     ${ES2PANDA_ROOT}/lexer/regexp/regexp.h
     ${ES2PANDA_ROOT}/util/language.h
-    ${ES2PANDA_ROOT}/lexer/token/tokenType.h
+    ${GENERATED_DIR}/tokenType.h
     ${ES2PANDA_ROOT}/ir/astNodeFlags.h
     ${ES2PANDA_ROOT}/ir/astNodeMapping.h
     ${ES2PANDA_ROOT}/ir/module/exportDefaultDeclaration.h
@@ -525,7 +525,7 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/etsObjectType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/omittedExpression.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/arrayType.yaml
-    ${LIBGEN_DIR}/gen/headers/lexer/token/tokenType.yaml
+    ${LIBGEN_DIR}/gen/headers/tokenType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsNewClassInstanceExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ts/tsAsExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/forUpdateStatement.yaml
@@ -607,7 +607,7 @@ add_custom_command(
     DEPENDS ${HEADERS_TO_BE_PARSED} ${HEADERS_PARSER_SOURCES}
 )
 
-add_custom_target(gen_yamls DEPENDS es2panda_options_gen ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
+add_custom_target(gen_yamls DEPENDS es2panda_options_gen es2panda_keywords ${ES2PANDA_API_GENERATED} ${HEADERS_PARSER_SOURCES})
 
 
 set(ES2PANDA_PUBLIC_SOURCES

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 #include "parser/parserFlags.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"

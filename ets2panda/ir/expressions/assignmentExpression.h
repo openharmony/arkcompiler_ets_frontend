@@ -17,7 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_ASSIGNMENT_EXPRESSION_H
 
 #include "ir/expression.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 namespace ark::es2panda::checker {
 class ETSAnalyzer;
 }  // namespace ark::es2panda::checker

@@ -133,11 +133,17 @@ panda_gen(
 )
 
 panda_gen(
-    DATA ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.yaml
     TARGET_NAME es2panda_keywords
-    TEMPLATES keywords.h.erb
+    TEMPLATES
+        keywords.h.erb
+        token.inl.erb
+        tokenType.h.erb
+    DATA
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.yaml
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/tokens.yaml
     API
-       ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.rb
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.rb
+        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/tokens.rb
     SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lexer/templates
     DESTINATION ${GENERATED_DIR}
 )
