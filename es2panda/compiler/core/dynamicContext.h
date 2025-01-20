@@ -114,7 +114,7 @@ public:
 
     bool HasTryCatch() const override;
     void AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                      [[maybe_unused]] const util::StringView &targetLabel) override;
+                      const util::StringView &targetLabel) override;
 
 private:
     VariableEnvScope *envScope_;

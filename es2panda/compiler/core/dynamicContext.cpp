@@ -93,14 +93,30 @@ bool LexEnvContext::HasTryCatch() const
 }
 
 void LexEnvContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                                 [[maybe_unused]] const util::StringView &targetLabel)
+                                 const util::StringView &targetLabel)
 {
     if (!envScope_->HasEnv()) {
         return;
     }
 
     const auto *node = envScope_->Scope()->Node();
+    // Process the continue label in the ForUpdate Statement.
     if (node->IsForUpdateStatement()) {
+        if (targetLabel == LabelTarget::CONTINUE_LABEL || targetLabel == LabelTarget::BREAK_LABEL) {
+            return;
+        }
+
+        DynamicContext *iter = this->Prev();
+        // Because multiple labels can be set before the loop statement,
+        // iterates forward until the target label is found.
+        while (iter && iter->Type() == DynamicContextType::LABEL) {
+            const auto &labelName = iter->Target().ContinueLabel();
+            if (labelName == targetLabel) {
+                return;
+            }
+            iter = iter->Prev();
+        }
+        pg_->PopLexEnv(node);
         return;
     }
 
