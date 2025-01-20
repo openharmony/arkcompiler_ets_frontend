@@ -2584,6 +2584,7 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/binder", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/binder/noModule", "ts", ["--dump-assembly", "--dump-literal-buffer", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/binder/api12beta2", "js", ["--dump-assembly", "--target-api-version=12", "--target-api-sub-version=beta2"])
+    runner.add_directory("parser/binder/debugInfo", "ts", ["--dump-assembly", "--dump-literal-buffer", "--debug-info", "--module"])
     runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
     runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
     runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])

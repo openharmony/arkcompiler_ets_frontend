@@ -65,6 +65,8 @@ void LocalVariable::SetLexical(Scope *scope, util::PatchFix *patchFixHelper)
         if (decl_ && decl_->NeedSetInSendableEnv(varScope)) {
             AddFlag(VariableFlags::IN_SENDABLE_ENV);
             slot = varScope->NextSendableSlot();
+            BindLexEnvSlot(slot);
+            return;
         } else {
             slot = varScope->NextSlot();
         }
