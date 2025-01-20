@@ -51,3 +51,4 @@ test262/data/test/built-ins/TypedArray/prototype/copyWithin/negative-start.js
 test262/data/test/built-ins/TypedArray/prototype/slice/BigInt/results-with-different-length.js
 test262/data/test/built-ins/TypedArray/prototype/subarray/results-with-empty-length.js
 test262/data/test/built-ins/TypedArray/prototype/filter/result-full-callbackfn-returns-true.js
+test262/data/test/built-ins/TypedArray/prototype/subarray/results-with-different-length.js
