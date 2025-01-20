@@ -44,9 +44,9 @@
 /ets2panda/checker/ets/helpers.cpp @zelentsovdmitry @igelhaus @Prof1983
 /ets2panda/checker/ets/object.cpp @zelentsovdmitry @vpukhov @igelhaus @Prof1983
 /ets2panda/checker/types/ets @gogabr @igelhaus @Prof1983 @zelentsovdmitry
-/ets2panda/checker/types/signature.* @vpukhov @trubachevilya @igelhaus @Prof1983 @zelentsovdmitry
-/ets2panda/checker/types/typeFlag.h @vpukhov @trubachevilya @igelhaus @Prof1983  @zelentsovdmitry
-/ets2panda/checker/types/typeRelation.* @vpukhov @trubachevilya @igelhaus @Prof1983  @zelentsovdmitry
+/ets2panda/checker/types/signature.* @vpukhov @igelhaus @Prof1983 @zelentsovdmitry
+/ets2panda/checker/types/typeFlag.h @vpukhov @igelhaus @Prof1983  @zelentsovdmitry
+/ets2panda/checker/types/typeRelation.* @vpukhov @igelhaus @Prof1983  @zelentsovdmitry
 /ets2panda/compiler/core/ETSCompiler.cpp @vpukhov @igelhaus @Prof1983 @zelentsovdmitry
 /ets2panda/compiler/core/ETSGen.* @zelentsovdmitry @igelhaus @Prof1983 @zelentsovdmitry
 /ets2panda/test/test-lists/astchecker @chernykhsergey @igelhaus @Prof1983
