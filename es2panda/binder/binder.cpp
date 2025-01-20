@@ -464,6 +464,7 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
                 BuildTSSignatureDeclarationBaseParamsWithParent(ident, ident->TypeAnnotation());
             }
 
+            CHECK_NOT_NULL(variable);
             variable->AddFlag(VariableFlags::INITIALIZED);
             break;
         }
