@@ -76,6 +76,7 @@ private:
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
     void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
     void VisitClassDeclaration(ir::ClassDeclaration *classDecl) override;
+    void VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl) override;
     void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl) override;
     void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl) override;
     void VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl) override;
