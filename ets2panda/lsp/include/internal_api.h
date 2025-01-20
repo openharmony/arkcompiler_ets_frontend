@@ -63,6 +63,7 @@ private:
 ir::AstNode *GetTouchingToken(es2panda_Context *context, size_t pos, bool flagFindFirstMatch);
 void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *referenceFileContext,
                            char const *searchFileName, bool isPackageModule, FileReferences *fileReferences);
+ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator);
 
 }  // namespace ark::es2panda::lsp
 

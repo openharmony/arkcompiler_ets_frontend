@@ -49,9 +49,17 @@ extern "C" FileReferences *GetFileReferences(char const *fileName)
     return result;
 }
 
+extern "C" es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const size_t pos)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto ast = ctx->parserProgram->Ast();
+    return reinterpret_cast<es2panda_AstNode *>(FindPrecedingToken(pos, ast, ctx->allocator));
+}
+
 LSPAPI g_lspImpl = {
     GetDefinitionAtPosition,
     GetFileReferences,
+    GetPrecedingToken,
 };
 }  // namespace ark::es2panda::lsp
 
