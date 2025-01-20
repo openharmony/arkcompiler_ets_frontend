@@ -16,6 +16,8 @@
 #ifndef ES2PANDA_TEST_LSP_API_TEST_H
 #define ES2PANDA_TEST_LSP_API_TEST_H
 
+#include "lsp/include/api.h"
+#include "lsp/include/internal_api.h"
 #include <gtest/gtest.h>
 #include "test/utils/ast_verifier_test.h"
 
@@ -38,6 +40,26 @@ public:
         }
         return result;
     }
+
+    Range CreateTestRange()
+    {
+        int const endPos = 10;
+        Position start(1, 0);
+        Position end(1, endPos);
+        return Range(start, end);
+    }
+
+    void SetUp() override
+    {
+        range_ = CreateTestRange();
+        message_ = R"(Test message)";
+    }
+
+protected:
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+    Range range_;
+    std::string message_;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 #endif
