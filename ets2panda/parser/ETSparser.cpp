@@ -307,9 +307,7 @@ ir::Statement *ETSParser::ParseIdentKeyword()
     ASSERT(token.Type() == lexer::TokenType::LITERAL_IDENT);
     switch (token.KeywordType()) {
         case lexer::TokenType::KEYW_STRUCT: {
-            // Remove this LogSyntaxError when struct is implemented in #12726
-            LogSyntaxError("Struct types are not supported yet!");
-            break;
+            return ParseTypeDeclaration(false);
         }
         case lexer::TokenType::KEYW_TYPE: {
             return ParseTypeAliasDeclaration();
@@ -571,7 +569,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
 
     auto tokenType = Lexer()->GetToken().Type();
     switch (tokenType) {
-        case lexer::TokenType::KEYW_STATIC: {
+        case lexer::TokenType::KEYW_STATIC:
             if (!allowStatic) {
                 LogUnexpectedToken(Lexer()->GetToken().Type());
             }
@@ -584,30 +582,25 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
 
             Lexer()->Rewind(savedPos);
             [[fallthrough]];
-        }
         case lexer::TokenType::KEYW_ABSTRACT:
-        case lexer::TokenType::KEYW_FINAL: {
+        case lexer::TokenType::KEYW_FINAL:
             return ParseTypeDeclarationAbstractFinal(allowStatic, modifiers);
-        }
-        case lexer::TokenType::KEYW_ENUM: {
+        case lexer::TokenType::KEYW_ENUM:
             return ParseEnumDeclaration(false);
-        }
-        case lexer::TokenType::KEYW_INTERFACE: {
+        case lexer::TokenType::KEYW_INTERFACE:
             return ParseInterfaceDeclaration(false);
-        }
-        case lexer::TokenType::KEYW_CLASS: {
+        case lexer::TokenType::KEYW_CLASS:
             return ParseClassDeclaration(modifiers);
-        }
-        case lexer::TokenType::LITERAL_IDENT: {
+        case lexer::TokenType::KEYW_STRUCT:
+            return ParseStructDeclaration(modifiers);
+        case lexer::TokenType::LITERAL_IDENT:
             if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT) {
                 return ParseStructDeclaration(modifiers);
             }
             [[fallthrough]];
-        }
-        default: {
+        default:
             LogUnexpectedToken(Lexer()->GetToken().Type());
             return nullptr;
-        }
     }
 }
 

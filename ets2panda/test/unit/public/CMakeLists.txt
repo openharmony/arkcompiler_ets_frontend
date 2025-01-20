@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -51,6 +51,12 @@ ets2panda_add_gtest(ast_verifier_test_3
         ast_verifier_getter_setter_neg_test.cpp
         ast_verifier_check_scope_declaration_test.cpp
     TEST_GROUP qemu_excluded_gtests
+)
+
+ets2panda_add_gtest(ast_verifier_test_4
+        CPP_SOURCES
+        ast_verifier_check_struct_declaration_test.cpp
+        TEST_GROUP qemu_excluded_gtests
 )
 
 if (NOT PANDA_QEMU_BUILD)

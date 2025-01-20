@@ -321,14 +321,9 @@ ir::ETSStructDeclaration *ParserImpl::ParseStructDeclaration(ir::ClassDefinition
         modifiers |= ir::ClassDefinitionModifiers::FROM_EXTERNAL;
     }
 
-    if ((flags & ir::ModifierFlags::ABSTRACT) != 0U) {
-        LogSyntaxError("struct declaration is not allowed to use 'abstract' modifiers.");
-    }
-
     ir::ClassDefinition *classDefinition = ParseClassDefinition(modifiers, flags);
-
-    if ((classDefinition->Modifiers() & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U) {
-        LogSyntaxError("struct declaration cannot extends from other class");
+    if (classDefinition == nullptr) {  // Error processing.
+        return nullptr;
     }
 
     lexer::SourcePosition endLoc = classDefinition->End();

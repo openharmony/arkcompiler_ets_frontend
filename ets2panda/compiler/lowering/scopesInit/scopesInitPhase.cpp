@@ -257,6 +257,11 @@ void ScopesInitPhase::VisitWhileStatement(ir::WhileStatement *whileStmt)
 
 void ScopesInitPhase::VisitETSStructDeclaration(ir::ETSStructDeclaration *structDecl)
 {
+    LogSyntaxError(
+        "Structs are only used to define UI components, it should be translated at 'plugin after parser' phase.",
+        structDecl->Start());
+
+    // For multiple error report
     Iterate(structDecl);
     BindClassDefinition(structDecl->Definition());
 }

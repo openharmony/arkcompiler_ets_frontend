@@ -13,10 +13,22 @@
  * limitations under the License.
  */
 
-struct A {
-    class B {
-        
-    }
+@interface Anno1 {
+    name : string = "Tom";
+    id : int = 1;
 }
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+@interface Anno2 {
+    name : string;
+    id : int;
+}
+
+@Anno1
+@Anno2({name: "", id: 0})
+struct A {
+    a : string;
+    foo() {}
+}
+
+
+/* @@? 28:1 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase.  */

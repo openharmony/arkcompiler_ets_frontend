@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-class A {
-    struct B {
-        
-    }
+struct CE<K> {
+     x: K;
 }
 
-/* @@? 17:12 Error SyntaxError: Field type annotation expected  */
-/* @@? 17:14 Error SyntaxError: Field type annotation expected  */
-/* @@? 17:14 Error SyntaxError: Unexpected token: '{'.  */
-/* @@? 20:1 Error SyntaxError: Unexpected token '}'.  */
+function main(): void {
+   let a: CE<Int> = new CE<Int>();
+}
+
+/* @@? 16:1 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase.  */

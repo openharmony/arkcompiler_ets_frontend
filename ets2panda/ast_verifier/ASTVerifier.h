@@ -42,6 +42,7 @@
 #include "ast_verifier/arithmeticOperationValid.h"
 #include "ast_verifier/variableNameIdentifierNameSame.h"
 #include "ast_verifier/checkScopeDeclaration.h"
+#include "ast_verifier/checkStructDeclaration.h"
 #include "ast_verifier/checkConstProperties.h"
 
 #include "ir/astNode.h"
@@ -105,12 +106,12 @@ protected:
  * NOTE(dkofanov) Fix and enable ImportExportAccessValid
  */
 class ASTVerifier
-    : public InvariantsRegistry<NodeHasParent, NodeHasSourceRange, EveryChildHasValidParent, EveryChildInParentRange,
-                                VariableHasScope, NodeHasType, IdentifierHasVariable, ReferenceTypeAnnotationIsNull,
-                                ArithmeticOperationValid, SequenceExpressionHasLastType, CheckInfiniteLoop,
-                                ForLoopCorrectlyInitialized, VariableHasEnclosingScope, ModifierAccessValid,
-                                VariableNameIdentifierNameSame, CheckAbstractMethod, GetterSetterValidation,
-                                CheckScopeDeclaration, CheckConstProperties> {
+    : public InvariantsRegistry<CheckStructDeclaration, NodeHasParent, NodeHasSourceRange, EveryChildHasValidParent,
+                                EveryChildInParentRange, VariableHasScope, NodeHasType, IdentifierHasVariable,
+                                ReferenceTypeAnnotationIsNull, ArithmeticOperationValid, SequenceExpressionHasLastType,
+                                CheckInfiniteLoop, ForLoopCorrectlyInitialized, VariableHasEnclosingScope,
+                                ModifierAccessValid, VariableNameIdentifierNameSame, CheckAbstractMethod,
+                                GetterSetterValidation, CheckScopeDeclaration, CheckConstProperties> {
 public:
     using SourcePath = std::string_view;
     using PhaseName = std::string_view;
@@ -156,6 +157,12 @@ public:
 
     void IntroduceNewInvariants(std::string_view phaseName)
     {
+        if (phaseName == "plugins-after-parse") {
+            for (size_t i = VerifierInvariants::AFTER_PLUGINS_AFTER_PARSE_FIRST;
+                 i <= VerifierInvariants::AFTER_PLUGINS_AFTER_PARSE_LAST; i++) {
+                allowed_[i] = true;
+            }
+        }
         if (phaseName == "ScopesInitPhase") {
             for (size_t i = VerifierInvariants::AFTER_SCOPES_INIT_PHASE_FIRST;
                  i <= VerifierInvariants::AFTER_SCOPES_INIT_PHASE_LAST; i++) {
