@@ -439,18 +439,21 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
                       type->ExtensionMethodType()->CallSignatures().end());
 
     auto *memberExpr = expr->Callee()->AsMemberExpression();
-    expr->Arguments().insert(expr->Arguments().begin(), memberExpr->Object());
-    auto *dummyReceiver = type->ExtensionMethodType()->CallSignatures()[0]->Params()[0];
-    const bool typeParamsNeeded = dummyReceiver->TsType()->IsETSObjectType();
+    auto *dummyReceiver = memberExpr->Object();
+    auto *dummyReceiverVar = type->ExtensionMethodType()->CallSignatures()[0]->Params()[0];
+    expr->Arguments().insert(expr->Arguments().begin(), dummyReceiver);
+    const bool typeParamsNeeded = dummyReceiverVar->TsType()->IsETSObjectType();
 
     for (auto *methodCallSig : type->ClassMethodType()->CallSignatures()) {
         methodCallSig->GetSignatureInfo()->minArgCount++;
-        auto &params = methodCallSig->Params();
+        auto &paramsVar = methodCallSig->Params();
+        paramsVar.insert(paramsVar.begin(), dummyReceiverVar);
+        auto &params = methodCallSig->Function()->Params();
         params.insert(params.begin(), dummyReceiver);
         if (typeParamsNeeded) {
             auto &typeParams = methodCallSig->TypeParams();
-            typeParams.insert(typeParams.end(), dummyReceiver->TsType()->AsETSObjectType()->TypeArguments().begin(),
-                              dummyReceiver->TsType()->AsETSObjectType()->TypeArguments().end());
+            typeParams.insert(typeParams.end(), dummyReceiverVar->TsType()->AsETSObjectType()->TypeArguments().begin(),
+                              dummyReceiverVar->TsType()->AsETSObjectType()->TypeArguments().end());
         }
     }
 
@@ -459,11 +462,14 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
 
     for (auto *methodCallSig : type->ClassMethodType()->CallSignatures()) {
         methodCallSig->GetSignatureInfo()->minArgCount--;
-        auto &params = methodCallSig->Params();
+        auto &paramsVar = methodCallSig->Params();
+        paramsVar.erase(paramsVar.begin());
+        auto &params = methodCallSig->Function()->Params();
         params.erase(params.begin());
         if (typeParamsNeeded) {
             auto &typeParams = methodCallSig->TypeParams();
-            typeParams.resize(typeParams.size() - dummyReceiver->TsType()->AsETSObjectType()->TypeArguments().size());
+            typeParams.resize(typeParams.size() -
+                              dummyReceiverVar->TsType()->AsETSObjectType()->TypeArguments().size());
         }
     }
     expr->Arguments().erase(expr->Arguments().begin());

@@ -387,9 +387,23 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromParentheses(Type
     return std::make_pair(typeAnnotation, true);
 }
 
+static bool IsSimpleReturnThis(lexer::Token const &tokenAfterThis)
+{
+    return (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_ARROW) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_COMMA) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) ||
+           (tokenAfterThis.Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) ||
+           ((tokenAfterThis.Flags() & lexer::TokenFlags::NEW_LINE) != 0);
+}
+
 ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+
+    auto startPos = Lexer()->GetToken().Start();
+    auto const tokenLoc = Lexer()->GetToken().Loc();
+    Lexer()->NextToken();  // eat 'this'
 
     // A syntax error should be thrown if
     // - the usage of 'this' as a type is not allowed in the current context, or
@@ -402,26 +416,22 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     bool parseReturnType = (*options & TypeAnnotationParsingOptions::RETURN_TYPE) != 0;
     bool isExtensionFunction = (GetContext().Status() & ParserStatus::HAS_RECEIVER) != 0;
     bool isInUnion = (*options & TypeAnnotationParsingOptions::DISALLOW_UNION) != 0;
-    bool notSimpleReturnThisType =
-        (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_BRACE) && (Lexer()->Lookahead() != lexer::LEX_CHAR_EQUALS) &&
-        (Lexer()->Lookahead() != lexer::LEX_CHAR_COMMA) && (Lexer()->Lookahead() != lexer::LEX_CHAR_RIGHT_PAREN) &&
-        (Lexer()->Lookahead() != lexer::LEX_CHAR_SEMICOLON) && (Lexer()->Lookahead() != lexer::UNICODE_INVALID_CP);
     if (isExtensionFunction) {
-        if (reportErr && (notSimpleReturnThisType || isInUnion)) {
+        if (reportErr && (!IsSimpleReturnThis(Lexer()->GetToken()) || isInUnion)) {
             LogSyntaxError(
                 "A 'this' type is available only as return type in a non-static method of a class or struct and "
-                "extension functions.");
+                "extension functions.",
+                startPos);
         }
     } else if (reportErr && (!allowThisType || !parseReturnType || isArrowFunc)) {
         LogSyntaxError(
             "A 'this' type is available only as return type in a non-static method of a class or struct and extension "
-            "functions.");
+            "functions.",
+            startPos);
     }
 
     auto *const thisType = AllocNode<ir::TSThisType>(Allocator());
-    thisType->SetRange(Lexer()->GetToken().Loc());
-
-    Lexer()->NextToken();  // eat 'this'
+    thisType->SetRange(tokenLoc);
 
     return thisType;
 }

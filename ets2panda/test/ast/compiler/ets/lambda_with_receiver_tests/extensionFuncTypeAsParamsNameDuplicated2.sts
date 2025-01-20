@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-class A {};
+class B {}
+class A {}
+function foo(this: A, f: (this: A) => void) {}
+/* @@ label1 */function foo(this: A, f: (this: B) => void) {}
 
-let x: (this: A, n: number) => this
-let y: (this: A, n: number) => this;
-(this: A, n: number):this => {};
-function foo(a: A, ff:(this: A, n: number) => this) {};
-function foo2(ff:(this: A, n: number) => this, a:A) {};
-function foo3(this: A, n: number):this {return this};
+/* @@@ label1 Error TypeError: Function foo is already declared.  */

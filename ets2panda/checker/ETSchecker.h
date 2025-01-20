@@ -446,6 +446,9 @@ public:
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
+    Signature *ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpression *callExpr,
+                                                          ArenaVector<Signature *> const &signatures,
+                                                          ArenaVector<ir::Expression *> &arguments);
     Signature *ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
                                                       ir::CallExpression *callExpr, const lexer::SourcePosition &pos,
                                                       TypeRelationFlag reportFlag = TypeRelationFlag::NONE);
@@ -916,7 +919,7 @@ private:
                                                const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags);
     // Trailing lambda
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *callExpr);
-    void TransformTraillingLambda(ir::CallExpression *callExpr);
+    void TransformTraillingLambda(ir::CallExpression *callExpr, Signature *sig);
     ArenaVector<ir::Expression *> ExtendArgumentsWithFakeLamda(ir::CallExpression *callExpr);
 
     // Static invoke

@@ -69,6 +69,7 @@ enum class ParserStatus : uint64_t {
     ALLOW_RECEIVER = 1ULL << 35ULL,
     EXTENSION_ACCESSOR = 1ULL << 36ULL,
     HAS_RECEIVER = 1ULL << 37ULL,
+    PARSE_TRAILING_BLOCK = 1ULL << 38ULL,
 };
 
 }  // namespace ark::es2panda::parser
