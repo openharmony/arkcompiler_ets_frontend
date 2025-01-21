@@ -252,6 +252,18 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
     res->sourceFileName = fileName;
     res->config = cfg;
 
+    if (cfg == nullptr) {
+        res->errorMessage = "Config is nullptr.";
+        res->state = ES2PANDA_STATE_ERROR;
+        return reinterpret_cast<es2panda_Context *>(res);
+    }
+
+    if (cfg->options->GetExtension() != ScriptExtension::STS) {
+        res->errorMessage = "Invalid extension. Plugin API supports only STS.";
+        res->state = ES2PANDA_STATE_ERROR;
+        return reinterpret_cast<es2panda_Context *>(res);
+    }
+
     try {
         res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->IsModule());
         res->allocator = new ArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
