@@ -34,6 +34,7 @@ ignored_list:
       - name: ETSChecker
       - name: ETSParser
       - name: NumberLiteral
+      - name: VerifiedType
 
 
   # Which methods should not be generated
