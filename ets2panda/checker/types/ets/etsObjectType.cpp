@@ -450,7 +450,7 @@ bool ETSObjectType::CheckIdenticalFlags(ETSObjectType *other) const
 {
     constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::INCOMPLETE_INSTANTIATION |
                                      ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY | ETSObjectFlags::EXTENSION_FUNCTION;
 
     auto cleanedTargetFlags = other->ObjectFlags();
     cleanedTargetFlags &= ~FLAGS_TO_REMOVE;
@@ -993,6 +993,9 @@ void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObj
                 copySignatures[i]->Function()->Params()[j]->AsETSParameterExpression()->SetInitializer(
                     thisSignatures[i]->Function()->Params()[j]->AsETSParameterExpression()->Initializer());
             }
+            if (thisSignatures[i]->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
+                copySignatures[i]->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS);
+            }
         }
     }
 }
@@ -1030,7 +1033,8 @@ void ETSObjectType::UpdateTypeProperties(checker::ETSChecker *checker, PropertyP
     }
 }
 
-ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution, bool cache)
+ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution, bool cache,
+                                         bool isExtensionFunctionType)
 {
     if (substitution == nullptr || substitution->empty()) {
         return this;
@@ -1048,7 +1052,7 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
         return this;
     }
 
-    const util::StringView hash = checker->GetHashFromSubstitution(substitution);
+    const util::StringView hash = checker->GetHashFromSubstitution(substitution, isExtensionFunctionType);
     if (cache) {
         if (auto *inst = GetInstantiatedType(hash); inst != nullptr) {
             return inst;
@@ -1062,6 +1066,9 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
 
     auto *const copiedType = checker->CreateETSObjectType(declNode_, flags_);
     SetCopiedTypeProperties(relation, copiedType, std::move(newTypeArgs), base);
+    if (isExtensionFunctionType) {
+        copiedType->AddObjectFlag(checker::ETSObjectFlags::EXTENSION_FUNCTION);
+    }
 
     if (cache) {
         GetInstantiationMap().try_emplace(hash, copiedType);

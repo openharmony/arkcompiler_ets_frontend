@@ -13,18 +13,21 @@
  * limitations under the License.
  */
 
+class A {
+    value: boolean = true;
+}
+type F1 = (this: A) => boolean;
+type F2 = (a: A) => boolean;
 
-class Dog {
-    name: String;
-    legs: Int;
+function foo(this: A): boolean {
+    return this.value;
 }
 
-let dog: Dog = {
-    name: "Scooby"
-}
+let a = new A();
+let f1: F2 = foo;
+let f2: F2 = (this: A): boolean => { return this.value }
+a./* @@ label1 */f1();
+a./* @@ label2 */f2();
 
-let hasSting = dog?.hasSting;
-
-/* @@? 26:5 Error TypeError: Circular dependency detected for identifier: hasSting  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
+/* @@@ label1 Error TypeError: Property 'f1' does not exist on type 'A'  */
+/* @@@ label2 Error TypeError: Property 'f2' does not exist on type 'A'  */

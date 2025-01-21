@@ -466,7 +466,6 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, const ETSObjectT
         (void)_;
         auto *method = it->Declaration()->Node()->AsMethodDefinition();
         auto *function = method->Function();
-
         if (function->IsProxy()) {
             continue;
         }
@@ -1662,21 +1661,53 @@ void ETSChecker::ValidateResolvedProperty(varbinder::LocalVariable **property, c
     LogTypeError({"'", ident->Name(), "' is an instance property of '", target->Name(), "'"}, ident->Start());
 }
 
-varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpression *const memberExpr)
+using VO = varbinder::ResolveBindingOptions;
+varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalFunction(const ir::MemberExpression *const memberExpr)
 {
-    // clang-format off
-    auto *globalFunctionVar = Scope()
-                                ->FindInGlobal(memberExpr->Property()->AsIdentifier()->Name(),
-                                                // CC-OFFNXT(G.FMT.06-CPP) project code style
-                                                varbinder::ResolveBindingOptions::STATIC_METHODS)
-                                .variable;
-    // clang-format on
-
+    auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
+    auto *globalFunctionVar = Scope()->FindInGlobal(propertyName, VO::STATIC_METHODS).variable;
     if (globalFunctionVar == nullptr || !IsExtensionETSFunctionType(this->GetTypeOfVariable(globalFunctionVar))) {
         return nullptr;
     }
 
     return globalFunctionVar;
+}
+
+varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalField(const ir::MemberExpression *const memberExpr)
+{
+    auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
+    auto *globalFieldVar = Scope()->FindInGlobal(propertyName, VO::STATIC_VARIABLES).variable;
+    if (globalFieldVar == nullptr || !IsExtensionETSFunctionType(this->GetTypeOfVariable(globalFieldVar))) {
+        return nullptr;
+    }
+
+    return globalFieldVar;
+}
+
+varbinder::Variable *ETSChecker::GetExtensionFuncVarInFunctionScope(const ir::MemberExpression *const memberExpr)
+{
+    auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
+    auto *funcScopeVar = Scope()->FindInFunctionScope(propertyName, VO::ALL_NON_TYPE).variable;
+    if (funcScopeVar == nullptr || !IsExtensionETSFunctionType(funcScopeVar->TsType())) {
+        return nullptr;
+    }
+    return funcScopeVar;
+}
+
+varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpression *const memberExpr)
+{
+    auto *globalFunctionVar = GetExtensionFuncVarInGlobalFunction(memberExpr);
+    if (globalFunctionVar != nullptr) {
+        return globalFunctionVar;
+    }
+
+    auto *globalFieldVar = GetExtensionFuncVarInGlobalField(memberExpr);
+    if (globalFieldVar != nullptr) {
+        return globalFieldVar;
+    }
+
+    // extension function maybe a parameter, or some lambda function defined in function.
+    return GetExtensionFuncVarInFunctionScope(memberExpr);
 }
 
 PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression *const memberExpr)
@@ -1899,6 +1930,21 @@ void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression
     }
 }
 
+static ResolvedKind DecideResolvedKind(Type *typeOfGlobalFunctionVar)
+{
+    ASSERT(typeOfGlobalFunctionVar->IsETSObjectType() || typeOfGlobalFunctionVar->IsETSFunctionType());
+    if (typeOfGlobalFunctionVar->IsETSObjectType()) {
+        return ResolvedKind::EXTENSION_FUNCTION;
+    }
+
+    auto const *callSig = typeOfGlobalFunctionVar->AsETSFunctionType()->CallSignatures()[0];
+    if (callSig->Function()->IsGetter() || callSig->Function()->IsSetter()) {
+        return ResolvedKind::EXTENSION_ACCESSOR;
+    }
+
+    return ResolvedKind::EXTENSION_FUNCTION;
+}
+
 // NOLINTNEXTLINE(readability-function-size)
 std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::MemberExpression *const memberExpr,
                                                                 const ETSObjectType *const target)
@@ -1932,7 +1978,6 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
         prop == nullptr) {
         globalFunctionVar = ResolveInstanceExtension(memberExpr);
     }
-
     if (globalFunctionVar == nullptr ||
         (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE))) {
         /*
@@ -1953,10 +1998,7 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
             return resolveRes;
         }
     } else {
-        auto *const callSig = globalFunctionVar->TsType()->AsETSFunctionType()->CallSignatures()[0];
-        ResolvedKind resolvedKind = (callSig->Function()->IsGetter() || callSig->Function()->IsSetter())
-                                        ? ResolvedKind::INSTANCE_EXTENSION_ACCESSOR
-                                        : ResolvedKind::INSTANCE_EXTENSION_FUNCTION;
+        ResolvedKind resolvedKind = DecideResolvedKind(globalFunctionVar->TsType());
         resolveRes.emplace_back(Allocator()->New<ResolveResult>(globalFunctionVar, resolvedKind));
 
         if (prop == nullptr) {

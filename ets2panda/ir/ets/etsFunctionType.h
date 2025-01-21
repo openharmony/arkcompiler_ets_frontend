@@ -113,6 +113,11 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
     }
 
+    bool IsExtensionFunction() const
+    {
+        return (funcFlags_ & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0;
+    }
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

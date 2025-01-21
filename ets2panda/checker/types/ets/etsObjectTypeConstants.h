@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -56,6 +56,7 @@ enum class ETSObjectFlags : std::uint64_t {
     BUILTIN_DOUBLE = 1U << 31U,
 
     BOXED_ENUM = 1ULL << 32U,
+    EXTENSION_FUNCTION = 1ULL << 33U,
 
     BUILTIN_NUMERIC = BUILTIN_BYTE | BUILTIN_SHORT | BUILTIN_INT | BUILTIN_LONG | BUILTIN_FLOAT | BUILTIN_DOUBLE,
     // Complete set includes null|undefined|Object

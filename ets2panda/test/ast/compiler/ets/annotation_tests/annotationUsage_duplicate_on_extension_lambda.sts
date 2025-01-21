@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,19 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@interface Anno {}
+class A { name = "Bob" }
+let a = new A();
 
-
-class Dog {
-    name: String;
-    legs: Int;
+let show = @Anno()@/* @@ label */Anno(this: A): string => {
+    return "Hello," + this.name;
 }
-
-let dog: Dog = {
-    name: "Scooby"
-}
-
-let hasSting = dog?.hasSting;
-
-/* @@? 26:5 Error TypeError: Circular dependency detected for identifier: hasSting  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
-/* @@? 26:21 Error TypeError: Property 'hasSting' does not exist on type 'Dog'  */
+/* @@@ label Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
+/* @@@ label Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */

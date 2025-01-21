@@ -26,8 +26,8 @@ enum class OverrideErrorCode {
 
 enum class ResolvedKind {
     PROPERTY,
-    INSTANCE_EXTENSION_FUNCTION,
-    INSTANCE_EXTENSION_ACCESSOR,
+    EXTENSION_FUNCTION,
+    EXTENSION_ACCESSOR,
 };
 
 class ResolveResult {

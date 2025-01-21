@@ -191,18 +191,28 @@ ir::TypeNode *ETSParser::ParseFunctionType()
     auto startLoc = Lexer()->GetToken().Start();
 
     auto params = ParseFunctionParams();
+    bool hasReceiver = !params.empty() && params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
 
     ExpectToken(lexer::TokenType::PUNCTUATOR_ARROW);
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
-    auto *const returnTypeAnnotation = ParseTypeAnnotation(&options);
+    ir::TypeNode *returnTypeAnnotation = nullptr;
+    if (hasReceiver) {
+        SavedParserContext contextAfterParseParams(this, GetContext().Status() | ParserStatus::HAS_RECEIVER);
+        returnTypeAnnotation = ParseTypeAnnotation(&options);
+    } else {
+        returnTypeAnnotation = ParseTypeAnnotation(&options);
+    }
+
     if (returnTypeAnnotation == nullptr) {
         return nullptr;
     }
 
     ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(false);
-
+    if (hasReceiver) {
+        throwMarker |= ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD;
+    }
     auto *funcType = AllocNode<ir::ETSFunctionType>(
-        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation), throwMarker);
+        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation, hasReceiver), throwMarker);
     funcType->SetRange({startLoc, returnTypeAnnotation->End()});
 
     return funcType;
@@ -289,11 +299,11 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
     if (((*options) & TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE) == 0 &&
         (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
          Lexer()->Lookahead() == lexer::LEX_CHAR_COLON || Lexer()->Lookahead() == lexer::LEX_CHAR_QUESTION)) {
-        GetContext().Status() |= ParserStatus::ALLOW_DEFAULT_VALUE;
+        GetContext().Status() |= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         // '(' is consumed in `ParseFunctionType`
         Lexer()->Rewind(savePos);
         auto typeAnnotation = ParseFunctionType();
-        GetContext().Status() ^= ParserStatus::ALLOW_DEFAULT_VALUE;
+        GetContext().Status() ^= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         return typeAnnotation;
     }
     Lexer()->Rewind(savePos);
@@ -385,13 +395,24 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     // - the usage of 'this' as a type is not allowed in the current context, or
     // - 'this' is not used as a return type, or
     // - the current context is an arrow function (might be inside a method of a class where 'this' is allowed).
+    // - Specially, Function with Receiver, Lambda with Receiver and Function type with Receiver can return 'this'.
     bool reportErr = (*options & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
-    bool allowThisType = (GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) != 0;
-    bool parseReturnType = (*options & TypeAnnotationParsingOptions::RETURN_TYPE) != 0;
+    bool allowThisType = ((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) != 0);
     bool isArrowFunc = (GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0;
+    bool parseReturnType = (*options & TypeAnnotationParsingOptions::RETURN_TYPE) != 0;
+    bool isExtensionFunction = (GetContext().Status() & ParserStatus::HAS_RECEIVER) != 0;
+    bool isInUnion = (*options & TypeAnnotationParsingOptions::DISALLOW_UNION) != 0;
     bool notSimpleReturnThisType =
-        (allowThisType && parseReturnType && (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_BRACE));
-    if (reportErr && (!allowThisType || !parseReturnType || isArrowFunc || notSimpleReturnThisType)) {
+        (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_BRACE) && (Lexer()->Lookahead() != lexer::LEX_CHAR_EQUALS) &&
+        (Lexer()->Lookahead() != lexer::LEX_CHAR_COMMA) && (Lexer()->Lookahead() != lexer::LEX_CHAR_RIGHT_PAREN) &&
+        (Lexer()->Lookahead() != lexer::LEX_CHAR_SEMICOLON) && (Lexer()->Lookahead() != lexer::UNICODE_INVALID_CP);
+    if (isExtensionFunction) {
+        if (reportErr && (notSimpleReturnThisType || isInUnion)) {
+            LogSyntaxError(
+                "A 'this' type is available only as return type in a non-static method of a class or struct and "
+                "extension functions.");
+        }
+    } else if (reportErr && (!allowThisType || !parseReturnType || isArrowFunc)) {
         LogSyntaxError(
             "A 'this' type is available only as return type in a non-static method of a class or struct and extension "
             "functions.");

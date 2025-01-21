@@ -870,16 +870,16 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     }
     checker::ScopeContext scopeCtx(checker, expr->Function()->Scope());
 
-    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+    if (checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_METHOD) && !expr->Function()->IsExtensionMethod()) {
         /*
         example code:
         ```
             class A {
                 prop:number
             }
-            function A.method() {
+            function method(this: A) {
                 let a = () => {
-                    console.println(this.prop)
+                    console.log(this.prop)
                 }
             }
         ```
@@ -898,6 +898,11 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     checker->BuildFunctionSignature(expr->Function(), false);
     if (expr->Function()->Signature() == nullptr) {
         return checker->InvalidateType(expr);
+    }
+
+    if (expr->Function()->IsExtensionMethod()) {
+        checker->AddStatus(checker::CheckerStatus::IN_EXTENSION_METHOD);
+        CheckExtensionMethod(checker, expr->Function(), expr);
     }
     auto *signature = expr->Function()->Signature();
 
@@ -1179,7 +1184,7 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     }
 
     if (checker->IsExtensionETSFunctionType(calleeType)) {
-        auto *signature = ResolveCallExtensionFunction(calleeType->AsETSFunctionType(), checker, expr);
+        auto *signature = ResolveCallExtensionFunction(calleeType, checker, expr, isFunctionalInterface);
         bool isReturnTypeLambda = (signature != nullptr) && signature->ReturnType()->IsETSObjectType() &&
                                   signature->ReturnType()->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL);
         bool isSignatureExtensionAccessor = (signature != nullptr) && (signature->Function()->IsExtensionAccessor());
@@ -1260,10 +1265,11 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
     }
 
     auto *returnType = signature->ReturnType();
-    if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
-        returnType = signature->Function()->IsExtensionMethod()
-                         ? expr->Arguments()[0]->TsType()
-                         : ChooseCalleeObj(checker, expr, calleeType, isConstructorCall);
+
+    if (signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
+        returnType = expr->Arguments()[0]->TsType();
+    } else if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
+        returnType = ChooseCalleeObj(checker, expr, calleeType, isConstructorCall);
     }
 
     return returnType;
@@ -1863,7 +1869,7 @@ checker::Type *ETSAnalyzer::Check(ir::ThisExpression *expr) const
     parameter(MANDATORY_PARAM_THIS), and capture the parameter's variable other than containing class's variable
     */
     auto *variable = checker->AsETSChecker()->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable;
-    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+    if (checker->HasStatus(checker::CheckerStatus::IN_EXTENSION_METHOD)) {
         ASSERT(variable != nullptr);
         expr->SetTsType(variable->TsType());
     } else {

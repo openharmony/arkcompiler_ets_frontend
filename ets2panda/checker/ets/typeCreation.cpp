@@ -541,6 +541,19 @@ Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size
     return signature;
 }
 
+void ETSChecker::AddThisReturnTypeFlagForInterfaceInvoke(ETSObjectType *interface)
+{
+    auto &callSigsOfInvoke0 =
+        interface->AsETSObjectType()
+            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
+            ->TsType()
+            ->AsETSFunctionType()
+            ->CallSignatures();
+    for (auto sig : callSigsOfInvoke0) {
+        sig->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS);
+    }
+}
+
 ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *signature)
 {
     ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::NONE;
@@ -560,7 +573,7 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
             GlobalBuiltinFunctionType(GlobalBuiltinFunctionTypeVariadicThreshold(), flags)->AsETSObjectType();
         auto *substitution = NewSubstitution();
         substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), MaybeBoxType(retType));
-        return functionN->Substitute(Relation(), substitution);
+        return functionN->Substitute(Relation(), substitution, signature->Function()->IsExtensionMethod());
     }
 
     // Note: FunctionN is not supported yet
@@ -577,7 +590,13 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
     }
     substitution->emplace(funcIface->TypeArguments()[signature->Params().size()]->AsETSTypeParameter(),
                           MaybeBoxType(signature->ReturnType()));
-    return funcIface->Substitute(Relation(), substitution);
+
+    auto *interFaceType =
+        funcIface->Substitute(Relation(), substitution, true, signature->Function()->IsExtensionMethod());
+    if (signature->HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
+        AddThisReturnTypeFlagForInterfaceInvoke(interFaceType);
+    }
+    return interFaceType;
 }
 
 ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)

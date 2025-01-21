@@ -204,7 +204,7 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
                 return {checker->GetTypeOfVariable(var), var};
             }
 
-            if (resolveRes[0]->Kind() == checker::ResolvedKind::INSTANCE_EXTENSION_ACCESSOR) {
+            if (resolveRes[0]->Kind() == checker::ResolvedKind::EXTENSION_ACCESSOR) {
                 auto *callee = const_cast<ir::Expression *>(this->AsExpression());
                 callee->AsMemberExpression()->AddMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR);
             }

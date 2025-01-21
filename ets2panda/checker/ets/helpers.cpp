@@ -2101,7 +2101,7 @@ util::StringView ETSChecker::GetHashFromTypeArguments(const ArenaVector<Type *> 
     return util::UString(ss.str(), Allocator()).View();
 }
 
-util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substitution)
+util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substitution, const bool extensionFuncFlag)
 {
     std::vector<std::string> fields;
     for (auto [k, v] : *substitution) {
@@ -2120,6 +2120,10 @@ util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substit
         ss << fstr;
         ss << ";";
     }
+
+    if (extensionFuncFlag) {
+        ss << "extensionFunctionType;";
+    }
     return util::UString(ss.str(), Allocator()).View();
 }
 
@@ -2132,7 +2136,17 @@ util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
         ss << ";";
     }
 
-    type->ReturnType()->GetType(this)->ToString(ss, true);
+    if (type->IsExtensionFunction()) {
+        if (type->ReturnType()->IsTSThisType()) {
+            type->Params()[0]->AsETSParameterExpression()->TypeAnnotation()->TsType()->ToString(ss, true);
+        } else {
+            type->ReturnType()->GetType(this)->ToString(ss, true);
+        }
+        ss << "extensionFunction;";
+    } else {
+        type->ReturnType()->GetType(this)->ToString(ss, true);
+    }
+
     ss << ";";
 
     if (type->IsThrowing()) {

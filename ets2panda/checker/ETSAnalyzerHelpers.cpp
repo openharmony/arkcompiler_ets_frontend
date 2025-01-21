@@ -86,7 +86,7 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
 
     if (extensionFunc->ReturnTypeAnnotation() != nullptr && extensionFunc->ReturnTypeAnnotation()->IsTSThisType()) {
         // when return `this` in extensionFunction, the type of `this` actually should be type of the receiver,
-        // so some substitution should be done
+        // so some substitution should be done, temporary solution(xingshunxiang).
         auto *const thisType = extensionFunc->Signature()->Params()[0]->TsType();
         auto *const thisTypeAnnotation =
             extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->TypeAnnotation();
@@ -109,7 +109,7 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
         "replace-this-in-extension-method");
 }
 
-void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::MethodDefinition *node)
+void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::AstNode *node)
 {
     auto *const thisType = extensionFunc->Signature()->Params()[0]->TsType();
 
@@ -126,6 +126,9 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
 
         // NOTE(gogabr): should be done in a lowering
         ReplaceThisInExtensionMethod(checker, extensionFunc);
+        if (extensionFunc->IsArrow()) {
+            return;
+        }
 
         checker::SignatureInfo *originalExtensionSigInfo = checker->Allocator()->New<checker::SignatureInfo>(
             extensionFunc->Signature()->GetSignatureInfo(), checker->Allocator());
@@ -371,25 +374,26 @@ static void SwitchMethodCallToFunctionCall(checker::ETSChecker *checker, ir::Cal
     expr->Callee()->Check(checker);
 }
 
-checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *functionType, checker::ETSChecker *checker,
-                                                 ir::CallExpression *expr, const TypeRelationFlag reportFlag)
+checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, checker::ETSChecker *checker,
+                                                 ir::CallExpression *expr, bool isFunctionalInterface,
+                                                 const TypeRelationFlag reportFlag)
 {
     // We have to ways to call ExtensionFunction `function foo(this: A, ...)`:
     // 1. Make ExtensionFunction as FunctionCall: `foo(a,...);`
     // 2. Make ExtensionFunction as MethodCall: `a.foo(...)`, here `a` is the receiver;
+    auto &signatures = ChooseSignatures(checker, functionType, false, isFunctionalInterface, false);
     if (expr->Callee()->IsMemberExpression()) {
         // when handle extension function as MethodCall, we temporarily transfer the expr node from `a.foo(...)` to
-        // `a.foo(a, ...)` and resolve the call. If we find the suitable signature, then switch the expr node to
+        // `foo(a, ...)` and resolve the call. If we find the suitable signature, then switch the expr node to
         // function call.
         auto *memberExpr = expr->Callee()->AsMemberExpression();
         expr->Arguments().insert(expr->Arguments().begin(), memberExpr->Object());
-        auto *signature = checker->ResolveCallExpressionAndTrailingLambda(functionType->CallSignatures(), expr,
-                                                                          expr->Start(), reportFlag);
+        auto *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start(), reportFlag);
         if (signature == nullptr) {
             expr->Arguments().erase(expr->Arguments().begin());
             return nullptr;
         }
-        if (!signature->Function()->IsExtensionMethod()) {
+        if (!signature->Function()->IsExtensionMethod() && !isFunctionalInterface) {
             checker->LogTypeError({"Property '", memberExpr->Property()->AsIdentifier()->Name(),
                                    "' does not exist on type '", memberExpr->ObjType()->Name(), "'"},
                                   memberExpr->Property()->Start());
@@ -400,7 +404,7 @@ checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *funct
         return signature;
     }
 
-    return checker->ResolveCallExpressionAndTrailingLambda(functionType->CallSignatures(), expr, expr->Start());
+    return checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
 }
 
 checker::Signature *ResolveCallForClassMethod(checker::ETSExtensionFuncHelperType *type, checker::ETSChecker *checker,
@@ -477,13 +481,15 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
                                                              checker::ETSChecker *checker, ir::CallExpression *expr)
 {
     ASSERT(expr->Callee()->IsMemberExpression());
+    auto *calleeObj = expr->Callee()->AsMemberExpression()->Object();
+    bool isCalleeObjETSGlobal =
+        calleeObj->IsIdentifier() && calleeObj->AsIdentifier()->Name() == compiler::Signatures::ETS_GLOBAL;
     // for callExpr `a.foo`, there are 3 situations:
     // 1.`a.foo` is private method call of class A;
     // 2.`a.foo` is extension function of `A`(function with receiver `A`)
     // 3.`a.foo` is public method call of class A;
     Signature *signature = nullptr;
-    if (checker->IsTypeIdenticalTo(checker->Context().ContainingClass(),
-                                   expr->Callee()->AsMemberExpression()->Object()->TsType())) {
+    if (checker->IsTypeIdenticalTo(checker->Context().ContainingClass(), calleeObj->TsType()) || isCalleeObjETSGlobal) {
         // When called `a.foo` in `a.anotherFunc`, we should find signature through private or protected method firstly.
         signature = ResolveCallForClassMethod(type, checker, expr, checker::TypeRelationFlag::NO_THROW);
         if (signature != nullptr) {
@@ -880,12 +886,23 @@ ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ET
         }
     }
 
-    auto *returnType = node->ReturnType()->GetType(checker);
+    Type *returnType = nullptr;
+    if (node->ReturnType()->IsTSThisType() && node->IsExtensionFunction()) {
+        returnType = node->Params()[0]->AsETSParameterExpression()->TypeAnnotation()->TsType();
+    } else {
+        returnType = node->ReturnType()->GetType(checker);
+    }
+
     checker::ETSChecker::EmplaceSubstituted(
         substitution, genericInterfaceType->TypeArguments()[paramsNum]->AsETSTypeParameter()->GetOriginal(),
         InstantiateBoxedPrimitiveType(checker, node->ReturnType(), returnType));
 
-    return genericInterfaceType->Substitute(checker->Relation(), substitution)->AsETSObjectType();
+    auto *interfaceType =
+        genericInterfaceType->Substitute(checker->Relation(), substitution, true, node->IsExtensionFunction());
+    if (node->IsExtensionFunction() && node->ReturnType()->IsTSThisType()) {
+        checker->AddThisReturnTypeFlagForInterfaceInvoke(interfaceType->AsETSObjectType());
+    }
+    return interfaceType->AsETSObjectType();
 }
 
 Type *CreateParamTypeWithDefaultParam(ETSChecker *checker, ir::Expression *param, Type *paramType)

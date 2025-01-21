@@ -672,10 +672,13 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
     auto *returnType2 = allocator->New<ir::OpaqueTypeNode>(
         wrapToObject ? anyType
                      : lciInfo->lambdaSignature->ReturnType()->Substitute(checker->Relation(), lciInfo->substitution));
+    ir::ScriptFunctionFlags functionFlag = function->IsExtensionMethod()
+                                               ? ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD
+                                               : ir::ScriptFunctionFlags::METHOD;
     auto *func = util::NodeAllocator::ForceSetParent<ir::ScriptFunction>(
         allocator, allocator,
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), returnType2),
-                                                ir::ScriptFunctionFlags::METHOD});
+                                                functionFlag});
 
     PostprocessLambdaClassInvoke(ctx, lciInfo, methodName, func);
 }
@@ -733,7 +736,6 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, ArenaVe
     lambdaClassName.Append(info->calleeClass->Definition()->Ident()->Name()).Append("$").Append(info->name);
 
     ArenaVector<checker::Type *> funcInterfaces(allocator->Adapter());
-
     auto *classDeclaration =
         parser
             ->CreateFormattedTopLevelStatement(BuildLambdaClass(ctx, lambdaSigs, substitution, funcInterfaces),
@@ -1163,7 +1165,11 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     call->SetCallee(newCallee);
     call->SetSignature(propSignature);
     ASSERT(propSignature->ReturnType() != nullptr);
-    call->SetTsType(propSignature->ReturnType());
+    if (propSignature->HasSignatureFlag(checker::SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
+        call->SetTsType(call->Arguments()[0]->TsType());
+    } else {
+        call->SetTsType(propSignature->ReturnType());
+    }
 
     return InsertInvokeArguments(ctx, call);
 }

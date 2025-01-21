@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_SIGNATURE_H
 
 #include "type.h"
+#include "ets/etsObjectType.h"
 
 #include "varbinder/variable.h"
 
@@ -88,6 +89,7 @@ enum class SignatureFlags : uint32_t {
     SETTER = 1U << 17U,
     THROWS = 1U << 18U,
     RETHROWS = 1U << 19U,
+    EXTENSION_FUNCTION_RETURN_THIS = 1U << 20U,
 
     INTERNAL_PROTECTED = INTERNAL | PROTECTED,
     GETTER_OR_SETTER = GETTER | SETTER,

@@ -935,7 +935,7 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
     bool hasReceiver = !params.empty() && params[0]->IsETSParameterExpression() &&
                        params[0]->AsETSParameterExpression()->Ident()->IsReceiver();
     if (hasReceiver) {
-        SavedParserContext contextAfterParseParams(this, GetContext().Status() | ParserStatus::ALLOW_THIS_TYPE);
+        SavedParserContext contextAfterParseParams(this, GetContext().Status() | ParserStatus::HAS_RECEIVER);
         returnTypeAnnotation = ParseFunctionReturnType(status);
     } else {
         returnTypeAnnotation = ParseFunctionReturnType(status);

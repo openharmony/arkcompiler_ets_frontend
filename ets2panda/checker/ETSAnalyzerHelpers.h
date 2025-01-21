@@ -31,7 +31,7 @@ void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *chec
                                                        checker::Signature *signature);
 void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETSObjectType *objType,
                                       ir::ScriptFunction *extensionFunc, checker::Signature *signature);
-void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::MethodDefinition *node);
+void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::AstNode *node);
 void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::ScriptFunction *scriptFunc);
 void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc);
 void ComposeAsyncImplMethod(ETSChecker *checker, ir::MethodDefinition *node);
@@ -40,8 +40,8 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
                                    const lexer::SourcePosition &position, const std::string &methodName);
 checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expression *callee,
                                          checker::Type *calleeType);
-checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *functionType, checker::ETSChecker *checker,
-                                                 ir::CallExpression *expr,
+checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, checker::ETSChecker *checker,
+                                                 ir::CallExpression *expr, bool isFunctionalInterface,
                                                  TypeRelationFlag reportFlag = TypeRelationFlag::NONE);
 checker::Signature *ResolveCallForClassMethod(checker::ETSFunctionType *functionType, checker::ETSChecker *checker,
                                               ir::CallExpression *expr,
