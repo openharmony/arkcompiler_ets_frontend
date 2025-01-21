@@ -33,15 +33,24 @@ import {
   getRelativeSourcePath,
   OptionTypeForTest,
   SourceObConfig,
-  Obfuscation
+  Obfuscation,
+  printUnobfuscationReasons
 } from '../../../src/initialization/ConfigResolver';
 import { HvigorErrorInfo, PropCollections, renameFileNameModule } from '../../../src/ArkObfuscator';
-import { nameCacheMap } from '../../../src/initialization/CommonObject';
+import {
+  clearUnobfuscationNamesObj,
+  nameCacheMap,
+  unobfuscationNamesObj
+} from '../../../src/initialization/CommonObject';
 import path from 'path';
 import fs from 'fs';
 import { FileUtils } from '../../../src/utils/FileUtils';
 import sinon from 'sinon';
 import { UnobfuscationCollections } from '../../../src/utils/CommonCollections';
+import {
+  clearHistoryUnobfuscatedMap,
+  historyAllUnobfuscatedNamesMap
+} from '../../../src/initialization/Initializer';
 
 const OBFUSCATE_TESTDATA_DIR = path.resolve(__dirname, '../../testData/obfuscation/system_api_obfuscation');
 const projectConfig = {
@@ -2029,6 +2038,47 @@ describe('test for ConfigResolve', function() {
 
       const result = getRelativeSourcePath(filePath, '', '');
       expect(result).to.equal(expectedRelativePath);
+    });
+  });
+
+  describe('printUnobfuscationReasons', () => {
+    it('historyAllUnobfuscatedNamesMap is empty', () => {
+      unobfuscationNamesObj['Index.ets'] = { 'abc': ['sdk'] };
+      unobfuscationNamesObj['Test.ets'] = { 'abc_test': ['conf'] };
+      printUnobfuscationReasons('', './keptNames.json');
+      let keptNamesObj = {
+        keptReasons: {},
+        keptNames: {}
+      };
+      let keptNameString = fs.readFileSync('./keptNames.json', 'utf-8');
+      const parsedObj = JSON.parse(keptNameString);
+      keptNamesObj.keptReasons = parsedObj.keptReasons;
+      keptNamesObj.keptNames = parsedObj.keptNames;
+      expect(keptNamesObj.keptNames['Index.ets']['abc'][0]).to.equal('sdk');
+      expect(keptNamesObj.keptNames['Test.ets']['abc_test'][0]).to.equal('conf');
+      clearHistoryUnobfuscatedMap();
+      clearUnobfuscationNamesObj();
+    });
+
+    it('historyAllUnobfuscatedNamesMap is not empty', () => {
+      historyAllUnobfuscatedNamesMap.set('Index.ets', { 'abc': ['sdk'] });
+      historyAllUnobfuscatedNamesMap.set('Test.ets', { 'abc_test': ['conf'] });
+      unobfuscationNamesObj['Index.ets'] = { 'abc': ['conf'] };
+      unobfuscationNamesObj['Test2.ets'] = { 'abc_test2': ['lang'] };
+      printUnobfuscationReasons('', './keptNames.json');
+      let keptNamesObj = {
+        keptReasons: {},
+        keptNames: {}
+      };
+      let keptNameString = fs.readFileSync('./keptNames.json', 'utf-8');
+      const parsedObj = JSON.parse(keptNameString);
+      keptNamesObj.keptReasons = parsedObj.keptReasons;
+      keptNamesObj.keptNames = parsedObj.keptNames;
+      expect(keptNamesObj.keptNames['Index.ets']['abc'][0]).to.equal('conf');
+      expect(keptNamesObj.keptNames['Test.ets']['abc_test'][0]).to.equal('conf');
+      expect(keptNamesObj.keptNames['Test2.ets']['abc_test2'][0]).to.equal('lang');
+      clearHistoryUnobfuscatedMap();
+      clearUnobfuscationNamesObj();
     });
   });
 });

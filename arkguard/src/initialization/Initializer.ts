@@ -22,8 +22,15 @@ import { type IOptions } from '../configs/IOptions';
 import type { HvigorErrorInfo } from '../common/type';
 
 // Record all unobfuscated properties and reasons.
-export let historyUnobfuscatedPropMap: Map<string, string[]> | undefined;
-export let historyAllUnobfuscatedNamesMap: Map<string, Object> = new Map();
+export const historyUnobfuscatedPropMap: Map<string, string[]> = new Map<string, string[]>();
+// Record all files and the unobfuscated names and reasons in the files.
+export const historyAllUnobfuscatedNamesMap: Map<string, Object> = new Map<string, Object>();
+
+// Clear the map after one compilation is completed.
+export function clearHistoryUnobfuscatedMap(): void {
+  historyUnobfuscatedPropMap.clear();
+  historyAllUnobfuscatedNamesMap.clear();
+}
 
 export const printerConfig = {
   // Print obfuscation time&memory usage of all files and obfuscation processes
@@ -129,13 +136,13 @@ function initArkGuardConfig(
   if (mergedObConfig.options.printKeptNames && obfuscationCacheDir) {
     const defaultUnobfuscationPath: string = path.join(obfuscationCacheDir, 'keptNames.json');
     if (fs.existsSync(defaultUnobfuscationPath)) {
-      readUnobfuscationContent(defaultUnobfuscationPath, printObfLogger);
+      readUnobfuscationContentCache(defaultUnobfuscationPath, printObfLogger);
     }
   }
   return arkObfuscator;
 }
 
-function readUnobfuscationContent(defaultUnobfuscationPath: string, printObfLogger: Function): void {
+function readUnobfuscationContentCache(defaultUnobfuscationPath: string, printObfLogger: Function): void {
   try {
     const unobfuscationContent = fs.readFileSync(defaultUnobfuscationPath, 'utf-8');
     const unobfuscationObj: {
@@ -146,9 +153,10 @@ function readUnobfuscationContent(defaultUnobfuscationPath: string, printObfLogg
       };
     } = JSON.parse(unobfuscationContent);
 
-    if (Object.keys(unobfuscationObj.keptNames.property).length !== 0) {
-      historyUnobfuscatedPropMap = new Map<string, string[]>(Object.entries(unobfuscationObj.keptNames.property));
-    }
+    Object.keys(unobfuscationObj.keptNames.property).forEach((key) => {
+      historyUnobfuscatedPropMap.set(key, unobfuscationObj.keptNames.property[key]);
+    });
+
     const { property, ...rest } = unobfuscationObj.keptNames;
     Object.keys(rest).forEach((key) => {
       historyAllUnobfuscatedNamesMap.set(key, rest[key]);
