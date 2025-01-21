@@ -14,11 +14,11 @@
  */
 
 #include "ir/astNode.h"
-#include "ir/expressions/callExpression.h"
 #include "lsp/include/api.h"
 #include "lsp/include/internal_api.h"
 #include <gtest/gtest.h>
 #include <cstddef>
+#include <string>
 #include <vector>
 
 #include "public/es2panda_lib.h"
@@ -405,4 +405,124 @@ TEST_F(LSPAPITests, GetPrecedingToken2)
     ASSERT_EQ(result->Start().index, stringLiteral->Start().index);
     ASSERT_EQ(result->End().index, stringLiteral->End().index);
     impl_->DestroyContext(context);
+}
+
+TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation1)
+{
+    using ark::es2panda::ir::AstNode;
+    using ark::es2panda::public_lib::Context;
+    es2panda_Context *ctx =
+        CreateContextAndProceedToState(impl_, cfg_,
+                                       "let a: number;\nlet b: byte;\nlet c: short;\nlet d: int;\nlet e: long;\nlet f: "
+                                       "float;\nlet g: double;\nlet h: char;\nlet i: boolean;",
+                                       "types.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto checker = reinterpret_cast<Context *>(ctx)->checker->AsETSChecker();
+    auto astNode = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "a"; });
+    auto type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsDoubleType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "b"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsByteType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "c"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsShortType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "d"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsIntType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "e"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsLongType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "f"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsFloatType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "g"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsDoubleType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "h"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsCharType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "i"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSBooleanType());
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
+{
+    using ark::es2panda::ir::AstNode;
+    using ark::es2panda::public_lib::Context;
+    es2panda_Context *ctx = CreateContextAndProceedToState(
+        impl_, cfg_,
+        "let j: object;\nlet k: string;\nlet l: [];\nlet m: bigint;\nlet n: never;\nlet o: null;\nlet p: "
+        "undefined;\nlet tuple: [number, number] = [1, 2];\nlet union: int | null;",
+        "types.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto checker = reinterpret_cast<Context *>(ctx)->checker->AsETSChecker();
+    auto astNode = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "j"; });
+    auto type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSObjectType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "k"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSStringType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "l"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSArrayType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "m"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSBigIntType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "n"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSNeverType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "o"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSNullType());
+
+    targetNode =
+        astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "p"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSUndefinedType());
+
+    targetNode = astNode->FindChild(
+        [](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "tuple"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSTupleType());
+
+    targetNode = astNode->FindChild(
+        [](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "union"; });
+    type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
+    ASSERT_TRUE(type->IsETSUnionType());
+    impl_->DestroyContext(ctx);
 }

@@ -15,6 +15,9 @@
 
 #include "api.h"
 #include "internal_api.h"
+#include "checker/types/type.h"
+#include "ir/astNode.h"
+#include "macros.h"
 #include "public/public.h"
 
 namespace ark::es2panda::lsp {
@@ -211,6 +214,21 @@ ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, 
     auto children = GetChildren(startNode, allocator);
     auto candidate = FindNodeBeforePosition(children, pos);
     return FindRightmostToken(candidate, allocator);
+}
+
+ir::AstNode *GetOriginalNode(ir::AstNode *astNode)
+{
+    while (astNode != nullptr && astNode->OriginalNode() != nullptr) {
+        astNode = astNode->OriginalNode();
+    }
+    return astNode;
+}
+
+checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode)
+{
+    ASSERT(astNode);
+    auto originalNode = GetOriginalNode(astNode);
+    return originalNode->Check(checker);
 }
 
 }  // namespace ark::es2panda::lsp
