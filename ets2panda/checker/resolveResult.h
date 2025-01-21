@@ -21,6 +21,7 @@ enum class OverrideErrorCode {
     NO_ERROR,
     OVERRIDDEN_FINAL,
     INCOMPATIBLE_RETURN,
+    INCOMPATIBLE_TYPEPARAM,
     OVERRIDDEN_WEAKER,
 };
 

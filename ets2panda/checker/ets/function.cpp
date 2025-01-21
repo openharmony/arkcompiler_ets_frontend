@@ -1418,6 +1418,12 @@ void ETSChecker::ReportOverrideError(Signature *signature, Signature *overridden
             reason = "overridden method has weaker access privilege.";
             break;
         }
+        case OverrideErrorCode::INCOMPATIBLE_TYPEPARAM: {
+            reason =
+                "overriding type parameter's conatraints are not compatible with type parameter constraints of the "
+                "overridden method.";
+            break;
+        }
         default: {
             UNREACHABLE();
         }
@@ -1427,6 +1433,24 @@ void ETSChecker::ReportOverrideError(Signature *signature, Signature *overridden
                   overriddenSignature->Function()->Id()->Name(), overriddenSignature, " in ",
                   overriddenSignature->Owner(), " because ", reason},
                  signature->Function()->Start());
+}
+
+bool CheckTypeParameterConstraints(ArenaVector<Type *> typeParamList1, ArenaVector<Type *> typeParamList2,
+                                   TypeRelation *relation)
+{
+    if (!typeParamList1.empty() || !typeParamList2.empty()) {
+        if (typeParamList1.size() != typeParamList2.size()) {
+            return false;
+        }
+        for (size_t i = 0; i < typeParamList1.size(); i++) {
+            auto c1 = typeParamList1[i]->AsETSTypeParameter()->GetConstraintType();
+            auto c2 = typeParamList2[i]->AsETSTypeParameter()->GetConstraintType();
+            if (!relation->IsSupertypeOf(c1, c2)) {  // contravariance check
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
@@ -1439,6 +1463,11 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
     }
 
     for (auto *it : target->TsType()->AsETSFunctionType()->CallSignatures()) {
+        bool typeParamError = false;
+        if (!CheckTypeParameterConstraints(signature->TypeParams(), it->TypeParams(), Relation())) {
+            typeParamError = true;
+        }
+
         auto *itSubst = AdjustForTypeParameters(signature, it);
 
         if (itSubst == nullptr) {
@@ -1458,6 +1487,11 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
 
         if (!IsMethodOverridesOther(itSubst, signature)) {
             continue;
+        }
+
+        if (typeParamError) {
+            ReportOverrideError(signature, it, OverrideErrorCode::INCOMPATIBLE_TYPEPARAM);
+            return false;
         }
 
         if (auto err = CheckOverride(signature, itSubst); err != OverrideErrorCode::NO_ERROR) {
