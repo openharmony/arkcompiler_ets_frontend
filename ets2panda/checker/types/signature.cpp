@@ -16,6 +16,7 @@
 #include "signature.h"
 
 #include "checker/ETSchecker.h"
+#include "ets/etsObjectType.h"
 
 namespace ark::es2panda::checker {
 
@@ -217,6 +218,10 @@ bool Signature::CheckParameter(TypeRelation *relation, Type const *type1, Type c
 {
     if (relation->IsOverridingCheck()) {
         return relation->IsSupertypeOf(type1, type2);
+    }
+
+    if (!relation->IsOverridingCheck() && type1->IsETSObjectType()) {
+        return const_cast<ETSObjectType *>(type1->AsETSObjectType())->IsSameBasedGeneric(relation, type2);
     }
 
     return relation->IsIdenticalTo(type1, type2);

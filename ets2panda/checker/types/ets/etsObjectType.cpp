@@ -23,6 +23,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
+#include "macros.h"
 
 namespace ark::es2panda::checker {
 
@@ -1267,6 +1268,12 @@ ir::TSTypeParameterDeclaration *ETSObjectType::GetTypeParams() const
 
     ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
     return declNode_->AsTSInterfaceDeclaration()->TypeParams();
+}
+
+bool ETSObjectType::IsSameBasedGeneric(TypeRelation *relation, Type const *other) const
+{
+    const_cast<ETSObjectType *>(this)->IdenticalUptoTypeArguments(relation, const_cast<Type *>(other));
+    return relation->IsTrue();
 }
 
 }  // namespace ark::es2panda::checker
