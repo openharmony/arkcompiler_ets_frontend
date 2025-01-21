@@ -374,7 +374,7 @@ final class LambdaObject-C$lambda$invoke$0 implements Function0<Int> {
     return this.$this.lambda$invoke$0(this.ll) as Object|null|undefined;
   }
   
-  public invoke(): int {
+  public $_invoke(): int {
     return this.$this.lambda$invoke$0(this.ll);
   }
 }

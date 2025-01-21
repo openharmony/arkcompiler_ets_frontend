@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -110,7 +110,6 @@ enum class PropertyType {
 
 /* Invoke method name in functional interfaces */
 constexpr char const *FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME = "invoke0";
-constexpr char const *FUNCTIONAL_INTERFACE_SUBSTITUTED_INVOKE_METHOD_NAME = "invoke";
 
 }  // namespace ark::es2panda::checker
 

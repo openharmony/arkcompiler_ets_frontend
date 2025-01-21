@@ -137,7 +137,7 @@ ir::MethodDefinition *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *cal
                                                              ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE});
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *name = AllocNode<ir::Identifier>("invoke", Allocator());
+    auto *name = AllocNode<ir::Identifier>(compiler::Signatures::STATIC_INVOKE_METHOD, Allocator());
     func->SetIdent(name);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -627,7 +627,8 @@ ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInitializer(ETSObjectTy
 
 void ETSChecker::BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::TypeNode *retTypeAnnotation)
 {
-    auto *invokeMethod = functionalInterface->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke");
+    auto *invokeMethod = functionalInterface->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
+        compiler::Signatures::STATIC_INVOKE_METHOD);
     auto *invokeSignature = invokeMethod->TsType()->AsETSFunctionType()->CallSignatures()[0];
 
     std::stringstream ss;

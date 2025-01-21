@@ -20,7 +20,7 @@ class GoodGreeter {
 
     fooExample() : void {}
 
-    static invoke(): int {
+    static $_invoke(): int {
         return 5;
     }
 

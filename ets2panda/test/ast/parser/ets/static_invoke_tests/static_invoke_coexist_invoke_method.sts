@@ -14,13 +14,13 @@
  */
 
 class A /* @@ label */{
-    static invoke(): int {
+    static $_invoke(): int {
         return 1;
     }
 
-    static instantiate<T extends A>(factory: ()=>T): T {
+    static $_instantiate<T extends A>(factory: ()=>T): T {
         return factory();
     }
 }
 
-/* @@@ label Error TypeError: Static invoke method and static instantiate method both exist in class/interface A is not allowed.  */
+/* @@@ label Error TypeError: Static $_invoke method and static $_instantiate method both exist in class/interface A is not allowed.  */

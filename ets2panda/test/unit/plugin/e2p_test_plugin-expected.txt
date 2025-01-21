@@ -6,8 +6,8 @@ string
 b
 fooExample
 fooExample
-invoke
-invoke
+$_invoke
+$_invoke
 constructor
 constructor
 name
