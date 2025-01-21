@@ -2573,7 +2573,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     }
 }
 
-Type const *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type const *type)
+Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type *type)
 {
     if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         auto const propInvoke = type->AsETSObjectType()->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,

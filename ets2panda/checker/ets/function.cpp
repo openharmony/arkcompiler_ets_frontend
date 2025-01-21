@@ -437,7 +437,7 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
 }
 
 bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
-                                             TypeRelationFlag flags, bool reportError)
+                                             TypeRelationFlag flags, bool reportError, const bool unique)
 {
     std::size_t const argumentCount = arguments.size();
     std::size_t const parameterCount = substitutedSig->Params().size();
@@ -472,8 +472,13 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         }
 
         auto *const restArgument = argument->AsSpreadElement()->Argument();
+        Type *targetType = TryGettingFunctionTypeFromInvokeFunction(substitutedSig->RestVar()->TsType());
+        // backing out of check that results in a signature mismatch would be difficult
+        // so only attempt it if there is only one candidate signature
+        if (unique && restArgument->IsArrayExpression()) {
+            restArgument->AsArrayExpression()->SetPreferredType(targetType);
+        }
         auto const argumentType = restArgument->Check(this);
-        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(substitutedSig->RestVar()->TsType());
         const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
 
         auto const invocationCtx = checker::InvocationContext(
@@ -492,7 +497,7 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
 Signature *ETSChecker::ValidateSignature(
     std::tuple<Signature *, const ir::TSTypeParameterInstantiation *, TypeRelationFlag> info,
     const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
-    const std::vector<bool> &argTypeInferenceRequired)
+    const std::vector<bool> &argTypeInferenceRequired, const bool unique)
 {
     auto [signature, typeArguments, flags] = info;
     Signature *substitutedSig = MaybeSubstituteTypeParameters(this, signature, typeArguments, arguments, pos, flags);
@@ -524,7 +529,7 @@ Signature *ETSChecker::ValidateSignature(
 
     // Check rest parameter(s) if any exists
     if (hasRestParameter && argumentCount > parameterCount) {
-        if (!ValidateSignatureRestParams(substitutedSig, arguments, flags, reportError)) {
+        if (!ValidateSignatureRestParams(substitutedSig, arguments, flags, reportError, unique)) {
             return nullptr;
         }
     }
@@ -617,7 +622,7 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
                 continue;
             }
             auto *concreteSig = ValidateSignature(std::make_tuple(sig, typeArguments, relationFlags), arguments, pos,
-                                                  argTypeInferenceRequired);
+                                                  argTypeInferenceRequired, signatures.size() == 1);
             if (concreteSig == nullptr) {
                 continue;
             }
