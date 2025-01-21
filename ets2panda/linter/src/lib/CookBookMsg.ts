@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -230,3 +230,4 @@ cookBookTag[183] = 'Object literal properties can only contain name-value pairs 
 cookBookTag[184] = 'Optional methods are not supported (arkts-optional-methods)';
 cookBookTag[185] = 'syntax for import type is disabled (arkts-import-types)';
 cookBookTag[186] = '"new" expression with dynamic constructor type is not supported (arkts-no-dynamic-ctor-call)';
+cookBookTag[193] = '"void" operator is not supported (arkts-no-void-operator)';
