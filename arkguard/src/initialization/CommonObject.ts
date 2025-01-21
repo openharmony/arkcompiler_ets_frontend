@@ -21,3 +21,8 @@ export let nameCacheMap: Map<string, string | {}> = new Map();
 
 // Record all unobfuscated names and reasons for each file.
 export let unobfuscationNamesObj: Object = {};
+
+// Clear this object after one compilation is completed.
+export function clearUnobfuscationNamesObj(): void {
+    unobfuscationNamesObj = {};
+}

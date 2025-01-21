@@ -87,9 +87,10 @@ export { MemoryUtils } from './utils/MemoryUtils';
 import { TypeUtils } from './utils/TypeUtils';
 import { handleReservedConfig } from './utils/TransformUtil';
 import { UnobfuscationCollections } from './utils/CommonCollections';
-import { historyAllUnobfuscatedNamesMap } from './initialization/Initializer';
+import { clearHistoryUnobfuscatedMap, historyAllUnobfuscatedNamesMap } from './initialization/Initializer';
 import { MemoryDottingDefine } from './utils/MemoryDottingDefine';
 import { nodeSymbolMap } from './utils/ScopeAnalyzer';
+import { clearUnobfuscationNamesObj } from './initialization/CommonObject';
 export { UnobfuscationCollections } from './utils/CommonCollections';
 export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
 export type { ReservedNameInfo } from './utils/TransformUtil';
@@ -139,6 +140,8 @@ export function clearGlobalCaches(): void {
   UnobfuscationCollections.clear();
   LocalVariableCollections.clear();
   renameFileNameModule.clearCaches();
+  clearUnobfuscationNamesObj();
+  clearHistoryUnobfuscatedMap();
 }
 
 export type ObfuscationResultType = {

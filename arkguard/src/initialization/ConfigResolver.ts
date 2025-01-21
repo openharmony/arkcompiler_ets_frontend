@@ -36,7 +36,7 @@ import {
 
 import { isDebug, isFileExist, sortAndDeduplicateStringArr, mergeSet, convertSetToArray } from './utils';
 import { nameCacheMap, yellow, unobfuscationNamesObj } from './CommonObject';
-import { historyUnobfuscatedPropMap } from './Initializer';
+import { historyAllUnobfuscatedNamesMap, historyUnobfuscatedPropMap } from './Initializer';
 import { LocalVariableCollections, UnobfuscationCollections } from '../utils/CommonCollections';
 import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 import { WhitelistType } from '../utils/TransformUtil';
@@ -1199,14 +1199,14 @@ export function printUnobfuscationReasons(configPath: string, defaultPath: strin
   };
   unobfuscationObj.keptReasons = keptReasons;
 
-  if (!historyUnobfuscatedPropMap) {
-    // Full build
+  if (historyUnobfuscatedPropMap.size === 0) {
+    // Full compilation or there is no cache after the previous compilation.
     UnobfuscationCollections.unobfuscatedPropMap.forEach((value: Set<string>, key: string) => {
       let array: string[] = Array.from(value);
       unobfuscationObj.keptNames.property[key] = array;
     });
   } else {
-    // Incremental build
+    // Retrieve the cache from 'historyUnobfuscatedPropMap' after the previous compilation.
     UnobfuscationCollections.unobfuscatedPropMap.forEach((value: Set<string>, key: string) => {
       let array: string[] = Array.from(value);
       historyUnobfuscatedPropMap.set(key, array);
@@ -1215,7 +1215,19 @@ export function printUnobfuscationReasons(configPath: string, defaultPath: strin
       unobfuscationObj.keptNames.property[key] = value;
     });
   }
-  Object.assign(unobfuscationObj.keptNames, unobfuscationNamesObj);
+
+  if (historyAllUnobfuscatedNamesMap.size === 0) {
+    // Full compilation or there is no cache after the previous compilation.
+    Object.assign(unobfuscationObj.keptNames, unobfuscationNamesObj);
+  } else {
+    // Retrieve the cache from 'historyAllUnobfuscatedNamesMap' after the previous compilation.
+    let historyAllUnobfuscatedNamesObj = Object.fromEntries(historyAllUnobfuscatedNamesMap);
+    Object.keys(unobfuscationNamesObj).forEach(key => {
+      historyAllUnobfuscatedNamesObj[key] = unobfuscationNamesObj[key];
+    });
+    Object.assign(unobfuscationObj.keptNames, historyAllUnobfuscatedNamesObj);
+  }
+
   let unobfuscationContent = JSON.stringify(unobfuscationObj, null, 2);
   if (!fs.existsSync(path.dirname(defaultPath))) {
     fs.mkdirSync(path.dirname(defaultPath), { recursive: true });
