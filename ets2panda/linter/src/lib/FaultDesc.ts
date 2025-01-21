@@ -133,7 +133,9 @@ faultDesc[FaultID.ObjectLiteralProperty] = 'Object literal property';
 faultDesc[FaultID.OptionalMethod] = 'Optional method';
 faultDesc[FaultID.ImportType] = 'Import type syntax';
 faultDesc[FaultID.DynamicCtorCall] = 'Dynamic constructor call';
+faultDesc[FaultID.MathPow] = 'Exponent call';
 faultDesc[FaultID.VoidOperator] = 'Void operator';
+faultDesc[FaultID.ExponentOp] = 'Exponent operation';
 faultDesc[FaultID.RegularExpressionLiteral] = 'Regex literals';
 faultDesc[FaultID.ArgumentsObject] = 'Special arguments object inside functions';
 faultDesc[FaultID.LimitedVoidType] = 'Limited void type';
@@ -156,3 +158,4 @@ faultDesc[FaultID.MethodOverridingField] = '"Method overriding field" to keep st
 faultDesc[FaultID.ExplicitFunctionType] = 'Explicit function type';
 faultDesc[FaultID.ClassstaticInitialization] = 'The static properties of a class need to have initial values';
 faultDesc[FaultID.AvoidUnionTypes] = 'Union types';
+

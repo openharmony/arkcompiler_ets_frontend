@@ -208,7 +208,9 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ReturnStatement, this.handleReturnStatement],
     [ts.SyntaxKind.Decorator, this.handleDecorator],
     [ts.SyntaxKind.ImportType, this.handleImportType],
+    [ts.SyntaxKind.AsteriskAsteriskToken, this.handleExponentOperation],
     [ts.SyntaxKind.VoidExpression, this.handleVoidExpression],
+    [ts.SyntaxKind.AsteriskAsteriskEqualsToken, this.handleExponentOperation],
     [ts.SyntaxKind.RegularExpressionLiteral, this.handleRegularExpressionLiteral],
     [ts.SyntaxKind.DebuggerStatement, this.handleDebuggerStatement],
     [ts.SyntaxKind.SwitchStatement, this.handleSwitchStatement],
@@ -2156,6 +2158,27 @@ export class TypeScriptLinter {
     }
   }
 
+  private processCalleeSym(calleeSym: ts.Symbol, tsCallExpr: ts.CallExpression): void {
+    if (!this.options.arkts2) {
+      this.handleStdlibAPICall(tsCallExpr, calleeSym);
+      this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
+    }
+    if (TsUtils.symbolHasEsObjectType(calleeSym)) {
+      const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
+      this.incrementCounters(tsCallExpr, faultId);
+    }
+    // Need to process Symbol call separately in order to not report two times when using Symbol API
+    if (this.options.arkts2 && this.tsUtils.isStdSymbol(calleeSym)) {
+      this.incrementCounters(tsCallExpr, FaultID.SymbolType);
+    }
+
+    if (this.options.arkts2 &&
+      calleeSym.getEscapedName() === 'pow' && isStdLibrarySymbol(calleeSym)) {
+      const autofix = this.autofixer?.fixExponent(tsCallExpr);
+      this.incrementCounters(tsCallExpr, FaultID.MathPow, autofix);
+    }
+  }
+
   private handleCallExpression(node: ts.Node): void {
     const tsCallExpr = node as ts.CallExpression;
 
@@ -2164,18 +2187,7 @@ export class TypeScriptLinter {
     this.handleImportCall(tsCallExpr);
     this.handleRequireCall(tsCallExpr);
     if (calleeSym !== undefined) {
-      if (!this.options.arkts2) {
-        this.handleStdlibAPICall(tsCallExpr, calleeSym);
-        this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
-      }
-      if (TsUtils.symbolHasEsObjectType(calleeSym)) {
-        const faultId = this.options.arkts2 ? FaultID.EsObjectTypeError : FaultID.EsObjectType;
-        this.incrementCounters(tsCallExpr, faultId);
-      }
-      // Need to process Symbol call separately in order to not report two times when using Symbol API
-      if (this.options.arkts2 && this.tsUtils.isStdSymbol(calleeSym)) {
-        this.incrementCounters(tsCallExpr, FaultID.SymbolType);
-      }
+      this.processCalleeSym(calleeSym, tsCallExpr);
     }
     if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(calleeSym)) {
       this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
@@ -3426,6 +3438,14 @@ export class TypeScriptLinter {
     ) {
       this.incrementCounters(node, FaultID.NoTuplesArrays);
     }
+  }
+
+  private handleExponentOperation(node: ts.Node): void {
+    if (!this.options.arkts2) {
+      return;
+    }
+    const autofix = this.autofixer?.fixExponent(node.parent);
+    this.incrementCounters(node, FaultID.ExponentOp, autofix);
   }
 
   private handleNonNullExpression(node: ts.Node): void {
