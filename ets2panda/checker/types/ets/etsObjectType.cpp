@@ -466,6 +466,15 @@ bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unuse
     return relation->Result(false);
 }
 
+bool ETSObjectType::IsBoxedPrimitive() const
+{
+    if (this->IsETSDynamicType()) {
+        return false;
+    }
+
+    return this->IsETSUnboxableObject();
+}
+
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
     if (source->HasTypeFlag(TypeFlag::READONLY)) {

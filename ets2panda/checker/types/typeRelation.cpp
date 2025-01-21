@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #include "typeRelation.h"
 
 #include "checker/checker.h"
+#include "checker/ETSchecker.h"
 #include "checker/types/ts/indexInfo.h"
 #include "checker/types/signature.h"
 
@@ -117,7 +118,6 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
         }
 
         result_ = RelationResult::FALSE;
-
         if (!source->AssignmentSource(this, target)) {
             target->AssignmentTarget(this, source);
         }
@@ -185,6 +185,33 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
     return result_ == RelationResult::TRUE;
 }
 
+bool TypeRelation::IsLegalBoxedPrimitiveConversion(Type *target, Type *source)
+{
+    if (!target->IsETSReferenceType() || !source->IsETSReferenceType()) {
+        return false;
+    }
+    if (!target->IsETSObjectType() || !source->IsETSObjectType()) {
+        return false;
+    }
+    if (!target->AsETSObjectType()->IsBoxedPrimitive() || !source->AsETSObjectType()->IsBoxedPrimitive()) {
+        return false;
+    }
+
+    ETSChecker *checker = this->GetChecker()->AsETSChecker();
+
+    Type *targetUnboxedType = checker->MaybeUnboxType(target);
+    Type *sourceUnboxedType = checker->MaybeUnboxType(source);
+
+    if (targetUnboxedType == nullptr || sourceUnboxedType == nullptr) {
+        return false;
+    }
+    if (!targetUnboxedType->IsETSPrimitiveType() || !sourceUnboxedType->IsETSPrimitiveType()) {
+        return false;
+    }
+
+    return this->Result(this->IsAssignableTo(sourceUnboxedType, targetUnboxedType));
+}
+
 bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 {
     result_ = CacheLookup(super, sub, checker_->SupertypeResults(), RelationType::SUPERTYPE);
@@ -194,7 +221,6 @@ bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
         }
 
         result_ = RelationResult::FALSE;
-
         if (super->IsSupertypeOf(this, sub), !IsTrue()) {
             sub->IsSubtypeOf(this, super);
         }

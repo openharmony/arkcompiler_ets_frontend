@@ -54,6 +54,11 @@ public:
         relation->SetFlags(flags_);
 
         if (!relation->IsAssignableTo(source, target)) {
+            if (relation->IsLegalBoxedPrimitiveConversion(target, source)) {
+                Type *sourceUnboxedType = etsChecker->MaybeUnboxType(source);
+                relation->GetNode()->AddBoxingUnboxingFlags(etsChecker->GetUnboxingFlag(sourceUnboxedType));
+                relation->GetNode()->AddBoxingUnboxingFlags(etsChecker->GetBoxingFlag(target));
+            }
             if (((flags_ & TypeRelationFlag::UNBOXING) != 0) && !relation->IsTrue() && source->IsETSObjectType() &&
                 !target->IsETSObjectType()) {
                 etsChecker->CheckUnboxedTypesAssignable(relation, source, target);

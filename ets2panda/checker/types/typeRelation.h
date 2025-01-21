@@ -315,6 +315,7 @@ public:
     {
         return IsSupertypeOf(const_cast<Type *>(super), const_cast<Type *>(sub));
     }
+    bool IsLegalBoxedPrimitiveConversion(Type *target, Type *source);
     bool IsSupertypeOf(Type *super, Type *sub);
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
     void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;

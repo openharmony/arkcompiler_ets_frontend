@@ -1168,7 +1168,9 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
 {
     auto ttctx = TargetTypeContext(this, targetType);
 
-    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
+    const bool hasBoxingflags = (node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U;
+    const bool hasUnboxingflags = (node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U;
+    if (hasBoxingflags && !hasUnboxingflags) {
         ApplyBoxingConversion(node);
 
         if (node->HasAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING)) {
@@ -1179,7 +1181,7 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
         return;
     }
 
-    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+    if (hasUnboxingflags) {
         ApplyUnboxingConversion(node);
     }
 
@@ -1188,6 +1190,10 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
     }
 
     ApplyConversionCast(node, targetType);
+
+    if (hasBoxingflags) {
+        ApplyBoxingConversion(node);
+    }
 }
 
 void ETSGen::ApplyCast(const ir::AstNode *node, const checker::Type *targetType)
