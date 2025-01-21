@@ -13,39 +13,16 @@
  * limitations under the License.
  */
 
+#include "lsp_api_test.h"
+
+#include <gtest/gtest.h>
+#include <cstddef>
+
 #include "ir/astNode.h"
 #include "lsp/include/api.h"
 #include "lsp/include/internal_api.h"
-#include <gtest/gtest.h>
-#include <cstddef>
-#include <string>
-#include <vector>
-
 #include "public/es2panda_lib.h"
 #include "public/public.h"
-#include "test/utils/ast_verifier_test.h"
-#include "utils/arena_containers.h"
-
-class LSPAPITests : public test::utils::AstVerifierTest {
-public:
-    std::vector<std::string> CreateTempFile(std::vector<std::string> files, std::vector<std::string> texts)
-    {
-        std::vector<std::string> result = {};
-        auto tempDir = testing::TempDir();
-        for (size_t i = 0; i < files.size(); i++) {
-            auto outPath = tempDir + files[i];
-            std::ofstream outStream(outPath);
-            if (outStream.fail()) {
-                std::cerr << "Failed to open file: " << outPath << std::endl;
-                return result;
-            }
-            outStream << texts[i];
-            outStream.close();
-            result.push_back(outPath);
-        }
-        return result;
-    }
-};
 
 TEST_F(LSPAPITests, GetTouchingToken1)
 {

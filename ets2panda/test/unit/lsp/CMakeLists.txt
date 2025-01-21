@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ets2panda_add_gtest(lsp_api_test
-    CPP_SOURCES lsp_api_test.cpp
+ets2panda_add_gtest(lsp_api_test CPP_SOURCES
+    lsp_api_test.cpp
+    classifier_test.cpp
 )
