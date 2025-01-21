@@ -18,6 +18,7 @@
 #include "ir/astNode.h"
 #include "ir/ets/etsModule.h"
 #include "utils/arena_containers.h"
+#include "util/errorRecovery.h"
 
 namespace ark::es2panda::parser {
 
@@ -83,6 +84,7 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
         if (Lexer()->GetToken().Type() == lexer::TokenType::EOS) {
             LogSyntaxError("Unexpected token, expected '}'");
             break;
@@ -91,10 +93,6 @@ ir::ETSModule *ETSParser::ParseNamespaceImp(ir::ModifierFlags flags)
             continue;
         }
         auto st = ParseTopLevelStatement();
-        if (st == nullptr) {
-            LogSyntaxError("Failed to parse statement.");
-            break;
-        }
         statements.emplace_back(st);
     }
     Lexer()->NextToken();

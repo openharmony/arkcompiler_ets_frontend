@@ -229,7 +229,7 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/ir/ts/tsTypeLiteral.h
     ${ES2PANDA_ROOT}/ir/ts/tsNumberKeyword.h
     ${ES2PANDA_ROOT}/ir/opaqueTypeNode.h
-    ${ES2PANDA_ROOT}/ir/errorTypeNode.h
+    ${ES2PANDA_ROOT}/ir/brokenTypeNode.h
     ${ES2PANDA_ROOT}/ir/base/scriptFunction.h
     ${ES2PANDA_ROOT}/ir/expressions/literal.h
     ${ES2PANDA_ROOT}/ir/ts/tsInterfaceDeclaration.h

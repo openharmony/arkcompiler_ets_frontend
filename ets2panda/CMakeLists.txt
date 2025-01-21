@@ -253,7 +253,7 @@ set(ES2PANDA_LIB_SRC
   ir/irnode.cpp
   ir/typeNode.cpp
   ir/opaqueTypeNode.cpp
-  ir/errorTypeNode.cpp
+  ir/brokenTypeNode.cpp
   ir/base/catchClause.cpp
   ir/base/classElement.cpp
   ir/base/classDefinition.cpp

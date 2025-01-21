@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -242,7 +242,7 @@ ir::Statement *TSParser::GetDeclarationForNamedExport(ir::ClassDefinitionModifie
         }
     }
 }
-ir::ExportNamedDeclaration *TSParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
+ir::Statement *TSParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
 {
     ir::ClassDefinitionModifiers classModifiers = ir::ClassDefinitionModifiers::ID_REQUIRED;
     ir::ModifierFlags flags = ir::ModifierFlags::NONE;
@@ -292,8 +292,11 @@ ir::Statement *TSParser::ParseExportDeclaration(StatementParsingFlags flags)
             return ParseExportDefaultDeclaration(startLoc, true);
         }
         default: {
-            ir::ExportNamedDeclaration *exportDecl = ParseNamedExportDeclaration(startLoc);
-
+            auto ret = ParseNamedExportDeclaration(startLoc);
+            if (ret->IsBrokenStatement()) {
+                return ret;
+            }
+            ir::ExportNamedDeclaration *exportDecl = ret->AsExportNamedDeclaration();
             if (exportDecl->Decl()->IsVariableDeclaration() && ((flags & StatementParsingFlags::GLOBAL) == 0) &&
                 exportDecl->Parent() != nullptr && !exportDecl->Parent()->IsTSModuleBlock() &&
                 !GetContext().IsModule()) {

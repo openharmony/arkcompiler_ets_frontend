@@ -17,4 +17,5 @@
 for () {}
 
 /* @@? 17:6 Error SyntaxError: Unexpected token: ')'.  */
-/* @@? 17:6 Error SyntaxError: Invalid left-hand side in 'For[In/Of]Statement'  */
+/* @@? 17:6 Error SyntaxError: Unexpected token: ')'.  */
+/* @@? 17:6 Error SyntaxError: Unexpected token ')', expected: ';'.  */

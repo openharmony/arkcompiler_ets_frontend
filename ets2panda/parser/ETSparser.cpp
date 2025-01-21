@@ -528,7 +528,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     if (memberName == nullptr) {                                                               // log error here
         LogUnexpectedToken(Lexer()->GetToken().Type());
         Lexer()->NextToken();
-        return AllocErrorExpression();
+        return AllocBrokenStatement();
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
@@ -600,7 +600,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
             [[fallthrough]];
         default:
             LogUnexpectedToken(Lexer()->GetToken().Type());
-            return nullptr;
+            return AllocBrokenStatement();
     }
 }
 
@@ -978,8 +978,9 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
 
     // re-export directive
     ir::ImportSource *reExportSource = ParseSourceFromClause(true);
-    if (reExportSource == nullptr) {
-        return nullptr;  // Error processing.
+    if (reExportSource == nullptr) {  // Error processing.
+        // Error is logged inside ParseSourceFromClause
+        return AllocBrokenStatement();
     }
 
     lexer::SourcePosition endLoc = reExportSource->Source()->End();
@@ -1053,13 +1054,14 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
     return Allocator()->New<ir::ImportSource>(source, resolvedSource, importData.lang, importData.hasDecl);
 }
 
-ir::ETSImportDeclaration *ETSParser::ParseImportDeclarationHelper(lexer::SourcePosition startLoc,
-                                                                  ArenaVector<ir::AstNode *> &specifiers,
-                                                                  ir::ImportKinds importKind)
+ir::Statement *ETSParser::ParseImportDeclarationHelper(lexer::SourcePosition startLoc,
+                                                       ArenaVector<ir::AstNode *> &specifiers,
+                                                       ir::ImportKinds importKind)
 {
-    auto *const importSource = ParseSourceFromClause(true);
+    auto const importSource = ParseSourceFromClause(true);
     if (importSource == nullptr) {
-        return nullptr;  // Error processing.
+        // Error is logged inside ParseSourceFromClause
+        return AllocBrokenStatement();  // Error processing.
     }
 
     const auto endLocDef = importSource->Source()->End();
@@ -1100,17 +1102,17 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
         auto pos = Lexer()->Save();
         if (!specifiers.empty()) {
             auto *const importDecl = ParseImportDeclarationHelper(startLoc, specifiers, importKind);
-            if (importDecl != nullptr) {
-                statements.push_back(importDecl);
+            if (!importDecl->IsBrokenStatement()) {
+                statements.push_back(importDecl->AsETSImportDeclaration());
             }
         }
 
         if (!defaultSpecifiers.empty()) {
             Lexer()->Rewind(pos);
             auto *const importDeclDefault = ParseImportDeclarationHelper(startLoc, defaultSpecifiers, importKind);
-            if (importDeclDefault != nullptr) {
+            if (!importDeclDefault->IsBrokenStatement()) {
                 util::Helpers::CheckDefaultImport(statements);
-                statements.push_back(importDeclDefault);
+                statements.push_back(importDeclDefault->AsETSImportDeclaration());
             }
         }
     }
@@ -1322,7 +1324,7 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
 
         default: {
             LogSyntaxError("Unexpected token, expected an identifier.");
-            return AllocErrorExpression();
+            return AllocBrokenExpression();
         }
     }
 
@@ -1373,7 +1375,7 @@ ir::Expression *ETSParser::ParseFunctionReceiver()
     Lexer()->NextToken();  // eat 'this';
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         LogSyntaxError("The function parameter 'this' must explicitly specify the typeAnnotation.");
-        return AllocErrorExpression();
+        return AllocBrokenExpression();
     }
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
@@ -1580,7 +1582,7 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
     }
 
     if (importSource == nullptr) {
-        return nullptr;  // Error processing.
+        return AllocBrokenStatement();
     }
 
     lexer::SourcePosition endLoc = importSource->Source()->End();
@@ -1874,7 +1876,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
         funcIdentNode = ExpectIdentifier();
     } else if (!canBeAnonymous) {
         LogSyntaxError("Unexpected token, expected identifier after 'function' keyword");
-        funcIdentNode = AllocErrorExpression();
+        funcIdentNode = AllocBrokenExpression();
     }
 
     if (funcIdentNode != nullptr) {

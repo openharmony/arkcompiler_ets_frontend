@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -158,7 +158,7 @@ protected:
                                                                                   ExpressionParseFlags exprFlags,
                                                                                   bool isAwait);
     std::tuple<ir::Expression *, ir::Expression *> ParseForUpdate(bool isAwait);
-    std::tuple<ir::Expression *, ir::AstNode *> ParseForLoopInitializer();
+    std::tuple<ir::Expression *, ir::Statement *> ParseForLoopInitializer();
     ir::SwitchCaseStatement *ParseSwitchCaseStatement(bool *seenDefault);
     virtual ir::Expression *ParseCatchParam();
     ir::CatchClause *ParseCatchClause();
@@ -182,6 +182,10 @@ protected:
     void LogSyntaxError(std::initializer_list<std::string_view> list, const lexer::SourcePosition &pos);
     void LogParameterModifierError(ir::ModifierFlags status);
     void LogGenericError(std::string_view errorMessage);
+    // Error handling
+    ir::Statement *AllocEmptyStatement();
+    ir::Statement *AllocBrokenStatement();
+    bool IsBrokenStatement(ir::Statement *st);
 
     template <typename T, typename... Args>
     T *AllocNode(Args &&...args)
@@ -194,8 +198,8 @@ protected:
         return ret;
     }
 
-    ir::Identifier *AllocErrorExpression();
-    ir::TypeNode *AllocErrorType();
+    ir::Identifier *AllocBrokenExpression();
+    ir::TypeNode *AllocBrokenType();
 
     ArenaAllocator *Allocator() const
     {
@@ -267,25 +271,23 @@ protected:
     ir::BlockStatement *ParseBlockStatement();
     ir::EmptyStatement *ParseEmptyStatement();
     ir::Statement *ParseForStatement();
-    ir::IfStatement *ParseIfStatement();
+    ir::Statement *ParseIfStatement();
     virtual ir::Statement *ParseFunctionStatement(StatementParsingFlags flags);
     // NOLINTNEXTLINE(google-default-arguments)
-    virtual ir::ClassDeclaration *ParseClassStatement(StatementParsingFlags flags,
-                                                      ir::ClassDefinitionModifiers modifiers,
-                                                      ir::ModifierFlags modFlags = ir::ModifierFlags::NONE);
+    virtual ir::Statement *ParseClassStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
+                                               ir::ModifierFlags modFlags = ir::ModifierFlags::NONE);
     // NOLINTNEXTLINE(google-default-arguments)
-    virtual ir::ETSStructDeclaration *ParseStructStatement(StatementParsingFlags flags,
-                                                           ir::ClassDefinitionModifiers modifiers,
-                                                           ir::ModifierFlags modFlags = ir::ModifierFlags::NONE);
+    virtual ir::Statement *ParseStructStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
+                                                ir::ModifierFlags modFlags = ir::ModifierFlags::NONE);
     ir::Statement *ParseStatementBasedOnTokenType(StatementParsingFlags flags);
     ir::Statement *ParseVarStatement();
     ir::Statement *ParseLetStatement(StatementParsingFlags flags);
-    ir::BreakStatement *ParseBreakStatement();
-    ir::ContinueStatement *ParseContinueStatement();
-    ir::DoWhileStatement *ParseDoWhileStatement();
-    ir::WhileStatement *ParseWhileStatement();
-    ir::SwitchStatement *ParseSwitchStatement();
-    ir::ReturnStatement *ParseReturnStatement();
+    ir::Statement *ParseBreakStatement();
+    ir::Statement *ParseContinueStatement();
+    ir::Statement *ParseDoWhileStatement();
+    ir::Statement *ParseWhileStatement();
+    ir::Statement *ParseSwitchStatement();
+    ir::Statement *ParseReturnStatement();
     ir::Statement *ParseExpressionStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
     ir::LabelledStatement *ParseLabelledStatement(const lexer::LexerPosition &pos);
     virtual void ValidateRestParameter(ir::Expression *param);
@@ -322,10 +324,10 @@ protected:
     ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags);
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous = false,
                                                       ParserStatus newStatus = ParserStatus::NO_OPTS);
-    ir::ETSStructDeclaration *ParseStructDeclaration(ir::ClassDefinitionModifiers modifiers,
-                                                     ir::ModifierFlags flags = ir::ModifierFlags::NONE);
-    ir::ClassDeclaration *ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers,
-                                                ir::ModifierFlags flags = ir::ModifierFlags::NONE);
+    ir::Statement *ParseStructDeclaration(ir::ClassDefinitionModifiers modifiers,
+                                          ir::ModifierFlags flags = ir::ModifierFlags::NONE);
+    ir::Statement *ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers,
+                                         ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     FunctionSignature ParseFunctionSignature(ParserStatus status);
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile);
@@ -467,15 +469,15 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                         bool isExportEquals = false);
-    virtual ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
+    virtual ir::Statement *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
     virtual bool ValidateForInStatement()
     {
         return true;
     }
 
     virtual ir::Statement *ParseTryStatement();
-    virtual ir::ThrowStatement *ParseThrowStatement();
-    virtual ir::DebuggerStatement *ParseDebuggerStatement();
+    virtual ir::Statement *ParseThrowStatement();
+    virtual ir::Statement *ParseDebuggerStatement();
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Statement *ParseModuleDeclaration(StatementParsingFlags flags = StatementParsingFlags::NONE)
     {

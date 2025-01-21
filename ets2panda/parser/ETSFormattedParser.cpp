@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -76,7 +76,7 @@ ir::Expression *ETSParser::ParseExpressionFormatPlaceholder()
     if (insertingNodes_.empty()) {
         LogUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
         Lexer()->NextToken();
-        return AllocErrorType();
+        return AllocBrokenType();
     }
 
     ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
@@ -408,9 +408,9 @@ ir::AstNode *ETSParser::CreateClassElement(std::string_view sourceCode, const Ar
     return ParseClassElement(properties, modifiers, ir::ModifierFlags::NONE);
 }
 
-ir::ClassDeclaration *ETSParser::CreateFormattedClassDeclaration(std::string_view sourceCode,
-                                                                 std::vector<ir::AstNode *> &insertingNodes,
-                                                                 bool const allowStatic)
+ir::Statement *ETSParser::CreateFormattedClassDeclaration(std::string_view sourceCode,
+                                                          std::vector<ir::AstNode *> &insertingNodes,
+                                                          bool const allowStatic)
 {
     insertingNodes_.swap(insertingNodes);
     auto *const classDeclaration = CreateClassDeclaration(sourceCode, allowStatic);
@@ -418,7 +418,7 @@ ir::ClassDeclaration *ETSParser::CreateFormattedClassDeclaration(std::string_vie
     return classDeclaration;
 }
 
-ir::ClassDeclaration *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bool allowStatic)
+ir::Statement *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bool allowStatic)
 {
     util::UString source {sourceCode, Allocator()};
     auto const isp = InnerSourceParser(this);

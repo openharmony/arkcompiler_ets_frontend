@@ -115,7 +115,7 @@ ir::TypeNode *ETSParser::ParseUnionType(ir::TypeNode *const firstType)
 
         auto options = TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
         auto typeAnnotation = ParseTypeAnnotation(&options);
-        if (!typeAnnotation->IsErrorTypeNode()) {
+        if (!typeAnnotation->IsBrokenTypeNode()) {
             types.push_back(typeAnnotation);
         }
     }
@@ -462,7 +462,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
     if (typeAnnotation == nullptr) {
         if (reportError) {
             LogSyntaxError("Invalid Type");
-            auto typeNode = AllocErrorType();
+            auto typeNode = AllocBrokenType();
             typeNode->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
             return typeNode;
         }

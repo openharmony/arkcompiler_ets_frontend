@@ -573,7 +573,7 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         case lexer::TokenType::KEYW_PROTECTED: {
             LogSyntaxError("Access modifier must precede field and method modifiers.");
             Lexer()->NextToken();
-            return nullptr;
+            return AllocBrokenStatement();
         }
         default: {
             result = ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
@@ -874,7 +874,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     ir::Identifier *name = nullptr;
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogSyntaxError({"Expected method name, got '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
-        name = AllocErrorExpression();
+        name = AllocBrokenExpression();
     } else {
         name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         name->SetRange(Lexer()->GetToken().Loc());
@@ -978,7 +978,7 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
     ir::ModifierFlags modfiers = ParseInterfaceMethodModifiers();
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         LogSyntaxError("Identifier expected");
-        return AllocErrorExpression();
+        return AllocBrokenExpression();
     }
 
     char32_t nextCp = Lexer()->Lookahead();

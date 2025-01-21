@@ -17,7 +17,7 @@
 #include "parserStatusContext.h"
 
 #include "varbinder/privateBinding.h"
-#include "ir/errorTypeNode.h"
+#include "ir/brokenTypeNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
@@ -389,7 +389,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
         }
         default: {
             LogSyntaxError("Unexpected token in class property");
-            propName = AllocErrorExpression();
+            propName = AllocBrokenExpression();
         }
     }
 
@@ -712,7 +712,7 @@ ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifie
 
     if (idRequired == ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED) {
         LogSyntaxError("Unexpected token, expected an identifier.");
-        return AllocErrorExpression();
+        return AllocBrokenExpression();
     }
 
     return nullptr;
@@ -819,7 +819,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
 
             util::ErrorRecursionGuard infiniteLoopBlocker(Lexer());
             ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
-            if (property == nullptr) {  // Error processing.
+            if (property->IsBrokenStatement()) {  // Error processing.
                 continue;
             }
 
@@ -902,7 +902,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] ir::TypeNode *typeAnnotation)
 {
     LogSyntaxError("Unexpected token, expected function identifier");
-    return AllocErrorExpression();
+    return AllocBrokenExpression();
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
@@ -1238,7 +1238,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
         }
         LogSyntaxError({"Identifier expected, got '", TokenToString(tokenType), "'."}, tokenStart);
         lexer_->NextToken();
-        return AllocErrorExpression();
+        return AllocBrokenExpression();
     }
 
     auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());
@@ -1406,13 +1406,13 @@ bool ParserImpl::ParseList(std::optional<lexer::TokenType> termToken, lexer::Nex
     return success;
 }
 
-ir::Identifier *ParserImpl::AllocErrorExpression()
+ir::Identifier *ParserImpl::AllocBrokenExpression()
 {
     return AllocNode<ir::Identifier>(Allocator());
 }
 
-ir::TypeNode *ParserImpl::AllocErrorType()
+ir::TypeNode *ParserImpl::AllocBrokenType()
 {
-    return AllocNode<ir::ErrorTypeNode>();
+    return AllocNode<ir::BrokenTypeNode>();
 }
 }  // namespace ark::es2panda::parser

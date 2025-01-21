@@ -280,10 +280,10 @@ bool ETSParser::ValidateForInStatement()
     return false;
 }
 
-ir::DebuggerStatement *ETSParser::ParseDebuggerStatement()
+ir::Statement *ETSParser::ParseDebuggerStatement()
 {
     LogSyntaxError({"Unexpected token: '", lexer::TokenToString(lexer::TokenType::KEYW_DEBUGGER), "'."});
-    return nullptr;
+    return AllocBrokenStatement();
 }
 
 ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags flags)
@@ -291,7 +291,7 @@ ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags fla
     ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
     LogSyntaxError("Nested functions are not allowed");
     ParserImpl::ParseFunctionStatement(flags);  // Try to parse function body but skip result.
-    return nullptr;
+    return AllocBrokenStatement();
 }
 
 ir::Statement *ETSParser::ParseAssertStatement()
@@ -353,8 +353,8 @@ ir::Statement *ETSParser::ParseTryStatement()
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingFlags flags,
-                                                     ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
+ir::Statement *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingFlags flags,
+                                              ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
     modFlags |= ParseClassModifiers();
     return ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
@@ -363,15 +363,14 @@ ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementP
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ETSStructDeclaration *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
-                                                          ir::ClassDefinitionModifiers modifiers,
-                                                          ir::ModifierFlags modFlags)
+ir::Statement *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
+                                               ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
     LogSyntaxError("Illegal start of STRUCT expression", Lexer()->GetToken().Start());
     ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
                               ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
                           modFlags);  // Try to parse struct and drop the result.
-    return nullptr;
+    return AllocBrokenStatement();
 }
 
 }  // namespace ark::es2panda::parser

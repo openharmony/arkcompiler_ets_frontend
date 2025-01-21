@@ -1784,7 +1784,7 @@ checker::Type *ETSAnalyzer::Check(ir::OpaqueTypeNode *expr) const
     return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ErrorTypeNode *expr) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::BrokenTypeNode *expr) const
 {
     return GetETSChecker()->GlobalTypeError();
 }

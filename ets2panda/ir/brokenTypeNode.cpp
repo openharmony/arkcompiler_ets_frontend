@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "errorTypeNode.h"
+#include "brokenTypeNode.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -22,49 +22,49 @@
 
 namespace ark::es2panda::ir {
 
-void ErrorTypeNode::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
-                                      [[maybe_unused]] std::string_view transformationName)
+void BrokenTypeNode::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                       [[maybe_unused]] std::string_view transformationName)
 {
 }
 
-void ErrorTypeNode::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
+void BrokenTypeNode::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
-void ErrorTypeNode::Dump(ir::AstDumper *dumper) const
+void BrokenTypeNode::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ErrorType"}});
 }
 
-void ErrorTypeNode::Dump(ir::SrcDumper *dumper) const
+void BrokenTypeNode::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("*ERROR_TYPE*");
 }
 
-void ErrorTypeNode::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void BrokenTypeNode::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
     pg->GetAstCompiler()->Compile(this);
 }
 
-void ErrorTypeNode::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void BrokenTypeNode::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
     etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ErrorTypeNode::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *BrokenTypeNode::Check([[maybe_unused]] checker::TSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ErrorTypeNode::GetType([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *BrokenTypeNode::GetType([[maybe_unused]] checker::TSChecker *checker)
 {
     return nullptr;
 }
 
-checker::Type *ErrorTypeNode::GetType([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *BrokenTypeNode::GetType([[maybe_unused]] checker::ETSChecker *checker)
 {
     return checker->GlobalTypeError();
 }
 
-checker::VerifiedType ErrorTypeNode::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::VerifiedType BrokenTypeNode::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
 }
