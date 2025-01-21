@@ -430,3 +430,4 @@ verifier_acc_type.sts
 verifier_acc_type1.stsvisible_signatures.sts
 verifier_acc_type1.sts
 visible_signatures.sts
+nestedNameSpaceWithStaticField.sts

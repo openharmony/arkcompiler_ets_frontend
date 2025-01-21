@@ -317,6 +317,18 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode)
     return blockStmt;
 }
 
+ir::Expression *ETSParser::CreateFormattedExpression(std::string_view const sourceCode,
+                                                     ArenaVector<ir::Expression *> &args)
+{
+    std::vector<ir::AstNode *> insertingNodes {};
+    insertingNodes.reserve(args.size());
+    for (auto it : args) {
+        ProcessFormattedArg(insertingNodes, it);
+    }
+
+    return CreateFormattedExpression(sourceCode, insertingNodes);
+}
+
 ir::Statement *ETSParser::CreateFormattedStatement(std::string_view const sourceCode,
                                                    std::vector<ir::AstNode *> &insertingNodes)
 {

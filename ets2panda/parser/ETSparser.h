@@ -125,6 +125,8 @@ public:
         return CreateFormattedExpression(sourceCode, insertingNodes);
     }
 
+    ir::Expression *CreateFormattedExpression(std::string_view const sourceCode, ArenaVector<ir::Expression *> &args);
+
     ir::Statement *CreateFormattedStatement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes);
 
     template <typename... Args>

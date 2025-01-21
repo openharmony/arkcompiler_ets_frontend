@@ -134,18 +134,89 @@ static std::string GenFormatForExpression(ir::Expression *expr, size_t ix1, size
     return res;
 }
 
-static std::string GenerateStringForLoweredAssignment(lexer::TokenType opEqual, ir::Expression *expr)
-{
-    std::string leftHand = GenFormatForExpression(expr, 5, 6);
-    std::string rightHand = GenFormatForExpression(expr, 7, 8);
-
-    return leftHand + " = (" + rightHand + ' ' + std::string {lexer::TokenToString(CombinedOpToOp(opEqual))} +
-           " (@@E9)) as @@T10";
-}
-
 static ir::Identifier *GetClone(ArenaAllocator *allocator, ir::Identifier *node)
 {
     return node == nullptr ? nullptr : node->Clone(allocator, nullptr);
+}
+
+static std::string GetFormatPlaceholder(const ir::Expression *expr, const size_t counter)
+{
+    if (expr->IsIdentifier()) {
+        return "@@I" + std::to_string(counter);
+    }
+
+    return "@@E" + std::to_string(counter);
+}
+
+static std::string UpdateStatementToAccessPropertyOrElement(const ir::MemberExpression *expr, std::string statement)
+{
+    if (auto const kind = expr->Kind();
+        kind != ir::MemberExpressionKind::NONE && kind != ir::MemberExpressionKind::ELEMENT_ACCESS) {
+        statement = "." + statement;
+    } else if (kind == ir::MemberExpressionKind::ELEMENT_ACCESS) {
+        statement = "[" + statement + "]";
+    }
+
+    return statement;
+}
+
+static std::tuple<std::string, ArenaVector<ir::Expression *>> GenerateNestedMemberAccess(
+    ir::MemberExpression *expr, ArenaAllocator *const allocator, size_t counter = 1)
+{
+    // Generate a formatString and a vector of expressions(same order as the format string)
+    // The formatString will look like this: "@@I1K@@I2...K@@IN"
+    // Where K is either "." or "["
+    // If "[", then after the number there will be a "]".
+    // Where N is the number of nested member accesses (N == newAssignmentExpressions.size())
+    auto member = expr->Object();
+    ArenaVector<ir::Expression *> newAssignmentExpressions(allocator->Adapter());
+    newAssignmentExpressions.push_back(expr->Property());
+
+    while (member->IsMemberExpression()) {
+        newAssignmentExpressions.push_back(member->AsMemberExpression()->Property());
+        member = member->AsMemberExpression()->Object();
+    }
+
+    newAssignmentExpressions.push_back(member);
+    // This is done because the vector is built from the innermost member access to the outermost,
+    // but the format string is built from the outermost to the innermost
+    std::reverse(newAssignmentExpressions.begin(), newAssignmentExpressions.end());
+
+    // It is outside the loop to avoid calling `UpdateStringToAccessPropertyOrElement` for the first element
+    std::string newAssignmentStatements = GetFormatPlaceholder(newAssignmentExpressions[0], counter);
+    newAssignmentExpressions[0] = newAssignmentExpressions[0]->Clone(allocator, nullptr)->AsExpression();
+
+    for (size_t i = 1; i < newAssignmentExpressions.size(); i++) {
+        const std::string statement = GetFormatPlaceholder(newAssignmentExpressions[i], i + counter);
+        newAssignmentStatements += UpdateStatementToAccessPropertyOrElement(
+            newAssignmentExpressions[i]->Parent()->AsMemberExpression(), statement);
+        newAssignmentExpressions[i] = newAssignmentExpressions[i]->Clone(allocator, nullptr)->AsExpression();
+    }
+
+    return {newAssignmentStatements, newAssignmentExpressions};
+}
+
+static ir::Expression *GenerateStringForLoweredAssignment(
+    const lexer::TokenType opEqual, ir::MemberExpression *expr, ArenaAllocator *const allocator,
+    parser::ETSParser *parser, const std::array<ir::Expression *, 2> additionalAssignmentExpressions)
+{
+    // Generated a formatString for the new lowered assignment expression
+    // The formatString will look like this: "A = (A `operation` B) as T"
+    // Where A is a member access
+    // `operation` is the operation of the assignment like: "+", "-", "*", "/", etc.,
+    // B is the right hand side of the assignment
+    // T is the type of the left hand side of the assignment
+    size_t counter = 1;
+    auto [retStr, retVec] = GenerateNestedMemberAccess(expr, allocator, counter);
+    counter += retVec.size();
+    auto result = GenerateNestedMemberAccess(expr, allocator, counter);
+    counter += std::get<1>(result).size();
+    retStr += " = ( " + std::get<0>(result) + ' ' + std::string {lexer::TokenToString(CombinedOpToOp(opEqual))} +
+              " (@@E" + std::to_string(counter) + ")) as @@T" + std::to_string(counter + 1);
+    retVec.insert(retVec.end(), std::get<1>(result).begin(), std::get<1>(result).end());
+    retVec.push_back(additionalAssignmentExpressions[0]);
+    retVec.push_back(additionalAssignmentExpressions[1]);
+    return parser->CreateFormattedExpression(retStr, retVec);
 }
 
 static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir::AssignmentExpression *assignment)
@@ -160,45 +231,24 @@ static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir:
     auto *const left = assignment->Left();
     auto *const right = assignment->Right();
 
-    std::string newAssignmentStatements {};
-
-    ir::Identifier *ident1;
-    ir::Identifier *ident2 = nullptr;
-    ir::Expression *object = nullptr;
-    ir::Expression *property = nullptr;
+    auto *exprType = CreateProxyTypeNode(checker, left);
+    ir::Expression *retVal = nullptr;
 
     // Create temporary variable(s) if left hand of assignment is not defined by simple identifier[s]
     if (left->IsIdentifier()) {
-        ident1 = left->AsIdentifier();
+        const std::string formatString =
+            "@@I1 = (@@I2 " + std::string(lexer::TokenToString(CombinedOpToOp(opEqual))) + " (@@E3)) as @@T4";
+        retVal = parser->CreateFormattedExpression(formatString, GetClone(allocator, left->AsIdentifier()),
+                                                   GetClone(allocator, left->AsIdentifier()), right, exprType);
     } else if (left->IsMemberExpression()) {
-        auto *const memberExpression = left->AsMemberExpression();
-
-        if (object = memberExpression->Object(); object->IsIdentifier()) {
-            ident1 = object->AsIdentifier();
-        } else {
-            ident1 = Gensym(allocator);
-            newAssignmentStatements = "const @@I1 = (@@E2); ";
-        }
-
-        if (property = memberExpression->Property(); property->IsIdentifier()) {
-            ident2 = property->AsIdentifier();
-        } else {
-            ident2 = Gensym(allocator);
-            newAssignmentStatements += "const @@I3 = (@@E4); ";
-        }
+        // Generate ArkTS code string for new lowered assignment expression:
+        retVal = GenerateStringForLoweredAssignment(opEqual, left->AsMemberExpression(), allocator, parser,
+                                                    {right, exprType});
     } else {
         UNREACHABLE();
     }
 
-    auto *exprType = CreateProxyTypeNode(checker, left);
-
-    // Generate ArkTS code string for new lowered assignment expression:
-    newAssignmentStatements += GenerateStringForLoweredAssignment(opEqual, left);
-
-    // Parse ArkTS code string and create corresponding AST node(s)
-    return parser->CreateFormattedExpression(newAssignmentStatements, ident1, object, ident2, property,
-                                             GetClone(allocator, ident1), GetClone(allocator, ident2),
-                                             GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
+    return retVal;
 }
 
 ir::AstNode *HandleOpAssignment(public_lib::Context *ctx, ir::AssignmentExpression *assignment)
