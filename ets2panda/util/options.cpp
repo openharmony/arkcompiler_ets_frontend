@@ -288,7 +288,7 @@ void Options::InitCompilerOptions()
 void Options::InitializeWarnings()
 {
     std::array<bool, ETSWarnings::COUNT> warningSet {};
-    ASSERT(ETSWarnings::LAST < ETSWarnings::COUNT);
+    ES2PANDA_ASSERT(ETSWarnings::LAST < ETSWarnings::COUNT);
 
     const auto processWarningList = [&warningSet](const auto &list, bool v) {
         static const std::map<std::string_view, std::pair<size_t, size_t>> WARNING_GROUPS {
@@ -305,7 +305,7 @@ void Options::InitializeWarnings()
                 setWarningRange(first, last);
                 continue;
             }
-            ASSERT(ets_warnings::FromString(warningOrGroup) != ETSWarnings::INVALID);
+            ES2PANDA_ASSERT(ets_warnings::FromString(warningOrGroup) != ETSWarnings::INVALID);
             warningSet[ets_warnings::FromString(warningOrGroup)] = v;
         }
     };

@@ -125,7 +125,7 @@ ir::Expression *TypedParser::ParseExpression(ExpressionParseFlags flags)
 
 ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFlags flags)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_TYPE: {
@@ -158,7 +158,7 @@ ir::Statement *TypedParser::ParsePotentialExpressionStatement(StatementParsingFl
 
 ir::TSTypeAssertion *TypedParser::ParseTypeAssertion()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat '<'
 
@@ -190,7 +190,7 @@ ir::Statement *TypedParser::ParseModuleDeclaration([[maybe_unused]] StatementPar
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_NAMESPACE) {
         Lexer()->NextToken();
     } else {
-        ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_MODULE);
+        ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_MODULE);
         Lexer()->NextToken();
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
             return ParseAmbientExternalModuleDeclaration(startLoc);
@@ -204,7 +204,7 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
 {
     ArrowFunctionContext arrowFunctionContext(this, false);
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
 
     auto typeParamDeclOptions = TypeAnnotationParsingOptions::NO_OPTS;
@@ -247,7 +247,7 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
         isGlobal = true;
         name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     } else {
-        ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
+        ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
 
         if (!InAmbientContext()) {
             LogError(diagnostic::ONLY_AMBIENT_MODULES_QUOTED_NAMES);
@@ -325,7 +325,7 @@ ir::TSModuleBlock *TypedParser::ParseTsModuleBlock()
 
 void TypedParser::CheckDeclare()
 {
-    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE);
 
     if (InAmbientContext()) {
         LogError(diagnostic::DECALRE_IN_AMBIENT_CONTEXT);
@@ -440,7 +440,7 @@ ir::TSTypeParameterDeclaration *TypedParser::ParseFunctionTypeParameters()
 
 ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE);
     GetContext().Status() |= ParserStatus::ALLOW_THIS_TYPE;
     lexer::SourcePosition interfaceStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat interface keyword
@@ -667,7 +667,7 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Statement *TypedParser::ParseEnumDeclaration(bool isConst, [[maybe_unused]] bool isStatic)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM);
     lexer::SourcePosition enumStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat enum keyword
     auto *key = ExpectIdentifier(true);
@@ -767,7 +767,7 @@ ir::AstNode *TypedParser::ParseTypeParameterDeclarationImpl(TypeAnnotationParsin
 
 ir::TSTypeParameterDeclaration *TypedParser::ParseTypeParameterDeclaration(TypeAnnotationParsingOptions *options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
 
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat '<'
@@ -988,7 +988,7 @@ ir::AstNode *TypedParser::ParseProperty(const ArenaVector<ir::AstNode *> &proper
         }
     }
 
-    ASSERT(property != nullptr);
+    ES2PANDA_ASSERT(property != nullptr);
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON &&
         Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
         ((Lexer()->GetToken().Flags() & lexer::TokenFlags::NEW_LINE) == 0) &&
@@ -1280,7 +1280,7 @@ ir::AstNode *TypedParser::ParseTypeParameterInstantiationImpl(TypeAnnotationPars
 
 ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(TypeAnnotationParsingOptions *options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
 
     const bool inPotentialNewArray = (*options & TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY) != 0;
     *options &= ~TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY;

@@ -31,7 +31,7 @@ static void PrintUsage()
 
 void FilterArgs(Span<const char *const> args, int &newArgc, const char **&newArgv)
 {
-    ASSERT(args.size() > 1);
+    ES2PANDA_ASSERT(args.size() > 1);
     std::vector<const char *> filteredArgs;
     filteredArgs.push_back(args[0]);
     for (size_t i = 1; i < args.size(); ++i) {

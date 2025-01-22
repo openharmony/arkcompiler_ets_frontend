@@ -81,7 +81,7 @@ void ClassBuilder::BuildFields(ArenaVector<ir::AstNode *> &classBody)
         const char *name = utf::Mutf8AsCString(pf.GetStringData(fda.GetNameId()).data);
 
         auto *typeNode = helpers::PandaTypeToTypeNode(pf, fda, checker_);
-        ASSERT(typeNode);
+        ES2PANDA_ASSERT(typeNode);
 
         auto *field = helpers::CreateClassProperty(checker_, name, typeNode, helpers::GetModifierFlags(fda, true));
         classBody.push_back(field);

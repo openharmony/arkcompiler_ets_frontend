@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,7 +44,7 @@ struct FileDebugInfo final {
                            std::string_view module)
         : pf(std::move(pandaFile)), globalClassAcc(*pf, classId), moduleName(module)
     {
-        ASSERT(pf);
+        ES2PANDA_ASSERT(pf);
     }
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)

@@ -51,7 +51,7 @@ void CatchClause::Dump(ir::AstDumper *dumper) const
 
 void CatchClause::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(body_ != nullptr);
+    ES2PANDA_ASSERT(body_ != nullptr);
     dumper->Add("(");
     if (param_ != nullptr) {
         param_->Dump(dumper);

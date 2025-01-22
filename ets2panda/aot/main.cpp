@@ -29,7 +29,6 @@
 #include <iostream>
 #include <memory>
 #include <optional>
-#include <csignal>
 namespace ark::es2panda::aot {
 using mem::MemConfig;
 
@@ -128,21 +127,6 @@ static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<st
     return {std::move(res)};
 }
 
-static void InitializeSignalHandlers()
-{
-    auto sigHandler = []([[maybe_unused]] int sig) {
-        if (g_diagnosticEngine != nullptr) {
-            g_diagnosticEngine->FlushDiagnostic();
-        }
-        std::cerr << "PLEASE submit a bug report to https://gitee.com/openharmony/arkcompiler_ets_frontend/issues";
-        std::cerr << std::endl;
-        // NOTE(schernykh): it's print only ark::PrintStack. Need to investigate how to dump full stack.
-        ark::PrintStack(std::cerr);
-        std::abort();  // CC-OFF(G.STD.16-CPP) fatal error
-    };
-    std::signal(SIGSEGV, sigHandler);
-}
-
 static int Run(Span<const char *const> args)
 {
     auto diagnosticEngine = util::DiagnosticEngine();
@@ -154,7 +138,7 @@ static int Run(Span<const char *const> args)
     ark::Logger::ComponentMask mask {};
     mask.set(ark::Logger::Component::ES2PANDA);
     ark::Logger::InitializeStdLogging(options->LogLevel(), mask);
-    InitializeSignalHandlers();
+    util::DiagnosticEngine::InitializeSignalHandlers();
 
     auto pluginsOpt = InitializePlugins(options->GetPlugins(), diagnosticEngine);
     if (!pluginsOpt.has_value()) {

@@ -44,7 +44,7 @@ void ETSUnionType::ToDebugInfoType(std::stringstream &ss) const
 ETSUnionType::ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituentTypes)
     : Type(TypeFlag::ETS_UNION), constituentTypes_(std::move(constituentTypes))
 {
-    ASSERT(constituentTypes_.size() > 1);
+    ES2PANDA_ASSERT(constituentTypes_.size() > 1);
     assemblerLub_ = ComputeAssemblerLUB(checker, this);
 }
 
@@ -78,7 +78,7 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
             return checker->GlobalTypeError();
         }
         // NOTE(vpukhov): #19701 void refactoring
-        ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
+        ES2PANDA_ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
         t = t->IsETSVoidType() ? checker->GlobalETSUndefinedType() : t;
 
         if (lub == nullptr || lub->IsETSUndefinedType()) {
@@ -232,8 +232,8 @@ static Type *LargestNumeric(Type *t1, Type *t2)
 
     auto v1 = t1->TypeFlags() & ETS_NORMALIZABLE_NUMERIC;
     auto v2 = t2->TypeFlags() & ETS_NORMALIZABLE_NUMERIC;
-    ASSERT(helpers::math::IsPowerOfTwo(v1));
-    ASSERT(helpers::math::IsPowerOfTwo(v2));
+    ES2PANDA_ASSERT(helpers::math::IsPowerOfTwo(v1));
+    ES2PANDA_ASSERT(helpers::math::IsPowerOfTwo(v2));
     return v1 > v2 ? t1 : t2;
 }
 
@@ -582,7 +582,7 @@ std::pair<checker::Type *, checker::Type *> ETSUnionType::GetComplimentaryType(E
 
 Type *ETSUnionType::FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const
 {
-    ASSERT(node);
+    ES2PANDA_ASSERT(node);
     bool nodeWasSet = false;
     if (relation->GetNode() == nullptr) {
         nodeWasSet = true;
@@ -614,7 +614,7 @@ Type *ETSUnionType::FindTypeIsCastableToThis(ir::Expression *node, TypeRelation 
 
 Type *ETSUnionType::FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const
 {
-    ASSERT(node);
+    ES2PANDA_ASSERT(node);
     bool nodeWasSet = false;
     if (relation->GetNode() == nullptr) {
         nodeWasSet = true;

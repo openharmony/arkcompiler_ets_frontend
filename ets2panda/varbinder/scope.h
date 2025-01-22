@@ -97,13 +97,13 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part */                                                      \
     className *As##className()                                                               \
     {                                                                                        \
-        ASSERT(Is##className());                                                             \
+        ES2PANDA_ASSERT(Is##className());                                                    \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/  \
         return reinterpret_cast<className *>(this); /* CC-OFF(G.PRE.02) name part */         \
     }                                                                                        \
     const className *As##className() const                                                   \
     {                                                                                        \
-        ASSERT(Is##className());                                                             \
+        ES2PANDA_ASSERT(Is##className());                                                    \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */ \
         return reinterpret_cast<const className *>(this);                                    \
     }
@@ -122,25 +122,25 @@ public:
 
     FunctionScope *AsFunctionVariableScope()
     {
-        ASSERT(IsFunctionVariableScope());
+        ES2PANDA_ASSERT(IsFunctionVariableScope());
         return reinterpret_cast<FunctionScope *>(this);
     }
 
     const FunctionScope *AsFunctionVariableScope() const
     {
-        ASSERT(IsFunctionVariableScope());
+        ES2PANDA_ASSERT(IsFunctionVariableScope());
         return reinterpret_cast<const FunctionScope *>(this);
     }
 
     VariableScope *AsVariableScope()
     {
-        ASSERT(IsVariableScope());
+        ES2PANDA_ASSERT(IsVariableScope());
         return reinterpret_cast<VariableScope *>(this);
     }
 
     const VariableScope *AsVariableScope() const
     {
-        ASSERT(IsVariableScope());
+        ES2PANDA_ASSERT(IsVariableScope());
         return reinterpret_cast<const VariableScope *>(this);
     }
 
@@ -516,7 +516,7 @@ public:
 
     void AssignParamScope(T *paramScope)
     {
-        ASSERT(this->Parent() == paramScope);
+        ES2PANDA_ASSERT(this->Parent() == paramScope);
         paramScope_ = paramScope;
     }
 

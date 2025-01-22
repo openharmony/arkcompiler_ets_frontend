@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,7 +37,7 @@ void PathResolver::FindImportedFunctions(ArenaVector<EntityInfo> &overloadSet, s
         return;
     }
 
-    ASSERT(!optOverloadSet->second.empty());
+    ES2PANDA_ASSERT(!optOverloadSet->second.empty());
     for (const auto &[path, entity] : optOverloadSet->second) {
         // `import {A as B} from "C"`
         FindExportedFunctions(overloadSet, path, entity);
@@ -57,7 +57,7 @@ void PathResolver::FindExportedFunctions(ArenaVector<EntityInfo> &overloadSet, s
     const auto &exports = table->GetExports();
     const auto optOverloadSet = exports.find(entityName);
     if (optOverloadSet != exports.end()) {
-        ASSERT(!optOverloadSet->second.empty());
+        ES2PANDA_ASSERT(!optOverloadSet->second.empty());
         for (const auto &[path, entity] : optOverloadSet->second) {
             // `export {A as B} from "C"`
             if (path.empty()) {
@@ -71,11 +71,11 @@ void PathResolver::FindExportedFunctions(ArenaVector<EntityInfo> &overloadSet, s
     // Still need to traverse re-export-all statements to fill the complete overload set.
     const auto optReExportAll = exports.find(STAR_IMPORT);
     if (optReExportAll != exports.end()) {
-        ASSERT(!optReExportAll->second.empty());
+        ES2PANDA_ASSERT(!optReExportAll->second.empty());
         for (const auto &[path, entity] : optReExportAll->second) {
             // export * from "C"
             (void)entity;
-            ASSERT(entity == STAR_IMPORT);
+            ES2PANDA_ASSERT(entity == STAR_IMPORT);
 
             FindExportedFunctions(overloadSet, path, entityName);
         }
@@ -96,7 +96,7 @@ std::string_view PathResolver::FindNamedImportAll(std::string_view filePath, std
         return {};
     }
 
-    ASSERT(!optEntity->second.empty());
+    ES2PANDA_ASSERT(!optEntity->second.empty());
     for (const auto &[path, entity] : optEntity->second) {
         if (entity == STAR_IMPORT) {
             return path;
@@ -121,7 +121,7 @@ std::optional<EntityInfo> PathResolver::FindImportedEntity(std::string_view file
         return {};
     }
 
-    ASSERT(!optEntity->second.empty());
+    ES2PANDA_ASSERT(!optEntity->second.empty());
     if (optEntity->second.size() > 1) {
         // Have more than one imports for the given name - it could not be a variable.
         return {};
@@ -145,7 +145,7 @@ std::optional<EntityInfo> PathResolver::FindExportedEntity(std::string_view file
     const auto &exports = table->GetExports();
     const auto optOverloadSet = exports.find(entityName);
     if (optOverloadSet != exports.end()) {
-        ASSERT(!optOverloadSet->second.empty());
+        ES2PANDA_ASSERT(!optOverloadSet->second.empty());
         if (optOverloadSet->second.size() > 1) {
             // Have more than one imports for the given name, but we search for the single one - variable or class.
             return {};
@@ -160,11 +160,11 @@ std::optional<EntityInfo> PathResolver::FindExportedEntity(std::string_view file
 
     const auto optReExportAll = exports.find(STAR_IMPORT);
     if (optReExportAll != exports.end()) {
-        ASSERT(!optReExportAll->second.empty());
+        ES2PANDA_ASSERT(!optReExportAll->second.empty());
         for (const auto &[path, entity] : optReExportAll->second) {
             // export * from "C"
             (void)entity;
-            ASSERT(entity == STAR_IMPORT);
+            ES2PANDA_ASSERT(entity == STAR_IMPORT);
 
             auto optResult = FindExportedEntity(path, entityName);
             if (optResult) {

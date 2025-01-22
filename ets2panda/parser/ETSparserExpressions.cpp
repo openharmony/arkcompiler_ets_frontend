@@ -376,7 +376,7 @@ static bool IsValidTokenTypeOfArrowFunctionStart(lexer::TokenType tokenType)
 
 static bool EatArrowFunctionParams(lexer::Lexer *lexer)
 {
-    ASSERT(lexer->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(lexer->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer->NextToken();
     auto tokenType = lexer->GetToken().Type();
 
@@ -457,7 +457,7 @@ ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseCoverParenthesizedExpressionAndArrowParameterList(ExpressionParseFlags flags)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     if (IsArrowFunctionExpressionStart()) {
         return ParseArrowFunctionExpression();
     }
@@ -562,7 +562,7 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
 
 ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExpr)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS);
     Lexer()->NextToken();
 
     TypeAnnotationParsingOptions options =
@@ -615,7 +615,7 @@ ir::Expression *ETSParser::ParseNewExpression()
         TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE |
         TypeAnnotationParsingOptions::ALLOW_WILDCARD | TypeAnnotationParsingOptions::POTENTIAL_NEW_ARRAY;
     auto typeReference = ParseTypeAnnotation(&options);
-    ASSERT(typeReference != nullptr);
+    ES2PANDA_ASSERT(typeReference != nullptr);
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
         Lexer()->NextToken();

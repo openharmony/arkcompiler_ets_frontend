@@ -181,7 +181,7 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::DebuggerStatement *st) co
 
 checker::Type *ETSAnalyzer::Check(ir::ForInStatement *st) const
 {
-    ASSERT(GetETSChecker()->IsAnyError());
+    ES2PANDA_ASSERT(GetETSChecker()->IsAnyError());
     return ReturnTypeForStatement(st);
 }
 
@@ -338,7 +338,7 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSStringKeyword *node) co
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSThisType *node) const
 {
-    ASSERT(GetETSChecker()->IsAnyError());
+    ES2PANDA_ASSERT(GetETSChecker()->IsAnyError());
     return GetChecker()->AsETSChecker()->InvalidateType(node);
 }
 

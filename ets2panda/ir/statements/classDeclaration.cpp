@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,7 +57,7 @@ void ClassDeclaration::Dump(ir::SrcDumper *dumper) const
         def_->Dump(dumper);
     }
     // NOTE(nsizov): support decorators when supported in ArkTS
-    ASSERT(decorators_.empty());
+    ES2PANDA_ASSERT(decorators_.empty());
 }
 
 void ClassDeclaration::Compile(compiler::PandaGen *pg) const

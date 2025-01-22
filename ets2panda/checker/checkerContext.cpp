@@ -109,7 +109,7 @@ void CheckerContext::RemoveSmartCasts(SmartCastArray const &otherSmartCasts) noe
 //  and no smart cast change is required.
 checker::Type *CheckerContext::CombineTypes(checker::Type *const typeOne, checker::Type *const typeTwo) const noexcept
 {
-    ASSERT(typeOne != nullptr && typeTwo != nullptr);
+    ES2PANDA_ASSERT(typeOne != nullptr && typeTwo != nullptr);
     auto *const checker = parent_->AsETSChecker();
 
     if (checker->Relation()->IsIdenticalTo(typeOne, typeTwo)) {
@@ -271,7 +271,7 @@ void CheckerContext::CheckIdentifierSmartCastCondition(ir::Identifier const *con
     }
 
     auto const *const variable = identifier->Variable();
-    ASSERT(variable != nullptr);
+    ES2PANDA_ASSERT(variable != nullptr);
 
     //  Smart cast for extended conditional check can be applied only to the variables of reference types.
     if (auto const *const variableType = variable->TsType(); !variableType->IsETSReferenceType()) {
@@ -282,7 +282,7 @@ void CheckerContext::CheckIdentifierSmartCastCondition(ir::Identifier const *con
         return;
     }
 
-    ASSERT(testCondition_.variable == nullptr);
+    ES2PANDA_ASSERT(testCondition_.variable == nullptr);
     if (identifier->TsType()->PossiblyETSNullish()) {
         testCondition_ = {variable, parent_->AsETSChecker()->GlobalETSNullType(), true, false};
     }
@@ -315,7 +315,7 @@ void CheckerContext::CheckBinarySmartCastCondition(ir::BinaryExpression *const b
     }
 
     if (auto const operatorType = binaryExpression->OperatorType(); operatorType == lexer::TokenType::KEYW_INSTANCEOF) {
-        ASSERT(testCondition_.variable == nullptr);
+        ES2PANDA_ASSERT(testCondition_.variable == nullptr);
         if (binaryExpression->Left()->IsIdentifier()) {
             testCondition_ = {binaryExpression->Left()->AsIdentifier()->Variable(),
                               binaryExpression->Right()->TsType()};
@@ -324,7 +324,7 @@ void CheckerContext::CheckBinarySmartCastCondition(ir::BinaryExpression *const b
                operatorType == lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL ||
                operatorType == lexer::TokenType::PUNCTUATOR_EQUAL ||
                operatorType == lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
-        ASSERT(testCondition_.variable == nullptr);
+        ES2PANDA_ASSERT(testCondition_.variable == nullptr);
         CheckSmartCastEqualityCondition(binaryExpression);
     }
 }
@@ -342,7 +342,7 @@ void CheckerContext::CheckSmartCastEqualityCondition(ir::BinaryExpression *const
     // extracted just to avoid extra nested level
     auto const getTestedType = [&variable, &testedType, &strict](ir::Identifier const *const identifier,
                                                                  ir::Expression *const expression) -> void {
-        ASSERT(identifier != nullptr && expression != nullptr);
+        ES2PANDA_ASSERT(identifier != nullptr && expression != nullptr);
         variable = identifier->Variable();
         if (expression->IsLiteral()) {
             testedType = expression->TsType();
@@ -400,16 +400,16 @@ checker::Type *CheckerContext::GetSmartCast(varbinder::Variable const *const var
 void CheckerContext::OnBreakStatement(ir::BreakStatement const *breakStatement)
 {
     if (breakStatement->Target() == nullptr) {
-        ASSERT(parent_->IsAnyError());
+        ES2PANDA_ASSERT(parent_->IsAnyError());
         return;
     }
 
     ir::Statement const *targetStatement = breakStatement->Target()->AsStatement();
-    ASSERT(targetStatement != nullptr);
+    ES2PANDA_ASSERT(targetStatement != nullptr);
     if (targetStatement->IsLabelledStatement()) {
         targetStatement = targetStatement->AsLabelledStatement()->Body();
     }
-    ASSERT(targetStatement != nullptr);
+    ES2PANDA_ASSERT(targetStatement != nullptr);
 
     auto const inInnerScope = [targetStatement](varbinder::Scope const *scope, ir::AstNode const *parent) -> bool {
         do {
@@ -450,7 +450,7 @@ void CheckerContext::AddBreakSmartCasts(ir::Statement const *targetStatement, Sm
 
 void CheckerContext::CombineBreakSmartCasts(ir::Statement const *targetStatement)
 {
-    ASSERT(smartCasts_.empty());
+    ES2PANDA_ASSERT(smartCasts_.empty());
 
     if (!breakSmartCasts_.empty()) {
         bool firstCase = true;

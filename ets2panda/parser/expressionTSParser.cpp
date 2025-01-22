@@ -451,7 +451,7 @@ ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Express
             if (identRef == nullptr) {
                 return nullptr;
             }
-            ASSERT(identRef->IsIdentifier());
+            ES2PANDA_ASSERT(identRef->IsIdentifier());
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
                 ThrowSyntaxError("Unexpected token, expected '=>'");
@@ -631,7 +631,7 @@ ir::Expression *TSParser::ParseArrowFunctionNoParameter(lexer::SourcePosition st
 ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
     [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;

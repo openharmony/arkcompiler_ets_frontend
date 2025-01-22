@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -346,7 +346,7 @@ IRNode *PandaGen::AllocMov(const ir::AstNode *node, const VReg vd, const VReg vs
 
 IRNode *PandaGen::AllocMov(const ir::AstNode *node, OutVReg vd, const VReg vs)
 {
-    ASSERT(vd.type == OperandType::ANY);
+    ES2PANDA_ASSERT(vd.type == OperandType::ANY);
     return Allocator()->New<MovDyn>(node, *vd.reg, vs);
 }
 
@@ -455,7 +455,7 @@ void PandaGen::LoadVar(const ir::Identifier *node, const varbinder::ConstScopeFi
         return;
     }
 
-    ASSERT(var->IsLocalVariable());
+    ES2PANDA_ASSERT(var->IsLocalVariable());
     LoadAccFromLexEnv(node, result);
 }
 
@@ -482,7 +482,7 @@ void PandaGen::StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFind
         return;
     }
 
-    ASSERT(var->IsLocalVariable());
+    ES2PANDA_ASSERT(var->IsLocalVariable());
     StoreAccToLexEnv(node, result, isDeclaration);
 }
 
@@ -493,7 +493,7 @@ void PandaGen::LoadAccFromArgs(const ir::AstNode *node)
     }
 
     auto res = Scope()->Find(varbinder::VarBinder::FUNCTION_ARGUMENTS);
-    ASSERT(res.scope);
+    ES2PANDA_ASSERT(res.scope);
 
     GetUnmappedArgs(node);
     StoreAccToLexEnv(node, res, true);
@@ -511,7 +511,7 @@ void PandaGen::LoadObjProperty(const ir::AstNode *node, const Operand &prop)
         return;
     }
 
-    ASSERT(std::holds_alternative<util::StringView>(prop));
+    ES2PANDA_ASSERT(std::holds_alternative<util::StringView>(prop));
     LoadObjByName(node, std::get<util::StringView>(prop));
 }
 
@@ -527,7 +527,7 @@ void PandaGen::StoreObjProperty(const ir::AstNode *node, VReg obj, const Operand
         return;
     }
 
-    ASSERT(std::holds_alternative<util::StringView>(prop));
+    ES2PANDA_ASSERT(std::holds_alternative<util::StringView>(prop));
     StoreObjByName(node, obj, std::get<util::StringView>(prop));
 }
 
@@ -543,7 +543,7 @@ void PandaGen::StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand
         return;
     }
 
-    ASSERT(std::holds_alternative<util::StringView>(prop));
+    ES2PANDA_ASSERT(std::holds_alternative<util::StringView>(prop));
     StOwnByName(node, obj, std::get<util::StringView>(prop));
 }
 
@@ -1273,13 +1273,13 @@ void PandaGen::CreateEmptyObject(const ir::AstNode *node)
 
 void PandaGen::CreateObjectWithBuffer(const ir::AstNode *node, uint32_t idx)
 {
-    ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
+    ES2PANDA_ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
     Sa().Emit<EcmaCreateobjectwithbuffer>(node, util::Helpers::ToStringView(Allocator(), idx));
 }
 
 void PandaGen::CreateObjectHavingMethod(const ir::AstNode *node, uint32_t idx)
 {
-    ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
+    ES2PANDA_ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
     LoadAccumulator(node, LexEnv());
     Sa().Emit<EcmaCreateobjecthavingmethod>(node, util::Helpers::ToStringView(Allocator(), idx));
 }
@@ -1309,7 +1309,7 @@ void PandaGen::CreateEmptyArray(const ir::AstNode *node)
 
 void PandaGen::CreateArrayWithBuffer(const ir::AstNode *node, uint32_t idx)
 {
-    ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
+    ES2PANDA_ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
     Sa().Emit<EcmaCreatearraywithbuffer>(node, util::Helpers::ToStringView(Allocator(), idx));
 }
 
@@ -1456,7 +1456,7 @@ void PandaGen::GetAsyncIterator(const ir::AstNode *node)
 
 void PandaGen::CreateObjectWithExcludedKeys(const ir::AstNode *node, VReg obj, VReg argStart, size_t argCount)
 {
-    ASSERT(argStart.GetIndex() == obj.GetIndex() - 1);
+    ES2PANDA_ASSERT(argStart.GetIndex() == obj.GetIndex() - 1);
     if (argCount == 0) {  // Do not emit undefined register
         argStart = obj;
     }
@@ -1573,7 +1573,7 @@ void PandaGen::StoreSuperProperty(const ir::AstNode *node, VReg obj, const Opera
         return;
     }
 
-    ASSERT(std::holds_alternative<VReg>(prop));
+    ES2PANDA_ASSERT(std::holds_alternative<VReg>(prop));
     StSuperByValue(node, obj, std::get<VReg>(prop));
 }
 
@@ -1584,7 +1584,7 @@ void PandaGen::LoadSuperProperty(const ir::AstNode *node, const Operand &prop)
         return;
     }
 
-    ASSERT(std::holds_alternative<VReg>(prop));
+    ES2PANDA_ASSERT(std::holds_alternative<VReg>(prop));
     LdSuperByValue(node, std::get<VReg>(prop));
 }
 
@@ -1704,7 +1704,7 @@ Operand PandaGen::ToOwnPropertyKey(const ir::Expression *prop, bool isComputed)
 {
     Operand op = ToNamedPropertyKey(prop, isComputed);
     if (std::holds_alternative<util::StringView>(op)) {
-        ASSERT(std::holds_alternative<util::StringView>(op) || std::holds_alternative<int64_t>(op));
+        ES2PANDA_ASSERT(std::holds_alternative<util::StringView>(op) || std::holds_alternative<int64_t>(op));
         return op;
     }
 

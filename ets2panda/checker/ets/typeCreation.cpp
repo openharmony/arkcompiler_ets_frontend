@@ -216,7 +216,7 @@ EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration co
                                      Context().ContainingSignature());
 
     varbinder::Variable *enumVar = enumDecl->Key()->Variable();
-    ASSERT(enumVar != nullptr);
+    ES2PANDA_ASSERT(enumVar != nullptr);
 
     checker::ETSEnumType::UType ordinal = -1;
     auto *const enumType = Allocator()->New<EnumType>(enumDecl, ordinal++);
@@ -271,7 +271,7 @@ EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration co
             enumLiteralType->SetToStringMethod(toStringMethod);
             enumLiteralType->SetValuesMethod(valuesMethod);
         } else {
-            ASSERT(IsAnyError());
+            ES2PANDA_ASSERT(IsAnyError());
         }
     }
     return enumType;
@@ -594,7 +594,7 @@ ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *sign
 ETSObjectType *ETSChecker::CreatePromiseOf(Type *type)
 {
     ETSObjectType *const promiseType = GlobalBuiltinPromiseType();
-    ASSERT(promiseType->TypeArguments().size() == 1U);
+    ES2PANDA_ASSERT(promiseType->TypeArguments().size() == 1U);
 
     Substitution *substitution = NewSubstitution();
     EmplaceSubstituted(substitution, promiseType->TypeArguments()[0]->AsETSTypeParameter()->GetOriginal(), type);
@@ -619,7 +619,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ETSFunctionType *typeNode)
         auto *const ident = param->Ident();
         auto *const variable = param->Variable()->AsLocalVariable();
         auto *const typeAnnotation = param->TypeAnnotation();
-        ASSERT(variable != nullptr);
+        ES2PANDA_ASSERT(variable != nullptr);
 
         if (LIKELY(!param->IsRestParameter())) {
             if (ident->TsType() == nullptr && typeAnnotation == nullptr) {
@@ -639,7 +639,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ETSFunctionType *typeNode)
             }
             signatureInfo->params.emplace_back(variable);
         } else {
-            ASSERT(typeAnnotation != nullptr);
+            ES2PANDA_ASSERT(typeAnnotation != nullptr);
             variable->SetTsType(typeAnnotation->GetType(this));
             ident->SetTsType(variable->TsType());
             signatureInfo->restVar = variable;

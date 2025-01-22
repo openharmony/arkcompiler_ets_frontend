@@ -48,7 +48,7 @@ void LabelledStatement::Dump(ir::AstDumper *dumper) const
 
 void LabelledStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(ident_ != nullptr);
+    ES2PANDA_ASSERT(ident_ != nullptr);
     ident_->Dump(dumper);
     dumper->Add(":");
     dumper->Endl();

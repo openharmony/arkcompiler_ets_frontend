@@ -73,7 +73,7 @@ public:
 
     void SetScope(varbinder::LocalScope *scope) noexcept
     {
-        ASSERT(scope_ == nullptr);
+        ES2PANDA_ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 

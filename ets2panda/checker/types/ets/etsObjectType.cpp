@@ -210,7 +210,7 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
     if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
         if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
             found != nullptr && !found->TsType()->IsTypeError()) {
-            ASSERT(found->TsType()->IsETSFunctionType());
+            ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
             addSignature(found);
         }
     }
@@ -218,7 +218,7 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
         if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
             found != nullptr && !found->TsType()->IsTypeError()) {
-            ASSERT(found->TsType()->IsETSFunctionType());
+            ES2PANDA_ASSERT(found->TsType()->IsETSFunctionType());
             addSignature(found);
         }
     }
@@ -374,7 +374,7 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
 
 void ETSObjectType::SubstitutePartialTypes(TypeRelation *relation, Type *other)
 {
-    ASSERT(IsPartial());
+    ES2PANDA_ASSERT(IsPartial());
 
     if ((baseType_->IsGeneric() || baseType_->IsETSTypeParameter()) && effectiveSubstitution_ != nullptr) {
         if (auto *newBaseType = baseType_->Substitute(relation, effectiveSubstitution_);
@@ -500,7 +500,7 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
         EnsurePropertiesInstantiated();
         auto found = properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].find(
             FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
-        ASSERT(found != properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].end());
+        ES2PANDA_ASSERT(found != properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].end());
         source = source->AsETSFunctionType()->BoxPrimitives(relation->GetChecker()->AsETSChecker());
         relation->IsAssignableTo(source, found->second->TsType());
         return;
@@ -756,7 +756,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 
 void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
 {
-    ASSERT(HasTypeFlag(TypeFlag::GENERIC));
+    ES2PANDA_ASSERT(HasTypeFlag(TypeFlag::GENERIC));
 
     auto *sourceType = source->AsETSObjectType();
     auto const &sourceTypeArguments = sourceType->TypeArguments();
@@ -766,17 +766,17 @@ void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
-    ASSERT(declNode_ == sourceType->GetDeclNode());
+    ES2PANDA_ASSERT(declNode_ == sourceType->GetDeclNode());
 
     auto *typeParamsDecl = GetTypeParams();
-    ASSERT(typeParamsDecl != nullptr || typeArguments_.empty());
+    ES2PANDA_ASSERT(typeParamsDecl != nullptr || typeArguments_.empty());
 
     if (typeParamsDecl == nullptr) {
         return;
     }
 
     auto &typeParams = typeParamsDecl->Params();
-    ASSERT(typeParams.size() == typeArgumentsNumber);
+    ES2PANDA_ASSERT(typeParams.size() == typeArgumentsNumber);
 
     for (size_t idx = 0U; idx < typeArgumentsNumber; ++idx) {
         auto *typeArg = typeArguments_[idx];
@@ -881,8 +881,8 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     relation->IncreaseTypeRecursionCount(base);
 
     auto *const copiedType = checker->CreateETSObjectType(declNode_, flags_);
-    ASSERT(copiedType->internalName_ == internalName_);
-    ASSERT(copiedType->name_ == name_);
+    ES2PANDA_ASSERT(copiedType->internalName_ == internalName_);
+    ES2PANDA_ASSERT(copiedType->name_ == name_);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
@@ -967,7 +967,7 @@ static Substitution *ComputeEffectiveSubstitution(TypeRelation *const relation,
                                                   const ArenaVector<Type *> &baseTypeParams,
                                                   ArenaVector<Type *> &newTypeArgs)
 {
-    ASSERT(baseTypeParams.size() == newTypeArgs.size());
+    ES2PANDA_ASSERT(baseTypeParams.size() == newTypeArgs.size());
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *effectiveSubstitution = checker->NewSubstitution();
 
@@ -1123,8 +1123,8 @@ ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaV
     auto *checker = relation->GetChecker()->AsETSChecker();
     auto *substitution = checker->NewSubstitution();
 
-    ASSERT(baseType_ == nullptr);
-    ASSERT(typeArguments_.size() == arguments.size());
+    ES2PANDA_ASSERT(baseType_ == nullptr);
+    ES2PANDA_ASSERT(typeArguments_.size() == arguments.size());
 
     for (size_t ix = 0; ix < typeArguments_.size(); ix++) {
         substitution->emplace(typeArguments_[ix]->AsETSTypeParameter(), checker->MaybeBoxType(arguments[ix]));
@@ -1135,7 +1135,7 @@ ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaV
 
 void ETSObjectType::InstantiateProperties() const
 {
-    ASSERT(relation_ != nullptr);
+    ES2PANDA_ASSERT(relation_ != nullptr);
     auto *checker = relation_->GetChecker()->AsETSChecker();
 
     if (baseType_ == nullptr || baseType_ == this) {
@@ -1143,7 +1143,7 @@ void ETSObjectType::InstantiateProperties() const
         return;
     }
 
-    ASSERT(!propertiesInstantiated_);
+    ES2PANDA_ASSERT(!propertiesInstantiated_);
     declNode_->Check(checker);
 
     for (auto *const it : baseType_->ConstructSignatures()) {
@@ -1200,7 +1200,7 @@ std::string ETSObjectType::NameToDescriptor(util::StringView name)
 
 std::uint32_t ETSObjectType::GetPrecedence(checker::ETSChecker *checker, ETSObjectType const *type) noexcept
 {
-    ASSERT(type != nullptr);
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
         return 1U;
     }
@@ -1291,11 +1291,11 @@ ir::TSTypeParameterDeclaration *ETSObjectType::GetTypeParams() const
     }
 
     if (HasObjectFlag(ETSObjectFlags::CLASS)) {
-        ASSERT(declNode_->IsClassDefinition() && declNode_->AsClassDefinition()->TypeParams());
+        ES2PANDA_ASSERT(declNode_->IsClassDefinition() && declNode_->AsClassDefinition()->TypeParams());
         return declNode_->AsClassDefinition()->TypeParams();
     }
 
-    ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
+    ES2PANDA_ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
     return declNode_->AsTSInterfaceDeclaration()->TypeParams();
 }
 

@@ -36,7 +36,7 @@ DynamicCall::Result DynamicCall::ResolveCall(const varbinder::ETSBinder *varbind
             callee = qname->Left();
             calleeName.emplace_back(qname->Right()->AsIdentifier()->Name());
         }
-        ASSERT(callee->IsIdentifier());
+        ES2PANDA_ASSERT(callee->IsIdentifier());
     } else if (callee->IsMemberExpression()) {
         const auto memberExpr = callee->AsMemberExpression();
         callee = SqueezeExpr(memberExpr, calleeName);
@@ -69,7 +69,7 @@ const ir::Expression *DynamicCall::SqueezeExpr(const ir::MemberExpression *membe
     if (!memberExpr->Object()->TsType()->IsETSDynamicType() || memberExpr->IsComputed()) {
         return memberExpr;
     }
-    ASSERT(memberExpr->Property()->IsIdentifier());
+    ES2PANDA_ASSERT(memberExpr->Property()->IsIdentifier());
     name.emplace_back(memberExpr->Property()->AsIdentifier()->Name());
     if (memberExpr->Object()->IsMemberExpression()) {
         return SqueezeExpr(memberExpr->Object()->AsMemberExpression(), name);

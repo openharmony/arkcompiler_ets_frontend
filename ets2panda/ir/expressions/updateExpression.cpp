@@ -41,7 +41,7 @@ void UpdateExpression::Dump(ir::AstDumper *dumper) const
 
 void UpdateExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(argument_);
+    ES2PANDA_ASSERT(argument_);
     dumper->Add("(");
     if (prefix_) {
         dumper->Add(TokenToString(operator_));

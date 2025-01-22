@@ -81,10 +81,10 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
             paramVar = pg->Scope()->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
         }
 
-        ASSERT(paramVar && paramVar->IsLocalVariable());
+        ES2PANDA_ASSERT(paramVar && paramVar->IsLocalVariable());
 
         VReg paramReg = VReg(varbinder::VarBinder::MANDATORY_PARAMS_NUMBER + VReg::PARAM_START + index++);
-        ASSERT(paramVar->LexicalBound() || paramVar->AsLocalVariable()->Vreg() == paramReg);
+        ES2PANDA_ASSERT(paramVar->LexicalBound() || paramVar->AsLocalVariable()->Vreg() == paramReg);
 
         if (param->IsAssignmentPattern()) {
             RegScope rs(pg);
@@ -131,7 +131,7 @@ void Function::LoadClassContexts(const ir::AstNode *node, PandaGen *pg, VReg cto
 
     do {
         auto res = pg->Scope()->Find(classDef->InternalName());
-        ASSERT(res.variable);
+        ES2PANDA_ASSERT(res.variable);
 
         if (classDef->HasMatchingPrivateKey(name)) {
             pg->LoadLexicalVar(node, res.lexLevel, res.variable->AsLocalVariable()->LexIdx());
@@ -260,7 +260,7 @@ void Function::Compile(PandaGen *pg)
     auto *topScope = pg->TopScope();
 
     if (pg->FunctionHasFinalizer()) {
-        ASSERT(topScope->IsFunctionScope());
+        ES2PANDA_ASSERT(topScope->IsFunctionScope());
 
         TryContext tryCtx(pg);
         pg->FunctionInit(tryCtx.GetCatchTable());
@@ -272,7 +272,7 @@ void Function::Compile(PandaGen *pg)
         if (topScope->IsFunctionScope()) {
             CompileFunction(pg);
         } else {
-            ASSERT(topScope->IsGlobalScope() || topScope->IsModuleScope());
+            ES2PANDA_ASSERT(topScope->IsGlobalScope() || topScope->IsModuleScope());
             CompileSourceBlock(pg, pg->RootNode()->AsBlockStatement());
         }
     }

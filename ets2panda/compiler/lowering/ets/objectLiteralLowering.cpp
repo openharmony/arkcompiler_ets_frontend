@@ -69,7 +69,7 @@ static void RestoreNestedBlockExpression(const ArenaVector<ir::Statement *> &sta
             }
         }
         // All nested block expressions should be restored
-        ASSERT(nestedBlckExprs.empty());
+        ES2PANDA_ASSERT(nestedBlckExprs.empty());
     }
 }
 
@@ -189,7 +189,7 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
     if (isAnonymous) {
         checker::Signature *sig = classType->ConstructSignatures().front();
         for (auto param : sig->Params()) {
-            ASSERT(param->Declaration() != nullptr);
+            ES2PANDA_ASSERT(param->Declaration() != nullptr);
             ctorArgumentsMap.emplace(param->Declaration()->Name(), nullptr);
         }
     }
@@ -197,7 +197,7 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
     for (auto *propExpr : objExpr->Properties()) {
         //  Skip possibly invalid properties:
         if (!propExpr->IsProperty()) {
-            ASSERT(checker->IsAnyError());
+            ES2PANDA_ASSERT(checker->IsAnyError());
             continue;
         }
 

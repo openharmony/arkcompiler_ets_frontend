@@ -31,7 +31,7 @@ void VarBinder::InitTopScope()
 
 std::tuple<ParameterDecl *, Variable *> VarBinder::AddParamDecl(ir::AstNode *param)
 {
-    ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
+    ES2PANDA_ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
     auto [decl, node, var] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
 
     if (node != nullptr) {
@@ -94,9 +94,9 @@ void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_v
 
 void VarBinder::IdentifierAnalysis()
 {
-    ASSERT(program_->Ast());
-    ASSERT(scope_ == topScope_);
-    ASSERT(varScope_ == topScope_);
+    ES2PANDA_ASSERT(program_->Ast());
+    ES2PANDA_ASSERT(scope_ == topScope_);
+    ES2PANDA_ASSERT(varScope_ == topScope_);
 
     functionScopes_.push_back(topScope_);
     topScope_->BindName(MAIN);
@@ -115,7 +115,7 @@ void VarBinder::LookupReference(const util::StringView &name)
         return;
     }
 
-    ASSERT(res.variable);
+    ES2PANDA_ASSERT(res.variable);
     res.variable->SetLexical(res.scope);
 }
 
@@ -217,7 +217,7 @@ void VarBinder::LookupIdentReference(ir::Identifier *ident)
 
     auto res = scope_->Find(ident->Name(), BindingOptions());
     if (res.level != 0) {
-        ASSERT(res.variable);
+        ES2PANDA_ASSERT(res.variable);
         res.variable->SetLexical(res.scope);
     }
 
@@ -265,7 +265,7 @@ void VarBinder::BuildVarDeclaratorId(ir::AstNode *childNode)
             }
 
             auto *variable = scope_->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
-            ASSERT(variable);
+            ES2PANDA_ASSERT(variable);
             ident->SetVariable(variable);
             BuildSignatureDeclarationBaseParams(ident->TypeAnnotation());
             variable->AddFlag(VariableFlags::INITIALIZED);
@@ -336,7 +336,7 @@ void VarBinder::InitializeClassBinding(ir::ClassDefinition *classDef)
 {
     auto res = scope_->Find(classDef->Ident()->Name());
 
-    ASSERT(res.variable && res.variable->Declaration()->IsLetDecl());
+    ES2PANDA_ASSERT(res.variable && res.variable->Declaration()->IsLetDecl());
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
@@ -344,8 +344,8 @@ void VarBinder::InitializeClassIdent(ir::ClassDefinition *classDef)
 {
     auto res = scope_->Find(classDef->Ident()->Name());
 
-    ASSERT(res.variable &&
-           (res.variable->Declaration()->IsConstDecl() || res.variable->Declaration()->IsReadonlyDecl()));
+    ES2PANDA_ASSERT(res.variable &&
+                    (res.variable->Declaration()->IsConstDecl() || res.variable->Declaration()->IsReadonlyDecl()));
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
@@ -440,7 +440,7 @@ void VarBinder::AddCompilableFunction(ir::ScriptFunction *func)
 {
     if (func->IsArrow()) {
         VariableScope *outerVarScope = scope_->EnclosingVariableScope();
-        ASSERT(outerVarScope != nullptr);
+        ES2PANDA_ASSERT(outerVarScope != nullptr);
         outerVarScope->AddFlag(ScopeFlags::INNER_ARROW);
     }
 
@@ -456,7 +456,7 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 {
     auto *funcScope = func->Scope();
     {
-        ASSERT(funcScope != nullptr);
+        ES2PANDA_ASSERT(funcScope != nullptr);
         auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, funcScope->ParamScope());
 
         for (auto *param : func->Params()) {
@@ -576,7 +576,7 @@ void VarBinder::ResolveReferences(const ir::AstNode *parent)
 
 LocalVariable *VarBinder::AddMandatoryParam(const std::string_view &name)
 {
-    ASSERT(scope_->IsFunctionParamScope());
+    ES2PANDA_ASSERT(scope_->IsFunctionParamScope());
 
     auto *decl = Allocator()->New<ParameterDecl>(name);
     auto *param = Allocator()->New<LocalVariable>(decl, VariableFlags::VAR);
@@ -606,12 +606,12 @@ void VarBinder::LookUpMandatoryReferences(const FunctionScope *funcScope, bool n
 
 void VarBinder::AddMandatoryParams()
 {
-    ASSERT(scope_ == topScope_);
-    ASSERT(!functionScopes_.empty());
+    ES2PANDA_ASSERT(scope_ == topScope_);
+    ES2PANDA_ASSERT(!functionScopes_.empty());
     auto iter = functionScopes_.begin();
     [[maybe_unused]] auto *funcScope = *iter++;
 
-    ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
+    ES2PANDA_ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
 
     const auto *options = context_->config->options;
     if (options->IsDirectEval()) {
@@ -622,7 +622,7 @@ void VarBinder::AddMandatoryParams()
     }
 
     if (options->IsFunctionEval()) {
-        ASSERT(iter != functionScopes_.end());
+        ES2PANDA_ASSERT(iter != functionScopes_.end());
         funcScope = *iter++;
         auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
         AddMandatoryParams(ARROW_MANDATORY_PARAMS);
@@ -645,7 +645,7 @@ void VarBinder::AddMandatoryParams()
 
         if (ctor != nullptr && util::Helpers::GetClassDefiniton(ctor)->Super() != nullptr &&
             funcScope->HasFlag(ScopeFlags::USE_SUPER)) {
-            ASSERT(ctor->Scope()->HasFlag(ScopeFlags::INNER_ARROW));
+            ES2PANDA_ASSERT(ctor->Scope()->HasFlag(ScopeFlags::INNER_ARROW));
             ctor->Scope()->AddFlag(ScopeFlags::SET_LEXICAL_FUNCTION);
             lexicalFunctionObject = true;
             AddMandatoryParams(CTOR_ARROW_MANDATORY_PARAMS);

@@ -655,10 +655,10 @@ size_t GlobalTypesHolder::VariadicFunctionTypeThreshold()
 {
     auto val =
         static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS) - static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS);
-    ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS) -
-                   static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS)));
-    ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS) -
-                   static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS)));
+    ES2PANDA_ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTIONN_CLASS) -
+                            static_cast<size_t>(GlobalTypeId::ETS_THROWING_FUNCTION0_CLASS)));
+    ES2PANDA_ASSERT(val == (static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTIONN_CLASS) -
+                            static_cast<size_t>(GlobalTypeId::ETS_RETHROWING_FUNCTION0_CLASS)));
     return val;
 }
 

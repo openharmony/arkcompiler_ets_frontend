@@ -516,7 +516,7 @@ void RegExpParser::ParseAtomEscapeSwitch(char32_t cp)
 
 uint32_t RegExpParser::ParseDecimalEscape()
 {
-    ASSERT(IsDecimalDigit(Peek()));
+    ES2PANDA_ASSERT(IsDecimalDigit(Peek()));
 
     auto digitStart = iter_;
     uint32_t decimalValue = DigitValue(Next());
@@ -565,7 +565,7 @@ uint32_t RegExpParser::ParseDecimalEscape()
 
 uint32_t RegExpParser::ParseLegacyOctalEscape()
 {
-    ASSERT(IsOctalDigit(Peek()));
+    ES2PANDA_ASSERT(IsOctalDigit(Peek()));
     uint32_t octalValue = DigitValue(Next());
 
     if (!IsOctalDigit(Peek())) {

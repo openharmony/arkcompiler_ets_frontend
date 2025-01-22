@@ -52,7 +52,7 @@ util::StringView ImportPathManager::ResolvePath(const StringView &currentModuleP
 
     if (IsRelativePath(importPath)) {
         const size_t pos = currentModulePath.Mutf8().find_last_of("/\\");
-        ASSERT(pos != std::string::npos);
+        ES2PANDA_ASSERT(pos != std::string::npos);
 
         auto currentDirectory = currentModulePath.Mutf8().substr(0, pos);
         auto resolvedPath = UString(currentDirectory, allocator_);
@@ -68,7 +68,7 @@ util::StringView ImportPathManager::ResolvePath(const StringView &currentModuleP
 util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &importPath,
                                                         const lexer::SourcePosition &srcPos) const
 {
-    ASSERT(!IsRelativePath(importPath));
+    ES2PANDA_ASSERT(!IsRelativePath(importPath));
 
     if (importPath.Mutf8()[0] == pathDelimiter_.at(0)) {
         std::string baseUrl = arktsConfig_->BaseUrl();
@@ -95,7 +95,7 @@ util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &import
         return UString(baseUrl, allocator_).View();
     }
 
-    ASSERT(arktsConfig_ != nullptr);
+    ES2PANDA_ASSERT(arktsConfig_ != nullptr);
     auto resolvedPath = arktsConfig_->ResolvePath(importPath.Mutf8());
     if (!resolvedPath) {
         diagnosticEngine_.LogFatalError(program_,

@@ -53,7 +53,7 @@ void TSArrayType::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    ASSERT(elementType_);
+    ES2PANDA_ASSERT(elementType_);
     if (elementType_->IsETSUnionType()) {
         dumper->Add("(");
     }

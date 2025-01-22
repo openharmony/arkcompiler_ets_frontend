@@ -40,7 +40,7 @@ namespace ark::es2panda::checker {
 
 void ETSWarningAnalyzer::AnalyzeClassDefForFinalModifier(const ir::ClassDefinition *classDef)
 {
-    ASSERT(classDef != nullptr);
+    ES2PANDA_ASSERT(classDef != nullptr);
 
     if (program_ == nullptr || classDef->IsFinal() || classDef->IsAbstract() || classDef->IsStatic() ||
         classDef->IsGlobal() || classDef->IsExported()) {
@@ -76,7 +76,7 @@ void ETSWarningAnalyzer::AnalyzeClassDefForFinalModifier(const ir::ClassDefiniti
 void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefinition *methodDef,
                                                             const ir::ClassDefinition *classDef)
 {
-    ASSERT(methodDef != nullptr && classDef != nullptr);
+    ES2PANDA_ASSERT(methodDef != nullptr && classDef != nullptr);
 
     if (methodDef->IsAbstract() || methodDef->IsStatic() || classDef->IsFinal() || program_ == nullptr ||
         methodDef->IsFinal() || methodDef->IsConstructor() || classDef->IsGlobal()) {
@@ -208,7 +208,7 @@ void ETSWarningAnalyzer::ETSWarningsProhibitTopLevelStatements(const ir::AstNode
 
 void ETSWarningAnalyzer::ETSWarningBoostEqualityStatement(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
 
     if (node->IsBinaryExpression() &&
         !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_BOOST_EQUALITY_STATEMENT)) {
@@ -236,7 +236,7 @@ void ETSWarningAnalyzer::ETSWarningRemoveAsync(const ir::AstNode *node)
 
 void ETSWarningAnalyzer::ETSWarningRemoveLambda(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
 
     if (node->IsArrowFunctionExpression() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_REMOVE_LAMBDA)) {
         LogWarning("Replace the lambda function with a regular function", node->Start());
@@ -246,7 +246,7 @@ void ETSWarningAnalyzer::ETSWarningRemoveLambda(const ir::AstNode *node)
 
 void ETSWarningAnalyzer::CheckTypeOfBoxing(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
     const auto flags = node->GetBoxingUnboxingFlags();
     if ((flags & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0) {
         switch (static_cast<ir::BoxingUnboxingFlags>(flags & ir::BoxingUnboxingFlags::BOXING_FLAG)) {
@@ -282,7 +282,7 @@ void ETSWarningAnalyzer::CheckTypeOfBoxing(const ir::AstNode *node)
 
 void ETSWarningAnalyzer::CheckTypeOfUnboxing(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
     const auto flags = node->GetBoxingUnboxingFlags();
     if ((flags & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0) {
         switch (static_cast<ir::BoxingUnboxingFlags>(flags & ir::BoxingUnboxingFlags::UNBOXING_FLAG)) {
@@ -321,7 +321,7 @@ void ETSWarningAnalyzer::CheckTypeOfUnboxing(const ir::AstNode *node)
 
 void ETSWarningAnalyzer::CheckTypeOfBoxingUnboxing(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
 
     CheckTypeOfBoxing(node);
     CheckTypeOfUnboxing(node);
@@ -329,7 +329,7 @@ void ETSWarningAnalyzer::CheckTypeOfBoxingUnboxing(const ir::AstNode *node)
 
 std::string ETSWarningAnalyzer::GetBoxingUnboxingType(const ir::AstNode *node)
 {
-    ASSERT(node->Parent() != nullptr);
+    ES2PANDA_ASSERT(node->Parent() != nullptr);
     switch (node->Parent()->Type()) {
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
             return " in Variable Declaration";
@@ -362,7 +362,7 @@ std::string ETSWarningAnalyzer::GetBoxingUnboxingType(const ir::AstNode *node)
 
 void ETSWarningAnalyzer::ETSWarningImplicitBoxingUnboxing(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
 
     switch (node->Type()) {
         case ir::AstNodeType::VARIABLE_DECLARATOR:

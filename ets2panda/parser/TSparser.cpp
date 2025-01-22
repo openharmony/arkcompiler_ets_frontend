@@ -128,7 +128,7 @@ std::unique_ptr<lexer::Lexer> TSParser::InitLexer(const SourceFile &sourceFile)
 
 ir::Decorator *TSParser::ParseDecorator()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT);
 
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat '@'
@@ -181,7 +181,7 @@ void TSParser::AddDecorators(ir::AstNode *node, ArenaVector<ir::Decorator *> &de
 
 ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
 {
-    ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
 
@@ -340,8 +340,8 @@ bool TSParser::IsStartOfMappedType() const
 
 bool TSParser::IsStartOfTypePredicate() const
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
-           Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+                    Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
 
     auto pos = Lexer()->Save();
     bool isAsserts = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ASSERTS;
@@ -384,7 +384,7 @@ bool TSParser::IsStartOfAbstractConstructorType() const
 
 ir::TSImportType *TSParser::ParseImportType(const lexer::SourcePosition &startLoc, bool isTypeof)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT);
 
     Lexer()->NextToken();
 
@@ -432,7 +432,7 @@ ir::TSImportType *TSParser::ParseImportType(const lexer::SourcePosition &startLo
 
 ir::TypeNode *TSParser::ParseThisType(bool throwError)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
 
     if (throwError && ((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) == 0)) {
         ThrowSyntaxError(
@@ -450,7 +450,7 @@ ir::TypeNode *TSParser::ParseThisType(bool throwError)
 
 ir::TypeNode *TSParser::ParseConditionalType(ir::Expression *checkType, bool restrictExtends)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
     if (restrictExtends) {
         ThrowSyntaxError("'?' expected.");
     }
@@ -611,7 +611,7 @@ ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seenOptio
 
 ir::TSTupleType *TSParser::ParseTupleType()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
     lexer::SourcePosition tupleStart = Lexer()->GetToken().Start();
     ArenaVector<ir::TypeNode *> elements(Allocator()->Adapter());
     ir::TSTupleKind kind = ir::TSTupleKind::NONE;
@@ -670,7 +670,7 @@ ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parseQuery)
     lexer::SourcePosition referenceStartLoc = Lexer()->GetToken().Start();
 
     if (parseQuery) {
-        ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_TYPEOF);
+        ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_TYPEOF);
         Lexer()->NextToken();  // eat 'typeof'
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT) {
@@ -683,8 +683,8 @@ ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parseQuery)
         }
     }
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
-           Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+                    Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
 
     ir::Expression *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     typeName->SetRange(Lexer()->GetToken().Loc());
@@ -779,7 +779,7 @@ ir::MappedOption TSParser::ParseMappedOption(lexer::TokenType tokenType)
 
 ir::TSMappedType *TSParser::ParseMappedType()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
 
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
@@ -926,7 +926,7 @@ ir::TypeNode *TSParser::ParseThisTypeOrTypePredicate(ir::TypeNode *typeAnnotatio
 
 ir::TSArrayType *TSParser::ParseArrayType(ir::TypeNode *elementType)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
     Lexer()->NextToken();  // eat '['
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
@@ -1168,7 +1168,7 @@ ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *typeAnnot
     }
 
     const auto startPos = Lexer()->Save();
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     Lexer()->NextToken();  // eat '('
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
@@ -1531,13 +1531,13 @@ ir::TSIndexSignature *TSParser::ParseIndexSignature(const lexer::SourcePosition 
 {
     Lexer()->NextToken();  // eat '['
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     auto *key = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     key->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();  // eat key
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON);
 
     Lexer()->NextToken();  // eat ':'
 
@@ -1792,7 +1792,7 @@ void TSParser::ValidateFunctionParam(const ArenaVector<ir::Expression *> &params
 
 ArenaVector<ir::Expression *> TSParser::ParseFunctionParams()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     Lexer()->NextToken();
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
@@ -1826,7 +1826,7 @@ ArenaVector<ir::Expression *> TSParser::ParseFunctionParams()
         }
     }
 
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     Lexer()->NextToken();
 
     return params;

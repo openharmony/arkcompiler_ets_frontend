@@ -73,7 +73,7 @@ static varbinder::LocalVariable *CreateNamedAccessProperty(checker::ETSChecker *
     auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, classScope->InstanceFieldScope());
 
     if (auto *var = classScope->FindLocal(propName, varbinder::ResolveBindingOptions::VARIABLES); var != nullptr) {
-        ASSERT(var->TsType() == fieldType);
+        ES2PANDA_ASSERT(var->TsType() == fieldType);
         return var->AsLocalVariable();
     }
 
@@ -106,11 +106,11 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
     }
 
     [[maybe_unused]] auto const *const parent = expr->Parent();
-    ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
-             parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)));
+    ES2PANDA_ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
+                      parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)));
     expr->SetPropVar(
         CreateNamedAccessProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
-    ASSERT(expr->PropVar() != nullptr);
+    ES2PANDA_ASSERT(expr->PropVar() != nullptr);
 }
 
 static ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker::Type *const opaqueType,

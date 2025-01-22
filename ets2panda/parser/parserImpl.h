@@ -34,6 +34,7 @@ enum class NextTokenFlags : uint32_t;
 
 namespace ark::es2panda::util {
 class Options;
+class SourcePositionHelper;
 }  // namespace ark::es2panda::util
 
 namespace ark::es2panda::parser {
@@ -83,13 +84,13 @@ public:
 
     ETSParser *AsETSParser()
     {
-        ASSERT(IsETSParser());
+        ES2PANDA_ASSERT(IsETSParser());
         return reinterpret_cast<ETSParser *>(this);
     }
 
     const ETSParser *AsETSParser() const
     {
-        ASSERT(IsETSParser());
+        ES2PANDA_ASSERT(IsETSParser());
         return reinterpret_cast<const ETSParser *>(this);
     }
 
@@ -102,6 +103,8 @@ public:
     {
         GetContext().Status() |= status;
     }
+
+    std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic() const;
 
 protected:
     virtual void ParseProgram(ScriptKind kind);
@@ -177,6 +180,7 @@ protected:
     friend class ArrowFunctionContext;
     friend class ETSNolintParser;
     friend class lexer::RegExpParser;
+    friend class util::SourcePositionHelper;
 
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);
@@ -206,7 +210,7 @@ protected:
     {
         auto *ret = util::NodeAllocator::ForceSetParent<T>(
             Allocator(), std::forward<Args>(args)...);  // Note: replace with AllocNode
-        ASSERT(ret != nullptr);
+        ES2PANDA_ASSERT(ret != nullptr);
         return ret;
     }
 

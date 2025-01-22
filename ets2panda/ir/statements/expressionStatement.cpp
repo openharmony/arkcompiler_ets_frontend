@@ -40,7 +40,7 @@ void ExpressionStatement::Dump(ir::AstDumper *dumper) const
 
 void ExpressionStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(expression_ != nullptr);
+    ES2PANDA_ASSERT(expression_ != nullptr);
     expression_->Dump(dumper);
     if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsSwitchCaseStatement())) {
         dumper->Add(";");

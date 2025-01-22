@@ -164,19 +164,19 @@ public:
 
     [[nodiscard]] checker::Type *ExtensionAccessorReturnType() const
     {
-        ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
+        ES2PANDA_ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
         return extensionAccessorReturnType_;
     }
 
     void SetExtensionAccessorReturnType(checker::Type *eaccReturnType)
     {
-        ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
+        ES2PANDA_ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
         extensionAccessorReturnType_ = eaccReturnType;
     }
 
     void SetPropVar(varbinder::LocalVariable *propVar) noexcept
     {
-        ASSERT(Property());
+        ES2PANDA_ASSERT(Property());
         Property()->SetVariable(propVar);
     }
 

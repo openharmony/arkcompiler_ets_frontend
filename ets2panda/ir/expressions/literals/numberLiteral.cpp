@@ -141,10 +141,10 @@ void GetBase(FpType d, int digits, int *decpt, Span<char> buf)
         UNREACHABLE();
     }
     char *end = buf.begin() + ret;
-    ASSERT(*end == 0);
+    ES2PANDA_ASSERT(*end == 0);
     const size_t positive = (digits > 1) ? 1 : 0;
     char *ePos = buf.begin() + digits + positive;
-    ASSERT(*ePos == 'e');
+    ES2PANDA_ASSERT(*ePos == 'e');
     char *signPos = ePos + 1;
     char *from = signPos + 1;
     // exponent
@@ -196,7 +196,7 @@ static void IntegerToString(IntegerType number, std::string &resStr)
 template <typename FpType>
 [[maybe_unused]] static bool RecheckGetMinimumDigits(FpType d, Span<char> buf)
 {
-    ASSERT(StrToFp<FpType>(buf.begin(), nullptr) == d);
+    ES2PANDA_ASSERT(StrToFp<FpType>(buf.begin(), nullptr) == d);
     std::string str(buf.begin());
     auto pos = str.find('e');
     std::copy(str.begin() + pos, str.end(), str.begin() + pos - 1);
@@ -216,8 +216,8 @@ static int GetMinimumDigits(FpType d, int *decpt, Span<char> buf)
     }
     // Note(daizihan): Can use GetBaseFast as in runtime implementation, but need charconv supported by compiler.
     int digits = GetBaseBinarySearch(d, decpt, buf);
-    ASSERT(RecheckGetMinimumDigits(d, buf));
-    ASSERT(digits == 1 || buf[1] == '.');
+    ES2PANDA_ASSERT(RecheckGetMinimumDigits(d, buf));
+    ES2PANDA_ASSERT(digits == 1 || buf[1] == '.');
     buf[1] = buf[0];
     return digits;
 }
@@ -226,7 +226,7 @@ template <typename FpType>
 static Span<char> FpToStringDecimalRadixMainCase(FpType number, bool negative, Span<char> buffer)
 {
     auto bufferStart = buffer.begin() + 2U;
-    ASSERT(number > 0);
+    ES2PANDA_ASSERT(number > 0);
     int n = 0;
     int k = GetMinimumDigits(number, &n, buffer.SubSpan(1));
     auto bufferEnd = bufferStart + k;
@@ -264,7 +264,7 @@ static Span<char> FpToStringDecimalRadixMainCase(FpType number, bool negative, S
     } else {
         if (k == 1) {
             // 9. Otherwise, if k = 1, return the String consisting of the code unit of the single digit of s
-            ASSERT(bufferEnd == bufferStart + 1);
+            ES2PANDA_ASSERT(bufferEnd == bufferStart + 1);
         } else {
             *(bufferStart - 1) = *bufferStart;
             *(bufferStart--) = '.';
@@ -322,7 +322,7 @@ static char *SmallFpToString(FpType number, bool negative, char *buffer)
 template <typename FpType>
 static const char *FpNonFiniteToString(FpType number)
 {
-    ASSERT(std::isnan(number) || !std::isfinite(number));
+    ES2PANDA_ASSERT(std::isnan(number) || !std::isfinite(number));
     if (std::isnan(number)) {
         return "NaN";
     }
@@ -387,7 +387,7 @@ std::string NumberLiteral::ToString() const
         FpToString(number_.GetFloat(), result);
     }
 
-    ASSERT(!result.empty());
+    ES2PANDA_ASSERT(!result.empty());
     return result;
 }
 }  // namespace ark::es2panda::ir

@@ -40,7 +40,7 @@ void ThrowStatement::Dump(ir::AstDumper *dumper) const
 
 void ThrowStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(Argument() != nullptr);
+    ES2PANDA_ASSERT(Argument() != nullptr);
     dumper->Add("throw ");
     Argument()->Dump(dumper);
     dumper->Add(";");

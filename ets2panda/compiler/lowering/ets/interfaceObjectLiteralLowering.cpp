@@ -94,7 +94,7 @@ static ir::MethodDefinition *CreateAnonClassFieldGetterSetter(public_lib::Contex
     auto *const parser = ctx->parser->AsETSParser();
     // Field type annotation
     auto *fieldType = ifaceMethod->Function()->Signature()->ReturnType();
-    ASSERT(fieldType != nullptr);
+    ES2PANDA_ASSERT(fieldType != nullptr);
 
     std::stringstream sourceCode;
 
@@ -129,7 +129,7 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
     auto *checker = ctx->checker->AsETSChecker();
 
     for (auto *it : ifaceBody) {
-        ASSERT(it->IsMethodDefinition());
+        ES2PANDA_ASSERT(it->IsMethodDefinition());
         auto *ifaceMethod = it->AsMethodDefinition();
 
         if (!ifaceMethod->Function()->IsGetter() && !ifaceMethod->Function()->IsSetter()) {
@@ -151,7 +151,8 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
                 currentType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(ifaceMethod->Id()->Name());
             auto funcType = (instanProp != nullptr) ? instanProp->TsType() : nullptr;
             if (funcType != nullptr) {
-                ASSERT(funcType->IsETSFunctionType() && funcType->AsETSFunctionType()->FindGetter() != nullptr);
+                ES2PANDA_ASSERT(funcType->IsETSFunctionType() &&
+                                funcType->AsETSFunctionType()->FindGetter() != nullptr);
                 copyIfaceMethod->Function()->SetSignature(funcType->AsETSFunctionType()->FindGetter());
             }
         }
@@ -223,7 +224,7 @@ static checker::Type *GenerateAnonClassTypeFromInterface(public_lib::Context *ct
         ArenaVector<checker::Type *> typeArgs(checker->Allocator()->Adapter());
         for (auto param : ifaceNode->TypeParams()->Params()) {
             auto *var = param->Name()->Variable();
-            ASSERT(var && var->TsType()->IsETSTypeParameter());
+            ES2PANDA_ASSERT(var && var->TsType()->IsETSTypeParameter());
             typeArgs.push_back(var->TsType());
         }
         classType->SetTypeArguments(std::move(typeArgs));
@@ -283,7 +284,7 @@ static checker::Type *GenerateAnonClassTypeFromAbstractClass(public_lib::Context
         ArenaVector<checker::Type *> typeArgs(checker->Allocator()->Adapter());
         for (auto param : abstractClassNode->TypeParams()->Params()) {
             auto *var = param->Name()->Variable();
-            ASSERT(var && var->TsType()->IsETSTypeParameter());
+            ES2PANDA_ASSERT(var && var->TsType()->IsETSTypeParameter());
             typeArgs.push_back(var->TsType());
         }
         classType->SetTypeArguments(std::move(typeArgs));
@@ -304,7 +305,7 @@ static void HandleInterfaceLowering(public_lib::Context *ctx, ir::ObjectExpressi
         auto *ifaceNode = targetType->AsETSObjectType()->GetDeclNode()->AsTSInterfaceDeclaration();
         resultType = GenerateAnonClassTypeFromInterface(ctx, ifaceNode, objExpr);
     } else {
-        ASSERT(targetType->AsETSObjectType()->GetDeclNode()->AsClassDefinition()->IsAbstract());
+        ES2PANDA_ASSERT(targetType->AsETSObjectType()->GetDeclNode()->AsClassDefinition()->IsAbstract());
         auto *abstractClassNode = targetType->AsETSObjectType()->GetDeclNode()->AsClassDefinition();
         resultType = GenerateAnonClassTypeFromAbstractClass(ctx, abstractClassNode, objExpr);
     }

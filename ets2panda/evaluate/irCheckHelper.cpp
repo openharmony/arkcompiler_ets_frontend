@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,14 +24,14 @@ namespace ark::es2panda::evaluate {
 IrCheckHelper::IrCheckHelper(checker::ETSChecker *checker, varbinder::ETSBinder *varBinder)
     : checker_(checker), varBinder_(varBinder), recursiveDecls_(checker->Allocator()->Adapter())
 {
-    ASSERT(checker_);
-    ASSERT(varBinder_);
+    ES2PANDA_ASSERT(checker_);
+    ES2PANDA_ASSERT(varBinder_);
 }
 
 bool IrCheckHelper::CheckNewNode(ir::AstNode *node, varbinder::Scope *scope, ir::AstNode *parentClass,
                                  parser::Program *program)
 {
-    ASSERT(node);
+    ES2PANDA_ASSERT(node);
 
     if (program == nullptr) {
         program = varBinder_->Program();
@@ -94,7 +94,7 @@ void IrCheckHelper::HandleCustomNodes()
 
 void IrCheckHelper::CheckGlobalEntity(parser::Program *program, ir::AstNode *node, bool mustCheck)
 {
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
 
     auto *globalClass = program->GlobalClass();
     auto *globalClassScope = program->GlobalClassScope();

@@ -399,7 +399,7 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
        Keeping it for now.
     */
     for (auto [ov, nv] : varMap) {
-        ASSERT(ov->Name() == nv->Name());
+        ES2PANDA_ASSERT(ov->Name() == nv->Name());
         auto name = ov->Name();
         funcScope->EraseBinding(name);
         funcScope->InsertBinding(name, nv);
@@ -633,7 +633,7 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
     auto *checker = ctx->checker->AsETSChecker();
     auto *anyType = checker->GlobalETSNullishObjectType();
 
-    ASSERT(lciInfo->lambdaSignature->Function() != nullptr);
+    ES2PANDA_ASSERT(lciInfo->lambdaSignature->Function() != nullptr);
     auto *function = lciInfo->lambdaSignature->Function();
 
     auto params = ArenaVector<ir::Expression *>(allocator->Adapter());
@@ -861,7 +861,7 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     if (lambda->Function()->Signature() == nullptr) {
         lambda->Check(checker);
     }
-    ASSERT(lambda->TsType()->IsETSFunctionType());
+    ES2PANDA_ASSERT(lambda->TsType()->IsETSFunctionType());
 
     LambdaInfo info;
     std::tie(info.calleeClass, info.enclosingFunction) = FindEnclosingClassAndFunction(lambda);
@@ -917,7 +917,7 @@ static checker::Signature *CheckAssignableSignatures(checker::ETSChecker *checke
     }
 
     argType = assignableSignatures.begin()->second;
-    ASSERT(argType->IsETSFunctionType());
+    ES2PANDA_ASSERT(argType->IsETSFunctionType());
     auto const minArgs = argType->AsETSFunctionType()->CallSignature()->MinArgCount();
 
     checker::Signature *sigFound = nullptr;
@@ -935,7 +935,7 @@ static checker::Signature *CheckAssignableSignatures(checker::ETSChecker *checke
 
 static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expression *ast)
 {
-    ASSERT(ast->TsType()->IsETSFunctionType());
+    ES2PANDA_ASSERT(ast->TsType()->IsETSFunctionType());
     auto *type = ast->TsType()->AsETSFunctionType();
 
     if (type->IsETSArrowType()) {
@@ -1044,10 +1044,10 @@ static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ct
 static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expression *funcRef)
 {
     auto *allocator = ctx->allocator;
-    ASSERT(funcRef->IsIdentifier() ||
-           (funcRef->IsMemberExpression() &&
-            funcRef->AsMemberExpression()->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS &&
-            funcRef->AsMemberExpression()->Property()->IsIdentifier()));
+    ES2PANDA_ASSERT(funcRef->IsIdentifier() ||
+                    (funcRef->IsMemberExpression() &&
+                     funcRef->AsMemberExpression()->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS &&
+                     funcRef->AsMemberExpression()->Property()->IsIdentifier()));
     varbinder::Variable *var;
     if (funcRef->IsIdentifier()) {
         var = funcRef->AsIdentifier()->Variable();
@@ -1058,10 +1058,10 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
             mexpr->Property()->AsIdentifier()->Name(),
             checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD | checker::PropertySearchFlags::SEARCH_STATIC_METHOD |
                 checker::PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
-        ASSERT(var != nullptr);
+        ES2PANDA_ASSERT(var != nullptr);
     }
 
-    ASSERT(var->Declaration()->Node()->IsMethodDefinition());
+    ES2PANDA_ASSERT(var->Declaration()->Node()->IsMethodDefinition());
     auto *method = var->Declaration()->Node()->AsMethodDefinition();
 
     if (method->IsPrivate() || method->IsProtected()) {
@@ -1083,7 +1083,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     if (method->IsStatic()) {
         info.callReceiver = nullptr;
     } else {
-        ASSERT(funcRef->IsMemberExpression());
+        ES2PANDA_ASSERT(funcRef->IsMemberExpression());
         info.callReceiver = funcRef->AsMemberExpression()->Object();
     }
 
@@ -1100,7 +1100,7 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
 
 static bool IsFunctionOrMethodCall(ir::AstNode const *node)
 {
-    ASSERT(node->IsCallExpression());
+    ES2PANDA_ASSERT(node->IsCallExpression());
     auto const *callee = node->AsCallExpression()->Callee();
 
     if (callee->TsType() != nullptr && callee->TsType()->IsETSExtensionFuncHelperType()) {
@@ -1183,7 +1183,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         prop = ifaceType->GetProperty(methodName, flag);
     }
 
-    ASSERT(prop != nullptr);
+    ES2PANDA_ASSERT(prop != nullptr);
     auto *invoke0Id = allocator->New<ir::Identifier>(methodName, allocator);
     auto *const propType = prop->TsType();
     invoke0Id->SetTsType(propType);
@@ -1200,7 +1200,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
 
     call->SetCallee(newCallee);
     call->SetSignature(propSignature);
-    ASSERT(propSignature->ReturnType() != nullptr);
+    ES2PANDA_ASSERT(propSignature->ReturnType() != nullptr);
     if (propSignature->HasSignatureFlag(checker::SignatureFlags::EXTENSION_FUNCTION_RETURN_THIS)) {
         call->SetTsType(call->Arguments()[0]->TsType());
     } else {
@@ -1255,7 +1255,7 @@ static ir::AstNode *BuildLambdaClassWhenNeeded(public_lib::Context *ctx, ir::Ast
         auto *mexpr = node->AsMemberExpression();
         if (mexpr->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS && mexpr->TsType() != nullptr &&
             mexpr->TsType()->IsETSFunctionType() && mexpr->Object()->TsType()->IsETSObjectType()) {
-            ASSERT(mexpr->Property()->IsIdentifier());
+            ES2PANDA_ASSERT(mexpr->Property()->IsIdentifier());
             auto *var = mexpr->Object()->TsType()->AsETSObjectType()->GetProperty(
                 mexpr->Property()->AsIdentifier()->Name(),
                 checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |

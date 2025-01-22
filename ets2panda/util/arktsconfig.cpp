@@ -114,7 +114,7 @@ static std::string MakeAbsolute(const std::string &path, const std::string &base
 
 ArkTsConfig::Pattern::Pattern(std::string value, std::string base) : value_(std::move(value)), base_(std::move(base))
 {
-    ASSERT(fs::path(base_).is_absolute());
+    ES2PANDA_ASSERT(fs::path(base_).is_absolute());
 }
 
 bool ArkTsConfig::Pattern::IsPattern() const
@@ -138,7 +138,7 @@ std::string ArkTsConfig::Pattern::GetSearchRoot() const
 
 bool ArkTsConfig::Pattern::Match(const std::string &path) const
 {
-    ASSERT(fs::path(path).is_absolute());
+    ES2PANDA_ASSERT(fs::path(path).is_absolute());
     fs::path value = fs::path(value_);
     std::string pattern = value.is_absolute() ? value.string() : (base_ / value).string();
 
@@ -331,7 +331,7 @@ static std::string ValueOrEmptyString(const JsonObject::JsonObjPointer *json, co
 // CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
 bool ArkTsConfig::Parse()
 {
-    ASSERT(!isParsed_);
+    ES2PANDA_ASSERT(!isParsed_);
     isParsed_ = true;
     auto arktsConfigDir = ParentPath(ark::os::GetAbsolutePath(configPath_));
 
@@ -551,7 +551,7 @@ std::vector<std::pair<std::string, std::string>> FindProjectSources(
     // CC-OFFNXT(G.FMT.06-CPP) project code style
     [[maybe_unused]] const std::shared_ptr<ArkTsConfig> &arkts_config)
 {
-    ASSERT(false);
+    ES2PANDA_ASSERT(false);
     return {};
 }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM

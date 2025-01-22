@@ -200,7 +200,7 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
     for (auto *anno : Annotations()) {
         anno->Dump(dumper);
     }
-    ASSERT(ident_ != nullptr);
+    ES2PANDA_ASSERT(ident_ != nullptr);
 
     if (IsExtern()) {
         dumper->Add("extern ");

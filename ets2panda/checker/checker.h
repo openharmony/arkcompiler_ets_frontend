@@ -150,13 +150,13 @@ public:
 
     [[nodiscard]] ETSChecker *AsETSChecker()
     {
-        ASSERT(IsETSChecker());
+        ES2PANDA_ASSERT(IsETSChecker());
         return reinterpret_cast<ETSChecker *>(this);
     }
 
     [[nodiscard]] const ETSChecker *AsETSChecker() const
     {
-        ASSERT(IsETSChecker());
+        ES2PANDA_ASSERT(IsETSChecker());
         return reinterpret_cast<const ETSChecker *>(this);
     }
 
@@ -203,6 +203,11 @@ public:
     util::DiagnosticEngine &DiagnosticEngine()
     {
         return diagnosticEngine_;
+    }
+
+    std::pair<const parser::Program *, lexer::SourcePosition> GetPositionForDiagnostic() const
+    {
+        return {Program(), lexer::SourcePosition {}};
     }
 
     // NOTE: required only for evaluate.
@@ -306,7 +311,7 @@ public:
 
     ~TypeStackElement()
     {
-        ASSERT(hasErrorChecker_);
+        ES2PANDA_ASSERT(hasErrorChecker_);
         if (element_ != nullptr && cleanup_) {
             checker_->typeStack_.erase(element_);
         }
@@ -420,7 +425,7 @@ public:
 
     VerifiedType([[maybe_unused]] const ir::AstNode *const node, Type *type) : type_(type)
     {
-        ASSERT(type != nullptr || !node->IsExpression());
+        ES2PANDA_ASSERT(type != nullptr || !node->IsExpression());
     };
 
     Type *operator*() const

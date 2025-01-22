@@ -82,7 +82,7 @@
 namespace ark::es2panda::parser {
 ir::YieldExpression *ParserImpl::ParseYieldExpression()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_YIELD);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_YIELD);
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer::SourcePosition endLoc = lexer_->GetToken().End();
@@ -384,7 +384,7 @@ ArrowFunctionDescriptor ParserImpl::ConvertToArrowParameter(ir::Expression *expr
                 auto &arguments = callExpression->Arguments();
 
                 if (callExpression->HasTrailingComma()) {
-                    ASSERT(!arguments.empty());
+                    ES2PANDA_ASSERT(!arguments.empty());
                     LogError(diagnostic::REST_PARAM_NOT_LAST, {}, arguments.back()->End());
                 }
 
@@ -410,7 +410,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpression(ir::Expres
                                                                       ir::TSTypeParameterDeclaration *typeParamDecl,
                                                                       ir::TypeNode *returnTypeAnnotation, bool isAsync)
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW);
 
     if (lexer_->GetToken().NewLine()) {
         LogError(diagnostic::EXPECTED_ARROW_SAME_LINE);
@@ -438,7 +438,7 @@ bool ParserImpl::ValidateArrowFunctionRestParameter([[maybe_unused]] ir::SpreadE
 ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterList(
     [[maybe_unused]] ExpressionParseFlags flags)  // CC-OFF(G.FMT.06-CPP) project code style
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();
 
@@ -857,8 +857,8 @@ ir::Identifier *ParserImpl::ParsePrimaryExpressionIdent([[maybe_unused]] Express
 
 ir::BooleanLiteral *ParserImpl::ParseBooleanLiteral()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_TRUE ||
-           lexer_->GetToken().Type() == lexer::TokenType::LITERAL_FALSE);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_TRUE ||
+                    lexer_->GetToken().Type() == lexer::TokenType::LITERAL_FALSE);
 
     auto *booleanNode = AllocNode<ir::BooleanLiteral>(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_TRUE);
     booleanNode->SetRange(lexer_->GetToken().Loc());
@@ -869,7 +869,7 @@ ir::BooleanLiteral *ParserImpl::ParseBooleanLiteral()
 
 ir::NullLiteral *ParserImpl::ParseNullLiteral()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_NULL);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_NULL);
     auto *nullNode = AllocNode<ir::NullLiteral>();
     nullNode->SetRange(lexer_->GetToken().Loc());
 
@@ -879,7 +879,7 @@ ir::NullLiteral *ParserImpl::ParseNullLiteral()
 
 ir::Literal *ParserImpl::ParseNumberLiteral()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_NUMBER);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_NUMBER);
 
     ir::Literal *numberNode {};
 
@@ -897,7 +897,7 @@ ir::Literal *ParserImpl::ParseNumberLiteral()
 
 ir::CharLiteral *ParserImpl::ParseCharLiteral()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_CHAR);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_CHAR);
 
     auto *charNode = AllocNode<ir::CharLiteral>(lexer_->GetToken().Utf16());
     charNode->SetRange(lexer_->GetToken().Loc());
@@ -908,7 +908,7 @@ ir::CharLiteral *ParserImpl::ParseCharLiteral()
 
 ir::StringLiteral *ParserImpl::ParseStringLiteral()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
 
     auto *stringNode = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
     stringNode->SetRange(lexer_->GetToken().Loc());
@@ -919,7 +919,7 @@ ir::StringLiteral *ParserImpl::ParseStringLiteral()
 
 ir::UndefinedLiteral *ParserImpl::ParseUndefinedLiteral()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_UNDEFINED);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_UNDEFINED);
     auto *undefinedNode = AllocNode<ir::UndefinedLiteral>();
     undefinedNode->SetRange(lexer_->GetToken().Loc());
 
@@ -929,7 +929,7 @@ ir::UndefinedLiteral *ParserImpl::ParseUndefinedLiteral()
 
 ir::ThisExpression *ParserImpl::ParseThisExpression()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_THIS);
 
     auto *thisExprNode = AllocNode<ir::ThisExpression>();
     thisExprNode->SetRange(lexer_->GetToken().Loc());
@@ -940,8 +940,8 @@ ir::ThisExpression *ParserImpl::ParseThisExpression()
 
 ir::RegExpLiteral *ParserImpl::ParseRegularExpression()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_DIVIDE ||
-           lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_DIVIDE ||
+                    lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL);
 
     lexer_->ResetTokenEnd();
     auto regexp = lexer_->ScanRegExp();
@@ -959,7 +959,7 @@ ir::RegExpLiteral *ParserImpl::ParseRegularExpression()
 
 ir::SuperExpression *ParserImpl::ParseSuperExpression()
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_SUPER);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_SUPER);
 
     auto *superExprNode = AllocNode<ir::SuperExpression>();
     superExprNode->SetRange(lexer_->GetToken().Loc());
@@ -1142,7 +1142,7 @@ static constexpr size_t GetOperatorPrecedenceArithmeticAndComparison(const lexer
 
 static constexpr size_t GetOperatorPrecedence(const lexer::TokenType operatorType)
 {
-    ASSERT(operatorType == lexer::TokenType::KEYW_AS || lexer::Token::IsBinaryToken(operatorType));
+    ES2PANDA_ASSERT(operatorType == lexer::TokenType::KEYW_AS || lexer::Token::IsBinaryToken(operatorType));
 
     switch (operatorType) {
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
@@ -1298,7 +1298,7 @@ static ir::Expression *FindAndAmendChildExpression(ir::Expression *expression, c
 ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, ExpressionParseFlags flags)
 {
     lexer::TokenType operatorType = lexer_->GetToken().Type();
-    ASSERT(lexer::Token::IsBinaryToken(operatorType));
+    ES2PANDA_ASSERT(lexer::Token::IsBinaryToken(operatorType));
 
     if (operatorType == lexer::TokenType::PUNCTUATOR_EXPONENTIATION) {
         if ((left->IsUnaryExpression() || left->IsTypeofExpression()) && !left->IsGrouped()) {
@@ -1381,7 +1381,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseCallExpressionArguments(bool &tra
 
 ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool isOptionalChain, bool handleEval)
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     bool trailingComma {};
 
     while (true) {
@@ -1476,7 +1476,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expre
         }
         case lexer::TokenType::LITERAL_IDENT: {
             ir::Expression *identRef = ParsePrimaryExpression();
-            ASSERT(identRef->IsIdentifier());
+            ES2PANDA_ASSERT(identRef->IsIdentifier());
 
             if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
                 // test exists for js extension only
@@ -1553,7 +1553,7 @@ ir::MemberExpression *ParserImpl::ParseElementAccess(ir::Expression *primaryExpr
 
 ir::MemberExpression *ParserImpl::ParsePrivatePropertyAccess(ir::Expression *primaryExpr)
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK);
 
     lexer::SourcePosition memberStart = lexer_->GetToken().Start();
     ValidatePrivateIdentifier();
@@ -2185,7 +2185,7 @@ bool ParserImpl::ParsePropertyEnd()
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ObjectExpression *ParserImpl::ParseObjectExpression(ExpressionParseFlags flags)
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    ES2PANDA_ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
     lexer::SourcePosition start = lexer_->GetToken().Start();
     ArenaVector<ir::Expression *> properties(Allocator()->Adapter());
     bool trailingComma = false;

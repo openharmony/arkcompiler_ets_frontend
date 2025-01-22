@@ -85,19 +85,19 @@ public:
 
     const parser::Program *Program() const
     {
-        ASSERT(program_);
+        ES2PANDA_ASSERT(program_);
         return program_;
     }
 
     void SetContext(public_lib::Context *context)
     {
-        ASSERT(!context_);
+        ES2PANDA_ASSERT(!context_);
         context_ = context;
     }
 
     public_lib::Context *GetContext() const
     {
-        ASSERT(context_);
+        ES2PANDA_ASSERT(context_);
         return context_;
     }
 
@@ -125,7 +125,7 @@ public:
 
     void ResetTopScope(GlobalScope *topScope)
     {
-        ASSERT(topScope_ == scope_);
+        ES2PANDA_ASSERT(topScope_ == scope_);
         topScope_ = topScope;
         varScope_ = topScope_;
         scope_ = topScope_;
@@ -148,7 +148,7 @@ public:
 
     ETSBinder *AsETSBinder()
     {
-        ASSERT(Extension() == ScriptExtension::STS);
+        ES2PANDA_ASSERT(Extension() == ScriptExtension::STS);
         return reinterpret_cast<ETSBinder *>(this);
     }
 
@@ -295,7 +295,7 @@ public:
 
     ~LexicalScope()
     {
-        ASSERT(varbinder_);
+        ES2PANDA_ASSERT(varbinder_);
         varbinder_->scope_ = prevScope_;
         varbinder_->varScope_ = prevVarScope_;
     }
@@ -352,7 +352,7 @@ private:
 template <size_t N>
 void VarBinder::AddMandatoryParams(const MandatoryParams<N> &params)
 {
-    ASSERT(scope_->IsFunctionVariableScope());
+    ES2PANDA_ASSERT(scope_->IsFunctionVariableScope());
 
     auto scopeCtx = LexicalScope<FunctionParamScope>::Enter(this, scope_->AsFunctionVariableScope()->ParamScope());
 

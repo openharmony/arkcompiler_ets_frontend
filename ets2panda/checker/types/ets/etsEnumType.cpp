@@ -171,7 +171,7 @@ const ArenaVector<ir::AstNode *> &ETSEnumType::GetMembers() const noexcept
 
 varbinder::LocalVariable *ETSEnumType::GetMemberVar() const noexcept
 {
-    ASSERT(IsLiteralType());
+    ES2PANDA_ASSERT(IsLiteralType());
     return member_->Key()->AsIdentifier()->Variable()->AsLocalVariable();
 }
 
@@ -182,7 +182,7 @@ util::StringView ETSEnumType::GetName() const noexcept
 
 ETSEnumType::UType ETSEnumType::GetOrdinal() const noexcept
 {
-    ASSERT(IsLiteralType());
+    ES2PANDA_ASSERT(IsLiteralType());
     return ordinal_;
 }
 
@@ -208,7 +208,7 @@ ETSEnumType *ETSEnumType::LookupConstant(ETSChecker *const checker, const ir::Ex
     }
 
     auto *const enumInterface = member->Key()->AsIdentifier()->Variable()->TsType()->AsETSEnumType();
-    ASSERT(enumInterface->IsLiteralType());
+    ES2PANDA_ASSERT(enumInterface->IsLiteralType());
     return enumInterface;
 }
 
@@ -219,7 +219,7 @@ ETSFunctionType *ETSEnumType::LookupMethod(ETSChecker *checker, const ir::Expres
         return LookupTypeMethod(checker, prop);
     }
 
-    ASSERT(IsEnumInstanceExpression(expression));
+    ES2PANDA_ASSERT(IsEnumInstanceExpression(expression));
     return LookupConstantMethod(checker, prop);
 }
 
@@ -230,20 +230,20 @@ bool ETSEnumType::IsSameEnumType(const ETSEnumType *const other) const noexcept
 
 bool ETSEnumType::IsSameEnumLiteralType(const ETSEnumType *const other) const noexcept
 {
-    ASSERT(IsLiteralType() && IsSameEnumType(other));
+    ES2PANDA_ASSERT(IsLiteralType() && IsSameEnumType(other));
     return member_ == other->member_;
 }
 
 bool ETSEnumType::IsEnumInstanceExpression(const ir::Expression *const expression) const noexcept
 {
-    ASSERT(IsSameEnumType(expression->TsType()->AsETSEnumType()));
+    ES2PANDA_ASSERT(IsSameEnumType(expression->TsType()->AsETSEnumType()));
 
     return IsEnumLiteralExpression(expression) || !IsEnumTypeExpression(expression);
 }
 
 bool ETSEnumType::IsEnumLiteralExpression(const ir::Expression *const expression) const noexcept
 {
-    ASSERT(IsSameEnumType(expression->TsType()->AsETSEnumType()));
+    ES2PANDA_ASSERT(IsSameEnumType(expression->TsType()->AsETSEnumType()));
 
     if (expression->IsMemberExpression()) {
         const auto *const memberExpr = expression->AsMemberExpression();
@@ -257,7 +257,7 @@ bool ETSEnumType::IsEnumLiteralExpression(const ir::Expression *const expression
 bool ETSEnumType::IsEnumTypeExpression(const ir::Expression *const expression) const noexcept
 {
     if (expression->TsType()->IsETSEnumType()) {
-        ASSERT(IsSameEnumType(expression->TsType()->AsETSEnumType()));
+        ES2PANDA_ASSERT(IsSameEnumType(expression->TsType()->AsETSEnumType()));
     } else {
         return false;
     }
@@ -277,56 +277,56 @@ bool ETSEnumType::IsEnumTypeExpression(const ir::Expression *const expression) c
         return expression->AsIdentifier()->Variable()->AsLocalVariable();
     }();
     // clang-format on
-    ASSERT(localVar->Declaration() == decl_->Key()->AsIdentifier()->Variable()->Declaration() ||
-           !localVar->HasFlag(varbinder::VariableFlags::ENUM_LITERAL));
+    ES2PANDA_ASSERT(localVar->Declaration() == decl_->Key()->AsIdentifier()->Variable()->Declaration() ||
+                    !localVar->HasFlag(varbinder::VariableFlags::ENUM_LITERAL));
     return localVar->HasFlag(varbinder::VariableFlags::ENUM_LITERAL);
 }
 
 ETSEnumType::Method ETSEnumType::FromIntMethod() const noexcept
 {
-    ASSERT(fromIntMethod_.globalSignature != nullptr && fromIntMethod_.memberProxyType == nullptr);
+    ES2PANDA_ASSERT(fromIntMethod_.globalSignature != nullptr && fromIntMethod_.memberProxyType == nullptr);
     return fromIntMethod_;
 }
 
 ETSEnumType::Method ETSEnumType::BoxedFromIntMethod() const noexcept
 {
-    ASSERT(boxedFromIntMethod_.globalSignature != nullptr && boxedFromIntMethod_.memberProxyType == nullptr);
+    ES2PANDA_ASSERT(boxedFromIntMethod_.globalSignature != nullptr && boxedFromIntMethod_.memberProxyType == nullptr);
     return boxedFromIntMethod_;
 }
 
 ETSEnumType::Method ETSEnumType::UnboxMethod() const noexcept
 {
-    ASSERT(unboxMethod_.globalSignature != nullptr && unboxMethod_.memberProxyType != nullptr);
+    ES2PANDA_ASSERT(unboxMethod_.globalSignature != nullptr && unboxMethod_.memberProxyType != nullptr);
     return unboxMethod_;
 }
 
 ETSEnumType::Method ETSEnumType::ValueOfMethod() const noexcept
 {
-    ASSERT(valueOfMethod_.globalSignature != nullptr && valueOfMethod_.memberProxyType != nullptr);
+    ES2PANDA_ASSERT(valueOfMethod_.globalSignature != nullptr && valueOfMethod_.memberProxyType != nullptr);
     return valueOfMethod_;
 }
 
 ETSEnumType::Method ETSEnumType::GetNameMethod() const noexcept
 {
-    ASSERT(getNameMethod_.globalSignature != nullptr && getNameMethod_.memberProxyType != nullptr);
+    ES2PANDA_ASSERT(getNameMethod_.globalSignature != nullptr && getNameMethod_.memberProxyType != nullptr);
     return getNameMethod_;
 }
 
 ETSEnumType::Method ETSEnumType::ToStringMethod() const noexcept
 {
-    ASSERT(toStringMethod_.globalSignature != nullptr && toStringMethod_.memberProxyType != nullptr);
+    ES2PANDA_ASSERT(toStringMethod_.globalSignature != nullptr && toStringMethod_.memberProxyType != nullptr);
     return toStringMethod_;
 }
 
 ETSEnumType::Method ETSEnumType::GetValueOfMethod() const noexcept
 {
-    ASSERT(getValueOfMethod_.globalSignature != nullptr && getValueOfMethod_.memberProxyType != nullptr);
+    ES2PANDA_ASSERT(getValueOfMethod_.globalSignature != nullptr && getValueOfMethod_.memberProxyType != nullptr);
     return getValueOfMethod_;
 }
 
 ETSEnumType::Method ETSEnumType::ValuesMethod() const noexcept
 {
-    ASSERT(valuesMethod_.globalSignature != nullptr && valuesMethod_.memberProxyType != nullptr);
+    ES2PANDA_ASSERT(valuesMethod_.globalSignature != nullptr && valuesMethod_.memberProxyType != nullptr);
     return valuesMethod_;
 }
 
@@ -337,7 +337,7 @@ bool ETSEnumType::IsLiteralType() const noexcept
 
 ir::TSEnumMember *ETSEnumType::FindMember(const util::StringView &name) const noexcept
 {
-    ASSERT(!IsLiteralType());
+    ES2PANDA_ASSERT(!IsLiteralType());
     const auto &members = GetMembers();
     auto memberIt = std::find_if(members.begin(), members.end(), [name](const ir::AstNode *const node) {
         return node->AsTSEnumMember()->Key()->AsIdentifier()->Name() == name;
@@ -352,17 +352,17 @@ ir::TSEnumMember *ETSEnumType::FindMember(const util::StringView &name) const no
 ETSFunctionType *ETSEnumType::LookupConstantMethod(ETSChecker *const checker, const ir::Identifier *const prop) const
 {
     if (prop->Name() == TO_STRING_METHOD_NAME) {
-        ASSERT(toStringMethod_.memberProxyType != nullptr);
+        ES2PANDA_ASSERT(toStringMethod_.memberProxyType != nullptr);
         return toStringMethod_.memberProxyType;
     }
 
     if (prop->Name() == VALUE_OF_METHOD_NAME) {
-        ASSERT(valueOfMethod_.memberProxyType != nullptr);
+        ES2PANDA_ASSERT(valueOfMethod_.memberProxyType != nullptr);
         return valueOfMethod_.memberProxyType;
     }
 
     if (prop->Name() == GET_NAME_METHOD_NAME) {
-        ASSERT(getNameMethod_.memberProxyType != nullptr);
+        ES2PANDA_ASSERT(getNameMethod_.memberProxyType != nullptr);
         return getNameMethod_.memberProxyType;
     }
 
@@ -373,12 +373,12 @@ ETSFunctionType *ETSEnumType::LookupConstantMethod(ETSChecker *const checker, co
 ETSFunctionType *ETSEnumType::LookupTypeMethod(ETSChecker *const checker, const ir::Identifier *const prop) const
 {
     if (prop->Name() == VALUES_METHOD_NAME) {
-        ASSERT(valuesMethod_.memberProxyType != nullptr);
+        ES2PANDA_ASSERT(valuesMethod_.memberProxyType != nullptr);
         return valuesMethod_.memberProxyType;
     }
 
     if (prop->Name() == GET_VALUE_OF_METHOD_NAME) {
-        ASSERT(getValueOfMethod_.memberProxyType != nullptr);
+        ES2PANDA_ASSERT(getValueOfMethod_.memberProxyType != nullptr);
         return getValueOfMethod_.memberProxyType;
     }
 

@@ -86,8 +86,8 @@ ir::ClassDefinition *AmbientLowering::CreateIndexerMethodIfNeeded(ir::ClassDefin
     auto &classBody = classDef->Body();
     auto it = classBody.begin();
     // Only one DummyNode is allowed in classBody for now
-    ASSERT(std::count_if(classBody.begin(), classBody.end(), [](ir::AstNode *node) { return node->IsDummyNode(); }) <=
-           1);
+    ES2PANDA_ASSERT(
+        std::count_if(classBody.begin(), classBody.end(), [](ir::AstNode *node) { return node->IsDummyNode(); }) <= 1);
     while (it != classBody.end()) {
         if ((*it)->IsDummyNode() && (*it)->AsDummyNode()->IsDeclareIndexer()) {
             auto setDefinition =

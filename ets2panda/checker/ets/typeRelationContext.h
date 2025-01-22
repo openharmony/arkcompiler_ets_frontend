@@ -145,7 +145,7 @@ public:
     explicit ConstraintCheckScope(ETSChecker *checker) : checker_(checker), isheld_(true)
     {
         size_t &counter = checker_->ConstraintCheckScopesCount();
-        ASSERT(counter != 0 || checker_->PendingConstraintCheckRecords().empty());
+        ES2PANDA_ASSERT(counter != 0 || checker_->PendingConstraintCheckRecords().empty());
         counter++;
     }
 
@@ -164,7 +164,7 @@ public:
 private:
     bool Unlock()
     {
-        ASSERT(isheld_);
+        ES2PANDA_ASSERT(isheld_);
         isheld_ = false;
         return --checker_->ConstraintCheckScopesCount() == 0;
     }

@@ -41,7 +41,7 @@ namespace ark::es2panda::compiler::ast_verifier {
 
 bool CheckInfiniteLoop::ConditionIsAlwaysTrue(const ir::Expression *const test) const
 {
-    ASSERT(test);
+    ES2PANDA_ASSERT(test);
     auto const *const type = test->TsType();
     if (type == nullptr) {
         return false;
@@ -58,7 +58,7 @@ bool CheckInfiniteLoop::ConditionIsAlwaysTrue(const ir::Expression *const test) 
 
 bool CheckInfiniteLoop::HasBreakOrReturnStatement(const ir::Statement *const body) const
 {
-    ASSERT(body);
+    ES2PANDA_ASSERT(body);
     bool hasExit = body->IsBreakStatement() || body->IsReturnStatement();
     body->IterateRecursively(
         [&hasExit](ir::AstNode *child) { hasExit |= child->IsBreakStatement() || child->IsReturnStatement(); });

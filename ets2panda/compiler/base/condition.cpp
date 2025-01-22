@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -237,7 +237,7 @@ bool Condition::CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpress
 
 void Condition::CompileInstanceofExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
-    ASSERT(binExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF);
+    ES2PANDA_ASSERT(binExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF);
     binExpr->Compile(etsg);
     etsg->BranchIfFalse(binExpr, falseLabel);
 }
@@ -297,7 +297,7 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLa
         etsg->BranchIfTrue(expr, falseLabel);
         return;
     }
-    ASSERT(expr->TsType()->IsConditionalExprType());
+    ES2PANDA_ASSERT(expr->TsType()->IsConditionalExprType());
     expr->Compile(etsg);
     etsg->ApplyConversion(expr, etsg->Checker()->GlobalETSBooleanType());
     etsg->ResolveConditionalResultIfFalse(expr, falseLabel);

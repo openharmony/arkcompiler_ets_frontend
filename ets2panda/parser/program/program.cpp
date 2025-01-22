@@ -33,7 +33,7 @@ std::string Program::Dump() const
 void Program::DumpSilent() const
 {
     [[maybe_unused]] ir::AstDumper dumper {ast_, SourceCode()};
-    ASSERT(!dumper.Str().empty());
+    ES2PANDA_ASSERT(!dumper.Str().empty());
 }
 
 varbinder::ClassScope *Program::GlobalClassScope()
@@ -48,13 +48,13 @@ const varbinder::ClassScope *Program::GlobalClassScope() const
 
 varbinder::GlobalScope *Program::GlobalScope()
 {
-    ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
+    ES2PANDA_ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
     return static_cast<varbinder::GlobalScope *>(ast_->Scope());
 }
 
 const varbinder::GlobalScope *Program::GlobalScope() const
 {
-    ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
+    ES2PANDA_ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
     return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 

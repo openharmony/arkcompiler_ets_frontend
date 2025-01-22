@@ -40,7 +40,7 @@ public:
           constraint_(constraint),
           defaultType_(defaultType)
     {
-        ASSERT(flags == ModifierFlags::NONE || flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
+        ES2PANDA_ASSERT(flags == ModifierFlags::NONE || flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
     }
 
     const Identifier *Name() const

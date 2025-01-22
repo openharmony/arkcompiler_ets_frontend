@@ -28,7 +28,7 @@ public:
                         std::make_tuple(nullptr, ETSObjectFlags::ASYNC_FUNC_RETURN_TYPE, relation)),
           promiseType_(promiseType)
     {
-        ASSERT(promiseType->TypeArguments().size() == 1);
+        ES2PANDA_ASSERT(promiseType->TypeArguments().size() == 1);
     }
 
     void ToString(std::stringstream &ss, bool precise) const override;

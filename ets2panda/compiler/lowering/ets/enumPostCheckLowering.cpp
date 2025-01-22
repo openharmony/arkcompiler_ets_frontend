@@ -66,7 +66,7 @@ static ir::CallExpression *CallInstanceEnumMethod(checker::ETSChecker *checker, 
 
 static ir::CallExpression *GenerateValueOfCall(checker::ETSChecker *checker, ir::AstNode *const node)
 {
-    ASSERT(node->IsExpression());
+    ES2PANDA_ASSERT(node->IsExpression());
     auto expr = node->AsExpression();
     auto parent = expr->Parent();
     parent->AddAstNodeFlags(ir::AstNodeFlags::RECHECK);
@@ -126,7 +126,7 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
                 return GenerateValueOfCall(ctx->checker->AsETSChecker(), node);
             }
             if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME)) {
-                ASSERT(node->IsMemberExpression());
+                ES2PANDA_ASSERT(node->IsMemberExpression());
                 auto memberExpr = node->AsMemberExpression();
 
                 auto *enumIf = memberExpr->Object()->TsType()->AsETSEnumType();

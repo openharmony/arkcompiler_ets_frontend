@@ -135,9 +135,9 @@ ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassPr
 
 void GlobalDeclTransformer::HandleNode(ir::AstNode *node)
 {
-    ASSERT(node->IsStatement());
+    ES2PANDA_ASSERT(node->IsStatement());
     if (typeDecl_.count(node->Type()) == 0U) {
-        ASSERT(!propertiesDecl_.count(node->Type()));
+        ES2PANDA_ASSERT(!propertiesDecl_.count(node->Type()));
         result_.initStatements.emplace_back(node->AsStatement());
     }
 }

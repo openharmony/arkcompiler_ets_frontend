@@ -51,7 +51,7 @@ void AnnotationUsage::Dump(ir::AstDumper *dumper) const
 }
 void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(expr_ != nullptr);
+    ES2PANDA_ASSERT(expr_ != nullptr);
     dumper->Add("@");
     expr_->Dump(dumper);
     dumper->Add("(");

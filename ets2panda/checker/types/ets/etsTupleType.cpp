@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -84,7 +84,7 @@ bool ETSTupleType::AssignmentSource(TypeRelation *const relation, Type *const ta
     }
 
     if (!target->IsETSTupleType()) {
-        ASSERT(target->IsETSArrayType());
+        ES2PANDA_ASSERT(target->IsETSArrayType());
         auto *const arrayTarget = target->AsETSArrayType();
 
         const SavedTypeRelationFlagsContext savedFlagsCtx(
@@ -108,7 +108,7 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
     }
 
     if (!source->IsETSTupleType()) {
-        ASSERT(source->IsETSArrayType());
+        ES2PANDA_ASSERT(source->IsETSArrayType());
         auto *const arraySource = source->AsETSArrayType();
 
         const SavedTypeRelationFlagsContext savedFlagsCtx(

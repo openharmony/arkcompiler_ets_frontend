@@ -822,7 +822,7 @@ void InitScopesPhaseETS::HandleProgram(parser::Program *program)
         }
         program->VarBinder()->ResetTopScope(savedTopScope);
     }
-    ASSERT(program->Ast() != nullptr);
+    ES2PANDA_ASSERT(program->Ast() != nullptr);
 
     HandleETSModule(program->Ast());
 }
@@ -915,7 +915,7 @@ void AddOverload(ir::MethodDefinition *overload, varbinder::Variable *variable) 
 
 void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
 {
-    ASSERT(VarBinder()->GetScope()->IsClassScope());
+    ES2PANDA_ASSERT(VarBinder()->GetScope()->IsClassScope());
 
     if ((method->AsMethodDefinition()->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) != 0) {
         return;
@@ -958,7 +958,7 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
             methodName->SetVariable(var);
         }
         for (auto *overload : method->Overloads()) {
-            ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
+            ES2PANDA_ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
             overload->Id()->SetVariable(var);
             overload->SetParent(var->Declaration()->Node());
         }
@@ -971,7 +971,7 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
 
         // default params overloads
         for (auto *overload : method->Overloads()) {
-            ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
+            ES2PANDA_ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
             AddOverload(overload, found);
         }
         method->ClearOverloads();
@@ -1203,10 +1203,10 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
     auto curScope = VarBinder()->GetScope();
     const auto name = classProp->Key()->AsIdentifier()->Name();
 
-    ASSERT(!classProp->IsClassStaticBlock());
+    ES2PANDA_ASSERT(!classProp->IsClassStaticBlock());
 
     if (classProp->IsConst()) {
-        ASSERT(curScope->Parent() != nullptr);
+        ES2PANDA_ASSERT(curScope->Parent() != nullptr);
         const auto initializer = classProp->Value();
         if (initializer == nullptr && curScope->Parent()->IsGlobalScope() && !classProp->IsDeclare()) {
             auto pos = classProp->End();

@@ -84,9 +84,9 @@ void ETSFunctionType::Identical(TypeRelation *relation, Type *other)
 bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
 {
     if (target->IsETSDynamicType()) {
-        ASSERT(relation->GetNode() != nullptr);
+        ES2PANDA_ASSERT(relation->GetNode() != nullptr);
         if (relation->GetNode()->IsArrowFunctionExpression()) {
-            ASSERT(callSignatures_.size() == 1 && callSignatures_[0]->HasSignatureFlag(SignatureFlags::CALL));
+            ES2PANDA_ASSERT(callSignatures_.size() == 1 && callSignatures_[0]->HasSignatureFlag(SignatureFlags::CALL));
             return relation->Result(true);
         }
         return relation->Result(false);
@@ -234,7 +234,7 @@ void ETSFunctionType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
-    ASSERT(IsETSArrowType() && sourceFnType->IsETSArrowType());
+    ES2PANDA_ASSERT(IsETSArrowType() && sourceFnType->IsETSArrowType());
 
     Signature *const targetSig = CallSignature();
     Signature *sourceSig = sourceFnType->CallSignature();
@@ -254,7 +254,7 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
         return;
     }
 
-    ASSERT(IsETSArrowType() && CallSignature()->IsTypeAnnotation());
+    ES2PANDA_ASSERT(IsETSArrowType() && CallSignature()->IsTypeAnnotation());
 
     // As the source function a class method can be used which can be overloaded - loop required
     for (auto signature : sourceFnType->CallSignatures()) {

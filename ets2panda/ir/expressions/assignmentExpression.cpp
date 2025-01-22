@@ -112,12 +112,12 @@ void AssignmentExpression::Dump(ir::AstDumper *dumper) const
 
 void AssignmentExpression::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(left_);
+    ES2PANDA_ASSERT(left_);
     left_->Dump(dumper);
     dumper->Add(" ");
     dumper->Add(TokenToString(operator_));
     dumper->Add(" ");
-    ASSERT(right_);
+    ES2PANDA_ASSERT(right_);
     right_->Dump(dumper);
 }
 

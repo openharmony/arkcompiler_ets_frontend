@@ -65,7 +65,7 @@ static auto ExtractAst(const parser::Program &program, bool checkFullProgram)
     if (checkFullProgram) {
         for (const auto &externalSource : program.ExternalSources()) {
             for (auto *external : externalSource.second) {
-                ASSERT(external->Ast() != nullptr);
+                ES2PANDA_ASSERT(external->Ast() != nullptr);
                 astToCheck.insert(std::make_pair(external->SourceFilePath().Utf8(), external->Ast()));
             }
         }
@@ -97,7 +97,8 @@ void ASTVerifier::Verify(std::string_view phaseName)
                 (TreatAsError(inv.ID) ? hasErrors_ : hasWarnings_) = true;
             }
         };
-        ASSERT(astCorrect == std::apply([](const auto &...inv) { return ((!inv.HasMessages()) && ...); }, invariants_));
+        ES2PANDA_ASSERT(astCorrect ==
+                        std::apply([](const auto &...inv) { return ((!inv.HasMessages()) && ...); }, invariants_));
         if (!astCorrect) {
             if (report_.empty() || report_.back().first != phaseName) {
                 report_.emplace_back();

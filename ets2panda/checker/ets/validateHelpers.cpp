@@ -216,7 +216,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident)
 bool ETSChecker::ValidateAnnotationPropertyType(checker::Type *type)
 {
     if (type == nullptr || type->IsTypeError()) {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return false;
     }
 
@@ -265,7 +265,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
     auto *const clonedNode = typeAliasNode->TypeAnnotation()->Clone(Allocator(), typeAliasNode);
 
     // Basic check, we really don't want to change the original type nodes, more precise checking should be made
-    ASSERT(clonedNode != typeAliasNode->TypeAnnotation());
+    ES2PANDA_ASSERT(clonedNode != typeAliasNode->TypeAnnotation());
 
     // Currently only reference types are checked. This should be extended for other types in a follow up patch, but for
     // complete usability, if the type isn't a simple reference type, then doN't check type alias declaration at all.

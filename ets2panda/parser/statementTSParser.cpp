@@ -124,7 +124,7 @@ ir::Statement *TSParser::ParseStatement(StatementParsingFlags flags)
 ir::TSImportEqualsDeclaration *TSParser::ParseTsImportEqualsDeclaration(const lexer::SourcePosition &startLoc,
                                                                         bool isExport)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT);
     Lexer()->NextToken();
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         ThrowSyntaxError("Unexpected token");
@@ -354,7 +354,7 @@ ir::Statement *TSParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
         ir::AstNode *astNode = ParseImportSpecifiers(&specifiers);
         if (astNode != nullptr) {
-            ASSERT(astNode->IsTSImportEqualsDeclaration());
+            ES2PANDA_ASSERT(astNode->IsTSImportEqualsDeclaration());
             astNode->SetRange({startLoc, Lexer()->GetToken().End()});
             ConsumeSemicolon(astNode->AsTSImportEqualsDeclaration());
             return astNode->AsTSImportEqualsDeclaration();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,9 +70,9 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
 bool ObjectIndexLowering::PerformForModule(public_lib::Context *ctx, parser::Program *program)
 {
     auto *const parser = ctx->parser->AsETSParser();
-    ASSERT(parser != nullptr);
+    ES2PANDA_ASSERT(parser != nullptr);
     auto *const checker = ctx->checker->AsETSChecker();
-    ASSERT(checker != nullptr);
+    ES2PANDA_ASSERT(checker != nullptr);
 
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style

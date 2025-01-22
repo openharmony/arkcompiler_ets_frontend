@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,7 +59,7 @@ void DestructuringContext::HandleDestructuringAssignment(ir::Identifier *ident, 
     }
 
     varbinder::Variable *variable = ident->Variable();
-    ASSERT(variable->TsType());
+    ES2PANDA_ASSERT(variable->TsType());
 
     if (defaultType != nullptr && !checker_->IsTypeAssignableTo(defaultType, variable->TsType())) {
         checker_->ThrowAssignmentError(defaultType, variable->TsType(), ident->Start());
@@ -73,7 +73,7 @@ void DestructuringContext::HandleDestructuringAssignment(ir::Identifier *ident, 
 void DestructuringContext::SetInferredTypeForVariable(varbinder::Variable *var, Type *inferredType,
                                                       const lexer::SourcePosition &loc)
 {
-    ASSERT(var);
+    ES2PANDA_ASSERT(var);
 
     if (!checker_->HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
         inferredType = checker_->GetBaseTypeOfLiteralType(inferredType);
@@ -107,7 +107,7 @@ void DestructuringContext::ValidateObjectLiteralType(ObjectType *objType, ir::Ob
                 continue;
             }
 
-            ASSERT(targetProp->IsProperty());
+            ES2PANDA_ASSERT(targetProp->IsProperty());
             const util::StringView &targetName = targetProp->AsProperty()->Key()->AsIdentifier()->Name();
 
             if (sourceName == targetName) {
@@ -195,7 +195,7 @@ void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *ass
         return;
     }
 
-    ASSERT(assignmentPattern->Left()->IsObjectPattern());
+    ES2PANDA_ASSERT(assignmentPattern->Left()->IsObjectPattern());
     ObjectDestructuringContext nextContext = ObjectDestructuringContext(
         {checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
     nextContext.SetInferredType(inferredType);
@@ -241,7 +241,7 @@ Type *ArrayDestructuringContext::NextInferredType([[maybe_unused]] const util::S
     }
 
     if (inferredType_->IsObjectType()) {
-        ASSERT(inferredType_->AsObjectType()->IsTupleType());
+        ES2PANDA_ASSERT(inferredType_->AsObjectType()->IsTupleType());
         Type *returnType = GetTypeFromTupleByIndex(inferredType_->AsObjectType()->AsTupleType());
 
         if (returnType == nullptr && throwError) {
@@ -258,7 +258,7 @@ Type *ArrayDestructuringContext::NextInferredType([[maybe_unused]] const util::S
         return returnType;
     }
 
-    ASSERT(inferredType_->IsUnionType());
+    ES2PANDA_ASSERT(inferredType_->IsUnionType());
 
     ArenaVector<Type *> unionTypes(checker_->Allocator()->Adapter());
 
@@ -268,7 +268,7 @@ Type *ArrayDestructuringContext::NextInferredType([[maybe_unused]] const util::S
             continue;
         }
 
-        ASSERT(type->IsObjectType() && type->AsObjectType()->IsTupleType());
+        ES2PANDA_ASSERT(type->IsObjectType() && type->AsObjectType()->IsTupleType());
         Type *elementType = GetTypeFromTupleByIndex(type->AsObjectType()->AsTupleType());
 
         if (elementType == nullptr) {
@@ -301,7 +301,7 @@ Type *ArrayDestructuringContext::CreateArrayTypeForRest(UnionType *inferredType)
             continue;
         }
 
-        ASSERT(it->IsObjectType() && it->AsObjectType()->IsTupleType());
+        ES2PANDA_ASSERT(it->IsObjectType() && it->AsObjectType()->IsTupleType());
         Type *tupleElementType = GetTypeFromTupleByIndex(it->AsObjectType()->AsTupleType());
 
         while (tupleElementType != nullptr) {
@@ -356,7 +356,7 @@ Type *ArrayDestructuringContext::GetRestType([[maybe_unused]] const lexer::Sourc
         return CreateTupleTypeForRest(inferredType_->AsObjectType()->AsTupleType());
     }
 
-    ASSERT(inferredType_->IsUnionType());
+    ES2PANDA_ASSERT(inferredType_->IsUnionType());
     bool createArrayType = false;
 
     for (auto *it : inferredType_->AsUnionType()->ConstituentTypes()) {
@@ -373,7 +373,7 @@ Type *ArrayDestructuringContext::GetRestType([[maybe_unused]] const lexer::Sourc
     ArenaVector<Type *> tupleUnion(checker_->Allocator()->Adapter());
 
     for (auto *it : inferredType_->AsUnionType()->ConstituentTypes()) {
-        ASSERT(it->IsObjectType() && it->AsObjectType()->IsTupleType());
+        ES2PANDA_ASSERT(it->IsObjectType() && it->AsObjectType()->IsTupleType());
         Type *newTuple = CreateTupleTypeForRest(it->AsObjectType()->AsTupleType());
         tupleUnion.push_back(newTuple);
     }
@@ -403,7 +403,7 @@ void ArrayDestructuringContext::HandleRest(ir::SpreadElement *rest)
         return;
     }
 
-    ASSERT(rest->Argument()->IsObjectPattern());
+    ES2PANDA_ASSERT(rest->Argument()->IsObjectPattern());
     ObjectDestructuringContext nextContext =
         ObjectDestructuringContext({checker_, rest->Argument(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
     nextContext.SetInferredType(inferredRestType);
@@ -448,7 +448,7 @@ void ArrayDestructuringContext::SetRemainingParameterTypes()
 {
     do {
         auto *it = id_->AsArrayPattern()->Elements()[index_];
-        ASSERT(it);
+        ES2PANDA_ASSERT(it);
         SetParameterType(it, checker_->GlobalAnyType());
     } while (++index_ != id_->AsArrayPattern()->Elements().size());
 }
@@ -494,7 +494,7 @@ void ArrayDestructuringContext::HandleElement(ir::Expression *element, Type *nex
 
 void ArrayDestructuringContext::Start()
 {
-    ASSERT(id_->IsArrayPattern());
+    ES2PANDA_ASSERT(id_->IsArrayPattern());
 
     ValidateInferredType();
 
@@ -515,7 +515,7 @@ void ArrayDestructuringContext::Start()
         }
 
         if (convertTupleToArray_ && nextInferredType != nullptr && inferredType_->IsObjectType()) {
-            ASSERT(inferredType_->AsObjectType()->IsTupleType());
+            ES2PANDA_ASSERT(inferredType_->AsObjectType()->IsTupleType());
 
             varbinder::Variable *currentTupleElement = inferredType_->AsObjectType()->Properties()[index_];
 
@@ -541,7 +541,7 @@ void ObjectDestructuringContext::ValidateInferredType()
 void ObjectDestructuringContext::HandleRest(ir::SpreadElement *rest)
 {
     Type *inferredRestType = GetRestType(rest->Start());
-    ASSERT(rest->Argument()->IsIdentifier());
+    ES2PANDA_ASSERT(rest->Argument()->IsIdentifier());
 
     if (inAssignment_) {
         HandleDestructuringAssignment(rest->Argument()->AsIdentifier(), inferredRestType, nullptr);
@@ -604,7 +604,7 @@ Type *ObjectDestructuringContext::ConvertTupleTypeToArrayTypeIfNecessary(ir::Ast
         return type;
     }
 
-    ASSERT(node->IsProperty());
+    ES2PANDA_ASSERT(node->IsProperty());
 
     ir::Property *property = node->AsProperty();
 
@@ -684,13 +684,13 @@ void ObjectDestructuringContext::StartPropertyHelper(ir::Expression *it)
         return;
     }
 
-    ASSERT(property->Value()->IsAssignmentPattern());
+    ES2PANDA_ASSERT(property->Value()->IsAssignmentPattern());
     HandleAssignmentPattern(property->Value()->AsAssignmentPattern(), nextInferredType, true);
 }
 
 void ObjectDestructuringContext::Start()
 {
-    ASSERT(id_->IsObjectPattern());
+    ES2PANDA_ASSERT(id_->IsObjectPattern());
 
     if (!id_->AsObjectPattern()->Properties().back()->IsRestElement() && validateObjectPatternInitializer_) {
         ValidateInferredType();

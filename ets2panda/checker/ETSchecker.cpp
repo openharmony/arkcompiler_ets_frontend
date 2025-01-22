@@ -37,13 +37,13 @@ static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signat
 {
     const auto varMap = checker->VarBinder()->TopScope()->Bindings();
     const auto iterator = varMap.find(signature);
-    ASSERT(iterator != varMap.end());
+    ES2PANDA_ASSERT(iterator != varMap.end());
     auto *var = iterator->second;
     Type *type {nullptr};
     if (var->Declaration()->Node()->IsClassDefinition()) {
         type = checker->BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
     } else {
-        ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+        ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
         type = checker->BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     }
     checker->GetGlobalTypesHolder()->InitializeBuiltin(iterator->first, type);
@@ -79,7 +79,7 @@ static void SetupFunctionalInterface(ETSObjectType *type)
     type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
     auto *invoke = type->GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
     auto *invokeType = invoke->TsType()->AsETSFunctionType();
-    ASSERT(invokeType->IsETSArrowType());
+    ES2PANDA_ASSERT(invokeType->IsETSArrowType());
     auto *signature = invokeType->CallSignatures()[0];
     signature->AddSignatureFlag(SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
 }
@@ -237,7 +237,7 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
     if (var->Declaration()->Node()->IsClassDefinition()) {
         type = BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
     } else {
-        ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+        ES2PANDA_ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
         type = BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     }
     GetGlobalTypesHolder()->InitializeBuiltin(name, type);
@@ -276,7 +276,7 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Optio
 
 #ifndef NDEBUG
     for (auto *func : varbinder->Functions()) {
-        ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());
+        ES2PANDA_ASSERT(!func->Node()->AsScriptFunction()->Scope()->Name().Empty());
     }
 #endif
 
@@ -318,7 +318,7 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
         }
     }
 
-    ASSERT(Program()->Ast()->IsProgram());
+    ES2PANDA_ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
 
     if (runAnalysis && !IsAnyError()) {
@@ -326,7 +326,7 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
         AssignAnalyzer(this).Analyze(Program()->Ast());
     }
 
-    ASSERT(VarBinder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);
+    ES2PANDA_ASSERT(VarBinder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);
 
     SetProgram(savedProgram);
 }

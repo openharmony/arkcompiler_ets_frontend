@@ -60,7 +60,7 @@ void IfStatement::Dump(ir::AstDumper *dumper) const
 
 void IfStatement::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(test_);
+    ES2PANDA_ASSERT(test_);
     dumper->Add("if (");
     test_->Dump(dumper);
     dumper->Add(") {");

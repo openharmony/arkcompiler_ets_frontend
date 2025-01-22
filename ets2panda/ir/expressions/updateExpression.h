@@ -34,8 +34,8 @@ public:
     explicit UpdateExpression(Expression *const argument, lexer::TokenType const updateOperator, bool const isPrefix)
         : Expression(AstNodeType::UPDATE_EXPRESSION), argument_(argument), operator_(updateOperator), prefix_(isPrefix)
     {
-        ASSERT(updateOperator == lexer::TokenType::PUNCTUATOR_PLUS_PLUS ||
-               updateOperator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
+        ES2PANDA_ASSERT(updateOperator == lexer::TokenType::PUNCTUATOR_PLUS_PLUS ||
+                        updateOperator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
     }
 
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields

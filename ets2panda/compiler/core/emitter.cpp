@@ -191,8 +191,8 @@ static std::string WholeLine(const util::StringView &source, lexer::SourceRange 
     if (source.Empty()) {
         return {};
     }
-    ASSERT(range.end.index <= source.Length());
-    ASSERT(range.end.index >= range.start.index);
+    ES2PANDA_ASSERT(range.end.index <= source.Length());
+    ES2PANDA_ASSERT(range.end.index >= range.start.index);
     return source.Substr(range.start.index, range.end.index).EscapeSymbol<util::StringView::Mutf8Encode>();
 }
 
@@ -200,7 +200,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, pandasm::Ins *p
 {
     const ir::AstNode *astNode = ins->Node();
 
-    ASSERT(astNode != nullptr);
+    ES2PANDA_ASSERT(astNode != nullptr);
 
     if (astNode == FIRST_NODE_OF_FUNCTION) {
         astNode = cg_->Debuginfo().FirstStatement();
@@ -299,7 +299,7 @@ static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variableDebu
         variableDebug.signature = "any";
         variableDebug.signatureType = "any";
     } else {
-        ASSERT(var->AsLocalVariable()->TsType() != nullptr);
+        ES2PANDA_ASSERT(var->AsLocalVariable()->TsType() != nullptr);
         std::stringstream ss;
         var->AsLocalVariable()->TsType()->ToDebugInfoType(ss);
         variableDebug.signature = ss.str();
@@ -388,7 +388,7 @@ void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const varbin
             varsStarts.emplace(var, count);
         }
     }
-    ASSERT(iter != lastIter);
+    ES2PANDA_ASSERT(iter != lastIter);
 
     GenScopeVariableInfoEnd(func, scope, count, start, varsStarts);
 }

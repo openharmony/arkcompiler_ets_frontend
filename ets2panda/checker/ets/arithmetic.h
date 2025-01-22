@@ -153,7 +153,7 @@ template <>
 inline IntType::UType ark::es2panda::checker::ETSChecker::HandleModulo<IntType::UType>(IntType::UType leftValue,
                                                                                        IntType::UType rightValue)
 {
-    ASSERT(rightValue != 0);
+    ES2PANDA_ASSERT(rightValue != 0);
     return leftValue % rightValue;
 }
 
@@ -161,7 +161,7 @@ template <>
 inline LongType::UType ark::es2panda::checker::ETSChecker::HandleModulo<LongType::UType>(LongType::UType leftValue,
                                                                                          LongType::UType rightValue)
 {
-    ASSERT(rightValue != 0);
+    ES2PANDA_ASSERT(rightValue != 0);
     return leftValue % rightValue;
 }
 

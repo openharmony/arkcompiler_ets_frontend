@@ -65,7 +65,7 @@ bool ETSChecker::ComputeSuperType(ETSObjectType *type)
         return true;
     }
 
-    ASSERT(type->Variable() && type->GetDeclNode()->IsClassDefinition());
+    ES2PANDA_ASSERT(type->Variable() && type->GetDeclNode()->IsClassDefinition());
     auto *classDef = type->GetDeclNode()->AsClassDefinition();
 
     if (classDef->Super() == nullptr || !classDef->Super()->IsTypeNode()) {
@@ -184,7 +184,7 @@ void ETSChecker::GetInterfacesOfInterface(ETSObjectType *type)
 
 ArenaVector<ETSObjectType *> ETSChecker::GetInterfaces(ETSObjectType *type)
 {
-    ASSERT(type->GetDeclNode()->IsClassDefinition() || type->GetDeclNode()->IsTSInterfaceDeclaration());
+    ES2PANDA_ASSERT(type->GetDeclNode()->IsClassDefinition() || type->GetDeclNode()->IsTSInterfaceDeclaration());
 
     if (type->GetDeclNode()->IsClassDefinition()) {
         GetInterfacesOfClass(type);
@@ -247,7 +247,7 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
             ir::ETSTypeReferencePart *defaultTypePart = node->AsETSTypeReferencePart();
             auto *const variable = defaultTypePart->Name()->Variable();
             if (variable == nullptr) {
-                ASSERT(IsAnyError());
+                ES2PANDA_ASSERT(IsAnyError());
                 ok = false;
                 return;
             }
@@ -325,7 +325,7 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
 ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const param)
 {
     if (param->Name()->Variable() != nullptr && param->Name()->Variable()->TsType() != nullptr) {
-        ASSERT(param->Name()->Variable()->TsType()->IsETSTypeParameter());
+        ES2PANDA_ASSERT(param->Name()->Variable()->TsType()->IsETSTypeParameter());
         return param->Name()->Variable()->TsType()->AsETSTypeParameter();
     }
 
@@ -363,7 +363,7 @@ Type *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *inte
 {
     auto *var = interfaceDecl->Id()->Variable();
     if (var == nullptr) {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();
     }
 
@@ -404,7 +404,7 @@ Type *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
 
     auto *var = classDef->Ident()->Variable();
     if (var == nullptr) {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return GlobalTypeError();
     }
 
@@ -461,7 +461,7 @@ static void ResolveDeclaredFieldsOfObject(ETSChecker *checker, const ETSObjectTy
 {
     for (auto &[_, it] : scope->InstanceFieldScope()->Bindings()) {
         (void)_;
-        ASSERT(it->Declaration()->Node()->IsClassProperty());
+        ES2PANDA_ASSERT(it->Declaration()->Node()->IsClassProperty());
         auto *classProp = it->Declaration()->Node()->AsClassProperty();
         it->AddFlag(checker->GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::INSTANCE_FIELD>(it->AsLocalVariable());
@@ -469,7 +469,7 @@ static void ResolveDeclaredFieldsOfObject(ETSChecker *checker, const ETSObjectTy
 
     for (auto &[_, it] : scope->StaticFieldScope()->Bindings()) {
         (void)_;
-        ASSERT(it->Declaration()->Node()->IsClassProperty());
+        ES2PANDA_ASSERT(it->Declaration()->Node()->IsClassProperty());
         auto *classProp = it->Declaration()->Node()->AsClassProperty();
         it->AddFlag(checker->GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::STATIC_FIELD>(it->AsLocalVariable());
@@ -675,7 +675,7 @@ void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
 
     for (auto *interface : interfaceType->Interfaces()) {
         auto found = cachedComputedAbstracts_.find(interface);
-        ASSERT(found != cachedComputedAbstracts_.end());
+        ES2PANDA_ASSERT(found != cachedComputedAbstracts_.end());
 
         if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
@@ -699,7 +699,7 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
     ArenaUnorderedSet<ETSObjectType *> abstractInheritanceTarget(Allocator()->Adapter());
     if (classType->SuperType() != nullptr) {
         auto base = cachedComputedAbstracts_.find(classType->SuperType());
-        ASSERT(base != cachedComputedAbstracts_.end());
+        ES2PANDA_ASSERT(base != cachedComputedAbstracts_.end());
         MergeComputedAbstracts(merged, base->second.first);
 
         abstractInheritanceTarget.insert(base->first);
@@ -711,7 +711,7 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
     for (auto *it : classType->Interfaces()) {
         ComputeAbstractsFromInterface(it);
         auto found = cachedComputedAbstracts_.find(it);
-        ASSERT(found != cachedComputedAbstracts_.end());
+        ES2PANDA_ASSERT(found != cachedComputedAbstracts_.end());
 
         if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
@@ -1063,7 +1063,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     classDef->SetClassDefinitionChecked();
 
     if (classDef->TsType() == nullptr) {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         classDef->SetTsType(GlobalTypeError());
     }
 
@@ -1135,7 +1135,7 @@ void ETSChecker::CheckClassElement(ir::ClassDefinition *classDef)
     for (auto *it : classDef->Body()) {
         if (!it->IsClassProperty()) {
             if (it->IsETSModule() && it->AsETSModule()->IsNamespace()) {
-                ASSERT(IsAnyError());
+                ES2PANDA_ASSERT(IsAnyError());
                 continue;
             }
             it->Check(this);
@@ -1464,7 +1464,7 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
         }
 
         auto num = expr->AsNumberLiteral()->Number();
-        ASSERT(num.IsReal());
+        ES2PANDA_ASSERT(num.IsReal());
         double value = num.GetDouble();
         double intpart;
         if (std::modf(value, &intpart) != 0.0) {
@@ -1490,7 +1490,7 @@ bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 
 std::optional<int32_t> ETSChecker::GetTupleElementAccessValue(const Type *const type, const lexer::SourcePosition &pos)
 {
-    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
+    ES2PANDA_ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     switch (ETSType(type)) {
         case TypeFlag::BYTE: {
@@ -1527,7 +1527,7 @@ bool ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberE
     }
 
     const auto *const exprType = expr->Property()->TsType();
-    ASSERT(exprType != nullptr);
+    ES2PANDA_ASSERT(exprType != nullptr);
 
     if (!exprType->HasTypeFlag(TypeFlag::CONSTANT) && !tuple->HasSpreadType()) {
         LogTypeError("Only constant expression allowed for element access on tuples.", expr->Property()->Start());
@@ -1564,7 +1564,7 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
         }
 
         auto *sig = Context().ContainingSignature();
-        ASSERT(sig->Function()->Body() && sig->Function()->Body()->IsBlockStatement());
+        ES2PANDA_ASSERT(sig->Function()->Body() && sig->Function()->Body()->IsBlockStatement());
 
         if (!sig->HasSignatureFlag(checker::SignatureFlags::CONSTRUCT)) {
             LogTypeError({"Call to '", msg, "' must be first statement in constructor"}, node->Start());
@@ -1592,7 +1592,7 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
 
 void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
 {
-    ASSERT(signature->Function());
+    ES2PANDA_ASSERT(signature->Function());
 
     if (signature->Function()->IsExternal()) {
         return;
@@ -1618,7 +1618,7 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
             LogTypeError("No matching call signature for constructor", constructorCall->Start());
             return;
         }
-        ASSERT(constructorCall->Signature());
+        ES2PANDA_ASSERT(constructorCall->Signature());
         CheckCyclicConstructorCall(constructorCall->Signature());
     }
 }
@@ -1894,8 +1894,8 @@ void ETSChecker::ValidateGetterSetter(const ir::MemberExpression *const memberEx
                                       const varbinder::LocalVariable *const prop, PropertySearchFlags searchFlag)
 {
     auto *propType = prop->TsType()->AsETSFunctionType();
-    ASSERT((propType->FindGetter() != nullptr) == propType->HasTypeFlag(TypeFlag::GETTER));
-    ASSERT((propType->FindSetter() != nullptr) == propType->HasTypeFlag(TypeFlag::SETTER));
+    ES2PANDA_ASSERT((propType->FindGetter() != nullptr) == propType->HasTypeFlag(TypeFlag::GETTER));
+    ES2PANDA_ASSERT((propType->FindSetter() != nullptr) == propType->HasTypeFlag(TypeFlag::SETTER));
 
     auto const &sourcePos = memberExpr->Property()->Start();
     auto callExpr = memberExpr->Parent()->IsCallExpression() ? memberExpr->Parent()->AsCallExpression() : nullptr;
@@ -1979,7 +1979,7 @@ void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression
     if (prop->TsType() != nullptr && prop->TsType()->IsETSFunctionType() && !IsVariableGetterSetter(prop) &&
         type_annotation != nullptr) {
         auto *targetType = GetTypeOfVariable(target_ident->Variable());
-        ASSERT(targetType != nullptr);
+        ES2PANDA_ASSERT(targetType != nullptr);
 
         if (!(targetType->IsETSFunctionType() ||
               (targetType->IsETSObjectType() &&
@@ -1992,7 +1992,7 @@ void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression
 
 static ResolvedKind DecideResolvedKind(Type *typeOfGlobalFunctionVar)
 {
-    ASSERT(typeOfGlobalFunctionVar->IsETSObjectType() || typeOfGlobalFunctionVar->IsETSFunctionType());
+    ES2PANDA_ASSERT(typeOfGlobalFunctionVar->IsETSObjectType() || typeOfGlobalFunctionVar->IsETSFunctionType());
     if (typeOfGlobalFunctionVar->IsETSObjectType()) {
         return ResolvedKind::EXTENSION_FUNCTION;
     }
@@ -2234,7 +2234,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
     auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
 
     for (auto *const field : propertyList) {
-        ASSERT(field->Declaration()->Node()->IsClassProperty());
+        ES2PANDA_ASSERT(field->Declaration()->Node()->IsClassProperty());
         auto *const originalProp = field->Declaration()->Node()->AsClassProperty();
 
         if ((originalProp->Modifiers() & ir::ModifierFlags::GETTER_SETTER) == 0U) {
@@ -2300,7 +2300,7 @@ void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util:
         if (name.Is(str.Mutf8()) || name.Is(compiler::Signatures::ETS_GLOBAL)) {
             continue;
         }
-        ASSERT(name.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
+        ES2PANDA_ASSERT(name.Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
 
         if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
             moduleObj->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());

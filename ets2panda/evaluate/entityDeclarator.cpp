@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,7 +33,7 @@ EntityDeclarator::EntityDeclarator(ScopedDebugInfoPlugin &debugInfoPlugin)
 
 UMapStringViewVariable &EntityDeclarator::GetOrCreateEntitiesMap(parser::Program *program)
 {
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
 
     auto iter = createdEntities_.find(program);
     if (iter == createdEntities_.end()) {
@@ -47,15 +47,15 @@ void EntityDeclarator::CreateAndInsertImportStatement(util::StringView pathToDec
                                                       parser::Program *importerProgram, util::StringView importedName,
                                                       varbinder::Variable *var)
 {
-    ASSERT(importerProgram);
-    ASSERT(var);
+    ES2PANDA_ASSERT(importerProgram);
+    ES2PANDA_ASSERT(var);
 
     auto &importEntitiesMap = GetOrCreateEntitiesMap(importerProgram);
     auto *findVar = FindEntityVariable(importEntitiesMap, importedName);
     if (findVar != nullptr) {
         // If var was found it means that import declaration has already been declared
         // and there is no need to create it once again.
-        ASSERT(findVar == var);
+        ES2PANDA_ASSERT(findVar == var);
         return;
     }
 
@@ -90,8 +90,8 @@ ir::ETSImportDeclaration *EntityDeclarator::CreateIrImport(util::StringView path
 
 void EntityDeclarator::InsertImportStatement(ir::Statement *importStatement, parser::Program *importerProgram)
 {
-    ASSERT(importerProgram);
-    ASSERT(importStatement);
+    ES2PANDA_ASSERT(importerProgram);
+    ES2PANDA_ASSERT(importStatement);
 
     auto *topStatement = importerProgram->Ast();
     importStatement->SetParent(topStatement);
@@ -103,7 +103,7 @@ void EntityDeclarator::InsertImportStatement(ir::Statement *importStatement, par
 
 bool EntityDeclarator::IsEntityDeclared(parser::Program *program, util::StringView name)
 {
-    ASSERT(program);
+    ES2PANDA_ASSERT(program);
 
     auto &entitiesMap = GetOrCreateEntitiesMap(program);
     return entitiesMap.find(name) != entitiesMap.end();

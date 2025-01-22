@@ -103,8 +103,8 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
 
 size_t LineIndex::GetOffset(SourceLocation loc) const noexcept
 {
-    ASSERT(loc.line != 0);
-    ASSERT(loc.col != 0);
+    ES2PANDA_ASSERT(loc.line != 0);
+    ES2PANDA_ASSERT(loc.col != 0);
     size_t line = loc.line - 1;
     size_t col = loc.col - 1;
 

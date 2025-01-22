@@ -241,7 +241,7 @@ bool ETSParser::ParseTriplePeriod(bool spreadTypePresent)
 
 ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
 
     const auto startLoc = Lexer()->GetToken().Start();
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
@@ -425,7 +425,7 @@ static bool IsSimpleReturnThis(lexer::Token const &tokenAfterThis)
 
 ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+    ES2PANDA_ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
 
     auto startPos = Lexer()->GetToken().Start();
     auto const tokenLoc = Lexer()->GetToken().Loc();

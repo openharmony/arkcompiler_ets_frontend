@@ -705,7 +705,7 @@ static const util::StringView &GetPropertyName(const ir::Expression *key)
         return key->AsStringLiteral()->Str();
     }
 
-    ASSERT(key->IsNumberLiteral());
+    ES2PANDA_ASSERT(key->IsNumberLiteral());
     return key->AsNumberLiteral()->Str();
 }
 
@@ -733,7 +733,7 @@ static checker::Type *GetTypeForProperty(ir::Property *prop, checker::TSChecker 
             return checker->GlobalAnyType();
         }
 
-        ASSERT(funcType->IsObjectType() && funcType->AsObjectType()->IsFunctionType());
+        ES2PANDA_ASSERT(funcType->IsObjectType() && funcType->AsObjectType()->IsFunctionType());
         return funcType->AsObjectType()->CallSignatures()[0]->ReturnType();
     }
 
@@ -748,7 +748,7 @@ void TSAnalyzer::CheckSpread(std::unordered_map<util::StringView, lexer::SourceP
                              checker::ObjectDescriptor *desc, ir::Expression *it) const
 {
     TSChecker *checker = GetTSChecker();
-    ASSERT(it->IsSpreadElement());
+    ES2PANDA_ASSERT(it->IsSpreadElement());
 
     checker::Type *const spreadType = it->AsSpreadElement()->Argument()->Check(checker);
 
@@ -1201,7 +1201,7 @@ checker::Type *TSAnalyzer::Check(ir::FunctionDeclaration *st) const
 
     const util::StringView &funcName = st->Function()->Id()->Name();
     auto result = checker->Scope()->Find(funcName);
-    ASSERT(result.variable);
+    ES2PANDA_ASSERT(result.variable);
 
     checker::ScopeContext scopeCtx(checker, st->Function()->Scope());
 
@@ -1234,7 +1234,7 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
     ir::AstNode *ancestor = util::Helpers::FindAncestorGivenByType(st, ir::AstNodeType::SCRIPT_FUNCTION);
-    ASSERT(ancestor && ancestor->IsScriptFunction());
+    ES2PANDA_ASSERT(ancestor && ancestor->IsScriptFunction());
     auto *containingFunc = ancestor->AsScriptFunction();
 
     if (containingFunc->Parent()->Parent()->IsMethodDefinition()) {
@@ -1391,7 +1391,7 @@ checker::Type *TSAnalyzer::Check(ir::VariableDeclarator *st) const
         return nullptr;
     }
 
-    ASSERT(st->Id()->IsObjectPattern());
+    ES2PANDA_ASSERT(st->Id()->IsObjectPattern());
     auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
     checker::ObjectDestructuringContext({checker, st->Id(), false,
                                          st->Id()->AsObjectPattern()->TypeAnnotation() == nullptr,
@@ -1740,12 +1740,12 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
         res = enumScope->FindLocal(memberStr, varbinder::ResolveBindingOptions::BINDINGS);
-        ASSERT(res && res->IsEnumVariable());
+        ES2PANDA_ASSERT(res && res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         enumVar->AsEnumVariable()->SetBackReference();
         enumVar->SetTsType(checker->GlobalStringType());
     } else {
-        ASSERT(res->IsEnumVariable());
+        ES2PANDA_ASSERT(res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
         decl->BindNode(variable->Declaration()->Node());
@@ -1782,7 +1782,7 @@ void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double
         return;
     }
 
-    ASSERT(init);
+    ES2PANDA_ASSERT(init);
     if (IsComputedEnumMember(init) && *isLiteralEnum) {
         checker->ThrowTypeError(INVALID_COMPUTED_WITH_STRING, init->Start());
     }
@@ -1804,7 +1804,7 @@ void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double
         return;
     }
 
-    ASSERT(std::holds_alternative<double>(res));
+    ES2PANDA_ASSERT(std::holds_alternative<double>(res));
     variable->SetValue(res);
 
     *value = std::get<double>(res);
@@ -1833,7 +1833,7 @@ checker::Type *TSAnalyzer::InferType(checker::TSChecker *checker, bool isConst, 
     for (size_t i = 0; i < localsSize; i++) {
         const util::StringView &currentName = enumScope->Decls()[i]->Name();
         varbinder::Variable *currentVar = enumScope->FindLocal(currentName, varbinder::ResolveBindingOptions::BINDINGS);
-        ASSERT(currentVar && currentVar->IsEnumVariable());
+        ES2PANDA_ASSERT(currentVar && currentVar->IsEnumVariable());
         InferEnumVariableType(currentVar->AsEnumVariable(), &value, &initNext, &isLiteralEnum, isConst);
     }
 
@@ -1849,7 +1849,7 @@ checker::Type *TSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 {
     TSChecker *checker = GetTSChecker();
     varbinder::Variable *enumVar = st->Key()->Variable();
-    ASSERT(enumVar);
+    ES2PANDA_ASSERT(enumVar);
 
     if (enumVar->TsType() == nullptr) {
         checker::ScopeContext scopeCtx(checker, st->Scope());
@@ -1953,7 +1953,7 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
 {
     TSChecker *checker = GetTSChecker();
     varbinder::Variable *var = st->Id()->Variable();
-    ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSInterfaceDeclaration());
+    ES2PANDA_ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSInterfaceDeclaration());
 
     if (st == var->Declaration()->Node()) {
         checker::Type *resolvedType = var->TsType();

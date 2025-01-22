@@ -37,7 +37,7 @@ std::string GetFullSuperClassName(panda_file::ClassDataAccessor &cda)
 std::optional<std::pair<util::StringView, FileDebugInfo *>> GetSuperClassModuleAndClassName(
     panda_file::ClassDataAccessor &cda, DebugInfoStorage *debugInfoStorage)
 {
-    ASSERT(debugInfoStorage);
+    ES2PANDA_ASSERT(debugInfoStorage);
 
     auto fullSuperClassName = GetFullSuperClassName(cda);
     if (fullSuperClassName == compiler::Signatures::BUILTIN_OBJECT) {
@@ -61,7 +61,7 @@ struct ChainEntryInfo final {
                             panda_file::ClassDataAccessor *accessor, parser::Program *prog)
         : sourceFilePath(filePath), entityDeclarationName(declName), cda(accessor), program(prog)
     {
-        ASSERT(cda != nullptr);
+        ES2PANDA_ASSERT(cda != nullptr);
     }
 
     DEFAULT_MOVE_SEMANTIC(ChainEntryInfo);
@@ -91,7 +91,7 @@ ir::ETSTypeReference *DebugInfoDeserializer::GetSuperClass(panda_file::ClassData
 ir::ETSTypeReference *DebugInfoDeserializer::ResolveInheritanceChain(util::StringView abcSuperName,
                                                                      FileDebugInfo *debugInfo)
 {
-    ASSERT(debugInfo);
+    ES2PANDA_ASSERT(debugInfo);
 
     auto *program = debugInfoPlugin_.GetProxyProgramsCache()->GetProgram(debugInfo->sourceFilePath);
     if (debugInfoPlugin_.GetEntityDeclarator()->IsEntityDeclared(program, abcSuperName)) {
@@ -122,7 +122,7 @@ ir::ETSTypeReference *DebugInfoDeserializer::ResolveInheritanceChainImpl(util::S
         // inserted in AST.
         std::string_view declarationName = it->entityDeclarationName;
         auto *cda = it->cda;
-        ASSERT(cda != nullptr);
+        ES2PANDA_ASSERT(cda != nullptr);
         // clang-format off
         entityDeclarator->ImportGlobalEntity(it->sourceFilePath, declarationName, it->program, declarationName,
             [this, superClass, cda](auto, auto *program, auto, auto name) {
@@ -139,7 +139,7 @@ ir::ETSTypeReference *DebugInfoDeserializer::ResolveInheritanceChainImpl(util::S
 util::StringView DebugInfoDeserializer::CollectChainInfo(ArenaVector<ChainEntryInfo> &chainEntryList,
                                                          util::StringView abcSuperName, FileDebugInfo *debugInfo)
 {
-    ASSERT(debugInfo != nullptr);
+    ES2PANDA_ASSERT(debugInfo != nullptr);
 
     auto *proxyProgramsCache = debugInfoPlugin_.GetProxyProgramsCache();
     auto *debugInfoStorage = debugInfoPlugin_.GetDebugInfoStorage();
@@ -149,7 +149,7 @@ util::StringView DebugInfoDeserializer::CollectChainInfo(ArenaVector<ChainEntryI
     // CC-OFFNXT(G.CTL.03) false positive
     while (true) {
         auto *program = proxyProgramsCache->GetProgram(debugInfo->sourceFilePath);
-        ASSERT(program != nullptr);
+        ES2PANDA_ASSERT(program != nullptr);
         if (entityDeclarator->IsEntityDeclared(program, abcSuperName)) {
             // Go until reach A_i, which has already been declared.
             // Object <-- A_1 <-- ... <-- A_i <-- ... <-- A_n

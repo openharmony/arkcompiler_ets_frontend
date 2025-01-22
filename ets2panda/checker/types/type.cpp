@@ -141,7 +141,7 @@ Type *Type::Substitute([[maybe_unused]] TypeRelation *relation, [[maybe_unused]]
 
 std::uint32_t Type::GetPrecedence(Type const *type) noexcept
 {
-    ASSERT(type != nullptr);
+    ES2PANDA_ASSERT(type != nullptr);
     if (type->HasTypeFlag(TypeFlag::BYTE)) {
         return 1U;
     }

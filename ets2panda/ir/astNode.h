@@ -21,6 +21,7 @@
 #include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
 #include "macros.h"
+#include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::compiler {
 class PandaGen;
@@ -172,13 +173,13 @@ public:
 
     Typed<AstNode> *AsTyped()
     {
-        ASSERT(IsTyped());
+        ES2PANDA_ASSERT(IsTyped());
         return reinterpret_cast<Typed<AstNode> *>(this);
     }
 
     Typed<AstNode> const *AsTyped() const
     {
-        ASSERT(IsTyped());
+        ES2PANDA_ASSERT(IsTyped());
         return reinterpret_cast<Typed<AstNode> const *>(this);
     }
 
@@ -193,13 +194,13 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
     className *As##className()                                                                        \
     {                                                                                                 \
-        ASSERT(Is##className());                                                                      \
+        ES2PANDA_ASSERT(Is##className());                                                             \
         /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
         return reinterpret_cast<className *>(this);                                                   \
     }                                                                                                 \
     const className *As##className() const                                                            \
     {                                                                                                 \
-        ASSERT(Is##className());                                                                      \
+        ES2PANDA_ASSERT(Is##className());                                                             \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
         return reinterpret_cast<const className *>(this);                                             \
     }
@@ -212,26 +213,26 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
     baseClass *As##baseClass()                                                                        \
     {                                                                                                 \
-        ASSERT(Is##baseClass());                                                                      \
+        ES2PANDA_ASSERT(Is##baseClass());                                                             \
         /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
         return reinterpret_cast<baseClass *>(this);                                                   \
     }                                                                                                 \
     /* CC-OFFNXT(G.PRE.02) name part*/                                                                \
     baseClass *As##reinterpretClass()                                                                 \
     {                                                                                                 \
-        ASSERT(Is##reinterpretClass());                                                               \
+        ES2PANDA_ASSERT(Is##reinterpretClass());                                                      \
         /* CC-OFFNXT(G.PRE.05,G.PRE.02) The macro is used to generate a function. Return is needed */ \
         return reinterpret_cast<baseClass *>(this);                                                   \
     }                                                                                                 \
     const baseClass *As##baseClass() const                                                            \
     {                                                                                                 \
-        ASSERT(Is##baseClass());                                                                      \
+        ES2PANDA_ASSERT(Is##baseClass());                                                             \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
         return reinterpret_cast<const baseClass *>(this);                                             \
     }                                                                                                 \
     const baseClass *As##reinterpretClass() const                                                     \
     {                                                                                                 \
-        ASSERT(Is##reinterpretClass());                                                               \
+        ES2PANDA_ASSERT(Is##reinterpretClass());                                                      \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed */          \
         return reinterpret_cast<const baseClass *>(this);                                             \
     }
@@ -240,25 +241,25 @@ public:
 
     Expression *AsExpression()
     {
-        ASSERT(IsExpression());
+        ES2PANDA_ASSERT(IsExpression());
         return reinterpret_cast<Expression *>(this);
     }
 
     const Expression *AsExpression() const
     {
-        ASSERT(IsExpression());
+        ES2PANDA_ASSERT(IsExpression());
         return reinterpret_cast<const Expression *>(this);
     }
 
     Statement *AsStatement()
     {
-        ASSERT(IsStatement());
+        ES2PANDA_ASSERT(IsStatement());
         return reinterpret_cast<Statement *>(this);
     }
 
     const Statement *AsStatement() const
     {
-        ASSERT(IsStatement());
+        ES2PANDA_ASSERT(IsStatement());
         return reinterpret_cast<const Statement *>(this);
     }
 
@@ -638,9 +639,9 @@ public:
     ~VectorIterationGuard()
     {
         // check that `begin` iterator remained valid
-        ASSERT(data_.begin() == vector_.data());
+        ES2PANDA_ASSERT(data_.begin() == vector_.data());
         // check that there were no `push_back`s or other expansions which potentially cause reallocation
-        ASSERT(data_.size() == vector_.size());
+        ES2PANDA_ASSERT(data_.size() == vector_.size());
     }
 
     auto begin()  // NOLINT(readability-identifier-naming)

@@ -91,7 +91,7 @@ static ArenaSet<varbinder::Variable *> FindModified(public_lib::Context *ctx, ir
 
         auto expr = ast->AsAssignmentExpression();
         if (expr->Left()->IsIdentifier()) {
-            ASSERT(expr->Left()->Variable() != nullptr);
+            ES2PANDA_ASSERT(expr->Left()->Variable() != nullptr);
             auto *var = expr->Left()->Variable();
             var->AddFlag(varbinder::VariableFlags::INITIALIZED);
             modified.insert(var);
@@ -126,7 +126,7 @@ static void HandleFunctionParam(public_lib::Context *ctx, ir::ETSParameterExpres
     auto *oldVar = id->Variable();
     auto *oldType = oldVar->TsType();
     auto *func = param->Parent()->AsScriptFunction();
-    ASSERT(func->Body()->IsBlockStatement());  // guaranteed after expressionLambdaLowering
+    ES2PANDA_ASSERT(func->Body()->IsBlockStatement());  // guaranteed after expressionLambdaLowering
     auto *body = func->Body()->AsBlockStatement();
     auto &bodyStmts = body->Statements();
     auto *scope = body->Scope();
@@ -223,14 +223,14 @@ static ir::AstNode *HandleVariableDeclarator(public_lib::Context *ctx, ir::Varia
 
 static bool IsBeingDeclared(ir::AstNode *ast)
 {
-    ASSERT(ast->IsIdentifier());
+    ES2PANDA_ASSERT(ast->IsIdentifier());
     return (ast->Parent()->IsVariableDeclarator() && ast == ast->Parent()->AsVariableDeclarator()->Id()) ||
            (ast->Parent()->IsETSParameterExpression() && ast == ast->Parent()->AsETSParameterExpression()->Ident());
 }
 
 static bool IsPartOfBoxInitializer(public_lib::Context *ctx, ir::AstNode *ast)
 {
-    ASSERT(ast->IsIdentifier());
+    ES2PANDA_ASSERT(ast->IsIdentifier());
     auto *checker = ctx->checker->AsETSChecker();
     auto *id = ast->AsIdentifier();
 
@@ -266,7 +266,7 @@ static ir::AstNode *HandleReference(public_lib::Context *ctx, ir::Identifier *id
     // adjustment later.
     res->Check(checker);
 
-    ASSERT(res->TsType() == id->TsType());
+    ES2PANDA_ASSERT(res->TsType() == id->TsType());
     res->SetBoxingUnboxingFlags(id->GetBoxingUnboxingFlags());
 
     return res;
@@ -276,7 +276,7 @@ static ir::AstNode *HandleAssignment(public_lib::Context *ctx, ir::AssignmentExp
                                      ArenaMap<varbinder::Variable *, varbinder::Variable *> const &varsMap)
 {
     // Should be true after opAssignment lowering
-    ASSERT(ass->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ES2PANDA_ASSERT(ass->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     auto *parser = ctx->parser->AsETSParser();
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
@@ -300,7 +300,7 @@ static ir::AstNode *HandleAssignment(public_lib::Context *ctx, ir::AssignmentExp
     varBinder->ResolveReferencesForScopeWithContext(res, scope);
     res->Check(checker);
 
-    ASSERT(res->TsType() == ass->TsType());
+    ES2PANDA_ASSERT(res->TsType() == ass->TsType());
     res->SetBoxingUnboxingFlags(ass->GetBoxingUnboxingFlags());
 
     return res;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -74,13 +74,13 @@ public:
     /* CC-OFFNXT(G.PRE.02) name part*/                                                      \
     typeName *As##typeName()                                                                \
     {                                                                                       \
-        ASSERT(Is##typeName());                                                             \
+        ES2PANDA_ASSERT(Is##typeName());                                                    \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<typeName *>(this); /* CC-OFF(G.PRE.02) name part*/          \
     }                                                                                       \
     const typeName *As##typeName() const                                                    \
     {                                                                                       \
-        ASSERT(Is##typeName());                                                             \
+        ES2PANDA_ASSERT(Is##typeName());                                                    \
         /* CC-OFFNXT(G.PRE.05) The macro is used to generate a function. Return is needed*/ \
         return reinterpret_cast<const typeName *>(this);                                    \
     }
@@ -107,19 +107,19 @@ public:
 
     ETSStringType *AsETSStringType()
     {
-        ASSERT(IsETSObjectType());
+        ES2PANDA_ASSERT(IsETSObjectType());
         return reinterpret_cast<ETSStringType *>(this);
     }
 
     const ETSStringType *AsETSStringType() const
     {
-        ASSERT(IsETSObjectType());
+        ES2PANDA_ASSERT(IsETSObjectType());
         return reinterpret_cast<const ETSStringType *>(this);
     }
 
     const ETSBigIntType *AsETSBigIntType() const
     {
-        ASSERT(IsETSObjectType());
+        ES2PANDA_ASSERT(IsETSObjectType());
         return reinterpret_cast<const ETSBigIntType *>(this);
     }
 
@@ -130,25 +130,25 @@ public:
 
     ETSDynamicType *AsETSDynamicType()
     {
-        ASSERT(IsETSDynamicType());
+        ES2PANDA_ASSERT(IsETSDynamicType());
         return reinterpret_cast<ETSDynamicType *>(this);
     }
 
     const ETSDynamicType *AsETSDynamicType() const
     {
-        ASSERT(IsETSDynamicType());
+        ES2PANDA_ASSERT(IsETSDynamicType());
         return reinterpret_cast<const ETSDynamicType *>(this);
     }
 
     ETSAsyncFuncReturnType *AsETSAsyncFuncReturnType()
     {
-        ASSERT(IsETSAsyncFuncReturnType());
+        ES2PANDA_ASSERT(IsETSAsyncFuncReturnType());
         return reinterpret_cast<ETSAsyncFuncReturnType *>(this);
     }
 
     const ETSAsyncFuncReturnType *AsETSAsyncFuncReturnType() const
     {
-        ASSERT(IsETSAsyncFuncReturnType());
+        ES2PANDA_ASSERT(IsETSAsyncFuncReturnType());
         return reinterpret_cast<const ETSAsyncFuncReturnType *>(this);
     }
 
@@ -159,13 +159,13 @@ public:
 
     ETSDynamicFunctionType *AsETSDynamicFunctionType()
     {
-        ASSERT(IsETSDynamicFunctionType());
+        ES2PANDA_ASSERT(IsETSDynamicFunctionType());
         return reinterpret_cast<ETSDynamicFunctionType *>(this);
     }
 
     const ETSDynamicFunctionType *AsETSDynamicFunctionType() const
     {
-        ASSERT(IsETSDynamicFunctionType());
+        ES2PANDA_ASSERT(IsETSDynamicFunctionType());
         return reinterpret_cast<const ETSDynamicFunctionType *>(this);
     }
 

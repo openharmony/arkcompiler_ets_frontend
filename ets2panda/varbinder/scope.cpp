@@ -117,7 +117,7 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
 
 Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable *const var)
 {
-    ASSERT(var != nullptr);
+    ES2PANDA_ASSERT(var != nullptr);
     auto insertResult = bindings_.emplace(name, var);
     if (insertResult.second) {
         decls_.push_back(var->Declaration());
@@ -128,7 +128,7 @@ Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable 
 
 Scope::InsertResult Scope::TryInsertBinding(const util::StringView &name, Variable *const var)
 {
-    ASSERT(var != nullptr);
+    ES2PANDA_ASSERT(var != nullptr);
     return bindings_.try_emplace(name, var);
 }
 
@@ -313,7 +313,7 @@ Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, 
 
 void VariableScope::CheckDirectEval(public_lib::Context *context)
 {
-    ASSERT(context);
+    ES2PANDA_ASSERT(context);
     const auto &varMap = Bindings();
 
     if (!HasFlag(ScopeFlags::NO_REG_STORE) || varMap.empty()) {
@@ -356,7 +356,7 @@ void VariableScope::CheckDirectEval(public_lib::Context *context)
         uint32_t buffIndex = 0;
         for (const auto *variable : bindings) {
             if (variable == nullptr) {
-                ASSERT(literals[buffIndex].GetString().empty());
+                ES2PANDA_ASSERT(literals[buffIndex].GetString().empty());
                 buffIndex++;
                 continue;
             }
@@ -422,7 +422,7 @@ template <typename T>
 Variable *VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *currentVariable,
                                       Decl *newDecl, VariableFlags flags)
 {
-    ASSERT(!currentVariable);
+    ES2PANDA_ASSERT(!currentVariable);
     return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
 }
 
@@ -438,7 +438,7 @@ Variable *VariableScope::AddLexical(ArenaAllocator *allocator, Variable *current
 
 Variable *ParamScope::AddParam(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags)
 {
-    ASSERT(newDecl->IsParameterDecl());
+    ES2PANDA_ASSERT(newDecl->IsParameterDecl());
 
     if (currentVariable != nullptr) {
         return nullptr;
@@ -616,7 +616,7 @@ Scope::InsertResult GlobalScope::TryInsertBinding(const util::StringView &name, 
     const auto insRes = Scope::TryInsertBinding(name, var);
     if (insRes.second) {
         [[maybe_unused]] const bool insertSuccess = std::get<1>(foreignBindings_.try_emplace(name, var));
-        ASSERT(insertSuccess);
+        ES2PANDA_ASSERT(insertSuccess);
     }
 
     return insRes;
@@ -632,7 +632,7 @@ Scope::VariableMap::size_type GlobalScope::EraseBinding(const util::StringView &
     const auto erased = Scope::EraseBinding(name);
     if (erased != 0) {
         [[maybe_unused]] const auto erasedForeign = foreignBindings_.erase(name);
-        ASSERT(erasedForeign != 0);
+        ES2PANDA_ASSERT(erasedForeign != 0);
     }
 
     return erased;
@@ -647,7 +647,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
                                             const bool isDynamic)
 {
     if (!isDynamic && isForeign && !var->Declaration()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
-        ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
+        ES2PANDA_ASSERT(var->Declaration()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) == std::string::npos);
         const auto *const node = var->Declaration()->Node();
 
         if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {
@@ -658,7 +658,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
     const auto insRes = Scope::InsertBinding(name, var);
     if (insRes.second) {
         [[maybe_unused]] const bool insertSuccess = std::get<1>(foreignBindings_.emplace(name, isForeign));
-        ASSERT(insertSuccess);
+        ES2PANDA_ASSERT(insertSuccess);
     }
 
     return insRes;
@@ -667,8 +667,8 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
 bool GlobalScope::IsForeignBinding(const util::StringView &name) const
 {
     // Asserts make sure that the passed in key comes from this scope
-    ASSERT(Bindings().find(name) != Bindings().end());
-    ASSERT(foreignBindings_.find(name) != foreignBindings_.end());
+    ES2PANDA_ASSERT(Bindings().find(name) != Bindings().end());
+    ES2PANDA_ASSERT(foreignBindings_.find(name) != foreignBindings_.end());
 
     return foreignBindings_.at(name);
 }
@@ -1111,7 +1111,7 @@ void LoopScope::ConvertToVariableScope(ArenaAllocator *allocator)
     for (const auto &[_, var] : Bindings()) {
         (void)_;
         if (var->LexicalBound() && var->Declaration()->IsLetDecl()) {
-            ASSERT(declScope_->NeedLexEnv());
+            ES2PANDA_ASSERT(declScope_->NeedLexEnv());
             loopType_ = ScopeType::LOOP;
             break;
         }

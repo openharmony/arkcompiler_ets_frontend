@@ -34,7 +34,7 @@ Lexer::Lexer(const parser::ParserContext *parserContext, util::DiagnosticEngine 
 
 char32_t Lexer::ScanUnicodeEscapeSequence()
 {
-    ASSERT(Iterator().Peek() == LEX_CHAR_LOWERCASE_U);
+    ES2PANDA_ASSERT(Iterator().Peek() == LEX_CHAR_LOWERCASE_U);
     auto constexpr UNICODE_ESCAPE_SEQUENCE_LENGTH = 4;
 
     Iterator().Forward(1);
@@ -105,6 +105,11 @@ const Token &Lexer::GetToken() const
 size_t Lexer::Line() const
 {
     return pos_.line_;
+}
+
+const parser::Program *Lexer::GetProgram() const
+{
+    return parserContext_->GetProgram();
 }
 
 LexerPosition Lexer::Save() const
@@ -1205,7 +1210,7 @@ RegExp Lexer::ScanRegExp()
 
     const auto pattern = SourceView(patternStart, Iterator().Index());
 
-    ASSERT(Iterator().Peek() == LEX_CHAR_SLASH);
+    ES2PANDA_ASSERT(Iterator().Peek() == LEX_CHAR_SLASH);
     Iterator().Forward(1);
 
     const auto flagsStart = Iterator().Index();

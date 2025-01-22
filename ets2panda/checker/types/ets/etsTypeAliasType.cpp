@@ -259,7 +259,7 @@ bool ETSTypeAliasType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVec
 
 void ETSTypeAliasType::ApplySubstitution(TypeRelation *relation)
 {
-    ASSERT(base_ == nullptr);
+    ES2PANDA_ASSERT(base_ == nullptr);
 
     const util::StringView hash = relation->GetChecker()->AsETSChecker()->GetHashFromTypeArguments(typeArguments_);
     EmplaceInstantiatedType(hash, this);

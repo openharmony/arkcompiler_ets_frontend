@@ -217,7 +217,7 @@ void AssignAnalyzer::AnalyzeNodes(const ir::AstNode *node)
 
 void AssignAnalyzer::AnalyzeNode(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
 
     // NOTE(pantos) these are dummy methods to conform the CI's method size and complexity requirements
     if (AnalyzeStmtNode1(node) || AnalyzeStmtNode2(node) || AnalyzeExprNode1(node) || AnalyzeExprNode2(node)) {
@@ -401,7 +401,7 @@ bool AssignAnalyzer::AnalyzeExprNode2(const ir::AstNode *node)
 
 void AssignAnalyzer::AnalyzeStat(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
     AnalyzeNode(node);
 }
 
@@ -860,7 +860,7 @@ void AssignAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switchStmt)
             }
             for (auto *var : stmt->AsVariableDeclaration()->Declarators()) {
                 NodeId adr = GetNodeId(var);
-                ASSERT(adr >= 0);
+                ES2PANDA_ASSERT(adr >= 0);
                 initsSwitch.Excl(adr);
                 uninitsSwitch.Incl(adr);
             }
@@ -989,7 +989,7 @@ void AssignAnalyzer::AnalyzeAssert(const ir::AssertStatement *assertStmt)
 
 void AssignAnalyzer::AnalyzeExpr(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
     AnalyzeNode(node);
     if (inits_.IsReset()) {
         Merge();
@@ -1005,7 +1005,7 @@ void AssignAnalyzer::AnalyzeExprs(const ArenaVector<ir::Expression *> &exprs)
 
 void AssignAnalyzer::AnalyzeCond(const ir::AstNode *node)
 {
-    ASSERT(node->IsExpression());
+    ES2PANDA_ASSERT(node->IsExpression());
     const ir::Expression *expr = node->AsExpression();
 
     if (auto etype = expr->TsType();
@@ -1104,7 +1104,7 @@ void AssignAnalyzer::AnalyzeCondExpr(const ir::ConditionalExpression *condExpr)
     inits_ = initsWhenTrue_;
     uninits_ = uninitsWhenTrue_;
 
-    ASSERT(condExpr->Consequent()->TsType() && condExpr->Alternate()->TsType());
+    ES2PANDA_ASSERT(condExpr->Consequent()->TsType() && condExpr->Alternate()->TsType());
 
     if (condExpr->Consequent()->TsType()->IsETSBooleanType() && condExpr->Alternate()->TsType()->IsETSBooleanType()) {
         AnalyzeCond(condExpr->Consequent());
@@ -1363,7 +1363,7 @@ const ir::AstNode *AssignAnalyzer::GetDeclaringNode(const ir::AstNode *node)
 
 bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
 {
-    ASSERT(node != nullptr);
+    ES2PANDA_ASSERT(node != nullptr);
 
     const checker::Type *type = nullptr;
     bool isNonReadonlyField = false;
