@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,16 +26,16 @@ public:
     using TupleSizeType = uint32_t;
 
     explicit ETSTuple(ArenaAllocator *const allocator)
-        : TypeNode(AstNodeType::ETS_TUPLE), typeAnnotationList_(allocator->Adapter())
+        : TypeNode(AstNodeType::ETS_TUPLE, allocator), typeAnnotationList_(allocator->Adapter())
     {
     }
 
     explicit ETSTuple(ArenaAllocator *const allocator, const TupleSizeType size)
-        : TypeNode(AstNodeType::ETS_TUPLE), typeAnnotationList_(allocator->Adapter()), size_(size)
+        : TypeNode(AstNodeType::ETS_TUPLE, allocator), typeAnnotationList_(allocator->Adapter()), size_(size)
     {
     }
-    explicit ETSTuple(const ArenaVector<ir::TypeNode *> &typeList)
-        : TypeNode(AstNodeType::ETS_TUPLE),
+    explicit ETSTuple(const ArenaVector<ir::TypeNode *> &typeList, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::ETS_TUPLE, allocator),
           typeAnnotationList_(typeList),
           size_(static_cast<TupleSizeType>(typeList.size()))
     {

@@ -270,6 +270,7 @@
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 16,
@@ -418,6 +419,7 @@
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 20,
@@ -465,6 +467,7 @@
                               }
                             }
                           },
+                          "annotations": [],
                           "loc": {
                             "start": {
                               "line": 21,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,12 @@ void ETSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view
             it = static_cast<TypeNode *>(transformedNode);
         }
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ETSUnionType::Iterate(const NodeTraverser &cb) const
@@ -36,15 +42,22 @@ void ETSUnionType::Iterate(const NodeTraverser &cb) const
     for (auto *it : VectorIterationGuard(types_)) {
         cb(it);
     }
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void ETSUnionType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSUnionType"}, {"types", types_}});
+    dumper->Add({{"type", "ETSUnionType"}, {"types", types_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSUnionType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     for (auto type : types_) {
         type->Dump(dumper);
         if (type != types_.back()) {
@@ -84,6 +97,7 @@ checker::Type *ETSUnionType::GetType(checker::ETSChecker *checker)
     if (TsType() != nullptr) {
         return TsType();
     }
+    checker->CheckAnnotations(Annotations());
 
     ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
 
@@ -108,9 +122,16 @@ ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *cons
         auto *type = it->Clone(allocator, nullptr);
         types.push_back(type);
     }
-    ETSUnionType *const clone = allocator->New<ir::ETSUnionType>(std::move(types));
+    ETSUnionType *const clone = allocator->New<ir::ETSUnionType>(std::move(types), allocator);
     if (parent != nullptr) {
         clone->SetParent(parent);
+    }
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
     }
     for (auto *it : clone->types_) {
         it->SetParent(clone);

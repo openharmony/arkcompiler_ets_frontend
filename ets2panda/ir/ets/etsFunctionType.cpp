@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,11 +26,20 @@ namespace ark::es2panda::ir {
 void ETSFunctionType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     signature_.TransformChildren(cb, transformationName);
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void ETSFunctionType::Iterate(const NodeTraverser &cb) const
 {
     signature_.Iterate(cb);
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void ETSFunctionType::Dump(ir::AstDumper *dumper) const
@@ -45,11 +54,15 @@ void ETSFunctionType::Dump(ir::AstDumper *dumper) const
                  {"params", signature_.Params()},
                  {"typeParameters", AstDumper::Optional(signature_.TypeParams())},
                  {"returnType", signature_.ReturnType()},
-                 {"throwMarker", AstDumper::Optional(throwMarker)}});
+                 {"throwMarker", AstDumper::Optional(throwMarker)},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     dumper->Add("((");
     for (auto *param : Params()) {
         param->Dump(dumper);
@@ -123,7 +136,7 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
         signature_.ReturnType() != nullptr ? signature_.ReturnType()->Clone(allocator, nullptr)->AsTypeNode() : nullptr;
 
     if (auto *const clone = allocator->New<ETSFunctionType>(
-            FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_);
+            FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_, allocator);
         clone != nullptr) {
         if (typeParamsClone != nullptr) {
             typeParamsClone->SetParent(clone);
@@ -139,6 +152,14 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
 
         if (parent != nullptr) {
             clone->SetParent(parent);
+        }
+
+        if (!Annotations().empty()) {
+            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+            for (auto *annotationUsage : Annotations()) {
+                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+            }
+            clone->SetAnnotations(std::move(annotationUsages));
         }
 
         // Reset scope for clone

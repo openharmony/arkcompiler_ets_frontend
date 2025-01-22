@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -61,7 +61,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
     auto const identName = GenName(checker->Allocator());
-    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
+    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType, checker->Allocator());
     auto *const newInstanceParent = newInstanceExpression->Parent();
 
     auto *blockExpression = parser->CreateFormattedExpression(FORMAT_NEW_ARRAY_EXPRESSION, identName, exprType,
@@ -108,7 +108,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
             newInstanceExpression->Dimensions()[i] = castedDimension;
         } else {
             auto const identName = GenName(checker->Allocator());
-            auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
+            auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType, checker->Allocator());
 
             auto *blockExpression = parser
                                         ->CreateFormattedExpression(FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION, identName,

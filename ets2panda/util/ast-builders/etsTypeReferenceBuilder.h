@@ -37,7 +37,7 @@ public:
 
     ETSTypeReference *Build()
     {
-        auto node = AllocNode(etsTypeReferencePart_);
+        auto node = AllocNode(etsTypeReferencePart_, Allocator());
         return node;
     }
 

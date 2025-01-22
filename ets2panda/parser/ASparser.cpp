@@ -512,7 +512,7 @@ ir::TypeNode *ASParser::ParseFunctionType(lexer::SourcePosition startLoc)
     ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation);
-    auto funcType = AllocNode<ir::TSFunctionType>(std::move(signature));
+    auto funcType = AllocNode<ir::TSFunctionType>(std::move(signature), Allocator());
 
     funcType->SetRange({startLoc, returnTypeAnnotation->End()});
 
@@ -571,7 +571,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type
 {
     auto *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     typeName->SetRange(Lexer()->GetToken().Loc());
-    type = AllocNode<ir::NamedType>(typeName);
+    type = AllocNode<ir::NamedType>(typeName, Allocator());
     type->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -585,7 +585,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type
 
         typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         typeName->SetRange(Lexer()->GetToken().Loc());
-        auto *next = AllocNode<ir::NamedType>(typeName);
+        auto *next = AllocNode<ir::NamedType>(typeName, Allocator());
         current->SetRange(Lexer()->GetToken().Loc());
         current->SetNext(next);
         current = next;
@@ -647,7 +647,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokens(ir::TypeNode *type, bool throw
 
     auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
     typeName->SetRange(Lexer()->GetToken().Loc());
-    type = AllocNode<ir::NamedType>(typeName);
+    type = AllocNode<ir::NamedType>(typeName, Allocator());
     type->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     return type;
@@ -723,7 +723,7 @@ ir::TypeNode *ASParser::ParseTypeAnnotationTokenLeftSquareBracket(ir::TypeNode *
         params.push_back(type);
         auto *typeParamInst = AllocNode<ir::TSTypeParameterInstantiation>(std::move(params));
 
-        type = AllocNode<ir::NamedType>(typeName);
+        type = AllocNode<ir::NamedType>(typeName, Allocator());
         type->AsNamedType()->SetTypeParams(typeParamInst);
         type->AsNamedType()->SetNullable(isNullable);
         type->SetRange({startPos, Lexer()->GetToken().End()});
@@ -876,7 +876,7 @@ ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
     lexer::SourcePosition heritageEnd = Lexer()->GetToken().End();
     auto *extendsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     extendsName->SetRange(Lexer()->GetToken().Loc());
-    auto *extendsClause = AllocNode<ir::NamedType>(extendsName);
+    auto *extendsClause = AllocNode<ir::NamedType>(extendsName, Allocator());
     extendsClause->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
@@ -890,7 +890,7 @@ ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
 
         extendsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         extendsName->SetRange(Lexer()->GetToken().Loc());
-        auto *next = AllocNode<ir::NamedType>(extendsName);
+        auto *next = AllocNode<ir::NamedType>(extendsName, Allocator());
         current->SetRange(Lexer()->GetToken().Loc());
         current->SetNext(next);
         current = next;
@@ -1100,7 +1100,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
         const lexer::SourcePosition &implementStart = Lexer()->GetToken().Start();
         auto *implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         implementsName->SetRange(Lexer()->GetToken().Loc());
-        auto *implementsClause = AllocNode<ir::NamedType>(implementsName);
+        auto *implementsClause = AllocNode<ir::NamedType>(implementsName, Allocator());
         implementsClause->SetRange(Lexer()->GetToken().Loc());
         Lexer()->NextToken();
 
@@ -1114,7 +1114,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
 
             implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
             implementsName->SetRange(Lexer()->GetToken().Loc());
-            auto *next = AllocNode<ir::NamedType>(implementsName);
+            auto *next = AllocNode<ir::NamedType>(implementsName, Allocator());
             current->SetRange(Lexer()->GetToken().Loc());
             current->SetNext(next);
             current = next;

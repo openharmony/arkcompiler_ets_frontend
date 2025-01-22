@@ -31,7 +31,7 @@ enum Color{RED, BLUE, GREEN}
     ]
 }
 
-@ClassAuthor ()
+@ClassAuthor()
 class MyClass {
    @ClassAuthor
    foo(){}

@@ -84,7 +84,7 @@ public:
             nodes.emplace_back(AllocNode<ir::Identifier>(
                 util::UString(std::string {std::forward<T>(arg)}, Allocator()).View(), Allocator()));
         } else if constexpr (std::is_convertible_v<std::decay_t<T>, checker::Type *>) {
-            nodes.emplace_back(AllocNode<ir::OpaqueTypeNode>(std::forward<T>(arg)));
+            nodes.emplace_back(AllocNode<ir::OpaqueTypeNode>(std::forward<T>(arg), Allocator()));
         } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<ir::AstNode *>>) {
             nodes.emplace_back(AllocNode<ir::TSInterfaceBody>(std::forward<T>(arg)));
         } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<ir::Expression *>>) {
@@ -93,7 +93,7 @@ public:
             nodes.emplace_back(AllocNode<ir::BlockExpression>(std::forward<T>(arg)));
         } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<checker::Type *>>) {
             for (auto *type : arg) {
-                nodes.emplace_back(AllocNode<ir::OpaqueTypeNode>(type));
+                nodes.emplace_back(AllocNode<ir::OpaqueTypeNode>(type, Allocator()));
             }
         } else {
             static_assert(STATIC_FALSE<T>, "Format argument has invalid type.");
@@ -211,7 +211,8 @@ public:
         return CreateFormattedTopLevelStatement(sourceCode, insertingNodes);
     }
     void ApplyAnnotationsToNode(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
-                                lexer::SourcePosition pos);
+                                lexer::SourcePosition pos,
+                                TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS);
 
     uint32_t GetNamespaceNestedRank()
     {
@@ -236,7 +237,10 @@ private:
     ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) override;
     ir::TypeNode *ParseTypeFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
     ir::AstNode *ParseTypeParametersFormatPlaceholder() override;
-
+    void ApplyAnnotationsToArrayType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
+                                     lexer::SourcePosition pos);
+    void ApplyAnnotationsToSpecificNodeType(ir::AstNode *node, ArenaVector<ir::AnnotationUsage *> &&annotations,
+                                            lexer::SourcePosition pos);
     ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder() override;
     ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder() override;
     ArenaVector<ir::Expression *> &ParseExpressionsArrayFormatPlaceholder() override;
@@ -425,6 +429,9 @@ private:
                                          bool needTypeAnnotation = true);
     ArenaVector<ir::AstNode *> ParseAnnotationProperties(ir::ModifierFlags memberModifiers = ir::ModifierFlags::NONE);
     ir::AnnotationUsage *ParseAnnotationUsage();
+    bool TryParseAnnotations();
+    void TryParseAnnotationsParams();
+    bool IsAnnotationUsageStart(lexer::SourcePosition lastTokenEndIndex);
     ir::AstNode *ParseInnerTypeDeclaration(ir::ModifierFlags memberModifiers, lexer::LexerPosition savedPos,
                                            bool isStepToken, bool seenStatic);
     ir::AstNode *ParseInnerConstructorDeclaration(ir::ModifierFlags memberModifiers,

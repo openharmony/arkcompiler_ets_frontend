@@ -837,9 +837,10 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ETSParser::Pars
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
             Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
         }
-        *options |= TypeAnnotationParsingOptions::ALLOW_WILDCARD;
+        *options |= TypeAnnotationParsingOptions::ALLOW_WILDCARD | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
         typeParamInst = ParseTypeParameterInstantiation(options);
-        *options &= ~TypeAnnotationParsingOptions::ALLOW_WILDCARD;
+        *options &=
+            ~(TypeAnnotationParsingOptions::ALLOW_WILDCARD | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW);
     }
 
     return {typeName, typeParamInst};
@@ -857,7 +858,7 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
     while (true) {
         auto partPos = Lexer()->GetToken().Start();
         auto [typeName, typeParams] = ParseTypeReferencePart(options);
-        typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeName, typeParams, typeRefPart);
+        typeRefPart = AllocNode<ir::ETSTypeReferencePart>(typeName, typeParams, typeRefPart, Allocator());
         typeRefPart->SetRange({partPos, Lexer()->GetToken().End()});
 
         if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_PERIOD)) {
@@ -870,7 +871,7 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
         }
     }
 
-    auto *typeReference = AllocNode<ir::ETSTypeReference>(typeRefPart);
+    auto *typeReference = AllocNode<ir::ETSTypeReference>(typeRefPart, Allocator());
     typeReference->SetRange({startPos, Lexer()->GetToken().End()});
     return typeReference;
 }
@@ -1351,7 +1352,8 @@ ir::ETSUnionType *ETSParser::CreateOptionalParameterTypeNode(ir::TypeNode *typeA
     }
     types.push_back(defaultUndef);
 
-    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types));
+    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
+    unionType->SetAnnotations(std::move(typeAnnotation->Annotations()));
     unionType->SetRange({typeAnnotation->Start(), typeAnnotation->End()});
     return unionType;
 }
@@ -1401,7 +1403,7 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         if (paramIdent->IsRestElement()) {
             LogSyntaxError(NO_DEFAULT_FOR_REST);
         }
-        defaultUndef = AllocNode<ir::ETSUndefinedType>();
+        defaultUndef = AllocNode<ir::ETSUndefinedType>(Allocator());
         defaultUndef->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
         Lexer()->NextToken();  // eat '?'
     }
@@ -1604,7 +1606,8 @@ ir::Expression *ETSParser::ParseExpressionOrTypeAnnotation(lexer::TokenType type
                                                            [[maybe_unused]] ExpressionParseFlags flags)
 {
     if (type == lexer::TokenType::KEYW_INSTANCEOF) {
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
+        TypeAnnotationParsingOptions options =
+            TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
             auto *typeAnnotation = AllocNode<ir::NullLiteral>();
@@ -1753,8 +1756,8 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
         Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
     }
-    auto const returnType =
-        AllocNode<ir::ETSTypeReferencePart>(AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator()));
+    auto const returnType = AllocNode<ir::ETSTypeReferencePart>(
+        AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator()), Allocator());
 
     auto dummyNode = AllocNode<ir::DummyNode>(compiler::Signatures::AMBIENT_INDEXER, indexName, returnType,
                                               ir::DummyNodeFlag::INDEXER);
@@ -1766,6 +1769,10 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
 ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotationParsingOptions *options)
 {
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
+    ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
+        annotations = ParseAnnotations(false);
+    }
 
     const auto varianceModifier = [this, options] {
         switch (Lexer()->GetToken().KeywordType()) {
@@ -1777,6 +1784,13 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
         }
     }();
 
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
+        auto moreAnnos = ParseAnnotations(false);
+        for (auto *anno : moreAnnos) {
+            annotations.push_back(anno);
+        }
+    }
+    auto saveLoc = Lexer()->GetToken().Start();
     auto *paramIdent = ExpectIdentifier();
 
     ir::TypeNode *constraint = nullptr;
@@ -1794,8 +1808,10 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
         defaultType = ParseTypeAnnotation(options);
     }
 
-    auto *typeParam = AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType, varianceModifier);
+    auto *typeParam =
+        AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType, varianceModifier, Allocator());
 
+    ApplyAnnotationsToNode(typeParam, std::move(annotations), saveLoc);
     typeParam->SetRange({startLoc, Lexer()->GetToken().End()});
     return typeParam;
 }

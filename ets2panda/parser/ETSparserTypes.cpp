@@ -99,7 +99,7 @@ ir::TypeNode *ETSParser::ParsePrimitiveType(TypeAnnotationParsingOptions *option
         LogSyntaxError("Primitive type is not allowed here.");
     }
 
-    auto *const typeAnnotation = AllocNode<ir::ETSPrimitiveType>(type);
+    auto *const typeAnnotation = AllocNode<ir::ETSPrimitiveType>(type, Allocator());
     typeAnnotation->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
     return typeAnnotation;
@@ -121,7 +121,7 @@ ir::TypeNode *ETSParser::ParseUnionType(ir::TypeNode *const firstType)
     }
 
     auto const endLoc = types.back()->End();
-    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types));
+    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types), Allocator());
     unionType->SetRange({firstType->Start(), endLoc});
     return unionType;
 }
@@ -180,7 +180,7 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
         typeReference = reference->AsETSTypeReference();
     }
 
-    auto *wildcardType = AllocNode<ir::ETSWildcardType>(typeReference, varianceModifier);
+    auto *wildcardType = AllocNode<ir::ETSWildcardType>(typeReference, varianceModifier, Allocator());
     wildcardType->SetRange({varianceStartLoc, typeReference == nullptr ? varianceEndLoc : typeReference->End()});
 
     return wildcardType;
@@ -212,7 +212,7 @@ ir::TypeNode *ETSParser::ParseFunctionType()
         throwMarker |= ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD;
     }
     auto *funcType = AllocNode<ir::ETSFunctionType>(
-        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation, hasReceiver), throwMarker);
+        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation, hasReceiver), throwMarker, Allocator());
     funcType->SetRange({startLoc, returnTypeAnnotation->End()});
 
     return funcType;
@@ -323,19 +323,19 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::LITERAL_NULL: {
-            auto typeAnnotation = AllocNode<ir::ETSNullType>();
+            auto typeAnnotation = AllocNode<ir::ETSNullType>(Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::KEYW_UNDEFINED: {
-            auto typeAnnotation = AllocNode<ir::ETSUndefinedType>();
+            auto typeAnnotation = AllocNode<ir::ETSUndefinedType>(Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
         }
         case lexer::TokenType::LITERAL_STRING: {
-            auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String());
+            auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(Lexer()->GetToken().String(), Allocator());
             typeAnnotation->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
             return std::make_pair(typeAnnotation, true);
@@ -418,7 +418,7 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
             "functions.");
     }
 
-    auto *const thisType = AllocNode<ir::TSThisType>();
+    auto *const thisType = AllocNode<ir::TSThisType>(Allocator());
     thisType->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();  // eat 'this'
@@ -444,19 +444,21 @@ ir::TypeNode *ETSParser::ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotation
             return nullptr;
         }
 
-        typeNode = AllocNode<ir::TSArrayType>(typeNode);
+        typeNode = AllocNode<ir::TSArrayType>(typeNode, Allocator());
         typeNode->SetRange({startPos, Lexer()->GetToken().End()});
-
         Lexer()->NextToken();  // eat ']'
     }
-
     return typeNode;
 }
 
 ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingOptions *options)
 {
     bool const reportError = ((*options) & TypeAnnotationParsingOptions::REPORT_ERROR) != 0;
-
+    ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
+    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
+        annotations = ParseAnnotations(false);
+    }
+    auto startPos = Lexer()->GetToken().Start();
     auto [typeAnnotation, needFurtherProcessing] = GetTypeAnnotationFromToken(options);
 
     if (typeAnnotation == nullptr) {
@@ -477,18 +479,15 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
 
     if (((*options) & TypeAnnotationParsingOptions::DISALLOW_UNION) == 0 &&
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos);
         return ParseUnionType(typeAnnotation);
     }
-
+    ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos, *options);
     return typeAnnotation;
 }
 
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
-    ArenaVector<ir::AnnotationUsage *> annotations {Allocator()->Adapter()};
-    if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_AT)) {
-        annotations = ParseAnnotations(false);
-    }
     ir::TypeNode *typeAnnotation = nullptr;
     auto startPos = Lexer()->GetToken().Start();
     // if there is prefix readonly parameter type, change the return result to ETSTypeReference, like Readonly<>
@@ -503,7 +502,6 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
     } else {
         typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
     }
-    ApplyAnnotationsToNode(typeAnnotation, std::move(annotations), startPos);
     return typeAnnotation;
 }
 
@@ -513,7 +511,7 @@ ir::TypeNode *ETSParser::ParseMultilineString()
     const auto multilineStr = Lexer()->ScanMultilineString();
     Lexer()->ScanTemplateStringEnd();
 
-    auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(multilineStr);
+    auto typeAnnotation = AllocNode<ir::ETSStringLiteralType>(multilineStr, Allocator());
     typeAnnotation->SetRange({startPos, Lexer()->GetToken().End()});
     Lexer()->NextToken();
 

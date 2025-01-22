@@ -272,6 +272,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 22,

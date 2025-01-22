@@ -187,6 +187,7 @@
                                   }
                                 }
                               },
+                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 17,

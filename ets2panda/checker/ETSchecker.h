@@ -216,7 +216,9 @@ public:
     void CheckInnerClassMembers(const ETSObjectType *classType);
     void CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus);
     void CheckClassDefinition(ir::ClassDefinition *classDef);
-    void CheckClassMembers(ir::ClassDefinition *classDef);
+    void CheckClassElement(ir::ClassDefinition *classDef);
+    void CheckClassAnnotations(ir::ClassDefinition *classDef);
+    void CheckInterfaceAnnotations(ir::TSInterfaceDeclaration *interfaceDecl);
     void CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType *classType);
     void FindAssignment(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
     void FindAssignments(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
@@ -538,7 +540,9 @@ public:
     bool ValidateAnnotationPropertyType(checker::Type *tsType);
     void ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap,
                                ir::AnnotationUsage *st, ETSChecker *checker) const;
-    void CheckFunctionAnnotations(ir::ScriptFunction *scriptFunc);
+    void CheckFunctionSignatureAnnotations(const ArenaVector<ir::Expression *> &params,
+                                           ir::TSTypeParameterDeclaration *typeParams,
+                                           ir::TypeNode *returnTypeAnnotation);
     void CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &annotations);
     void CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir::AnnotationDeclaration *annoDecl);
     bool CheckAmbientAnnotationFieldInitializerValue(ir::Expression *init, ir::Expression *expected);
@@ -748,6 +752,8 @@ public:
     Signature *ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments, Language lang,
                                             bool isConstruct);
     ir::ClassProperty *CreateStaticReadonlyField(const char *name);
+    void BuildClassBodyFromDynamicImports(const ArenaVector<ir::ETSImportDeclaration *> &dynamicImports,
+                                          ArenaVector<ir::AstNode *> *classBody);
     void BuildDynamicImportClass();
     void BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::TypeNode *retTypeAnnotation);
     // Trailing lambda

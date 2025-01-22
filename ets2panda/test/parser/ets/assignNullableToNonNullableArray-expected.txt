@@ -365,6 +365,7 @@
                                   }
                                 }
                               },
+                              "annotations": [],
                               "loc": {
                                 "start": {
                                   "line": 19,
@@ -467,6 +468,7 @@
                                       }
                                     }
                                   },
+                                  "annotations": [],
                                   "loc": {
                                     "start": {
                                       "line": 20,

@@ -81,7 +81,7 @@ ir::TSTypeParameterDeclaration *DefaultParameterLowering::CreateParameterDeclara
         auto *defaultType = par->DefaultType() != nullptr
                                 ? par->DefaultType()->Clone(checker->Allocator(), nullptr)->AsTypeNode()
                                 : nullptr;
-        auto *typeParam = checker->AllocNode<ir::TSTypeParameter>(ident, constraint, defaultType);
+        auto *typeParam = checker->AllocNode<ir::TSTypeParameter>(ident, constraint, defaultType, checker->Allocator());
         typeParams.push_back(typeParam);
     });
     return checker->AllocNode<ir::TSTypeParameterDeclaration>(std::move(typeParams), typeParams.size());
@@ -118,9 +118,9 @@ ir::TSTypeParameterInstantiation *DefaultParameterLowering::CreateTypeParameterI
         auto *identRef =
             checker->AllocNode<ir::Identifier>(param->AsTSTypeParameter()->Name()->Name(), checker->Allocator());
 
-        referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef, nullptr, nullptr);
+        referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef, nullptr, nullptr, checker->Allocator());
 
-        auto *typeReference = checker->AllocNode<ir::ETSTypeReference>(referencePart);
+        auto *typeReference = checker->AllocNode<ir::ETSTypeReference>(referencePart, checker->Allocator());
 
         selfParams.push_back(typeReference);
     }

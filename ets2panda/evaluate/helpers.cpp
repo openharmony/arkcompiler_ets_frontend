@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,7 +69,7 @@ ir::TypeNode *PrimitiveToTypeNode(panda_file::Type::TypeId typeId, checker::ETSC
             UNREACHABLE();
     }
 
-    return checker->AllocNode<ir::ETSPrimitiveType>(irType);
+    return checker->AllocNode<ir::ETSPrimitiveType>(irType, checker->Allocator());
 }
 
 ir::TypeNode *ClassReferenceToTypeNode(std::string_view name, checker::ETSChecker *checker)
@@ -102,7 +102,7 @@ ir::TypeNode *ReferenceToTypeNode(std::string_view typeSignature, checker::ETSCh
             auto *elementType = ToTypeNode(typeSignature.substr(rank), checker);
             if (elementType != nullptr) {
                 for (size_t i = 0; i < rank; ++i) {
-                    elementType = checker->AllocNode<ir::TSArrayType>(elementType);
+                    elementType = checker->AllocNode<ir::TSArrayType>(elementType, checker->Allocator());
                 }
                 return elementType;
             }
@@ -318,8 +318,8 @@ void AddExternalProgram(parser::Program *program, parser::Program *extProgram, s
 ir::ETSTypeReference *CreateETSTypeReference(checker::ETSChecker *checker, util::StringView name)
 {
     auto *identRef = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
-    auto *typeRefPart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef);
-    return checker->AllocNode<ir::ETSTypeReference>(typeRefPart);
+    auto *typeRefPart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef, checker->Allocator());
+    return checker->AllocNode<ir::ETSTypeReference>(typeRefPart, checker->Allocator());
 }
 
 // Be aware of lifecycle of string and string_view

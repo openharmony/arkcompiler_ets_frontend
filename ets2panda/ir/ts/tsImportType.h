@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,8 +24,8 @@ class TSTypeParameterInstantiation;
 class TSImportType : public TypeNode {
 public:
     explicit TSImportType(Expression *param, TSTypeParameterInstantiation *typeParams, Expression *qualifier,
-                          bool isTypeof)
-        : TypeNode(AstNodeType::TS_IMPORT_TYPE),
+                          bool isTypeof, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_IMPORT_TYPE, allocator),
           param_(param),
           typeParams_(typeParams),
           qualifier_(qualifier),

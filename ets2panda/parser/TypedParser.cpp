@@ -396,7 +396,7 @@ ir::TypeNode *TypedParser::ParseInterfaceExtendsElement()
         heritageEnd = typeParamInst->End();
     }
 
-    auto *typeReference = AllocNode<ir::TSTypeReference>(expr, typeParamInst);
+    auto *typeReference = AllocNode<ir::TSTypeReference>(expr, typeParamInst, Allocator());
     typeReference->SetRange({heritageStart, heritageEnd});
     return typeReference;
 }
@@ -718,7 +718,7 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
         defaultType = ParseTypeAnnotation(&newOptions);
     }
 
-    auto *typeParam = AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType);
+    auto *typeParam = AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType, Allocator());
 
     typeParam->SetRange({startLoc, Lexer()->GetToken().End()});
 
@@ -1244,6 +1244,7 @@ ir::AstNode *TypedParser::ParseTypeParameterInstantiationImpl(TypeAnnotationPars
         TypeAnnotationParsingOptions tmpOptions = *options &= ~TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
         // Need to parse correctly the cases like `x: T|C<T|U>`
         tmpOptions &= ~TypeAnnotationParsingOptions::DISALLOW_UNION;
+        tmpOptions |= TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
         ir::TypeNode *currentParam = ParseTypeAnnotation(&tmpOptions);
 
         if (currentParam == nullptr) {

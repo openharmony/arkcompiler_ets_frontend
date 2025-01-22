@@ -556,7 +556,8 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS);
     Lexer()->NextToken();
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
+    TypeAnnotationParsingOptions options =
+        TypeAnnotationParsingOptions::REPORT_ERROR | TypeAnnotationParsingOptions::ANNOTATION_NOT_ALLOW;
     ir::TypeNode *type = ParseTypeAnnotation(&options);
     if (type == nullptr) {
         // Error processing

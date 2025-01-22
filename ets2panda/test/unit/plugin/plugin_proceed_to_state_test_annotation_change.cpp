@@ -37,7 +37,7 @@ static std::string source = R"(
    authorName: string = "Tom"
 }
 // Annotation use:
-@FuncAuthor ()
+@FuncAuthor()
 function foo():void {}
 )";
 

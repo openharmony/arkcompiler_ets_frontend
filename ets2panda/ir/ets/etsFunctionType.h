@@ -28,8 +28,9 @@ class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
 public:
-    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags const funcFlags) noexcept
-        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE), signature_(std::move(signature)), funcFlags_(funcFlags)
+    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags const funcFlags,
+                             ArenaAllocator *const allocator) noexcept
+        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE, allocator), signature_(std::move(signature)), funcFlags_(funcFlags)
     {
     }
 

@@ -138,8 +138,8 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "NamedType",
-              "name": {
+              "type": "TSTypeReference",
+              "typeName": {
                 "type": "Identifier",
                 "name": "i32",
                 "decorators": [],
@@ -154,7 +154,6 @@
                   }
                 }
               },
-              "isNullable": false,
               "loc": {
                 "start": {
                   "line": 18,

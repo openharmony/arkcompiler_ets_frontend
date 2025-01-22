@@ -23,7 +23,7 @@
 }
 
 // Annotation use:
-@ClassAuthor ({authorName: "Bob"})
+@ClassAuthor({authorName: "Bob"})
 @MyAnno()
 class MyClass {}
 

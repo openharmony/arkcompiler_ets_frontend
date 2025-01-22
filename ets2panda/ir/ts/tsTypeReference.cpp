@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +44,12 @@ void TSTypeReference::TransformChildren(const NodeTransformer &cb, std::string_v
         typeName_->SetTransformedNode(transformationName, transformedNode);
         typeName_ = transformedNode->AsExpression();
     }
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 
 void TSTypeReference::Iterate(const NodeTraverser &cb) const
@@ -53,16 +59,25 @@ void TSTypeReference::Iterate(const NodeTraverser &cb) const
     }
 
     cb(typeName_);
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void TSTypeReference::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add(
-        {{"type", "TSTypeReference"}, {"typeName", typeName_}, {"typeParameters", AstDumper::Optional(typeParams_)}});
+    dumper->Add({{"type", "TSTypeReference"},
+                 {"typeName", typeName_},
+                 {"typeParameters", AstDumper::Optional(typeParams_)},
+                 {"annotations", AstDumper::Optional(Annotations())}});
 }
 
 void TSTypeReference::Dump(ir::SrcDumper *dumper) const
 {
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     BaseName()->Dump(dumper);
 }
 

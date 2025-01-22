@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,8 +27,9 @@ class TSTypeParameterInstantiation;
 
 class TSTypeReference : public TypeNode {
 public:
-    explicit TSTypeReference(Expression *typeName, TSTypeParameterInstantiation *typeParams)
-        : TypeNode(AstNodeType::TS_TYPE_REFERENCE), typeName_(typeName), typeParams_(typeParams)
+    explicit TSTypeReference(Expression *typeName, TSTypeParameterInstantiation *typeParams,
+                             ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_TYPE_REFERENCE, allocator), typeName_(typeName), typeParams_(typeParams)
     {
     }
 

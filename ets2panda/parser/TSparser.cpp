@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -423,7 +423,7 @@ ir::TSImportType *TSParser::ParseImportType(const lexer::SourcePosition &startLo
         typeParams = ParseTypeParameterInstantiation(&options);
     }
 
-    auto *importType = AllocNode<ir::TSImportType>(param, typeParams, qualifier, isTypeof);
+    auto *importType = AllocNode<ir::TSImportType>(param, typeParams, qualifier, isTypeof, Allocator());
 
     importType->SetRange({startLoc, Lexer()->GetToken().End()});
 
@@ -440,7 +440,7 @@ ir::TypeNode *TSParser::ParseThisType(bool throwError)
             "of a class or interface.");
     }
 
-    auto *returnType = AllocNode<ir::TSThisType>();
+    auto *returnType = AllocNode<ir::TSThisType>(Allocator());
     returnType->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
@@ -487,7 +487,7 @@ ir::TypeNode *TSParser::ParseConditionalType(ir::Expression *checkType, bool res
 
     lexer::SourcePosition endLoc = falseType->End();
 
-    auto *conditionalType = AllocNode<ir::TSConditionalType>(checkType, extendsType, trueType, falseType);
+    auto *conditionalType = AllocNode<ir::TSConditionalType>(checkType, extendsType, trueType, falseType, Allocator());
 
     conditionalType->SetRange({startLoc, endLoc});
 
@@ -510,7 +510,7 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
                 "and tuple literal types.");
         }
 
-        auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::READONLY);
+        auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::READONLY, Allocator());
 
         typeOperator->SetRange({typeOperatorStart, type->End()});
 
@@ -523,7 +523,7 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
 
         ir::TypeNode *type = ParseTypeAnnotation(&options);
 
-        auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF);
+        auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF, Allocator());
 
         typeOperator->SetRange({typeOperatorStart, type->End()});
 
@@ -542,7 +542,7 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
 
         ir::TSTypeParameter *typeParam = ParseTypeParameter(&options);
 
-        auto *inferType = AllocNode<ir::TSInferType>(typeParam);
+        auto *inferType = AllocNode<ir::TSInferType>(typeParam, Allocator());
 
         inferType->SetRange({inferStart, Lexer()->GetToken().End()});
 
@@ -586,7 +586,7 @@ ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seenOptio
             auto *elementType = ParseTypeAnnotation(&options);
             *kind = ir::TSTupleKind::NAMED;
 
-            element = AllocNode<ir::TSNamedTupleMember>(elementIdent, elementType, isOptional);
+            element = AllocNode<ir::TSNamedTupleMember>(elementIdent, elementType, isOptional, Allocator());
         } else {
             element = ParseTypeReferenceOrQuery();
         }
@@ -637,7 +637,7 @@ ir::TSTupleType *TSParser::ParseTupleType()
     lexer::SourcePosition tupleEnd = Lexer()->GetToken().End();
     Lexer()->NextToken();  // eat ']'
 
-    auto *tupleType = AllocNode<ir::TSTupleType>(std::move(elements));
+    auto *tupleType = AllocNode<ir::TSTupleType>(std::move(elements), Allocator());
     tupleType->SetRange({tupleStart, tupleEnd});
     return tupleType;
 }
@@ -657,7 +657,7 @@ ir::TypeNode *TSParser::ParseIndexAccessType(ir::TypeNode *typeName)
 
         Lexer()->NextToken();  // eat ']'
 
-        typeName = AllocNode<ir::TSIndexedAccessType>(typeName, indexType);
+        typeName = AllocNode<ir::TSIndexedAccessType>(typeName, indexType, Allocator());
         typeName->SetRange({typeName->AsTSIndexedAccessType()->ObjectType()->Start(), Lexer()->GetToken().End()});
     } while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
              Lexer()->Lookahead() != lexer::LEX_CHAR_RIGHT_SQUARE);
@@ -711,16 +711,18 @@ ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parseQuery)
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
         Lexer()->Lookahead() != lexer::LEX_CHAR_RIGHT_SQUARE) {
-        ir::TypeNode *typeRef = parseQuery ? AllocNode<ir::TSTypeQuery>(typeName)->AsTypeNode()
-                                           : AllocNode<ir::TSTypeReference>(typeName, typeParamInst)->AsTypeNode();
+        ir::TypeNode *typeRef =
+            parseQuery ? AllocNode<ir::TSTypeQuery>(typeName, Allocator())->AsTypeNode()
+                       : AllocNode<ir::TSTypeReference>(typeName, typeParamInst, Allocator())->AsTypeNode();
 
         typeRef->SetRange({referenceStartLoc, Lexer()->GetToken().End()});
 
         return ParseIndexAccessType(typeRef);
     }
 
-    ir::TypeNode *returnNode = parseQuery ? AllocNode<ir::TSTypeQuery>(typeName)->AsTypeNode()
-                                          : AllocNode<ir::TSTypeReference>(typeName, typeParamInst)->AsTypeNode();
+    ir::TypeNode *returnNode = parseQuery
+                                   ? AllocNode<ir::TSTypeQuery>(typeName, Allocator())->AsTypeNode()
+                                   : AllocNode<ir::TSTypeReference>(typeName, typeParamInst, Allocator())->AsTypeNode();
 
     returnNode->SetRange({referenceStartLoc, typeName->End()});
 
@@ -743,7 +745,7 @@ ir::TSTypeParameter *TSParser::ParseMappedTypeParameter()
 
     lexer::SourcePosition endLoc = constraint->End();
 
-    auto *typeParameter = AllocNode<ir::TSTypeParameter>(paramName, constraint, nullptr);
+    auto *typeParameter = AllocNode<ir::TSTypeParameter>(paramName, constraint, nullptr, Allocator());
 
     typeParameter->SetRange({startLoc, endLoc});
 
@@ -816,7 +818,7 @@ ir::TSMappedType *TSParser::ParseMappedType()
         ThrowSyntaxError("'}' expected");
     }
 
-    auto *mappedType = AllocNode<ir::TSMappedType>(typeParameter, typeAnnotation, readonly, optional);
+    auto *mappedType = AllocNode<ir::TSMappedType>(typeParameter, typeAnnotation, readonly, optional, Allocator());
 
     mappedType->SetRange({startLoc, Lexer()->GetToken().End()});
 
@@ -842,7 +844,7 @@ ir::TSTypePredicate *TSParser::ParseTypePredicate()
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         parameterName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     } else {
-        parameterName = AllocNode<ir::TSThisType>();
+        parameterName = AllocNode<ir::TSThisType>(Allocator());
     }
 
     parameterName->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
@@ -855,7 +857,7 @@ ir::TSTypePredicate *TSParser::ParseTypePredicate()
 
     if (isAsserts && Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_IS) {
         endPos = parameterName->End();
-        result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts);
+        result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts, Allocator());
         result->SetRange({startPos, endPos});
         return result;
     }
@@ -866,7 +868,7 @@ ir::TSTypePredicate *TSParser::ParseTypePredicate()
     typeAnnotation = ParseTypeAnnotation(&options);
     endPos = typeAnnotation->End();
 
-    result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts);
+    result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts, Allocator());
 
     result->SetRange({startPos, endPos});
 
@@ -888,7 +890,7 @@ ir::TypeNode *TSParser::ParseTypeLiteralOrMappedType(ir::TypeNode *typeAnnotatio
     lexer::SourcePosition bodyEnd = Lexer()->GetToken().End();
     Lexer()->NextToken();
 
-    auto *literalType = AllocNode<ir::TSTypeLiteral>(std::move(members));
+    auto *literalType = AllocNode<ir::TSTypeLiteral>(std::move(members), Allocator());
     auto *typeVar = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, literalType);
     literalType->SetVariable(typeVar);
     literalType->SetRange({bodyStart, bodyEnd});
@@ -935,7 +937,7 @@ ir::TSArrayType *TSParser::ParseArrayType(ir::TypeNode *elementType)
     Lexer()->NextToken();  // eat ']'
 
     lexer::SourcePosition startLoc = elementType->Start();
-    auto *arrayType = AllocNode<ir::TSArrayType>(elementType);
+    auto *arrayType = AllocNode<ir::TSArrayType>(elementType, Allocator());
     arrayType->SetRange({startLoc, endLoc});
 
     return arrayType;
@@ -972,7 +974,7 @@ ir::TSUnionType *TSParser::ParseUnionType(ir::TypeNode *type, bool restrictExten
 
     lexer::SourcePosition endLoc = types.back()->End();
 
-    auto *unionType = AllocNode<ir::TSUnionType>(std::move(types));
+    auto *unionType = AllocNode<ir::TSUnionType>(std::move(types), Allocator());
     auto *typeVar = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, unionType);
     unionType->SetVariable(typeVar);
     unionType->SetRange({startLoc, endLoc});
@@ -1015,7 +1017,7 @@ ir::TSIntersectionType *TSParser::ParseIntersectionType(ir::Expression *type, bo
 
     lexer::SourcePosition endLoc = types.back()->End();
 
-    auto *intersectionType = AllocNode<ir::TSIntersectionType>(std::move(types));
+    auto *intersectionType = AllocNode<ir::TSIntersectionType>(std::move(types), Allocator());
     auto *typeVar =
         varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, intersectionType);
     intersectionType->SetVariable(typeVar);
@@ -1036,33 +1038,33 @@ private:
                     auto *bigintNode = parser->AllocNode<ir::BigIntLiteral>(lexer->GetToken().BigInt());
                     bigintNode->SetRange(lexer->GetToken().Loc());
 
-                    return parser->AllocNode<ir::TSLiteralType>(bigintNode);
+                    return parser->AllocNode<ir::TSLiteralType>(bigintNode, parser->Allocator());
                 }
                 auto *numberNode = parser->AllocNode<ir::NumberLiteral>(lexer->GetToken().GetNumber());
                 numberNode->SetRange(lexer->GetToken().Loc());
 
-                return parser->AllocNode<ir::TSLiteralType>(numberNode);
+                return parser->AllocNode<ir::TSLiteralType>(numberNode, parser->Allocator());
             }
             case lexer::TokenType::LITERAL_STRING: {
                 auto *stringNode = parser->AllocNode<ir::StringLiteral>(lexer->GetToken().String());
                 stringNode->SetRange(lexer->GetToken().Loc());
 
-                return parser->AllocNode<ir::TSLiteralType>(stringNode);
+                return parser->AllocNode<ir::TSLiteralType>(stringNode, parser->Allocator());
             }
             case lexer::TokenType::LITERAL_TRUE: {
                 auto *booleanLiteral = parser->AllocNode<ir::BooleanLiteral>(true);
                 booleanLiteral->SetRange(lexer->GetToken().Loc());
 
-                return parser->AllocNode<ir::TSLiteralType>(booleanLiteral);
+                return parser->AllocNode<ir::TSLiteralType>(booleanLiteral, parser->Allocator());
             }
             case lexer::TokenType::LITERAL_FALSE: {
                 auto *booleanLiteral = parser->AllocNode<ir::BooleanLiteral>(false);
                 booleanLiteral->SetRange(lexer->GetToken().Loc());
 
-                return parser->AllocNode<ir::TSLiteralType>(booleanLiteral);
+                return parser->AllocNode<ir::TSLiteralType>(booleanLiteral, parser->Allocator());
             }
             case lexer::TokenType::LITERAL_NULL: {
-                return parser->AllocNode<ir::TSNullKeyword>();
+                return parser->AllocNode<ir::TSNullKeyword>(parser->Allocator());
             }
             default: {
                 return nullptr;
@@ -1081,34 +1083,34 @@ private:
                 return GetTypeAnnotationFromLiteral(parser, lexer);
             }
             case lexer::TokenType::KEYW_ANY: {
-                return parser->AllocNode<ir::TSAnyKeyword>();
+                return parser->AllocNode<ir::TSAnyKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_BOOLEAN: {
-                return parser->AllocNode<ir::TSBooleanKeyword>();
+                return parser->AllocNode<ir::TSBooleanKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_NUMBER: {
-                return parser->AllocNode<ir::TSNumberKeyword>();
+                return parser->AllocNode<ir::TSNumberKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_STRING: {
-                return parser->AllocNode<ir::TSStringKeyword>();
+                return parser->AllocNode<ir::TSStringKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_UNKNOWN: {
-                return parser->AllocNode<ir::TSUnknownKeyword>();
+                return parser->AllocNode<ir::TSUnknownKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_VOID: {
-                return parser->AllocNode<ir::TSVoidKeyword>();
+                return parser->AllocNode<ir::TSVoidKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_UNDEFINED: {
-                return parser->AllocNode<ir::TSUndefinedKeyword>();
+                return parser->AllocNode<ir::TSUndefinedKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_NEVER: {
-                return parser->AllocNode<ir::TSNeverKeyword>();
+                return parser->AllocNode<ir::TSNeverKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_OBJECT: {
-                return parser->AllocNode<ir::TSObjectKeyword>();
+                return parser->AllocNode<ir::TSObjectKeyword>(parser->Allocator());
             }
             case lexer::TokenType::KEYW_BIGINT: {
-                return parser->AllocNode<ir::TSBigintKeyword>();
+                return parser->AllocNode<ir::TSBigintKeyword>(parser->Allocator());
             }
             default: {
                 parser->ThrowSyntaxError("Unexpected type");
@@ -1197,7 +1199,7 @@ ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *typeAnnot
         return ParseFunctionType(typeStart, false, throwError);
     }
 
-    auto *result = AllocNode<ir::TSParenthesizedType>(type);
+    auto *result = AllocNode<ir::TSParenthesizedType>(type, Allocator());
     result->SetRange({typeStart, endLoc});
 
     return result;
@@ -1237,9 +1239,9 @@ ir::TypeNode *TSParser::ParseFunctionType(lexer::SourcePosition startLoc, bool i
     ir::FunctionSignature signature(typeParamDecl, std::move(params), returnTypeAnnotation);
 
     if (isConstructionType) {
-        funcType = AllocNode<ir::TSConstructorType>(std::move(signature), abstractConstructor);
+        funcType = AllocNode<ir::TSConstructorType>(std::move(signature), abstractConstructor, Allocator());
     } else {
-        funcType = AllocNode<ir::TSFunctionType>(std::move(signature));
+        funcType = AllocNode<ir::TSFunctionType>(std::move(signature), Allocator());
     }
 
     funcType->SetRange({startLoc, returnTypeAnnotation->End()});

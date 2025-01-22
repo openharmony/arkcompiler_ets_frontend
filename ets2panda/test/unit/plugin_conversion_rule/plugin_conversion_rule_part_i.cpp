@@ -29,25 +29,26 @@ es2panda_AstNode **types, size_t typesLen)
     EXPECT_FALSE(HasMatched(targetAPIWithNoSpace));
 }
 
-/* explicit ETSUnionType(ArenaVector<TypeNode *> &&types) */
+/* explicit ETSUnionType(ArenaVector<TypeNode *> &&types, ArenaAllocator *const allocator) */
 TEST_F(PluginConversionRuleUnitTest, ArenaVectorInputParameter)
 {
     std::string targetCAPI {R"(
     extern "C" es2panda_AstNode *CreateETSUnionTypeIr([[maybe_unused]] es2panda_Context *context,
-[[maybe_unused]] es2panda_AstNode **types, size_t typesLen)
+        [[maybe_unused]] es2panda_AstNode **types, size_t typesLen)
     {
         ArenaVector<ir::TypeNode *> typesArenaVector {reinterpret_cast<Context *>(context)->allocator->Adapter()};
-        for (size_t i = 0; i < typesLen; ++i)
-        {
+        for (size_t i = 0; i < typesLen; ++i) {
             auto *typesElement1 = types[i];
             auto *typesElement1E2p = reinterpret_cast<ir::TypeNode *>(typesElement1);
+
             typesArenaVector.push_back(typesElement1E2p);
         }
+        auto *allocatorE2p = reinterpret_cast<Context *>(context)->allocator;
         auto *ctx = reinterpret_cast<Context *>(context);
         auto *ctxAllocator = ctx->allocator;
-        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSUnionType>(std::move(typesArenaVector)));
-    }
-    )"};
+        return reinterpret_cast<es2panda_AstNode *>(ctxAllocator->New<ir::ETSUnionType>(
+            std::move(typesArenaVector), allocatorE2p));
+    })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
     EXPECT_TRUE(HasMatched(targetAPIWithNoSpace));

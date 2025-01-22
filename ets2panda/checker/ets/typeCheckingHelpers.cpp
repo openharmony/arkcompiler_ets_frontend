@@ -858,16 +858,27 @@ void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir:
     }
 }
 
-void ETSChecker::CheckFunctionAnnotations(ir::ScriptFunction *scriptFunc)
+void ETSChecker::CheckFunctionSignatureAnnotations(const ArenaVector<ir::Expression *> &params,
+                                                   ir::TSTypeParameterDeclaration *typeParams,
+                                                   ir::TypeNode *returnTypeAnnotation)
 {
-    CheckAnnotations(scriptFunc->Annotations());
-
-    if (!scriptFunc->Params().empty()) {
-        for (ir::Expression *param : scriptFunc->Params()) {
-            if (param->IsETSParameterExpression()) {
-                CheckAnnotations(param->AsETSParameterExpression()->Annotations());
+    for (auto *param : params) {
+        if (param->IsETSParameterExpression()) {
+            CheckAnnotations(param->AsETSParameterExpression()->Annotations());
+            if (param->AsETSParameterExpression()->TypeAnnotation() != nullptr) {
+                param->AsETSParameterExpression()->TypeAnnotation()->Check(this);
             }
         }
+    }
+
+    if (typeParams != nullptr) {
+        for (auto *typeParam : typeParams->Params()) {
+            CheckAnnotations(typeParam->Annotations());
+        }
+    }
+
+    if (returnTypeAnnotation != nullptr) {
+        CheckAnnotations(returnTypeAnnotation->Annotations());
     }
 }
 
@@ -934,7 +945,6 @@ void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::C
             continue;
         }
         auto *clone = entry.second->Clone(checker->Allocator(), st);
-        clone->Check(checker);
         st->AddProperty(clone);
     }
 }

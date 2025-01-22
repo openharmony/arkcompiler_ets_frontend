@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,15 +50,15 @@ void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir
         }
         if (!alreadyHasUndefined) {
             ArenaVector<ir::TypeNode *> types(field->AsETSUnionType()->Types(), checker->Allocator()->Adapter());
-            types.push_back(checker->AllocNode<ir::ETSUndefinedType>());
-            auto *const unionType = checker->AllocNode<ir::ETSUnionType>(std::move(types));
+            types.push_back(checker->AllocNode<ir::ETSUndefinedType>(checker->Allocator()));
+            auto *const unionType = checker->AllocNode<ir::ETSUnionType>(std::move(types), checker->Allocator());
             field->SetTypeAnnotation(unionType);
         }
     } else {
         ArenaVector<ir::TypeNode *> types(checker->Allocator()->Adapter());
         types.push_back(field->TypeAnnotation());
-        types.push_back(checker->AllocNode<ir::ETSUndefinedType>());
-        auto *const unionType = checker->AllocNode<ir::ETSUnionType>(std::move(types));
+        types.push_back(checker->AllocNode<ir::ETSUndefinedType>(checker->Allocator()));
+        auto *const unionType = checker->AllocNode<ir::ETSUnionType>(std::move(types), checker->Allocator());
         field->SetTypeAnnotation(unionType);
     }
     field->ClearModifier(ir::ModifierFlags::OPTIONAL);

@@ -27,8 +27,8 @@ class TSTypeParameterDeclaration;
 
 class TSFunctionType : public TypeNode {
 public:
-    explicit TSFunctionType(FunctionSignature &&signature)
-        : TypeNode(AstNodeType::TS_FUNCTION_TYPE), signature_(std::move(signature))
+    explicit TSFunctionType(FunctionSignature &&signature, ArenaAllocator *const allocator)
+        : TypeNode(AstNodeType::TS_FUNCTION_TYPE, allocator), signature_(std::move(signature))
     {
     }
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields

@@ -333,6 +333,7 @@
                       }
                     }
                   },
+                  "annotations": [],
                   "loc": {
                     "start": {
                       "line": 17,
@@ -638,6 +639,7 @@
                           }
                         }
                       },
+                      "annotations": [],
                       "loc": {
                         "start": {
                           "line": 1,

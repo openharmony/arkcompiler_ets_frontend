@@ -28,10 +28,10 @@
 }
 
 // Annotation use:
-@ClassAuthor ({authorName: "Bob", authorAge: 35, testBool: false,
+@ClassAuthor({authorName: "Bob", authorAge: 35, testBool: false,
                reviewers: ["Bob", "Jim", "Tom"], reviewersAge: [-18, -3.14, 32],
                testBools: [false, true, false]})
-@MyAnno ()
+@MyAnno()
 class MyClass {}
 
 function main(): void {
