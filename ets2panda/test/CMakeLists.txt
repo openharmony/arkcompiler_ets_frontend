@@ -30,6 +30,12 @@ if(PANDA_TARGET_ARM32 OR PANDA_ARM64_TESTS_WITH_SANITIZER)
 endif()
 
 add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
+add_custom_target(es2panda_gtests COMMENT "Running es2panda gtest suites")
+
+# List for accumulation of all ets gtests binary paths.
+# It's used by CI to archive these binaries into a single artifact
+# and send it to second stage where unit tests will use them.
+set_property(GLOBAL PROPERTY ets_stash_list "")
 
 function(ets2panda_add_gtest TARGET)
     # Parse arguments
@@ -42,6 +48,8 @@ function(ets2panda_add_gtest TARGET)
     )
 
     panda_add_gtest(
+            TEST_GROUP es2panda_gtests
+            STASH_LIST ets_stash_list
             NAME ${TARGET}
             SOURCES
                 ${ES2PANDA_ROOT}/test/utils/asm_test.cpp

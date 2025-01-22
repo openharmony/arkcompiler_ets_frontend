@@ -60,5 +60,5 @@ ets2panda_add_gtest(ast_verifier_test_4
 )
 
 if (NOT PANDA_QEMU_BUILD)
-    add_dependencies(gtests qemu_excluded_gtests)
+    add_dependencies(es2panda_gtests qemu_excluded_gtests)
 endif()
