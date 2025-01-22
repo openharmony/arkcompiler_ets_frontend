@@ -186,7 +186,6 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     globalClass_ = program->GlobalClass();
 
     AnalyzeClassDef(globalClass_);
-    globalClassIsVisited_ = true;
 
     firstNonGlobalAdr_ = nextAdr_;
     AnalyzeNodes(node);
@@ -235,7 +234,9 @@ void AssignAnalyzer::AnalyzeNode(const ir::AstNode *node)
             break;
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
-            AnalyzeClassDef(node->AsClassDefinition());
+            if (node->AsClassDefinition() != globalClass_) {
+                AnalyzeClassDef(node->AsClassDefinition());
+            }
             break;
         }
         case ir::AstNodeType::METHOD_DEFINITION: {
@@ -430,10 +431,6 @@ void AssignAnalyzer::AnalyzeClassDecl(const ir::ClassDeclaration *classDecl)
 
 void AssignAnalyzer::AnalyzeClassDef(const ir::ClassDefinition *classDef)
 {
-    if (classDef == globalClass_ && globalClassIsVisited_) {
-        return;
-    }
-
     SetOldPendingExits(PendingExits());
 
     ScopeGuard save(firstAdr_, nextAdr_, classDef_, classFirstAdr_);
@@ -579,6 +576,9 @@ void AssignAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 
     ScopeGuard save(firstAdr_, nextAdr_, returnAdr_, isInitialConstructor_);
 
+    hasTryFinallyBlock_ = func->IsAnyChild([](ir::AstNode *ast) {
+        return (ast->Type() == ir::AstNodeType::TRY_STATEMENT && ast->AsTryStatement()->FinallyBlock() != nullptr);
+    });
     isInitialConstructor_ = IsInitialConstructor(methodDef);
     if (!isInitialConstructor_) {
         firstAdr_ = nextAdr_;
@@ -946,12 +946,12 @@ void AssignAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
 
 void AssignAnalyzer::AnalyzeBreak(const ir::BreakStatement *breakStmt)
 {
-    RecordExit(AssignPendingExit(breakStmt, inits_, uninits_));
+    RecordExit(AssignPendingExit(breakStmt, inits_, uninits_, isInitialConstructor_, hasTryFinallyBlock_));
 }
 
 void AssignAnalyzer::AnalyzeContinue(const ir::ContinueStatement *contStmt)
 {
-    RecordExit(AssignPendingExit(contStmt, inits_, uninits_));
+    RecordExit(AssignPendingExit(contStmt, inits_, uninits_, isInitialConstructor_, hasTryFinallyBlock_));
 }
 
 void AssignAnalyzer::AnalyzeReturn(const ir::ReturnStatement *retStmt)
@@ -959,7 +959,7 @@ void AssignAnalyzer::AnalyzeReturn(const ir::ReturnStatement *retStmt)
     if (retStmt->Argument() != nullptr) {
         AnalyzeNode(retStmt->Argument());
     }
-    RecordExit(AssignPendingExit(retStmt, inits_, uninits_));
+    RecordExit(AssignPendingExit(retStmt, inits_, uninits_, isInitialConstructor_, hasTryFinallyBlock_));
 }
 
 void AssignAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throwStmt)

@@ -57,22 +57,21 @@ private:
 
 class AssignPendingExit : public PendingExit {
 public:
-    explicit AssignPendingExit(const ir::AstNode *node, Set &inits, Set &uninits)
+    explicit AssignPendingExit(const ir::AstNode *node, Set &inits, Set &uninits, bool isInitialConstructor,
+                               bool hasTryFinallyBlock)
         : PendingExit(node), inits_(&inits), uninits_(&uninits)
     {
-        exitInits_ = inits;
-        exitUninits_ = uninits;
+        if (isInitialConstructor || hasTryFinallyBlock) {
+            exitInits_ = inits;
+        }
+        if (hasTryFinallyBlock) {
+            exitUninits_ = uninits;
+        }
     }
     ~AssignPendingExit() override = default;
 
     DEFAULT_COPY_SEMANTIC(AssignPendingExit);
     DEFAULT_NOEXCEPT_MOVE_SEMANTIC(AssignPendingExit);
-
-    void ResolveJump() override
-    {
-        inits_->AndSet(exitInits_);
-        uninits_->AndSet(exitUninits_);
-    }
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes,readability-identifier-naming)
     Set *inits_;
@@ -168,13 +167,13 @@ private:
     ArenaVector<const ir::AstNode *> varDecls_;
     const ir::ClassDefinition *globalClass_ {};
     const ir::ClassDefinition *classDef_ {};
-    bool globalClassIsVisited_ {};
     int classFirstAdr_ {};
     int firstNonGlobalAdr_ {};
     int firstAdr_ {};
     int nextAdr_ {};
     int returnAdr_ {};
     bool isInitialConstructor_ {};
+    bool hasTryFinallyBlock_ {};
     NodeIdMap nodeIdMap_;
     int numErrors_ {};
     lexer::SourcePosition lastWarningPos_ {};
