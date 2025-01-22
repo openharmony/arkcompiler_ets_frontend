@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -55,7 +55,8 @@ void ImportDeclaration::Dump(ir::AstDumper *dumper) const
 void ImportDeclaration::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("import ");
-    if (specifiers_.size() == 1 && specifiers_[0]->IsImportNamespaceSpecifier()) {
+    if (specifiers_.size() == 1 &&
+        (specifiers_[0]->IsImportNamespaceSpecifier() || specifiers_[0]->IsImportDefaultSpecifier())) {
         specifiers_[0]->Dump(dumper);
     } else {
         dumper->Add("{ ");
