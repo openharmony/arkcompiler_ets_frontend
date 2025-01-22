@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,22 @@
  * limitations under the License.
  */
 
-class A {
-    $$a$aa$$: boolean = false
-    $$b$bb$$: int = 666
-    $$c$cc$$: string = "Hello world"
-    component_fun(b: boolean, num: int, str: string): void { }
-    fun(): void {
-        this.component_fun(this.$$a$aa$$, this.$$b$bb$$, this.$$c$cc$$)
-    }
-}
+ class A {
+     $$a$aa$$: boolean = true
+     $$b$bb$$: int = 1
+     $$c$cc$$: string = "apple"
+     component_fun(b: boolean, num: int, str: string): void { }
+     fun(): void {
+         this.component_fun(this.$$a$aa$$, this.$$b$bb$$, this.$$c$cc$$)
+     }
+ }
+
+ function main(){
+    let $$m = new A();
+    let b = $$m.$$a$aa$$;
+    assert(b == true);
+    let c = $$m.$$b$bb$$;
+    assert(c == 1);
+    let d = $$m.$$c$cc$$;
+    assert(d == "apple");
+ }

@@ -1455,13 +1455,7 @@ void Lexer::NextToken(Keywords *kws)
             ScanAtPunctuator();
             break;
         }
-        case LEX_CHAR_DOLLAR_SIGN: {
-            if (ScanDollarPunctuator()) {
-                break;
-            }
-
-            [[fallthrough]];
-        }
+        case LEX_CHAR_DOLLAR_SIGN:
         case LEX_CHAR_UPPERCASE_A:
         case LEX_CHAR_UPPERCASE_B:
         case LEX_CHAR_UPPERCASE_C:

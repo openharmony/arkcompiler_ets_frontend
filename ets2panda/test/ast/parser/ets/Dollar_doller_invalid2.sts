@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,12 @@
  * limitations under the License.
  */
 
-let $$aaa = 5
+function main(){
+  let a = $$true;
+  let b = $$false;
+  let c = $$1;
+}
 
-/* @@? 16:5 Error SyntaxError: Identifier expected, got '$$'. */
-/* @@? 16:7 Error SyntaxError: Variable must be initialized or it's type must be declared */
-/* @@? 16:7 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 17:11 Error TypeError: Unresolved reference $$true */
+/* @@? 18:11 Error TypeError: Unresolved reference $$false */
+/* @@? 19:11 Error TypeError: Unresolved reference $$1 */

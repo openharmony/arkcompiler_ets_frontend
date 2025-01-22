@@ -650,10 +650,6 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
             ProcessExclamationMark(checker, expr, operandType);
             break;
         }
-        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
-            expr->SetTsType(expr->Argument()->TsType());
-            break;
-        }
         default: {
             UNREACHABLE();
             break;

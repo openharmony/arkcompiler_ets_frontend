@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,7 +64,7 @@ bool Token::IsUnary() const
             type_ == TokenType::PUNCTUATOR_TILDE || type_ == TokenType::PUNCTUATOR_EXCLAMATION_MARK ||
             type_ == TokenType::PUNCTUATOR_PLUS_PLUS || type_ == TokenType::PUNCTUATOR_MINUS_MINUS ||
             type_ == TokenType::KEYW_TYPEOF || type_ == TokenType::KEYW_VOID || type_ == TokenType::KEYW_DELETE ||
-            type_ == TokenType::KEYW_AWAIT || type_ == TokenType::PUNCTUATOR_DOLLAR_DOLLAR);
+            type_ == TokenType::KEYW_AWAIT);
 }
 
 bool Token::IsPropNameLiteral() const
@@ -447,8 +447,6 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
             return "eos";
         case TokenType::KEYW_OUT:
             return "out";
-        case TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
-            return "$$";
         case TokenType::KEYW_OVERRIDE:
             return "override";
         case TokenType::KEYW_NATIVE:

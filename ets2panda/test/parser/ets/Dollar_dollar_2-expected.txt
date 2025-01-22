@@ -26,7 +26,7 @@
             "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "$a$aa$$",
+              "name": "$$a$aa$$",
               "decorators": [],
               "loc": {
                 "start": {
@@ -35,7 +35,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 12
+                  "column": 13
                 }
               }
             },
@@ -45,11 +45,11 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 24
+                  "column": 25
                 },
                 "end": {
                   "line": 17,
-                  "column": 29
+                  "column": 30
                 }
               }
             },
@@ -64,11 +64,11 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 14
+                  "column": 15
                 },
                 "end": {
                   "line": 17,
-                  "column": 21
+                  "column": 22
                 }
               }
             },
@@ -81,7 +81,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 29
+                "column": 30
               }
             }
           },
@@ -89,7 +89,7 @@
             "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "$b$bb$$",
+              "name": "$$b$bb$$",
               "decorators": [],
               "loc": {
                 "start": {
@@ -98,7 +98,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 12
+                  "column": 13
                 }
               }
             },
@@ -108,11 +108,11 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 20
+                  "column": 21
                 },
                 "end": {
                   "line": 18,
-                  "column": 23
+                  "column": 24
                 }
               }
             },
@@ -127,11 +127,11 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 14
+                  "column": 15
                 },
                 "end": {
                   "line": 18,
-                  "column": 17
+                  "column": 18
                 }
               }
             },
@@ -144,7 +144,7 @@
               },
               "end": {
                 "line": 18,
-                "column": 23
+                "column": 24
               }
             }
           },
@@ -152,7 +152,7 @@
             "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "$c$cc$$",
+              "name": "$$c$cc$$",
               "decorators": [],
               "loc": {
                 "start": {
@@ -161,7 +161,7 @@
                 },
                 "end": {
                   "line": 19,
-                  "column": 12
+                  "column": 13
                 }
               }
             },
@@ -171,11 +171,11 @@
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 23
+                  "column": 24
                 },
                 "end": {
                   "line": 19,
-                  "column": 36
+                  "column": 37
                 }
               }
             },
@@ -196,33 +196,33 @@
                   "loc": {
                     "start": {
                       "line": 19,
-                      "column": 14
+                      "column": 15
                     },
                     "end": {
                       "line": 19,
-                      "column": 20
+                      "column": 21
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 19,
-                    "column": 14
+                    "column": 15
                   },
                   "end": {
                     "line": 19,
-                    "column": 22
+                    "column": 23
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 14
+                  "column": 15
                 },
                 "end": {
                   "line": 19,
-                  "column": 22
+                  "column": 23
                 }
               }
             },
@@ -235,7 +235,7 @@
               },
               "end": {
                 "line": 19,
-                "column": 36
+                "column": 37
               }
             }
           },
@@ -608,52 +608,37 @@
                         },
                         "arguments": [
                           {
-                            "type": "UnaryExpression",
-                            "operator": "$$",
-                            "prefix": true,
-                            "argument": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "ThisExpression",
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 30
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 34
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "$a$aa$$",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 35
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 42
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "ThisExpression",
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 30
+                                  "column": 28
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 42
+                                  "column": 32
                                 }
                               }
                             },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "$$a$aa$$",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 22,
+                                  "column": 33
+                                },
+                                "end": {
+                                  "line": 22,
+                                  "column": 41
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 22,
@@ -661,123 +646,93 @@
                               },
                               "end": {
                                 "line": 22,
-                                "column": 42
+                                "column": 41
                               }
                             }
                           },
                           {
-                            "type": "UnaryExpression",
-                            "operator": "$$",
-                            "prefix": true,
-                            "argument": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "ThisExpression",
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 46
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 50
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "$b$bb$$",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 51
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 58
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "ThisExpression",
                               "loc": {
                                 "start": {
                                   "line": 22,
-                                  "column": 46
+                                  "column": 43
                                 },
                                 "end": {
+                                  "line": 22,
+                                  "column": 47
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "$$b$bb$$",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 22,
+                                  "column": 48
+                                },
+                                "end": {
+                                  "line": 22,
+                                  "column": 56
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 43
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 56
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "ThisExpression",
+                              "loc": {
+                                "start": {
                                   "line": 22,
                                   "column": 58
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 22,
-                                "column": 44
-                              },
-                              "end": {
-                                "line": 22,
-                                "column": 58
-                              }
-                            }
-                          },
-                          {
-                            "type": "UnaryExpression",
-                            "operator": "$$",
-                            "prefix": true,
-                            "argument": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "ThisExpression",
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 62
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 66
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "$c$cc$$",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 67
-                                  },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 74
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": false,
-                              "loc": {
-                                "start": {
-                                  "line": 22,
-                                  "column": 62
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 74
+                                  "column": 62
                                 }
                               }
                             },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "$$c$cc$$",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 22,
+                                  "column": 63
+                                },
+                                "end": {
+                                  "line": 22,
+                                  "column": 71
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 60
+                                "column": 58
                               },
                               "end": {
                                 "line": 22,
-                                "column": 74
+                                "column": 71
                               }
                             }
                           }
@@ -790,7 +745,7 @@
                           },
                           "end": {
                             "line": 22,
-                            "column": 75
+                            "column": 72
                           }
                         }
                       },
@@ -801,7 +756,7 @@
                         },
                         "end": {
                           "line": 22,
-                          "column": 75
+                          "column": 72
                         }
                       }
                     }
