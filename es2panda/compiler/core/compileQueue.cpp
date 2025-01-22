@@ -158,11 +158,12 @@ void CompileAbcClassJob::Run()
     auto *program = new panda::pandasm::Program();
     compiler_.CompileAbcClass(recordId, *program);
 
-    // Update version for abc input when needed
-    if (options_.updatePkgVersionForAbcInput && pkgVersionUpdateRequiredInAbc_) {
-        UpdatePackageVersion(program, options_);
+    // Update ohmurl for abc input when needed
+    if (options_.compileContextInfo.needModifyRecord ||
+        (options_.updatePkgVersionForAbcInput && pkgVersionUpdateRequiredInAbc_)) {
+        UpdateImportOhmurl(program, options_);
         // Remove redundant strings created due to version replacement
-        if (options_.removeRedundantFile && hasUpdatedVersion_) {
+        if (options_.removeRedundantFile && hasOhmurlBeenChanged_) {
             program->strings.clear();
             for (const auto &[_, function] : program->function_table) {
                 const auto &funcStringSet = function.CollectStringsFromFunctionInsns();
@@ -186,47 +187,65 @@ void CompileAbcClassJob::Run()
     program = nullptr;
 }
 
-void CompileAbcClassJob::UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
+void CompileAbcClassJob::UpdateBundleNameOfOhmurl(std::string &ohmurl)
+{
+    const auto &newOhmurl = util::UpdateBundleNameIfNeeded(ohmurl, options_.compileContextInfo.bundleName,
+                                                           options_.compileContextInfo.externalPkgNames);
+    if (newOhmurl == ohmurl) {
+        return;
+    }
+    SetOhmurlBeenChanged(true);
+    ohmurl = newOhmurl;
+}
+
+void CompileAbcClassJob::UpdateDynamicImport(panda::pandasm::Program *prog,
     const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[name, function] : prog->function_table) {
         util::VisitDyanmicImports<false>(function, [this, &prog, pkgContextInfo](std::string &ohmurl) {
+            if (this->options_.compileContextInfo.needModifyRecord) {
+                this->UpdateBundleNameOfOhmurl(ohmurl);
+            }
             const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(ohmurl, pkgContextInfo);
             if (newOhmurl == ohmurl) {
                 return;
             }
-            this->SetHasUpdatedVersion(true);
+            this->SetOhmurlBeenChanged(true);
             prog->strings.insert(newOhmurl);
             ohmurl = newOhmurl;
         });
     }
 }
 
-void CompileAbcClassJob::UpdateStaticImportPackageVersion(panda::pandasm::Program *prog,
+void CompileAbcClassJob::UpdateStaticImport(panda::pandasm::Program *prog,
     const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo)
 {
     for (auto &[recordName, record] : prog->record_table) {
         util::VisitStaticImports<false>(*prog, record, [this, pkgContextInfo](std::string &ohmurl) {
+            if (this->options_.compileContextInfo.needModifyRecord) {
+                this->UpdateBundleNameOfOhmurl(ohmurl);
+            }
+
             const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(ohmurl, pkgContextInfo);
             if (newOhmurl == ohmurl) {
                 return;
             }
-            this->SetHasUpdatedVersion(true);
+            this->SetOhmurlBeenChanged(true);
             ohmurl = newOhmurl;
         });
     }
 }
 
-void CompileAbcClassJob::UpdatePackageVersion(panda::pandasm::Program *prog,
-                                              const panda::es2panda::CompilerOptions &options)
+void CompileAbcClassJob::UpdateImportOhmurl(panda::pandasm::Program *prog,
+                                            const panda::es2panda::CompilerOptions &options)
 {
     bool isAccurateUpdateVersion = !options.compileContextInfo.updateVersionInfo.empty();
     const std::unordered_map<std::string, panda::es2panda::PkgInfo> &pkgContextInfo = isAccurateUpdateVersion ?
         options.compileContextInfo.updateVersionInfo.at(abcPkgName_) : options.compileContextInfo.pkgContextInfo;
     // Replace for esm module static import
-    UpdateStaticImportPackageVersion(prog, pkgContextInfo);
+    UpdateStaticImport(prog, pkgContextInfo);
     // Replace for dynamic import
-    UpdateDynamicImportPackageVersion(prog, pkgContextInfo);
+    UpdateDynamicImport(prog, pkgContextInfo);
 }
 
 void PostAnalysisOptimizeFileJob::Run()
