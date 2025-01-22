@@ -303,15 +303,18 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Optio
 
     bool isEvalMode = (debugInfoPlugin_ != nullptr);
     if (UNLIKELY(isEvalMode)) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         debugInfoPlugin_->PreCheck();
     }
 
     CheckProgram(Program(), true);
 
     if (UNLIKELY(isEvalMode)) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         debugInfoPlugin_->PostCheck();
     }
 
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     BuildDynamicImportClass();
 
 #ifndef NDEBUG
@@ -633,6 +636,7 @@ Type *ETSChecker::TypeError(varbinder::Variable *var, util::DiagnosticMessagePar
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)
 {
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     VarBinder()->AsETSBinder()->HandleCustomNodes(callExpr);
 }
 

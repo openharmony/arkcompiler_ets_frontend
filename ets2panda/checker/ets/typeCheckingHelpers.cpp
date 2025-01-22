@@ -541,7 +541,9 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCast(Type *base, Type *substituted)
     // Apparent type acts as effective representation for type.
     //  For T extends SomeClass|undefined
     //  Apparent(Int|T|null) is Int|SomeClass|undefined|null
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *appBase = GetApparentType(base);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *appSubst = GetApparentType(substituted);
     // Base is supertype of Substituted AND Substituted is supertype of Base
     return Relation()->IsIdenticalTo(appSubst, appBase) ? nullptr : appBase;
@@ -563,6 +565,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         if (!method->HasTypeFlag(checker::TypeFlag::GETTER)) {
             return nullptr;
         }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return GuaranteedTypeForUncheckedCallReturn(method->FindGetter());
     }
     // NOTE(vpukhov): mark ETSDynamicType properties
@@ -576,6 +579,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
             if (baseProp == prop) {
                 return nullptr;
             }
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             return GuaranteedTypeForUncheckedCast(GetTypeOfVariable(baseProp), GetTypeOfVariable(prop));
         }
         case ir::AstNodeType::METHOD_DEFINITION:
@@ -597,6 +601,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
     if (baseSig == nullptr || baseSig == sig) {
         return nullptr;
     }
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return GuaranteedTypeForUncheckedCast(MaybeBoxType(baseSig->ReturnType()), MaybeBoxType(sig->ReturnType()));
 }
 
@@ -941,6 +946,7 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
                      st->Start());
     }
     auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto clone = singleField->TypeAnnotation()->Clone(Allocator(), param);
     param->SetTypeAnnotation(clone);
     ScopeContext scopeCtx(this, st->Scope());
@@ -958,6 +964,7 @@ void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::C
                                   st->Start());
             continue;
         }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *clone = entry.second->Clone(checker->Allocator(), st);
         st->AddProperty(clone);
     }
@@ -976,6 +983,7 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
             continue;
         }
 
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto clone = result->second->TypeAnnotation()->Clone(Allocator(), param);
         param->SetTypeAnnotation(clone);
         ScopeContext scopeCtx(this, st->Scope());
@@ -1274,6 +1282,7 @@ bool ETSChecker::CheckLambdaInfer(ir::AstNode *typeAnnotation, ir::ArrowFunction
 
     ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
     auto calleeType = typeAnnotation->AsETSFunctionType();
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     InferTypesForLambda(lambda, calleeType, subParameterType->AsETSFunctionType()->ArrowSignature());
 
     return true;
@@ -1300,6 +1309,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
         if (!nonNullishParam->IsETSFunctionType()) {
             return true;
         }
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return CheckLambdaInfer(typeAnnotation, arrowFuncExpr, nonNullishParam) && checkInvocable(flags);
     }
 
@@ -1318,6 +1328,7 @@ bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
     for (size_t ix = 0; ix < typeAnnsOfUnion.size(); ++ix) {
         auto *typeNode = typeAnnsOfUnion[ix];
         auto *paramNode = typeParamOfUnion[ix];
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         if (CheckLambdaInfer(typeNode, arrowFuncExpr, paramNode) && checkInvocable(flags)) {
             return true;
         }
@@ -1363,6 +1374,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         ir::AstNode *typeAnn = param->TypeAnnotation();
         Type *const parameterType = signature->Params()[index]->TsType();
 
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         bool const rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
         if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);
