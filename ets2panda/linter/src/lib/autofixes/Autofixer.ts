@@ -21,6 +21,7 @@ import { forEachNodeInSubtree } from '../utils/functions/ForEachNodeInSubtree';
 import { NameGenerator } from '../utils/functions/NameGenerator';
 import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { SymbolCache } from './SymbolCache';
+import { SENDABLE_DECORATOR } from '../utils/consts/SendableAPI';
 
 const UNDEFINED_NAME = 'undefined';
 
@@ -43,6 +44,48 @@ export interface Autofix {
 }
 
 export class Autofixer {
+  private readonly printer: ts.Printer = ts.createPrinter({
+    omitTrailingSemicolon: false,
+    removeComments: false,
+    newLine: ts.NewLineKind.LineFeed
+  });
+
+  private readonly nonCommentPrinter: ts.Printer = ts.createPrinter({
+    omitTrailingSemicolon: false,
+    removeComments: true,
+    newLine: ts.NewLineKind.LineFeed
+  });
+
+  private readonly typeLiteralInterfaceNameGenerator = new NameGenerator(
+    GENERATED_TYPE_LITERAL_INTERFACE_NAME,
+    GENERATED_TYPE_LITERAL_INTERFACE_TRESHOLD
+  );
+
+  private readonly destructObjNameGenerator = new NameGenerator(
+    GENERATED_DESTRUCT_OBJECT_NAME,
+    GENERATED_DESTRUCT_OBJECT_TRESHOLD
+  );
+
+  private readonly destructArrayNameGenerator = new NameGenerator(
+    GENERATED_DESTRUCT_ARRAY_NAME,
+    GENERATED_DESTRUCT_ARRAY_TRESHOLD
+  );
+
+  private readonly objectLiteralInterfaceNameGenerator = new NameGenerator(
+    GENERATED_OBJECT_LITERAL_INTERFACE_NAME,
+    GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD
+  );
+
+  private readonly symbolCache: SymbolCache;
+
+  private readonly renameSymbolAsIdentifierCache = new Map<ts.Symbol, Autofix[] | undefined>();
+
+  private readonly enumMergingCache = new Map<ts.Symbol, Autofix[] | undefined>();
+
+  private readonly privateIdentifierCache = new Map<ts.Symbol, Autofix[] | undefined>();
+
+  private readonly sendableDecoratorCache = new Map<ts.Declaration, Autofix[] | undefined>();
+
   constructor(
     private readonly typeChecker: ts.TypeChecker,
     private readonly utils: TsUtils,
@@ -876,8 +919,6 @@ export class Autofixer {
     return result;
   }
 
-  private readonly renameSymbolAsIdentifierCache = new Map<ts.Symbol, Autofix[] | undefined>();
-
   private static renamePropertyName(node: ts.PropertyName, newName: string): Autofix[] | undefined {
     if (ts.isComputedPropertyName(node)) {
       return undefined;
@@ -1292,20 +1333,6 @@ export class Autofixer {
     return result;
   }
 
-  private readonly enumMergingCache = new Map<ts.Symbol, Autofix[] | undefined>();
-
-  private readonly printer: ts.Printer = ts.createPrinter({
-    omitTrailingSemicolon: false,
-    removeComments: false,
-    newLine: ts.NewLineKind.LineFeed
-  });
-
-  private readonly nonCommentPrinter: ts.Printer = ts.createPrinter({
-    omitTrailingSemicolon: false,
-    removeComments: true,
-    newLine: ts.NewLineKind.LineFeed
-  });
-
   private static getReturnTypePosition(funcLikeDecl: ts.FunctionLikeDeclaration): number {
     if (funcLikeDecl.body) {
 
@@ -1538,8 +1565,6 @@ export class Autofixer {
     autofix[0] = { start: nodes[0].getStart(), end: nodes[0].getEnd(), replacementText: text };
     return autofix;
   }
-
-  private readonly privateIdentifierCache = new Map<ts.Symbol, Autofix[] | undefined>();
 
   private fixSinglePrivateIdentifier(ident: ts.PrivateIdentifier): Autofix {
     if (
@@ -1800,11 +1825,6 @@ export class Autofixer {
     return (decl.exclamationToken || decl.name).getEnd();
   }
 
-  private readonly objectLiteralInterfaceNameGenerator = new NameGenerator(
-    GENERATED_OBJECT_LITERAL_INTERFACE_NAME,
-    GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD
-  );
-
   /*
    * In case of type alias initialized with type literal, replace
    * entire type alias with identical interface declaration.
@@ -1895,27 +1915,60 @@ export class Autofixer {
     return found;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   removeDecorator(decorator: ts.Decorator): Autofix[] {
+    void this;
     return [{ start: decorator.getStart(), end: decorator.getEnd(), replacementText: '' }];
   }
 
-  private readonly typeLiteralInterfaceNameGenerator = new NameGenerator(
-    GENERATED_TYPE_LITERAL_INTERFACE_NAME,
-    GENERATED_TYPE_LITERAL_INTERFACE_TRESHOLD
-  );
+  fixSendableExplicitFieldType(node: ts.PropertyDeclaration): Autofix[] | undefined {
+    const initializer = node.initializer;
+    if (initializer === undefined) {
+      return undefined;
+    }
 
-  private readonly destructObjNameGenerator = new NameGenerator(
-    GENERATED_DESTRUCT_OBJECT_NAME,
-    GENERATED_DESTRUCT_OBJECT_TRESHOLD
-  );
+    const propType = this.typeChecker.getTypeAtLocation(node);
+    const propTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
+    if (!propTypeNode || !this.utils.isSupportedType(propTypeNode)) {
+      return undefined;
+    }
 
-  private readonly destructArrayNameGenerator = new NameGenerator(
-    GENERATED_DESTRUCT_ARRAY_NAME,
-    GENERATED_DESTRUCT_ARRAY_TRESHOLD
-  );
+    const questionOrExclamationToken: ts.ExclamationToken | ts.QuestionToken | undefined =
+      node.questionToken ?? node.exclamationToken ?? undefined;
 
-  private readonly symbolCache: SymbolCache;
+    const newPropDecl: ts.PropertyDeclaration = ts.factory.createPropertyDeclaration(
+      node.modifiers,
+      node.name,
+      questionOrExclamationToken,
+      propTypeNode,
+      initializer
+    );
+
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newPropDecl, node.getSourceFile());
+    return [{ start: node.getFullStart(), end: node.getEnd(), replacementText: text }];
+  }
+
+  addClassSendableDecorator(
+    hClause: ts.HeritageClause,
+    typeExpr: ts.ExpressionWithTypeArguments
+  ): Autofix[] | undefined {
+    const decl = hClause.parent;
+    if (this.sendableDecoratorCache.has(decl)) {
+      return this.sendableDecoratorCache.get(decl);
+    }
+    if (hClause.token === ts.SyntaxKind.ExtendsKeyword && !this.utils.isValidSendableClassExtends(typeExpr)) {
+      return undefined;
+    }
+    const result = this.addSendableDecorator(decl);
+    this.sendableDecoratorCache.set(decl, result);
+    return result;
+  }
+
+  addSendableDecorator(node: ts.Node): Autofix[] {
+    void this;
+    const text = '@' + SENDABLE_DECORATOR + '\n';
+    const pos = node.getStart();
+    return [{ start: pos, end: pos, replacementText: text }];
+  }
 
   fixVoidOperator(voidExpr: ts.VoidExpression): Autofix[] {
     let newExpr = voidExpr.expression;
