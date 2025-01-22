@@ -1385,8 +1385,8 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
 
     return type != nullptr &&
            (type->IsETSPrimitiveType() ||
-            (type->PossiblyETSNullish() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
-                                            (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
+            (type->PossiblyETSUndefined() && (!type->HasTypeFlag(checker::TypeFlag::GENERIC) ||
+                                              (isNonReadonlyField && !CHECK_GENERIC_NON_READONLY_PROPERTIES))));
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)

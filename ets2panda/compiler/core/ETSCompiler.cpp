@@ -134,8 +134,9 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) 
 void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
+    auto const checker = const_cast<checker::ETSChecker *>(etsg->Checker());
     compiler::RegScope rs(etsg);
-    compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
+    compiler::TargetTypeContext ttctx(etsg, checker->GlobalIntType());
 
     expr->Dimension()->Compile(etsg);
 
@@ -145,13 +146,7 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
     etsg->NewArray(expr, arr, dim, expr->TsType());
 
     const auto *elementType = expr->TypeReference()->TsType();
-
-    auto const checker = const_cast<checker::ETSChecker *>(GetETSGen()->Checker());
-
-    const bool undefAssignable =
-        checker->Relation()->IsSupertypeOf(elementType, etsg->Checker()->GlobalETSUndefinedType());
-    const bool nullAssignable = checker->Relation()->IsSupertypeOf(elementType, etsg->Checker()->GlobalETSNullType());
-
+    const bool undefAssignable = checker->Relation()->IsSupertypeOf(elementType, checker->GlobalETSUndefinedType());
     if (elementType->IsETSPrimitiveType() || undefAssignable) {
         // no-op
     } else {
@@ -168,9 +163,7 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
         etsg->LoadAccumulator(expr, countReg);
         etsg->StoreAccumulator(expr, indexReg);
 
-        if (nullAssignable) {
-            etsg->LoadAccumulatorNull(expr);
-        } else if (expr->Signature() != nullptr) {
+        if (expr->Signature() != nullptr) {
             const compiler::TargetTypeContext ttctx2(etsg, elementType);
             ArenaVector<ir::Expression *> arguments(GetCodeGen()->Allocator()->Adapter());
             etsg->InitObject(expr, expr->Signature(), arguments);

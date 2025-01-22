@@ -21,11 +21,6 @@ assert(erase((() => {
 })()) === undefined)
 
 assert(erase((() => {
-    let r: boolean | null;
-    return r;
-})()) === null)
-
-assert(erase((() => {
     let r: boolean | null | undefined;
     return r;
 })()) === undefined)

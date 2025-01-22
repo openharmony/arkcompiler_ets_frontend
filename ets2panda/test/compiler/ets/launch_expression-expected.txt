@@ -119,7 +119,7 @@
             }
           },
           {
-            "type": "ETSNullType",
+            "type": "ETSUndefinedType",
             "loc": {
               "start": {
                 "line": 20,
@@ -127,7 +127,7 @@
               },
               "end": {
                 "line": 20,
-                "column": 29
+                "column": 34
               }
             }
           }
@@ -139,7 +139,7 @@
           },
           "end": {
             "line": 20,
-            "column": 29
+            "column": 34
           }
         }
       },

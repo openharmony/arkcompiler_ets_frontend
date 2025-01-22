@@ -14,6 +14,9 @@
  */
 
 #include "ETSAnalyzer.h"
+
+#include <type_traits>
+
 #include "generated/diagnostic.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
@@ -419,40 +422,51 @@ checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
     return expr->TsType();
 }
 
+template <typename T, typename = typename std::enable_if_t<std::is_base_of_v<ir::Expression, T>>>
+static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
+{
+    ASSERT(checker != nullptr);
+    ASSERT(newArrayInstanceExpr != nullptr);
+
+    checker::Type *elementType = newArrayInstanceExpr->TypeReference()->GetType(checker);
+    if (elementType->IsETSPrimitiveType()) {
+        return true;
+    }
+
+    if (elementType->IsETSObjectType()) {
+        auto *calleeObj = elementType->AsETSObjectType();
+        const auto flags = checker::ETSObjectFlags::ABSTRACT | checker::ETSObjectFlags::INTERFACE;
+        if (!calleeObj->HasObjectFlag(flags)) {
+            // A workaround check for new Interface[...] in test cases
+            newArrayInstanceExpr->SetSignature(checker->CollectParameterlessConstructor(
+                calleeObj->ConstructSignatures(), newArrayInstanceExpr->Start()));
+            checker->ValidateSignatureAccessibility(calleeObj, nullptr, newArrayInstanceExpr->Signature(),
+                                                    newArrayInstanceExpr->Start());
+        } else {
+            checker->LogTypeError("Cannot use array creation expression with abstract classes and interfaces.",
+                                  newArrayInstanceExpr->Start());
+            return false;
+        }
+    } else if (!checker->Relation()->IsSupertypeOf(elementType, checker->GlobalETSUndefinedType())) {
+        checker->LogTypeError({"Cannot use array creation expression with non-constructable element type which is "
+                               "non-assignable from undefined."},
+                              newArrayInstanceExpr->Start());
+        return false;
+    }
+    return true;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
 
     auto *elementType = expr->TypeReference()->GetType(checker);
     checker->ValidateArrayIndex(expr->Dimension(), true);
-    if (!elementType->IsETSPrimitiveType()) {
-        if (elementType->IsETSUnionType() && !elementType->AsETSUnionType()->HasNullishType(checker)) {
-            checker->LogTypeError({"Union types in array declaration must include a nullish type."}, expr->Start());
-            expr->SetTsType(checker->GlobalTypeError());
-            return expr->TsType();
-        }
-        if (elementType->IsETSObjectType()) {
-            auto *calleeObj = elementType->AsETSObjectType();
-            const auto flags = checker::ETSObjectFlags::ABSTRACT | checker::ETSObjectFlags::INTERFACE;
-            if (!calleeObj->HasObjectFlag(flags)) {
-                // A workaround check for new Interface[...] in test cases
-                expr->SetSignature(
-                    checker->CollectParameterlessConstructor(calleeObj->ConstructSignatures(), expr->Start()));
-                checker->ValidateSignatureAccessibility(calleeObj, nullptr, expr->Signature(), expr->Start());
-            } else {
-                checker->LogTypeError("Cannot use array creation expression with abstract classes and interfaces.",
-                                      expr->Start());
-                expr->SetTsType(checker->GlobalTypeError());
-                return expr->TsType();
-            }
-        }
 
-        if (elementType->IsETSNeverType()) {
-            checker->LogTypeError("Cannot use array creation expression with never type.", expr->Start());
-        }
-    }
+    CheckArrayElementType(checker, expr);
     expr->SetTsType(checker->CreateETSArrayType(elementType));
     checker->CreateBuiltinArraySignature(expr->TsType()->AsETSArrayType(), 1);
+
     return expr->TsType();
 }
 
@@ -558,6 +572,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    CheckArrayElementType(checker, expr);
     auto *elementType = expr->TypeReference()->GetType(checker);
 
     for (auto *dim : expr->Dimensions()) {
@@ -567,6 +583,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *exp
 
     expr->SetTsType(elementType);
     expr->SetSignature(checker->CreateBuiltinArraySignature(elementType->AsETSArrayType(), expr->Dimensions().size()));
+
     return expr->TsType();
 }
 
