@@ -1748,6 +1748,8 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
 {
     if (targetType->IsETSStringType()) {
         CastDynamicTo(node, checker::TypeFlag::STRING);
+        CheckedReferenceNarrowing(node, targetType);
+        SetAccumulatorType(targetType);
         return;
     }
 
@@ -1800,6 +1802,9 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
 void ETSGen::CastToString(const ir::AstNode *const node)
 {
     const auto *const sourceType = GetAccumulatorType();
+    if (sourceType->IsETSStringType()) {
+        return;
+    }
     if (sourceType->IsETSPrimitiveType()) {
         EmitBoxingConversion(node);
     } else {
