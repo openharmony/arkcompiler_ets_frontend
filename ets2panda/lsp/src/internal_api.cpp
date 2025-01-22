@@ -231,4 +231,21 @@ checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir
     return originalNode->Check(checker);
 }
 
+std::string ReplaceQuotation(ark::es2panda::util::StringView strView)
+{
+    std::string str = std::string {strView};
+    str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
+    str.erase(std::remove(str.begin(), str.end(), '\''), str.end());
+    return str;
+}
+
+std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto program = ctx->parserProgram;
+    auto ast = program->Ast();
+    ir::AstNode *node = FindPrecedingToken(position, ast, ctx->allocator);
+    return node != nullptr ? ReplaceQuotation(program->SourceCode().Substr(node->Start().index, position)) : "";
+}
+
 }  // namespace ark::es2panda::lsp

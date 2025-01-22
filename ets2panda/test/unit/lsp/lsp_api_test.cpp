@@ -526,3 +526,33 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
     ASSERT_TRUE(type->IsETSUnionType());
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(LSPAPITests, GetCurrentTokenValue1)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "\"ab\"", "file1.sts", ES2PANDA_STATE_CHECKED);
+    size_t offset = 3;
+    std::string result = ark::es2panda::lsp::GetCurrentTokenValueImpl(ctx, offset);
+    std::string expect = "ab";
+    ASSERT_EQ(result, expect);
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetCurrentTokenValue2)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "\'ab\'", "file1.sts", ES2PANDA_STATE_CHECKED);
+    size_t offset = 3;
+    std::string result = ark::es2panda::lsp::GetCurrentTokenValueImpl(ctx, offset);
+    std::string expect = "ab";
+    ASSERT_EQ(result, expect);
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetCurrentTokenValue3)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "abc", "file1.sts", ES2PANDA_STATE_CHECKED);
+    size_t offset = 2;
+    std::string result = ark::es2panda::lsp::GetCurrentTokenValueImpl(ctx, offset);
+    std::string expect = "ab";
+    ASSERT_EQ(result, expect);
+    impl_->DestroyContext(ctx);
+}

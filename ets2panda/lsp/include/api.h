@@ -53,6 +53,7 @@ typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
     FileReferences *(*getFileReferences)(char const *fileName);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
+    std::string (*getCurrentTokenValue)(char const *fileName, size_t position);
 } LSPAPI;
 
 LSPAPI const *GetImpl();

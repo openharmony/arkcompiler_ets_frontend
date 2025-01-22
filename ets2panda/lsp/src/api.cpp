@@ -56,10 +56,20 @@ extern "C" es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const 
     return reinterpret_cast<es2panda_AstNode *>(FindPrecedingToken(pos, ast, ctx->allocator));
 }
 
+extern "C" std::string GetCurrentTokenValue(char const *fileName, size_t position)
+{
+    Initializer &initializer = Initializer::GetInstance();
+    auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto result = GetCurrentTokenValueImpl(ctx, position);
+    initializer.DestroyContext(ctx);
+    return result;
+}
+
 LSPAPI g_lspImpl = {
     GetDefinitionAtPosition,
     GetFileReferences,
     GetPrecedingToken,
+    GetCurrentTokenValue,
 };
 }  // namespace ark::es2panda::lsp
 

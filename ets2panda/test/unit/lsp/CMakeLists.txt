@@ -14,3 +14,7 @@
 ets2panda_add_gtest(lsp_api_test
     CPP_SOURCES lsp_api_test.cpp
 )
+
+ets2panda_add_gtest(lsp_public_api_test
+    CPP_SOURCES lsp_public_api_test.cpp
+)

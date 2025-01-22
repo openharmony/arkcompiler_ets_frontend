@@ -67,6 +67,7 @@ void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *ref
 ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator);
 ir::AstNode *GetOriginalNode(ir::AstNode *astNode);
 checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode);
+std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position);
 
 }  // namespace ark::es2panda::lsp
 
