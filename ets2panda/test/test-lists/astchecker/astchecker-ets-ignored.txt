@@ -72,3 +72,6 @@ ast/compiler/ets/implicit_this_method_trailing.sts
 # Issue: #22664
 ast/compiler/ets/recordWithLambdaFunction2.sts
 ast/compiler/ets/extension_accessor_tests/extensionGetterInWrongUsage.sts
+
+# Issue: ##22719
+ast/parser/ets/forOfType.sts
