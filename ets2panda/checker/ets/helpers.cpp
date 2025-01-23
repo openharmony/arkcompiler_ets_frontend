@@ -1249,7 +1249,7 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
                 paramType = boxedType;
             }
         }
-        aliasSub->insert({typeAliasType->AsETSTypeParameter(), paramType});
+        aliasSub->insert({typeAliasType->AsETSTypeParameter(), paramType});  // #21835: type argument is not boxed
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -83,7 +83,7 @@ static ir::Identifier *CreateNewArrayDeclareStatement(public_lib::Context *ctx, 
     //       as arrayType" should be added after cast Expression is implemented completely.
     //       Related issue: #issue20162
     if (checker->IsReferenceType(arrayElementType)) {
-        newArrayElementType = checker->CreateETSUnionType({arrayElementType, checker->GlobalETSNullType()});
+        newArrayElementType = checker->CreateETSUnionType({arrayElementType, checker->GlobalETSUndefinedType()});
     }
 
     std::stringstream newArrayDeclareStr;

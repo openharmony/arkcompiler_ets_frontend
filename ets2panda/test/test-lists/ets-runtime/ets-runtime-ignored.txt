@@ -61,5 +61,9 @@ lambdaWithLocalClassAccess.sts
 implementsClassPropertyUnionType1.sts
 implementsClassPropertyUnionType2.sts
 
+#Issue 21834
+override_for_partial_02.sts
+optional_field.sts
+
 #Issue 21188
 namespace_tests/nested_namespace_plus_equal.sts

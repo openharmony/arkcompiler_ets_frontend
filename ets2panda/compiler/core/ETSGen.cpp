@@ -226,6 +226,14 @@ void ETSGen::MoveVreg(const ir::AstNode *const node, const VReg vd, const VReg v
     SetVRegType(vd, sourceType);
 }
 
+// indicates that initializer is meaningless and may lead to NPEs
+void ETSGen::LoadAccumulatorPoison(const ir::AstNode *node, const checker::Type *type)
+{
+    ASSERT(type->IsETSReferenceType());
+    LoadAccumulatorUndefined(node);
+    SetAccumulatorType(type);
+}
+
 util::StringView ETSGen::FormDynamicModulePropReference(const varbinder::Variable *var)
 {
     ASSERT(VarBinder()->IsDynamicModuleVariable(var) || VarBinder()->IsDynamicNamespaceVariable(var));
@@ -610,36 +618,32 @@ VReg ETSGen::GetThisReg() const
     return res.variable->AsLocalVariable()->Vreg();
 }
 
-const checker::Type *ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode *node,
-                                              [[maybe_unused]] const checker::Type *type)
+const checker::Type *ETSGen::LoadDefaultValue(const ir::AstNode *node, const checker::Type *type)
 {
     if (type->IsETSAsyncFuncReturnType()) {
         LoadDefaultValue(node, type->AsETSAsyncFuncReturnType()->GetPromiseTypeArg());
         return type;
     }
 
-    if (type->IsETSUnionType()) {
-        if (type->AsETSUnionType()->HasUndefinedType()) {
-            type = Checker()->GetGlobalTypesHolder()->GlobalETSUndefinedType();
+    auto const checker = const_cast<checker::ETSChecker *>(Checker());
+
+    if (type->IsETSReferenceType()) {
+        if (checker->Relation()->IsSupertypeOf(type, checker->GlobalETSUndefinedType())) {
+            LoadAccumulatorUndefined(node);
+        } else if (checker->Relation()->IsSupertypeOf(type, checker->GlobalETSNullType())) {
+            LoadAccumulatorNull(node);
         } else {
-            type = Checker()->GetGlobalTypesHolder()->GlobalETSObjectType();
+            LoadAccumulatorPoison(node, type);
         }
+        return type;
     }
-    // NOTE(vpukhov): #19701 void refactoring
-    if (type->IsUndefinedType() || type->IsETSUndefinedType() || type->IsETSVoidType()) {
-        LoadAccumulatorUndefined(node);
-    } else if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter() ||
-               type->IsETSNullType() || type->IsETSPartialTypeParameter() || type->IsETSNeverType() ||
-               type->IsETSNonNullishType()) {
-        // NOTE: need rework about ETSNeverType #20340
-        LoadAccumulatorNull(node, type);
-    } else if (type->IsETSBooleanType()) {
+
+    if (type->IsETSBooleanType()) {
         LoadAccumulatorBoolean(node, type->AsETSBooleanType()->GetValue());
     } else {
         const auto ttctx = TargetTypeContext(this, type);
         LoadAccumulatorInt(node, 0);
     }
-
     return type;
 }
 
@@ -668,9 +672,14 @@ static bool IsAnyReferenceSupertype(checker::Type const *type)
     }
     auto const &constituent = type->AsETSUnionType()->ConstituentTypes();
     return constituent.size() == 3U && std::all_of(constituent.begin(), constituent.end(), [](checker::Type *t) {
-               return t->IsETSNullType() || t->IsETSUndefinedType() ||
+               return t->IsETSUndefinedType() || t->IsETSNullType() ||
                       (t->IsETSObjectType() && t->AsETSObjectType()->IsGlobalETSObjectType());
            });  // CC-OFF(G.FMT.02) project code style
+}
+
+static bool IsNullUnsafeObjectType(checker::Type const *type)
+{
+    return type->IsETSObjectType() && type->AsETSObjectType()->IsGlobalETSObjectType();
 }
 
 void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VReg srcReg,
@@ -766,7 +775,7 @@ void ETSGen::TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg
 
 // Implemented on top of the runtime type system, do not relax checks, do not introduce new types
 void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple<Label *, Label *> label, VReg srcReg,
-                                       checker::Type const *target, bool acceptUndefined)
+                                       checker::Type const *target, bool acceptNull)
 {
     ASSERT(!target->IsETSDynamicType());
     auto [ifTrue, ifFalse] = label;
@@ -777,33 +786,27 @@ void ETSGen::TestIsInstanceConstituent(const ir::AstNode *const node, std::tuple
     }
 
     switch (checker::ETSChecker::ETSType(target)) {
-        case checker::TypeFlag::ETS_NULL: {
+        case checker::TypeFlag::ETS_UNDEFINED:
+            BranchIfUndefined(node, ifTrue);
+            break;
+        case checker::TypeFlag::ETS_NULL:
             BranchIfNull(node, ifTrue);
             break;
-        }
-        case checker::TypeFlag::ETS_UNDEFINED: {
-            EmitIsUndefined(node);
-            BranchIfTrue(node, ifTrue);
-            break;
-        }
-        case checker::TypeFlag::ETS_OBJECT: {
-            if (!target->AsETSObjectType()->IsGlobalETSObjectType()) {
+        case checker::TypeFlag::ETS_OBJECT:
+            if (!IsNullUnsafeObjectType(target)) {
                 Sa().Emit<Isinstance>(node, ToAssemblerType(target));
                 BranchIfTrue(node, ifTrue);
                 break;
             }
-            if (!acceptUndefined) {
-                EmitIsUndefined(node);
-                BranchIfTrue(node, ifFalse);
+            if (!acceptNull) {
+                BranchIfNull(node, ifFalse);
             }
             JumpTo(node, ifTrue);
             break;
-        }
-        case checker::TypeFlag::ETS_ARRAY: {
+        case checker::TypeFlag::ETS_ARRAY:
             Sa().Emit<Isinstance>(node, ToAssemblerType(target));
             BranchIfTrue(node, ifTrue);
             break;
-        }
         default:
             UNREACHABLE();  // other types must not appear here
     }
@@ -817,21 +820,17 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
     ASSERT(target == Checker()->GetApparentType(target));
     auto ifFalse = AllocLabel();
 
-    bool const allowUndefined = target->PossiblyETSUndefined();
-    if (!target->PossiblyETSNull()) {
+    if (!target->PossiblyETSUndefined()) {
         LoadAccumulator(node, srcReg);
-        BranchIfNull(node, ifFalse);
+        BranchIfUndefined(node, ifFalse);
     }
 
-    auto const checkType = [this, srcReg, ifTrue, ifFalse, allowUndefined](const ir::AstNode *const n,
-                                                                           checker::Type const *t) {
+    auto const checkType = [this, srcReg, ifTrue, ifFalse, acceptNull = target->PossiblyETSNull()](
+                               const ir::AstNode *const n, checker::Type const *t) {
         LoadAccumulator(n, srcReg);
-        if (t->IsETSTypeAliasType()) {
-            TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t->AsETSTypeAliasType()->GetTargetType(),
-                                      allowUndefined);
-        } else {
-            TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, allowUndefined);
-        }
+        // #21835: type-alias in ApparentType
+        t = t->IsETSTypeAliasType() ? t->AsETSTypeAliasType()->GetTargetType() : t;
+        TestIsInstanceConstituent(n, std::tie(ifTrue, ifFalse), srcReg, t, acceptNull);
     };
 
     if (target->IsETSUnionType()) {
@@ -857,8 +856,7 @@ void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const 
         return;
     }
     if (target->IsETSArrayType() ||
-        (target->IsETSObjectType() &&
-         !(target->AsETSObjectType()->IsGlobalETSObjectType() && GetAccumulatorType()->PossiblyETSUndefined()))) {
+        (target->IsETSObjectType() && !(IsNullUnsafeObjectType(target) && GetAccumulatorType()->PossiblyETSNull()))) {
         InternalIsInstance(node, target);
         return;
     }
@@ -875,11 +873,11 @@ void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const 
     SetLabel(node, end);
 }
 
-// isinstance can only be used for Object and [] types, ensure source is not undefined!
+// isinstance can only be used for Object and [] types, ensure source is not null!
 void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
     ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
-    if (!target->IsETSObjectType() || !target->AsETSObjectType()->IsGlobalETSObjectType()) {
+    if (!IsNullUnsafeObjectType(target)) {
         Sa().Emit<Isinstance>(node, ToAssemblerType(target));
         SetAccumulatorType(Checker()->GlobalETSBooleanType());
     } else {
@@ -891,7 +889,7 @@ void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker
 void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
     ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
-    if (!target->IsETSObjectType() || !target->AsETSObjectType()->IsGlobalETSObjectType()) {
+    if (!IsNullUnsafeObjectType(target)) {
         Sa().Emit<Checkcast>(node, ToAssemblerType(target));
     }
     SetAccumulatorType(target);
@@ -910,15 +908,13 @@ void ETSGen::CheckedReferenceNarrowingObject(const ir::AstNode *node, const chec
     bool nullishCheck = false;
 
     auto *source = GetAccumulatorType();
-    if (source->PossiblyETSNull()) {
+    if (source->PossiblyETSUndefined()) {
+        nullishCheck = true;
+        BranchIfUndefined(node, isNullish);
+    }
+    if (source->PossiblyETSNull() && IsNullUnsafeObjectType(target)) {
         nullishCheck = true;
         BranchIfNull(node, isNullish);
-    }
-    if (source->PossiblyETSUndefined() && target->IsETSObjectType() &&
-        target->AsETSObjectType()->IsGlobalETSObjectType()) {
-        nullishCheck = true;
-        EmitIsUndefined(node);
-        BranchIfTrue(node, isNullish);
     }
 
     if (!nullishCheck) {
@@ -2086,7 +2082,7 @@ void ETSGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, L
     }
 }
 
-void ETSGen::BranchIfNullish([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifNullish)
+void ETSGen::BranchIfNullish(const ir::AstNode *node, Label *ifNullish)
 {
     auto *const type = GetAccumulatorType();
 
@@ -2094,19 +2090,19 @@ void ETSGen::BranchIfNullish([[maybe_unused]] const ir::AstNode *node, [[maybe_u
         // no action
     } else if (type->DefinitelyETSNullish()) {
         Sa().Emit<Jmp>(node, ifNullish);
-    } else if (!type->PossiblyETSUndefined()) {
+    } else if (!type->PossiblyETSNull()) {
         Sa().Emit<JeqzObj>(node, ifNullish);
     } else {
         RegScope rs(this);
         auto tmpObj = AllocReg();
         auto notTaken = AllocLabel();
 
-        if (type->PossiblyETSNull()) {
+        if (type->PossiblyETSUndefined()) {
             Sa().Emit<JeqzObj>(node, ifNullish);
         }
 
         Sa().Emit<StaObj>(node, tmpObj);
-        EmitIsUndefined(node);
+        EmitIsNull(node);
         Sa().Emit<Jeqz>(node, notTaken);
 
         Sa().Emit<LdaObj>(node, tmpObj);
@@ -2117,7 +2113,7 @@ void ETSGen::BranchIfNullish([[maybe_unused]] const ir::AstNode *node, [[maybe_u
     }
 }
 
-void ETSGen::BranchIfNotNullish([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifNotNullish)
+void ETSGen::BranchIfNotNullish(const ir::AstNode *node, Label *ifNotNullish)
 {
     auto notTaken = AllocLabel();
     BranchIfNullish(node, notTaken);
@@ -2128,9 +2124,9 @@ void ETSGen::BranchIfNotNullish([[maybe_unused]] const ir::AstNode *node, [[mayb
 void ETSGen::AssumeNonNullish(const ir::AstNode *node, checker::Type const *targetType)
 {
     auto const *nullishType = GetAccumulatorType();
-    if (nullishType->PossiblyETSUndefined() &&
+    if (nullishType->PossiblyETSNull() &&
         ToAssemblerType(targetType) != ToAssemblerType(Checker()->GlobalETSObjectType())) {
-        // clear 'undefined' union constituent
+        // clear 'null' dataflow
         Sa().Emit<Checkcast>(node, ToAssemblerType(targetType));
     }
     SetAccumulatorType(targetType);
@@ -2450,15 +2446,15 @@ void ETSGen::StringBuilderAppend(const ir::AstNode *node, VReg builder)
     }
 
     if (GetAccumulatorType()->IsETSReferenceType() && !GetAccumulatorType()->IsETSStringType()) {
-        if (GetAccumulatorType()->PossiblyETSNull()) {
-            Label *ifnull = AllocLabel();
+        if (GetAccumulatorType()->PossiblyETSUndefined()) {
+            Label *ifUndefined = AllocLabel();
             Label *end = AllocLabel();
-            BranchIfNull(node, ifnull);
+            BranchIfUndefined(node, ifUndefined);
             Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummyReg_, 0);
             JumpTo(node, end);
 
-            SetLabel(node, ifnull);
-            LoadAccumulatorString(node, "null");
+            SetLabel(node, ifUndefined);
+            LoadAccumulatorString(node, "undefined");
 
             SetLabel(node, end);
         } else {

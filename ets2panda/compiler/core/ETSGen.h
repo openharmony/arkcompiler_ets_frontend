@@ -256,34 +256,26 @@ public:
         Sa().Emit<Jnez>(node, ifTrue);
     }
 
-    void BranchIfNull(const ir::AstNode *node, Label *ifNull)
+    void BranchIfUndefined(const ir::AstNode *node, Label *ifNull)
     {
         Sa().Emit<JeqzObj>(node, ifNull);
     }
 
-    void BranchIfUndefined([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifUndefined)
-    {
-#ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsIsundefined>(node);
-        Sa().Emit<Jnez>(node, ifUndefined);
-#else
-        UNREACHABLE();
-#endif  // PANDA_WITH_ETS
-    }
-
-    void BranchIfNotUndefined([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifUndefined)
-    {
-#ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsIsundefined>(node);
-        Sa().Emit<Jeqz>(node, ifUndefined);
-#else
-        UNREACHABLE();
-#endif  // PANDA_WITH_ETS
-    }
-
-    void BranchIfNotNull(const ir::AstNode *node, Label *ifNotNull)
+    void BranchIfNotUndefined(const ir::AstNode *node, Label *ifNotNull)
     {
         Sa().Emit<JnezObj>(node, ifNotNull);
+    }
+
+    void BranchIfNull(const ir::AstNode *node, Label *ifTaken)
+    {
+        EmitIsNull(node);
+        BranchIfTrue(node, ifTaken);
+    }
+
+    void BranchIfNotNull(const ir::AstNode *node, Label *ifTaken)
+    {
+        EmitIsNull(node);
+        BranchIfFalse(node, ifTaken);
     }
 
     void BranchIfNullish(const ir::AstNode *node, Label *ifNullish);
@@ -356,21 +348,23 @@ public:
         SetAccumulatorType(Checker()->GlobalETSBigIntType());
     }
 
-    void LoadAccumulatorNull(const ir::AstNode *node, const checker::Type *type)
+    void LoadAccumulatorUndefined(const ir::AstNode *node)
     {
         Sa().Emit<LdaNull>(node);
-        SetAccumulatorType(type);
+        SetAccumulatorType(Checker()->GlobalETSUndefinedType());
     }
 
-    void LoadAccumulatorUndefined([[maybe_unused]] const ir::AstNode *node)
+    void LoadAccumulatorNull([[maybe_unused]] const ir::AstNode *node)
     {
 #ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsLdundefined>(node);
-        SetAccumulatorType(Checker()->GlobalETSUndefinedType());
+        Sa().Emit<EtsLdnullvalue>(node);
+        SetAccumulatorType(Checker()->GlobalETSNullType());
 #else
         UNREACHABLE();
 #endif  // PANDA_WITH_ETS
     }
+
+    void LoadAccumulatorPoison(const ir::AstNode *node, const checker::Type *type);
 
     void LoadAccumulatorChar(const ir::AstNode *node, char16_t value)
     {
@@ -680,7 +674,7 @@ private:
     util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
     void TestIsInstanceConstant(const ir::AstNode *node, Label *ifTrue, VReg srcReg, checker::Type const *target);
     void TestIsInstanceConstituent(const ir::AstNode *node, std::tuple<Label *, Label *> label, VReg srcReg,
-                                   checker::Type const *target, bool acceptUndefined);
+                                   checker::Type const *target, bool acceptNull);
     void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
 
     template <bool IS_SRTICT = false>
@@ -688,10 +682,10 @@ private:
     template <bool IS_SRTICT = false>
     void HandlePossiblyNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue);
 
-    void EmitIsUndefined([[maybe_unused]] const ir::AstNode *node)
+    void EmitIsNull([[maybe_unused]] const ir::AstNode *node)
     {
 #ifdef PANDA_WITH_ETS
-        Sa().Emit<EtsIsundefined>(node);
+        Sa().Emit<EtsIsnullvalue>(node);
 #else
         UNREACHABLE();
 #endif  // PANDA_WITH_ETS

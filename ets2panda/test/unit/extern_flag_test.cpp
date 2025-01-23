@@ -140,7 +140,7 @@ TEST_F(DeclareTest, function_with_overloads_0)
     SetCurrentProgram(R"(
         declare function foo(tmp?: double): string
     )");
-    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.Object;std.core.String;");
+    CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.Double;std.core.String;");
     CheckFunctionExternalFlag("ETSGLOBAL.foo:std.core.String;");
 }
 
@@ -152,7 +152,7 @@ TEST_F(DeclareTest, noImplclass_def_with_overload_0)
             public foo(arg?: int): string
         }
     )");
-    CheckFunctionExternalFlag("my_class.foo:std.core.Object;std.core.String;");
+    CheckFunctionExternalFlag("my_class.foo:std.core.Int;std.core.String;");
     CheckFunctionExternalFlag("my_class.foo:std.core.String;");
 }
 
@@ -194,7 +194,7 @@ TEST_F(DeclareTest, noImplinterface_def_with_overload_0)
             foo(arg?: int): void
         }
     )");
-    CheckFunctionExternalFlag("my_inter.foo:std.core.Object;void;");
+    CheckFunctionExternalFlag("my_inter.foo:std.core.Int;void;");
     CheckFunctionExternalFlag("my_inter.foo:void;");
 }
 
