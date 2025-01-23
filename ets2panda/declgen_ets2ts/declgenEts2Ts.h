@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,23 +19,38 @@
 #include "parser/program/program.h"
 #include "checker/ETSchecker.h"
 #include "libpandabase/os/file.h"
+#include "libpandabase/utils/arena_containers.h"
+#include "util/options.h"
 
 namespace ark::es2panda::declgen_ets2ts {
 
+struct DeclgenOptions {
+    bool exportAll = false;
+    std::string outputDts;
+};
+
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
-                            const std::string &outPath);
+                            const util::Options *options, const DeclgenOptions &declgenOptions);
 
 class TSDeclGen {
 public:
     TSDeclGen(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program)
-        : checker_(checker), program_(program)
+        : checker_(checker),
+          program_(program),
+          allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
+          objectArguments_(allocator_.Adapter())
     {
     }
 
     std::stringstream &Output()
     {
         return output_;
+    }
+
+    void SetDeclgenOptions(const DeclgenOptions &options)
+    {
+        declgenOptions_ = options;
     }
 
     void Generate();
@@ -59,7 +74,7 @@ private:
     void GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
-    void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
+    void GenMethodDeclaration(const ir::MethodDefinition *methodDef, const bool isInGlobalClass);
     void GenPropDeclaration(const ir::ClassProperty *classProp);
     void GenGlobalVarDeclaration(const ir::ClassProperty *globalVar);
     void GenLiteral(const ir::Literal *literal);
@@ -71,9 +86,15 @@ private:
     void GenExport(const ir::Identifier *symbol, const std::string &alias);
     void GenDefaultExport(const ir::Identifier *symbol);
     void ExportIfNeeded(const ir::Identifier *symbol);
+    bool ShouldEmitDeclarationSymbol(const ir::Identifier *symbol);
 
     template <class T, class CB>
     void GenSeparated(const T &container, const CB &cb, const char *separator = ", ");
+
+    void PrepareClassDeclaration(const ir::ClassDefinition *classDef);
+    bool ShouldSkipClassDeclaration(const std::string_view &className) const;
+    void HandleClassDeclarationTypeInfo(const ir::ClassDefinition *classDef, const std::string_view &className);
+    void ProcessClassBody(const ir::ClassDefinition *classDef, const bool isInGlobalClass);
 
     void Out() {}
     template <class F, class... T>
@@ -102,6 +123,9 @@ private:
     std::stringstream output_ {};
     checker::ETSChecker *checker_ {};
     const ark::es2panda::parser::Program *program_ {};
+    ArenaAllocator allocator_;
+    ArenaSet<std::string> objectArguments_;
+    DeclgenOptions declgenOptions_ {};
 };
 }  // namespace ark::es2panda::declgen_ets2ts
 
