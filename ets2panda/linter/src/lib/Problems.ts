@@ -142,6 +142,7 @@ export enum FaultID {
   LimitedVoidType,
   DecoratorsNotSupported,
   DebuggerStatement,
+  TsOverload,
   NoSideEffectImport,
   DynamicImport,
   ImportLazyIdentifier,
@@ -160,6 +161,12 @@ export enum FaultID {
   ExplicitFunctionType,
   ClassstaticInitialization,
   TaggedTemplates,
+  IncompationbleFunctionType,
+  InvalidIdentifier,
+  ExtendsExpression,
+  NumericSemantics,
+  AnimatableExtendDecoratorTransform,
+  NoDuplicateFunctionName,
   // this should always be last enum
   LAST_ID
 }

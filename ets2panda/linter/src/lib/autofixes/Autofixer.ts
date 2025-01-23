@@ -36,7 +36,6 @@ const GENERATED_DESTRUCT_OBJECT_TRESHOLD = 1000;
 
 const GENERATED_DESTRUCT_ARRAY_NAME = 'GeneratedDestructArray_';
 const GENERATED_DESTRUCT_ARRAY_TRESHOLD = 1000;
-
 const SPECIAL_LIB_NAME = 'specialAutofixLib';
 
 const ATTRIBUTE_SUFFIX = 'Attribute';
@@ -2027,6 +2026,29 @@ export class Autofixer {
     return [{ start: pos, end: pos, replacementText: text }];
   }
 
+  fixGlobalThisSet(decl: ts.BinaryExpression): Autofix[] | undefined {
+    void this;
+    const left = decl.left;
+    const right = decl.right;
+    if (
+      ts.isPropertyAccessExpression(left) &&
+      ts.isIdentifier(left.expression) &&
+      left.expression.text === 'globalThis'
+    ) {
+      const propertyName = left.name.text;
+      const value = right.getText();
+      const replacementText = `${SPECIAL_LIB_NAME}.globalThis.set("${propertyName}", ${value})`;
+      return [{ start: decl.getStart(), end: decl.getEnd(), replacementText: replacementText }];
+    }
+    return undefined;
+  }
+
+  fixGlobalThisGet(node: ts.PropertyAccessExpression): Autofix[] {
+    void this;
+    const replacement = `${SPECIAL_LIB_NAME}.globalThis.get("${node.name.text}")`;
+    return [{ start: node.getStart(), end: node.getEnd(), replacementText: replacement }];
+  }
+
   fixVoidOperator(voidExpr: ts.VoidExpression): Autofix[] {
     let newExpr = voidExpr.expression;
 
@@ -2206,7 +2228,7 @@ export class Autofixer {
     return [{ start: identifier.getStart(), end: identifier.getEnd(), replacementText: text }];
   }
 
-  fixExtendDecorator(extendDecorator: ts.Decorator): Autofix[] | undefined {
+  fixExtendDecorator(extendDecorator: ts.Decorator, preserveDecorator: boolean): Autofix[] | undefined {
     if (!ts.isCallExpression(extendDecorator.expression)) {
       return undefined;
     }
@@ -2244,9 +2266,14 @@ export class Autofixer {
     if (!componentName) {
       return undefined;
     }
+    const decoratorName = extendDecorator.expression.expression.getText();
     const typeName = componentName + ATTRIBUTE_SUFFIX;
     const newFuncDecl = Autofixer.createFunctionDeclaration(funcDecl, undefined, typeName, newBlock);
-    const text = ts.createPrinter().printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
+
+    let text = this.printer.printNode(ts.EmitHint.Unspecified, newFuncDecl, funcDecl.getSourceFile());
+    if (preserveDecorator) {
+      text = '@' + decoratorName + '\n' + text;
+    }
     return [{ start: funcDecl.getStart(), end: funcDecl.getEnd(), replacementText: text }];
   }
 
@@ -2256,7 +2283,7 @@ export class Autofixer {
     typeName: string,
     block: ts.Block
   ): ts.FunctionDeclaration {
-    const parameterDecl = ts.factory.createParameterDeclaration(
+    const parameter = ts.factory.createParameterDeclaration(
       undefined,
       undefined,
       ts.factory.createIdentifier(THIS_IDENTIFIER),
@@ -2271,7 +2298,7 @@ export class Autofixer {
       undefined,
       funcDecl.name,
       typeParameters,
-      [parameterDecl],
+      [parameter, ...funcDecl.parameters],
       returnType,
       block
     );
@@ -2310,5 +2337,111 @@ export class Autofixer {
     ts.forEachChild(node, (child) => {
       this.traverseNodes(child, parameters, values);
     });
+  }
+
+  private resolveActualTypeNode(typeNode: ts.TypeNode): ts.TypeNode {
+    let current = typeNode;
+    while (ts.isTypeReferenceNode(current)) {
+      const symbol = this.typeChecker.getSymbolAtLocation(current.typeName);
+      if (!symbol) {
+        break;
+      }
+      const declaration = symbol.declarations?.[0];
+      if (!declaration || !ts.isTypeAliasDeclaration(declaration)) {
+        break;
+      }
+      current = declaration.type;
+    }
+    return current;
+  }
+
+  private static createOuterParams(actualTypeNode: ts.TypeNode): ts.ParameterDeclaration[] | undefined {
+    return ts.isFunctionTypeNode(actualTypeNode) ? [...actualTypeNode.parameters] : undefined;
+  }
+
+  private static createOuterArrowFunction(
+    outerParams: ts.ParameterDeclaration[],
+    functionBody: ts.CallExpression | ts.ArrowFunction
+  ): ts.ArrowFunction {
+    const blockFunctionBody = ts.factory.createBlock([ts.factory.createExpressionStatement(functionBody)], true);
+    return ts.factory.createArrowFunction(
+      undefined,
+      undefined,
+      outerParams,
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      blockFunctionBody
+    );
+  }
+
+  private static isGenericTypeNode(typeNode: ts.TypeNode): boolean | undefined {
+    return ts.isTypeReferenceNode(typeNode) && typeNode.typeArguments && typeNode.typeArguments.length > 0;
+  }
+
+  private isGenericFunction(expr: ts.Expression): boolean | undefined {
+    const symbol = this.typeChecker.getSymbolAtLocation(expr);
+    if (!symbol) {
+      return false;
+    }
+    const declarations = symbol.getDeclarations();
+    if (!declarations || declarations.length === 0) {
+      return false;
+    }
+    const declaration = declarations[0];
+    return ts.isFunctionDeclaration(declaration) && declaration.typeParameters && declaration.typeParameters.length > 0;
+  }
+
+  fixIncompatibleFunction(expr: ts.Expression, typeNode: ts.TypeNode): Autofix[] | undefined {
+    const resolvedTypeNode = this.resolveActualTypeNode(typeNode);
+    const outerParams = Autofixer.createOuterParams(resolvedTypeNode);
+    if (outerParams === undefined) {
+      return undefined;
+    }
+    const areAllParametersIdentifiers = (params: ts.ParameterDeclaration[]): boolean => {
+      return params.every((p) => {
+        return ts.isIdentifier(p.name);
+      });
+    };
+    if (
+      !areAllParametersIdentifiers(outerParams) ||
+      this.isGenericFunction(expr) ||
+      Autofixer.isGenericTypeNode(resolvedTypeNode)
+    ) {
+      return undefined;
+    }
+    const createInnerParamRefs = (params: ts.ParameterDeclaration[]): ts.Identifier[] => {
+      return params.map((p) => {
+        return ts.factory.createIdentifier((p.name as ts.Identifier).text);
+      });
+    };
+    const createCompanyFunction = (functionExpr: ts.Expression): Autofix[] => {
+      const functionCall = ts.factory.createCallExpression(functionExpr, undefined, createInnerParamRefs(outerParams));
+      const outerArrowFunction = Autofixer.createOuterArrowFunction(outerParams, functionCall);
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, outerArrowFunction, expr.getSourceFile());
+      return [{ start: expr.getStart(), end: expr.getEnd(), replacementText: text }];
+    };
+    return createCompanyFunction(expr);
+  }
+
+  findVariableDeclaration(node: ts.VariableDeclaration): Autofix[] | undefined {
+    const initializer = node.initializer;
+    if (node.type || !initializer) {
+      return undefined;
+    }
+    const name = node.name;
+    if (!ts.isIdentifier(name)) {
+      return undefined;
+    }
+    if (!ts.isNumericLiteral(initializer)) {
+      return undefined;
+    }
+    const newVarDecl = ts.factory.createVariableDeclaration(
+      name,
+      undefined,
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+      initializer
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newVarDecl, node.getSourceFile());
+    return [{ start: node.getFullStart(), end: node.getEnd(), replacementText: text }];
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,3 +24,18 @@ function circleArea(r: number): number {
 function foo(x: any): void {
   console.log(x.pi);
 }
+
+globalThis.abc = 200;
+
+const value = globalThis.obj.prop;
+
+delete globalThis.property;
+
+globalThisprop = 100;
+
+specialAutofixLib.globalThis.get("pi");
+
+specialAutofixLib.globalThis.set("pi",3.1416);
+
+specialAutofixLib.globalThis;
+
