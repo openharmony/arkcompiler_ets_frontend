@@ -52,8 +52,7 @@ test262/data/test/built-ins/TypedArray/prototype/slice/BigInt/results-with-diffe
 test262/data/test/built-ins/TypedArray/prototype/subarray/results-with-empty-length.js
 test262/data/test/built-ins/TypedArray/prototype/filter/result-full-callbackfn-returns-true.js
 test262/data/test/built-ins/TypedArray/prototype/subarray/results-with-different-length.js
-
-#21819
 test262/data/test/built-ins/TypedArray/prototype/copyWithin/coerced-values-end.js
 test262/data/test/built-ins/TypedArray/prototype/some/callbackfn-not-callable-throws.js
 test262/data/test/built-ins/TypedArray/prototype/copyWithin/negative-target.js
+test262/data/test/built-ins/TypedArray/prototype/fill/coerced-indexes.js
