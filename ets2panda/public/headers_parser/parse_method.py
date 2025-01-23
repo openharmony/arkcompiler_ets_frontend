@@ -63,9 +63,7 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
         function_declaration_postfix = data[end_of_args + 1 : colon_pos].strip(" \n")
         res["raw_declaration"] = data[start:colon_pos].strip(" \n")
 
-        start_of_body, initializers = parse_initializers(data, colon_pos + 1)
-        start_of_body, end_of_body = find_scope_borders(data, start_of_body, "{")
-        end_of_function = end_of_body
+        end_of_initializers, initializers = parse_initializers(data, colon_pos + 1)
         # CC-OFFNXT(G.TYP.07) dict key exist
         updated_args, other_initializers = extract_init_args(res["args"], initializers)
 
@@ -74,8 +72,17 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
         if other_initializers != []:
             res["other_initializers"] = other_initializers
 
+        if data[end_of_initializers] == '{':
+            start_of_body, end_of_body = find_scope_borders(data, end_of_initializers, "{")
+            end_of_function = end_of_body
+
     if len(function_declaration_postfix):
         res["postfix"] = function_declaration_postfix
+
+    if end_of_function < len(data) and data[end_of_function] != ';':
+        first_body_token_pos = find_first_not_restricted_character(' \n\t', data, start_of_body + 1)
+        if data[first_body_token_pos: first_body_token_pos + len('return')] == 'return':
+            res["additional_attributes"] = "get"
 
     return end_of_function + 1, res
 
@@ -138,7 +145,7 @@ def parse_initializers(data: str, start: int = 0) -> Tuple[int, List]:  # pylint
     current_pos = find_first_not_restricted_character(" \n", data, start)
     parethese_open = find_first_of_characters("{(", data, current_pos)
 
-    while data[current_pos] != "{" and parethese_open != -1:
+    while data[current_pos] != "{" and data[current_pos] != ';' and parethese_open != len(data):
 
         parethese_open, parenthese_close = find_scope_borders(data, parethese_open, "")
         res.append(parse_initializer(data[current_pos : parenthese_close + 1]))

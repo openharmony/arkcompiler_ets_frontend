@@ -22,8 +22,10 @@ module Es2pandaLibApi
     # Containers
     @es2panda_arg = nil
     @lib_args = nil
+    @idl_args = nil
     @lib_cast = nil
     @return_args = nil
+    @idl_return_args = nil
     @is_ast_node = false
     @is_ast_node_add_children = false
     @is_ast_type = false
@@ -44,6 +46,12 @@ module Es2pandaLibApi
       (change_type.es2panda_arg['max_ptr_depth'] && ptr_depth > change_type.es2panda_arg['max_ptr_depth']))
     end
 
+    def delete_refs(args)
+      args&.map do |arg|
+        arg['type']['ref_depth'] = 0 if arg['type'].respond_to?('ref_depth')
+      end
+    end
+
     def delete_ref(type)
       type['ref_depth'] = 0 if type.respond_to?('ref_depth')
     end
@@ -57,35 +65,28 @@ module Es2pandaLibApi
                           @es2panda_arg['type']['const'].include?('const')
     end
 
-    def add_const_modifier(args)
-      args&.map! do |arg|
+    def set_const_modifier(args, value)
+      args&.map do |arg|
         unless arg['type']&.respond_to?('const') && arg['type']&.respond_to?('ptr_depth') &&
                arg['type']&.ptr_depth&.positive?
           arg['type']['const'] = const || ''
         end
-        arg
       end
     end
 
-    def add_const_modifier_to_lib_args(const)
-      @lib_args&.map! do |arg|
-        unless arg['type']&.respond_to?('const') && arg['type']&.respond_to?('ptr_depth') &&
-               arg['type']&.ptr_depth&.positive?
-          arg['type']['const'] = const
-        end
-        arg
-      end
+    def stop_modify_idl_arg
+      @is_ast_node || @is_ast_node_add_children || @is_ast_type || @is_ast_type_add_children || @is_var_type || @is_scope_type || @is_decl_type
     end
 
-    def modify_template_nested_arg(arg, base_namespace)
+    def modify_template_nested_arg(arg, base_namespace, idl_mode = false)
       arg['type'] = ClassData.add_base_namespace(arg['type'], base_namespace)
       tmp = Arg.new(arg, base_namespace)
       raise "Unsupported double+ nested complex types: #{arg_info.to_s}\n" if tmp.lib_args.length > 1
+
       return nil if tmp.lib_args.nil? || tmp.lib_args[0].nil?
+      return arg if idl_mode && tmp.stop_modify_idl_arg
 
       tmp.lib_args[0]['increase_ptr_depth'] = arg['increase_ptr_depth'] if (arg['increase_ptr_depth'] || 0) != 0
-      return tmp.lib_args[0] if tmp.lib_args[0]['type'].nil?
-
       tmp.lib_args[0]['type']['const'] = tmp.const
       tmp.lib_args[0]
     end
@@ -297,6 +298,14 @@ module Es2pandaLibApi
         end
 
         found_change_type.es2panda_arg = Marshal.load(Marshal.dump(@es2panda_arg))
+
+        if stop_modify_idl_arg
+          found_change_type.idl_args = [Marshal.load(Marshal.dump(@es2panda_arg))]
+        else
+          found_change_type.idl_args = Marshal.load(Marshal.dump(found_change_type.new_args))
+          found_change_type.idl_return_args = Marshal.load(Marshal.dump(found_change_type.return_args))
+        end
+
         found_change_type = deep_replace(found_change_type, replacements)
 
         clever_replacements = []
@@ -315,7 +324,10 @@ module Es2pandaLibApi
 
             raise "Unsupported double+ nested complex types: #{@es2panda_arg.to_s}\n" if template_arg.lib_args.length > 1
 
-            template_arg.add_const_modifier_to_lib_args('const') unless template_arg_raw['type']['const'].nil?
+            unless template_arg_raw['type']['const'].nil?
+              template_arg.set_const_modifier(@lib_args, 'const')
+              template_arg.set_const_modifier(@idl_args, 'const')
+            end
 
             template_args += [template_arg]
           end
@@ -327,6 +339,15 @@ module Es2pandaLibApi
           found_change_type&.return_args&.map! do |arg|
             modify_template_nested_arg(arg, base_namespace)
           end
+
+          found_change_type&.idl_args&.map! do |arg|
+            modify_template_nested_arg(arg, base_namespace, true)
+          end
+
+          found_change_type&.idl_return_args&.map! do |arg|
+            modify_template_nested_arg(arg, base_namespace, true)
+          end
+
           correct_depths(found_change_type)
 
           template_args.each_with_index do |template_arg, i|
@@ -363,20 +384,21 @@ module Es2pandaLibApi
         found_change_type = deep_replace(found_change_type, clever_replacements)
 
         @lib_args = found_change_type&.new_args
+        @idl_args = found_change_type&.idl_args
         @lib_cast = found_change_type&.cast
-        @return_args = found_change_type&.return_args || nil
+        @return_args = found_change_type&.return_args
+        @idl_return_args = found_change_type&.idl_return_args
         nested_arg_transform
 
       end
 
       if @lib_args.nil?
-        @lib_args = []
-        @lib_args << @es2panda_arg if check_allowed_type(@es2panda_arg)
+        @lib_args = check_allowed_type(@es2panda_arg) ? [@es2panda_arg] : []
+        @idl_args = @lib_args
       end
 
-      @lib_args.each do |arg|
-        delete_ref(arg['type'])
-      end
+      delete_refs(@lib_args)
+      delete_refs(@idl_args)
 
       if @lib_cast.nil?
         @lib_cast = {}
@@ -387,8 +409,9 @@ module Es2pandaLibApi
 
       return unless @es2panda_arg['name'] == 'returnType'
 
-      add_const_modifier(@lib_args)
-      add_const_modifier(@return_args)
+      set_const_modifier(@lib_args, const)
+      set_const_modifier(@idl_args, const)
+      set_const_modifier(@return_args, const)
     end
 
     def check_allowed_type(arg)
@@ -400,11 +423,14 @@ module Es2pandaLibApi
     def nested_arg_transform
       return unless @lib_args && @lib_args.size == 1 && !check_allowed_type(@lib_args[0])
 
-      add_const_modifier(@lib_args)
+      set_const_modifier(@lib_args, const)
+      set_const_modifier(@idl_args, const)
       tmp = Arg.new(@lib_args[0], @base_namespace)
       @lib_args = tmp.lib_args
+      @idl_args = tmp.idl_args
       @lib_cast = tmp.lib_cast
-      @return_args = tmp.return_args || nil
+      @return_args = tmp.return_args
+      @idl_return_args = tmp.idl_return_args
       return unless !tmp.check_allowed_type(@lib_args[0])
       nested_arg_transform
     end
@@ -498,12 +524,11 @@ module Es2pandaLibApi
     end
 
     attr_reader :es2panda_arg
-
     attr_reader :lib_args
-
+    attr_reader :idl_args
     attr_reader :lib_cast
-
     attr_reader :return_args
+    attr_reader :idl_return_args
 
     def lib_args_to_str
       @lib_args.map do |lib_arg|
@@ -512,8 +537,8 @@ module Es2pandaLibApi
     end
 
     def lib_args_to_idl
-      @lib_args.map do |lib_arg|
-        Arg.arg_to_idl(lib_arg)
+      @idl_args.map do |idl_arg|
+        Arg.arg_to_idl(idl_arg)
       end.join(', ')
     end
 
@@ -537,18 +562,32 @@ module Es2pandaLibApi
     def self.arg_to_idl(arg)
       name = arg['name']
       name += '_arg' if %w[optional object readonly sequence].include?(name)
-      type_to_idl(arg['type']) + name
+      "#{type_to_idl(arg['type'])} #{name}"
     end
 
     def self.type_to_idl(type)
-      annotations = []
-      annotations << 'constant' if type['const']
-      annotations << "ptr_#{type['ptr_depth']}" if (type['ptr_depth'] || 0) != 0
-      annotations << "ref_#{type['ref_depth']}" if (type['ref_depth'] || 0) != 0
+      @@replace_to_idl_types ||= {
+        'bool' => 'boolean',
+        'int' => 'i32',
+        'size_t' => 'u32',
+        'char' => 'i8',
+        'int8_t' => 'i8',
+        'uint8_t' => 'u8',
+        'int16_t' => 'i16',
+        'char16_t' => 'i16',
+        'int32_t' => 'i32',
+        'uint32_t' => 'u32',
+        'int64_t' => 'i64',
+        'uint64_t' => 'u64',
+        'float' => 'f32',
+        'double' => 'f64',
+        'sequence<i8>' => 'String',
+      }
 
-      return "#{type['name']} " if annotations.empty?
-
-      "[#{annotations.join(', ')}] #{type['name']} "
+      c_type = type['name']
+      res_sequence_len = @@replace_to_idl_types.key?(c_type) ? (type['ptr_depth'] || 0) : ((type['ptr_depth'] || 1) - 1)
+      res = res_sequence_len.times.reduce(c_type) { |acc, _| "sequence<#{@@replace_to_idl_types[acc] || acc}>" }
+      @@replace_to_idl_types[res] || res
     end
 
     attr_reader :is_change_type
@@ -562,6 +601,7 @@ module Es2pandaLibApi
     @raw_type = nil
     @lib_type = nil
     @return_args = nil
+    @idl_return_args = nil
     @cast = nil
     @usage = 'no'
     @base_namespace = ''
@@ -573,8 +613,10 @@ module Es2pandaLibApi
       tmp_arg = Arg.new({ 'name' => "#{usage}Type", 'type' => @raw_type }, base_namespace)
 
       @return_args = tmp_arg.return_args if tmp_arg.lib_args.length != 1
+      @idl_return_args = tmp_arg.idl_return_args if tmp_arg.lib_args.length != 1
       unless tmp_arg.lib_args.nil? || tmp_arg.lib_args[0].nil? || tmp_arg.lib_args[0]['type'].nil?
         @lib_type = tmp_arg.lib_args[0]['type']
+        @idl_type = tmp_arg.idl_args[0]['type']
         remove_unused_const_modifier
       end
       @cast = tmp_arg.lib_cast
@@ -584,14 +626,15 @@ module Es2pandaLibApi
 
     def remove_unused_const_modifier
       @lib_type['const'] = nil if const && !(@lib_type&.respond_to?('ptr_depth') && @lib_type&.ptr_depth&.positive?)
+      @idl_type['const'] = nil if const && !(@idl_type&.respond_to?('ptr_depth') && @idl_type&.ptr_depth&.positive?)
     end
 
     def lib_type_to_str
       Arg.type_to_str(@lib_type)
     end
 
-    def lib_type_to_idl
-      Arg.type_to_idl(@lib_type)
+    def idl_type_to_str
+      Arg.type_to_idl(@idl_type)
     end
 
     def arena_item_type
@@ -634,7 +677,12 @@ module Es2pandaLibApi
     end
 
     def return_args_to_idl
-      @return_args ? @return_args.map { |arg| ", #{Arg.arg_to_idl(arg)}" }.join('') : ''
+      return '' unless @idl_return_args
+
+      @idl_return_args
+        .select { |arg| arg['name'] != 'returnTypeLen' }
+        .map { |arg| ", #{Arg.arg_to_idl(arg)}" }
+        .join('')
     end
 
     def const
@@ -643,13 +691,20 @@ module Es2pandaLibApi
 
     attr_reader :raw_type
     attr_reader :lib_type
+    attr_reader :idl_type
   end
 
   class ClassData < SimpleDelegator
     @class_base_namespace = ''
+    @extends_classname = ''
+    @ast_node_type_value = nil
 
     attr_reader :class_base_namespace
     attr_writer :class_base_namespace
+    attr_reader :extends_classname
+    attr_writer :extends_classname
+    attr_reader :ast_node_type_value
+    attr_writer :ast_node_type_value
 
     def class_name
       Es2pandaLibApi.classes&.each do |namespace_name, namespace_classes|
@@ -950,7 +1005,7 @@ module Es2pandaLibApi
             const_return = get_const_return_modifier(return_type)
 
             args = []
-            method.args&.each do |arg|
+            method.args.each do |arg|
               arg['type'] = add_base_namespace(replace_with_usings(arg['type'], usings))
               args << Arg.new(arg, class_base_namespace)
             end
@@ -969,7 +1024,7 @@ module Es2pandaLibApi
             res << { 'name' => method.name, 'const' => const, 'return_arg_to_str' => return_type.return_args_to_str,
                      'overload_name' => get_new_method_name(function_overload, method.name, const), 'args' => args,
                      'return_type' => return_type, 'return_expr' => return_expr, 'raw_decl' => method.raw_declaration,
-                     'const_return' => const_return, 'return_arg_to_idl' => return_type.return_args_to_idl }
+                     'const_return' => const_return, 'get_modifier' => method['additional_attributes'] }
           end
         else
           Es2pandaLibApi.log('info', "Banned method\n")
@@ -1008,6 +1063,7 @@ module Es2pandaLibApi
   end
 
   @ast_nodes = Set.new(%w[AstNode Expression Statement TypeNode])
+  @ast_node_mapping = []
   @ast_types = Set.new(['Type'])
   @scopes = Set.new(%w[Scope VariableScope])
   @declarations = Set.new(['Decl'])
@@ -1286,6 +1342,7 @@ module Es2pandaLibApi
       case macros.name
       when 'AST_NODE_MAPPING'
         @ast_nodes.merge(Set.new(macros.values&.map { |x| x[1] }))
+        @ast_node_mapping = macros.values
       when 'AST_NODE_REINTERPRET_MAPPING'
         @ast_nodes.merge(Set.new(macros.values&.map { |x| x[2..3] }&.flatten))
       when 'TYPE_MAPPING'
@@ -1318,10 +1375,21 @@ module Es2pandaLibApi
     @ignored_info = deep_to_h(data.ignored_list) if data.ignored_list
     @allowed_info = deep_to_h(data.allowed_list) if data.allowed_list
 
+    data.enums&.each do |enum|
+      @enums << enum.name
+    end
+    Enums.wrap_data(data)
+
     @classes['ir'] = {} unless @classes['ir']
     data['ir']&.class_definitions&.each do |class_definition|
-      @classes['ir'][class_definition.name] = ClassData.new(class_definition&.public)
-      @classes['ir'][class_definition.name].class_base_namespace = 'ir'
+      class_data = ClassData.new(class_definition&.public)
+      class_data.class_base_namespace = 'ir'
+      if class_definition.respond_to?('extends')
+        class_data.extends_classname = class_definition.extends.gsub(/[<>]/, ' ').split.last
+      end
+      flag_name = @ast_node_mapping.find { |elem| elem[1] == class_definition.name }&.first
+      class_data.ast_node_type_value = Enums.get_astnodetype_value(flag_name)
+      @classes['ir'][class_definition.name] = class_data
     end
 
     @classes['checker'] = {} unless @classes['checker']
@@ -1365,12 +1433,6 @@ module Es2pandaLibApi
         @structs[struct.name].class_base_namespace = 'es2panda'
       end
     end
-
-    data.enums&.each do |enum|
-      @enums << enum.name
-    end
-
-    Enums.wrap_data(data)
   end
 
   module_function :wrap_data, :classes, :ast_nodes, :includes, :change_types, :enums, :ast_types, :check_fit, :log,
