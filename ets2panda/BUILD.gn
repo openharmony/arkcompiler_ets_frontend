@@ -1110,6 +1110,7 @@ ohos_source_set("libes2panda_frontend_static") {
   configs = libes2panda_configs
 
   deps = [
+    ":es2panda_diagnostic_gen_diagnostic_h",
     ":es2panda_options_gen_options_h",
     ":gen_${LIB_NAME}_decl_inc",
     ":gen_${LIB_NAME}_enums_inc",
@@ -1175,6 +1176,24 @@ ark_gen("es2panda_options_gen") {
   sources = "$ark_root/templates/options"
   destination = "$target_gen_dir/generated"
   api = [ "$ark_root/templates/common.rb" ]
+}
+
+ark_gen("es2panda_diagnostic_gen") {
+  data = [
+    "util/diagnostic/syntax.yaml",
+    "util/diagnostic/semantic.yaml",
+    "util/diagnostic/warning.yaml",
+    "util/diagnostic/fatal.yaml",
+  ]
+  template_files = [ "diagnostic.h.erb" ]
+  sources = "util/diagnostic"
+  destination = "$target_gen_dir/generated"
+  api = [
+    "util/diagnostic/diagnostic.rb",
+    "util/diagnostic/diagnostic.rb",
+    "util/diagnostic/diagnostic.rb",
+    "util/diagnostic/diagnostic.rb",
+  ]
 }
 
 ark_gen("gen_es2panda_lexer") {

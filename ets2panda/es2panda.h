@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,6 +51,10 @@ class CompilerImpl;
 namespace varbinder {
 class VarBinder;
 }  // namespace varbinder
+
+namespace diagnostic {
+class Diagnostic;
+}  // namespace diagnostic
 
 enum class CompilationMode {
     GEN_STD_LIB,
@@ -108,18 +112,24 @@ public:
         : type_(type), file_(file), message_(message), line_(line), col_(column)
     {
     }
+    explicit Error(std::string_view file, const diagnostic::Diagnostic *diagnostic,
+                   std::vector<std::string> diagnosticParams, size_t line, size_t column) noexcept
+        : file_(file),
+          line_(line),
+          col_(column),
+          diagnosticKind_(diagnostic),
+          diagnosticParams_(std::move(diagnosticParams))
+    {
+    }
     ~Error() override = default;
     DEFAULT_COPY_SEMANTIC(Error);
     DEFAULT_MOVE_SEMANTIC(Error);
 
-    ErrorType Type() const noexcept
-    {
-        return type_;
-    }
+    ErrorType Type() const noexcept;
 
     const char *TypeString() const noexcept
     {
-        switch (type_) {
+        switch (Type()) {
             case ErrorType::SYNTAX:
                 return "SyntaxError";
             case ErrorType::TYPE:
@@ -143,10 +153,7 @@ public:
         return errorCode_;
     }
 
-    const std::string &Message() const noexcept
-    {
-        return message_;
-    }
+    std::string Message() const;
 
     const std::string &File() const noexcept
     {
@@ -166,10 +173,12 @@ public:
 private:
     ErrorType type_ {ErrorType::INVALID};
     std::string file_;
-    std::string message_;
+    std::string message_ {};
     size_t line_ {};
     size_t col_ {};
     int errorCode_ {1};
+    const diagnostic::Diagnostic *diagnosticKind_ {nullptr};
+    std::vector<std::string> diagnosticParams_ {};
 };
 
 class Compiler {

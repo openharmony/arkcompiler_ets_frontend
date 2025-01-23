@@ -16,6 +16,7 @@
 #include "ETSparser.h"
 #include <utility>
 #include "forwardDeclForParserImpl.h"
+#include "generated/diagnostic.h"
 #include "parser/parserStatusContext.h"
 #include "parserFlags.h"
 #include "util/language.h"
@@ -194,8 +195,8 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
 
     if (typeAnnotation == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0) {
         auto nameField = fieldName->Name().Mutf8();
-        auto logField = !fieldName->IsErrorPlaceHolder() ? " '" + nameField + "'." : ".";
-        LogSyntaxError("Missing type annotation for property" + logField, Lexer()->GetToken().Start());
+        auto logField = !fieldName->IsErrorPlaceHolder() ? " '" + nameField + "'" : "";
+        LogError(diagnostic::MISSING_TYPE_ANNOTATION, {logField}, Lexer()->GetToken().Start());
     }
 
     if (typeAnnotation != nullptr) {

@@ -176,6 +176,9 @@ protected:
     friend class lexer::RegExpParser;
 
     void LogError(ErrorType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
+    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams = {});
+    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+                  const lexer::SourcePosition &pos);
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);
     void LogSyntaxError(std::string_view errorMessage);

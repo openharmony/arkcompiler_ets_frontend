@@ -16,6 +16,7 @@
 #include "parserImpl.h"
 #include "parserStatusContext.h"
 
+#include "generated/diagnostic.h"
 #include "varbinder/privateBinding.h"
 #include "ir/brokenTypeNode.h"
 #include "ir/base/classDefinition.h"
@@ -42,6 +43,7 @@
 #include "ir/statements/functionDeclaration.h"
 #include "lexer/lexer.h"
 #include "parser/ETSparser.h"
+#include "util/errorHandler.h"
 #include "util/errorRecovery.h"
 
 using namespace std::literals::string_literals;
@@ -1326,6 +1328,21 @@ void ParserImpl::LogSyntaxError(std::initializer_list<std::string_view> list, co
     std::string err = ss.str();
 
     LogSyntaxError(std::string_view {err}, pos);
+}
+
+void ParserImpl::LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+                          const lexer::SourcePosition &pos)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    errorLogger_.WriteLog(
+        Error {program_->SourceFilePath().Utf8(), &diagnostic, std::move(diagnosticParams), loc.line, loc.col});
+}
+
+void ParserImpl::LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams)
+{
+    LogError(diagnostic, std::move(diagnosticParams), lexer_->GetToken().Start());
 }
 
 void ParserImpl::LogGenericError(std::string_view errorMessage)
