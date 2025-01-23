@@ -22,27 +22,27 @@
 #include <string>
 #include <unordered_set>
 
-#include "ast_verifier/checkContext.h"
-#include "ast_verifier/sequenceExpressionHasLastType.h"
-#include "ast_verifier/checkAbstractMethod.h"
-#include "ast_verifier/everyChildHasValidParent.h"
-#include "ast_verifier/everyChildInParentRange.h"
-#include "ast_verifier/getterSetterValidation.h"
-#include "ast_verifier/identifierHasVariable.h"
-#include "ast_verifier/nodeHasParent.h"
-#include "ast_verifier/nodeHasSourceRange.h"
-#include "ast_verifier/nodeHasType.h"
-#include "ast_verifier/referenceTypeAnnotationIsNull.h"
-#include "ast_verifier/variableHasScope.h"
-#include "ast_verifier/variableHasEnclosingScope.h"
-#include "ast_verifier/forLoopCorrectlyInitialized.h"
-#include "ast_verifier/modifierAccessValid.h"
-#include "ast_verifier/importExportAccessValid.h"
-#include "ast_verifier/arithmeticOperationValid.h"
-#include "ast_verifier/variableNameIdentifierNameSame.h"
-#include "ast_verifier/checkScopeDeclaration.h"
-#include "ast_verifier/checkStructDeclaration.h"
-#include "ast_verifier/checkConstProperties.h"
+#include "ast_verifier/invariantBase.h"
+#include "ast_verifier/invariants/sequenceExpressionHasLastType.h"
+#include "ast_verifier/invariants/checkAbstractMethod.h"
+#include "ast_verifier/invariants/everyChildHasValidParent.h"
+#include "ast_verifier/invariants/everyChildInParentRange.h"
+#include "ast_verifier/invariants/getterSetterValidation.h"
+#include "ast_verifier/invariants/identifierHasVariable.h"
+#include "ast_verifier/invariants/nodeHasParent.h"
+#include "ast_verifier/invariants/nodeHasSourceRange.h"
+#include "ast_verifier/invariants/nodeHasType.h"
+#include "ast_verifier/invariants/referenceTypeAnnotationIsNull.h"
+#include "ast_verifier/invariants/variableHasScope.h"
+#include "ast_verifier/invariants/variableHasEnclosingScope.h"
+#include "ast_verifier/invariants/forLoopCorrectlyInitialized.h"
+#include "ast_verifier/invariants/modifierAccessValid.h"
+#include "ast_verifier/invariants/importExportAccessValid.h"
+#include "ast_verifier/invariants/arithmeticOperationValid.h"
+#include "ast_verifier/invariants/variableNameIdentifierNameSame.h"
+#include "ast_verifier/invariants/checkScopeDeclaration.h"
+#include "ast_verifier/invariants/checkStructDeclaration.h"
+#include "ast_verifier/invariants/checkConstProperties.h"
 
 #include "ir/astNode.h"
 #include "ir/statements/blockStatement.h"
@@ -65,39 +65,6 @@
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-template <typename... Invs>
-class InvariantsRegistryImpl {
-public:
-    using Invariants = std::tuple<Invs...>;
-    template <VerifierInvariants ID>
-    using InvariantClass = std::tuple_element_t<ID, Invariants>;
-    template <typename T>
-    using InvArray = std::array<T, VerifierInvariants::COUNT>;
-
-private:
-    template <typename T, T... INTS>
-    static constexpr bool CheckRegistry(std::integer_sequence<T, INTS...> /*unused*/)
-    {
-        return ((CheckRegistry<VerifierInvariants(INTS), Invs::ID>()) && ...);
-    }
-
-    template <VerifierInvariants ORDER_IN_PARAMETER_LIST, VerifierInvariants DEFINED_ENUM>
-    static constexpr bool CheckRegistry()
-    {
-        static_assert(ORDER_IN_PARAMETER_LIST == DEFINED_ENUM,
-                      "Invariant's `ID` must be equal to"
-                      "index of the invariant in `InvariantsRegistryImpl` parameter-list");
-        return true;
-    }
-
-protected:
-    Invariants invariants_ {};
-
-    static_assert(sizeof...(Invs) == VerifierInvariants::COUNT,
-                  "Parameter-list is inconsistent with invaraints' declararation in 'options.yaml'");
-    static_assert(CheckRegistry(std::make_index_sequence<sizeof...(Invs)> {}));
-};
-
 // NOTE(dkofanov) Fix and enable ImportExportAccessValid:
 using InvariantsRegistry =
     InvariantsRegistryImpl<NodeHasParent, NodeHasSourceRange, EveryChildHasValidParent, EveryChildInParentRange,
@@ -116,7 +83,7 @@ public:
     NO_MOVE_SEMANTIC(ASTVerifier);
 
     ASTVerifier(const public_lib::Context &context, const parser::Program &program)
-        : program_ {program}, options_ {*context.config->options}
+        : program_ {program}, context_ {context}
     {
         for (size_t i = VerifierInvariants::BASE_FIRST; i <= VerifierInvariants::BASE_LAST; i++) {
             allowed_[i] = true;
@@ -124,7 +91,7 @@ public:
         for (size_t i = 0; i < VerifierInvariants::COUNT; i++) {
             enabled_[i] = TreatAsWarning(VerifierInvariants {i}) || TreatAsError(VerifierInvariants {i});
         }
-        if (options_.IsAstVerifierBeforePhases()) {
+        if (Options().IsAstVerifierBeforePhases()) {
             Verify("before");
         }
     }
@@ -132,7 +99,7 @@ public:
     ~ASTVerifier()
     {
         if (!suppressed_) {
-            if (options_.IsAstVerifierAfterPhases()) {
+            if (Options().IsAstVerifierAfterPhases()) {
                 Verify("after");
             }
             if (HasErrors() || HasWarnings()) {
@@ -163,10 +130,10 @@ public:
                 allowed_[i] = true;
             }
             // NOTE(dkofanov): This should be called after "NumberLowering" phase:
-            std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured();
+            Get<NoPrimitiveTypes>()->SetNumberLoweringOccured();
         }
         if (occurredPhaseName == "UnionLowering") {
-            std::get<IdentifierHasVariable>(invariants_).SetUnionLoweringOccurred();
+            Get<IdentifierHasVariable>()->SetUnionLoweringOccurred();
         }
     }
 
@@ -179,11 +146,11 @@ public:
 
     bool TreatAsWarning(VerifierInvariants id) const
     {
-        return options_.GetAstVerifierWarnings()[id];
+        return Options().GetAstVerifierWarnings()[id];
     }
     bool TreatAsError(VerifierInvariants id) const
     {
-        return options_.GetAstVerifierErrors()[id];
+        return Options().GetAstVerifierErrors()[id];
     }
     bool HasErrors() const
     {
@@ -195,10 +162,15 @@ public:
     }
 
 private:
-    template <typename T, std::enable_if_t<std::is_base_of_v<InvariantBase<T::ID>, T>, void *> = nullptr>
+    template <typename T, std::enable_if_t<std::is_base_of_v<InvariantMessages, T>, void *> = nullptr>
     bool NeedCheckInvariant(const T & /*unused*/)
     {
         return enabled_[T::ID] && allowed_[T::ID];
+    }
+
+    const util::Options &Options() const
+    {
+        return *context_.config->options;
     }
 
 public:
@@ -211,7 +183,7 @@ public:
 
 private:
     const parser::Program &program_;
-    const util::Options &options_;
+    const public_lib::Context &context_;
     InvArray<bool> enabled_ {};
     InvArray<bool> allowed_ {};
 
@@ -222,30 +194,6 @@ private:
 
     struct SinglePassVerifier;
 };
-
-template <VerifierInvariants ID>
-CheckResult InvariantBase<ID>::VerifyNode(const ir::AstNode *ast)
-{
-    auto [res, action] = (*static_cast<ASTVerifier::InvariantClass<ID> *>(this))(ast);
-    if (action == CheckAction::SKIP_SUBTREE) {
-        LOG_ASTV(DEBUG, util::gen::ast_verifier::ToString(ID) << ": SKIP_SUBTREE");
-    }
-    return {res, action};
-}
-
-template <VerifierInvariants ID>
-void RecursiveInvariant<ID>::VerifyAst(const ir::AstNode *ast)
-{
-    std::function<void(const ir::AstNode *)> aux {};
-    aux = [this, &aux](const ir::AstNode *child) -> void {
-        const auto [_, action] = this->VerifyNode(child);
-        if (action == CheckAction::SKIP_SUBTREE) {
-            return;
-        }
-        child->Iterate(aux);
-    };
-    aux(ast);
-}
 
 }  // namespace ark::es2panda::compiler::ast_verifier
 

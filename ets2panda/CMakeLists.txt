@@ -166,27 +166,27 @@ panda_gen(
 
 set(ES2PANDA_LIB_SRC
   ast_verifier/ASTVerifier.cpp
-  ast_verifier/arithmeticOperationValid.cpp
-  ast_verifier/checkAbstractMethod.cpp
-  ast_verifier/checkConstProperties.cpp
-  ast_verifier/checkScopeDeclaration.cpp
-  ast_verifier/checkStructDeclaration.cpp
-  ast_verifier/everyChildHasValidParent.cpp
-  ast_verifier/everyChildInParentRange.cpp
-  ast_verifier/getterSetterValidation.cpp
   ast_verifier/helpers.cpp
-  ast_verifier/identifierHasVariable.cpp
-  ast_verifier/importExportAccessValid.cpp
-  ast_verifier/nodeHasParent.cpp
-  ast_verifier/nodeHasSourceRange.cpp
-  ast_verifier/nodeHasType.cpp
-  ast_verifier/referenceTypeAnnotationIsNull.cpp
-  ast_verifier/forLoopCorrectlyInitialized.cpp
-  ast_verifier/modifierAccessValid.cpp
-  ast_verifier/sequenceExpressionHasLastType.cpp
-  ast_verifier/variableHasEnclosingScope.cpp
-  ast_verifier/variableHasScope.cpp
-  ast_verifier/variableNameIdentifierNameSame.cpp
+  ast_verifier/invariants/arithmeticOperationValid.cpp
+  ast_verifier/invariants/checkAbstractMethod.cpp
+  ast_verifier/invariants/checkConstProperties.cpp
+  ast_verifier/invariants/checkScopeDeclaration.cpp
+  ast_verifier/invariants/checkStructDeclaration.cpp
+  ast_verifier/invariants/everyChildHasValidParent.cpp
+  ast_verifier/invariants/everyChildInParentRange.cpp
+  ast_verifier/invariants/getterSetterValidation.cpp
+  ast_verifier/invariants/identifierHasVariable.cpp
+  ast_verifier/invariants/importExportAccessValid.cpp
+  ast_verifier/invariants/nodeHasParent.cpp
+  ast_verifier/invariants/nodeHasSourceRange.cpp
+  ast_verifier/invariants/nodeHasType.cpp
+  ast_verifier/invariants/referenceTypeAnnotationIsNull.cpp
+  ast_verifier/invariants/forLoopCorrectlyInitialized.cpp
+  ast_verifier/invariants/modifierAccessValid.cpp
+  ast_verifier/invariants/sequenceExpressionHasLastType.cpp
+  ast_verifier/invariants/variableHasEnclosingScope.cpp
+  ast_verifier/invariants/variableHasScope.cpp
+  ast_verifier/invariants/variableNameIdentifierNameSame.cpp
   es2panda.cpp
   varbinder/ASBinder.cpp
   varbinder/TSBinder.cpp

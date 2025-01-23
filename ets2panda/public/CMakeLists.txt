@@ -288,7 +288,6 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/parser/program/program.h
     ${ES2PANDA_ROOT}/es2panda.h
     ${ES2PANDA_ROOT}/ast_verifier/ASTVerifier.h
-    ${ES2PANDA_ROOT}/ast_verifier/checkContext.h
     ${ES2PANDA_ROOT}/util/importPathManager.h
 )
 
@@ -556,7 +555,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/parser/ETSparser.yaml
     ${LIBGEN_DIR}/gen/headers/parser/program/program.yaml
     ${LIBGEN_DIR}/gen/headers/ast_verifier/ASTVerifier.yaml
-    ${LIBGEN_DIR}/gen/headers/ast_verifier/checkContext.yaml
     ${LIBGEN_DIR}/gen/headers/util/importPathManager.yaml
     )
 
