@@ -19,6 +19,16 @@ namespace ark::es2panda::compiler::ast_verifier {
 
 using AstToCheck = ArenaMap<ASTVerifier::SourcePath, const ir::AstNode *>;
 
+template <typename Inv>
+auto VerifyNode(Inv *inv, const ir::AstNode *node)
+{
+    auto [res, action] = (*inv)(node);
+    if (action == CheckAction::SKIP_SUBTREE) {
+        LOG_ASTV(DEBUG, Inv::NAME << ": SKIP_SUBTREE");
+    }
+    return CheckResult {res, action};
+}
+
 struct ASTVerifier::SinglePassVerifier {
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     ASTVerifier *verifier {nullptr};
@@ -29,28 +39,25 @@ struct ASTVerifier::SinglePassVerifier {
     {
         const auto *node = ncnode;
         auto enabledSave = verifier->enabled_;
-        LOG_ASTV(DEBUG, "Verify: " << node->DumpJSON());
+        LOG_ASTV(DEBUG, "Verify: " << ir::ToString(node->Type()));
 
-        std::apply(
-            [this, node](auto &...inv) {
-                InvArray<CheckDecision> decisions {};
-                InvArray<CheckAction> actions {};
-                ((std::tie(decisions[inv.ID], actions[inv.ID]) =
-                      verifier->NeedCheckInvariant(inv)
-                          ? inv.VerifyNode(node)
-                          : CheckResult {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE}),
-                 ...);
-                // Temporaly disable invariant, the value should be restored after node and its childs are visited:
-                ((verifier->enabled_[inv.ID] &= (actions[inv.ID] == CheckAction::CONTINUE)), ...);
+        verifier->Apply([this, node](auto &...inv) {
+            InvArray<CheckDecision> decisions {};
+            InvArray<CheckAction> actions {};
+            ((std::tie(decisions[inv.ID], actions[inv.ID]) =
+                  verifier->NeedCheckInvariant(inv) ? VerifyNode(&inv, node)
+                                                    : CheckResult {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE}),
+             ...);
+            // Temporaly disable invariant, the value should be restored after node and its childs are visited:
+            ((verifier->enabled_[inv.ID] &= (actions[inv.ID] == CheckAction::CONTINUE)), ...);
 
-                for (size_t i = 0; i < VerifierInvariants::COUNT; i++) {
-                    LOG_ASTV(DEBUG, (actions[i] == CheckAction::CONTINUE ? "Enabled " : "Disabled ")
-                                        << util::gen::ast_verifier::ToString(VerifierInvariants {i}));
-                }
+            for (size_t i = 0; i < VerifierInvariants::COUNT; i++) {
+                LOG_ASTV(DEBUG, (actions[i] == CheckAction::CONTINUE ? "Enabled " : "Disabled ")
+                                    << util::gen::ast_verifier::ToString(VerifierInvariants {i}));
+            }
 
-                (*astCorrect) &= ((decisions[inv.ID] == CheckDecision::CORRECT) && ...);
-            },
-            verifier->invariants_);
+            (*astCorrect) &= ((decisions[inv.ID] == CheckDecision::CORRECT) && ...);
+        });
 
         node->Iterate(*this);
         verifier->enabled_ = enabledSave;
@@ -75,14 +82,19 @@ static auto ExtractAst(const parser::Program &program, bool checkFullProgram)
 
 void ASTVerifier::Verify(std::string_view phaseName)
 {
+    if (context_.diagnosticEngine->IsAnyError()) {
+        // NOTE(dkofanov): As for now, the policy is that ASTVerifier doesn't interrupt pipeline if there were errors
+        // reported. Should be revisited.
+        Suppress();
+    }
     if (suppressed_) {
         return;
     }
-    auto astToCheck = ExtractAst(program_, options_.IsAstVerifierFullProgram());
+    auto astToCheck = ExtractAst(program_, Options().IsAstVerifierFullProgram());
     for (const auto &p : astToCheck) {
         const auto sourceName = p.first;
         const auto *ast = p.second;
-        std::apply([](auto &&...inv) { ((inv.Init()), ...); }, invariants_);
+        Apply([](auto &&...inv) { ((inv.Init()), ...); });
 
         LOG_ASTV(INFO, "Begin traversal (" << sourceName << ')');
 
@@ -93,18 +105,17 @@ void ASTVerifier::Verify(std::string_view phaseName)
         auto reporter = [this, sourceName](auto &&inv) {
             if (inv.HasMessages()) {
                 report_.back().second[sourceName][TreatAsError(inv.ID) ? "errors" : "warnings"][inv.ID] =
-                    std::forward<CheckContext>(inv).MoveMessages();
+                    std::forward<InvariantMessages>(inv).MoveMessages();
                 (TreatAsError(inv.ID) ? hasErrors_ : hasWarnings_) = true;
             }
         };
-        ES2PANDA_ASSERT(astCorrect ==
-                        std::apply([](const auto &...inv) { return ((!inv.HasMessages()) && ...); }, invariants_));
+        ES2PANDA_ASSERT(astCorrect == Apply([](const auto &...inv) { return ((!inv.HasMessages()) && ...); }));
         if (!astCorrect) {
             if (report_.empty() || report_.back().first != phaseName) {
                 report_.emplace_back();
                 report_.back().first = phaseName;
             }
-            std::apply([&reporter](auto &...inv) { (reporter(std::move(inv)), ...); }, invariants_);
+            Apply([&reporter](auto &...inv) { (reporter(std::move(inv)), ...); });
         }
     }
 }
@@ -191,22 +202,22 @@ void DumpLog(const ASTVerifier::GroupedMessages &report)
 void ASTVerifier::DumpMessages() const
 {
     std::string errMsg = "ASTVerifier found broken invariants.";
-    if (options_.IsAstVerifierJson()) {
-        DumpJson(report_, options_.GetAstVerifierJsonPath());
-        errMsg += " Dumped to '" + std::string(options_.GetAstVerifierJsonPath()) + "'.";
+    if (Options().IsAstVerifierJson()) {
+        DumpJson(report_, Options().GetAstVerifierJsonPath());
+        errMsg += " Dumped to '" + std::string(Options().GetAstVerifierJsonPath()) + "'.";
     } else {
         DumpLog(report_);
         errMsg += " You may want to pass '--ast-verifier:json' option for more verbose output.";
     }
 
     if (hasErrors_) {
-        LOG(ERROR, ES2PANDA) << errMsg;
+        LOG(FATAL, ES2PANDA) << errMsg;
     } else if (hasWarnings_) {
         LOG(WARNING, ES2PANDA) << errMsg;
     }
 }
 
-void CheckContext::AddCheckMessage(const std::string &cause, const ir::AstNode &node)
+void InvariantMessages::AddCheckMessage(const std::string &cause, const ir::AstNode &node)
 {
     messages_.emplace_back(cause.data(), &node);
 }
