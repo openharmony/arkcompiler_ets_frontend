@@ -13,6 +13,7 @@
 
 set(ES2PANDA_LSP_SRC
   ./src/api.cpp
+  ./src/classifier.cpp
   ./src/internal_api.cpp
 )
 
