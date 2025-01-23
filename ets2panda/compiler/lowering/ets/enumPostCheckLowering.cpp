@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -113,6 +113,11 @@ bool EnumPostCheckLoweringPhase::PerformForModule(public_lib::Context *ctx, pars
             if (node->HasAstNodeFlags(ir::AstNodeFlags::RECHECK)) {
                 if (node->IsExpression()) {
                     node->AsExpression()->SetTsType(nullptr);  // force recheck
+                }
+                if (ctx->checker->AsETSChecker()->Context().ContainingClass() == nullptr) {
+                    auto *parentClass = util::Helpers::FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION);
+                    ctx->checker->AsETSChecker()->Context().SetContainingClass(
+                        parentClass->AsClassDefinition()->TsType()->AsETSObjectType());
                 }
                 node->Check(ctx->checker->AsETSChecker());
                 node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
