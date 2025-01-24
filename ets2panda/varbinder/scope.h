@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,11 +18,10 @@
 
 #include "es2panda.h"
 #include "varbinder/declaration.h"
-#include "varbinder/variable.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
+#include "varbinder/variableFlags.h"
 
-#include <map>
 #include <unordered_map>
 #include <vector>
 
@@ -34,6 +33,11 @@ namespace ark::es2panda::compiler {
 class IRNode;
 }  // namespace ark::es2panda::compiler
 
+namespace ark::es2panda::ir {
+class AstNode;
+class Identifier;
+}  // namespace ark::es2panda::ir
+
 namespace ark::es2panda::varbinder {
 // CC-OFFNXT(G.PRE.09) code gen
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
@@ -44,6 +48,7 @@ SCOPE_TYPES(DECLARE_CLASSES)
 class Scope;
 class VariableScope;
 class Variable;
+class LocalVariable;
 
 template <typename ScopeT,
           std::enable_if_t<std::is_pointer_v<ScopeT> && std::is_base_of_v<Scope, std::remove_pointer_t<ScopeT>>, bool> =
@@ -977,72 +982,6 @@ private:
     LocalExportNameMap localExports_;
 };
 
-template <typename T>
-Variable *VariableScope::AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
-{
-    if (!currentVariable) {
-        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::HOIST_VAR)).first->second;
-    }
-
-    switch (currentVariable->Declaration()->Type()) {
-        case DeclType::VAR: {
-            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
-            [[fallthrough]];
-        }
-        case DeclType::PARAM:
-        case DeclType::FUNC: {
-            return currentVariable;
-        }
-        default: {
-            return nullptr;
-        }
-    }
-}
-
-template <typename T>
-Variable *VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
-                                     ScriptExtension extension)
-{
-    VariableFlags flags = (extension == ScriptExtension::JS) ? VariableFlags::HOIST_VAR : VariableFlags::HOIST;
-
-    if (!currentVariable) {
-        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
-    }
-
-    if (extension != ScriptExtension::JS || IsModuleScope()) {
-        return nullptr;
-    }
-
-    switch (currentVariable->Declaration()->Type()) {
-        case DeclType::VAR:
-        case DeclType::FUNC: {
-            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
-            return currentVariable;
-        }
-        default: {
-            return nullptr;
-        }
-    }
-}
-
-template <typename T>
-Variable *VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *currentVariable,
-                                      Decl *newDecl, VariableFlags flags)
-{
-    ASSERT(!currentVariable);
-    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
-}
-
-template <typename T>
-Variable *VariableScope::AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
-{
-    if (currentVariable) {
-        return nullptr;
-    }
-
-    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::NONE)).first->second;
-}
-
 template <typename T, typename... Args>
 T *Scope::NewDecl(ArenaAllocator *allocator, Args &&...args)
 {
@@ -1078,17 +1017,6 @@ VariableType *Scope::CreateVar(ArenaAllocator *allocator, util::StringView name,
     return variable;
 }
 
-template <typename T, typename... Args>
-Variable *Scope::PropagateBinding(ArenaAllocator *allocator, util::StringView name, Args &&...args)
-{
-    auto res = bindings_.find(name);
-    if (res == bindings_.end()) {
-        return bindings_.insert({name, allocator->New<T>(std::forward<Args>(args)...)}).first->second;
-    }
-
-    res->second->Reset(std::forward<Args>(args)...);
-    return res->second;
-}
 }  // namespace ark::es2panda::varbinder
 
 #endif

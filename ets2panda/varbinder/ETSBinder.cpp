@@ -182,6 +182,51 @@ void ETSBinder::ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *s
     ResolveReference(node);
 }
 
+bool ETSBinder::AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
+                                        util::StringView const &value)
+{
+    if (auto foundMap = selectiveExportAliasMultimap_.find(path); foundMap != selectiveExportAliasMultimap_.end()) {
+        return foundMap->second.insert({key, value}).second;
+    }
+
+    ArenaMap<util::StringView, util::StringView> map(Allocator()->Adapter());
+    bool insertResult = map.insert({key, value}).second;
+    selectiveExportAliasMultimap_.insert({path, map});
+    return insertResult;
+}
+
+util::StringView ETSBinder::FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName)
+{
+    if (auto relatedMap = selectiveExportAliasMultimap_.find(pathAsKey);
+        relatedMap != selectiveExportAliasMultimap_.end()) {
+        if (auto item = relatedMap->second.find(aliasName); item != relatedMap->second.end()) {
+            return item->second;
+        }
+    }
+
+    return "";
+}
+
+util::StringView ETSBinder::FindLocalNameForImport(const ir::ImportSpecifier *const importSpecifier,
+                                                   util::StringView &imported,
+                                                   const ir::StringLiteral *const importPath)
+{
+    if (importSpecifier->Local() != nullptr) {
+        auto checkImportPathAndName = [&importPath, &imported](const auto &savedSpecifier) {
+            return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
+        };
+        if (!std::any_of(importSpecifiers_.begin(), importSpecifiers_.end(), checkImportPathAndName)) {
+            TopScope()->EraseBinding(imported);
+        }
+
+        importSpecifiers_.emplace_back(importPath->Str(), imported);
+
+        return importSpecifier->Local()->Name();
+    }
+
+    return imported;
+}
+
 void ETSBinder::LookupIdentReference(ir::Identifier *ident)
 {
     if (ident->IsErrorPlaceHolder()) {
@@ -465,6 +510,12 @@ void ETSBinder::AddFunctionThisParam(ir::ScriptFunction *func)
     auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
     auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
     thisParam->Declaration()->BindNode(thisParam_);
+}
+
+void ETSBinder::AddDynamicImport(ir::ETSImportDeclaration *import)
+{
+    ASSERT(import->Language().IsDynamic());
+    dynamicImports_.push_back(import);
 }
 
 void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isExternal)

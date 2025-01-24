@@ -16,14 +16,31 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 #define ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 
-#include "checker/types/type.h"
-#include "ir/statements/loopStatement.h"
-#include "varbinder/variable.h"
+#include "lexer/token/sourceLocation.h"
+#include "lexer/token/tokenType.h"
+#include "util/enumbitops.h"
+
+namespace ark::es2panda::ir {
+class ArrowFunctionExpression;
+class AstNode;
+class LoopStatement;
+class BlockStatement;
+class Identifier;
+class UnaryExpression;
+class BreakStatement;
+class Statement;
+class BinaryExpression;
+}  // namespace ark::es2panda::ir
+namespace ark::es2panda::varbinder {
+class Variable;
+}  // namespace ark::es2panda::varbinder
 
 namespace ark::es2panda::checker {
 
 class ETSObjectType;
 class Signature;
+class Type;
+class Checker;
 
 using ENUMBITOPS_OPERATORS;
 

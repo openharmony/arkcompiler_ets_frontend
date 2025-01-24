@@ -18,6 +18,7 @@
 #include "compiler/base/catchTable.h"
 #include "checker/ets/dynamic/dynamicCall.h"
 #include "compiler/base/condition.h"
+#include "compiler/core/ETSGen-inl.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
