@@ -19,7 +19,7 @@
 #include "lsp_api_test.h"
 #include "public/es2panda_lib.h"
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications1)
+TEST_F(LSPAPITests, GetSyntacticClassifications1)
 {
     es2panda_Context *ctx =
         CreateContextAndProceedToState(impl_, cfg_, R"(class A {};)", "class-name.sts", ES2PANDA_STATE_PARSED);
@@ -27,17 +27,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications1)
 
     size_t const start = 6;
     size_t const length = 1;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "class name";
+    std::string expectedName = "class name";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications2)
+TEST_F(LSPAPITests, GetSyntacticClassifications2)
 {
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(enum Color {Red, Blue, Green};)",
                                                            "enum-name.sts", ES2PANDA_STATE_PARSED);
@@ -45,17 +45,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications2)
 
     size_t const start = 5;
     size_t const length = 5;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "enum name";
+    std::string expectedName = "enum name";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications3)
+TEST_F(LSPAPITests, GetSyntacticClassifications3)
 {
     es2panda_Context *ctx =
         CreateContextAndProceedToState(impl_, cfg_, R"(interface I {};)", "interface-name.sts", ES2PANDA_STATE_PARSED);
@@ -63,17 +63,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications3)
 
     size_t const start = 10;
     size_t const length = 1;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "interface name";
+    std::string expectedName = "interface name";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications4)
+TEST_F(LSPAPITests, GetSyntacticClassifications4)
 {
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(class Foo<T> {};)",
                                                            "type-parameter-name.sts", ES2PANDA_STATE_PARSED);
@@ -81,17 +81,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications4)
 
     size_t const start = 10;
     size_t const length = 1;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "type parameter name";
+    std::string expectedName = "type parameter name";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications5)
+TEST_F(LSPAPITests, GetSyntacticClassifications5)
 {
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(type tmp = Long|null;)",
                                                            "type-alias-name.sts", ES2PANDA_STATE_PARSED);
@@ -99,17 +99,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications5)
 
     size_t const start = 5;
     size_t const length = 3;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "type alias name";
+    std::string expectedName = "type alias name";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications6)
+TEST_F(LSPAPITests, GetSyntacticClassifications6)
 {
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(function A(a:number) {};)",
                                                            "parameter-name.sts", ES2PANDA_STATE_PARSED);
@@ -117,17 +117,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications6)
 
     size_t const start = 11;
     size_t const length = 1;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "parameter name";
+    std::string expectedName = "parameter name";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications7)
+TEST_F(LSPAPITests, GetSyntacticClassifications7)
 {
     es2panda_Context *ctx =
         CreateContextAndProceedToState(impl_, cfg_, R"(let num = 1;)", "number-type.sts", ES2PANDA_STATE_PARSED);
@@ -135,17 +135,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications7)
 
     size_t const start = 10;
     size_t const length = 1;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "number";
+    std::string expectedName = "number";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications8)
+TEST_F(LSPAPITests, GetSyntacticClassifications8)
 {
     es2panda_Context *ctx =
         CreateContextAndProceedToState(impl_, cfg_, R"(let str = "123";)", "string-type.sts", ES2PANDA_STATE_PARSED);
@@ -153,17 +153,17 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications8)
 
     size_t const start = 10;
     size_t const length = 5;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     const size_t expectedCount = 1;
-    const char *expectedName = "string";
+    std::string expectedName = "string";
     ASSERT_EQ(result.size(), expectedCount);
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
-    ASSERT_EQ(*(result.at(0)->name), *expectedName);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications9)
+TEST_F(LSPAPITests, GetSyntacticClassifications9)
 {
     es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(let a = true;
 let b = false;)",
@@ -172,9 +172,9 @@ let b = false;)",
 
     size_t const start = 0;
     size_t const length = 28;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     // NOLINTBEGIN(readability-magic-numbers)
-    std::vector<std::tuple<size_t, size_t, const char *>> expectedResult = {
+    std::vector<std::tuple<size_t, size_t, std::string>> expectedResult = {
         {0, 3, "keyword"},  {4, 1, "identifier"},  {6, 1, "punctuation"},  {8, 4, "boolean"},  {12, 1, "punctuation"},
         {14, 3, "keyword"}, {18, 1, "identifier"}, {20, 1, "punctuation"}, {22, 5, "boolean"}, {27, 1, "punctuation"}};
     // NOLINTEND(readability-magic-numbers)
@@ -183,15 +183,15 @@ let b = false;)",
     for (size_t i = 0; i < result.size(); i++) {
         auto expectedStart = std::get<0>(expectedResult.at(i));
         auto expectedLength = std::get<1>(expectedResult.at(i));
-        auto expectedName = *std::get<2>(expectedResult.at(i));
+        auto expectedName = std::get<2>(expectedResult.at(i));
         ASSERT_EQ(result.at(i)->start, expectedStart);
         ASSERT_EQ(result.at(i)->length, expectedLength);
-        ASSERT_EQ(*(result.at(i)->name), expectedName);
+        ASSERT_EQ(result.at(i)->name, expectedName);
     }
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications10)
+TEST_F(LSPAPITests, GetSyntacticClassifications10)
 {
     es2panda_Context *ctx =
         CreateContextAndProceedToState(impl_, cfg_, R"(type tmp = null;)", "null-type.sts", ES2PANDA_STATE_PARSED);
@@ -199,9 +199,9 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications10)
 
     size_t const start = 0;
     size_t const length = 28;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     // NOLINTBEGIN(readability-magic-numbers)
-    std::vector<std::tuple<size_t, size_t, const char *>> expectedResult = {
+    std::vector<std::tuple<size_t, size_t, std::string>> expectedResult = {
         {0, 4, "keyword"}, {5, 3, "type alias name"}, {9, 1, "punctuation"}, {11, 4, "null"}, {15, 1, "punctuation"}};
     // NOLINTEND(readability-magic-numbers)
     ASSERT_EQ(result.size(), expectedResult.size());
@@ -209,15 +209,15 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications10)
     for (size_t i = 0; i < result.size(); i++) {
         auto expectedStart = std::get<0>(expectedResult.at(i));
         auto expectedLength = std::get<1>(expectedResult.at(i));
-        auto expectedName = *std::get<2>(expectedResult.at(i));
+        auto expectedName = std::get<2>(expectedResult.at(i));
         ASSERT_EQ(result.at(i)->start, expectedStart);
         ASSERT_EQ(result.at(i)->length, expectedLength);
-        ASSERT_EQ(*(result.at(i)->name), expectedName);
+        ASSERT_EQ(result.at(i)->name, expectedName);
     }
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications11)
+TEST_F(LSPAPITests, GetSyntacticClassifications11)
 {
     es2panda_Context *ctx = CreateContextAndProceedToState(
         impl_, cfg_,
@@ -228,9 +228,9 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications11)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
     size_t const start = 0;
     size_t const length = 428;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     // NOLINTBEGIN(readability-magic-numbers)
-    std::vector<std::tuple<size_t, size_t, const char *>> expectedResult = {
+    std::vector<std::tuple<size_t, size_t, std::string>> expectedResult = {
         {0, 3, "keyword"},       {4, 1, "identifier"},    {6, 1, "punctuation"},   {8, 1, "number"},
         {9, 1, "punctuation"},   {11, 3, "keyword"},      {15, 1, "identifier"},   {17, 1, "punctuation"},
         {19, 1, "number"},       {20, 1, "punctuation"},  {22, 5, "keyword"},      {28, 1, "class name"},
@@ -262,15 +262,15 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications11)
     for (size_t i = 0; i < result.size(); i++) {
         auto expectedStart = std::get<0>(expectedResult.at(i));
         auto expectedLength = std::get<1>(expectedResult.at(i));
-        auto expectedName = *std::get<2>(expectedResult.at(i));
+        auto expectedName = std::get<2>(expectedResult.at(i));
         ASSERT_EQ(result.at(i)->start, expectedStart);
         ASSERT_EQ(result.at(i)->length, expectedLength);
-        ASSERT_EQ(*(result.at(i)->name), expectedName);
+        ASSERT_EQ(result.at(i)->name, expectedName);
     }
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications12)
+TEST_F(LSPAPITests, GetSyntacticClassifications12)
 {
     es2panda_Context *ctx = CreateContextAndProceedToState(
         impl_, cfg_,
@@ -280,9 +280,9 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications12)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
     size_t const start = 0;
     size_t const length = 428;
-    auto result = ark::es2panda::lsp::GetEncodedSyntacticClassifications(ctx, start, length);
+    auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
     // NOLINTBEGIN(readability-magic-numbers)
-    std::vector<std::tuple<size_t, size_t, const char *>> expectedResult = {
+    std::vector<std::tuple<size_t, size_t, std::string>> expectedResult = {
         {0, 1, "identifier"},    {2, 3, "punctuation"},   {6, 1, "identifier"},    {7, 1, "punctuation"},
         {9, 1, "identifier"},    {11, 2, "punctuation"},  {14, 1, "identifier"},   {15, 1, "punctuation"},
         {17, 1, "identifier"},   {19, 1, "punctuation"},  {21, 1, "identifier"},   {22, 1, "punctuation"},
@@ -312,10 +312,102 @@ TEST_F(LSPAPITests, GetEncodeedSyntacticClassifications12)
     for (size_t i = 0; i < result.size(); i++) {
         auto expectedStart = std::get<0>(expectedResult.at(i));
         auto expectedLength = std::get<1>(expectedResult.at(i));
-        auto expectedName = *std::get<2>(expectedResult.at(i));
+        auto expectedName = std::get<2>(expectedResult.at(i));
         ASSERT_EQ(result.at(i)->start, expectedStart);
         ASSERT_EQ(result.at(i)->length, expectedLength);
-        ASSERT_EQ(*(result.at(i)->name), expectedName);
+        ASSERT_EQ(result.at(i)->name, expectedName);
     }
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetSemanticClassifications1)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "class Foo{};\nlet a:Foo = new Foo();",
+                                                           "class-name.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    size_t const start = 19;
+    size_t const length = 3;
+    auto result = ark::es2panda::lsp::GetSemanticClassifications(ctx, start, length);
+
+    const size_t expectedCount = 1;
+    std::string expectedName = "class name";
+    ASSERT_EQ(result.size(), expectedCount);
+    ASSERT_EQ(result.at(0)->start, start);
+    ASSERT_EQ(result.at(0)->length, length);
+    ASSERT_EQ(result.at(0)->name, expectedName);
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetSemanticClassifications2)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "class Foo{};\nlet a:Foo = new Foo();",
+                                                           "class-name.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    size_t const start = 29;
+    size_t const length = 3;
+    auto result = ark::es2panda::lsp::GetSemanticClassifications(ctx, start, length);
+
+    const size_t expectedCount = 1;
+    std::string expectedName = "class name";
+    ASSERT_EQ(result.size(), expectedCount);
+    ASSERT_EQ(result.at(0)->start, start);
+    ASSERT_EQ(result.at(0)->length, length);
+    ASSERT_EQ(result.at(0)->name, expectedName);
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetSemanticClassifications3)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "enum Color {Red, Blue, Green};\nlet a:Color",
+                                                           "enum-name.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    size_t const start = 37;
+    size_t const length = 5;
+    auto result = ark::es2panda::lsp::GetSemanticClassifications(ctx, start, length);
+    const size_t expectedCount = 1;
+    std::string expectedName = "enum name";
+    ASSERT_EQ(result.size(), expectedCount);
+    ASSERT_EQ(result.at(0)->start, start);
+    ASSERT_EQ(result.at(0)->length, length);
+    ASSERT_EQ(result.at(0)->name, expectedName);
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetSemanticClassifications4)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "interface I {};\nlet a:I",
+                                                           "interface-name.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    size_t const start = 22;
+    size_t const length = 1;
+    auto result = ark::es2panda::lsp::GetSemanticClassifications(ctx, start, length);
+    const size_t expectedCount = 1;
+    std::string expectedName = "interface name";
+    ASSERT_EQ(result.size(), expectedCount);
+    ASSERT_EQ(result.at(0)->start, start);
+    ASSERT_EQ(result.at(0)->length, length);
+    ASSERT_EQ(result.at(0)->name, expectedName);
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetSemanticClassifications5)
+{
+    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "type tmp = Long|null;\nlet a:tmp",
+                                                           "type-alias-name.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    size_t const start = 28;
+    size_t const length = 3;
+    auto result = ark::es2panda::lsp::GetSemanticClassifications(ctx, start, length);
+    const size_t expectedCount = 1;
+    std::string expectedName = "type alias name";
+    ASSERT_EQ(result.size(), expectedCount);
+    ASSERT_EQ(result.at(0)->start, start);
+    ASSERT_EQ(result.at(0)->length, length);
+    ASSERT_EQ(result.at(0)->name, expectedName);
     impl_->DestroyContext(ctx);
 }
