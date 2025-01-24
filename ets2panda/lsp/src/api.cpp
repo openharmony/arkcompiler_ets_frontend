@@ -65,11 +65,20 @@ extern "C" std::string GetCurrentTokenValue(char const *fileName, size_t positio
     return result;
 }
 
+extern "C" TextSpan *GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMultiLine)
+{
+    Initializer &initializer = Initializer::GetInstance();
+    auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto allocator = initializer.Allocator();
+    auto range = GetRangeOfEnclosingComment(ctx, pos, allocator);
+    initializer.DestroyContext(ctx);
+    return (range != nullptr) && (!onlyMultiLine || range->GetKind() == CommentKind::MULTI_LINE)
+               ? allocator->New<TextSpan>(range->GetPos(), range->GetEnd() - range->GetPos())
+               : nullptr;
+}
+
 LSPAPI g_lspImpl = {
-    GetDefinitionAtPosition,
-    GetFileReferences,
-    GetPrecedingToken,
-    GetCurrentTokenValue,
+    GetDefinitionAtPosition, GetFileReferences, GetPrecedingToken, GetCurrentTokenValue, GetSpanOfEnclosingComment,
 };
 }  // namespace ark::es2panda::lsp
 

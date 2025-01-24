@@ -68,6 +68,7 @@ ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, 
 ir::AstNode *GetOriginalNode(ir::AstNode *astNode);
 checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode);
 std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position);
+CommentRange *GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, ArenaAllocator *allocator);
 
 }  // namespace ark::es2panda::lsp
 
