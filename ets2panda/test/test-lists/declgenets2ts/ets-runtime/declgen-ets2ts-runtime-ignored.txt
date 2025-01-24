@@ -9,6 +9,7 @@ top_level_03.sts
 # FailKind.ABORT_FAIL
 ClassNewInstance.sts
 Enum5.sts
+Enum7.sts
 EnumConstExpression1.sts
 RecursiveTypeAlias1.sts
 RecursiveTypeAlias10.sts
@@ -253,6 +254,7 @@ extension_function_with_generic/extension_function_with_generic2.sts
 extension_function_with_generic/extension_function_with_generic3.sts
 extension_function_with_generic/extension_function_with_generic4.sts
 extension_function_with_generic/receiver_type_is_type_parameter1.sts
+extension_function_with_generic/receiver_type_is_type_parameter2.sts
 fieldImplicitCasting.sts
 finallyExecutedAbruptly.sts
 forOfCustomIterator1.sts
@@ -431,3 +433,4 @@ verifier_acc_type1.stsvisible_signatures.sts
 verifier_acc_type1.sts
 visible_signatures.sts
 nestedNameSpaceWithStaticField.sts
+implicit_this_array.sts
