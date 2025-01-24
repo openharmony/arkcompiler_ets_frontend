@@ -271,3 +271,4 @@ ast/compiler/ets/namespace_tests/namespace.sts
 ast/compiler/ets/namespace_tests/namespace_ambient_export01.sts
 ast/compiler/ets/namespace_tests/namespace_ambient_export02.sts
 ast/compiler/ets/namespace_tests/namespace_ambient_export03.sts
+ast/compiler/ets/namespace_tests/namespace_default_import.sts

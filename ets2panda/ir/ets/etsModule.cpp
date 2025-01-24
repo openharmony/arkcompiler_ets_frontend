@@ -19,9 +19,13 @@ namespace ark::es2panda::ir {
 
 void ETSModule::Dump(ir::SrcDumper *dumper) const
 {
-    if (flag_ == ModuleFlag::NAMESPACE) {
+    if (IsNamespace()) {
         if (IsExported()) {
             dumper->Add("export ");
+        }
+
+        if (IsDefaultExported()) {
+            dumper->Add("export default ");
         }
 
         if (IsDeclare()) {
@@ -44,7 +48,7 @@ void ETSModule::Dump(ir::SrcDumper *dumper) const
             dumper->Endl();
         }
     }
-    if (flag_ == ModuleFlag::NAMESPACE) {
+    if (IsNamespace()) {
         dumper->Add("}");
     }
 }
