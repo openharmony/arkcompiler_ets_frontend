@@ -20,9 +20,12 @@ let void2: (i: int) => void = void1;
 let void3: (i: int)  => void  = (i: int): void => { return; };
 let void4: (i: int) =>  void = (  i: int)      => { return; };
 function void5(fn1: () => void, fn2: (x: int) => void) { fn1(); fn2(2); }
-let void6: (i: int  )       /* @@ label */= void1; // CTE; need return type
+let void6: (i: int  )       /* @@ label */= void1 /* @@ label1 */; // CTE; need return type
 
 function main() {}
 
-/* @@@ label Error SyntaxError: Unexpected token '=', expected: '=>'. */
-/* @@@ label Error SyntaxError: Invalid Type */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '=>'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@@ label Error SyntaxError: Invalid Type  */
+/* @@@ label Error SyntaxError: Unexpected token '('.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected: ')'.  */

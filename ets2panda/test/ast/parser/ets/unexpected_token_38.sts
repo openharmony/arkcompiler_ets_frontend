@@ -19,11 +19,13 @@ let c: boolean;
 let d: void;
 let e: null;
 let f: undefined;
-let func3: (f: (a: number, b: string) => number[])/* @@ label */: number[] /* @@ label1 */=> (a: number, b: boolean) => true;
+let func3: (f: (a: number, b: string) => number[]): number[] => (a: number, b: boolean) => true;
 // let func3: (f: (a: number, b: string) => number[]): number[]) => (a: number, b: boolean) => true;
-/* @@@ label Error SyntaxError: Unexpected token ':', expected: '=>'.  */
-/* @@@ label Error SyntaxError: Invalid Type  */
-/* @@@ label Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token: '=>'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token, arrow (=>)  */
+
+/* @@? 22:51 Error SyntaxError: Unexpected token, expected: '=>'.  */
+/* @@? 22:51 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@? 22:51 Error SyntaxError: Invalid Type  */
+/* @@? 22:51 Error SyntaxError: Unexpected token '('.  */
+/* @@? 22:62 Error SyntaxError: Unexpected token: '=>'.  */
+/* @@? 22:62 Error SyntaxError: Unexpected token, arrow (=>)  */
+/* @@? 22:96 Error SyntaxError: Unexpected token, expected: ')'.  */

@@ -332,7 +332,7 @@ private:
     ir::TypeNode *ParseUnionType(ir::TypeNode *firstType);
     ir::TypeNode *GetTypeAnnotationOfPrimitiveType(lexer::TokenType tokenType, TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
-    ir::TypeNode *ParseFunctionType();
+    ir::TypeNode *ParseFunctionType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTsArrayType(ir::TypeNode *typeNode, TypeAnnotationParsingOptions *options);
     bool ParseTriplePeriod(bool spreadTypePresent);
