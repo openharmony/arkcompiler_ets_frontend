@@ -528,6 +528,15 @@ public:
                                            checker::SignatureFlags::CONSTRUCTOR);
     }
 
+    void EmitEtsTypeof([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const VReg reg)
+    {
+#ifdef PANDA_WITH_ETS
+        Ra().Emit<EtsTypeof>(node, reg);
+#else
+        UNREACHABLE();
+#endif  // PANDA_WITH_ETS
+    }
+
     void CallExact(const ir::AstNode *node, checker::Signature *signature,
                    const ArenaVector<ir::Expression *> &arguments)
     {

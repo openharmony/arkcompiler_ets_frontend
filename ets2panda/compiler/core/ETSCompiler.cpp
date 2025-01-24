@@ -1212,7 +1212,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) con
     }
     auto argReg = etsg->AllocReg();
     etsg->StoreAccumulator(expr, argReg);
-    etsg->CallExact(expr, Signatures::BUILTIN_RUNTIME_TYPEOF, argReg);
+    etsg->EmitEtsTypeof(expr, argReg);
     etsg->SetAccumulatorType(expr->TsType());
 }
 
