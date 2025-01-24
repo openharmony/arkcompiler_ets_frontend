@@ -81,8 +81,12 @@ void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETS
 
 static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc)
 {
-    ASSERT(!extensionFunc->Params().empty());
-    ASSERT(extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->IsReceiver());
+    //  Skip processing of possibly invalid extension method
+    if (extensionFunc->Params().empty() ||
+        !extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->IsReceiver()) {
+        ASSERT(checker->IsAnyError());
+        return;
+    }
 
     if (extensionFunc->ReturnTypeAnnotation() != nullptr && extensionFunc->ReturnTypeAnnotation()->IsTSThisType()) {
         // when return `this` in extensionFunction, the type of `this` actually should be type of the receiver,
@@ -111,13 +115,15 @@ static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::Scrip
 
 void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::AstNode *node)
 {
-    auto *const thisType = extensionFunc->Signature()->Params()[0]->TsType();
+    auto *const thisType =
+        !extensionFunc->Signature()->Params().empty() ? extensionFunc->Signature()->Params()[0]->TsType() : nullptr;
 
     // "Extension Functions" are only allowed for classes, interfaces, and arrays.
-    if (thisType->IsETSArrayType() ||
-        (thisType->IsETSObjectType() &&
-         (thisType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::CLASS) ||
-          thisType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)))) {
+    if (thisType != nullptr &&
+        (thisType->IsETSArrayType() ||
+         (thisType->IsETSObjectType() && thisType->AsETSObjectType()->HasObjectFlag(
+                                             // CC-OFFNXT(G.FMT.06-CPP) project code style
+                                             checker::ETSObjectFlags::CLASS | checker::ETSObjectFlags::INTERFACE)))) {
         // Skip for arrays (array does not contain a class definition) and checked class definition.
         if (!thisType->IsETSArrayType() && thisType->Variable()->Declaration()->Node()->IsClassDefinition() &&
             !thisType->Variable()->Declaration()->Node()->AsClassDefinition()->IsClassDefinitionChecked()) {
@@ -214,7 +220,7 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
 
 void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
 {
-    auto const promiseType = checker->CreatePromiseOf(scriptFunc->Signature()->ReturnType());
+    auto const promiseType = checker->CreatePromiseOf(checker->MaybeBoxType(scriptFunc->Signature()->ReturnType()));
 
     auto *objectId =
         checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, checker->Allocator());
@@ -256,6 +262,11 @@ void ComposeAsyncImplMethod(ETSChecker *checker, ir::MethodDefinition *node)
 
 void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
 {
+    if (scriptFunc->Signature() == nullptr) {
+        ASSERT(checker->IsAnyError());
+        return;
+    }
+
     auto const &position = scriptFunc->Start();
 
     if (scriptFunc->IsSetter() && (scriptFunc->Signature()->ReturnType() != checker->GlobalVoidType())) {
@@ -555,11 +566,14 @@ ArenaVector<checker::Signature *> &ChooseSignatures(ETSChecker *checker, checker
         return calleeType->AsETSObjectType()->ConstructSignatures();
     }
     if (isFunctionalInterface) {
-        return calleeType->AsETSObjectType()
-            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
-            ->TsType()
-            ->AsETSFunctionType()
-            ->CallSignatures();
+        auto const *const variable =
+            calleeType->AsETSObjectType()->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
+                FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
+        if (variable == nullptr || variable->TsType() == nullptr || !variable->TsType()->IsETSFunctionType()) {
+            ASSERT(checker->IsAnyError());
+            return unionSignatures;
+        }
+        return variable->TsType()->AsETSFunctionType()->CallSignatures();
     }
     if (isUnionTypeWithFunctionalInterface) {
         unionSignatures = GetUnionTypeSignatures(checker, calleeType->AsETSUnionType());
@@ -774,6 +788,10 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
     //  First (or single) return statement in the function:
     funcReturnType =
         stArgument == nullptr ? checker->GlobalVoidType() : checker->GetNonConstantType(stArgument->Check(checker));
+    if (funcReturnType->IsTypeError()) {
+        return;
+    }
+
     /*
     when st_argment is ArrowFunctionExpression, need infer type for st_argment
     example code:
@@ -885,7 +903,7 @@ ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ET
                 paramType = InstantiateBoxedPrimitiveType(checker, param, paramType);
             }
 
-            checker::ETSChecker::EmplaceSubstituted(
+            checker->EmplaceSubstituted(
                 substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(), paramType);
         }
     }
@@ -897,9 +915,9 @@ ETSObjectType *CreateInterfaceTypeForETSFunctionType(ETSChecker *checker, ir::ET
         returnType = node->ReturnType()->GetType(checker);
     }
 
-    checker::ETSChecker::EmplaceSubstituted(
-        substitution, genericInterfaceType->TypeArguments()[paramsNum]->AsETSTypeParameter()->GetOriginal(),
-        InstantiateBoxedPrimitiveType(checker, node->ReturnType(), returnType));
+    checker->EmplaceSubstituted(substitution,
+                                genericInterfaceType->TypeArguments()[paramsNum]->AsETSTypeParameter()->GetOriginal(),
+                                InstantiateBoxedPrimitiveType(checker, node->ReturnType(), returnType));
 
     auto *interfaceType =
         genericInterfaceType->Substitute(checker->Relation(), substitution, true, node->IsExtensionFunction());

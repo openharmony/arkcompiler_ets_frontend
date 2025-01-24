@@ -16,13 +16,8 @@
 #include "etsStructDeclaration.h"
 
 #include "checker/TSchecker.h"
-#include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/decorator.h"
 
 namespace ark::es2panda::ir {
 void ETSStructDeclaration::Dump(ir::AstDumper *dumper) const
@@ -46,6 +41,7 @@ checker::Type *ETSStructDeclaration::Check([[maybe_unused]] checker::TSChecker *
 
 checker::VerifiedType ETSStructDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    UNREACHABLE();
+    ASSERT(checker->IsAnyError());
+    return {this, checker->GetAnalyzer()->Check(this)};
 }
 }  // namespace ark::es2panda::ir

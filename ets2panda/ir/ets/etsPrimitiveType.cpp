@@ -19,9 +19,6 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "macros.h"
 
 namespace ark::es2panda::ir {
 void ETSPrimitiveType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
@@ -161,22 +158,21 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
 
 ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ETSPrimitiveType>(type_, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<ETSPrimitiveType>(type_, allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
-}
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
 
+    clone->SetRange(Range());
+    return clone;
+}
 }  // namespace ark::es2panda::ir

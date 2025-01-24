@@ -25,3 +25,4 @@ interface Test {
 /* @@? 18:12 Error SyntaxError: Unexpected token, expected: ','. */
 /* @@? 18:12 Error SyntaxError: Unexpected token, expected 'private' or identifier */
 /* @@? 19:1 Error SyntaxError: Identifier expected */
+/* @@? 18:5 Error TypeError: Function proc is already declared. */

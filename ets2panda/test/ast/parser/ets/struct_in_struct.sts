@@ -21,4 +21,6 @@ struct A {
 }
 
 
-/* @@? 18:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@? 18:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 16:1 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */
+/* @@? 18:5 Error SyntaxError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */

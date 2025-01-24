@@ -57,46 +57,64 @@ function f6(a: int = 9 @@): void;
 function f7(a: (b: int = 0) => int): void {
 }
 
-/* @@? 16:35 Error SyntaxError: Rest parameter cannot have the default value.  */
-/* @@? 16:37 Error SyntaxError: Identifier is needed here.  */
-/* @@? 17:21 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@? 17:21 Error SyntaxError: Unexpected token '...'.  */
-/* @@? 17:21 Error SyntaxError: Unexpected token '...'.  */
-/* @@? 17:24 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 18:35 Error SyntaxError: Unexpected token, expected: '>'.  */
-/* @@? 18:36 Error SyntaxError: Unexpected token ';'.  */
-/* @@? 18:36 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 22:23 Error SyntaxError: Not enable default value with default undefined  */
-/* @@? 24:22 Error SyntaxError: You didn't set the value.  */
-/* @@? 24:22 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 27:8 Error SyntaxError: Invalid left-hand side in assignment expression  */
-/* @@? 28:7 Error SyntaxError: Invalid left-hand side operator.  */
-/* @@? 30:5 Error SyntaxError: Invalid left-hand side in prefix operation  */
-/* @@? 30:8 Error SyntaxError: Invalid left-hand side in assignment expression  */
-/* @@? 33:27 Error SyntaxError: Rest parameter cannot have the default value.  */
-/* @@? 33:29 Error SyntaxError: Identifier is needed here.  */
-/* @@? 33:41 Error SyntaxError: Not enable default value with default undefined  */
-/* @@? 35:10 Error SyntaxError: Unexpected token ':'.  */
-/* @@? 35:10 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@? 35:16 Error SyntaxError: Unexpected token '=>'.  */
-/* @@? 35:16 Error SyntaxError: Unexpected token: '=>'.  */
-/* @@? 37:15 Error SyntaxError: Unexpected token '=>'.  */
-/* @@? 37:15 Error SyntaxError: Unexpected token '=>'.  */
-/* @@? 37:15 Error SyntaxError: Unexpected token: '=>'.  */
-/* @@? 39:17 Error SyntaxError: Unexpected token: 'number literal'.  */
-/* @@? 47:15 Error SyntaxError: Unexpected token, expected: '('.  */
-/* @@? 47:17 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@? 48:5 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@? 48:5 Error SyntaxError: Unexpected token '}', expected: '=>'.  */
-/* @@? 48:5 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 51:13 Error SyntaxError: Unexpected token 'number literal'.  */
-/* @@? 51:16 Error SyntaxError: Invalid left-hand side operator.  */
-/* @@? 55:24 Error SyntaxError: Unexpected token: '@@'.  */
-/* @@? 55:24 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@? 55:24 Error SyntaxError: Unexpected token: '@@'.  */
-/* @@? 55:26 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 55:26 Error SyntaxError: Unexpected token ')'.  */
-/* @@? 55:27 Error SyntaxError: Unexpected token ':'.  */
-/* @@? 57:26 Error SyntaxError: Default value is allowed only for optional parameters  */
+/* @@? 16:35 Error SyntaxError: Rest parameter cannot have the default value. */
+/* @@? 16:37 Error SyntaxError: Identifier is needed here. */
+/* @@? 17:21 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 17:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 17:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 17:24 Error SyntaxError: Unexpected token ')'. */
+/* @@? 18:35 Error SyntaxError: Unexpected token, expected: '>'. */
+/* @@? 18:36 Error SyntaxError: Unexpected token ';'. */
+/* @@? 18:36 Error SyntaxError: Unexpected token, expected: ')'. */
+/* @@? 22:23 Error SyntaxError: Not enable default value with default undefined */
+/* @@? 24:22 Error SyntaxError: You didn't set the value. */
+/* @@? 24:22 Error SyntaxError: Unexpected token ')'. */
+/* @@? 27:8 Error SyntaxError: Invalid left-hand side in assignment expression */
+/* @@? 28:7 Error SyntaxError: Invalid left-hand side operator. */
+/* @@? 30:5 Error SyntaxError: Invalid left-hand side in prefix operation */
+/* @@? 30:8 Error SyntaxError: Invalid left-hand side in assignment expression */
+/* @@? 33:27 Error SyntaxError: Rest parameter cannot have the default value. */
+/* @@? 33:29 Error SyntaxError: Identifier is needed here. */
+/* @@? 33:41 Error SyntaxError: Not enable default value with default undefined */
+/* @@? 35:10 Error SyntaxError: Unexpected token ':'. */
+/* @@? 35:10 Error SyntaxError: Unexpected token, expected: ')'. */
+/* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 35:16 Error SyntaxError: Unexpected token '=>'. */
+/* @@? 35:16 Error SyntaxError: Unexpected token: '=>'. */
+/* @@? 37:15 Error SyntaxError: Unexpected token '=>'. */
+/* @@? 37:15 Error SyntaxError: Unexpected token '=>'. */
+/* @@? 37:15 Error SyntaxError: Unexpected token: '=>'. */
+/* @@? 39:17 Error SyntaxError: Unexpected token: 'number literal'. */
+/* @@? 47:15 Error SyntaxError: Unexpected token, expected: '('. */
+/* @@? 47:17 Error SyntaxError: Unexpected token, expected an identifier. */
+/* @@? 48:5 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 48:5 Error SyntaxError: Unexpected token '}', expected: '=>'. */
+/* @@? 48:5 Error SyntaxError: Unexpected token '}'. */
+/* @@? 51:13 Error SyntaxError: Unexpected token 'number literal'. */
+/* @@? 51:16 Error SyntaxError: Invalid left-hand side operator. */
+/* @@? 55:24 Error SyntaxError: Unexpected token: '@@'. */
+/* @@? 55:24 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 55:24 Error SyntaxError: Unexpected token: '@@'. */
+/* @@? 55:26 Error SyntaxError: Unexpected token ')'. */
+/* @@? 55:26 Error SyntaxError: Unexpected token ')'. */
+/* @@? 55:27 Error SyntaxError: Unexpected token ':'. */
+/* @@? 57:26 Error SyntaxError: Default value is allowed only for optional parameters */
+/* @@? 37:5 Error SyntaxError: Variable 'x' has already been declared. */
+/* @@? 38:5 Error SyntaxError: Variable 'x' has already been declared. */
+/* @@? 39:5 Error SyntaxError: Variable 'x' has already been declared. */
+/* @@? 16:40 Error SyntaxError: Cannot find type 'bool'. */
+/* @@? 18:14 Error SyntaxError: Variable 'x' is accessed before it's initialization. */
+/* @@? 38:9 Error TypeError: This expression is not constructible. */
+/* @@? 39:9 Error TypeError: This expression is not constructible. */
+/* @@? 55:29 Error TypeError: Unresolved reference void */
+/* @@? 17:20 Error TypeError: Unresolved reference b */
+/* @@? 18:13 Error TypeError: Circular dependency detected for identifier: x */
+/* @@? 18:13 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 19:25 Error Warning: Type parameter is erased from type 'A' when used in instanceof expression. */
+/* @@? 19:12 Error TypeError: Bad operand type, the types of the operands must be same type. */
+/* @@? 24:10 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 27:5 Error TypeError: Invalid left-hand side of assignment expression */
+/* @@? 30:5 Error TypeError: Invalid left-hand side of assignment expression */
+/* @@? 55:10 Error TypeError: Only abstract or native methods can't have body. */
+/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,3 +27,5 @@ function main() {
 
 /* @@@ label1 Error TypeError: type A has no property named K  */
 /* @@@ label2 Error TypeError: Class property 'i' needs to be initialized for Required<A>.  */
+/* @@? 24:65 Error TypeError: Property 'K' does not exist on type 'A' */
+/* @@? 25:57 Error TypeError: An object literal cannot have multiple properties with the same name. */

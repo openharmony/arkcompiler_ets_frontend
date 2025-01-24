@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,6 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
-#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -196,14 +195,25 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
     }
 
     for (auto *propExpr : objExpr->Properties()) {
-        ASSERT(propExpr->IsProperty());
+        //  Skip possibly invalid properties:
+        if (!propExpr->IsProperty()) {
+            ASSERT(checker->IsAnyError());
+            continue;
+        }
+
         auto *prop = propExpr->AsProperty();
         ir::Expression *key = prop->Key();
         ir::Expression *value = prop->Value();
 
-        ir::Identifier *keyIdent = key->IsStringLiteral()
-                                       ? checker->AllocNode<ir::Identifier>(key->AsStringLiteral()->Str(), allocator)
-                                       : key->AsIdentifier();
+        //  Processing of possible invalid property key
+        ir::Identifier *keyIdent;
+        if (key->IsStringLiteral()) {
+            keyIdent = checker->AllocNode<ir::Identifier>(key->AsStringLiteral()->Str(), allocator);
+        } else if (key->IsIdentifier()) {
+            keyIdent = key->AsIdentifier();
+        } else {
+            continue;
+        }
 
         if (isAnonymous && CheckReadonlyAndUpdateCtorArgs(keyIdent, value, ctorArgumentsMap)) {
             continue;
@@ -288,11 +298,13 @@ bool ObjectLiteralLowering::PerformForModule(public_lib::Context *ctx, parser::P
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [ctx](ir::AstNode *ast) -> ir::AstNode * {
-            // Skip processing dynamic objects
-            if (ast->IsObjectExpression() && !ast->AsObjectExpression()->TsType()->AsETSObjectType()->HasObjectFlag(
-                                                 // CC-OFFNXT(G.FMT.14-CPP,G.FMT.06-CPP) project code style
-                                                 checker::ETSObjectFlags::DYNAMIC)) {
-                return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
+            // Skip processing invalid and dynamic objects
+            if (ast->IsObjectExpression()) {
+                auto *exprType = ast->AsObjectExpression()->TsType();
+                if (exprType != nullptr && exprType->IsETSObjectType() &&
+                    !exprType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {
+                    return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
+                }
             }
             return ast;
         },

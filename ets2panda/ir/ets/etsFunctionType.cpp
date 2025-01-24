@@ -19,8 +19,6 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void ETSFunctionType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -135,40 +133,37 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
     auto *const returnTypeClone =
         signature_.ReturnType() != nullptr ? signature_.ReturnType()->Clone(allocator, nullptr)->AsTypeNode() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSFunctionType>(
-            FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_, allocator);
-        clone != nullptr) {
-        if (typeParamsClone != nullptr) {
-            typeParamsClone->SetParent(clone);
-        }
+    auto *const clone = allocator->New<ETSFunctionType>(
+        FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_, allocator);
 
-        if (returnTypeClone != nullptr) {
-            returnTypeClone->SetParent(clone);
-        }
-
-        for (auto *param : clone->Params()) {
-            param->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-
-        // Reset scope for clone
-        // Using old scopes with clone may lead to incorrect ast-structure
-        clone->SetScope(nullptr);
-
-        return clone;
+    if (typeParamsClone != nullptr) {
+        typeParamsClone->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (returnTypeClone != nullptr) {
+        returnTypeClone->SetParent(clone);
+    }
+
+    for (auto *param : clone->Params()) {
+        param->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    // Reset scope for clone
+    // Using old scopes with clone may lead to incorrect ast-structure
+    clone->SetScope(nullptr);
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

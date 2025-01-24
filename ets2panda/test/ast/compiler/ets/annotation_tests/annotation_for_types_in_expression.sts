@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,3 +23,4 @@ new C1<Int>() instanceof @Anno @Anno() C1
 
 /* @@? 18:28 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
 /* @@? 22:40 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
+/* @@? 21:17 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element. */

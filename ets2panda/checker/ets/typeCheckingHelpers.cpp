@@ -18,11 +18,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsPartialTypeParameter.h"
-#include "checker/types/typeFlag.h"
-#include "ir/astNode.h"
 #include "ir/base/catchClause.h"
-#include "ir/expression.h"
-#include "ir/typeNode.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
@@ -40,11 +36,6 @@
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ets/etsUnionType.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "utils/arena_containers.h"
-#include "varbinder/variable.h"
-#include "varbinder/scope.h"
 #include "varbinder/declaration.h"
 #include "parser/program/program.h"
 #include "checker/ETSchecker.h"
@@ -434,21 +425,21 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
             auto *methodDef = iter->AsMethodDefinition();
             ASSERT(methodDef->TsType());
             Context().SetContainingSignature(methodDef->Function()->Signature());
-        }
-
-        if (iter->IsClassDefinition()) {
+        } else if (iter->IsClassDefinition()) {
             auto *classDef = iter->AsClassDefinition();
-            ETSObjectType *containingClass {};
+            Type *containingClass {};
 
             if (classDef->TsType() == nullptr) {
                 containingClass = BuildBasicClassProperties(classDef);
-                ResolveDeclaredMembersOfObject(containingClass);
+                ResolveDeclaredMembersOfObject(containingClass->AsETSObjectType());
             } else {
                 containingClass = classDef->TsType()->AsETSObjectType();
             }
 
             ASSERT(classDef->TsType());
-            Context().SetContainingClass(containingClass);
+            if (!containingClass->IsTypeError()) {
+                Context().SetContainingClass(containingClass->AsETSObjectType());
+            }
         }
 
         iter = iter->Parent();
@@ -457,43 +448,58 @@ void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
 
 Type *ETSChecker::GetTypeFromVariableDeclaration(varbinder::Variable *const var)
 {
+    Type *variableType = nullptr;
+
     switch (var->Declaration()->Type()) {
         case varbinder::DeclType::CLASS: {
             auto *classDef = var->Declaration()->Node()->AsClassDefinition();
             BuildBasicClassProperties(classDef);
-            return classDef->TsType();
+            variableType = classDef->TsType();
+            break;
         }
+
         case varbinder::DeclType::ENUM_LITERAL:
+            [[fallthrough]];
         case varbinder::DeclType::CONST:
+            [[fallthrough]];
         case varbinder::DeclType::READONLY:
+            [[fallthrough]];
         case varbinder::DeclType::LET:
+            [[fallthrough]];
         case varbinder::DeclType::VAR: {
             auto *declNode = var->Declaration()->Node();
             if (var->Declaration()->Node()->IsIdentifier()) {
                 declNode = declNode->Parent();
             }
-            return declNode->Check(this);
+            variableType = declNode->Check(this);
+            break;
         }
+
         case varbinder::DeclType::FUNC:
-        case varbinder::DeclType::IMPORT: {
-            return var->Declaration()->Node()->Check(this);
-        }
-        case varbinder::DeclType::TYPE_ALIAS: {
-            return GetTypeFromTypeAliasReference(var);
-        }
-        case varbinder::DeclType::INTERFACE: {
-            return BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
-        }
-        case varbinder::DeclType::ANNOTATIONUSAGE: {
-            return GlobalTypeError();
-        }
-        case varbinder::DeclType::ANNOTATIONDECL: {
-            return GlobalTypeError();
-        }
-        default: {
-            UNREACHABLE();
-        }
+            [[fallthrough]];
+        case varbinder::DeclType::IMPORT:
+            variableType = var->Declaration()->Node()->Check(this);
+            break;
+
+        case varbinder::DeclType::TYPE_ALIAS:
+            variableType = GetTypeFromTypeAliasReference(var);
+            break;
+
+        case varbinder::DeclType::INTERFACE:
+            variableType = BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+            break;
+
+        case varbinder::DeclType::ANNOTATIONUSAGE:
+            [[fallthrough]];
+        case varbinder::DeclType::ANNOTATIONDECL:
+            break;
+
+        default:
+            ASSERT(IsAnyError());
+            break;
     }
+
+    return variableType != nullptr ? variableType : GlobalTypeError();
 }
 
 Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
@@ -539,6 +545,11 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
     if (IsVariableStatic(prop)) {
         return nullptr;
     }
+
+    if (prop->TsType() != nullptr && prop->TsType()->IsTypeError()) {
+        return nullptr;
+    }
+
     if (IsVariableGetterSetter(prop)) {
         auto *method = prop->TsType()->AsETSFunctionType();
         if (!method->HasTypeFlag(checker::TypeFlag::GETTER)) {
@@ -949,7 +960,7 @@ void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::C
     }
 }
 
-void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
+void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util::StringView const &baseName,
                                                    ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap)
 {
     for (auto *it : st->Properties()) {
@@ -957,11 +968,11 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::
         auto result = fieldMap.find(param->Id()->Name());
         if (result == fieldMap.end()) {
             LogTypeError({"The parameter '", param->Id()->Name(),
-                          "' does not match any declared property in the annotation '", annoDecl->GetBaseName()->Name(),
-                          "'."},
+                          "' does not match any declared property in the annotation '", baseName, "'."},
                          param->Start());
             continue;
         }
+
         auto clone = result->second->TypeAnnotation()->Clone(Allocator(), param);
         param->SetTypeAnnotation(clone);
         ScopeContext scopeCtx(this, st->Scope());

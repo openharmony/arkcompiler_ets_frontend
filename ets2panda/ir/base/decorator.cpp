@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +15,6 @@
 
 #include "decorator.h"
 
-#include "es2panda.h"
-#include "ir/expression.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -71,17 +67,14 @@ checker::VerifiedType Decorator::Check(checker::ETSChecker *checker)
 Decorator *Decorator::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const expr = expr_ != nullptr ? expr_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const clone = allocator->New<Decorator>(expr);
 
-    if (auto *const clone = allocator->New<Decorator>(expr); clone != nullptr) {
-        if (expr != nullptr) {
-            expr->SetParent(clone);
-        }
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    if (expr != nullptr) {
+        expr->SetParent(clone);
     }
-
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    return clone;
 }
 }  // namespace ark::es2panda::ir

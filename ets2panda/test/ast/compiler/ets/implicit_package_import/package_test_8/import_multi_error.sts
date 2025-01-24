@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,3 +22,7 @@ import {myvar2} from "./package_module"
 
 /* @@? 20:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
 /* @@? 21:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
+/* @@? 20:7 Error SyntaxError: Variable 'myvar' has already been declared. */
+/* @@? 21:40 Error SyntaxError: Variable 'myvar2' has already been declared. */
+/* @@? 20:21 Error SyntaxError: Cannot find import: ./package_module  */
+/* @@? 21:22 Error SyntaxError: Cannot find import: ./package_module  */

@@ -18,3 +18,4 @@ try {
 } catch (e: number /* @@ label1 */{}
 
 /* @@@ label1 Error SyntaxError: Unexpected token '{', expected: ')'. */
+/* @@? 18:10 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */

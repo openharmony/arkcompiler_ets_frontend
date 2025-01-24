@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/expression.h"
 
 namespace ark::es2panda::ir {
 void ThrowStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -72,15 +69,12 @@ checker::VerifiedType ThrowStatement::Check([[maybe_unused]] checker::ETSChecker
 ThrowStatement *ThrowStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const expression = argument_->Clone(allocator, nullptr)->AsExpression();
-
-    if (auto *const clone = allocator->New<ThrowStatement>(expression); clone != nullptr) {
-        expression->SetParent(clone);
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        return clone;
+    auto *const clone = allocator->New<ThrowStatement>(expression);
+    expression->SetParent(clone);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(range_);
+    return clone;
 }
-
 }  // namespace ark::es2panda::ir

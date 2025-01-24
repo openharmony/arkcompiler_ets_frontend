@@ -43,3 +43,6 @@ function main(){
 /* @@@ label3 Error TypeError: Type '"some str"' is not compatible with type 'double' at property 'field1'  */
 /* @@@ label4 Error TypeError: type C2 has no parameterless constructor  */
 /* @@@ label5 Error TypeError: Signature constructor(): void is not visible here.  */
+/* @@? 34:43 Error TypeError: Property 'field3' does not exist on type 'gensym%%_1' */
+/* @@? 35:52 Error TypeError: Type 'int' cannot be assigned to type 'String' */
+/* @@? 36:40 Error TypeError: Type '"some str"' cannot be assigned to type 'double' */

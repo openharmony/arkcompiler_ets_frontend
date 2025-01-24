@@ -16,7 +16,6 @@
 #include "etsStringLiteralType.h"
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
 void ETSStringLiteralType::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
@@ -74,19 +73,21 @@ checker::Type *ETSStringLiteralType::GetType([[maybe_unused]] checker::ETSChecke
 
 ETSStringLiteralType *ETSStringLiteralType::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
-    if (auto *const clone = allocator->New<ir::ETSStringLiteralType>(value_, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-        return clone;
+    auto *const clone = allocator->New<ir::ETSStringLiteralType>(value_, allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-    return nullptr;
+
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

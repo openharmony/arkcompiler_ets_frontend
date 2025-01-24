@@ -19,3 +19,4 @@ let a = 2;
 
 /* @@? 16:10 Error SyntaxError: Unexpected token 'as'. */
 /* @@? 16:10 Error SyntaxError: Unexpected token 'as'. */
+/* @@? 16:13 Error SyntaxError: Cannot find type 'A'. */

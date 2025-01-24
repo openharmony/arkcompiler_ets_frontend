@@ -20,9 +20,8 @@ function main(): void {
     foo((x(() => {
 }
 
-
-/* @@@ label Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label */
+/* @@? 28:1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 28:1 Error SyntaxError: Unexpected token, expected: ')'. */
+/* @@? 28:1 Error SyntaxError: Unexpected token, expected ',' or ')'. */
+/* @@? 28:1 Error SyntaxError: Unexpected token 'eos', expected: '}'. */
+/* @@? 20:10 Error TypeError: Unresolved reference x */

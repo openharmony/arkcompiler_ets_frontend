@@ -17,7 +17,8 @@ let x = "literal str" as const
 
 /* @@? 16:26 Error SyntaxError: Invalid Type */
 /* @@? 16:26 Error SyntaxError: Unexpected token 'const'. */
-/* @@? 24:1 Error SyntaxError: Identifier expected, got 'eos'. */
-/* @@? 24:1 Error SyntaxError: Variable must be initialized or it's type must be declared */
-/* @@? 24:1 Error SyntaxError: Missing initializer in const declaration */
-/* @@? 24:1 Error SyntaxError: Variable must be initialized or it's type must be declared */
+/* @@? 25:1 Error SyntaxError: Identifier expected, got 'eos'. */
+/* @@? 25:1 Error SyntaxError: Variable must be initialized or it's type must be declared */
+/* @@? 25:1 Error SyntaxError: Missing initializer in const declaration */
+/* @@? 25:1 Error SyntaxError: Variable must be initialized or it's type must be declared */
+/* @@? 1:1 Error SyntaxError: Missing initializer in const declaration */

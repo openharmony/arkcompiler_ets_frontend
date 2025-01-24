@@ -170,16 +170,16 @@ public:
 
     // Object
     void CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &properties);
-    ETSObjectType *BuildBasicClassProperties(ir::ClassDefinition *classDef);
+    Type *BuildBasicClassProperties(ir::ClassDefinition *classDef);
     ETSObjectType *BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType);
-    ETSObjectType *BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
+    Type *BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
     ETSObjectType *GetSuperType(ETSObjectType *type);
     ArenaVector<ETSObjectType *> GetInterfaces(ETSObjectType *type);
     void GetInterfacesOfClass(ETSObjectType *type);
     void GetInterfacesOfInterface(ETSObjectType *type);
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
-    void ResolveDeclaredMembersOfObject(const ETSObjectType *type);
+    void ResolveDeclaredMembersOfObject(const Type *type);
     std::optional<int32_t> GetTupleElementAccessValue(const Type *type, const lexer::SourcePosition &pos);
     bool ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
     bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr);
@@ -387,7 +387,7 @@ public:
     {
         return Allocator()->New<Substitution>(*src);
     }
-    static void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
+    void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeParams, ETSReadonlyType *paramType,
@@ -467,7 +467,7 @@ public:
     void BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig = false);
 
     checker::ETSFunctionType *BuildNamedFunctionType(ir::ScriptFunction *func);
-    checker::ETSFunctionType *BuildMethodSignature(ir::MethodDefinition *method);
+    checker::Type *BuildMethodSignature(ir::MethodDefinition *method);
 
     Signature *CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *target, ETSFunctionType *source);
     static Signature *GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef);
@@ -527,7 +527,6 @@ public:
     Type *GetReferencedTypeFromBase(Type *baseType, ir::Expression *name);
     Type *GetReferencedTypeBase(ir::Expression *name);
     Type *ResolveReferencedType(varbinder::LocalVariable *refVar, const ir::Expression *name);
-    bool HandleDynamicImport(ir::Expression *name);
     Type *GetTypeFromInterfaceReference(varbinder::Variable *var);
     Type *GetTypeFromTypeAliasReference(varbinder::Variable *var);
     Type *GetTypeFromClassReference(varbinder::Variable *var);
@@ -552,7 +551,7 @@ public:
     bool CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir::Expression *expected);
     void CheckAnnotationPropertyType(ir::ClassProperty *property);
     void CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl);
-    void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, ir::AnnotationDeclaration *annoDecl,
+    void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util::StringView const &baseName,
                                            ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap);
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     bool TestUnionType(Type *type, TypeFlag test);
@@ -668,7 +667,7 @@ public:
                                                              varbinder::ClassScope *scope, bool isSetter,
                                                              ETSChecker *checker);
     void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
-    ETSObjectType *GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident);
+    Type *GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident);
     void ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
                                                   checker::ETSObjectType *lastObjectType, ir::Identifier *ident);
     bool CheckValidUnionEqual(checker::Type *const leftType, checker::Type *const rightType);

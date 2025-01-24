@@ -208,6 +208,8 @@ public:
     // NOTE: required only for evaluate.
     void Initialize(varbinder::VarBinder *varbinder);
 
+    [[nodiscard]] bool IsAnyError();
+
 protected:
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);

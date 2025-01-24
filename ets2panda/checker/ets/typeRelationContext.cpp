@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,14 +14,6 @@
  */
 
 #include "typeRelationContext.h"
-#include "boxingConverter.h"
-#include "macros.h"
-#include "varbinder/scope.h"
-#include "varbinder/variable.h"
-#include "varbinder/declaration.h"
-#include "checker/types/ets/etsUnionType.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/ts/tsTypeParameter.h"
 
 namespace ark::es2panda::checker {
 bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node,
@@ -102,7 +94,12 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
 
     while (typeArgTypes.size() < type->TypeArguments().size()) {
         auto *defaultType = type->TypeArguments().at(typeArgTypes.size())->AsETSTypeParameter()->GetDefaultType();
-        typeArgTypes.push_back(defaultType);
+        if (defaultType != nullptr && !defaultType->IsTypeError()) {
+            typeArgTypes.emplace_back(defaultType);
+        } else {
+            ASSERT(checker_->IsAnyError());
+            typeArgTypes.emplace_back(checker_->GlobalETSObjectType());
+        }
     }
 
     auto pos = (typeArgs == nullptr) ? lexer::SourcePosition() : typeArgs->Range().start;
@@ -164,7 +161,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
         if (!typeParams[idx]->IsETSTypeParameter()) {
             continue;
         }
-        ETSChecker::EmplaceSubstituted(substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
+        checker_->EmplaceSubstituted(substitution, typeParams[idx]->AsETSTypeParameter(), typeArgTypes[idx]);
     }
 
     ConstraintCheckScope ctScope(checker_);

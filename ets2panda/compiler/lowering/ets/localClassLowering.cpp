@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,8 @@
  */
 
 #include "localClassLowering.h"
+
 #include "checker/ETSchecker.h"
-#include "varbinder/ETSBinder.h"
 #include "../util.h"
 
 namespace ark::es2panda::compiler {
@@ -195,7 +195,8 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
     };
 
     for (auto *it : classDef->Body()) {
-        if (it->IsMethodDefinition() && !it->AsMethodDefinition()->IsConstructor()) {
+        if (it->IsMethodDefinition() && !it->AsMethodDefinition()->TsType()->IsTypeError() &&
+            !it->AsMethodDefinition()->IsConstructor()) {
             LOG(DEBUG, ES2PANDA) << "  - Rebinding variable rerferences in: "
                                  << it->AsMethodDefinition()->Id()->Name().Mutf8().c_str();
             it->AsMethodDefinition()->Function()->Body()->IterateRecursively(remapCapturedVariables);
@@ -237,7 +238,8 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
         ctx->allocator->Adapter()};
 
     program->Ast()->IterateRecursivelyPostorder([&](ir::AstNode *ast) {
-        if (ast->IsClassDefinition() && ast->AsClassDefinition()->IsLocal()) {
+        if (ast->IsClassDefinition() && ast->AsClassDefinition()->IsLocal() &&
+            !ast->AsClassDefinition()->TsType()->IsTypeError()) {
             HandleLocalClass(ctx, capturedVarsMap, ast->AsClassDefinition());
         }
     });
@@ -265,6 +267,9 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
         if (ast->IsETSNewClassInstanceExpression()) {
             auto *newExpr = ast->AsETSNewClassInstanceExpression();
             checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
+            if (!calleeType->IsETSObjectType()) {
+                return;
+            }
             auto *calleeObj = calleeType->AsETSObjectType();
             if (!calleeObj->GetDeclNode()->IsClassDefinition()) {
                 return;

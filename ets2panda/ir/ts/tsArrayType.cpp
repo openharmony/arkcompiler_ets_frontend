@@ -17,11 +17,8 @@
 
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
-#include "macros.h"
 
 namespace ark::es2panda::ir {
 void TSArrayType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
@@ -107,30 +104,27 @@ checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator, nullptr) : nullptr;
+    auto *const clone = allocator->New<TSArrayType>(elementTypeClone, allocator);
 
-    if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone, allocator); clone != nullptr) {
-        clone->AddModifier(flags_);
+    clone->AddModifier(flags_);
 
-        if (elementTypeClone != nullptr) {
-            elementTypeClone->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-
-        return clone;
+    if (elementTypeClone != nullptr) {
+        elementTypeClone->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
-}
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
 
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(range_);
+    return clone;
+}
 }  // namespace ark::es2panda::ir

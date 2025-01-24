@@ -927,9 +927,6 @@ bool IsStringEnum(const ir::Expression *expr)
     if (expr == nullptr) {
         return false;
     }
-    if (expr->TsType()->IsTypeError()) {
-        return false;
-    }
 
     auto type = expr->TsType();
     if (type == nullptr) {
@@ -942,9 +939,6 @@ bool IsStringEnum(const ir::Expression *expr)
 bool IsIntEnum(const ir::Expression *expr)
 {
     if (expr == nullptr) {
-        return false;
-    }
-    if (expr->TsType()->IsTypeError()) {
         return false;
     }
 

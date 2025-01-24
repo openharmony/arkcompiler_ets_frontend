@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void AnnotationUsage::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -76,26 +74,24 @@ void AnnotationUsage::Dump(ir::SrcDumper *dumper) const
 AnnotationUsage *AnnotationUsage::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const expr = expr_ != nullptr ? expr_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const clone = allocator->New<AnnotationUsage>(expr, allocator);
 
-    if (auto *const clone = allocator->New<AnnotationUsage>(expr, allocator); clone != nullptr) {
-        if (expr != nullptr) {
-            expr->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        for (auto *property : properties_) {
-            clone->AddProperty(property->Clone(allocator, clone));
-        }
-
-        clone->SetRange(range_);
-        clone->SetScope(propertiesScope_);
-        return clone;
+    if (expr != nullptr) {
+        expr->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    for (auto *property : properties_) {
+        clone->AddProperty(property->Clone(allocator, clone));
+    }
+
+    clone->SetRange(range_);
+    clone->SetScope(propertiesScope_);
+
+    return clone;
 }
 
 void AnnotationUsage::Compile(compiler::PandaGen *pg) const

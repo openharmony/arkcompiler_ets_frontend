@@ -18,15 +18,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
-#include "checker/ets/typeRelationContext.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/variableDeclarator.h"
 
 namespace ark::es2panda::ir {
 void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -101,21 +93,22 @@ ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &
 
 ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<ArrowFunctionExpression>(*this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-        if (!Annotations().empty()) {
-            ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
-            for (auto *annotationUsage : Annotations()) {
-                annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
-            }
-            clone->SetAnnotations(std::move(annotationUsages));
-        }
-        return clone;
+    auto *const clone = allocator->New<ArrowFunctionExpression>(*this, allocator);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (!Annotations().empty()) {
+        ArenaVector<AnnotationUsage *> annotationUsages {allocator->Adapter()};
+        for (auto *annotationUsage : Annotations()) {
+            annotationUsages.push_back(annotationUsage->Clone(allocator, clone)->AsAnnotationUsage());
+        }
+        clone->SetAnnotations(std::move(annotationUsages));
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 
 ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType)

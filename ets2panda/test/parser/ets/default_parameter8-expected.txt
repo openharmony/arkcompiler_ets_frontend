@@ -1446,12 +1446,12 @@
                                   "type": "ThisExpression",
                                   "loc": {
                                     "start": {
-                                      "line": 1,
-                                      "column": 1
+                                      "line": 30,
+                                      "column": 28
                                     },
                                     "end": {
-                                      "line": 1,
-                                      "column": 1
+                                      "line": 30,
+                                      "column": 32
                                     }
                                   }
                                 },

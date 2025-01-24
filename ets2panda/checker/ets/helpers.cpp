@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include "util/helpers.h"
-
 #include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ETSchecker.h"
@@ -28,7 +26,7 @@ namespace ark::es2panda::checker {
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name,
                                                              const varbinder::ResolveBindingOptions options)
 {
-    return Scope()->FindInFunctionScope(name, options).variable;
+    return Scope() != nullptr ? Scope()->FindInFunctionScope(name, options).variable : nullptr;
 }
 
 std::pair<varbinder::Variable *, const ETSObjectType *> ETSChecker::FindVariableInClassOrEnclosing(
@@ -244,9 +242,6 @@ void ETSChecker::SaveCapturedVariable(varbinder::Variable *const var, ir::Identi
 
 Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
 {
-    if (ident->IsErrorPlaceHolder()) {
-        return GlobalTypeError();
-    }
     if (ident->Variable() != nullptr) {
         auto *const resolved = ident->Variable();
         SaveCapturedVariable(resolved, ident);
@@ -268,10 +263,10 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
 
     if (resolved == nullptr) {
         resolved = ExtraCheckForResolvedError(ident);
-        ident->SetVariable(resolved);
         if (resolved == nullptr) {
             return GlobalTypeError();
         }
+        ident->SetVariable(resolved);
         return GetTypeOfVariable(resolved);
     }
 
@@ -581,7 +576,8 @@ checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bi
         if (init != nullptr && bindingVar->TsType()->IsETSPrimitiveType()) {
             init->SetBoxingUnboxingFlags(GetBoxingFlag(bindingVar->TsType()));
         }
-        bindingVar->SetTsType(CreateETSUnionType({GlobalETSUndefinedType(), bindingVar->TsType()}));
+        auto *variableType = bindingVar->TsType() != nullptr ? bindingVar->TsType() : GlobalTypeError();
+        bindingVar->SetTsType(CreateETSUnionType({GlobalETSUndefinedType(), variableType}));
     }
     return bindingVar->TsType();
 }
@@ -611,7 +607,9 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
     if (typeAnnotation == nullptr) {
         if (init->IsArrayExpression()) {
             annotationType = CheckArrayElements(init->AsArrayExpression());
-            bindingVar->SetTsType(annotationType);
+            if (bindingVar != nullptr) {
+                bindingVar->SetTsType(annotationType);
+            }
         }
 
         if (init->IsObjectExpression()) {
@@ -655,6 +653,7 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
 
     return true;
 }
+
 void ETSChecker::CheckEnumType(ir::Expression *init, checker::Type *initType, const util::StringView &varName)
 {
     if (initType->IsETSObjectType() && initType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::ENUM) &&
@@ -744,36 +743,48 @@ static checker::Type *CreateAnnotationType(ETSChecker *checker, checker::Type *i
     return annotationType;
 }
 
-// CC-OFFNXT(huge_method, G.FUN.01-CPP) solid logic
+// CC-OFFNXT(huge_method,huge_cca_cyclomatic_complexity,huge_cyclomatic_complexity,G.FUN.01-CPP) solid logic
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
 {
     varbinder::Variable *const bindingVar = ident->Variable();
     checker::Type *annotationType = nullptr;
-    if (typeAnnotation != nullptr) {
-        annotationType = typeAnnotation->GetType(this);
-        bindingVar->SetTsType(annotationType);
+
+    // We have to process possible parser errors when variable was not created and bind:
+    if (bindingVar != nullptr) {
+        if (typeAnnotation != nullptr) {
+            annotationType = typeAnnotation->GetType(this);
+            bindingVar->SetTsType(annotationType);
+        }
+
+        if (init == nullptr) {
+            return FixOptionalVariableType(bindingVar, flags, init);
+        }
+        CheckAssignForDeclare(ident, typeAnnotation, init, flags, this);
+    } else {
+        ASSERT(IsAnyError());
     }
 
-    if (init == nullptr) {
-        return FixOptionalVariableType(bindingVar, flags, init);
-    }
-    CheckAssignForDeclare(ident, typeAnnotation, init, flags, this);
+    checker::Type *initType = nullptr;
+    if (init != nullptr) {
+        TypeStackElement typeStackElement(this, init, {"Circular dependency detected for identifier: ", ident->Name()},
+                                          init->Start());
+        if (typeStackElement.HasTypeError()) {
+            return init->SetTsType(GlobalTypeError());
+        }
 
-    TypeStackElement typeStackElement(this, init, {"Circular dependency detected for identifier: ", ident->Name()},
-                                      init->Start());
-    if (typeStackElement.HasTypeError()) {
-        return GlobalTypeError();
-    }
-
-    if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
-        return GlobalTypeError();
+        if (!CheckInit(ident, typeAnnotation, init, annotationType, bindingVar)) {
+            init->SetTsType(GlobalTypeError());
+        } else {
+            initType = init->Check(this);
+        }
+    } else {
+        ASSERT(IsAnyError());
     }
 
     // initType should not be nullptr. If an error occurs during check, set it to GlobalTypeError().
-    checker::Type *initType = init->Check(this);
-    if (initType == nullptr || initType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
-        return GlobalTypeError();
+    if (bindingVar == nullptr || initType == nullptr || initType->IsTypeError()) {
+        return annotationType != nullptr ? annotationType : GlobalTypeError();
     }
 
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
@@ -1032,6 +1043,9 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
     auto *smartType = GetSmartCast(testCondition_.variable);
     if (smartType == nullptr) {
         smartType = testCondition_.variable->TsType();
+        if (smartType == nullptr) {
+            return std::nullopt;
+        }
     }
 
     auto *const checker = parent_->AsETSChecker();
@@ -1339,8 +1353,7 @@ static parser::Program *SelectEntryOrExternalProgram(varbinder::ETSBinder *etsBi
     }
 
     auto programList = etsBinder->GetProgramList(importPath);
-    ASSERT(!programList.empty());
-    return programList.front();
+    return !programList.empty() ? programList.front() : nullptr;
 }
 
 void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,
@@ -1393,27 +1406,20 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
         return name->Check(this);
     }
 
-    ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() != nullptr);
+    ASSERT(name->IsIdentifier());
 
-    if (HandleDynamicImport(name)) {
-        return name->TsType();
+    auto *const var = name->AsIdentifier()->Variable();
+    if (var == nullptr) {
+        ASSERT(IsAnyError());
+        return name->SetTsType(GlobalTypeError());
     }
 
-    auto *refVar = name->AsIdentifier()->Variable()->AsLocalVariable();
-    auto *tsType = ResolveReferencedType(refVar, name);
-
-    name->SetTsType(tsType);
-    return tsType;
-}
-
-bool ETSChecker::HandleDynamicImport(ir::Expression *name)
-{
-    auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(name->AsIdentifier()->Variable());
+    auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(var);
     if (importData != nullptr && importData->import->IsPureDynamic()) {
-        name->SetTsType(GlobalBuiltinDynamicType(importData->import->Language()));
-        return true;
+        return name->SetTsType(GlobalBuiltinDynamicType(importData->import->Language()));
     }
-    return false;
+
+    return name->SetTsType(ResolveReferencedType(var->AsLocalVariable(), name));
 }
 
 Type *ETSChecker::ResolveReferencedType(varbinder::LocalVariable *refVar, const ir::Expression *name)
@@ -1747,6 +1753,7 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
         case TypeFlag::ETS_OBJECT: {
             VarBinder()->ThrowError(caseType->AsETSObjectType()->Variable()->Declaration()->Node()->Start(),
                                     "not implemented");
+            return "error";
         }
         default: {
             UNREACHABLE();
@@ -2559,16 +2566,13 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
         var = methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
     }
     var->AddFlag(varbinder::VariableFlags::METHOD);
+    getter->Function()->Id()->SetVariable(var);
 
     SetupGetterSetterFlags(originalProp, classType, getter, setter, HasStatus(CheckerStatus::IN_EXTERNAL));
 
-    if (setter != nullptr) {
+    if (setter != nullptr && !setter->TsType()->IsTypeError()) {
         getter->Variable()->TsType()->AsETSFunctionType()->AddCallSignature(
             setter->TsType()->AsETSFunctionType()->CallSignatures()[0]);
-    }
-
-    getter->Function()->Id()->SetVariable(var);
-    if (setter != nullptr) {
         getter->AddOverload(setter);
     }
 }
@@ -2660,7 +2664,10 @@ void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclarati
             continue;
         }
         auto *reExportType = GetImportSpecifierObjectType(item->GetETSImportDeclarations(), ident);
-        lastObjectType->AddReExports(reExportType);
+        if (reExportType->IsTypeError()) {
+            continue;
+        }
+        lastObjectType->AddReExports(reExportType->AsETSObjectType());
         for (auto node : importDecl->Specifiers()) {
             if (node->IsImportSpecifier()) {
                 auto specifier = node->AsImportSpecifier();
@@ -2670,11 +2677,14 @@ void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclarati
     }
 }
 
-ETSObjectType *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident)
+Type *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident)
 {
     auto importPath = importDecl->ResolvedSource()->Str();
     parser::Program *program =
         SelectEntryOrExternalProgram(static_cast<varbinder::ETSBinder *>(VarBinder()), importPath);
+    if (program == nullptr) {
+        return GlobalTypeError();
+    }
 
     auto const moduleName = program->ModuleName();
     auto const internalName =

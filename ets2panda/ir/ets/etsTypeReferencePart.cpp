@@ -20,8 +20,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
@@ -180,28 +178,25 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
     auto *const typeParamsClone =
         typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr)->AsTSTypeParameterInstantiation() : nullptr;
     auto *const prevClone = prev_ != nullptr ? prev_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
-    if (auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone, allocator);
-        clone != nullptr) {
-        if (nameClone != nullptr) {
-            nameClone->SetParent(clone);
-        }
+    auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone, allocator);
 
-        if (typeParamsClone != nullptr) {
-            typeParamsClone->SetParent(clone);
-        }
-
-        if (prevClone != nullptr) {
-            prevClone->SetParent(clone);
-        }
-
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    if (nameClone != nullptr) {
+        nameClone->SetParent(clone);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    if (typeParamsClone != nullptr) {
+        typeParamsClone->SetParent(clone);
+    }
+
+    if (prevClone != nullptr) {
+        prevClone->SetParent(clone);
+    }
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

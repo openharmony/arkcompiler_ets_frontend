@@ -16,7 +16,7 @@
 export class MathSpectralNorm {
 
   private static spectralnorm(n: int): double {
-    for (i = 0; i < n/* @@ label */: i++/* @@ label1 */) {
+    for (i = 0; i < n: i++) {
       vbv += u[i] * v[i];
       vv  += v[i] * v[i];
 
@@ -24,10 +24,30 @@ export class MathSpectralNorm {
     return sqrt(vbv / vv);
   }
 }
-/* @@@ label Error SyntaxError: Unexpected token ':', expected: ';'.  */
-/* @@@ label Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label Error SyntaxError: Unexpected token ':', expected: ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ')'.  */
+
+/* @@? 19:22 Error SyntaxError: Unexpected token ':', expected: ';'. */
+/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:22 Error SyntaxError: Unexpected token ':', expected: ')'. */
+/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:22 Error SyntaxError: Unexpected token ':'. */
+/* @@? 19:27 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:27 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:27 Error SyntaxError: Unexpected token ')'. */
+/* @@? 19:10 Error TypeError: Unresolved reference i */
+/* @@? 19:17 Error TypeError: Unresolved reference i */
+/* @@? 19:17 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 19:24 Error TypeError: Unresolved reference i */
+/* @@? 20:7 Error TypeError: Unresolved reference vbv */
+/* @@? 20:14 Error TypeError: Unresolved reference u */
+/* @@? 20:14 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 20:21 Error TypeError: Unresolved reference v */
+/* @@? 20:21 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 21:7 Error TypeError: Unresolved reference vv */
+/* @@? 21:14 Error TypeError: Unresolved reference v */
+/* @@? 21:14 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 21:21 Error TypeError: Unresolved reference v */
+/* @@? 21:21 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 24:17 Error TypeError: Unresolved reference vbv */
+/* @@? 24:23 Error TypeError: Unresolved reference vv */

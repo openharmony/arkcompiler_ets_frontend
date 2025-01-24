@@ -14,31 +14,8 @@
  */
 
 #include "unionLowering.h"
-#include "varbinder/variableFlags.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
-#include "checker/ets/conversion.h"
-#include "checker/ets/boxingConverter.h"
-#include "checker/ets/unboxingConverter.h"
-#include "compiler/lowering/util.h"
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/astNode.h"
-#include "ir/expression.h"
-#include "ir/opaqueTypeNode.h"
-#include "ir/expressions/literals/nullLiteral.h"
-#include "ir/expressions/literals/undefinedLiteral.h"
-#include "ir/expressions/binaryExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/statements/variableDeclaration.h"
-#include "ir/ts/tsAsExpression.h"
-#include "type_helper.h"
-#include "public/public.h"
-#include "util/options.h"
 
 namespace ark::es2panda::compiler {
 
@@ -127,7 +104,14 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
     if (expr->PropVar() != nullptr) {
         return;
     }
-    [[maybe_unused]] auto parent = expr->Parent();
+
+    auto const *const parent = expr->Parent();
+    if (parent->IsExpression() &&
+        (parent->AsExpression()->TsType() == nullptr || parent->AsExpression()->TsType()->IsTypeError())) {
+        ASSERT(checker->IsAnyError());
+        return;
+    }
+
     ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
              parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)));
     expr->SetPropVar(
@@ -179,8 +163,13 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *check
 
         return expr;
     }
+
     auto *const unboxableUnionType = sourceType != nullptr ? sourceType : unionType->FindUnboxableType();
     auto *const unboxedUnionType = checker->MaybeUnboxInRelation(unboxableUnionType);
+    if (unboxableUnionType == nullptr || !unboxableUnionType->IsETSObjectType() || unboxedUnionType == nullptr) {
+        return expr;
+    }
+
     auto *const node =
         UnionCastToPrimitive(checker, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr());
     node->SetParent(expr->Parent());
@@ -195,7 +184,9 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [checker](ir::AstNode *ast) -> ir::AstNode * {
-            if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr) {
+            if (ast->IsMemberExpression() && ast->AsMemberExpression()->TsType() != nullptr &&
+                !ast->AsMemberExpression()->TsType()->IsTypeError() &&
+                ast->AsMemberExpression()->Object()->TsType() != nullptr) {
                 auto *objType =
                     checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
                 if (objType->IsETSUnionType()) {

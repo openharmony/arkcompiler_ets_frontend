@@ -24,3 +24,4 @@ class A{}
 /* @@@ label Error SyntaxError: Identifier expected, got ';'.  */
 /* @@@ label1 Error SyntaxError: Invalid argument passed to '*ERROR_LITERAL*'  */
 /* @@@ label1 Error SyntaxError: Unexpected token 'identification literal', expected: ','.  */
+/* @@? 20:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined. */

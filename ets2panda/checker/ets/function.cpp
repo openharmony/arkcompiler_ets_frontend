@@ -169,7 +169,7 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
                 return false;
             }
 
-            ETSChecker::EmplaceSubstituted(substitution, originalTparam, argumentType);
+            EmplaceSubstituted(substitution, originalTparam, argumentType);
             return IsCompatibleTypeArgument(tparam, argumentType, substitution);
         }
     }
@@ -999,7 +999,7 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
     }
 }
 
-checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
+checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
 {
     if (method->TsType() != nullptr) {
         return method->TsType()->AsETSFunctionType();
@@ -1010,8 +1010,9 @@ checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition 
     method->Function()->Id()->SetVariable(method->Id()->Variable());
     BuildFunctionSignature(method->Function(), isConstructSig);
     if (method->Function()->Signature() == nullptr) {
-        return nullptr;
+        return method->Id()->Variable()->SetTsType(GlobalTypeError());
     }
+
     auto *funcType = BuildNamedFunctionType(method->Function());
     std::vector<checker::ETSFunctionType *> overloads;
 
@@ -1019,7 +1020,7 @@ checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition 
         currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
         BuildFunctionSignature(currentFunc->Function(), isConstructSig);
         if (currentFunc->Function()->Signature() == nullptr) {
-            return nullptr;
+            return method->Id()->Variable()->SetTsType(GlobalTypeError());
         }
         auto *const overloadType = BuildNamedFunctionType(currentFunc->Function());
         CheckIdenticalOverloads(funcType, overloadType, currentFunc);
@@ -1036,8 +1037,7 @@ checker::ETSFunctionType *ETSChecker::BuildMethodSignature(ir::MethodDefinition 
         }
     }
 
-    method->Id()->Variable()->SetTsType(funcType);
-    return funcType;
+    return method->Id()->Variable()->SetTsType(funcType);
 }
 
 void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
@@ -1125,6 +1125,45 @@ Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func)
     return GlobalVoidType();
 }
 
+//  Auxilary method extracted from 'ETSChecker::ComposeSignatureInfo(...)' to reduce its size
+static bool AddParameterToSignatureInfo(ETSChecker *checker, SignatureInfo *signatureInfo,
+                                        ir::ETSParameterExpression *parameter)
+{
+    ASSERT(!parameter->IsRestParameter());
+    auto *const paramIdent = parameter->Ident();
+
+    varbinder::Variable *const paramVar = paramIdent->Variable();
+    if (paramVar == nullptr) {
+        ASSERT(checker->IsAnyError());
+        parameter->SetTsType(paramIdent->SetTsType(checker->GlobalTypeError()));
+        return false;
+    }
+
+    auto *const paramTypeAnnotation = parameter->TypeAnnotation();
+    if (paramIdent->TsType() == nullptr && paramTypeAnnotation == nullptr) {
+        checker->LogTypeError({"The type of parameter '", paramIdent->Name(), "' cannot be determined"},
+                              parameter->Start());
+        parameter->SetTsType(paramIdent->SetTsType(checker->GlobalTypeError()));
+        paramVar->SetTsType(checker->GlobalTypeError());
+        return false;
+    }
+
+    if (paramIdent->TsType() == nullptr) {
+        paramVar->SetTsType(paramIdent->SetTsType(paramTypeAnnotation->GetType(checker)));
+    } else {
+        paramVar->SetTsType(paramIdent->TsType());
+    }
+
+    if (!parameter->IsDefault()) {
+        ++signatureInfo->minArgCount;
+    } else {
+        paramVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
+    }
+
+    signatureInfo->params.emplace_back(paramVar->AsLocalVariable());
+    return true;
+}
+
 SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
 {
     auto *signatureInfo = CreateSignatureInfo();
@@ -1143,46 +1182,43 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
     }
 
     for (auto *const it : func->Params()) {
+        //  Check possibly invalid parameter
+        if (!it->IsETSParameterExpression()) {
+            ASSERT(IsAnyError());
+            return nullptr;
+        }
         auto *const param = it->AsETSParameterExpression();
 
         if (param->IsRestParameter()) {
             auto const *const restIdent = param->Ident();
-
-            ASSERT(restIdent->Variable());
-            signatureInfo->restVar = restIdent->Variable()->AsLocalVariable();
-
-            auto *const restParamTypeAnnotation = param->TypeAnnotation();
-            ASSERT(restParamTypeAnnotation);
-
-            signatureInfo->restVar->SetTsType(restParamTypeAnnotation->GetType(this));
-            auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
-            CreateBuiltinArraySignature(arrayType, arrayType->Rank());
-        } else {
-            auto *const paramIdent = param->Ident();
-
-            varbinder::Variable *const paramVar = paramIdent->Variable();
-            ASSERT(paramVar);
-
-            auto *const paramTypeAnnotation = param->TypeAnnotation();
-            if (paramIdent->TsType() == nullptr && paramTypeAnnotation == nullptr) {
-                LogTypeError({"The type of parameter '", paramIdent->Name(), "' cannot be determined"}, param->Start());
+            if (restIdent->TsType() != nullptr && restIdent->TsType()->IsTypeError()) {
                 return nullptr;
             }
 
-            if (paramIdent->TsType() == nullptr) {
-                ASSERT(paramTypeAnnotation);
-
-                paramVar->SetTsType(paramTypeAnnotation->GetType(this));
-            } else {
-                paramVar->SetTsType(paramIdent->TsType());
+            if (restIdent->Variable() == nullptr) {
+                ASSERT(IsAnyError());
+                return nullptr;
             }
 
-            if (!param->IsDefault()) {
-                ++signatureInfo->minArgCount;
-            } else {
-                paramVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
+            signatureInfo->restVar = restIdent->Variable()->AsLocalVariable();
+
+            auto *const restParamTypeAnnotation = param->TypeAnnotation();
+            if (restParamTypeAnnotation == nullptr) {
+                ASSERT(IsAnyError());
+                return nullptr;
             }
-            signatureInfo->params.emplace_back(paramVar->AsLocalVariable());
+
+            signatureInfo->restVar->SetTsType(restParamTypeAnnotation->GetType(this));
+            if (!signatureInfo->restVar->TsType()->IsETSArrayType()) {
+                ASSERT(IsAnyError());
+                return nullptr;
+            }
+            auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
+            CreateBuiltinArraySignature(arrayType, arrayType->Rank());
+        } else {
+            if (!AddParameterToSignatureInfo(this, signatureInfo, param)) {
+                return nullptr;
+            }
         }
     }
 
@@ -1441,7 +1477,7 @@ Signature *ETSChecker::AdjustForTypeParameters(Signature *source, Signature *tar
         if (!targetTypeParams[ix]->IsETSTypeParameter()) {
             continue;
         }
-        ETSChecker::EmplaceSubstituted(substitution, targetTypeParams[ix]->AsETSTypeParameter(), sourceTypeParams[ix]);
+        EmplaceSubstituted(substitution, targetTypeParams[ix]->AsETSTypeParameter(), sourceTypeParams[ix]);
     }
     return target->Substitute(Relation(), substitution);
 }

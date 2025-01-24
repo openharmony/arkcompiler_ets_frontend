@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,3 +50,6 @@ class A extends B {
 }
 
 /* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@? 16:33 Error TypeError: Overloaded function identifier "max" can not be used as value */
+/* @@? 47:12 Error TypeError: Property 'b' does not exist on type 'C' */
+/* @@? 16:33 Error TypeError: Cannot deduce call signature */

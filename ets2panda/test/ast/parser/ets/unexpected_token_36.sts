@@ -26,17 +26,27 @@ export class AccessNSieve {
   private static nsieve(m: int): int {
     let count: int = 0;
 
-    for (le /* @@ label */i/* @@ label1 */: int = 2; i <= m; i++/* @@ label2 */) {
+    for (le i: int = 2; i <= m; i++) {
       AccessNSieve.isPrime[i] = true;
     }
   }
 }
-
-/* @@@ label Error SyntaxError: Unexpected token 'identification literal', expected: ';'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ':', expected: ';'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ':', expected: ')'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token ':'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token ')'.  */
+/* @@? 29:13 Error SyntaxError: Unexpected token 'identification literal', expected: ';'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':', expected: ';'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':', expected: ')'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
+/* @@? 29:36 Error SyntaxError: Unexpected token ')'. */
+/* @@? 29:36 Error SyntaxError: Unexpected token ')'. */
+/* @@? 29:36 Error SyntaxError: Unexpected token ')'. */
+/* @@? 29:10 Error TypeError: Unresolved reference le */
+/* @@? 29:13 Error TypeError: Unresolved reference i */
+/* @@? 29:16 Error TypeError: Unresolved reference int */
+/* @@? 29:25 Error TypeError: Unresolved reference i */
+/* @@? 29:25 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 29:33 Error TypeError: Unresolved reference i */
+/* @@? 30:28 Error TypeError: Unresolved reference i */
+/* @@? 30:28 Error TypeError: Type '*TYPE_ERROR*' cannot be used as an index type. Only primitive or unboxable integral types can be used as index. */

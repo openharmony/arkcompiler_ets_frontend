@@ -15,9 +15,7 @@
 
 #include "spreadLowering.h"
 #include "checker/ETSchecker.h"
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
-#include "ir/expressions/literals/numberLiteral.h"
 
 namespace ark::es2panda::compiler {
 
@@ -225,7 +223,8 @@ bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser:
 
     program->Ast()->TransformChildrenRecursively(
         [&checker, &varbinder, &ctx](ir::AstNode *const node) -> AstNodePtr {
-            if (node->IsArrayExpression() &&
+            if (node->IsArrayExpression() && node->AsArrayExpression()->TsType() != nullptr &&
+                !node->AsArrayExpression()->TsType()->IsTypeError() &&
                 std::any_of(node->AsArrayExpression()->Elements().begin(), node->AsArrayExpression()->Elements().end(),
                             [](const auto *param) { return param->Type() == ir::AstNodeType::SPREAD_ELEMENT; })) {
                 auto scopeCtx =

@@ -19,9 +19,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
 TSQualifiedName::TSQualifiedName([[maybe_unused]] Tag const tag, TSQualifiedName const &other,
@@ -152,15 +149,11 @@ const ir::TSQualifiedName *TSQualifiedName::ResolveLeftMostQualifiedName() const
 
 TSQualifiedName *TSQualifiedName::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<TSQualifiedName>(Tag {}, *this, allocator); clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        clone->SetRange(Range());
-        return clone;
+    auto *const clone = allocator->New<TSQualifiedName>(Tag {}, *this, allocator);
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
-
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

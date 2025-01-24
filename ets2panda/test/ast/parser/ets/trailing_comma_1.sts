@@ -47,3 +47,16 @@ foo(,)
 /* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 36:5 Error SyntaxError: Unexpected token ','. */
+/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */
+/* @@? 30:5 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 31:5 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 31:11 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 31:17 Error TypeError: Spread argument for the rest parameter can be only one. */
+/* @@? 31:17 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
+/* @@? 31:1 Error TypeError: No matching call signature for foo(*TYPE_ERROR*, *TYPE_ERROR*, *TYPE_ERROR*) */
+/* @@? 32:5 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 32:11 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 33:5 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 34:6 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 35:5 Error TypeError: Indexed access is not supported for such expression type. */
+/* @@? 35:10 Error TypeError: Indexed access is not supported for such expression type. */

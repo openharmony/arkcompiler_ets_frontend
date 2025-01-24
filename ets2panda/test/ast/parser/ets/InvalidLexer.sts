@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -114,3 +114,19 @@ const n5 = 02n
 /* @@? 57:16 Error SyntaxError: Implicit octal literal not allowed  */
 /* @@? 57:16 Error SyntaxError: Invalid BigInt number  */
 /* @@? 59:60 Error SyntaxError: Unexpected token: '#'.  */
+
+/* @@? 29:18 Error TypeError: Unresolved reference c'' */
+/* @@? 30:1 Error TypeError: Unresolved reference c'
+const */
+/* @@? 16:16 Error TypeError: Unresolved reference t */
+/* @@? 19:19 Error TypeError: Unresolved reference F0011101 */
+/* @@? 23:13 Error TypeError: Unresolved reference _ */
+/* @@? 27:14 Error TypeError: Unresolved reference undef����FF00����ned */
+/* @@? 30:1 Error TypeError: Unresolved reference c2 */
+/* @@? 34:1 Error TypeError: Unresolved reference d444n */
+/* @@? 38:1 Error TypeError: Unresolved reference b0 */
+/* @@? 42:1 Error TypeError: Bad operand type, the types of the operands must be numeric type, enum or String. */
+/* @@? 44:1 Error TypeError: Unresolved reference b */
+/* @@? 46:1 Error TypeError: Invalid string template expression */
+/* @@? 50:1 Error TypeError: Unresolved reference U4444 */
+/* @@? 56:16 Error TypeError: Unresolved reference FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF */

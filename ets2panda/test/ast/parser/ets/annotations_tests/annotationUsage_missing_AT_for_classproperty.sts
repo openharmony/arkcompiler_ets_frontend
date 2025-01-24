@@ -26,3 +26,4 @@ class A{
 /* @@? 20:12 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 20:28 Error SyntaxError: Label must be followed by a loop statement */
 /* @@? 20:31 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */

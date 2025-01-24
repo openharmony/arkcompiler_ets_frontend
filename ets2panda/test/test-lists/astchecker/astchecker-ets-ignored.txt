@@ -52,3 +52,14 @@ ast/compiler/ts/varRedeclaration9.ts
 # Fail with SEGV. Issue: #21730
 ast/parser/js/test-private-field5.js
 ast/parser/js/test-private-field4.js
+
+# Issue #22140
+ast/parser/ets/InvalidLexer.sts
+
+# Issue #18241
+ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.sts
+ast/parser/ets/ambient_indexer_4.sts
+ast/parser/ets/ambient_indexer_5.sts
+ast/parser/ets/ambient_indexer_7.sts
+ast/parser/ets/ambient_indexer_8.sts
+ast/parser/ets/ambient_indexer_9.sts

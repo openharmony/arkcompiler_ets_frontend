@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,16 +17,22 @@
 #define ES2PANDA_COMPILER_ENUM_PRE_CHECK_LOWERING_H
 
 #include "compiler/lowering/phase.h"
-#include "checker/types/ets/etsEnumType.h"
 
 namespace ark::es2panda::compiler {
 
 class EnumLoweringPhase : public PhaseForDeclarations {
 public:
     struct DeclarationFlags {
+        // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
         bool isTopLevel;
         bool isLocal;
         bool isNamespace;
+        // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+        [[nodiscard]] bool IsValid() const noexcept
+        {
+            return isTopLevel || isLocal || isNamespace;
+        }
     };
 
     EnumLoweringPhase() noexcept = default;

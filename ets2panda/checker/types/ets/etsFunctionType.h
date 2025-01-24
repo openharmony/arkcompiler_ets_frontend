@@ -100,7 +100,9 @@ public:
 
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
     {
-        funcInterface_->ToAssemblerType(ss);
+        if (funcInterface_ != nullptr) {
+            funcInterface_->ToAssemblerType(ss);
+        }
     }
 
     void ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const override

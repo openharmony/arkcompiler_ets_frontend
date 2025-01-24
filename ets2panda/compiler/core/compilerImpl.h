@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,11 +17,6 @@
 #define ES2PANDA_COMPILER_INCLUDE_COMPILER_IMPL_H
 
 #include "compiler/core/compileQueue.h"
-#include "macros.h"
-#include "mem/arena_allocator.h"
-#include "os/thread.h"
-
-#include <string>
 
 namespace ark::pandasm {
 struct Program;
@@ -72,14 +67,14 @@ public:
         return &queue_;
     }
 
-    bool IsAnyError()
+    [[nodiscard]] bool IsAnyError() const noexcept
     {
         return isAnyError_;
     }
 
-    void SetIsAnyError(bool value)
+    void SetIsAnyError(bool const value) noexcept
     {
-        isAnyError_ = value;
+        isAnyError_ |= value;
     }
 
 private:

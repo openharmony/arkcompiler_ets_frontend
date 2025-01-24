@@ -179,9 +179,10 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::DebuggerStatement *st) co
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ForInStatement *st) const
+checker::Type *ETSAnalyzer::Check(ir::ForInStatement *st) const
 {
-    UNREACHABLE();
+    ASSERT(GetETSChecker()->IsAnyError());
+    return ReturnTypeForStatement(st);
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::FunctionDeclaration *st) const
@@ -337,7 +338,8 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSStringKeyword *node) co
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSThisType *node) const
 {
-    UNREACHABLE();
+    ASSERT(GetETSChecker()->IsAnyError());
+    return GetChecker()->AsETSChecker()->InvalidateType(node);
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSTupleType *node) const

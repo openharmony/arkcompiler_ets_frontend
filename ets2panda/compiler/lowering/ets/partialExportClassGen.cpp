@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 
 #include "checker/ETSchecker.h"
 #include "varbinder/ETSBinder.h"
-#include "varbinder/recordTable.h"
 
 namespace ark::es2panda::compiler {
 
@@ -25,7 +24,7 @@ static void GeneratePartialDeclForExported(const public_lib::Context *const ctx,
 {
     // NOTE (mmartin): handle interfaces
 
-    if (node->IsClassDeclaration()) {
+    if (node->IsClassDeclaration() && !node->AsClassDeclaration()->Definition()->TsType()->IsTypeError()) {
         ctx->checker->AsETSChecker()->CreatePartialType(node->AsClassDeclaration()->Definition()->TsType());
     }
 }

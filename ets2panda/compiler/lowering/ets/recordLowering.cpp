@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,19 +14,10 @@
  */
 
 #include "recordLowering.h"
-#include <algorithm>
-#include <sstream>
-#include <string_view>
 
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
-#include "macros.h"
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "utils/arena_containers.h"
-#include "util/options.h"
-#include "varbinder/ETSBinder.h"
 #include "compiler/lowering/util.h"
 
 namespace ark::es2panda::compiler {
@@ -169,9 +160,8 @@ ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expre
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     auto checker = ctx->checker->AsETSChecker();
-    if (expr->TsType() == nullptr) {
-        // Hasn't been through checker
-        checker->LogTypeError("Unexpected type error in Record object literal", expr->Start());
+    if (expr->TsType() == nullptr || expr->TsType()->IsTypeError()) {
+        ASSERT(ctx->checker->IsAnyError());
         return expr;
     }
 

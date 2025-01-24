@@ -906,17 +906,21 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
 {
     switch (newDecl->Type()) {
         case DeclType::CONST:
+            [[fallthrough]];
         case DeclType::READONLY:
-        case DeclType::LET: {
-            props->SetBindingProps(VariableFlags::PROPERTY, newDecl->Node()->AsClassProperty()->Id(),
-                                   isStatic ? staticFieldScope_ : instanceFieldScope_);
+            [[fallthrough]];
+        case DeclType::LET:
+            if (newDecl->Node()->IsClassProperty()) {
+                props->SetBindingProps(VariableFlags::PROPERTY, newDecl->Node()->AsClassProperty()->Id(),
+                                       isStatic ? staticFieldScope_ : instanceFieldScope_);
+            }
             break;
-        }
-        case DeclType::INTERFACE: {
+
+        case DeclType::INTERFACE:
             props->SetBindingProps(VariableFlags::INTERFACE, newDecl->Node()->AsTSInterfaceDeclaration()->Id(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
+
         case DeclType::CLASS: {
             VariableFlags flag = VariableFlags::CLASS;
             if (newDecl->Node()->AsClassDefinition()->IsNamespaceTransformed()) {
@@ -926,31 +930,30 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
         }
-        case DeclType::ENUM_LITERAL: {
+
+        case DeclType::ENUM_LITERAL:
             props->SetBindingProps(VariableFlags::ENUM_LITERAL, newDecl->Node()->AsTSEnumDeclaration()->Key(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
-        case DeclType::TYPE_ALIAS: {
+
+        case DeclType::TYPE_ALIAS:
             props->SetBindingProps(VariableFlags::TYPE_ALIAS, newDecl->Node()->AsTSTypeAliasDeclaration()->Id(),
                                    TypeAliasScope());
             break;
-        }
-        case DeclType::ANNOTATIONDECL: {
+
+        case DeclType::ANNOTATIONDECL:
             props->SetBindingProps(VariableFlags::ANNOTATIONDECL,
                                    newDecl->Node()->AsAnnotationDeclaration()->GetBaseName(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
-        case DeclType::ANNOTATIONUSAGE: {
+
+        case DeclType::ANNOTATIONUSAGE:
             props->SetBindingProps(VariableFlags::ANNOTATIONUSAGE, newDecl->Node()->AsAnnotationUsage()->GetBaseName(),
                                    isStatic ? staticDeclScope_ : instanceDeclScope_);
             break;
-        }
-        default: {
+
+        default:
             UNREACHABLE();
-            break;
-        }
     }
 }
 
@@ -965,6 +968,9 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
     }
 
     SetBindingProps(newDecl, &props, isStatic);
+    if (props.GetTargetScope() == nullptr) {
+        return nullptr;
+    }
 
     // First search
     const auto typeOptions = newDecl->Type() != DeclType::TYPE_ALIAS ? ResolveBindingOptions::ALL_NON_TYPE

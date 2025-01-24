@@ -24,8 +24,5 @@ class A {
 }
 
 /* @@? 22:28 Error TypeError: Unresolved reference $$this */
-/* @@? 22:28 Error TypeError: Property '$$a$aa$$' does not exist on type '*TYPE_ERROR*' */
 /* @@? 22:45 Error TypeError: Unresolved reference $$this */
-/* @@? 22:45 Error TypeError: Property '$$b$bb$$' does not exist on type '*TYPE_ERROR*' */
 /* @@? 22:62 Error TypeError: Unresolved reference $$this */
-/* @@? 22:62 Error TypeError: Property '$$c$cc$$' does not exist on type '*TYPE_ERROR*' */

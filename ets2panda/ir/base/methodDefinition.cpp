@@ -18,8 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 
@@ -252,34 +250,25 @@ checker::VerifiedType MethodDefinition::Check(checker::ETSChecker *checker)
 
 MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
-    auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const key = key_->Clone(allocator, nullptr)->AsExpression();
+    auto *const value = value_->Clone(allocator, nullptr)->AsExpression();
+    auto *const clone = allocator->New<MethodDefinition>(kind_, key, value, flags_, allocator, isComputed_);
 
-    if (auto *const clone = allocator->New<MethodDefinition>(kind_, key, value, flags_, allocator, isComputed_);
-        clone != nullptr) {
-        if (parent != nullptr) {
-            clone->SetParent(parent);
-        }
-
-        if (key != nullptr) {
-            key->SetParent(clone);
-        }
-
-        if (value != nullptr) {
-            value->SetParent(clone);
-        }
-
-        for (auto *const decorator : decorators_) {
-            clone->AddDecorator(decorator->Clone(allocator, clone));
-        }
-
-        for (auto *const overloads : overloads_) {
-            clone->AddOverload(overloads->Clone(allocator, clone));
-        }
-
-        return clone;
+    if (parent != nullptr) {
+        clone->SetParent(parent);
     }
 
-    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+    key->SetParent(clone);
+    value->SetParent(clone);
+
+    for (auto *const decorator : decorators_) {
+        clone->AddDecorator(decorator->Clone(allocator, clone));
+    }
+
+    for (auto *const overloads : overloads_) {
+        clone->AddOverload(overloads->Clone(allocator, clone));
+    }
+
+    return clone;
 }
 }  // namespace ark::es2panda::ir

@@ -15,20 +15,6 @@
 
 #include "promiseVoid.h"
 #include "checker/ETSchecker.h"
-#include "checker/checker.h"
-#include "generated/signatures.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsNullishTypes.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/returnStatement.h"
-#include "ir/typeNode.h"
-#include "lexer/token/sourceLocation.h"
-#include "ir/astNode.h"
-#include "ir/statements/blockStatement.h"
-#include "util/ustring.h"
 
 namespace ark::es2panda::compiler {
 ir::BlockStatement *PromiseVoidInferencePhase::HandleAsyncScriptFunctionBody(checker::ETSChecker *checker,
@@ -175,10 +161,10 @@ bool PromiseVoidInferencePhase::PerformForModule(public_lib::Context *ctx, parse
                 function->SetReturnTypeAnnotation(CreatePromiseVoidType(checker, loc));
             }
 
-            if (function->HasBody()) {
+            if (function->HasBody() && function->Body()->IsBlockStatement()) {
                 HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
             }
-        } else if (hasPromiseVoid && function->HasBody()) {
+        } else if (hasPromiseVoid && function->HasBody() && function->Body()->IsBlockStatement()) {
             HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
         }
 

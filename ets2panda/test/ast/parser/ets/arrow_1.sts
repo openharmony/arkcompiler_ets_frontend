@@ -28,3 +28,5 @@ let a: A = {
 }
 
 /* @@? 22:12 Error SyntaxError: Unexpected token ',', expected: '=>'. */
+/* @@? 17:11 Error TypeError: Type 'Function<R>' is generic but type argument were not provided. */
+/* @@? 18:11 Error TypeError: Type 'Function<R>' is generic but type argument were not provided. */
