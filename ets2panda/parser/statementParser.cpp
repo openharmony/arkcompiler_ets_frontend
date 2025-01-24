@@ -1100,7 +1100,8 @@ ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosi
 
 ir::Statement *ParserImpl::ParseReturnStatement()
 {
-    if ((context_.Status() & ParserStatus::FUNCTION) == 0) {
+    if ((context_.Status() & ParserStatus::FUNCTION) == 0 &&
+        (context_.Status() & ParserStatus::PARSE_TRAILING_BLOCK) == 0) {
         LogSyntaxError("return keyword should be used in function body");
     }
 

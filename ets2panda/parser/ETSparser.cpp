@@ -1830,6 +1830,7 @@ bool ETSParser::IsStructKeyword() const
 void ETSParser::ParseTrailingBlock(ir::CallExpression *callExpr)
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        SavedParserContext svCtx(this, ParserStatus::PARSE_TRAILING_BLOCK);
         callExpr->SetIsTrailingBlockInNewLine(Lexer()->GetToken().NewLine());
         callExpr->SetTrailingBlock(ParseBlockStatement());
     }

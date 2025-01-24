@@ -720,6 +720,41 @@ static std::string BuildLambdaClass(public_lib::Context *ctx, ArenaVector<checke
     return stringBuilder;
 }
 
+// The `invoke` and `invoke0` of extension lambda class has two `this` identifier in parameter scope,
+// first one is the lambdaClass itself and second one is the receiver class,
+// the true `this` of the `invoke` and `invoke0` functionScope is the lambdaClass.
+static void CorrectTheTrueThisForExtensionLambda(public_lib::Context *ctx, ir::ClassDeclaration *lambdaClass)
+{
+    auto *checker = ctx->checker->AsETSChecker();
+    auto *classScope = lambdaClass->Definition()->Scope();
+    ArenaVector<varbinder::Variable *> invokeFuncsOfLambda(checker->Allocator()->Adapter());
+    invokeFuncsOfLambda.emplace_back(
+        classScope->FindLocal(compiler::Signatures::LAMBDA_OBJECT_INVOKE, varbinder::ResolveBindingOptions::METHODS));
+    invokeFuncsOfLambda.emplace_back(classScope->FindLocal(checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
+                                                           varbinder::ResolveBindingOptions::METHODS));
+    for (auto *invokeFuncOfLambda : invokeFuncsOfLambda) {
+        if (invokeFuncOfLambda == nullptr) {
+            continue;
+        }
+        auto *scriptFunc = invokeFuncOfLambda->Declaration()
+                               ->AsFunctionDecl()
+                               ->Node()
+                               ->AsMethodDefinition()
+                               ->Value()
+                               ->AsFunctionExpression()
+                               ->Function();
+        if (!scriptFunc->IsExtensionMethod()) {
+            continue;
+        }
+        auto *functionScope = scriptFunc->Scope();
+        auto *functionParamScope = scriptFunc->Scope()->ParamScope();
+        auto *theTrueThisVar = functionParamScope->Params()[0];
+        auto &bindings = const_cast<varbinder::Scope::VariableMap &>(functionScope->Bindings());
+        bindings.erase(varbinder::ETSBinder::MANDATORY_PARAM_THIS);
+        bindings.insert({varbinder::ETSBinder::MANDATORY_PARAM_THIS, theTrueThisVar});
+    }
+}
+
 static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, ArenaVector<checker::Signature *> &lambdaSigs,
                                                ir::MethodDefinition *callee, LambdaInfo const *info)
 {
@@ -775,7 +810,7 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, ArenaVe
     InitScopesPhaseETS::RunExternalNode(classDeclaration, varBinder);
     varBinder->ResolveReferencesForScopeWithContext(classDeclaration, varBinder->TopScope());
     classDeclaration->Check(checker);
-
+    CorrectTheTrueThisForExtensionLambda(ctx, classDeclaration);
     return classDeclaration;
 }
 

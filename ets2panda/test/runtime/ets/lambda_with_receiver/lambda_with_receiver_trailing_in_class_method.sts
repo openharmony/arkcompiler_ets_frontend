@@ -13,11 +13,32 @@
  * limitations under the License.
  */
 
-class A {};
+class B {
+    data: number = 0;
+}
 
-let x: (this: A, n: number) => this
-let y: (this: A, n: number) => this;
-(this: A, n: number):this => {};
-function foo(a: A, ff:(this: A, n: number) => this) {};
-function foo2(ff:(this: A, n: number) => this, a:A) {};
-function foo3(this: A, n: number):this {return this};
+class A {
+    b:B;
+    data:number = 0;
+    constructor() {
+        this.b = new B();
+    }
+    
+    foo(f: (this:B) => void) {
+        this.b.f();
+    }
+
+    foo2(f: (this:B) => void) {
+        f(this.b);
+    }
+
+}
+
+let a = new A();
+a.foo() { this.data = 666 } 
+assertTrue(a.b.data == 666);
+assertTrue(a.data == 0);
+
+a.foo2() { this.data = 66 } 
+assertTrue(a.b.data == 66);
+assertTrue(a.data == 0);

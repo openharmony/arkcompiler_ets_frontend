@@ -899,6 +899,47 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     return mostSpecificSignature;
 }
 
+static bool IsLastParameterLambdaWithReceiver(Signature *sig)
+{
+    auto const &params = sig->Function()->Params();
+
+    return !params.empty() && (params.back()->AsETSParameterExpression()->TypeAnnotation() != nullptr) &&
+           params.back()->AsETSParameterExpression()->TypeAnnotation()->IsETSFunctionType() &&
+           params.back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType()->IsExtensionFunction();
+}
+
+Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpression *callExpr,
+                                                                  ArenaVector<Signature *> const &signatures,
+                                                                  ArenaVector<ir::Expression *> &arguments)
+{
+    auto *trailingLambda = arguments.back()->AsArrowFunctionExpression();
+    ArenaVector<Signature *> normalSig(Allocator()->Adapter());
+    ArenaVector<Signature *> sigContainLambdaWithReceiverAsParam(Allocator()->Adapter());
+    Signature *signature = nullptr;
+    for (auto sig : signatures) {
+        if (!IsLastParameterLambdaWithReceiver(sig)) {
+            normalSig.emplace_back(sig);
+            continue;
+        }
+
+        auto *candidateFunctionType =
+            sig->Function()->Params().back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType();
+        auto *currentReceiver = candidateFunctionType->Params()[0];
+        trailingLambda->Function()->Params().emplace_back(currentReceiver);
+        sigContainLambdaWithReceiverAsParam.emplace_back(sig);
+        signature = ValidateSignatures(sigContainLambdaWithReceiverAsParam, callExpr->TypeParams(), arguments,
+                                       callExpr->Start(), "call",
+                                       TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
+        if (signature != nullptr) {
+            return signature;
+        }
+        sigContainLambdaWithReceiverAsParam.clear();
+        trailingLambda->Function()->Params().clear();
+    }
+    return ValidateSignatures(normalSig, callExpr->TypeParams(), arguments, callExpr->Start(), "call",
+                              TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
+}
+
 Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
                                                               ir::CallExpression *callExpr,
                                                               const lexer::SourcePosition &pos,
@@ -912,11 +953,10 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto arguments = ExtendArgumentsWithFakeLamda(callExpr);
-    sig = ValidateSignatures(signatures, callExpr->TypeParams(), arguments, pos, "call",
-                             TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
+    sig = ResolvePotentialTrailingLambdaWithReceiver(callExpr, signatures, arguments);
     if (sig != nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        TransformTraillingLambda(callExpr);
+        TransformTraillingLambda(callExpr, sig);
         TypeInference(sig, callExpr->Arguments());
         return sig;
     }
@@ -1970,7 +2010,8 @@ void ETSChecker::MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *
     }
 }
 
-void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
+using SFunctionData = ir::ScriptFunction::ScriptFunctionData;
+void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signature *sig)
 {
     auto *trailingBlock = callExpr->TrailingBlock();
     ASSERT(trailingBlock != nullptr);
@@ -1993,10 +2034,23 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
     }
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::ARROW;
+    if (IsLastParameterLambdaWithReceiver(sig)) {
+        auto *actualLambdaType =
+            sig->Function()->Params().back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType();
+        auto *receiverOfTrailingBlock = actualLambdaType->Params()[0]->Clone(Allocator(), nullptr)->AsExpression();
+        auto *receiverVar = receiverOfTrailingBlock->AsETSParameterExpression()->Ident()->Variable();
+        auto *receiverVarClone =
+            Allocator()->New<varbinder::LocalVariable>(receiverVar->Declaration(), receiverVar->Flags());
+        receiverVarClone->SetTsType(receiverVar->TsType());
+        receiverVarClone->SetScope(funcParamScope);
+        funcScope->InsertBinding(receiverVarClone->Name(), receiverVarClone);
+        receiverOfTrailingBlock->AsETSParameterExpression()->Ident()->SetVariable(receiverVarClone);
+        params.emplace_back(receiverOfTrailingBlock);
+        flags |= ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD;
+    }
     auto *funcNode = AllocNode<ir::ScriptFunction>(
-        Allocator(), ir::ScriptFunction::ScriptFunctionData {trailingBlock,
-                                                             ir::FunctionSignature(nullptr, std::move(params), nullptr),
-                                                             ir::ScriptFunctionFlags::ARROW});
+        Allocator(), SFunctionData {trailingBlock, ir::FunctionSignature(nullptr, std::move(params), nullptr), flags});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
     funcParamScope->BindNode(funcNode);
