@@ -18,6 +18,24 @@
 
 namespace ark::es2panda::checker {
 
+static bool IsValidReceiverParameter(Type *const thisType)
+{
+    if (thisType == nullptr) {
+        return false;
+    }
+
+    if (thisType->IsETSArrayType() || thisType->IsETSTypeParameter()) {
+        return true;
+    }
+
+    if (!thisType->IsETSObjectType()) {
+        return false;
+    }
+
+    auto *const thisObjectType = thisType->AsETSObjectType();
+    return thisObjectType->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE);
+}
+
 void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *checker, checker::ETSObjectType *objType,
                                                        ir::ScriptFunction *extensionFunc, checker::Signature *signature)
 {
@@ -118,14 +136,11 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
     auto *const thisType =
         !extensionFunc->Signature()->Params().empty() ? extensionFunc->Signature()->Params()[0]->TsType() : nullptr;
 
-    // "Extension Functions" are only allowed for classes, interfaces, and arrays.
-    if (thisType != nullptr &&
-        (thisType->IsETSArrayType() ||
-         (thisType->IsETSObjectType() && thisType->AsETSObjectType()->HasObjectFlag(
-                                             // CC-OFFNXT(G.FMT.06-CPP) project code style
-                                             checker::ETSObjectFlags::CLASS | checker::ETSObjectFlags::INTERFACE)))) {
+    // "Extension Functions" are only allowed for classes, interfaces, arrays and type parameters extends from object.
+    if (IsValidReceiverParameter(thisType)) {
         // Skip for arrays (array does not contain a class definition) and checked class definition.
-        if (!thisType->IsETSArrayType() && thisType->Variable()->Declaration()->Node()->IsClassDefinition() &&
+        if (!thisType->IsETSArrayType() && !thisType->IsETSTypeParameter() &&
+            thisType->Variable()->Declaration()->Node()->IsClassDefinition() &&
             !thisType->Variable()->Declaration()->Node()->AsClassDefinition()->IsClassDefinitionChecked()) {
             thisType->Variable()->Declaration()->Node()->Check(checker);
         }
