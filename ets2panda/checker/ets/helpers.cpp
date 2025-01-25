@@ -2404,30 +2404,46 @@ void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunction
                                      Signature *maybeSubstitutedFunctionSig)
 {
     for (size_t i = 0; i < lambda->Params().size(); ++i) {
-        const auto *const calleeParam = calleeType->Params()[i]->AsETSParameterExpression()->Ident();
         auto *const lambdaParam = lambda->Params().at(i)->AsETSParameterExpression()->Ident();
         if (lambdaParam->TypeAnnotation() == nullptr) {
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            auto *const typeAnnotation = calleeParam->TypeAnnotation()->Clone(Allocator(), lambdaParam);
-            if (maybeSubstitutedFunctionSig != nullptr) {
+            Type *inferredType = calleeType->Params()[i]->AsETSParameterExpression()->TypeAnnotation()->Check(this);
+            bool isPrimitive = inferredType != nullptr && inferredType->IsETSPrimitiveType();
+            if (!isPrimitive && maybeSubstitutedFunctionSig != nullptr) {
                 ES2PANDA_ASSERT(maybeSubstitutedFunctionSig->Params().size() == calleeType->Params().size());
-                typeAnnotation->SetTsType(maybeSubstitutedFunctionSig->Params()[i]->TsType());
+                inferredType = maybeSubstitutedFunctionSig->Params()[i]->TsType();
             }
-            lambdaParam->SetTsTypeAnnotation(typeAnnotation);
+            lambdaParam->Variable()->SetTsType(inferredType);
+            lambdaParam->SetTsType(inferredType);
         }
     }
 
     if (lambda->ReturnTypeAnnotation() == nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *const returnTypeAnnotation = calleeType->ReturnType()->Clone(Allocator(), lambda);
-        if (maybeSubstitutedFunctionSig != nullptr) {
-            returnTypeAnnotation->SetTsType(maybeSubstitutedFunctionSig->ReturnType());
+        Type *inferredReturnType = calleeType->ReturnType()->GetType(this);
+        bool isPrimitive = inferredReturnType != nullptr && inferredReturnType->IsETSPrimitiveType();
+        if (!isPrimitive && maybeSubstitutedFunctionSig != nullptr) {
+            inferredReturnType = maybeSubstitutedFunctionSig->ReturnType();
         }
+        lambda->SetPreferredReturnType(inferredReturnType);
+    }
+}
 
-        // Return type can be ETSFunctionType
-        // Run varbinder to set scopes for cloned node
-        compiler::InitScopesPhaseETS::RunExternalNode(returnTypeAnnotation, VarBinder());
-        lambda->SetReturnTypeAnnotation(returnTypeAnnotation);
+void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, Signature *signature)
+{
+    ES2PANDA_ASSERT(signature->Params().size() >= lambda->Params().size());
+    for (size_t i = 0; i < lambda->Params().size(); ++i) {
+        auto *const lambdaParam = lambda->Params().at(i)->AsETSParameterExpression()->Ident();
+        if (lambdaParam->TypeAnnotation() == nullptr) {
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+            lambdaParam->Variable()->SetTsType(signature->Params().at(i)->TsType());
+            lambdaParam->SetTsType(signature->Params().at(i)->TsType());
+        }
+    }
+
+    if (lambda->ReturnTypeAnnotation() == nullptr) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        lambda->SetPreferredReturnType(signature->ReturnType());
     }
 }
 
@@ -2441,6 +2457,19 @@ void ETSChecker::ModifyPreferredType(ir::ArrayExpression *const arrayExpr, Type 
         if (element->IsArrayExpression()) {
             ModifyPreferredType(element->AsArrayExpression(), nullptr);
         }
+    }
+}
+
+void ETSChecker::TryInferTypeForLambdaTypeAlias(ir::AssignmentExpression *expr, ETSFunctionType *calleeType)
+{
+    ES2PANDA_ASSERT(expr->Right()->IsArrowFunctionExpression());
+    ES2PANDA_ASSERT(calleeType->IsETSArrowType());
+
+    ir::ScriptFunction *const lambda = expr->Right()->AsArrowFunctionExpression()->Function();
+
+    auto *signature = calleeType->CallSignaturesOfMethodOrArrow()[0];
+    if (signature->Params().size() >= lambda->Params().size() && NeedTypeInference(lambda)) {
+        InferTypesForLambda(lambda, signature);
     }
 }
 

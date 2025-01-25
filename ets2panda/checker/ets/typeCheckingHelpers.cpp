@@ -1401,6 +1401,8 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
             continue;
         }
 
+        arrowFuncExpr->SetTsType(nullptr);
+
         auto const *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
         ir::AstNode *typeAnn = param->TypeAnnotation();
         Type *const parameterType = signature->Params()[index]->TsType();

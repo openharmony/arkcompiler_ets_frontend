@@ -75,6 +75,7 @@ static void InferUntilFail(Signature const *const signature, const ArenaVector<i
     bool anyChange = true;
     size_t lastSubsititutionSize = 0;
 
+    checker->AddStatus(checker::CheckerStatus::IN_TYPE_INFER);
     // some ets lib files require type infer from arg index 0,1,... , not fit to build graph
     while (anyChange && substitution->size() < sigParams.size()) {
         anyChange = false;
@@ -109,6 +110,7 @@ static void InferUntilFail(Signature const *const signature, const ArenaVector<i
             }
         }
     }
+    checker->RemoveStatus(checker::CheckerStatus::IN_TYPE_INFER);
 }
 
 static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *checker, Signature *signature,

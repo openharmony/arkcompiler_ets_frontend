@@ -376,6 +376,8 @@ public:
     std::vector<bool> FindTypeInferenceArguments(const ArenaVector<ir::Expression *> &arguments);
     void InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType,
                              Signature *maybeSubstitutedFunctionSig = nullptr);
+    void InferTypesForLambda(ir::ScriptFunction *lambda, Signature *signature);
+    void TryInferTypeForLambdaTypeAlias(ir::AssignmentExpression *expr, ETSFunctionType *calleeType);
     bool TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
                        TypeRelationFlag flags = TypeRelationFlag::NONE);
     bool CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *arrowFuncExpr,

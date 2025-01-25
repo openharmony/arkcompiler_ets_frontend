@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,8 @@
  * limitations under the License.
  */
 
-function foo<T>(f: (i: T) => undefined) {}
+let lam :(x:string, y:int) => void = (a,b) =>{}
+lam(2, 3)
 
-function main() {
-    /* @@ label */foo((value) => {})
-}
-
-/* @@@ label Error TypeError: No matching call signature for foo((value: *ERROR_TYPE*) => void)  */
+/* @@? 17:1 Error TypeError: No matching call signature for (int, int) */
+/* @@? 17:5 Error TypeError: Type 'int' is not compatible with type 'String' at index 1 */
