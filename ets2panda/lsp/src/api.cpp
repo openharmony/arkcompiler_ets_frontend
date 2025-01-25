@@ -195,12 +195,19 @@ extern "C" DocumentHighlightsReferences GetDocumentHighlights(char const *fileNa
     return result;
 }
 
+extern "C" FileRefMap FindReferencesWrapper(ark::es2panda::lsp::CancellationToken *tkn,
+                                            const std::vector<ark::es2panda::SourceFile> &srcFiles,
+                                            const ark::es2panda::SourceFile &srcFile, size_t position)
+{
+    return FindReferences(tkn, srcFiles, srcFile, position);
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition,   GetFileReferences,
                     GetReferencesAtPosition,   GetPrecedingToken,
                     GetCurrentTokenValue,      GetQuickInfoAtPosition,
                     GetSpanOfEnclosingComment, GetSemanticDiagnostics,
                     GetSyntacticDiagnostics,   GetReferenceLocationAtPosition,
-                    GetDocumentHighlights};
+                    GetDocumentHighlights,     FindReferencesWrapper};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()
