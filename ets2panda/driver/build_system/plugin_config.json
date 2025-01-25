@@ -1,0 +1,3 @@
+{
+  "ArkUI": "${absolute_path_to}/arkcompiler/ets_frontend/ets2panda/driver/build_system/node_modules/libarkts/arkoala-arkts/libarkts/build/src/koala-plugin"
+}
