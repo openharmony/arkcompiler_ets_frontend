@@ -89,6 +89,8 @@ private:
 
     ir::AstNode *FoldTSAsExpression(ir::TSAsExpression *expr);
 
+    ir::AstNode *FoldMultilineString(ir::TemplateLiteral *expr);
+
     ir::AstNode *FoldConstant(ir::AstNode *constantNode);
 
     varbinder::Variable *FindIdentifier(ir::Identifier *ident);

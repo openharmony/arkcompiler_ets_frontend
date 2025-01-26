@@ -740,6 +740,14 @@ ir::AstNode *ConstantExpressionLowering::FoldTSAsExpression(ir::TSAsExpression *
     return TryFoldTSAsExpressionForString(expr);
 }
 
+ir::AstNode *ConstantExpressionLowering::FoldMultilineString(ir::TemplateLiteral *expr)
+{
+    auto *result = util::NodeAllocator::Alloc<ir::StringLiteral>(context_->allocator, expr->GetMultilineString());
+    result->SetParent(expr->Parent());
+    result->SetRange(expr->Range());
+    return result;
+}
+
 varbinder::Variable *ConstantExpressionLowering::FindIdentifier(ir::Identifier *ident)
 {
     auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(ident));
@@ -793,6 +801,13 @@ ir::AstNode *ConstantExpressionLowering::UnfoldConstIdentifiers(ir::AstNode *con
 ir::AstNode *ConstantExpressionLowering::FoldConstant(ir::AstNode *constantNode)
 {
     ir::NodeTransformer handleFoldConstant = [this](ir::AstNode *const node) {
+        if (node->IsTemplateLiteral()) {
+            auto tmpLiteral = node->AsTemplateLiteral();
+            if (tmpLiteral->Expressions().empty()) {
+                return FoldMultilineString(tmpLiteral);
+            }
+            LogSyntaxError("String Interpolation Expression is not constant expression", node->Start());
+        }
         if (node->IsTSAsExpression()) {
             auto tsAsExpr = node->AsTSAsExpression();
             if (IsSupportedLiteral(tsAsExpr->Expr())) {
