@@ -432,6 +432,27 @@ checker::Signature *ResolveCallExtensionFunction(checker::Type *functionType, ch
         return signature;
     }
 
+    // Implicit this call in lambda with receiver body, may be ExtensionFunction or Function
+    // Priority:ExtensionFunction > Function
+    if (expr->Callee()->IsIdentifier() && expr->Callee()->AsIdentifier()->IsImplicitThis()) {
+        // First convert `foo(...) ` to `foo(a, ...) ` for matching, and if it doesn't match, then follow `foo(...) ` to
+        // match Since it must be a function call, there is no need for SwitchMethodCallToFunctionCall
+        auto *thisIdentifier = checker->Allocator()->New<ir::Identifier>(varbinder::TypedBinder::MANDATORY_PARAM_THIS,
+                                                                         checker->Allocator());
+        thisIdentifier->SetParent(expr);
+        expr->Arguments().insert(expr->Arguments().begin(), thisIdentifier);
+
+        auto *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start(),
+                                                                          reportFlag | TypeRelationFlag::NO_THROW);
+        if (signature == nullptr) {
+            expr->Arguments().erase(expr->Arguments().begin());
+            signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start(), reportFlag);
+        }
+
+        expr->Callee()->AsIdentifier()->RemoveImplicitThis();
+        return signature;
+    }
+
     return checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
 }
 
@@ -450,24 +471,11 @@ checker::Signature *ResolveCallForClassMethod(checker::ETSExtensionFuncHelperTyp
     return signature;
 }
 
-checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::ETSExtensionFuncHelperType *type,
-                                                                      checker::ETSChecker *checker,
-                                                                      ir::CallExpression *expr)
+checker::Signature *MatchSignatureForDummyReceiver(checker::ETSExtensionFuncHelperType *type,
+                                                   checker::ETSChecker *checker, ir::CallExpression *expr,
+                                                   ArenaVector<Signature *> &signatures, ir::Expression *dummyReceiver)
 {
-    // We try to find the most suitable signature for a.foo(...) both in ExtensionFunctionType and ClassMethodType.
-    // So we temporarily transfer expr node from `a.foo(...)` to `a.foo(a, ...)`.
-    // For allCallSignatures in ClassMethodType, temporarily insert the dummyReceiver into their signatureInfo,
-    // otherwise we can't get the most suitable classMethod signature if all the extensionFunction signature mismatched.
-    ArenaVector<Signature *> signatures(checker->Allocator()->Adapter());
-    signatures.insert(signatures.end(), type->ClassMethodType()->CallSignatures().begin(),
-                      type->ClassMethodType()->CallSignatures().end());
-    signatures.insert(signatures.end(), type->ExtensionMethodType()->CallSignatures().begin(),
-                      type->ExtensionMethodType()->CallSignatures().end());
-
-    auto *memberExpr = expr->Callee()->AsMemberExpression();
-    auto *dummyReceiver = memberExpr->Object();
     auto *dummyReceiverVar = type->ExtensionMethodType()->CallSignatures()[0]->Params()[0];
-    expr->Arguments().insert(expr->Arguments().begin(), dummyReceiver);
     const bool typeParamsNeeded = dummyReceiverVar->TsType()->IsETSObjectType();
 
     for (auto *methodCallSig : type->ClassMethodType()->CallSignatures()) {
@@ -499,6 +507,27 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
         }
     }
     expr->Arguments().erase(expr->Arguments().begin());
+    return signature;
+}
+
+checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::ETSExtensionFuncHelperType *type,
+                                                                      checker::ETSChecker *checker,
+                                                                      ir::CallExpression *expr)
+{
+    // We try to find the most suitable signature for a.foo(...) both in ExtensionFunctionType and ClassMethodType.
+    // So we temporarily transfer expr node from `a.foo(...)` to `a.foo(a, ...)`.
+    // For allCallSignatures in ClassMethodType, temporarily insert the dummyReceiver into their signatureInfo,
+    // otherwise we can't get the most suitable classMethod signature if all the extensionFunction signature mismatched.
+    ArenaVector<Signature *> signatures(checker->Allocator()->Adapter());
+    signatures.insert(signatures.end(), type->ClassMethodType()->CallSignatures().begin(),
+                      type->ClassMethodType()->CallSignatures().end());
+    signatures.insert(signatures.end(), type->ExtensionMethodType()->CallSignatures().begin(),
+                      type->ExtensionMethodType()->CallSignatures().end());
+
+    auto *memberExpr = expr->Callee()->AsMemberExpression();
+    auto *dummyReceiver = memberExpr->Object();
+    expr->Arguments().insert(expr->Arguments().begin(), dummyReceiver);
+    auto *signature = MatchSignatureForDummyReceiver(type, checker, expr, signatures, dummyReceiver);
 
     if (signature != nullptr) {
         if (signature->Owner()->Name() == compiler::Signatures::ETS_GLOBAL) {
@@ -511,9 +540,62 @@ checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::E
     return signature;
 }
 
+checker::Signature *GetMostSpecificSigForImplicitThisCall(checker::ETSExtensionFuncHelperType *type,
+                                                          checker::ETSChecker *checker, ir::CallExpression *expr)
+{
+    // Implicit this Match priority : Receiver.Method > ExtensionFunction > Function
+    // First convert `foo(...) ` to `foo(a, ...) `, matching Receiver.Method and ExtensionFunction
+    // If the match fails, follow `foo(...) ` to match the function and remove the implicit this flag
+    ArenaVector<Signature *> signatures(checker->Allocator()->Adapter());
+    signatures.insert(signatures.end(), type->ClassMethodType()->CallSignatures().begin(),
+                      type->ClassMethodType()->CallSignatures().end());
+    signatures.insert(signatures.end(), type->ExtensionMethodType()->CallSignatures().begin(),
+                      type->ExtensionMethodType()->CallSignatures().end());
+
+    auto *thisIdentifier =
+        checker->Allocator()->New<ir::Identifier>(varbinder::TypedBinder::MANDATORY_PARAM_THIS, checker->Allocator());
+    thisIdentifier->SetParent(expr);
+    expr->Arguments().insert(expr->Arguments().begin(), thisIdentifier);
+    auto *signature = MatchSignatureForDummyReceiver(type, checker, expr, signatures, thisIdentifier);
+
+    if (signature == nullptr) {
+        expr->Callee()->AsIdentifier()->RemoveImplicitThis();
+        signatures.clear();
+        signatures.insert(signatures.end(), type->ExtensionMethodType()->CallSignatures().begin(),
+                          type->ExtensionMethodType()->CallSignatures().end());
+
+        signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start(),
+                                                                    checker::TypeRelationFlag::NO_THROW);
+        if (signature != nullptr) {
+            auto *var = signature->Function()->Id()->Variable();
+            expr->AsCallExpression()->Callee()->AsIdentifier()->SetVariable(var);
+        }
+        return signature;
+    }
+
+    if (signature->Owner()->Name() != compiler::Signatures::ETS_GLOBAL) {
+        auto *var = type->ClassMethodType()->Variable();
+        expr->AsCallExpression()->Callee()->AsIdentifier()->SetVariable(var);
+    }
+
+    return signature;
+}
+
 checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
                                                              checker::ETSChecker *checker, ir::CallExpression *expr)
 {
+    Signature *signature = nullptr;
+    // Implicit this call in lambda with receiver body, may be Receiver.Method or ExtensionFunction or Function
+    // Priority:Receiver.Method > ExtensionFunction > Function
+    if (expr->Callee()->IsIdentifier() && expr->Callee()->AsIdentifier()->IsImplicitThis()) {
+        signature = GetMostSpecificSigForImplicitThisCall(type, checker, expr);
+        if (signature == nullptr) {
+            checker->ThrowSignatureMismatch(type->ExtensionMethodType()->CallSignatures(), expr->Arguments(),
+                                            expr->Start(), "call");
+        }
+        return signature;
+    }
+
     ASSERT(expr->Callee()->IsMemberExpression());
     auto *calleeObj = expr->Callee()->AsMemberExpression()->Object();
     bool isCalleeObjETSGlobal =
@@ -522,7 +604,6 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
     // 1.`a.foo` is private method call of class A;
     // 2.`a.foo` is extension function of `A`(function with receiver `A`)
     // 3.`a.foo` is public method call of class A;
-    Signature *signature = nullptr;
     if (checker->IsTypeIdenticalTo(checker->Context().ContainingClass(), calleeObj->TsType()) || isCalleeObjETSGlobal) {
         // When called `a.foo` in `a.anotherFunc`, we should find signature through private or protected method firstly.
         signature = ResolveCallForClassMethod(type, checker, expr, checker::TypeRelationFlag::NO_THROW);

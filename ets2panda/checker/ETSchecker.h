@@ -578,6 +578,7 @@ public:
     void ConcatConstantString(util::UString &target, Type *type);
     Type *HandleStringConcatenation(Type *leftType, Type *rightType);
     Type *ResolveIdentifier(ir::Identifier *ident);
+    Type *ResolveImplicitThisIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
     ETSFunctionType *FindFunctionInVectorGivenByName(util::StringView name, ArenaVector<ETSFunctionType *> &list);
     void MergeComputedAbstracts(ArenaVector<ETSFunctionType *> &merged, ArenaVector<ETSFunctionType *> &current);
     void MergeSignatures(ETSFunctionType *target, ETSFunctionType *source);
