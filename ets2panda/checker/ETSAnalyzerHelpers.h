@@ -49,6 +49,11 @@ checker::Signature *ResolveCallForClassMethod(checker::ETSFunctionType *function
 checker::Signature *GetMostSpecificSigFromExtensionFuncAndClassMethod(checker::ETSExtensionFuncHelperType *type,
                                                                       checker::ETSChecker *checker,
                                                                       ir::CallExpression *expr);
+checker::Signature *MatchSignatureForDummyReceiver(checker::ETSExtensionFuncHelperType *type,
+                                                   checker::ETSChecker *checker, ir::CallExpression *expr,
+                                                   ArenaVector<Signature *> &signatures, ir::Expression *dummyReceiver);
+checker::Signature *GetMostSpecificSigForImplicitThisCall(checker::ETSExtensionFuncHelperType *type,
+                                                          checker::ETSChecker *checker, ir::CallExpression *expr);
 checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
                                                              checker::ETSChecker *checker, ir::CallExpression *expr);
 ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, checker::ETSUnionType *etsUnionType);
