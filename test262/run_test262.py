@@ -118,6 +118,8 @@ def parse_args():
                         help="Choose one of them")
     parser.add_argument('--ark-frontend-binary',
                         help="ark frontend conversion binary tool")
+    parser.add_argument('--icu-data-path',
+                        help="ark frontend conversion binary tool")
     parser.add_argument('--ark-arch',
                         default=DEFAULT_ARK_ARCH,
                         nargs='?', choices=ARK_ARCH_LIST, type=str,
@@ -714,7 +716,7 @@ def get_host_args_of_product_name(args):
 
 def get_host_args_of_host_type(args, host_args, ark_tool, ark_aot_tool, libs_dir, ark_frontend,
                                ark_frontend_binary, opt_level, es2abc_thread_count,
-                               merge_abc_binary, merge_abc_mode, product_name):
+                               merge_abc_binary, merge_abc_mode, product_name, icu_data_path):
     host_args = f"-B test262/run_sunspider.py "
     host_args += f"--ark-tool={ark_tool} "
     if args.ark_aot:
@@ -732,6 +734,7 @@ def get_host_args_of_host_type(args, host_args, ark_tool, ark_aot_tool, libs_dir
     host_args += f"--ark-frontend={ark_frontend} "
     host_args += f"--ark-frontend-binary={ark_frontend_binary} "
     host_args += f"--opt-level={opt_level} "
+    host_args += f"--icu-data-path={icu_data_path} "
     host_args += f"--es2abc-thread-count={es2abc_thread_count} "
     host_args += f"--merge-abc-binary={merge_abc_binary} "
     host_args += f"--merge-abc-mode={merge_abc_mode} "
@@ -740,7 +743,6 @@ def get_host_args_of_host_type(args, host_args, ark_tool, ark_aot_tool, libs_dir
         host_args = f"{host_args}--abc2program "
     if args.enable_arkguard:
         host_args = f"{host_args}--enable-arkguard "
-
     return host_args
 
 
@@ -777,6 +779,7 @@ def get_host_args(args, host_type):
     merge_abc_binary = DEFAULT_MERGE_ABC_BINARY
     merge_abc_mode = DEFAULT_MERGE_ABC_MODE
     product_name = DEFAULT_PRODUCT_NAME
+    icu_data_path = DEFAULT_ICU_PATH
 
     if args.product_name:
         ark_tool, libs_dir, ark_aot_tool, merge_abc_binary = get_host_args_of_product_name(args)
@@ -808,13 +811,15 @@ def get_host_args(args, host_type):
     if args.merge_abc_binary:
         merge_abc_binary = args.merge_abc_binary
 
+    if args.icu_data_path:
+        icu_data_path = args.icu_data_path
     if args.merge_abc_mode:
         merge_abc_mode = args.merge_abc_mode
 
     if host_type == DEFAULT_HOST_TYPE:
         host_args = get_host_args_of_host_type(args, host_args, ark_tool, ark_aot_tool, libs_dir, ark_frontend,
                                                ark_frontend_binary, opt_level, es2abc_thread_count,
-                                               merge_abc_binary, merge_abc_mode, product_name)
+                                               merge_abc_binary, merge_abc_mode, product_name, icu_data_path)
 
     if args.ark_arch != ark_arch:
         host_args = get_host_args_of_ark_arch(args, host_args)
@@ -853,7 +858,6 @@ def run_test262_test(args):
     test_cmd.append(f"--test262Dir={DATA_DIR}")
     if args.test_list:
         test_cmd.append("--isTestListSet")
-
     if args.babel:
         test_cmd.append("--preprocessor='test262/babel-preprocessor.js'")
     test_cmd.append(DEFAULT_OTHER_ARGS)
