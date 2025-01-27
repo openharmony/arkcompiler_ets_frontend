@@ -30,6 +30,7 @@ using ark::es2panda::compiler::ast_verifier::ArithmeticOperationValid;
 using ark::es2panda::compiler::ast_verifier::NodeHasParent;
 using ark::es2panda::compiler::ast_verifier::NodeHasSourceRange;
 using ark::es2panda::compiler::ast_verifier::NodeHasType;
+using ark::es2panda::compiler::ast_verifier::NoPrimitiveTypes;
 using ark::es2panda::compiler::ast_verifier::SequenceExpressionHasLastType;
 using ark::es2panda::compiler::ast_verifier::VariableHasEnclosingScope;
 using ark::es2panda::compiler::ast_verifier::VariableHasScope;
@@ -195,6 +196,22 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
 
     const auto &messages = VerifyNode<ArithmeticOperationValid>(arithmeticExpression.AsBinaryExpression());
     ASSERT_EQ(messages.size(), 1);
+}
+
+TEST_F(ASTVerifierTest, PrimitiveType)
+{
+    DiagnosticEngine de {};
+    ETSChecker etschecker {de};
+
+    auto ast = BooleanLiteral(true);
+    ast.SetTsType(etschecker.CreateETSBooleanType(true));
+
+    auto messages = VerifyNode<NoPrimitiveTypes>(&ast);
+    ASSERT_EQ(messages.size(), 1);
+    std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured();
+    messages = VerifyNode<NoPrimitiveTypes>(&ast);
+    ASSERT_EQ(messages.size(), 0);
+    std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured(false);
 }
 
 TEST_F(ASTVerifierTest, SequenceExpressionType)
