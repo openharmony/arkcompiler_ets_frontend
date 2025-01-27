@@ -145,6 +145,11 @@ void ImportExportDecls::VisitClassDeclaration(ir::ClassDeclaration *classDecl)
     fieldMap_.emplace(classDecl->Definition()->Ident()->Name(), classDecl);
 }
 
+void ImportExportDecls::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
+{
+    fieldMap_.emplace(enumDecl->Key()->Name(), enumDecl);
+}
+
 void ImportExportDecls::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl)
 {
     fieldMap_.emplace(typeAliasDecl->Id()->Name(), typeAliasDecl);
