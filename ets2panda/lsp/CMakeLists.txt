@@ -15,6 +15,7 @@ set(ES2PANDA_LSP_SRC
   ./src/api.cpp
   ./src/classifier.cpp
   ./src/internal_api.cpp
+  ./src/cancellation_token.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
