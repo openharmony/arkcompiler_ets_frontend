@@ -17,12 +17,13 @@
 #define ES2PANDA_LSP_INCLUDE_CLASSIFIER_H
 
 #include <cstddef>
+#include "lexer/lexer.h"
 #include "lexer/token/token.h"
 #include "public/es2panda_lib.h"
 
 namespace ark::es2panda::lsp {
 
-enum class ClassificationTypeNames {
+enum class ClassificationType {
     IDENTIFIER,
     KEYWORD,
     NUMERIC_LITERAL,
@@ -34,7 +35,6 @@ enum class ClassificationTypeNames {
     CLASS_NAME,
     ENUM_NAME,
     INTERFACE_NAME,
-    MODULE_NAME,
     TYPE_PARAMETER_NAME,
     TYPE_ALIAS_NAME,
     PARAMETER_NAME,
@@ -46,10 +46,12 @@ struct ClassifiedSpan {
     char const *name;
 };
 
-ClassificationTypeNames GetClassificationType(const lexer::Token &token);
-char const *ClassificationTypeToString(ClassificationTypeNames type);
-ArenaVector<ClassifiedSpan *> GetEncodedSyntacticClassifications(es2panda_Context *context, size_t startPos,
-                                                                 size_t length);
+std::unique_ptr<lexer::Lexer> InitLexer(es2panda_Context *context);
+ClassificationType GetClassificationType(const lexer::Token &token);
+ClassificationType AstNodeTypeToClassificationType(ir::AstNodeType type);
+char const *ClassificationTypeToString(ClassificationType type);
+ArenaVector<ClassifiedSpan *> GetSyntacticClassifications(es2panda_Context *context, size_t startPos, size_t length);
+ArenaVector<ClassifiedSpan *> GetSemanticClassifications(es2panda_Context *context, size_t startPos, size_t length);
 
 }  // namespace ark::es2panda::lsp
 
