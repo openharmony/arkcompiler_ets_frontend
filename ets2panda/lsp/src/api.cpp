@@ -77,9 +77,18 @@ extern "C" TextSpan *GetSpanOfEnclosingComment(char const *fileName, size_t pos,
                : nullptr;
 }
 
-LSPAPI g_lspImpl = {
-    GetDefinitionAtPosition, GetFileReferences, GetPrecedingToken, GetCurrentTokenValue, GetSpanOfEnclosingComment,
-};
+extern "C" ArenaVector<Diagnostic *> GetSemanticDiagnostics(char const *fileName)
+{
+    Initializer &initializer = Initializer::GetInstance();
+    auto allocator = initializer.Allocator();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto semanticDiagnostics = GetSemanticDiagnosticsForFile(context, allocator);
+    initializer.DestroyContext(context);
+    return semanticDiagnostics;
+}
+
+LSPAPI g_lspImpl = {GetDefinitionAtPosition, GetFileReferences,         GetPrecedingToken,
+                    GetCurrentTokenValue,    GetSpanOfEnclosingComment, GetSemanticDiagnostics};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()

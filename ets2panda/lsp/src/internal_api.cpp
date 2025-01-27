@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <string>
 #include "api.h"
 #include "internal_api.h"
 #include "checker/types/type.h"
@@ -351,6 +352,80 @@ CommentRange *GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, 
     std::string sourceCode(ctx->parserProgram->SourceCode());
     CommentRange *result = GetRangeOfCommentFromContext(sourceCode, leftPos, rightPos, pos, allocator);
     return result;
+}
+
+// convert from es2panda error type to LSP severity
+DiagnosticSeverity GetSeverity(ErrorType errorType)
+{
+    ASSERT(errorType != ErrorType::INVALID);
+    if (errorType == ErrorType::ETS_WARNING) {
+        return DiagnosticSeverity::Warning;
+    }
+    if (errorType == ErrorType::SYNTAX || errorType == ErrorType::TYPE || errorType == ErrorType::GENERIC) {
+        return DiagnosticSeverity::Error;
+    }
+    throw std::runtime_error("Unknown error type!");
+}
+
+const char *GetCategory(ErrorType errorType)
+{
+    switch (errorType) {
+        case ErrorType::SYNTAX:
+            return "syntax";
+        case ErrorType::TYPE:
+            return "semantic";
+        default:
+            return "invailde";
+    }
+}
+
+Diagnostic *CreateDiagnosticForError(es2panda_Context *context, const Error &error, ArenaAllocator *allocator)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
+    auto offset = index.GetOffset(lexer::SourceLocation(error.Line(), error.Col()));
+    auto touchingToken = GetTouchingToken(context, offset, false);
+    auto sourceRange = touchingToken->Range();
+    auto sourceStartLocation = index.GetLocation(sourceRange.start);
+    auto sourceEndLocation = index.GetLocation(sourceRange.end);
+    auto range = Range(Position(sourceStartLocation.line, sourceStartLocation.col),
+                       Position(sourceEndLocation.line, sourceEndLocation.col));
+    auto severity = GetSeverity(error.Type());
+    auto code = error.ErrorCode();
+    const char *message = StdStringToCString(allocator, error.Message());
+    auto codeDescription = CodeDescription("test code description");
+    auto source = StdStringToCString(allocator, touchingToken->DumpEtsSrc());
+    auto tags = ArenaVector<DiagnosticTag>(allocator->Adapter());
+    auto relatedInformation = ArenaVector<DiagnosticRelatedInformation>(allocator->Adapter());
+    auto data = GetCategory(error.Type());
+    auto diagnostic = allocator->New<Diagnostic>(range, tags, relatedInformation, severity, code, message,
+                                                 codeDescription, source, data);
+    return diagnostic;
+}
+
+ArenaVector<Diagnostic *> CreateDiagnostics(es2panda_Context *context, ArenaAllocator *allocator)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto &errors = ctx->checker->ErrorLogger()->Log();
+    ArenaVector<Diagnostic *> diagnostics(allocator->Adapter());
+    diagnostics.reserve(errors.size());
+    for (auto &error : errors) {
+        diagnostics.push_back(CreateDiagnosticForError(context, error, allocator));
+    }
+    return diagnostics;
+}
+
+ArenaVector<Diagnostic *> GetSemanticDiagnosticsForFile(es2panda_Context *context, ArenaAllocator *allocator)
+{
+    ArenaVector<Diagnostic *> semanticDiagnostics(allocator->Adapter());
+    auto diagnostics = CreateDiagnostics(context, allocator);
+    for (auto diagnostic : diagnostics) {
+        auto category = std::get_if<const char *>(&diagnostic->data_);
+        if (category != nullptr && strcmp(*category, "semantic") == 0) {
+            semanticDiagnostics.push_back(diagnostic);
+        }
+    }
+    return semanticDiagnostics;
 }
 
 }  // namespace ark::es2panda::lsp

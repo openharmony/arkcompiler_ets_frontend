@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -98,5 +98,32 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
     }
 
     return SourceLocation(line + 1, col + 1);
+}
+
+size_t LineIndex::GetOffset(SourceLocation loc) const noexcept
+{
+    ASSERT(loc.line != 0);
+    ASSERT(loc.col != 0);
+    size_t line = loc.line - 1;
+    size_t col = loc.col - 1;
+
+    if (line >= entries_.size()) {
+        return 0;
+    }
+
+    const auto &entry = entries_[line];
+    size_t offset = entry.lineStart;
+
+    for (const auto &range : entry.ranges) {
+        if (col < range.cnt) {
+            offset += col * range.byteSize;
+            break;
+        }
+
+        col -= range.cnt;
+        offset += range.cnt * range.byteSize;
+    }
+
+    return offset;
 }
 }  // namespace ark::es2panda::lexer

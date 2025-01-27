@@ -19,8 +19,6 @@
 #include <cstddef>
 
 #include "ir/astNode.h"
-#include "lsp/include/api.h"
-#include "lsp/include/internal_api.h"
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 
@@ -84,34 +82,13 @@ TEST_F(LSPAPITests, GetDefinitionAtPosition)
     impl_->DestroyContext(ctx);
 }
 
-Range CreateTestRange()
-{
-    int const endPos = 10;
-    Position start(1, 0);
-    Position end(1, endPos);
-    return Range(start, end);
-}
-
-class DiagnosticTest : public ::testing::Test {
-public:
-    void SetUp() override
-    {
-        range_ = CreateTestRange();
-        message_ = "Test message";
-    }
-
-protected:
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    Range range_;
-    std::string message_;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
-
-TEST_F(DiagnosticTest, ConstructorAndField)
+TEST_F(LSPAPITests, DiagnosticConstructorAndField)
 {
     int const errorCode = 404;
     int const defaultCharacter = 10;
-    Diagnostic diagnostic(range_, DiagnosticSeverity::Error, errorCode, message_);
+    ark::ArenaVector<DiagnosticTag> tags(allocator_->Adapter());
+    ark::ArenaVector<DiagnosticRelatedInformation> relatedInfoList(allocator_->Adapter());
+    Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Error, errorCode, message_.c_str());
 
     EXPECT_EQ(diagnostic.range_.start.line_, 1);
     EXPECT_EQ(diagnostic.range_.end.character_, defaultCharacter);
@@ -120,30 +97,35 @@ TEST_F(DiagnosticTest, ConstructorAndField)
     EXPECT_EQ(std::get<int>(diagnostic.code_), errorCode);
 }
 
-TEST_F(DiagnosticTest, CodeDescriptionOptional)
+TEST_F(LSPAPITests, DiagnosticCodeDescriptionOptional)
 {
     CodeDescription codeDesc;
     codeDesc.href_ = "http://example.com/error/404";
     int const errorCode = 404;
+    ark::ArenaVector<DiagnosticTag> tags(allocator_->Adapter());
+    ark::ArenaVector<DiagnosticRelatedInformation> relatedInfoList(allocator_->Adapter());
 
-    Diagnostic diagnostic(range_, DiagnosticSeverity::Error, errorCode, message_, codeDesc);
+    Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Error, errorCode, message_.c_str(),
+                          codeDesc);
 
     const auto &codeDescription = diagnostic.codeDescription_;
     EXPECT_EQ(codeDescription.href_, "http://example.com/error/404");
 }
 
-TEST_F(DiagnosticTest, TagsAndRelatedInformation)
+TEST_F(LSPAPITests, DiagnosticTagsAndRelatedInformation)
 {
-    std::vector<DiagnosticTag> tags = {DiagnosticTag::Unnecessary};
-    std::vector<DiagnosticRelatedInformation> relatedInfoList;
+    ark::ArenaVector<DiagnosticTag> tags(allocator_->Adapter());
+    tags.push_back(DiagnosticTag::Unnecessary);
+    ark::ArenaVector<DiagnosticRelatedInformation> relatedInfoList(allocator_->Adapter());
     DiagnosticRelatedInformation relatedInfo;
     relatedInfo.location_ = Location {"www.test.uri", range_};
     relatedInfo.message_ = "Related information message";
     relatedInfoList.push_back(relatedInfo);
     int const errorCode = 200;
+    CodeDescription des = {};
 
-    Diagnostic diagnostic(range_, DiagnosticSeverity::Information, errorCode, message_, {}, "default", tags,
-                          relatedInfoList);
+    Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Information, errorCode, message_.c_str(),
+                          des, "default");
 
     const auto &diagnosticTags = diagnostic.tags_;
     EXPECT_EQ(diagnosticTags.size(), 1);
@@ -154,14 +136,17 @@ TEST_F(DiagnosticTest, TagsAndRelatedInformation)
     EXPECT_EQ(relatedInformation[0].message_, "Related information message");
 }
 
-TEST_F(DiagnosticTest, DataField)
+TEST_F(LSPAPITests, DiagnosticDataField)
 {
     int const dataValue = 42;
-    std::variant<int, std::string> data = dataValue;
+    std::variant<int, const char *> data = dataValue;
     int const errorCode = 400;
     int const dataResult = 42;
+    ark::ArenaVector<DiagnosticTag> tags(allocator_->Adapter());
+    ark::ArenaVector<DiagnosticRelatedInformation> relatedInfoList(allocator_->Adapter());
 
-    Diagnostic diagnostic(range_, DiagnosticSeverity::Error, errorCode, message_, {}, {}, {}, {}, data);
+    Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Error, errorCode, message_.c_str(), {}, {},
+                          data);
 
     const auto &diagnosticData = diagnostic.data_;
     EXPECT_EQ(std::get<int>(diagnosticData), dataResult);
@@ -532,4 +517,66 @@ TEST_F(LSPAPITests, GetCurrentTokenValue3)
     std::string expect = "ab";
     ASSERT_EQ(result, expect);
     impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetSemanticDiagnosticsForFile1)
+{
+    const char *source = R"delimiter(
+function add(a: number, b: number) {
+    return a + b;
+}
+let n = 333;
+let res = add(n, n);
+)delimiter";
+    es2panda_Context *context = CreateContextAndProceedToState(impl_, cfg_, source, "GetSemanticDiagnosticsNoError.sts",
+                                                               ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(context), ES2PANDA_STATE_CHECKED);
+    auto allocator = reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->allocator;
+    auto semanticDiagnostics = ark::es2panda::lsp::GetSemanticDiagnosticsForFile(context, allocator);
+    ASSERT_EQ(semanticDiagnostics.size(), 0);
+    impl_->DestroyContext(context);
+}
+
+TEST_F(LSPAPITests, GetSemanticDiagnosticsForFile2)
+{
+    const char *source = R"delimiter(
+const a: number = "hello";
+function add(a: number, b: number): number {
+    return a + b;
+}
+add("1", 2);
+)delimiter";
+    es2panda_Context *context = CreateContextAndProceedToState(impl_, cfg_, source, "GetSemanticDiagnosticsForFile.sts",
+                                                               ES2PANDA_STATE_CHECKED);
+    auto allocator = reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->allocator;
+    auto semanticDiagnostics = ark::es2panda::lsp::GetSemanticDiagnosticsForFile(context, allocator);
+    auto const expectedErrorCount = 3;
+    ASSERT_EQ(semanticDiagnostics.size(), expectedErrorCount);
+    auto const expectedFirstStartLine = 2;
+    auto const expectedFirstStartCharacter = 19;
+    auto const expectedFirstEndLine = 2;
+    auto const expectedFirstEndCharacter = 26;
+    ASSERT_EQ(semanticDiagnostics[0]->range_.start.line_, expectedFirstStartLine);
+    ASSERT_EQ(semanticDiagnostics[0]->range_.start.character_, expectedFirstStartCharacter);
+    ASSERT_EQ(semanticDiagnostics[0]->range_.end.line_, expectedFirstEndLine);
+    ASSERT_EQ(semanticDiagnostics[0]->range_.end.character_, expectedFirstEndCharacter);
+    ASSERT_EQ(semanticDiagnostics[0]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(semanticDiagnostics[0]->code_), 1);
+    ASSERT_STREQ(semanticDiagnostics[0]->message_, R"(Type '"hello"' cannot be assigned to type 'double')");
+    ASSERT_STREQ(semanticDiagnostics[0]->codeDescription_.href_, "test code description");
+    ASSERT_STREQ(std::get<const char *>(semanticDiagnostics[0]->data_), "semantic");
+    auto const expectedSecondStartLine = 6;
+    auto const expectedSecondStartCharacter = 5;
+    auto const expectedSecondEndLine = 6;
+    auto const expectedSecondEndCharacter = 8;
+    ASSERT_EQ(semanticDiagnostics[1]->range_.start.line_, expectedSecondStartLine);
+    ASSERT_EQ(semanticDiagnostics[1]->range_.start.character_, expectedSecondStartCharacter);
+    ASSERT_EQ(semanticDiagnostics[1]->range_.end.line_, expectedSecondEndLine);
+    ASSERT_EQ(semanticDiagnostics[1]->range_.end.character_, expectedSecondEndCharacter);
+    ASSERT_EQ(semanticDiagnostics[1]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(semanticDiagnostics[1]->code_), 1);
+    ASSERT_STREQ(semanticDiagnostics[1]->message_, R"(Type '"1"' is not compatible with type 'double' at index 1)");
+    ASSERT_STREQ(semanticDiagnostics[1]->codeDescription_.href_, "test code description");
+    ASSERT_STREQ(std::get<const char *>(semanticDiagnostics[1]->data_), "semantic");
+    impl_->DestroyContext(context);
 }
