@@ -97,6 +97,7 @@
 #include "ir/ts/tsNonNullExpression.h"
 #include "ir/ts/tsThisType.h"
 #include "generated/signatures.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -694,8 +695,7 @@ ir::TSInterfaceDeclaration *ETSParser::ParseInterfaceBody(ir::Identifier *name, 
             member->Type() == ir::AstNodeType::STRUCT_DECLARATION ||
             member->Type() == ir::AstNodeType::TS_ENUM_DECLARATION ||
             member->Type() == ir::AstNodeType::TS_INTERFACE_DECLARATION) {
-            LogSyntaxError(
-                "Local type declaration (class, struct, interface and enum) support is not yet implemented.");
+            LogError(diagnostic::IMPROPER_NESTING_INTERFACE);
         }
     }
 

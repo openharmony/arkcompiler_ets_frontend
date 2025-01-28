@@ -18,4 +18,4 @@ class A{
 
 
 /* @@? 16:6 Error SyntaxError: Annotations can only be declared at the top level. */
-/* @@? 16:6 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 16:6 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */

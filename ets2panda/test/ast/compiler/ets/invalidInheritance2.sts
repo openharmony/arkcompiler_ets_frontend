@@ -26,5 +26,5 @@ class C extends B {
     }
 }
 
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
+/* @@@ label Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected.  */
 /* @@? 23:17 Error TypeError: Cannot inherit from class B, because class a is inherited with a different declaration type */

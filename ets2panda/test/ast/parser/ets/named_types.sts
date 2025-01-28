@@ -30,8 +30,8 @@ class auxilliary  {
     }
 }
 
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected.  */
+/* @@@ label1 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 19:12 Error TypeError: Cannot find type 'ets'. */
 /* @@? 19:16 Error TypeError: 'lang' type does not exist. */
 /* @@? 19:21 Error TypeError: 'String' type does not exist. */

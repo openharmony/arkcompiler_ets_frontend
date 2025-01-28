@@ -204,16 +204,16 @@ function main(): void {
 /* @@? 59:23 Error SyntaxError: Rest parameter should be of an array type. */
 /* @@? 63:26 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 67:7 Error TypeError: Variable 'A' has already been declared. */
-/* @@? 68:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 68:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 73:7 Error TypeError: Variable 'A' has already been declared. */
-/* @@? 74:11 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 74:11 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 77:20 Error TypeError: Interface expected here. */
 /* @@? 77:22 Error TypeError: 'I' type does not exist. */
 /* @@? 78:22 Error TypeError: Method fee(): int in B not overriding any method */
 /* @@? 83:7 Error TypeError: Variable 'A' has already been declared. */
-/* @@? 84:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 84:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 92:7 Error TypeError: Variable 'A' has already been declared. */
-/* @@? 93:3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 93:3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 103:25 Error SyntaxError: Rest parameter should be of an array type. */
 /* @@? 104:32 Error SyntaxError: Rest parameter should be of an array type. */
 /* @@? 115:26 Error SyntaxError: Unexpected token 'case'. */

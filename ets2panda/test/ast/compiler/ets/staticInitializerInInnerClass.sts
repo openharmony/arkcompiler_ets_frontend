@@ -31,6 +31,6 @@ class Outer {
     }
 }
 
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected.  */
+/* @@@ label1 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 20:9 Error TypeError: Static initializer is not allowed in inner class. */
