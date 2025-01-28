@@ -1003,7 +1003,12 @@ bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpres
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
 
     if (objectType->IsETSDynamicType()) {
-        etsg->LoadElementDynamic(expr, objReg);
+        if (etsg->Checker()->AsETSChecker()->Relation()->IsSupertypeOf(etsg->Checker()->GlobalBuiltinETSStringType(),
+                                                                       expr->Property()->TsType())) {
+            etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, expr->Property());
+        } else {
+            etsg->LoadElementDynamic(expr, objReg);
+        }
     } else {
         etsg->LoadArrayElement(expr, objReg);
     }

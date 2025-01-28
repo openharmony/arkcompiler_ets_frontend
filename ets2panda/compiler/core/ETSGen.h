@@ -22,6 +22,7 @@
 #include "compiler/core/targetTypeContext.h"
 #include "checker/ETSchecker.h"
 #include "util/helpers.h"
+#include <variant>
 
 namespace ark::es2panda::compiler {
 
@@ -71,7 +72,7 @@ public:
     void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                               const util::StringView &propName);
     void LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                             const util::StringView &propName);
+                             std::variant<util::StringView, const ark::es2panda::ir::Expression *> property);
 
     void StoreElementDynamic(const ir::AstNode *node, VReg objectReg, VReg index);
     void LoadElementDynamic(const ir::AstNode *node, VReg objectReg);
