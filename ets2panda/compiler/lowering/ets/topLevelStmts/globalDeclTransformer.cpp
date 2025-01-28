@@ -72,9 +72,9 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
         auto id = declarator->Id()->AsIdentifier();
         auto typeAnn = id->TypeAnnotation();
         id->SetTsTypeAnnotation(nullptr);
-        auto *field = util::NodeAllocator::ForceSetParent<ir::ClassProperty>(allocator_, id->Clone(allocator_, nullptr),
-                                                                             declarator->Init(), typeAnn,
-                                                                             varDecl->Modifiers(), allocator_, false);
+        auto *field = util::NodeAllocator::ForceSetParent<ir::ClassProperty>(
+            allocator_, id->Clone(allocator_, nullptr), declarator->Init(), typeAnn,
+            varDecl->Modifiers() | declarator->Modifiers(), allocator_, false);
         field->SetRange(declarator->Range());
 
         if (!varDecl->Annotations().empty()) {
@@ -85,7 +85,8 @@ void GlobalDeclTransformer::VisitVariableDeclaration(ir::VariableDeclaration *va
             field->SetAnnotations(std::move(propAnnotations));
         }
 
-        if (varDecl->IsExported() && varDecl->HasExportAlias()) {
+        if ((varDecl->IsExported() || declarator->IsExported()) &&
+            (varDecl->HasExportAlias() || declarator->HasExportAlias())) {
             field->AddAstNodeFlags(ir::AstNodeFlags::HAS_EXPORT_ALIAS);
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,7 @@
 #include "ir/annotationAllowed.h"
 #include "ir/statement.h"
 #include "ir/statements/annotationUsage.h"
+#include "variableDeclarator.h"
 
 namespace ark::es2panda::ir {
 class VariableDeclarator;
@@ -54,6 +55,16 @@ public:
     const ArenaVector<Decorator *> &Decorators() const
     {
         return decorators_;
+    }
+
+    VariableDeclarator *GetDeclaratorByName(util::StringView name) const
+    {
+        for (VariableDeclarator *declarator : declarators_) {
+            if (declarator->Id()->AsIdentifier()->Name().Compare(name) == 0) {
+                return declarator;
+            }
+        }
+        return nullptr;
     }
 
     const ArenaVector<Decorator *> *DecoratorsPtr() const override

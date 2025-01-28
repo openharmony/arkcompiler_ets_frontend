@@ -706,7 +706,10 @@ static void CheckAssignForDeclare(ir::Identifier *ident, ir::TypeNode *typeAnnot
         return;
     }
     const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
-    if (isConst && !init->IsNumberLiteral() && !init->IsStringLiteral()) {
+    bool numberLiteralButNotBigInt = init->IsNumberLiteral() && !init->IsBigIntLiteral();
+    bool multilineLiteralWithNoEmbedding =
+        init->IsTemplateLiteral() && init->AsTemplateLiteral()->Expressions().empty();
+    if (isConst && !numberLiteralButNotBigInt && !init->IsStringLiteral() && !multilineLiteralWithNoEmbedding) {
         check->LogTypeError(
             {"A \'const\' initializer in an ambient context must be a string or numeric literal: ", ident->Name()},
             init->Start());
