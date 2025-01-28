@@ -580,3 +580,66 @@ add("1", 2);
     ASSERT_STREQ(std::get<const char *>(semanticDiagnostics[1]->data_), "semantic");
     impl_->DestroyContext(context);
 }
+
+TEST_F(LSPAPITests, GetTokenPosOfNode1)
+{
+    using ark::es2panda::ir::AstNode;
+
+    es2panda_Context *ctx =
+        CreateContextAndProceedToState(impl_, cfg_, "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",
+                                       "token-pos-identifier.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
+    auto targetNode =
+        ast->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "A"; });
+
+    ASSERT_NE(targetNode, nullptr);
+    auto result = ark::es2panda::lsp::GetTokenPosOfNode(targetNode);
+    size_t const pos = 51;
+    ASSERT_EQ(result, pos);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetTokenPosOfNode2)
+{
+    using ark::es2panda::ir::AstNode;
+
+    es2panda_Context *ctx =
+        CreateContextAndProceedToState(impl_, cfg_, "function A(a:number, b:number) {\n  return a + b;\n}\nA(1, 2);",
+                                       "token-pos-expression.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
+    auto targetNode = ast->FindChild([](AstNode *node) { return node->IsExpressionStatement(); });
+
+    ASSERT_NE(targetNode, nullptr);
+    auto result = ark::es2panda::lsp::GetTokenPosOfNode(targetNode);
+    size_t const pos = 51;
+    ASSERT_EQ(result, pos);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetTokenPosOfNode3)
+{
+    using ark::es2panda::ir::AstNode;
+
+    es2panda_Context *ctx = CreateContextAndProceedToState(
+        impl_, cfg_,
+        "let number_literal: number = 1234;\nlet string_literal: string = \"hello\";\nconst str_property = \"foo\";\n",
+        "token-pos-literal.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
+    auto targetNode = ast->FindChild(
+        [](AstNode *node) { return node->IsNumberLiteral() && node->AsNumberLiteral()->Str() == "1234"; });
+
+    ASSERT_NE(targetNode, nullptr);
+    auto result = ark::es2panda::lsp::GetTokenPosOfNode(targetNode);
+    size_t const pos = 29;
+    ASSERT_EQ(result, pos);
+
+    impl_->DestroyContext(ctx);
+}
