@@ -20,4 +20,3 @@ let a = {
 
 /* @@@ label Error SyntaxError: Unexpected token, expected: ']'.  */
 /* @@? 16:5 Error TypeError: Cannot infer type for a because class composite needs an explicit target type */
-/* @@? 16:9 Error TypeError: Target type for class composite needs to be an object type, found '*TYPE_ERROR*' */

@@ -49,4 +49,3 @@ export class AccessNSieve {
 /* @@? 29:25 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 29:33 Error TypeError: Unresolved reference i */
 /* @@? 30:28 Error TypeError: Unresolved reference i */
-/* @@? 30:28 Error TypeError: Type '*TYPE_ERROR*' cannot be used as an index type. Only primitive or unboxable integral types can be used as index. */

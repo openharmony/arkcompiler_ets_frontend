@@ -21,12 +21,19 @@
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
+TSQualifiedName::TSQualifiedName(Expression *left, Identifier *right, ArenaAllocator *allocator)
+    : Expression(AstNodeType::TS_QUALIFIED_NAME), left_(left), right_(right), allocator_(allocator)
+{
+    ASSERT(left_ != nullptr && right_ != nullptr);
+}
+
 TSQualifiedName::TSQualifiedName([[maybe_unused]] Tag const tag, TSQualifiedName const &other,
                                  ArenaAllocator *allocator)
     : Expression(static_cast<Expression const &>(other))
 {
-    left_ = other.left_ != nullptr ? other.left_->Clone(allocator, this)->AsExpression() : nullptr;
-    right_ = other.right_ != nullptr ? other.right_->Clone(allocator, this)->AsIdentifier() : nullptr;
+    left_ = other.left_->Clone(allocator, this)->AsExpression();
+    right_ = other.right_->Clone(allocator, this)->AsIdentifier();
+    allocator_ = allocator;
 }
 
 void TSQualifiedName::Iterate(const NodeTraverser &cb) const
@@ -79,9 +86,9 @@ checker::VerifiedType TSQualifiedName::Check(checker::ETSChecker *checker)
     return {this, checker->GetAnalyzer()->Check(this)};
 }
 
-util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const
+util::StringView TSQualifiedName::Name() const
 {
-    util::UString packageName(allocator);
+    util::UString packageName(allocator_);
 
     const auto *iter = this;
 
@@ -92,29 +99,6 @@ util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const
     packageName.Append(iter->Left()->AsIdentifier()->Name());
 
     const ir::AstNode *parent = iter;
-
-    while (parent != nullptr && parent->IsTSQualifiedName()) {
-        packageName.Append('.');
-        packageName.Append(parent->AsTSQualifiedName()->Right()->AsIdentifier()->Name());
-        parent = parent->Parent();
-    }
-
-    return packageName.View();
-}
-
-util::StringView TSQualifiedName::BaseToString(ArenaAllocator *allocator) const
-{
-    util::UString packageName(allocator);
-
-    const auto *iter = this;
-
-    while (iter->Left()->IsTSQualifiedName()) {
-        iter = iter->Left()->AsTSQualifiedName();
-    }
-
-    packageName.Append(iter->Left()->AsIdentifier()->Name());
-
-    const ir::AstNode *parent = iter->Parent();
 
     while (parent != nullptr && parent->IsTSQualifiedName()) {
         packageName.Append('.');

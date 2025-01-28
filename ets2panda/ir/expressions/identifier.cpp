@@ -32,12 +32,12 @@ Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, 
     }
 }
 
-Identifier::Identifier(ArenaAllocator *const allocator) : Identifier(parser::ParserImpl::ERROR_LITERAL, allocator) {}
+Identifier::Identifier(ArenaAllocator *const allocator) : Identifier(ERROR_LITERAL, allocator) {}
 
 Identifier::Identifier(util::StringView const name, ArenaAllocator *const allocator)
     : AnnotatedExpression(AstNodeType::IDENTIFIER), name_(name), decorators_(allocator->Adapter())
 {
-    if (name == parser::ParserImpl::ERROR_LITERAL) {
+    if (name == ERROR_LITERAL) {
         flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
     }
 }
@@ -45,14 +45,14 @@ Identifier::Identifier(util::StringView const name, ArenaAllocator *const alloca
 Identifier::Identifier(util::StringView const name, TypeNode *const typeAnnotation, ArenaAllocator *const allocator)
     : AnnotatedExpression(AstNodeType::IDENTIFIER, typeAnnotation), name_(name), decorators_(allocator->Adapter())
 {
-    if (name == parser::ParserImpl::ERROR_LITERAL) {
+    if (name == ERROR_LITERAL) {
         flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
     }
 }
 
 void Identifier::SetName(const util::StringView &newName) noexcept
 {
-    ASSERT(newName != parser::ParserImpl::ERROR_LITERAL);
+    ASSERT(newName != ERROR_LITERAL);
     name_ = newName;
 }
 
@@ -448,4 +448,12 @@ bool Identifier::CheckDeclarationsPart2(const ir::AstNode *parent, ScriptExtensi
     return false;
 }
 
+std::string Identifier::ToString() const
+{
+    if (!Name().Empty() && Name() != ERROR_LITERAL) {
+        return std::string {Name().Utf8()};
+    }
+
+    return AnnotatedExpression::ToString();
+}
 }  // namespace ark::es2panda::ir

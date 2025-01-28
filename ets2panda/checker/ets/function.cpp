@@ -689,28 +689,35 @@ void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
                                         const lexer::SourcePosition &pos, std::string_view signatureKind)
 {
     if (!arguments.empty() && !signatures.empty()) {
-        std::stringstream ss;
+        std::string msg {};
 
         if (signatures[0]->Function() != nullptr) {
             if (signatures[0]->Function()->IsConstructor()) {
-                ss << util::Helpers::GetClassDefiniton(signatures[0]->Function())->InternalName().Utf8();
+                msg.append(util::Helpers::GetClassDefiniton(signatures[0]->Function())->InternalName().Utf8());
             } else if (signatures[0]->Function()->Id() != nullptr) {
-                ss << signatures[0]->Function()->Id()->Name().Utf8();
+                msg.append(signatures[0]->Function()->Id()->Name().Utf8());
             }
         }
 
-        ss << "(";
+        msg += "(";
 
-        for (uint32_t index = 0; index < arguments.size(); ++index) {
-            arguments[index]->Check(this)->ToString(ss);
+        for (std::size_t index = 0U; index < arguments.size(); ++index) {
+            auto const &argument = arguments[index];
+            Type const *const argumentType = argument->Check(this);
+            if (!argumentType->IsTypeError()) {
+                msg += argumentType->ToString();
+            } else {
+                //  NOTE (DZ): extra cases for some specific nodes can be added here (as for 'ArrowFunctionExpression')
+                msg += argument->ToString();
+            }
 
-            if (index == arguments.size() - 1) {
-                ss << ")";
-                LogTypeError({"No matching ", signatureKind, " signature for ", ss.str().c_str()}, pos);
+            if (index == arguments.size() - 1U) {
+                msg += ")";
+                LogTypeError({"No matching ", signatureKind, " signature for ", msg.c_str()}, pos);
                 return;
             }
 
-            ss << ", ";
+            msg += ", ";
         }
     }
 

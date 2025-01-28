@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_IR_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_H
 
-#include "ir/astNode.h"
 #include "ir/typed.h"
 
 namespace ark::es2panda::ir {
@@ -99,6 +98,8 @@ public:
     }
 
     bool IsBrokenExpression() const noexcept;
+
+    [[nodiscard]] virtual std::string ToString() const;
 
 protected:
     explicit Expression(AstNodeType const type) : TypedAstNode(type) {}

@@ -26,9 +26,7 @@ SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const
 {
     optional_ = other.optional_;
 
-    if (other.argument_ != nullptr) {
-        argument_ = other.argument_->Clone(allocator, this)->AsExpression();
-    }
+    argument_ = other.argument_->Clone(allocator, this)->AsExpression();
 
     for (auto *decorator : other.decorators_) {
         decorators_.emplace_back(decorator->Clone(allocator, this));
@@ -168,5 +166,15 @@ checker::Type *SpreadElement::Check([[maybe_unused]] checker::TSChecker *checker
 checker::VerifiedType SpreadElement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+std::string SpreadElement::ToString() const
+{
+    auto str = Argument()->ToString();
+    if (str == INVALID_EXPRESSION) {
+        return str;
+    }
+
+    return "..." + str;
 }
 }  // namespace ark::es2panda::ir

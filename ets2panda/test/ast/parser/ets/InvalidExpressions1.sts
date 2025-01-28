@@ -80,11 +80,7 @@ let a = [1, 2, 3);
 /* @@? 32:10 Error SyntaxError: Variable 'f' has already been declared. */
 /* @@? 32:10 Error SyntaxError: Variable 'f' has already been declared. */
 /* @@? 38:5 Error SyntaxError: Variable 'a' has already been declared. */
-/* @@? 16:13 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
-/* @@? 16:13 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
 /* @@? 20:5 Error TypeError: Unresolved reference x */
-/* @@? 20:2 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
-/* @@? 20:2 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
 /* @@? 24:18 Error TypeError: The type of parameter 'y' cannot be determined */
 /* @@? 26:5 Error TypeError: Unresolved reference x */
 /* @@? 30:13 Error TypeError: 'import' expressions require string as argument. */

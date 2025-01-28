@@ -22,11 +22,6 @@
 #include "util/ustring.h"
 #include "generated/options.h"
 
-#include <string>
-#include <functional>
-#include <memory>
-#include <unordered_set>
-
 namespace ark::pandasm {
 struct Program;
 }  // namespace ark::pandasm
@@ -100,6 +95,12 @@ enum class ErrorType {
     TYPE,
     ETS_WARNING,
 };
+
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline static constexpr char const ERROR_LITERAL[] = "*ERROR_LITERAL*";
+inline static constexpr char const ERROR_TYPE[] = "*ERROR_TYPE*";
+inline static constexpr char const INVALID_EXPRESSION[] = "...";
+// NOLINTEND(modernize-avoid-c-arrays)
 
 class Error : public std::exception {
 public:

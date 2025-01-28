@@ -1222,7 +1222,7 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
 
         propName->SetRange(Lexer()->GetToken().Loc());
 
-        typeName = AllocNode<ir::TSQualifiedName>(typeName, propName);
+        typeName = AllocNode<ir::TSQualifiedName>(typeName, propName, Allocator());
         typeName->SetRange({typeName->AsTSQualifiedName()->Left()->Start(), Lexer()->GetToken().End()});
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {

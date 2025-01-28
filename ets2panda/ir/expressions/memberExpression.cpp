@@ -502,4 +502,24 @@ MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNo
     clone->SetRange(Range());
     return clone;
 }
+
+std::string MemberExpression::ToString() const
+{
+    auto str1 = object_ != nullptr ? object_->ToString() : std::string {INVALID_EXPRESSION};
+    if (str1 == INVALID_EXPRESSION) {
+        return str1;
+    }
+
+    auto str2 = property_ != nullptr ? property_->ToString() : std::string {INVALID_EXPRESSION};
+
+    if (kind_ == MemberExpressionKind::ELEMENT_ACCESS) {
+        return str1 + '[' + str2 + ']';
+    }
+
+    if (str2 == INVALID_EXPRESSION) {
+        return str1 + str2;
+    }
+
+    return str1 + '.' + str2;
+}
 }  // namespace ark::es2panda::ir
