@@ -111,7 +111,7 @@ function do_checkout() {
 
 GIT_URL=https://gitee.com/rri_opensource/koala_projects.git
 DEST="${DEST:-koala-sig}"
-do_checkout "${GIT_URL}" panda_rev_5-3-cancel-signature "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_6 "${DEST}"
 
 cd "${DEST}" || exit 1
 
@@ -125,7 +125,7 @@ if [ -z "${KOALA_REPO}" ] ; then
     npm config set "//$NEXUS_REPO/repository/koala-npm/:_auth=$KOALA_TOKEN"
 fi
 
-npm install
+npm install -d
 
 pushd incremental/tools/panda/ || exit 1
 if [ -z "${PANDA_SDK_TARBALL}" ] ; then
@@ -136,7 +136,7 @@ fi
 popd >/dev/null 2>&1 || exit 1
 
 pushd arkoala-arkts || exit 1
-npm install
+npm install -d
 popd >/dev/null 2>&1 || exit 1
 
 return 0
