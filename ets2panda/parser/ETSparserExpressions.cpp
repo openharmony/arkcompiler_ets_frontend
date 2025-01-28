@@ -583,8 +583,7 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
 }
 
 //  Extracted from 'ParseNewExpression()' to reduce function's size
-ir::ClassDefinition *ETSParser::CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
-                                                                      ir::TypeNode *typeReference)
+void ETSParser::ParseArgumentsNewExpression(ArenaVector<ir::Expression *> &arguments, ir::TypeNode *typeReference)
 {
     lexer::SourcePosition endLoc = typeReference->End();
 
@@ -607,23 +606,6 @@ ir::ClassDefinition *ETSParser::CreateClassDefinitionForNewExpression(ArenaVecto
             },
             &endLoc, true);
     }
-
-    ir::ClassDefinition *classDefinition {};
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
-        auto modifiers = ir::ClassDefinitionModifiers::ANONYMOUS | ir::ClassDefinitionModifiers::HAS_SUPER;
-        auto [ctor, properties, bodyRange] = ParseClassBody(modifiers);
-
-        auto newIdent = AllocNode<ir::Identifier>("#newexpr", Allocator());
-        classDefinition = AllocNode<ir::ClassDefinition>(
-            newIdent, nullptr, nullptr, std::move(implements), ctor, typeReference->Clone(Allocator(), nullptr),
-            std::move(properties), modifiers, ir::ModifierFlags::NONE, Language(Language::Id::ETS));
-
-        classDefinition->SetRange(bodyRange);
-    }
-
-    return classDefinition;
 }
 
 ir::Expression *ETSParser::ParseNewExpression()
@@ -668,10 +650,9 @@ ir::Expression *ETSParser::ParseNewExpression()
     }
 
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
-    ir::ClassDefinition *classDefinition = CreateClassDefinitionForNewExpression(arguments, typeReference);
+    ParseArgumentsNewExpression(arguments, typeReference);
 
-    auto *newExprNode =
-        AllocNode<ir::ETSNewClassInstanceExpression>(typeReference, std::move(arguments), classDefinition);
+    auto *newExprNode = AllocNode<ir::ETSNewClassInstanceExpression>(typeReference, std::move(arguments));
     newExprNode->SetRange({start, Lexer()->GetToken().End()});
 
     return newExprNode;

@@ -20,18 +20,9 @@ class A {
 }
 
 function main(): void {
-    // Trailing lambda for class constructor is not supported, the next line gives error: Field type annotation expected
-    new A() { console.print(2); };
+    new A() { console.print(2); }; // It is forbidden to extend a class by an anonymous class
 }
 
-/* @@? 24:22 Error SyntaxError: Field type annotation expected */
-/* @@? 24:22 Error SyntaxError: Unexpected token: '.'. */
-/* @@? 24:29 Error SyntaxError: Unexpected token, expected an identifier. */
-/* @@? 24:29 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
-/* @@? 24:29 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 24:29 Error SyntaxError: Unexpected token: 'number literal'. */
-/* @@? 24:30 Error SyntaxError: Unexpected token: ')'. */
-/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */
-/* @@? 24:28 Error TypeError: Only abstract or native methods can't have body. */
-/* @@? 24:5 Error TypeError: Expected 1 arguments, got 0. */
-/* @@? 24:5 Error TypeError: No matching construct signature */
+/* @@? 23:13 Error SyntaxError: Unexpected token '{'. */
+/* @@? 23:5 Error TypeError: Expected 1 arguments, got 0. */
+/* @@? 23:5 Error TypeError: No matching construct signature */

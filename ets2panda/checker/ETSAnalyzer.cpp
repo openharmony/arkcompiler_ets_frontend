@@ -459,26 +459,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr, ETSObjectType *&calleeObj) const
 {
     ETSChecker *checker = GetETSChecker();
-    if (expr->ClassDefinition() != nullptr) {
-        if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && calleeObj->GetDeclNode()->IsFinal()) {
-            checker->LogTypeError({"Class ", calleeObj->Name(), " cannot be both 'abstract' and 'final'."},
-                                  calleeObj->GetDeclNode()->Start());
-            expr->SetTsType(checker->GlobalTypeError());
-            return;
-        }
-
-        bool fromInterface = calleeObj->HasObjectFlag(checker::ETSObjectFlags::INTERFACE);
-        auto *classType = checker->BuildAnonymousClassProperties(
-            expr->ClassDefinition(), fromInterface ? checker->GlobalETSObjectType() : calleeObj);
-        if (fromInterface) {
-            classType->AddInterface(calleeObj);
-            calleeObj = checker->GlobalETSObjectType();
-        }
-        expr->ClassDefinition()->SetTsType(classType);
-        checker->CheckClassDefinition(expr->ClassDefinition());
-        checker->CheckInnerClassMembers(classType);
-        expr->SetTsType(classType);
-    } else if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
+    if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
         checker->LogTypeError({calleeObj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
         expr->SetTsType(checker->GlobalTypeError());
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,12 +41,10 @@ public:
     NO_MOVE_SEMANTIC(ETSNewClassInstanceExpression);
 
     explicit ETSNewClassInstanceExpression(ir::Expression *const typeReference,
-                                           ArenaVector<ir::Expression *> &&arguments,
-                                           ir::ClassDefinition *const classDefinition)
+                                           ArenaVector<ir::Expression *> &&arguments)
         : Expression(AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION),
           typeReference_(typeReference),
-          arguments_(std::move(arguments)),
-          classDef_(classDefinition)
+          arguments_(std::move(arguments))
     {
     }
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -54,16 +52,6 @@ public:
     friend class compiler::ETSCompiler;
 
     explicit ETSNewClassInstanceExpression(ETSNewClassInstanceExpression const &other, ArenaAllocator *allocator);
-
-    [[nodiscard]] ir::ClassDefinition *ClassDefinition() noexcept
-    {
-        return classDef_;
-    }
-
-    [[nodiscard]] const ir::ClassDefinition *ClassDefinition() const noexcept
-    {
-        return classDef_;
-    }
 
     [[nodiscard]] ir::Expression *GetTypeRef() const noexcept
     {
@@ -116,7 +104,6 @@ public:
 private:
     ir::Expression *typeReference_;
     ArenaVector<ir::Expression *> arguments_;
-    ir::ClassDefinition *classDef_;
     checker::Signature *signature_ {};
 };
 }  // namespace ark::es2panda::ir

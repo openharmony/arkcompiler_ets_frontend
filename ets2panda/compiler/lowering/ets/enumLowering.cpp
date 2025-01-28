@@ -518,7 +518,7 @@ ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDec
                         auto boxedTypeRef = MakeTypeReference(checker_, boxedClassName);
 
                         auto *const newExpression = checker_->AllocNode<ir::ETSNewClassInstanceExpression>(
-                            boxedTypeRef, std::move(newExprArgs), nullptr);
+                            boxedTypeRef, std::move(newExprArgs));
                         return newExpression;
                     });
     // clang-format on
@@ -579,7 +579,7 @@ ir::ThrowStatement *CreateThrowStatement(checker::ETSChecker *checker, ir::ETSPa
 
     auto *const exceptionReference = MakeTypeReference(checker, "Exception");
     auto *const newExpr =
-        checker->AllocNode<ir::ETSNewClassInstanceExpression>(exceptionReference, std::move(newExprArgs), nullptr);
+        checker->AllocNode<ir::ETSNewClassInstanceExpression>(exceptionReference, std::move(newExprArgs));
     return checker->AllocNode<ir::ThrowStatement>(newExpr);
 }
 

@@ -22,12 +22,13 @@ class H {
 }
 
 class B {
+    // It is forbidden to extend a class by an anonymous class
     bar: A = new A() {
         override foo(): void {
 
         }
     }
-
+    // It is forbidden to extend a class by an anonymous class
     func: H = new H() {
 
     }

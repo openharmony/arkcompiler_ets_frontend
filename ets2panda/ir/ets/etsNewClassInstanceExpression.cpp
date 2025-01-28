@@ -33,13 +33,6 @@ void ETSNewClassInstanceExpression::TransformChildren(const NodeTransformer &cb,
             arg = transformedNode->AsExpression();
         }
     }
-
-    if (classDef_ != nullptr) {
-        if (auto *transformedNode = cb(classDef_); classDef_ != transformedNode) {
-            classDef_->SetTransformedNode(transformationName, transformedNode);
-            classDef_ = transformedNode->AsClassDefinition();
-        }
-    }
 }
 
 void ETSNewClassInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
@@ -49,18 +42,12 @@ void ETSNewClassInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser
     for (auto *arg : arguments_) {
         cb(arg);
     }
-
-    if (classDef_ != nullptr) {
-        cb(classDef_);
-    }
 }
 
 void ETSNewClassInstanceExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ETSNewClassInstanceExpression"},
-                 {"typeReference", typeReference_},
-                 {"arguments", arguments_},
-                 {"classBody", AstDumper::Optional(classDef_)}});
+    dumper->Add(
+        {{"type", "ETSNewClassInstanceExpression"}, {"typeReference", typeReference_}, {"arguments", arguments_}});
 }
 
 void ETSNewClassInstanceExpression::Dump(ir::SrcDumper *dumper) const
@@ -112,7 +99,6 @@ ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstance
 {
     typeReference_ =
         other.typeReference_ != nullptr ? other.typeReference_->Clone(allocator, this)->AsExpression() : nullptr;
-    classDef_ = other.classDef_;
 
     for (auto *const argument : other.arguments_) {
         arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());

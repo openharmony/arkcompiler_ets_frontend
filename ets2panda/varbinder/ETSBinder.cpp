@@ -1129,18 +1129,11 @@ void ETSBinder::BuildExternalProgram(parser::Program *extProgram)
 
 void ETSBinder::BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance)
 {
-    BoundContext boundCtx(recordTable_, classInstance->ClassDefinition());
     ResolveReference(classInstance->GetTypeRef());
 
     for (auto *arg : classInstance->GetArguments()) {
         ResolveReference(arg);
     }
-
-    if (classInstance->ClassDefinition() == nullptr) {
-        return;
-    }
-
-    ResolveReference(classInstance->ClassDefinition());
 }
 
 void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)

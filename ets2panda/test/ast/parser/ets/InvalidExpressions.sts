@@ -62,6 +62,8 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 17:21 Error SyntaxError: Unexpected token, expected ',' or ')'. */
 /* @@? 17:21 Error SyntaxError: Unexpected token '...'. */
 /* @@? 17:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 17:21 Error SyntaxError: Unexpected token '...'. */
+/* @@? 17:24 Error SyntaxError: Unexpected token ')'. */
 /* @@? 17:24 Error SyntaxError: Unexpected token ')'. */
 /* @@? 18:35 Error SyntaxError: Unexpected token, expected: '>'. */
 /* @@? 18:36 Error SyntaxError: Unexpected token ';'. */
@@ -80,12 +82,13 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 35:10 Error SyntaxError: Unexpected token, expected: ')'. */
 /* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 35:12 Error SyntaxError: Unexpected token 'identification literal'. */
 /* @@? 35:16 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 35:16 Error SyntaxError: Unexpected token: '=>'. */
 /* @@? 37:15 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 37:15 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 37:15 Error SyntaxError: Unexpected token: '=>'. */
-/* @@? 39:17 Error SyntaxError: Unexpected token: 'number literal'. */
+/* @@? 39:16 Error SyntaxError: Unexpected token '{'. */
 /* @@? 47:15 Error SyntaxError: Unexpected token, expected: '('. */
 /* @@? 47:17 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 48:5 Error SyntaxError: Unexpected token, expected ',' or ')'. */
@@ -98,6 +101,8 @@ function f7(a: (b: int = 0) => int): void {
 /* @@? 55:24 Error SyntaxError: Unexpected token: '@@'. */
 /* @@? 55:26 Error SyntaxError: Unexpected token ')'. */
 /* @@? 55:26 Error SyntaxError: Unexpected token ')'. */
+/* @@? 55:26 Error SyntaxError: Unexpected token ')'. */
+/* @@? 55:27 Error SyntaxError: Unexpected token ':'. */
 /* @@? 55:27 Error SyntaxError: Unexpected token ':'. */
 /* @@? 57:26 Error SyntaxError: Default value is allowed only for optional parameters */
 /* @@? 37:5 Error SyntaxError: Variable 'x' has already been declared. */

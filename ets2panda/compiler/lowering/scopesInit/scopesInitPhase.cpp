@@ -1047,22 +1047,6 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
 {
     CallNode(newClassExpr->GetArguments());
     CallNode(newClassExpr->GetTypeRef());
-    if (newClassExpr->ClassDefinition() != nullptr) {
-        const auto classDef = newClassExpr->ClassDefinition();
-        auto *parentClassScope = VarBinder()->GetScope();
-        while (!parentClassScope->IsClassScope()) {
-            ASSERT(parentClassScope->Parent());
-            parentClassScope = parentClassScope->Parent();
-        }
-        auto classCtx = LexicalScopeCreateOrEnter<varbinder::ClassScope>(VarBinder(), newClassExpr->ClassDefinition());
-        util::UString anonymousName(classDef->Ident()->Name(), Allocator());
-        anonymousName.Append("#");
-        anonymousName.Append(std::to_string(parentClassScope->AsClassScope()->GetAndIncrementAnonymousClassIdx()));
-        classDef->Ident()->SetName(anonymousName.View());
-        AddOrGetDecl<varbinder::ClassDecl>(VarBinder(), anonymousName.View(), classDef, classDef->Start(),
-                                           anonymousName.View(), classDef);
-        CallNode(classDef);
-    }
 }
 
 void InitScopesPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)

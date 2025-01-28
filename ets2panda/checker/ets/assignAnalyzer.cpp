@@ -1157,9 +1157,6 @@ void AssignAnalyzer::AnalyzeNewClass(const ir::ETSNewClassInstanceExpression *ne
 {
     AnalyzeExpr(newClass->GetTypeRef());
     AnalyzeExprs(newClass->GetArguments());
-    if (newClass->ClassDefinition() != nullptr) {
-        AnalyzeNode(newClass->ClassDefinition());
-    }
 }
 
 void AssignAnalyzer::AnalyzeUnaryExpr(const ir::UnaryExpression *unaryExpr)
