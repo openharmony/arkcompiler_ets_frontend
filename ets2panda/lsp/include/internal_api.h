@@ -70,6 +70,7 @@ checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir
 std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position);
 CommentRange *GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, ArenaAllocator *allocator);
 ArenaVector<Diagnostic *> GetSemanticDiagnosticsForFile(es2panda_Context *context, ArenaAllocator *allocator);
+size_t GetTokenPosOfNode(const ir::AstNode *astNode);
 
 }  // namespace ark::es2panda::lsp
 

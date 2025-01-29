@@ -428,4 +428,11 @@ ArenaVector<Diagnostic *> GetSemanticDiagnosticsForFile(es2panda_Context *contex
     return semanticDiagnostics;
 }
 
+size_t GetTokenPosOfNode(const ir::AstNode *astNode)
+{
+    ASSERT(astNode);
+
+    return astNode->Start().index;
+}
+
 }  // namespace ark::es2panda::lsp
