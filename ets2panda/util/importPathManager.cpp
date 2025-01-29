@@ -32,12 +32,12 @@ namespace fs = std::experimental::filesystem;
 #endif
 namespace ark::es2panda::util {
 
-constexpr size_t SUPPORTED_INDEX_FILES_SIZE = 2;
-constexpr size_t SUPPORTED_EXTENSIONS_SIZE = 2;
+constexpr size_t SUPPORTED_INDEX_FILES_SIZE = 3;
+constexpr size_t SUPPORTED_EXTENSIONS_SIZE = 6;
 
 static bool IsCompatibleExtension(const std::string &extension)
 {
-    return extension == ".sts" || extension == ".ts";
+    return extension == ".sts" || extension == ".ts" || extension == ".ets";
 }
 
 util::StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath) const
@@ -270,7 +270,8 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
 
     if (ark::os::file::File::IsDirectory(realPath.Mutf8())) {
         // Supported index files: keep this checking order
-        std::array<std::string, SUPPORTED_INDEX_FILES_SIZE> supportedIndexFiles = {"index.sts", "index.ts"};
+        std::array<std::string, SUPPORTED_INDEX_FILES_SIZE> supportedIndexFiles = {"index.sts", "index.ets",
+                                                                                   "index.ts"};
         for (const auto &indexFile : supportedIndexFiles) {
             std::string indexFilePath = realPath.Mutf8() + pathDelimiter_.data() + indexFile;
             if (ark::os::file::File::IsRegularFile(indexFilePath)) {
@@ -282,7 +283,8 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
     }
 
     // Supported extensions: keep this checking order
-    std::array<std::string, SUPPORTED_EXTENSIONS_SIZE> supportedExtensions = {".sts", ".ts"};
+    std::array<std::string, SUPPORTED_EXTENSIONS_SIZE> supportedExtensions = {".sts",   ".d.sts", ".ets",
+                                                                              ".d.ets", ".ts",    ".d.ts"};
 
     for (const auto &extension : supportedExtensions) {
         if (ark::os::file::File::IsRegularFile(path.Mutf8() + extension)) {
