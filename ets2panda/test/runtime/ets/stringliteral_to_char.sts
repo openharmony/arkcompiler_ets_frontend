@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,11 +28,11 @@ function foo2() : Char {
 function main() {
     let c : Char = 'c';
     let val : Char = foo()
-    assert(val == c)
+    assertEQ(val, c)
 
     let val1 : Char = foo1("c")
-    assert(val1 == c)
+    assertEQ(val1, c)
 
     let val2 : Char = foo2()
-    assert(val2 == c)
+    assertEQ(val2, c)
 }

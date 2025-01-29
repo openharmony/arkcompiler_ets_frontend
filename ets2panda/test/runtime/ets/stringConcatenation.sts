@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,23 +28,23 @@ function main() {
     
     
 
-    assert dst == "undefined";
-    assert dst_s == "undefined";
-    assert a_dst == "A_undefined";
-    assert dst_a == "undefinedA_";
-    assert n_dst == "nullA_undefined";
-    assert udef + s == "undefined_str_";
-    assert s + udef == "_str_undefined";
-    assert a + n == "A_null";
-    assert a + s == "A__str_";
-    assert a + s + udef == "A__str_undefined";
-    assert a + udef + a == "A_undefinedA_";
-    assert udef + s + n == "undefined_str_null";
+    assertEQ( dst, "undefined")
+    assertEQ( dst_s, "undefined")
+    assertEQ( a_dst, "A_undefined")
+    assertEQ( dst_a, "undefinedA_")
+    assertEQ( n_dst, "nullA_undefined")
+    assertEQ( udef + s, "undefined_str_")
+    assertEQ( s + udef, "_str_undefined")
+    assertEQ( a + n, "A_null")
+    assertEQ( a + s, "A__str_")
+    assertEQ( a + s + udef, "A__str_undefined")
+    assertEQ( a + udef + a, "A_undefinedA_")
+    assertEQ( udef + s + n, "undefined_str_null")
 
     let p1 = 1
     let p2 = 2
     let p3 = "*"
 
     let res = p1+p2+p3;
-    assert (res == "3*")
+    assertEQ(res, "3*")
 }

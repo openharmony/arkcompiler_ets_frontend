@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,7 +37,7 @@ function foo(flag: boolean): int {
 function main() {
   let flag: boolean = false;
   
-  assert(foo(flag) == 6);
+  assertEQ(foo(flag), 6)
 
   try {
     foo(!flag);
@@ -45,5 +45,5 @@ function main() {
     flag = true;
   }
 
-  assert(flag);
+  assertTrue(flag)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,7 @@
  */
 
 function createMap<K, V>(keys: K[], values: V[]): Map<K, V> {
-  assert keys.length == values.length;
+  assertEQ( keys.length, values.length)
   let map = new Map<K, V>();
   for (let i = 0; i < keys.length; i++) {
     map.set(keys[i], values[i]);
@@ -24,4 +24,4 @@ function createMap<K, V>(keys: K[], values: V[]): Map<K, V> {
 }
 
 let map = createMap<number, string>([10, 20], ["hello", "world"]);
-assert map.get(10) == "hello"
+assertEQ( map.get(10), "hello")

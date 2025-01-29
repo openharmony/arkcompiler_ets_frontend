@@ -18,29 +18,29 @@ const vundefined = ((): Object | null | undefined => { return undefined })();
 const vobject = ((): Object | null | undefined => { return new Object() })();
 
 function main() {
-    assert(null === null);
-    assert(null !== undefined);
-    assert(null !== vobject);
-    assert(undefined === undefined);
-    assert(undefined !== vobject);
-    assert(vobject === vobject);
+    assertTrue(null === null)
+    assertTrue(null !== undefined)
+    assertTrue(null !== vobject)
+    assertTrue(undefined === undefined)
+    assertTrue(undefined !== vobject)
+    assertTrue(vobject === vobject)
 
-    assert(vnull === vnull);
-    assert(vnull !== vundefined);
-    assert(vnull !== vobject);
-    assert(vundefined === vundefined);
-    assert(vundefined !== vobject);
+    assertTrue(vnull === vnull)
+    assertTrue(vnull !== vundefined)
+    assertTrue(vnull !== vobject)
+    assertTrue(vundefined === vundefined)
+    assertTrue(vundefined !== vobject)
 
-    assert(null == null);
-    assert(null == undefined);
-    assert(null != vobject);
-    assert(undefined == undefined);
-    assert(undefined != vobject);
-    assert(vobject == vobject);
+    assertEQ(null, null)
+    assertEQ(null, undefined)
+    assertNE(null, vobject)
+    assertEQ(undefined, undefined)
+    assertNE(undefined, vobject)
+    assertEQ(vobject, vobject)
 
-    assert(vnull == vnull);
-    assert(vnull == vundefined);
-    assert(vnull != vobject);
-    assert(vundefined == vundefined);
-    assert(vundefined != vobject);
+    assertEQ(vnull, vnull)
+    assertEQ(vnull, vundefined)
+    assertNE(vnull, vobject)
+    assertEQ(vundefined, vundefined)
+    assertNE(vundefined, vobject)
 }

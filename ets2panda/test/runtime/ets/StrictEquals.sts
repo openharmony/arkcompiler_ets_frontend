@@ -36,33 +36,33 @@ function nequs<T>(a: T, b:T){
 class A {}
 
 function main() {
-  assert (equ<T0>(null, undefined) == true)
-  assert (equs<T0>(null, undefined) == false)
+  assertEQ(equ<T0>(null, undefined), true)
+  assertEQ(equs<T0>(null, undefined), false)
 
-  assert (nequ<T0>(null, undefined) == false)
-  assert (nequs<T0>(null, undefined) == true)
+  assertEQ(nequ<T0>(null, undefined), false)
+  assertEQ(nequs<T0>(null, undefined), true)
 
-  assert (null == undefined)
-  assert (!(null === undefined))
+  assertEQ(null, undefined)
+  assertTrue(!(null === undefined))
 
-  assert (!(null != undefined))
-  assert (null !== undefined)
+  assertTrue(!(null != undefined))
+  assertTrue(null !== undefined)
 
   let f1 = (a:Int, b:Int) => { a=a-b; }
   let f2 = (a:Int, b:Int) => { a=a+b; }
 
-  assert (equ<F1<Int>>(f1, f1) == true)
-  assert (equ<F1<Int>>(f1, f2) == false)
-  assert (equs<F1<Int>>(f1, f1) == true)
-  assert (equs<F1<Int>>(f1, f2) == false)
+  assertEQ(equ<F1<Int>>(f1, f1), true)
+  assertEQ(equ<F1<Int>>(f1, f2), false)
+  assertEQ(equs<F1<Int>>(f1, f1), true)
+  assertEQ(equs<F1<Int>>(f1, f2), false)
 
   let a1 = new A()
   let a2 = new A()
 
-  assert (equs<T0>(a1, a1) == true)
-  assert (nequs<T0>(a1, a1) == false)
-  assert (equs<T0>(a1, a2) == false)
-  assert (nequs<T0>(a1, a2) == true)
+  assertEQ(equs<T0>(a1, a1), true)
+  assertEQ(nequs<T0>(a1, a1), false)
+  assertEQ(equs<T0>(a1, a2), false)
+  assertEQ(nequs<T0>(a1, a2), true)
 
-  assert (10 === 10)
+  assertTrue(10 === 10)
 }

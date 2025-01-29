@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,24 +47,24 @@ function main(): void {
   let b: B = new BB();
   let c: C = new CC();
 
-  assert(b.str == "A")
-  assert(b.get_str() == "A")
-  assert(b.get_super_str() == "A")
-  assert(c.str == "C")
-  assert(c.get_str() == "C")
-  assert(c.get_super_str() == "A")
+  assertEQ(b.str, "A")
+  assertEQ(b.get_str(), "A")
+  assertEQ(b.get_super_str(), "A")
+  assertEQ(c.str, "C")
+  assertEQ(c.get_str(), "C")
+  assertEQ(c.get_super_str(), "A")
 
-  assert((b as B).str == "A")
-  assert((b as A).str == "A")
-  assert((b as B).get_str() == "A")
-  assert((b as B).get_super_str() == "A")
+  assertEQ((b as B).str, "A")
+  assertEQ((b as A).str, "A")
+  assertEQ((b as B).get_str(), "A")
+  assertEQ((b as B).get_super_str(), "A")
 
-  assert((c as C).str == "C")
-  assert((c as B).str == "A")
-  assert((c as A).str == "A")
+  assertEQ((c as C).str, "C")
+  assertEQ((c as B).str, "A")
+  assertEQ((c as A).str, "A")
 
-  assert((c as C).get_str() == "C")
-  assert((c as C).get_super_str() == "A")
-  assert((c as B).get_str() == "C")
-  assert((c as B).get_super_str() == "A")
+  assertEQ((c as C).get_str(), "C")
+  assertEQ((c as C).get_super_str(), "A")
+  assertEQ((c as B).get_str(), "C")
+  assertEQ((c as B).get_super_str(), "A")
 }

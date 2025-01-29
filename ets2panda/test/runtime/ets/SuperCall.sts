@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -65,26 +65,26 @@ function main(): void {
     let bClass: B = new B();
 
     let a: int = bClass.foo();
-    assert a == 2
+    assertEQ( a, 2)
 
     let b: int = bClass.bar();
-    assert b == 1
+    assertEQ( b, 1)
 
     let c: int = bClass.virt();
-    assert c == 2
+    assertEQ( c, 2)
 
     const f: F = new F();
-    assert f.f == 42;
+    assertEQ( f.f, 42)
 
     const g: G = new G();
-    assert g.f == 42;
+    assertEQ( g.f, 42)
 
     const h: H = new H();
-    assert h.f == 42;
+    assertEQ( h.f, 42)
 
     const i: I = new I();
-    assert i.f == 42;
+    assertEQ( i.f, 42)
 
     let d_as_A: F = i;
-    assert d_as_A.f == 42;
+    assertEQ( d_as_A.f, 42)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,25 +20,25 @@ function main(): void {
     let doubleType: TypeGetter<Double> = new TypeGetter<Double>();
     intType.SetType(testInt);
     doubleType.SetType(testDouble);
-    assert intType.GetType() == 2;
-    assert doubleType.GetType() == 3.0;
+    assertEQ( intType.GetType(), 2)
+    assertEQ( doubleType.GetType(), 3.0)
 
     let aType: TypeGetter<A> = new TypeGetter<A>();
     let aClass: A = new A();
     aType.SetType(aClass);
-    assert aType.GetType().aValue() == 1;
+    assertEQ( aType.GetType().aValue(), 1)
 
     let ext1Class: Ext1 = new Ext1();
     let ext2Class: Ext2 = new Ext2();
-    assert bar(ext1Class, ext2Class) == 7;
-    assert bar(ext2Class, ext1Class) == -7;
+    assertEQ( bar(ext1Class, ext2Class), 7)
+    assertEQ( bar(ext2Class, ext1Class), -7)
 
     let bc: B = new B();
     let cc : C = new C();
     let dc: D = new D();
-    assert bc.bMet(cc).cMet() == 17;
-    assert bc.bMet(cc).ifaceMet() == 10;
-    assert bc.bMet(dc).dMet() == 8;
+    assertEQ( bc.bMet(cc).cMet(), 17)
+    assertEQ( bc.bMet(cc).ifaceMet(), 10)
+    assertEQ( bc.bMet(dc).dMet(), 8)
 }
 
 interface ifaceExt {

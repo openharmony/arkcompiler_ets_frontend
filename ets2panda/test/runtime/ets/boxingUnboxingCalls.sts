@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,18 +37,18 @@ function main(): void {
     let a: int = 1;
     let b: Int = 2;
     let c: int = intParam(a);
-    assert c == 0
+    assertEQ( c, 0)
     let d: int = intParam(b);
-    assert d == 1
+    assertEQ( d, 1)
     let e: Int = intParam(a);
-    assert c == 0
+    assertEQ( c, 0)
     let f: Int = intParam(b);
-    assert d == 1
+    assertEQ( d, 1)
     let g: int = objParam(a);
-    assert g == 2
+    assertEQ( g, 2)
     let h: int = objParam(b);
-    assert h == 2
+    assertEQ( h, 2)
     let i: Object = b;
     let j: int = retInt(retRefInt(5));
-    assert j == 5
+    assertEQ( j, 5)
 }

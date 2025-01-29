@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,8 +59,8 @@ class KlassC extends KlassB {
     }
 
     public final CheckThisAndSuper() : void {
-        assert(this.Foo() == "KlassC::Foo()");
-        assert(super.Foo() == "KlassB::Foo()");
+        assertEQ(this.Foo(), "KlassC::Foo()");
+        assertEQ(super.Foo(), "KlassB::Foo()");
     }
 }
 
@@ -86,40 +86,40 @@ function main() : void {
     let b: KlassB = new KlassB();
     let c: KlassC = new KlassC();
 
-    assert(a.Foo() == "KlassA::Foo()");
-    assert(b.Foo() == "KlassB::Foo()");
-    assert(c.Foo() == "KlassC::Foo()");
+    assertEQ(a.Foo() , "KlassA::Foo()");
+    assertEQ(b.Foo() , "KlassB::Foo()");
+    assertEQ(c.Foo() , "KlassC::Foo()");
 
     let d: KlassA = new KlassC();
     let f: KlassB = new KlassC();
 
-    assert(d.Foo() == "KlassC::Foo()");
-    assert(f.Foo() == "KlassC::Foo()");
-    assert(c.Bar() == "KlassB::Bar()");
+    assertEQ(d.Foo() , "KlassC::Foo()");
+    assertEQ(f.Foo() , "KlassC::Foo()");
+    assertEQ(c.Bar() , "KlassB::Bar()");
 
     let objA : A = new A();
     let objB : B = new B();
 
-    assert(c.Baz(objB, objB) == "KlassC::Baz(B, B)");
-    assert(c.Baz(objA, objB) == "KlassB::Baz(A, B)");
-    assert(c.Baz(objA, objA) == "KlassA::Baz(A, A)");
+    assertEQ(c.Baz(objB, objB) , "KlassC::Baz(B, B)");
+    assertEQ(c.Baz(objA, objB) , "KlassB::Baz(A, B)");
+    assertEQ(c.Baz(objA, objA) , "KlassA::Baz(A, A)");
 
     c.CheckThisAndSuper();
 
-    assert(Foo(objA, objB) == "GLOBAL::Foo(A, B)");
-    assert(Foo(objB, objB) == "GLOBAL::Foo(B, B)");
+    assertEQ(Foo(objA, objB) , "GLOBAL::Foo(A, B)");
+    assertEQ(Foo(objB, objB) , "GLOBAL::Foo(B, B)");
 
-    assert(Baz(new Int(1)) == "GLOBAL::Baz(Int)");
-    assert(Baz(new Char(c'1')) == "GLOBAL::Baz(Char)");
-    assert(Baz(new Short(1 as short)) == "GLOBAL::Baz(Short)");
-    assert(Baz("hello") == "GLOBAL::Baz(String)");
+    assertEQ(Baz(new Int(1)) , "GLOBAL::Baz(Int)");
+    assertEQ(Baz(new Char(c'1')) , "GLOBAL::Baz(Char)");
+    assertEQ(Baz(new Short(1 as short)) , "GLOBAL::Baz(Short)");
+    assertEQ(Baz("hello") , "GLOBAL::Baz(String)");
 
-    assert(Bar(1) == "GLOBAL::Bar(int)");
-    assert(Bar(c'1') == "GLOBAL::Bar(char)");
-    assert(Bar(3.14) == "GLOBAL::Bar(double)");
+    assertEQ(Bar(1) , "GLOBAL::Bar(int)");
+    assertEQ(Bar(c'1') , "GLOBAL::Bar(char)");
+    assertEQ(Bar(3.14) , "GLOBAL::Bar(double)");
 
-    assert(Bar2(1) == "GLOBAL::Bar2(long)");
-    assert(Bar2(1 as long) == "GLOBAL::Bar2(long)");
-    assert(Bar2(1.1) == "GLOBAL::Bar2(double)");
+    assertEQ(Bar2(1) , "GLOBAL::Bar2(long)");
+    assertEQ(Bar2(1 as long) , "GLOBAL::Bar2(long)");
+    assertEQ(Bar2(1.1) , "GLOBAL::Bar2(double)");
 
 }

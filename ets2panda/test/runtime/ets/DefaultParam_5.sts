@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,19 +14,19 @@
  */
 
 function main():void{
-    assert foo2() == 5;
+    assertEQ( foo2(), 5)
 
     let bar = new Bar();
-    assert bar.bar2() == 5;
+    assertEQ( bar.bar2(), 5)
 
-    assert goo1() == 15;
-    assert goo2() == 15;
-    assert goo2((a0:int):int=>{return 25;}) == 25;
+    assertEQ(goo1(), 15)
+    assertEQ(goo2(), 15)
+    assertEQ(goo2((a0:int):int=>{return 25;}), 25)
 
-    assert boo1() == 18;
-    assert boo2(1,2,3) == 6;
+    assertEQ( boo1(), 18)
+    assertEQ( boo2(1,2,3), 6)
 
-    assert doo1() == 8;
+    assertEQ( doo1(), 8)
 
     too1();
     too2();

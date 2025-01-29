@@ -18,26 +18,26 @@ class A {}
 function main(){
    let $$a = new A();
    let b = $$a;
-   assert(b != null);
+   assertNE(b, null)
 
    let c$$ = true;
    let d = c$$;
-   assert(d == true);
+   assertEQ(d, true)
 
    let $$e$$ = 1;
    let f = $$e$$;
-   assert(f == 1);
+   assertEQ(f, 1)
 
    let $$g$ = false;
    let h = $$g$;
-   assert(h == false);
+   assertEQ(h, false)
 
    let $i$$ = false;
    let j = $i$$;
-   assert(j == false);
+   assertEQ(j, false)
 
    let $k$ = "apple";
    let m = $k$;
-   assert(m == "apple");
+   assertEQ(m, "apple")
 
 }

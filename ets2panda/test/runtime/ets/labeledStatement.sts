@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -127,17 +127,17 @@ function labeledTest05(): int {
 
 function main(): void {
     let test1 = labeledTest01();
-    assert test1 == 10;
+    assertEQ( test1, 10)
 
     let test2 = labeledTest02();
-    assert test2 == 200;
+    assertEQ( test2, 200)
 
     let test3 = labeledTest03();
-    assert test3 == -999;
+    assertEQ( test3, -999)
 
     let test4 = labeledTest04();
-    assert test4 == 10000;
+    assertEQ( test4, 10000)
 
     let test5 = labeledTest05();
-    assert test5 == 420;
+    assertEQ( test5, 420)
 }

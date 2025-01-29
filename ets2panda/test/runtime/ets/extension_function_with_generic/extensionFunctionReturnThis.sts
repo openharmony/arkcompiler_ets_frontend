@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,8 +23,8 @@ function foo<T>(this: B<T>, d: T): this {
 
 function main() {
     let b = new B<Int>();
-    assert b.foo(1).data == 1;
-    assert foo(b, 2).data == 2;
-    assert b.foo<Int>(3).data == 3;
-    assert foo<Int>(b, 4).data == 4;
+    assertEQ( b.foo(1).data, 1)
+    assertEQ( foo(b, 2).data, 2)
+    assertEQ( b.foo<Int>(3).data, 3)
+    assertEQ( foo<Int>(b, 4).data, 4)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,23 +31,23 @@ function getStringArr(): string[] {
 function main() {
     let a = new A()
     let arr1: int[] = [...a.foo(), ...foo()]
-    assert(arr1.length == 3)
-    assert(arr1[0] == 7)
-    assert(arr1[1] == 1)
-    assert(arr1[2] == 2)
+    assertEQ(arr1.length, 3)
+    assertEQ(arr1[0], 7)
+    assertEQ(arr1[1], 1)
+    assertEQ(arr1[2], 2)
 
     let arr2: string[] = [...getStringArr()]
-    assert(arr2.length == 1)
-    assert(arr2[0] == "A")
+    assertEQ(arr2.length, 1)
+    assertEQ(arr2[0], "A")
 
     let getArr0 = (): string[] => {
         return ["a", "b"]
     }
     let arr3 : string[] = [...arr2, ...getArr0(), "B"]
     let expectedArr3: string[] = ["A", "a", "b", "B"]
-    assert(arr3.length == expectedArr3.length)
+    assertEQ(arr3.length, expectedArr3.length)
     for (let i = 0; i < arr3.length; i++) {
-        assert(arr3[i] == expectedArr3[i])
+        assertEQ(arr3[i], expectedArr3[i])
     }
 
     let getArr1 = (): boolean[] => {
@@ -55,16 +55,16 @@ function main() {
     }
     let arr4: boolean[] = [...getArr1(), ...getArr1()]
     let expectedArr4: boolean[] = [true, false, true, true, false, true]
-    assert(arr4.length == expectedArr4.length)
+    assertEQ(arr4.length, expectedArr4.length)
     for (let i = 0; i < arr4.length; i++) {
-        assert(arr4[i] == expectedArr4[i])
+        assertEQ(arr4[i], expectedArr4[i])
     }
 
     let arr5: (string|boolean|int)[] = [...a.foo(), ...getArr0(), ...getStringArr(), ...getArr1()]
     let expectedArr5: (string|boolean|int)[] = [7, "a", "b", "A", true, false, true]
-    assert(arr5.length == expectedArr5.length)
+    assertEQ(arr5.length, expectedArr5.length)
     for (let i = 0; i < arr5.length; i++) {
-        assert(arr5[i] == expectedArr5[i])
+        assertEQ(arr5[i], expectedArr5[i])
     }
 
 }

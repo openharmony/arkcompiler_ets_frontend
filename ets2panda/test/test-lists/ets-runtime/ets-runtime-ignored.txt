@@ -60,3 +60,29 @@ optional_field.sts
 
 #Issue 21188
 namespace_tests/nested_namespace_plus_equal.sts
+
+#Issue 22384
+Object-type-in-binary-logical-expression.sts
+trailing-lambda.sts
+unboxingBooleanConversion.sts
+extension_accessor/extensionAccessorChained.sts
+extension_accessor/extensionAccessorInOpAssignment.sts
+extension_accessor/extensionAccessorInOpAssignment2.sts
+extension_accessor/extensionAccessorInherited1.sts
+extension_accessor/extensionAccessorInherited2.sts
+extension_accessor/extensionAccessorWithNewExpr1.sts
+extension_accessor/extensionAccessorWithNewExpr2.sts
+extension_accessor/extensionAccessorAsMemberExprObject.sts
+BitwiseOperationsOnFloat.sts
+RecursiveTypeAlias11.sts
+boxingConversions3.sts
+char-type.sts
+conversionFloatIntLong.sts
+conversionFromInfinity.sts
+enum_const_variable.sts
+local_enum03.sts
+non-const-capture.sts
+inallyCatchExecutedNormally.sts
+finallyTryExecutedNormally.sts
+finallyCatchExecutedNormally.sts
+enumConstExpression.sts

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,12 +39,12 @@ class A<T> {
 
 function main() {
     let x = (a: int) => { return a + 1; };
-    assert func<int>(10, x) == 11;
-    assert func<int>(10, undefined) == 0;
+    assertEQ( func<int>(10, x), 11)
+    assertEQ( func<int>(10, undefined), 0)
 
     let a = new A<int>;
     a.update(undefined);
-    assert a.value === undefined;
+    assertTrue( a.value === undefined)
     a.update(48);
-    assert a.value == 48;
+    assertEQ( a.value, 48)
 }

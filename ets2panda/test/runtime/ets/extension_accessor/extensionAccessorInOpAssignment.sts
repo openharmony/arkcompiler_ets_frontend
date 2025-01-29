@@ -36,69 +36,69 @@ set bfield(this: A, b: boolean): void {
 
 function main(): void {
     let obj: A = new A();
-    assert (obj.field == 30);
+    assertEQ(obj.field, 30)
     obj.field = 29;
-    assert (obj.field == 29);
+    assertEQ(obj.field, 29)
     obj.field = 15 + 15;
 
     let z = obj.field + obj.field;
-    assert z == 60;
+    assertEQ( z, 60)
     z = obj.field + obj.field + obj.field;
-    assert z == 90
+    assertEQ( z, 90)
     let u = obj.field + 10;
-    assert u == 40;
+    assertEQ( u, 40)
     let i = 10 + obj.field;
-    assert i == 40;
+    assertEQ( i, 40)
     u = 10 + obj.field + obj.field + 10;
     obj.field =  10 + obj.field + obj.field + 10;
-    assert u == 80
-    assert obj.field == 80;
+    assertEQ( u, 80)
+    assertEQ( obj.field, 80)
 
     obj.field = 10;
     let k = obj.field;
-    assert k == 10;
+    assertEQ( k, 10)
 
     obj.field = obj.field; 
     k = obj.field;
-    assert k == 10;
+    assertEQ( k, 10)
 
     obj.field = obj.field + obj.field;
     k = obj.field;
-    assert obj.field == 20;
+    assertEQ( obj.field, 20)
 
     obj.field = obj.field + 10;
     k = obj.field;
-    assert k == 30;
+    assertEQ( k, 30)
 
     obj.field = 10 + obj.field;
     k = obj.field;
-    assert k == 40;
+    assertEQ( k, 40)
 
     obj.field = 10 * obj.field;
     k = obj.field;
-    assert k == 400;
+    assertEQ( k, 400)
 
     obj.field = obj.field / 2;
     k = obj.field;
-    assert k == 200;
+    assertEQ( k, 200)
 
     obj.field = 1;
     obj.field = obj.field & 0;
     k = obj.field;
-    assert k == 0;
+    assertEQ( k, 0)
 
     obj.bfield = true;
     obj.bfield = obj.bfield & false;
     let boolk = obj.bfield;
-    assert boolk == false;
+    assertEQ( boolk, false)
 
     obj.bfield = true;
     obj.bfield = obj.bfield | false;
     boolk = obj.bfield;
-    assert boolk == true;
+    assertEQ( boolk, true)
 
     obj.bfield = true;
     obj.bfield = obj.bfield | obj.bfield;
     boolk = obj.bfield;
-    assert boolk == true;
+    assertEQ( boolk, true)
 }

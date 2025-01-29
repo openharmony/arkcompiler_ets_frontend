@@ -1,4 +1,4 @@
-/* Copyright (c) 2024 Huawei Device Co., Ltd.
+/* Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,20 +27,20 @@ class B77 extends A77<B77> {
 }
 
 function bar<T>(x: A77<T>, y: Partial<A77<T>>): void {
-   assert (x.foo(undefined) == "undefined");
-   assert (x.foo(y) == "Partial<B77>");
+   assertEQ(x.foo(undefined), "undefined")
+   assertEQ(x.foo(y), "Partial<B77>")
 }
 
 function main() : void {
    let x: A77<B77>  = new B77();
    let y: Partial<B77> = {};
 
-   assert (x.foo(undefined) == "undefined");
-   assert (x.foo(y) == "Partial<B77>");
+   assertEQ(x.foo(undefined), "undefined")
+   assertEQ(x.foo(y), "Partial<B77>")
 
    bar<B77>(x, y);
 
    let z = new B77();
-   assert (z.foo(undefined) == "undefined");
-   assert (z.foo(y) == "Partial<B77>");
+   assertEQ(z.foo(undefined), "undefined")
+   assertEQ(z.foo(y), "Partial<B77>")
 }

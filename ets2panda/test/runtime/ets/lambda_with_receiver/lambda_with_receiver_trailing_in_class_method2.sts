@@ -38,9 +38,9 @@ class A {
 
 let a = new A();
 a.foo() { this.data = 666 } 
-assertTrue(a.d.data == 666);
-assertTrue(a.data == 0);
+assertEQ(a.d.data, 666);
+assertEQ(a.data, 0);
 
 a.foo2() { this.data = 66 } 
-assertTrue(a.d.data == 66);
-assertTrue(a.data == 0);
+assertEQ(a.d.data, 66);
+assertEQ(a.data, 0);

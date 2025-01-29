@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,41 +33,41 @@ function main()
 {
     let v1 : double[] = [1,2,3];                       // double[]
     v1[0] = new Int(4);
-    assert (v1[0] == 4);
-    assert (v1[1] == 2);
-    assert (v1[2] == 3);
+    assertEQ(v1[0], 4)
+    assertEQ(v1[1], 2)
+    assertEQ(v1[2], 3)
     
     let v2 : Alias1Array<double> =  [5, 6, 7];         // double[]
     v2[0] = new Int(8);
-    assert (v2[0] == 8);
-    assert (v2[1] == 6);
-    assert (v2[2] == 7);
+    assertEQ(v2[0], 8)
+    assertEQ(v2[1], 6)
+    assertEQ(v2[2], 7)
 
     let v3 : Alias2Array<double> = [new C<double>(9)];  // C<Double>[]
-    assert(v3[0].v == 9);
+    assertEQ(v3[0].v, 9)
     v3[0].v = 10;
-    assert(v3[0].v == 10);
+    assertEQ(v3[0].v, 10)
 
     let v4 : Alias3Array<double> = [[new C<double>(11)]];  // C<Double>[][]
-    assert(v4[0][0].v == 11);
+    assertEQ(v4[0][0].v, 11)
     v4[0][0].v = 12;
-    assert(v4[0][0].v == 12);
+    assertEQ(v4[0][0].v, 12)
 
     let v5 : Alias4Array<double> = [(p : double) : double => { return p; }];  // [(p: Double)=>Double]
-    assert(v5[0](13) == 13);
+    assertEQ(v5[0](13), 13)
 
     let v6 : Alias5Array<double> = (p : double[]) : double => { return p[0]; };  // (p: double[])=>Double
-    assert(v6([14.0]) == 14);
+    assertEQ(v6([14.0]), 14)
 
     // let v7 : Alias6Array<double> = (p : double[], q: double) : double => { return p[0]; };  // (p: Double[], q: Double)=>Double
-    // assert(v7([15.0], 16) == 15);
+    // assertEQ(v7([15.0], 16), 15)
 
     let v9 : Alias7Array<double, double> = (p : double[], q: double) : double => { return p[0]; };  // (p: double[], q: Double)=>Double
-    assert(v9([17.0], 18) == 17);
+    assertEQ(v9([17.0], 18), 17)
 
     let v10 : Alias8Array<double> = [[new Int(18)]];  //  [double][]
-    assert(v10[0][0] == 18);
+    assertEQ(v10[0][0], 18)
 
     let v11 : Alias9Array<double> = [[new C<double>(19)]]; // [C<Double>][]
-    assert(v11[0][0].v == 19);
+    assertEQ(v11[0][0].v, 19)
 }

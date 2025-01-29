@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,46 +23,46 @@ function main(): void {
   } catch (e: NullPointerError) {
     catchCode = 1;
   } catch (e: Error) {
-    assert(false);
+    assertTrue(false)
   } catch (e) {
-    assert(false);
+    assertTrue(false)
   }
 
-  assert(catchCode == 1);
+  assertEQ(catchCode, 1)
 
   try {
     throw new NullPointerError();
   } catch (e: Error) {
     catchCode = 2;
   } catch (e: NullPointerError) {
-    assert(false);
+    assertTrue(false)
   } catch (e) {
-    assert(false);
+    assertTrue(false)
   }
 
-  assert(catchCode == 2);
+  assertEQ(catchCode, 2)
 
   try {
     throw new TestException();
   } catch(e: TestException) {
     catchCode = 3;
   } catch (e: Exception) {
-    assert(false);
+    assertTrue(false)
   } catch (e) {
-    assert(false);
+    assertTrue(false)
   }
 
-  assert(catchCode == 3);
+  assertEQ(catchCode, 3)
 
   try {
     throw new TestException();
   } catch (e: Exception) {
     catchCode = 4;
   } catch (e: TestException) {
-    assert(false);
+    assertTrue(false)
   } catch (e) {
-    assert(false);
+    assertTrue(false)
   }
 
-  assert(catchCode == 4);
+  assertEQ(catchCode, 4)
 }

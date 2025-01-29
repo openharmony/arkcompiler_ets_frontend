@@ -16,5 +16,5 @@
 function main() {
    let $$a = "aaaddd"
    let b = $$a
-   assert(b == "aaaddd");
+   assertEQ(b, "aaaddd")
 }

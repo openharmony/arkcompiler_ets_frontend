@@ -17,7 +17,7 @@ function main() {
     const a : int = 1;
     const b : int = 2 + a;
     enum Foo {Baz = a, Bar = b}
-    assert Foo.Bar == 3;
+    assertEQ( Foo.Bar, 3)
 
-    assert Foo.Baz == 1;
+    assertEQ( Foo.Baz, 1)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,8 @@
  */
 
 function main() {
-  assert(`${new Float(Float.MIN_VALUE)}` == `${Float.MIN_VALUE}`)
-  assert(`${new Float(Float.MAX_VALUE)}` == `${Float.MAX_VALUE}`)
-  assert(`${new Number(Number.MIN_VALUE)}` == `${Number.MIN_VALUE}`)
-  assert(`${new Number(Number.MAX_VALUE)}` == `${Number.MAX_VALUE}`)
+  assertEQ(`${new Float(Float.MIN_VALUE)}`, `${Float.MIN_VALUE}`)
+  assertEQ(`${new Float(Float.MAX_VALUE)}`, `${Float.MAX_VALUE}`)
+  assertEQ(`${new Number(Number.MIN_VALUE)}`, `${Number.MIN_VALUE}`)
+  assertEQ(`${new Number(Number.MAX_VALUE)}`, `${Number.MAX_VALUE}`)
 }

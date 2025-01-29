@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,10 @@ function main() {
         2:"hello2",
         3:"world",
     };
-    assert x[1] == "hello";
-    assert x[2] == "hello2";
-    assert x[3] == "world";
+    assertEQ( x[1], "hello")
+    assertEQ( x[2], "hello2")
+    assertEQ( x[3], "world")
 
     x[1] = "newHello";
-    assert x[1] == "newHello";
+    assertEQ( x[1], "newHello")
 } 

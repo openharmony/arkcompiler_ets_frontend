@@ -27,5 +27,5 @@ function demo(p1: A) {
 
 function main() {
     let a1 = new A()
-    assertTrue(demo(a1) == 1)
+    assertEQ(demo(a1), 1)
 }

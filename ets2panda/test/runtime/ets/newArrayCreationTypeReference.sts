@@ -17,5 +17,5 @@ type NumberOrUndefined = Number | undefined
 
  function main() {
     let array = new (NumberOrUndefined)[10]
-    assert(array[1] == undefined)
+    assertEQ(array[1], undefined)
 }

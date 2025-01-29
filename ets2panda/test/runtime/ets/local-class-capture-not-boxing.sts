@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -93,46 +93,46 @@ class GlobalClass
 
             static local_s_method(lp : int) : void 
             {
-                assert(lp == 30);
-                assert(LocalClassNotBoxing.local_s_field == 200);
+                assertEQ(lp, 30)
+                assertEQ(LocalClassNotBoxing.local_s_field, 200)
             } 
 
             local_method(lp : int) : void 
             {
                 // Parameter
-                assert(lp == 40);
+                assertEQ(lp, 40)
                 // Local class object field
-                assert(this.local_field == 100);
+                assertEQ(this.local_field, 100)
                 // Local class static field
-                assert(LocalClassNotBoxing.local_s_field == 200);
+                assertEQ(LocalClassNotBoxing.local_s_field, 200)
                 // Predefined value types
-                assert(l_number == 1);
-                assert(l_byte == 2);
-                assert(l_short == 3);
-                assert(l_int == 4);
-                assert(l_long == 5);
-                assert(l_float == 6);
-                assert(l_double == 7);
-                assert(l_boolean == false);
-                assert(l_char == c'x');
+                assertEQ(l_number, 1)
+                assertEQ(l_byte, 2)
+                assertEQ(l_short, 3)
+                assertEQ(l_int, 4)
+                assertEQ(l_long, 5)
+                assertEQ(l_float, 6)
+                assertEQ(l_double, 7)
+                assertEQ(l_boolean, false)
+                assertEQ(l_char, c'x')
                 // User defined value type
-                assert(l_enum == UserEnumType.Red);
+                assertEQ(l_enum, UserEnumType.Red)
                 // Predefined reference types
-                assert(l_Number == Number.valueOf(11));
-                assert(l_Byte == Byte.valueOf(12 as byte));
-                assert(l_Short == Short.valueOf(13 as short));
-                assert(l_Int == Int.valueOf(14 as int));
-                assert(l_Long == Long.valueOf(15 as long));
-                assert(l_Float == Float.valueOf(16 as float));
-                assert(l_Double == Double.valueOf(17 as double));
-                assert(l_Boolean == Boolean.valueOf(false));
-                assert(l_Char == Char.valueOf(c'X'));
-                assert(l_string == "something");
-                assert(l_String == "Something");
-                assert(l_array == g_array);
-                assert(l_Array == g_Array);
-                assert(l_Object == g_Object);
-                assert(l_Class == g_Class);
+                assertEQ(l_Number, Number.valueOf(11))
+                assertEQ(l_Byte, Byte.valueOf(12 as byte))
+                assertEQ(l_Short, Short.valueOf(13 as short))
+                assertEQ(l_Int, Int.valueOf(14 as int))
+                assertEQ(l_Long, Long.valueOf(15 as long))
+                assertEQ(l_Float, Float.valueOf(16 as float))
+                assertEQ(l_Double, Double.valueOf(17 as double))
+                assertEQ(l_Boolean, Boolean.valueOf(false))
+                assertEQ(l_Char, Char.valueOf(c'X'))
+                assertEQ(l_string, "something")
+                assertEQ(l_String, "Something")
+                assertEQ(l_array, g_array)
+                assertEQ(l_Array, g_Array)
+                assertEQ(l_Object, g_Object)
+                assertEQ(l_Class, g_Class)
             }
         };
 

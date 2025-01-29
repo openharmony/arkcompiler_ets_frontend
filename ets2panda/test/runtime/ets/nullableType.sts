@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,19 +42,19 @@ function nullableType(): void {
   let generic : Gen<A | null> | null = new Gen<A | null>;
 
   let h : Char | null = nullableArgsAndReturn(7, g);
-  assert h == c'C';
+  assertEQ( h, c'C')
 
   let gt1 : Gen<A | null> | null = nullableGenArgAndReturn(generic);
-  assert gt1 == generic;
+  assertEQ( gt1, generic)
 
   let gt2 = new Gen2<A_alias>();
   let gt2_g = gt2.foo(g);
 
-  assert gt2_g == g;
+  assertEQ( gt2_g, g)
 
   let f_g = foo_gen<tmp>(g);
 
-  assert f_g == g;
+  assertEQ( f_g, g)
 
   let arr = new long[1024];
   a = arr;
@@ -112,10 +112,10 @@ function nullableTypeAlias(): void {
 function numericNullableType(): Object | null {
   let a: int = 5;
   let x: Int | null = 5 + a;
-  assert x == 10;
+  assertEQ( x, 10)
 
   let y: Long | null = null;
-  assert y == null;
+  assertEQ( y, null)
 
   return null;
 }

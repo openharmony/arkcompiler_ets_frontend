@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,12 +19,12 @@ let o: Object = c // Autoboxing of enum type to its reference version
 // Such reference version type has no name, but can be detected by instanceof
 if (o instanceof Commands) {
     let d = o as Commands // And explicitly converted back by 'as' conversion
-    assert(d == Commands.Close)
+    assertEQ(d, Commands.Close)
 }
 
 let u : Object | Commands = Commands.Close;
 if (u instanceof Commands)
 {
      let d = o as Commands;
-     assert(d == Commands.Close)
+     assertEQ(d, Commands.Close)
 }

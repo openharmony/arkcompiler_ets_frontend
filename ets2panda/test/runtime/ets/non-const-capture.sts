@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,12 +23,12 @@ class C {
 function part0() {
     let b = false
     let lam: () => void = () => {
-        assert b == true
+        assertEQ( b, true)
         b = false
     }
     b = true
     lam()
-    assert b == false
+    assertEQ( b, false)
 }
 
 function part1() {
@@ -37,10 +37,10 @@ function part1() {
     let i: int = 0;
     let c: char = 0;
     let lam: () => void = () => {
-        assert b == 1;
-        assert s == 2;
-        assert i == 3;
-        assert c == 4;
+        assertEQ( b, 1)
+        assertEQ( s, 2)
+        assertEQ( i, 3)
+        assertEQ( c, 4)
         b = 5;
         s = 6;
         i = 7;
@@ -51,10 +51,10 @@ function part1() {
     i = 3;
     c = 4;
     lam();
-    assert b == 5;
-    assert s == 6;
-    assert i == 7;
-    assert c == 8;
+    assertEQ( b, 5)
+    assertEQ( s, 6)
+    assertEQ( i, 7)
+    assertEQ( c, 8)
 }
 
 function part2() {
@@ -63,10 +63,10 @@ function part2() {
     let d: double = 0.0;
     let o = new C(0);
     let lam: () => void = () => {
-        assert l == 9;
-        assert f == 10.0;
-        assert d == 11.0;
-        assert o.v == 12;
+        assertEQ( l, 9)
+        assertEQ( f, 10.0)
+        assertEQ( d, 11.0)
+        assertEQ( o.v, 12)
         l = 13;
         f = 14.0;
         d = 15.0;
@@ -77,10 +77,10 @@ function part2() {
     d = 11.0;
     o = new C(12);
     lam();
-    assert l == 13;
-    assert f == 14.0;
-    assert d == 15.0;
-    assert o.v == 16;
+    assertEQ( l, 13)
+    assertEQ( f, 14.0)
+    assertEQ( d, 15.0)
+    assertEQ( o.v, 16)
 }
 
 function main(): void {

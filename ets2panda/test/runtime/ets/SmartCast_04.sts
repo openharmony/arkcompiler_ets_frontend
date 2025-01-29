@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,18 +48,18 @@ function fooOr2(x: String|null, y: String|null): string {
 }
 
 function main(): void {
-  assert(fooAnd("Test", "string") == "Test string");
-  assert(fooAnd("Test", null) == "Test");
-  assert(fooAnd(null, "string") == "string");
-  assert(fooAnd(null, null) == "null");
+  assertEQ(fooAnd("Test", "string"), "Test string")
+  assertEQ(fooAnd("Test", null), "Test")
+  assertEQ(fooAnd(null, "string"), "string")
+  assertEQ(fooAnd(null, null), "null")
 
-  assert(fooOr1("Test", "string") == "case 1");
-  assert(fooOr1("Test", null) == "case 1");
-  assert(fooOr1(null, "string") == "case 1");
-  assert(fooOr1(null, null) == "null");
+  assertEQ(fooOr1("Test", "string"), "case 1")
+  assertEQ(fooOr1("Test", null), "case 1")
+  assertEQ(fooOr1(null, "string"), "case 1")
+  assertEQ(fooOr1(null, null), "null")
 
-  assert(fooOr2("Test", "string") == "Test string");
-  assert(fooOr2("Test", null) == "case 1");
-  assert(fooOr2(null, "string") == "case 1");
-  assert(fooOr2(null, null) == "case 1");
+  assertEQ(fooOr2("Test", "string"), "Test string")
+  assertEQ(fooOr2("Test", null), "case 1")
+  assertEQ(fooOr2(null, "string"), "case 1")
+  assertEQ(fooOr2(null, null), "case 1")
 }

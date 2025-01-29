@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,12 +24,12 @@ function test_captures(): void {
 
     // capture in lambda
     foo() {
-        assert num_const == 1: "expected: " + 1 + " actual: " + num_const;
-        assert num == 2: "expected: " + 2 + " actual: " + num;
+        assertEQ( num_const, 1)
+        assertEQ( num, 2)
         {
             num++
-            assert num_const == 1: "expected: " + 1 + " actual: " + num_const;
-            assert num == 3: "expected: " + 3 + " actual: " + num;
+            assertEQ( num_const, 1)
+            assertEQ( num, 3)
         }
 
         let x: ()=>void = () => {
@@ -39,16 +39,16 @@ function test_captures(): void {
 
         if (true) {
             num++;
-            assert num == 4: "expected: " + 4 + " actual: " + num;
-            assert num_const == 1: "expected: " + 1 + " actual: " + num_const;
+            assertEQ( num, 4)
+            assertEQ( num_const, 1)
         }
 
         for (let i = 0; i < 2; ++i) {
             num++;
-            assert num_const == 1: "expected: " + 1 + " actual: " + num_const;
+            assertEQ( num_const, 1)
         }
 
-        assert num == 6: "expected: " + 6 + " actual: " + num;
+        assertEQ( num, 6)
 
         while (true) {
             if (num < 7) {
@@ -57,11 +57,11 @@ function test_captures(): void {
                 break;
             }
         }
-        assert num == 7: "expected: " + 7 + " actual: " + num;
+        assertEQ( num, 7)
 
         foo() {
             num++;
-            assert num == 8: "expected: " + 8 + " actual: " + num;
+            assertEQ( num, 8)
         }
     };
 }

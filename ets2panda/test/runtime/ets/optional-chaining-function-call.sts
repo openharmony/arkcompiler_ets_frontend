@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,10 +26,10 @@ function foo(a: funcType | null) {
 
     let getPeach: funcType | null = dummy();
     fruit = getPeach?.() ?? "banana";
-    assert(fruit == "peach");
+    assertEQ(fruit, "peach")
 
     fruit = getMelon() ?? "strawberry";
-    assert(fruit == "melon");
+    assertEQ(fruit, "melon")
 
     let test = false;
     try {
@@ -38,7 +38,7 @@ function foo(a: funcType | null) {
         test = true;
     }
 
-    assert(test == true);
+    assertEQ(test, true)
 }
 
 function main(): void {
@@ -47,5 +47,5 @@ function main(): void {
 
     let getPeach: funcType | null = dummy();
     let b = getPeach?.();
-    assert(b == "peach");
+    assertEQ(b, "peach")
 }

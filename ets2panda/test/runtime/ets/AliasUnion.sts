@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,19 +28,19 @@ function main() {
     let v2 : double | string = 2;             // boxed Double|String
 
     let v3 : Alias1Union<double, double> = new Int(3);  // primitive double
-    assert(v3 == 3);                           
+    assertEQ(v3, 3)                           
     let v4 : Alias1Union<double, string> = 4;          // boxed Double|String
-    assert(v4 == 4);
+    assertEQ(v4, 4)
 
     let v5 : Alias2Union<double, string> = new C<double>(5);  // C<Double>|String
     let v6 : C<double> = v5 as C<double>;
-    assert(v6.v == 5);
+    assertEQ(v6.v, 5)
 
     let v7 : Alias3Union<double, string> = [new C<double>(6)];   // C<Double>[]|String
     let v9 : C<double>[] = v7 as C<double>[];
-    assert (v9[0].v == 6);
+    assertEQ(v9[0].v, 6)
 
     let v10 : Alias4Union<double, string> = (p : double) : double => { return p; };  // (p: Double)=>Double |String
     let v11 : (p : double) => double = v10 as (p : double) => double;
-    assert (v11(7) == 7);
+    assertEQ(v11(7), 7)
 }

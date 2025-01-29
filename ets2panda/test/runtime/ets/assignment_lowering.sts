@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,8 +25,8 @@ class B   {
 function main(): void {
 
   let b = new B();
-  assert (b.c == 33);
-  assert (b.d == -11);
+  assertEQ(b.c, 33)
+  assertEQ(b.d, -11)
 
   let x: int[] = [1, 2, 3];
 
@@ -38,6 +38,6 @@ function main(): void {
   }
 
   for (let i: int = 0; i < 3; ++i) {
-    assert (x[i] == (i + 1) * 2);
+    assertEQ(x[i], (i + 1) * 2)
   }
 }

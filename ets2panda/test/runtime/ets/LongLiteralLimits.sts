@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,11 +18,11 @@ function main(): void {
     const binLongMax = 0b0111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111;
     const hexLongMax = 0x7FFFFFFFFFFFFFFF;
     const octLongMax = 0o777777777777777777777;
-    assert decLongMax - binLongMax + hexLongMax - octLongMax == 0: "Incorrect long max result";
+    assertEQ( decLongMax - binLongMax + hexLongMax - octLongMax, 0,  "Incorrect long max result")
 
     const decLongMin = ~decLongMax;
     const binLongMin = ~binLongMax;
     const hexLongMin = ~hexLongMax;
     const octLongMin = ~octLongMax;
-    assert decLongMin - binLongMin + hexLongMin - octLongMin == 0: "Incorrect long min result";
+    assertEQ( decLongMin - binLongMin + hexLongMin - octLongMin, 0,  "Incorrect long min result")
 }

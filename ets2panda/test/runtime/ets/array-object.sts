@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,15 +33,15 @@ function main(): void {
 
   object.$_hashCode();
 
-  assert(arr1 == arr1);
-  assert(arr1 == object_array);
-  assert(arr1 == object);
-  assert(arr1 != arr2);
+  assertEQ(arr1, arr1)
+  assertEQ(arr1, object_array)
+  assertEQ(arr1, object)
+  assertNE(arr1, arr2)
 
 // Cannot cast type 'int[]' to 'Object[]'
 //  let object_array2: Object[] = arr2 as Object[];
-//  assert(object.equals(arr2 as Object) == false);
+//  assertEQ(object.equals(arr2 as Object), false)
 
-  assert(arr2 == arr2);
-  assert(arr2 != new int[5]);
+  assertEQ(arr2, arr2)
+  assertNE(arr2, new int[5])
 }
