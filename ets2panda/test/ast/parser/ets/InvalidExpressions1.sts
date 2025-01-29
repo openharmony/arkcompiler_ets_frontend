@@ -69,6 +69,7 @@ let a = [1, 2, 3);
 /* @@? 28:20 Error SyntaxError: Unexpected token ')', expected: '}'. */
 /* @@? 30:13 Error SyntaxError: Invalid Type */
 /* @@? 30:13 Error SyntaxError: Unexpected token 'import'. */
+/* @@? 30:13 Error SyntaxError: Import declarations can only be used on the top level and before any other declaration, top level statement or directive */
 /* @@? 33:10 Error SyntaxError: Unexpected super keyword */
 /* @@? 36:8 Error SyntaxError: Unexpected token, expected: ']'. */
 /* @@? 38:17 Error SyntaxError: Unexpected token, expected ',' or ']'. */
