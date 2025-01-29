@@ -51,11 +51,17 @@ void ETSCompiler::Compile(const ir::ClassProperty *st) const
     auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
     compiler::RegScope rs(etsg);
 
+    ir::BoxingUnboxingFlags flags =
+        (st->Value() != nullptr) ? st->Value()->GetBoxingUnboxingFlags() : ir::BoxingUnboxingFlags::NONE;
+
     if (st->Value() == nullptr) {
         etsg->LoadDefaultValue(st, st->TsType());
-    } else if (!etsg->TryLoadConstantExpression(st->Value())) {
-        st->Value()->Compile(etsg);
-        etsg->ApplyConversion(st->Value(), st->TsType());
+    } else {
+        if (!etsg->TryLoadConstantExpression(st->Value())) {
+            st->Value()->Compile(etsg);
+            etsg->ApplyConversion(st->Value(), st->TsType());
+        }
+        st->Value()->SetBoxingUnboxingFlags(flags);
     }
 
     if (st->IsStatic()) {
