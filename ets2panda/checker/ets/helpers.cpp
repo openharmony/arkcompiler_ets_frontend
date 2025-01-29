@@ -1848,19 +1848,14 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
 
 bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
 {
-    if (expression->IsMemberExpression()) {
-        auto *var = expression->AsMemberExpression()->PropVar();
-        return var->Declaration()->IsConstDecl() ||
-               (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC));
-    }
-
+    varbinder::Variable *var = nullptr;
     if (expression->IsIdentifier()) {
-        auto *var = expression->AsIdentifier()->Variable();
-        return var->Declaration()->IsConstDecl() ||
-               (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC));
+        var = expression->AsIdentifier()->Variable();
+    } else if (expression->IsMemberExpression()) {
+        var = expression->AsMemberExpression()->PropVar();
     }
-
-    return false;
+    return var != nullptr && (var->Declaration()->IsConstDecl() ||
+                              (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC)));
 }
 
 void ETSChecker::CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> const &cases)
@@ -1871,6 +1866,9 @@ void ETSChecker::CheckItemCasesConstant(ArenaVector<ir::SwitchCaseStatement *> c
             continue;
         }
         auto *caseType = caseTest->TsType();
+        if (caseType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+            continue;
+        }
         if (caseTest->TsType()->IsETSEnumType()) {
             continue;
         }
@@ -1961,9 +1959,13 @@ void ETSChecker::CheckItemCasesDuplicate(ArenaVector<ir::SwitchCaseStatement *> 
 
 bool ETSChecker::CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue)
 {
-    if (IsConstantMemberOrIdentifierExpression(compareValue)) {
-        checker::Type *compareCaseType = compareValue->TsType();
+    checker::Type *compareCaseType = compareValue->TsType();
 
+    if (compareCaseType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
+        return true;
+    }
+
+    if (IsConstantMemberOrIdentifierExpression(compareValue)) {
         const auto compareCaseValue = GetStringFromIdentifierValue(compareCaseType);
         return caseValue != compareCaseValue;
     }
