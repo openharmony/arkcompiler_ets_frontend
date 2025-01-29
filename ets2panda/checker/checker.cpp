@@ -190,5 +190,4 @@ bool Checker::IsAnyError()
 {
     return DiagnosticEngine().IsAnyError();
 }
-
 }  // namespace ark::es2panda::checker

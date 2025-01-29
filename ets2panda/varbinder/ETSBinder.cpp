@@ -90,7 +90,7 @@ bool ETSBinder::LookupInDebugInfoPlugin(ir::Identifier *ident)
 void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces)
 {
     const auto &name = ident->Name();
-    if (IsSpecialName(name)) {
+    if (IsSpecialName(name) || ident->IsErrorPlaceHolder()) {
         return;
     }
     auto *iter = GetScope();
@@ -490,8 +490,8 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
                 fieldVar->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);
             }
         } else {
+            ASSERT(GetContext()->diagnosticEngine->IsAnyError());
             auto *checker = GetContext()->checker->AsETSChecker();
-            ASSERT(checker->IsAnyError());
             prop->SetTsType(checker->GlobalTypeError());
             prop->Id()->SetTsType(checker->GlobalTypeError());
         }

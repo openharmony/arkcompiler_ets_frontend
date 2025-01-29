@@ -210,9 +210,8 @@ void Lexer::LogSyntaxError(std::string_view const errorMessage) const
 
 void Lexer::LogUnexpectedToken(lexer::TokenType const tokenType) const
 {
-    std::stringstream ss;
-    ss << "Unexpected token: '" << TokenToString(tokenType) << "'.";
-    LogSyntaxError(ss.str());
+    auto const str = std::string {parser::UNEXPECTED_TOKEN}.append(TokenToString(tokenType)).append("'.");
+    LogSyntaxError(str);
 }
 
 void Lexer::CheckNumberLiteralEnd()

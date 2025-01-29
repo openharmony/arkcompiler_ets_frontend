@@ -52,9 +52,9 @@ function g(x: int): int {
 
 /* @@? 30:17 Error SyntaxError: Label already declared */
 /* @@? 40:1 Error SyntaxError: return keyword should be used in function body */
-/* @@? 43:12 Error SyntaxError: Unexpected token 'identification literal', expected: '('. */
-/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected: ')'. */
-/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected: '{'. */
+/* @@? 43:12 Error SyntaxError: Unexpected token 'x', expected '('. */
+/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected ')'. */
+/* @@? 44:9 Error SyntaxError: Unexpected token 'case', expected '{'. */
 /* @@? 46:15 Error SyntaxError: Unexpected token ':'. */
 /* @@? 46:15 Error SyntaxError: Unexpected token ':'. */
 /* @@? 46:15 Error SyntaxError: Unexpected token ':'. */

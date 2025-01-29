@@ -17,8 +17,8 @@ function printMagicIndex(arr) {
   console.log(arr?.[42});
 }
 
-/* @@? 17:23 Error SyntaxError: Unexpected token, expected: ']'.  */
+/* @@? 17:23 Error SyntaxError: Unexpected token, expected ']'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */
-/* @@? 17:23 Error SyntaxError: Unexpected token, expected: ']'.  */
+/* @@? 17:23 Error SyntaxError: Unexpected token, expected ']'.  */

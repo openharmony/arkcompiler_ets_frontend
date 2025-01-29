@@ -23,5 +23,5 @@ class A {
 }
 
 /* @@@ label Error SyntaxError: Unexpected private identifier  */
-/* @@@ label1 Error SyntaxError: Unexpected token '}', expected: ')'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token: '}'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '}', expected ')'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '}'.  */

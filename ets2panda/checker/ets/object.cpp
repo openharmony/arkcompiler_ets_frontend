@@ -1688,6 +1688,10 @@ void ETSChecker::ValidateResolvedProperty(varbinder::LocalVariable **property, c
         return;
     }
 
+    if (ident->Name().Is(ERROR_LITERAL)) {
+        return;
+    }
+
     using Utype = std::underlying_type_t<PropertySearchFlags>;
     static constexpr uint32_t CORRECT_PROPERTY_SEARCH_ORDER_INSTANCE = 7U;
     static_assert(static_cast<Utype>(PropertySearchFlags::SEARCH_INSTANCE) == CORRECT_PROPERTY_SEARCH_ORDER_INSTANCE,

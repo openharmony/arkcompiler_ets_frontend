@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,9 +17,9 @@
 a = {
   get a[b](){},
 }
-/* @@? 18:8 Error SyntaxError: Unexpected token, expected: '('.  */
+/* @@? 18:8 Error SyntaxError: Unexpected token, expected '('.  */
 /* @@? 18:10 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@? 18:10 Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@? 18:13 Error SyntaxError: Unexpected token, expected: '=>'.  */
-/* @@? 18:14 Error SyntaxError: Unexpected token: '}'.  */
+/* @@? 18:10 Error SyntaxError: Unexpected token, expected '{'.  */
+/* @@? 18:13 Error SyntaxError: Unexpected token, expected '=>'.  */
+/* @@? 18:14 Error SyntaxError: Unexpected token '}'.  */
 /* @@? 18:15 Error SyntaxError: Getter must not have formal parameters  */

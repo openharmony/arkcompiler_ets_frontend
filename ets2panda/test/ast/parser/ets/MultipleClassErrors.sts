@@ -29,12 +29,11 @@ class /* @@ label3 */77 {}
 
 class /* @@ label4 */{/* @@ label5 */}
 
-/* @@@ label Error SyntaxError: Unexpected token: 'function'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token: 'let'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token: 'let'.  */
-/* @@@ label3 Error SyntaxError: Identifier expected, got 'number literal'.  */
+/* @@@ label Error SyntaxError: Unexpected token 'function'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token 'let'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token 'let'.  */
+/* @@@ label3 Error SyntaxError: Identifier expected, got '77'.  */
 /* @@@ label4 Error SyntaxError: Identifier expected, got '{'.  */
-/* @@@ label5 Error SyntaxError: Unexpected token '}', expected: '{'.  */
-/* @@? 41:1 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@? 1:1 Error TypeError: Variable '*ERROR_LITERAL*' has already been declared. */
+/* @@@ label5 Error SyntaxError: Unexpected token '}', expected '{'.  */
+/* @@? 40:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
 /* @@? 24:17 Error TypeError: Type '"abc"' cannot be assigned to type 'double' */

@@ -17,8 +17,8 @@ final /* @@ label */kngkgj class /* @@ label1 */B /* @@ label2 */{
 
 }
 
-/* @@@ label Error SyntaxError: Unexpected token: 'identification literal'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@@ label Error SyntaxError: Unexpected token 'kngkgj'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token 'B'. */
 /* @@@ label2 Error SyntaxError: Unexpected token '{'. */
 /* @@? 16:21 Error TypeError: Cannot find type 'kngkgj'. */
 /* @@? 16:21 Error TypeError: Class literal is not yet supported. */

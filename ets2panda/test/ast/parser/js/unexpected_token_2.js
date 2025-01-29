@@ -15,8 +15,8 @@
 
 !(!(((a || b)));
 
-/* @@? 16:16 Error SyntaxError: Unexpected token ';', expected: ')'.  */
+/* @@? 16:16 Error SyntaxError: Unexpected token ';', expected ')'.  */
 /* @@? 1:1 Node {
     "type": "Program"
-}  *//* @@? 16:16 Error SyntaxError: Unexpected token ';', expected: ')'.  */
-/* @@? 16:16 Error SyntaxError: Unexpected token ';', expected: ')'.  */
+}  *//* @@? 16:16 Error SyntaxError: Unexpected token ';', expected ')'.  */
+/* @@? 16:16 Error SyntaxError: Unexpected token ';', expected ')'.  */

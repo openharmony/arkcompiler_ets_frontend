@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include <sstream>
-
 #include "ThrowingTypedParser.h"
 #include "lexer/lexer.h"
 
@@ -22,7 +20,7 @@ namespace ark::es2panda::parser {
 
 void ThrowingTypedParser::ThrowUnexpectedToken(lexer::TokenType tokenType) const
 {
-    ThrowSyntaxError({"Unexpected token: '", lexer::TokenToString(tokenType), "'."});
+    ThrowSyntaxError({UNEXPECTED_TOKEN, lexer::TokenToString(tokenType), "'."});
 }
 
 void ThrowingTypedParser::ThrowSyntaxError(std::string_view errorMessage) const

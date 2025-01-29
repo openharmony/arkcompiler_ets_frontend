@@ -14,9 +14,7 @@
  */
 @interface MyAnno {
     testProperty1: string/* @@ label */,
-    /* @@ label1 */testProperty2: number
+    testProperty2: number
 }
 
 /* @@@ label Error SyntaxError: Identifier expected, got ','.  */
-/* @@@ label1 Error SyntaxError: Missing type annotation for property.  */
-/* @@? 1:1 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */

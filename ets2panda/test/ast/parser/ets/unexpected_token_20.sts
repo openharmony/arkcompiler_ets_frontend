@@ -15,5 +15,5 @@
 
 try {} catch /* @@ label */e: number) {} finally {}
 
-/* @@@ label Error SyntaxError: Unexpected token 'identification literal', expected: '('.  */
+/* @@@ label Error SyntaxError: Unexpected token 'e', expected '('.  */
 /* @@? 16:28 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */

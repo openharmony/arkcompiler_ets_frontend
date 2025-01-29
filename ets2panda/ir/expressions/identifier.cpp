@@ -32,7 +32,10 @@ Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, 
     }
 }
 
-Identifier::Identifier(ArenaAllocator *const allocator) : Identifier(ERROR_LITERAL, allocator) {}
+Identifier::Identifier(ArenaAllocator *const allocator) : Identifier(ERROR_LITERAL, allocator)
+{
+    flags_ |= IdentifierFlags::ERROR_PLACEHOLDER;
+}
 
 Identifier::Identifier(util::StringView const name, ArenaAllocator *const allocator)
     : AnnotatedExpression(AstNodeType::IDENTIFIER), name_(name), decorators_(allocator->Adapter())

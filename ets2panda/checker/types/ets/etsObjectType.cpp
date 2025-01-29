@@ -17,13 +17,7 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
-#include "checker/types/ts/objectType.h"
-#include "checker/types/typeFlag.h"
-#include "checker/types/typeRelation.h"
 #include "checker/types/globalTypesHolder.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/identifier.h"
-#include "macros.h"
 
 namespace ark::es2panda::checker {
 
@@ -196,14 +190,16 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
     };
 
     if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
-        if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name); found != nullptr) {
+        if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
+            found != nullptr && !found->TsType()->IsTypeError()) {
             ASSERT(found->TsType()->IsETSFunctionType());
             addSignature(found);
         }
     }
 
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
-        if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name); found != nullptr) {
+        if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
+            found != nullptr && !found->TsType()->IsTypeError()) {
             ASSERT(found->TsType()->IsETSFunctionType());
             addSignature(found);
         }

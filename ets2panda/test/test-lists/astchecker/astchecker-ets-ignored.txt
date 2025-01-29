@@ -48,6 +48,7 @@ ast/compiler/ts/varRedeclaration9.ts
 
 # Issue #22140
 ast/parser/ets/InvalidLexer.sts
+ast/parser/ts/InvalidLexer.ts
 
 # Issue #18241
 ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.sts

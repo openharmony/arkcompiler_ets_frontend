@@ -19,5 +19,4 @@ do {
     )
 } while (true
 
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: ')'.  */
-/* @@ label */
+/* @@? 23:1 Error SyntaxError: Unexpected token 'eos', expected ')'.  */

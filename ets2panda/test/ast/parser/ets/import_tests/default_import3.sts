@@ -15,9 +15,8 @@
 
 import {default/* @@ label */} from /* @@ label1 */"./modules/class_default_module.sts"/* @@ label2 */;
 
-/* @@@ label Error SyntaxError: Unexpected token, expected: 'as'.  */
-/* @@@ label Error SyntaxError: Unexpected token '}', expected: 'identification literal'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token 'string literal', expected: 'identification literal'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token ';', expected: 'identification literal'.  */
-/* @@@ label3 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label3 */
+/* @@@ label Error SyntaxError: Unexpected token, expected 'as'.  */
+/* @@@ label Error SyntaxError: Unexpected token '}', expected identifier.  */
+/* @@@ label1 Error SyntaxError: Unexpected token './modules/class_default_module.sts', expected identifier.  */
+/* @@@ label2 Error SyntaxError: Unexpected token ';', expected identifier.  */
+/* @@? 23:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */

@@ -18,12 +18,7 @@
 }
 
 /* @@? 17:5 Error SyntaxError: Identifier expected, got ''. */
-/* @@? 17:11 Error SyntaxError: Missing type annotation for property. */
 /* @@? 17:12 Error SyntaxError: Missing type annotation for property 'A'. */
 /* @@? 17:12 Error SyntaxError: Identifier expected, got '{'. */
-/* @@? 17:13 Error SyntaxError: Missing type annotation for property. */
+/* @@? 17:13 Error SyntaxError: Identifier expected, got '}'. */
 /* @@? 18:1 Error SyntaxError: Unexpected token '}'. */
-/* @@? 1:1 Error TypeError: Variable '*ERROR_LITERAL*' has already been declared. */
-/* @@? 1:1 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */
-/* @@? 17:11 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */
-/* @@? 1:1 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */

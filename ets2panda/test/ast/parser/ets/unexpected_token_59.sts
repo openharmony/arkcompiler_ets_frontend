@@ -16,6 +16,4 @@
 class A {
     x: int
 
-
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label */
+/* @@? 20:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */

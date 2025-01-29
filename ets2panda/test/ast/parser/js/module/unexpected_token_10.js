@@ -19,7 +19,6 @@ flags: [module]
 
 import(import /* @@ label */)
 
-/* @@@ label Error SyntaxError: Unexpected token ')', expected: '('.  */
-/* @@@ label Error SyntaxError: Unexpected token: ')'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token 'eos', expected: ')'.  */
-/* @@ label1 */
+/* @@@ label Error SyntaxError: Unexpected token ')', expected '('.  */
+/* @@@ label Error SyntaxError: Unexpected token ')'.  */
+/* @@? 25:1 Error SyntaxError: Unexpected token 'eos', expected ')'.  */

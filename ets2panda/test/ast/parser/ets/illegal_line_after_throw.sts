@@ -26,6 +26,4 @@ throw
 }
 
 /* @@@ label Error SyntaxError: Illegal newline after throw */
-/* @@? 25:15 Error TypeError: need to specify target type for class composite */
-/* @@? 24:1 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */
-/* @@? 24:1 Error TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause */
+/* @@@ label Error TypeError: need to specify target type for class composite */

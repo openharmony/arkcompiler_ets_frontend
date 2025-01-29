@@ -14,29 +14,10 @@
  */
 
 #include "ETSparser.h"
-#include <utility>
-#include "forwardDeclForParserImpl.h"
 #include "generated/diagnostic.h"
-#include "parser/parserStatusContext.h"
-#include "parserFlags.h"
-#include "util/language.h"
-#include "utils/arena_containers.h"
 #include "lexer/lexer.h"
-#include "ir/astNode.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/spreadElement.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/dummyNode.h"
 #include "ir/ets/etsTuple.h"
 #include "ir/ets/etsUnionType.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsParameterExpression.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "generated/signatures.h"
 
 namespace ark::es2panda::parser {
 
@@ -143,14 +124,23 @@ ArenaVector<ir::AstNode *> ETSParser::ParseAnnotationProperties(ir::ModifierFlag
             LogSyntaxError("Annotation property can not have access modifiers", Lexer()->GetToken().Start());
             Lexer()->NextToken();
         }
+
         auto *fieldName = ExpectIdentifier();
-        if (fieldName == nullptr) {
-            LogSyntaxError("Unexpected token.");
-        } else {
-            bool needTypeAnnotation = (memberModifiers & ir::ModifierFlags::ANNOTATION_USAGE) == 0U;
-            ir::AstNode *property = ParseAnnotationProperty(fieldName, memberModifiers, needTypeAnnotation);
-            properties.push_back(property);
+        if (fieldName->IsErrorPlaceHolder()) {
+            //  Try to recover from error: simplest strategy: only one step ahead.
+            //  Probably we can seek for identifier till the enclosing right brace (staring after the next comma?)
+            //  if the simplest case failed.
+            auto const pos = Lexer()->Save();
+            if (auto *fieldName1 = ExpectIdentifier(); fieldName1->IsErrorPlaceHolder()) {
+                Lexer()->Rewind(pos);
+            } else {
+                fieldName = fieldName1;
+            }
         }
+
+        bool needTypeAnnotation = (memberModifiers & ir::ModifierFlags::ANNOTATION_USAGE) == 0U;
+        properties.emplace_back(ParseAnnotationProperty(fieldName, memberModifiers, needTypeAnnotation));
+
         if ((memberModifiers & ir::ModifierFlags::ANNOTATION_USAGE) != 0U &&
             Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
             ExpectToken(lexer::TokenType::PUNCTUATOR_COMMA);  // eat ','
@@ -193,9 +183,9 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
         typeAnnotation = ParseTypeAnnotation(&options);
     }
 
-    if (typeAnnotation == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0) {
-        auto nameField = fieldName->Name().Mutf8();
-        auto logField = !fieldName->IsErrorPlaceHolder() ? " '" + nameField + "'" : "";
+    if (typeAnnotation == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0 &&
+        !fieldName->IsErrorPlaceHolder()) {
+        auto const logField = std::string {" '"}.append(fieldName->Name().Utf8()).append("'");
         LogError(diagnostic::MISSING_TYPE_ANNOTATION, {logField}, Lexer()->GetToken().Start());
     }
 
@@ -212,8 +202,10 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
         initializer = ParseExpression();
     }
 
-    if (initializer == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_USAGE) != 0) {
-        LogSyntaxError("Invalid argument passed to '" + fieldName->Name().Mutf8() + "'", Lexer()->GetToken().Start());
+    if (initializer == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_USAGE) != 0 &&
+        !fieldName->IsErrorPlaceHolder()) {
+        LogSyntaxError(std::string("Invalid argument passed to '").append(fieldName->Name().Utf8()).append("'"),
+                       Lexer()->GetToken().Start());
     }
 
     if (initializer != nullptr && !ValidAnnotationValue(initializer)) {

@@ -17,7 +17,7 @@ for /* @@ label */let i = 0; i < count; ++i) {
     result = result + p[i]!.awaitResolution() * a[i];
 }
 
-/* @@@ label Error SyntaxError: Unexpected token 'let', expected: '('.  */
+/* @@@ label Error SyntaxError: Unexpected token 'let', expected '('.  */
 /* @@? 16:34 Error TypeError: Function name "count" used in the wrong context */
 /* @@? 16:30 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 17:5 Error TypeError: Unresolved reference result */

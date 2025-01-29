@@ -17,5 +17,4 @@ function foo(a: int) {}
 
 foo(1,
 
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: ')'.  */
-/* @@ label */
+/* @@? 21:1 Error SyntaxError: Unexpected token 'eos', expected ')'.  */

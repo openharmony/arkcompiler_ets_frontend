@@ -113,7 +113,7 @@ const n5 = 02n
 /* @@? 56:16 Error SyntaxError: Unexpected token 'identification literal'.  */
 /* @@? 57:16 Error SyntaxError: Implicit octal literal not allowed  */
 /* @@? 57:16 Error SyntaxError: Invalid BigInt number  */
-/* @@? 59:60 Error SyntaxError: Unexpected token: '#'.  */
+/* @@? 59:60 Error SyntaxError: Unexpected token '#'.  */
 
 /* @@? 29:18 Error TypeError: Unresolved reference c'' */
 /* @@? 30:1 Error TypeError: Unresolved reference c'

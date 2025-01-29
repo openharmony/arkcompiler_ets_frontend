@@ -15,7 +15,6 @@
 
 class G<T, S extends T /* @@ label */{/* @@ label1 */}
 
-/* @@@ label Error SyntaxError: Unexpected token, expected: '>'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token '}', expected: '{'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@label2 */
+/* @@@ label Error SyntaxError: Unexpected token, expected '>'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '}', expected '{'. */
+/* @@? 21:1 Error SyntaxError: Unexpected token 'eos', expected '}'. */

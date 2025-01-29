@@ -15,8 +15,8 @@
 
 async(async b > b)
 
-/* @@? 16:15 Error SyntaxError: Unexpected token, expected: '=>'.  */
+/* @@? 16:15 Error SyntaxError: Unexpected token, expected '=>'.  */
 /* @@? 1:1 Node {
     "type": "Program"
-}  *//* @@? 16:15 Error SyntaxError: Unexpected token, expected: '=>'.  */
-/* @@? 16:15 Error SyntaxError: Unexpected token, expected: '=>'.  */
+}  *//* @@? 16:15 Error SyntaxError: Unexpected token, expected '=>'.  */
+/* @@? 16:15 Error SyntaxError: Unexpected token, expected '=>'.  */

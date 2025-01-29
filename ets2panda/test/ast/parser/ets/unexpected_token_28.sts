@@ -17,13 +17,11 @@ interface A {}
 interface B {}
 interface C extends A, B [}
 
-/* @@? 18:26 Error SyntaxError: Unexpected token, expected: ','. */
+/* @@? 18:26 Error SyntaxError: Unexpected token, expected ','. */
 /* @@? 18:27 Error SyntaxError: Identifier expected */
-/* @@? 18:27 Error SyntaxError: Unexpected token, expected: ','. */
-/* @@? 30:1 Error SyntaxError: Identifier expected */
-/* @@? 30:1 Error SyntaxError: Unexpected token, expected: '{'. */
-/* @@? 30:1 Error SyntaxError: Unexpected token, expected: '}'. */
-/* @@? 1:1 Error TypeError: Cannot find type '*ERROR_LITERAL*'. */
-/* @@? 1:1 Error TypeError: Cannot find type '*ERROR_LITERAL*'. */
+/* @@? 18:27 Error SyntaxError: Unexpected token, expected ','. */
+/* @@? 28:1 Error SyntaxError: Identifier expected */
+/* @@? 28:1 Error SyntaxError: Unexpected token, expected '{'. */
+/* @@? 28:1 Error SyntaxError: Unexpected token, expected '}'. */
 /* @@? 18:27 Error TypeError: Interface expected here. */
-/* @@? 30:1 Error TypeError: Interface expected here. */
+/* @@? 28:1 Error TypeError: Interface expected here. */

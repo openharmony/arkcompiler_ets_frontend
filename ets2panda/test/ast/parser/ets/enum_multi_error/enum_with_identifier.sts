@@ -15,6 +15,5 @@
 
 enum a
 
-/* @@@ label Error SyntaxError: Unexpected token, expected: '{'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label */
+/* @@? 20:1 Error SyntaxError: Unexpected token, expected '{'. */
+/* @@? 20:1 Error SyntaxError: Unexpected token 'eos', expected '}'. */

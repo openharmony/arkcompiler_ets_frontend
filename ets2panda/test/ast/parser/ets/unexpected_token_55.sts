@@ -26,9 +26,9 @@ export class MathSpectralNorm {
 }
 
 /* @@? 19:18 Error SyntaxError: Unexpected token '='. */
-/* @@? 19:29 Error SyntaxError: Unexpected token ':', expected: ';'. */
+/* @@? 19:29 Error SyntaxError: Unexpected token ':', expected ';'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
-/* @@? 19:29 Error SyntaxError: Unexpected token ':', expected: ')'. */
+/* @@? 19:29 Error SyntaxError: Unexpected token ':', expected ')'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */
 /* @@? 19:29 Error SyntaxError: Unexpected token ':'. */

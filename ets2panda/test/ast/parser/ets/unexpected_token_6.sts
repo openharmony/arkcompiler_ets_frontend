@@ -17,4 +17,4 @@ while (true /* @@ label */{
     console.log("hehehehe")
 }
 
-/* @@@ label Error SyntaxError: Unexpected token '{', expected: ')'.  */
+/* @@@ label Error SyntaxError: Unexpected token '{', expected ')'.  */

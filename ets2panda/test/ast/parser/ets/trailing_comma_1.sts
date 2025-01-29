@@ -43,11 +43,11 @@ foo(,)
 /* @@? 33:10 Error SyntaxError: Unexpected token ','. */
 /* @@? 34:5 Error SyntaxError: Unexpected token ','. */
 /* @@? 35:10 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 35:10 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 35:10 Error SyntaxError: Unexpected token 'a'. */
+/* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 35:14 Error SyntaxError: Unexpected token ')'. */
 /* @@? 36:5 Error SyntaxError: Unexpected token ','. */
-/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */
 /* @@? 30:5 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 31:5 Error TypeError: Indexed access is not supported for such expression type. */
 /* @@? 31:11 Error TypeError: Indexed access is not supported for such expression type. */

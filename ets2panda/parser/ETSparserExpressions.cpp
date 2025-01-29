@@ -269,7 +269,7 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
         return ParsePrimaryExpressionIdent(flags);
     }
 
-    LogSyntaxError({"Unexpected token '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
+    LogUnexpectedToken(Lexer()->GetToken());
     return AllocBrokenExpression();
 }
 
@@ -537,7 +537,7 @@ std::optional<ir::Expression *> ETSParser::GetPostPrimaryExpression(ir::Expressi
         }
         case lexer::TokenType::PUNCTUATOR_FORMAT:
         case lexer::TokenType::PUNCTUATOR_ARROW:
-            LogUnexpectedToken(Lexer()->GetToken().Type());
+            LogUnexpectedToken(Lexer()->GetToken());
             [[fallthrough]];
         default:
             return std::nullopt;

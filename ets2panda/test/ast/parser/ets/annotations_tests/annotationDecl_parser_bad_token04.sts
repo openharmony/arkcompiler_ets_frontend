@@ -19,7 +19,7 @@ import * as Src from "./annotation_export"
 Src.MyAnno
 class /* @@ label */A/* @@ label1 */{}
 
-/* @@@ label Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@@ label Error SyntaxError: Unexpected token 'A'.  */
 /* @@@ label1 Error SyntaxError: Unexpected token '{'.  */
 /* @@? 19:1 Error TypeError: Class literal is not yet supported. */
 /* @@? 20:21 Error TypeError: Unresolved reference A */

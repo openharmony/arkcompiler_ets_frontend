@@ -17,6 +17,5 @@
 class B {}
 class A extends B
 
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '{'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label */
+/* @@? 22:1 Error SyntaxError: Unexpected token 'eos', expected '{'.  */
+/* @@? 22:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */

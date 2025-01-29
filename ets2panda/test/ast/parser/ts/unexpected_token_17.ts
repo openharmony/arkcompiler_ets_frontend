@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-abstract /* @@ label */foo/* @@ label1 */(1 /* @@ label2 */> 0/* @@ label3 */) /* @@ label4 */{ 
+abstract /* @@ label */foo/* @@ label1 */(1 /* @@ label2 */> 0/* @@ label3 */) /* @@ label4 */{
     console/* @@ label5 */.log(/* @@ label6 */"hehe")
 }
 
 
 /* @@@ label Error SyntaxError: abstract modifier can only appear on a class, struct, method, or property declaration.  */
-/* @@@ label1 Error SyntaxError: Unexpected token '(', expected: '{'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@@ label3 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '(', expected '{'.  */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected ';'.  */
+/* @@@ label3 Error SyntaxError: Unexpected token, expected ';'.  */
 /* @@@ label4 Error SyntaxError: Unexpected token in class property  */
-/* @@@ label5 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@@ label5 Error SyntaxError: Unexpected token, expected ';'.  */
 /* @@@ label6 Error SyntaxError: Unexpected token, expected an identifier.  */

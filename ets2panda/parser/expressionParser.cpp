@@ -545,7 +545,7 @@ void ParserImpl::ValidateParenthesizedExpression(ir::Expression *lhsExpression)
 
 ir::Expression *ParserImpl::ParsePrefixAssertionExpression()
 {
-    LogUnexpectedToken(lexer_->GetToken().Type());
+    LogUnexpectedToken(lexer_->GetToken());
     return AllocBrokenExpression();
 }
 
@@ -562,7 +562,7 @@ ir::Expression *ParserImpl::ParseAssignmentExpressionHelper()
             lexer_->NextToken();  // eat ':'
         } else {
             // just go to the next token if we missed ':'
-            LogSyntaxError("Unexpected token, expected: ':'.");
+            LogSyntaxError("Unexpected token, expected ':'.");
         }
     } else {
         lexer_->NextToken();  // eat ':'
@@ -999,7 +999,7 @@ ir::Expression *ParserImpl::ParsePrimaryExpressionWithLiterals(ExpressionParseFl
         case lexer::TokenType::LITERAL_STRING:
             return ParseStringLiteral();
         default:
-            LogUnexpectedToken(lexer_->GetToken().Type());
+            LogUnexpectedToken(lexer_->GetToken());
             return AllocBrokenExpression();
     }
 }
@@ -2057,7 +2057,7 @@ ir::Expression *ParserImpl::ParsePropertyValue(const ir::PropertyKind *propertyK
                 lexer_->NextToken();  // eat colon
             } else {
                 // we just missed ':'
-                LogSyntaxError("Unexpected token, expected: ':'.");
+                LogSyntaxError("Unexpected token, expected ':'.");
             }
         } else {
             lexer_->NextToken();  // eat colon

@@ -29,20 +29,14 @@
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/superExpression.h"
 #include "ir/ets/etsParameterExpression.h"
-#include "ir/module/exportNamedDeclaration.h"
-#include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/expressionStatement.h"
-#include "ir/statements/functionDeclaration.h"
-#include "lexer/lexer.h"
-#include "parser/ETSparser.h"
 #include "util/errorRecovery.h"
 
 using namespace std::literals::string_literals;
@@ -1238,7 +1232,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
         if ((options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
-        LogSyntaxError({"Identifier expected, got '", TokenToString(tokenType), "'."}, tokenStart);
+        LogSyntaxError({"Identifier expected, got '", token.ToString(), "'."}, tokenStart);
         lexer_->NextToken();
         return AllocBrokenExpression();
     }
@@ -1252,38 +1246,53 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
 
 void ParserImpl::ExpectToken(lexer::TokenType tokenType, bool consumeToken)
 {
-    auto actualType = lexer_->GetToken().Type();
+    auto const &token = lexer_->GetToken();
+    auto const actualType = token.Type();
     if (actualType == tokenType) {
         if (consumeToken) {
             lexer_->NextToken();
         }
         return;
     }
-    LogSyntaxError({"Unexpected token '", TokenToString(actualType), "', expected: '", TokenToString(tokenType), "'."});
+
+    if (tokenType != lexer::TokenType::LITERAL_IDENT) {
+        LogSyntaxError({UNEXPECTED_TOKEN, token.ToString(), "', expected '", TokenToString(tokenType), "'."});
+    } else {
+        LogSyntaxError({UNEXPECTED_TOKEN, token.ToString(), "', expected identifier."});
+    }
+
     if (!consumeToken) {
         return;
     }
-    if (!lexer::Token::IsPunctuatorToken(lexer_->GetToken().Type())) {
+
+    if (!lexer::Token::IsPunctuatorToken(actualType)) {
         return;
     }
+
     auto savedPos = lexer_->Save();
     lexer_->NextToken();
     if (lexer_->GetToken().Type() == tokenType) {
         lexer_->NextToken();
         return;
     }
+
     lexer_->Rewind(savedPos);
 }
 
 void ParserImpl::LogUnexpectedToken(lexer::TokenType tokenType)
 {
-    LogSyntaxError("Unexpected token: '"s + TokenToString(tokenType) + "'."s);
+    LogSyntaxError(std::string(UNEXPECTED_TOKEN).append(TokenToString(tokenType)).append("'."));
+}
+
+void ParserImpl::LogUnexpectedToken(lexer::Token const &token)
+{
+    LogSyntaxError(std::string(UNEXPECTED_TOKEN).append(token.ToString()).append("'."));
 }
 
 void ParserImpl::LogExpectedToken(lexer::TokenType tokenType)
 {
     if (tokenType != lexer::TokenType::LITERAL_IDENT && tokenType != lexer::TokenType::LITERAL_STRING) {
-        LogSyntaxError("Unexpected token, expected: '"s + TokenToString(tokenType) + "'."s);
+        LogSyntaxError("Unexpected token, expected '"s + TokenToString(tokenType) + "'."s);
     } else if (tokenType == lexer::TokenType::LITERAL_IDENT) {
         LogSyntaxError("Unexpected token, expected an identifier.");
         lexer_->GetToken().SetTokenStr(ERROR_LITERAL);

@@ -15,32 +15,7 @@
 
 #include "scope.h"
 
-#include "varbinder/declaration.h"
-#include "util/helpers.h"
 #include "varbinder/tsBinding.h"
-#include "varbinder/variable.h"
-#include "varbinder/variableFlags.h"
-#include "ir/astNode.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/annotationDeclaration.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/module/exportAllDeclaration.h"
-#include "ir/module/exportNamedDeclaration.h"
-#include "ir/module/exportSpecifier.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ts/tsTypeAliasDeclaration.h"
-#include "compiler/base/literals.h"
-#include "macros.h"
-#include "util/ustring.h"
-#include "generated/signatures.h"
 #include "public/public.h"
 
 namespace ark::es2panda::varbinder {
@@ -472,6 +447,9 @@ std::tuple<ParameterDecl *, ir::AstNode *, Variable *> ParamScope::AddParamDecl(
                                                                                 ir::AstNode *param)
 {
     const auto [name, pattern] = util::Helpers::ParamName(allocator, param, params_.size());
+    if (name.Is(ERROR_LITERAL)) {
+        return {nullptr, nullptr, nullptr};
+    }
 
     auto *decl = NewDecl<ParameterDecl>(allocator, name);
     auto *var = AddParam(allocator, FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS), decl,

@@ -23,4 +23,3 @@ function /* @@ label1 */(): /* @@ label2 */{
 /* @@@ label Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
 /* @@@ label1 Error SyntaxError: Unexpected token, expected identifier after 'function' keyword */
 /* @@@ label2 Error SyntaxError: Invalid Type */
-/* @@? 19:1 Error TypeError: Function *ERROR_LITERAL* is already declared. */
