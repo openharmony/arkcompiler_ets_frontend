@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "castingContext.h"
 #include "checker/types/type.h"
+#include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {
 CastingContext::CastingContext(TypeRelation *relation, std::initializer_list<TypeErrorMessageElement> list,
@@ -24,9 +25,10 @@ CastingContext::CastingContext(TypeRelation *relation, std::initializer_list<Typ
 
     const SavedTypeRelationFlagsContext savedTypeRelationFlags(relation, flags_);
     relation->SetNode(data.node);
-    relation->Result(false);
 
-    if (!relation->IsSupertypeOf(data.target, data.source)) {
+    const bool isLegalBoxedPrimitiveConversion = relation->IsLegalBoxedPrimitiveConversion(data.target, data.source);
+    relation->Result(false);
+    if (!relation->IsSupertypeOf(data.target, data.source) && !isLegalBoxedPrimitiveConversion) {
         relation->IsCastableTo(data.source, data.target);
         if (!relation->IsTrue() && data.source->ToString() == data.target->ToString()) {
             relation->Result(true);
@@ -34,6 +36,13 @@ CastingContext::CastingContext(TypeRelation *relation, std::initializer_list<Typ
         if (!relation->IsTrue() && (flags_ & TypeRelationFlag::NO_THROW) == 0) {
             relation->RaiseError(list, data.pos);
         }
+    }
+
+    if (isLegalBoxedPrimitiveConversion && !relation->IsTrue()) {
+        auto *const checker = relation->GetChecker()->AsETSChecker();
+        Type *sourceUnboxedType = checker->MaybeUnboxType(data.source);
+        relation->GetNode()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(sourceUnboxedType));
+        relation->GetNode()->AddBoxingUnboxingFlags(checker->GetBoxingFlag(data.target));
     }
 
     uncheckedCast_ = relation->UncheckedCast();
