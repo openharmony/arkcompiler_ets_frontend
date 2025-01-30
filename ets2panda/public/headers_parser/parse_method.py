@@ -32,10 +32,9 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
     Note: 'function' in names of variables is alias for 'method or constructor'
     """
     res: Dict[str, Any] = {}
-    end_of_args = parse_declaration_without_postfix(data, start, res)
 
     # Defines is it declaration or definition:
-    next_semicolon = find_first_of_characters(";", data, start)  # <---  for declaration
+    next_semicolon = smart_find_first_of_characters(";", data, start)  # <---  for declaration
     start_of_body = smart_find_first_of_characters("{", data, start)  # <---  for definition
 
     if next_semicolon <= start_of_body:  # <---  declaration case
@@ -49,6 +48,12 @@ def parse_method_or_constructor(data: str, start: int = 0) -> Tuple[int, Dict]:
 
     else:
         raise RuntimeError("Error! End of function declaration not found\n")
+
+    # Skip operator overloading
+    if data[start: find_first_of_characters("(", data, start)].find("operator") != -1:
+        return end_of_function + 1, {}
+
+    end_of_args = parse_declaration_without_postfix(data, start, res)
 
     # Defines is it constructor or method
     colon_pos = find_first_of_characters(":", data, end_of_args, end_of_function_declaration)

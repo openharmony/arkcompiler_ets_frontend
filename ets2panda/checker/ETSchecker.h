@@ -508,11 +508,6 @@ public:
     void ReplaceScope(ir::AstNode *root, ir::AstNode *oldNode, varbinder::Scope *newScope);
 
     // Helpers
-    size_t ComputeProxyMethods(ir::ClassDefinition *klass);
-    ir::ModifierFlags GetFlagsForProxyLambda(bool isStatic);
-    ir::ScriptFunction *CreateProxyFunc(ir::ArrowFunctionExpression *lambda, ArenaVector<ir::AstNode *> &captured,
-                                        bool isStatic);
-    ir::AstNode *GetProxyMethodBody(ir::ArrowFunctionExpression *lambda, varbinder::FunctionScope *scope);
     static std::string GetAsyncImplName(const util::StringView &name);
     static std::string GetAsyncImplName(ir::MethodDefinition *asyncMethod);
     static bool IsAsyncImplMethod(ir::MethodDefinition const *method);
@@ -554,7 +549,6 @@ public:
     void CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util::StringView const &baseName,
                                            ArenaUnorderedMap<util::StringView, ir::ClassProperty *> &fieldMap);
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
-    bool TestUnionType(Type *type, TypeFlag test);
     checker::Type *ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxedL,
                                                      checker::Type *unboxedR);
     Type *ApplyUnaryOperatorPromotion(Type *type, bool createConst = true, bool doPromotion = true,
@@ -636,7 +630,6 @@ public:
                                    const ir::Identifier *ident);
     void ValidateResolvedProperty(varbinder::LocalVariable **property, const ETSObjectType *target,
                                   const ir::Identifier *ident, PropertySearchFlags flags);
-    bool IsValidSetterLeftSide(const ir::MemberExpression *member);
     bool CheckRethrowingParams(const ir::AstNode *ancestorFunction, const ir::AstNode *node);
     void CheckThrowingStatements(ir::AstNode *node);
     bool CheckThrowingPlacement(ir::AstNode *node, const ir::AstNode *ancestorFunction);
@@ -671,7 +664,6 @@ public:
     Type *GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident);
     void ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
                                                   checker::ETSObjectType *lastObjectType, ir::Identifier *ident);
-    bool CheckValidUnionEqual(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
     void ETSObjectTypeDeclNode(ETSChecker *checker, ETSObjectType *const objectType);

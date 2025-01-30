@@ -209,7 +209,6 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;
-    bool CompileComputed(compiler::ETSGen *etsg) const;
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     void CompileToReg(compiler::PandaGen *pg, compiler::VReg objReg) const;

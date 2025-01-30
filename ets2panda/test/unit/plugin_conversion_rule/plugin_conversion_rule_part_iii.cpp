@@ -109,12 +109,12 @@ TEST_F(PluginConversionRuleUnitTest, FunctionSignaturePtrCall)
      	auto *ctxAllocator = ctx->allocator;
      	auto resultVector = ((reinterpret_cast<const ir::FunctionSignature *>(classInstance))->Params());
      	*returnTypeLen = resultVector.size();
-     	auto res = ctxAllocator->New< es2panda_AstNode *[]>(*returnTypeLen);
+     	auto apiRes = ctxAllocator->New< es2panda_AstNode *[]>(*returnTypeLen);
      	for (size_t i = 0; i < *returnTypeLen; ++i) {
      	auto toPush = reinterpret_cast< es2panda_AstNode *>(resultVector.at(i));
-     		res[i] = reinterpret_cast< es2panda_AstNode *>(toPush);
+     		apiRes[i] = reinterpret_cast< es2panda_AstNode *>(toPush);
      	};
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -179,8 +179,8 @@ TEST_F(PluginConversionRuleUnitTest, ScriptionExtensionInputParameter)
     es2panda_AstNode *classInstance/*return_args:*/)
     {
         ark::es2panda::ScriptExtension extE2p {ScriptExtension::STS};
-        auto res = ((reinterpret_cast<const ir::Identifier *>(classInstance))->IsReference(extE2p));
-    	return res;
+        auto apiRes = ((reinterpret_cast<const ir::Identifier *>(classInstance))->IsReference(extE2p));
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -209,9 +209,9 @@ TEST_F(PluginConversionRuleUnitTest, SourcePositionPtrReturnValue)
     extern "C" const es2panda_SourcePosition *AstNodeStartConst([[maybe_unused]] es2panda_Context *context,
     es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_SourcePosition *>(reinterpret_cast<Context *>(context)->
+        auto apiRes = reinterpret_cast<const es2panda_SourcePosition *>(reinterpret_cast<Context *>(context)->
         allocator->New<lexer::SourcePosition>(((reinterpret_cast<const ir::AstNode *>(classInstance))->Start())));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -225,9 +225,9 @@ TEST_F(PluginConversionRuleUnitTest, SourceRangePtrInputParameter)
     extern "C" const es2panda_SourceRange *AstNodeRangeConst([[maybe_unused]] es2panda_Context *context,
     es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_SourceRange *>(reinterpret_cast<Context *>(context)->allocator->
+        auto apiRes = reinterpret_cast<const es2panda_SourceRange *>(reinterpret_cast<Context *>(context)->allocator->
                    New<lexer::SourceRange>(((reinterpret_cast<const ir::AstNode *>(classInstance))->Range())));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -273,9 +273,9 @@ TEST_F(PluginConversionRuleUnitTest, IRNodePtrReturnValue)
     extern "C" const es2panda_IRNode *ScopeScopeStartConst([[maybe_unused]] es2panda_Context *context,
     es2panda_Scope *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_IRNode *>((reinterpret_cast<const varbinder::Scope *>
+        auto apiRes = reinterpret_cast<const es2panda_IRNode *>((reinterpret_cast<const varbinder::Scope *>
                    (classInstance))->ScopeStart());
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -321,9 +321,9 @@ TEST_F(PluginConversionRuleUnitTest, SrcDumperPtrCall)
     extern "C"  char *SrcDumperStrConst([[maybe_unused]] es2panda_Context *context,
     es2panda_SrcDumper *classInstance/*return_args:*/)
     {
-        auto res = StdStringToCString(reinterpret_cast<Context *>(context)->allocator,
+        auto apiRes = StdStringToCString(reinterpret_cast<Context *>(context)->allocator,
                    ((reinterpret_cast<const ir::SrcDumper *>(classInstance))->Str()));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -387,9 +387,9 @@ TEST_F(PluginConversionRuleUnitTest, AstDumperPtrCall)
     extern "C"  char *AstDumperStrConst([[maybe_unused]] es2panda_Context *context,
     es2panda_AstDumper *classInstance/*return_args:*/)
     {
-        auto res = StdStringToCString(reinterpret_cast<Context *>(context)->allocator, ((reinterpret_cast<
+        auto apiRes = StdStringToCString(reinterpret_cast<Context *>(context)->allocator, ((reinterpret_cast<
                    const ir::AstDumper *>(classInstance))->Str()));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -478,9 +478,10 @@ TEST_F(PluginConversionRuleUnitTest, LabelPairReturnValue)
                           std::forward<compiler::LabelPair>(*reinterpret_cast<compiler::LabelPair *>(insertion)),
                           insertionStmtE2p));
      	*returnTypeSecond = reinterpret_cast<const es2panda_AstNode *>(const_cast<ir::Statement *>(resultPair.second));
-     	auto res = reinterpret_cast< es2panda_LabelPair *>(ctxAllocator->New<compiler::LabelPair>(resultPair.first));
+     	auto apiRes = reinterpret_cast< es2panda_LabelPair *>(ctxAllocator
+            ->New<compiler::LabelPair>(resultPair.first));
      ;
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -503,9 +504,10 @@ TEST_F(PluginConversionRuleUnitTest, LabelPairPtrConstructor)
                           std::forward<compiler::LabelPair>(*reinterpret_cast<compiler::LabelPair *>(insertion)),
                           insertionStmtE2p));
      	*returnTypeSecond = reinterpret_cast<const es2panda_AstNode *>(const_cast<ir::Statement *>(resultPair.second));
-     	auto res = reinterpret_cast< es2panda_LabelPair *>(ctxAllocator->New<compiler::LabelPair>(resultPair.first));
+     	auto apiRes = reinterpret_cast< es2panda_LabelPair *>(ctxAllocator
+            ->New<compiler::LabelPair>(resultPair.first));
      ;
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -568,9 +570,9 @@ TEST_F(PluginConversionRuleUnitTest, ImportSourcePtrCall)
     extern "C" const es2panda_AstNode *ImportSourceSourceConst([[maybe_unused]] es2panda_Context *context,
     es2panda_ImportSource *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_AstNode *>((reinterpret_cast<const ir::ImportSource *>
+        auto apiRes = reinterpret_cast<const es2panda_AstNode *>((reinterpret_cast<const ir::ImportSource *>
                    (classInstance))->Source());
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -621,8 +623,8 @@ TEST_F(PluginConversionRuleUnitTest, ValidationInfoPtrCall)
     extern "C" bool ValidationInfoFailConst([[maybe_unused]] es2panda_Context *context,
     es2panda_ValidationInfo *classInstance/*return_args:*/)
     {
-        auto res = ((reinterpret_cast<const ir::ValidationInfo *>(classInstance))->Fail());
-    	return res;
+        auto apiRes = ((reinterpret_cast<const ir::ValidationInfo *>(classInstance))->Fail());
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -666,9 +668,9 @@ TEST_F(PluginConversionRuleUnitTest, IRSignaturePtrReturnValue)
     extern "C" const es2panda_Signature *ScriptFunctionSignatureConst([[maybe_unused]] es2panda_Context *context,
     es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_Signature *>((reinterpret_cast<
+        auto apiRes = reinterpret_cast<const es2panda_Signature *>((reinterpret_cast<
                    const ir::ScriptFunction *>(classInstance))->Signature());
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -682,9 +684,9 @@ TEST_F(PluginConversionRuleUnitTest, IRSignaturePtrCall)
     extern "C" const es2panda_SignatureInfo *SignatureGetSignatureInfoConst([[maybe_unused]] es2panda_Context *context,
     es2panda_Signature *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_SignatureInfo *>((reinterpret_cast<
+        auto apiRes = reinterpret_cast<const es2panda_SignatureInfo *>((reinterpret_cast<
                    const checker::Signature *>(classInstance))->GetSignatureInfo());
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);

@@ -44,8 +44,9 @@ es2panda_TypeRelation *classInstance, [[maybe_unused]] es2panda_Type *source,
     {
         auto *sourceE2p = reinterpret_cast<checker::Type *>(source);
         auto *targetE2p = reinterpret_cast<checker::Type *>(target);
-        auto res = ((reinterpret_cast<checker::TypeRelation *>(classInstance))->IsIdenticalTo(sourceE2p, targetE2p));
-	    return res;
+        auto apiRes = ((reinterpret_cast<checker::TypeRelation *>(classInstance))
+            ->IsIdenticalTo(sourceE2p, targetE2p));
+	    return apiRes;
     }
     )"};
 
@@ -80,8 +81,9 @@ es2panda_TypeRelation *classInstance, [[maybe_unused]] es2panda_IndexInfo *sourc
     {
         auto *sourceE2p = reinterpret_cast<checker::IndexInfo *>(source);
         auto *targetE2p = reinterpret_cast<checker::IndexInfo *>(target);
-        auto res = ((reinterpret_cast<checker::TypeRelation *>(classInstance))->IsIdenticalTo(sourceE2p, targetE2p));
-	    return res;
+        auto apiRes = ((reinterpret_cast<checker::TypeRelation *>(classInstance))
+                ->IsIdenticalTo(sourceE2p, targetE2p));
+	    return apiRes;
     }
     )"};
 
@@ -96,9 +98,9 @@ TEST_F(PluginConversionRuleUnitTest, CheckerIndexInfoPtrReturnValue)
     extern "C" const es2panda_IndexInfo *ObjectTypeNumberIndexInfoConst([[maybe_unused]] es2panda_Context *context,
 es2panda_Type *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_IndexInfo *>
+        auto apiRes = reinterpret_cast<const es2panda_IndexInfo *>
 ((reinterpret_cast<const checker::ObjectType *>(classInstance))->NumberIndexInfo());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -113,9 +115,9 @@ TEST_F(PluginConversionRuleUnitTest, CheckerGlobalTypesHolderPtrInputParameter)
     extern "C"  es2panda_Type *GlobalTypesHolderGlobalNullType([[maybe_unused]] es2panda_Context *context,
 es2panda_GlobalTypesHolder *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<es2panda_Type *>
+        auto apiRes = reinterpret_cast<es2panda_Type *>
     ((reinterpret_cast<checker::GlobalTypesHolder *>(classInstance))->GlobalNullType());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -130,9 +132,9 @@ TEST_F(PluginConversionRuleUnitTest, CheckerGlobalTypesHolderPtrMethodCall)
     extern "C"  es2panda_Type *GlobalTypesHolderGlobalClassCastErrorBuiltinTypeConst([[maybe_unused]]
 es2panda_Context *context, es2panda_GlobalTypesHolder *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast< es2panda_Type *>((
+        auto apiRes = reinterpret_cast< es2panda_Type *>((
     reinterpret_cast<const checker::GlobalTypesHolder *>(classInstance))->GlobalClassCastErrorBuiltinType());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -165,9 +167,9 @@ TEST_F(PluginConversionRuleUnitTest, CheckerObjectDescriptorPtrReturnValue)
     extern "C"  es2panda_ObjectDescriptor *ObjectTypeDesc([[maybe_unused]] es2panda_Context *context,
 es2panda_Type *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast< es2panda_ObjectDescriptor *>
+        auto apiRes = reinterpret_cast< es2panda_ObjectDescriptor *>
     ((reinterpret_cast<checker::ObjectType *>(classInstance))->Desc());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -199,8 +201,8 @@ TEST_F(PluginConversionRuleUnitTest, CheckerUTypeReturnValue)
     extern "C" int32_t IntTypeGetValueConst([[maybe_unused]] es2panda_Context *context,
 es2panda_Type *classInstance/*return_args:*/)
     {
-        auto res = ((reinterpret_cast<const checker::IntType *>(classInstance))->GetValue());
-	    return res;
+        auto apiRes = ((reinterpret_cast<const checker::IntType *>(classInstance))->GetValue());
+	    return apiRes;
     }
     )"};
 
@@ -233,8 +235,8 @@ TEST_F(PluginConversionRuleUnitTest, CheckerTupleSizeTypeReturnValue)
     extern "C" uint32_t ETSTupleGetTupleSizeConst([[maybe_unused]] es2panda_Context *context,
 es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = ((reinterpret_cast<const ir::ETSTuple *>(classInstance))->GetTupleSize());
-	    return res;
+        auto apiRes = ((reinterpret_cast<const ir::ETSTuple *>(classInstance))->GetTupleSize());
+	    return apiRes;
     }
     )"};
 
@@ -265,9 +267,9 @@ TEST_F(PluginConversionRuleUnitTest, VariablePtrReturnValue)
     extern "C" const es2panda_Variable *SignatureRestVarConst([[maybe_unused]] es2panda_Context *context,
 es2panda_Signature *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_Variable *>
+        auto apiRes = reinterpret_cast<const es2panda_Variable *>
     ((reinterpret_cast<const checker::Signature *>(classInstance))->RestVar());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -282,9 +284,9 @@ TEST_F(PluginConversionRuleUnitTest, VariablePtrMethodCall)
     extern "C" const es2panda_Declaration *VariableDeclarationConst([[maybe_unused]] es2panda_Context *context,
 es2panda_Variable *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_Declaration *>
+        auto apiRes = reinterpret_cast<const es2panda_Declaration *>
     ((reinterpret_cast<const varbinder::Variable *>(classInstance))->Declaration());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -299,8 +301,8 @@ TEST_F(PluginConversionRuleUnitTest, ScopePtrInputParameterAndMethodCall)
     extern "C" bool ScopeIsVariableScopeConst([[maybe_unused]] es2panda_Context *context,
 es2panda_Scope *classInstance/*return_args:*/)
     {
-        auto res = ((reinterpret_cast<const varbinder::Scope *>(classInstance))->IsVariableScope());
-	    return res;
+        auto apiRes = ((reinterpret_cast<const varbinder::Scope *>(classInstance))->IsVariableScope());
+	    return apiRes;
     }
     )"};
 
@@ -315,9 +317,9 @@ TEST_F(PluginConversionRuleUnitTest, ScopePtrAsReturnValue)
     extern "C" const es2panda_Scope *ScopeAsVariableScopeConst([[maybe_unused]] es2panda_Context *context,
 es2panda_Scope *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_Scope *>
+        auto apiRes = reinterpret_cast<const es2panda_Scope *>
     ((reinterpret_cast<const varbinder::Scope *>(classInstance))->AsVariableScope());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -349,9 +351,9 @@ TEST_F(PluginConversionRuleUnitTest, DeclarationPtrReturnValue)
     extern "C" const es2panda_Declaration *VariableDeclarationConst([[maybe_unused]] es2panda_Context *context,
 es2panda_Variable *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_Declaration *>
+        auto apiRes = reinterpret_cast<const es2panda_Declaration *>
     ((reinterpret_cast<const varbinder::Variable *>(classInstance))->Declaration());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -366,8 +368,8 @@ TEST_F(PluginConversionRuleUnitTest, RecordTablePtrMethodCall)
     extern "C" bool RecordTableIsExternalConst([[maybe_unused]] es2panda_Context *context,
 es2panda_RecordTable *classInstance/*return_args:*/)
     {
-        auto res = ((reinterpret_cast<const varbinder::RecordTable *>(classInstance))->IsExternal());
-	    return res;
+        auto apiRes = ((reinterpret_cast<const varbinder::RecordTable *>(classInstance))->IsExternal());
+	    return apiRes;
     }
     )"};
 
@@ -403,9 +405,9 @@ TEST_F(PluginConversionRuleUnitTest, BoundContextPtrMethodCall)
     extern "C"  char *BoundContextFormRecordNameConst([[maybe_unused]] es2panda_Context *context,
 es2panda_BoundContext *classInstance/*return_args:*/)
     {
-        auto res = StringViewToCString(reinterpret_cast<Context *>(context)->allocator,
+        auto apiRes = StringViewToCString(reinterpret_cast<Context *>(context)->allocator,
     ((reinterpret_cast<const varbinder::BoundContext *>(classInstance))->FormRecordName()));
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -425,10 +427,10 @@ es2panda_Scope *classInstance, [[maybe_unused]] char *name,
     {
         util::StringView nameE2p {name};
         auto optionsE2p = E2pToIrResolveBindingOptions(options);
-        auto res = reinterpret_cast<es2panda_ScopeFindResult *>
+        auto apiRes = reinterpret_cast<es2panda_ScopeFindResult *>
     (reinterpret_cast<Context *>(context)->allocator->New<varbinder::ConstScopeFindResult>
     (((reinterpret_cast<const varbinder::Scope *>(classInstance))->Find(nameE2p, optionsE2p))));
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -462,8 +464,8 @@ TEST_F(PluginConversionRuleUnitTest, CheckerPtrInputParameter)
 [[maybe_unused]] es2panda_Type *type/*return_args:*/)
     {
         auto *typeE2p = reinterpret_cast<checker::Type *>(type);
-        auto res = ((reinterpret_cast<checker::Type *>(classInstance))->GetPrecedence(typeE2p));
-	    return res;
+        auto apiRes = ((reinterpret_cast<checker::Type *>(classInstance))->GetPrecedence(typeE2p));
+	    return apiRes;
     }
     )"};
 
@@ -499,9 +501,9 @@ TEST_F(PluginConversionRuleUnitTest, ETSCheckerParamterConversion)
     {
         std::string_view sourceCodeE2p {sourceCode};
         auto flagsE2p = E2pToIrExpressionParseFlags(flags);
-        auto res = reinterpret_cast< es2panda_AstNode *>((reinterpret_cast<Context *>
+        auto apiRes = reinterpret_cast< es2panda_AstNode *>((reinterpret_cast<Context *>
     (context)->parser->AsETSParser())->CreateExpression(sourceCodeE2p, flagsE2p));
-        return res;
+        return apiRes;
     }
     )"};
 

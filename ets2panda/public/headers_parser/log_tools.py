@@ -65,5 +65,6 @@ def parsing_failed_msg(file: str) -> None:
 def error_log(msg: str) -> None:
     path = os.path.join(LIB_GEN_FOLDER, "./gen/logs/error_logs.txt")
     if ERROR_LOGGIN:
+        logging.error(msg)
         with os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, mode=511), "a", encoding="utf-8") as f:
             f.write(msg + "\n")

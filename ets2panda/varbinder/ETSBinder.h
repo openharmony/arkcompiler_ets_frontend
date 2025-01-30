@@ -228,9 +228,6 @@ public:
 
     void ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *scope);
 
-    bool CheckForRedeclarationError(const util::StringView &localName, Variable *const var,
-                                    const ir::StringLiteral *const importPath);
-
     bool AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
                                  util::StringView const &value)
     {

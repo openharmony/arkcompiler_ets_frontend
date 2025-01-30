@@ -17,8 +17,6 @@ require_relative 'enums.rb'
 
 module Es2pandaLibApi
   class Arg
-    @primitive_types = nil
-
     # Containers
     @es2panda_arg = nil
     @lib_args = nil
@@ -99,78 +97,7 @@ module Es2pandaLibApi
     end
 
     def initialize(arg_info, base_namespace)
-      @primitive_types = [
-        'char',
-        'char16_t',
-        'short',
-        'int',
-        'long',
-        'long long',
-        'float',
-        'double',
-        'long double',
-        'bool',
-        'void',
-        'size_t',
-        'uint8_t',
-        'uint32_t',
-        'uint64_t',
-        'int8_t',
-        'int16_t',
-        'int32_t',
-        'int64_t',
-        'es2panda_Program',
-        'es2panda_ExternalSource',
-        'es2panda_AstNode',
-        'es2panda_FunctionSignature',
-        'es2panda_SourcePosition',
-        'es2panda_SourceRange',
-        'es2panda_SrcDumper',
-        'es2panda_AstDumper',
-        'es2panda_LabelPair',
-        'es2panda_ScriptFunctionData',
-        'es2panda_ImportSource',
-        'es2panda_Signature',
-        'es2panda_SignatureInfo',
-        'es2panda_CheckerContext',
-        'es2panda_CompilerOptions',
-        'es2panda_ResolveResult',
-        'es2panda_ValidationInfo',
-        'es2panda_Type',
-        'es2panda_TypeRelation',
-        'es2panda_IndexInfo',
-        'es2panda_GlobalTypesHolder',
-        'es2panda_ObjectDescriptor',
-        'es2panda_Variable',
-        'es2panda_Scope',
-        'es2panda_Declaration',
-        'es2panda_RecordTable',
-        'es2panda_AstVisitor',
-        'es2panda_CodeGen',
-        'es2panda_VReg',
-        'NodeTraverser',
-        'NodeTransformer',
-        'NodePredicate',
-        'es2panda_Config',
-        'es2panda_Context',
-        'PropertyProcessor',
-        'PropertyTraverser',
-        'ClassBuilder',
-        'MethodBuilder',
-        'ClassInitializerBuilder',
-        'es2panda_variantDoubleCharArrayBool',
-        'es2panda_variantIndex',
-        'es2panda_DynamicImportData',
-        'es2panda_IRNode',
-        'es2panda_ScopeFindResult',
-        'es2panda_BindingProps',
-        'es2panda_BoundContext',
-        'es2panda_ErrorLogger',
-        'es2panda_ArkTsConfig',
-        'es2panda_VerificationContext',
-        'es2panda_AstVerifier',
-        'es2panda_VerifierMessage'
-      ]
+      @@primitive_types ||= Es2pandaLibApi.primitive_types
       @es2panda_arg = arg_info
 
       @es2panda_arg['const'] = const
@@ -262,7 +189,7 @@ module Es2pandaLibApi
         end
       end
 
-      unless found_change_type_link || @primitive_types.include?(@es2panda_arg['type'].name)
+      unless found_change_type_link || @@primitive_types.include?(@es2panda_arg['type'].name)
         raise "Unsupported type: #{unsupported_type_msg}"
       end
 
@@ -415,7 +342,7 @@ module Es2pandaLibApi
     end
 
     def check_allowed_type(arg)
-      @primitive_types.include?(arg['type'].name) ||
+      @@primitive_types.include?(arg['type'].name) ||
         @is_enum_type || @is_ast_node || @is_ast_node_add_children || @is_ast_type || @is_ast_type_add_children ||
         @is_code_gen || @is_scope_type || @is_var_type
     end
@@ -552,11 +479,11 @@ module Es2pandaLibApi
     end
 
     def self.type_to_str(type)
-      res = type['const'] ? type['const'] + ' ' : ''
+      res = type['const'] ? "#{type['const']} " : ''
       res += type['name']
       ptr_depth = type['ptr_depth'] || 0
       ref_depth = type['ref_depth'] || 0
-      res + ' ' + '*' * ptr_depth + '&' * ref_depth
+      "#{res} #{'*' * ptr_depth}#{'&' * ref_depth}"
     end
 
     def self.arg_to_idl(arg)
@@ -844,16 +771,11 @@ module Es2pandaLibApi
       Es2pandaLibApi.ignored_info['postfix_contains']&.each do |postfix|
         return false if constructor.postfix&.include?(postfix)
       end
-      Es2pandaLibApi.ignored_info['constructors']['name_starts_with']&.each do |name_starts_with|
-        return false if constructor.name&.start_with?(name_starts_with)
-      end
       constructor.args&.each do |arg|
         Es2pandaLibApi.ignored_info['args']&.each do |banned_arg_pattern|
           return false if Es2pandaLibApi.check_fit(arg, banned_arg_pattern)
         end
-        Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
-          return false if Es2pandaLibApi.check_fit_template_type(arg.type, template_type)
-        end
+        return false unless Es2pandaLibApi.check_template_type_presents(arg.type)
       end
       Es2pandaLibApi.ignored_info['constructors']['call_class']&.each do |call_class|
         return false if (call_class['name'] == class_name)
@@ -870,31 +792,25 @@ module Es2pandaLibApi
 
     def check_no_gen_method(method)
       return true if Es2pandaLibApi.allowed_info[class_name]&.include?(method.name)
+      return false unless method['template'].nil?
 
       Es2pandaLibApi.ignored_info['postfix_contains']&.each do |postfix|
         return false if method.postfix&.include?(postfix)
-      end
-      Es2pandaLibApi.ignored_info['methods']['name_starts_with']&.each do |name_starts_with|
-        return false if method.name.start_with?(name_starts_with)
       end
       method.args&.each do |arg|
         Es2pandaLibApi.ignored_info['args']&.each do |banned_arg_pattern|
           return false if Es2pandaLibApi.check_fit(arg, banned_arg_pattern)
         end
-        Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
-          return false if Es2pandaLibApi.check_fit_template_type(arg.type, template_type)
-        end
+        return false unless Es2pandaLibApi.check_template_type_presents(arg.type)
       end
-      Es2pandaLibApi.ignored_info['methods']['return_type']&.each do |return_type|
+      Es2pandaLibApi.ignored_info['return_type']&.each do |return_type|
         return false if (method.return_type['name'] == return_type['name'] && (!return_type.respond_to?('namespace') ||
                             return_type['namespace'] == method.return_type['namespace']))
       end
       Es2pandaLibApi.ignored_info['methods']['call_class']&.each do |call_class|
         return false if (call_class['name'] == class_name)
       end
-      Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
-        return false if Es2pandaLibApi.check_fit_template_type(method.return_type, template_type)
-      end
+      return false unless Es2pandaLibApi.check_template_type_presents(method.return_type)
       Es2pandaLibApi.ignored_info['template_names']&.each do |template_name|
         return false if method.respond_to?('template') && (method['template'].include?(template_name['name']))
       end
@@ -902,19 +818,14 @@ module Es2pandaLibApi
     end
 
     def check_no_get_field(field)
-      Es2pandaLibApi.ignored_info['methods']['name_starts_with']&.each do |name_starts_with|
-        return false if field.name&.start_with?(name_starts_with)
-      end
-      Es2pandaLibApi.ignored_info['methods']['return_type']&.each do |return_type|
+      Es2pandaLibApi.ignored_info['return_type']&.each do |return_type|
         return false if (field.type['name'] == return_type['name'] && (!return_type.respond_to?('namespace') ||
         return_type['namespace'] == field.type['namespace']))
       end
       Es2pandaLibApi.ignored_info['methods']['call_class']&.each do |call_class|
         return false if (call_class['name'] == class_name)
       end
-      Es2pandaLibApi.ignored_info['template_types']&.each do |template_type|
-        return false if Es2pandaLibApi.check_fit_template_type(field.type, template_type)
-      end
+      return false unless Es2pandaLibApi.check_template_type_presents(field.type)
       return true
     end
 
@@ -926,7 +837,7 @@ module Es2pandaLibApi
       if return_type.raw_type['name'] != 'void' && !((return_type.return_args_to_str &&
          !return_type.return_args_to_str.empty?) ||
          Es2pandaLibApi.additional_containers.include?(return_type.raw_type['name']))
-        return_expr += 'auto res = '
+        return_expr += 'auto apiRes = '
       end
 
       return_expr += return_type.cast['start']&.gsub('?const?', const_return) if return_type.cast
@@ -947,7 +858,7 @@ module Es2pandaLibApi
       return_expr += if return_type.raw_type['name'] == 'void'
                        ';'
                      else
-                       ";\n\treturn res;"
+                       ";\n\treturn apiRes;"
                      end
       return_expr
     end
@@ -1134,17 +1045,16 @@ module Es2pandaLibApi
     true
   end
 
-  def check_fit_template_type(type, template_pattern)
-    res = false
-    if type.respond_to?('template_args')
-      type['template_args']&.each do |template_arg|
-        next if template_arg['type'].nil?
+  def check_template_type_presents(type)
+    type['template_args']&.each do |template_arg|
+      return false unless Es2pandaLibApi.allowed_info['template_types'].include?(template_arg.type.name)
 
-        res ||= Es2pandaLibApi.check_fit(template_arg['type'], template_pattern)
-        res ||= Es2pandaLibApi.check_fit_template_type(template_arg['type'], template_pattern)
+      if template_arg.type.respond_to?('template_args')
+        Es2pandaLibApi.log('warning', "Unexpected nested template args in type!");
+        return false
       end
     end
-    res
+    return true
   end
 
   def check_class_type(class_name, class_base_namespace)
@@ -1312,6 +1222,81 @@ module Es2pandaLibApi
     ]
   end
 
+  def primitive_types
+    %w[
+      char
+      char16_t
+      short
+      int
+      long
+      long long
+      float
+      double
+      long double
+      bool
+      void
+      size_t
+      uint8_t
+      uint32_t
+      uint64_t
+      int8_t
+      int16_t
+      int32_t
+      int64_t
+      es2panda_Program
+      es2panda_ExternalSource
+      es2panda_AstNode
+      es2panda_FunctionSignature
+      es2panda_SourcePosition
+      es2panda_SourceRange
+      es2panda_SrcDumper
+      es2panda_AstDumper
+      es2panda_LabelPair
+      es2panda_ScriptFunctionData
+      es2panda_ImportSource
+      es2panda_Signature
+      es2panda_SignatureInfo
+      es2panda_CheckerContext
+      es2panda_CompilerOptions
+      es2panda_ResolveResult
+      es2panda_ValidationInfo
+      es2panda_Type
+      es2panda_TypeRelation
+      es2panda_IndexInfo
+      es2panda_GlobalTypesHolder
+      es2panda_ObjectDescriptor
+      es2panda_Variable
+      es2panda_Scope
+      es2panda_Declaration
+      es2panda_RecordTable
+      es2panda_AstVisitor
+      es2panda_CodeGen
+      es2panda_VReg
+      NodeTraverser
+      NodeTransformer
+      NodePredicate
+      es2panda_Config
+      es2panda_Context
+      PropertyProcessor
+      PropertyTraverser
+      ClassBuilder
+      MethodBuilder
+      ClassInitializerBuilder
+      es2panda_variantDoubleCharArrayBool
+      es2panda_variantIndex
+      es2panda_DynamicImportData
+      es2panda_IRNode
+      es2panda_ScopeFindResult
+      es2panda_BindingProps
+      es2panda_BoundContext
+      es2panda_ErrorLogger
+      es2panda_ArkTsConfig
+      es2panda_VerificationContext
+      es2panda_AstVerifier
+      es2panda_VerifierMessage
+    ]
+  end
+
   attr_reader :ast_nodes
   attr_reader :ast_types
   attr_reader :scopes
@@ -1436,10 +1421,10 @@ module Es2pandaLibApi
   end
 
   module_function :wrap_data, :classes, :ast_nodes, :includes, :change_types, :enums, :ast_types, :check_fit, :log,
-                  :stat_add_constructor, :stat_add_method, :print_stats, :ignored_info, :allowed_info,
+                  :stat_add_constructor, :stat_add_method, :print_stats, :ignored_info, :allowed_info, :primitive_types,
                   :stat_add_class, :stat_add_unsupported_type, :ast_node_additional_children, :code_gen_children,
                   :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables, :deep_to_h,
-                  :no_usings_replace_info, :declarations, :check_fit_template_type, :structs, :structs_to_generate,
+                  :no_usings_replace_info, :declarations, :check_template_type_presents, :structs, :structs_to_generate,
                   :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type
 end
 

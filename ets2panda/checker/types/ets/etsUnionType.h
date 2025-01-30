@@ -57,7 +57,6 @@ public:
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 
     static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &types);
-    static void ReduceSubtypes(TypeRelation *relation, ArenaVector<Type *> &types);
 
     static ArenaVector<Type *> GetNonConstantTypes(ETSChecker *checker, const ArenaVector<Type *> &types);
 
