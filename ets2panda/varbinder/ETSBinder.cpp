@@ -727,7 +727,8 @@ void ETSBinder::ValidateImportVariable(varbinder::Variable *const var, const ir:
     } else if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
         ThrowError(importPath->Start(),
                    "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
-    } else if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType()) {
+    } else if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType() &&
+               !var->Declaration()->Node()->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
     }
 }

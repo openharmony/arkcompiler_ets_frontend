@@ -1275,12 +1275,13 @@ void InitScopesPhaseETS::AttachLabelToScope(ir::AstNode *node)
 
 void InitScopesPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)
 {
+    bool defaultExported = false;
     for (auto decl : global->Body()) {
         if (decl->IsDefaultExported()) {
-            if (VarBinder()->AsETSBinder()->DefaultExport() != nullptr) {
+            if (defaultExported) {
                 LogSyntaxError("Only one default export is allowed in a module", decl->Start());
             }
-            VarBinder()->AsETSBinder()->SetDefaultExport(decl);
+            defaultExported = true;
         }
         CallNode(decl);
     }
