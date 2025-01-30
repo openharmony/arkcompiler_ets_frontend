@@ -32,6 +32,10 @@ public:
     ~TSLexer() override = default;
     // NOLINTNEXTLINE(google-default-arguments)
     void NextToken(NextTokenFlags flags = NextTokenFlags::NONE) override;
+    void CheckNumberLiteralEndForIdentifier() override
+    {
+        // don't need check in TS
+    }
 };
 }  // namespace ark::es2panda::lexer
 

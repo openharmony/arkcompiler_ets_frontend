@@ -63,6 +63,10 @@ public:
     }
 
     void CheckNumberLiteralEnd() override;
+    void CheckNumberLiteralEndForIdentifier() override
+    {
+        // don't need check in STS
+    }
     bool CheckUtf16Compatible(char32_t cp) const;
     void ConvertNumber(NumberFlags flags) override;
 

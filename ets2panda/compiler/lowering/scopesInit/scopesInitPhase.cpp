@@ -647,9 +647,7 @@ void ScopeInitTyped::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
     } else {
         if (!res->second->Declaration()->IsEnumLiteralDecl() ||
             (enumDecl->IsConst() ^ res->second->Declaration()->AsEnumLiteralDecl()->IsConst()) != 0) {
-            auto loc = enumDecl->Key()->End();
-            loc.index++;
-            VarBinder()->ThrowRedeclaration(loc, enumDecl->Key()->Name());
+            VarBinder()->ThrowRedeclaration(enumDecl->Key()->Start(), enumDecl->Key()->Name());
             return;
         }
         decl = res->second->Declaration()->AsEnumLiteralDecl();

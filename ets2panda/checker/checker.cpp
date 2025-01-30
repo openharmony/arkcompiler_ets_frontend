@@ -190,4 +190,17 @@ bool Checker::IsAnyError()
 {
     return DiagnosticEngine().IsAnyError();
 }
+
+ScopeContext::ScopeContext(Checker *checker, varbinder::Scope *newScope)
+    : checker_(checker), prevScope_(checker_->scope_), prevProgram_(checker_->Program())
+{
+    checker_->scope_ = newScope;
+    if (newScope != nullptr && newScope->Node() != nullptr) {
+        auto *topStatement = newScope->Node()->GetTopStatement();
+        if (topStatement->IsETSModule()) {
+            checker_->SetProgram(topStatement->AsETSModule()->Program());
+        }
+    }
+}
+
 }  // namespace ark::es2panda::checker

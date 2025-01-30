@@ -324,6 +324,7 @@ protected:
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allowNumericSeparator);
     virtual void CheckNumberLiteralEnd();
+    virtual void CheckNumberLiteralEndForIdentifier();
     void CheckOctal();
 
     inline static uint32_t HexValue(char32_t ch);

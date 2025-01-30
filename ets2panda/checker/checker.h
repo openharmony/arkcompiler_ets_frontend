@@ -355,15 +355,12 @@ private:
 
 class ScopeContext {
 public:
-    explicit ScopeContext(Checker *checker, varbinder::Scope *newScope)
-        : checker_(checker), prevScope_(checker_->scope_)
-    {
-        checker_->scope_ = newScope;
-    }
+    explicit ScopeContext(Checker *checker, varbinder::Scope *newScope);
 
     ~ScopeContext()
     {
         checker_->scope_ = prevScope_;
+        checker_->SetProgram(prevProgram_);
     }
 
     NO_COPY_SEMANTIC(ScopeContext);
@@ -372,6 +369,7 @@ public:
 private:
     Checker *checker_;
     varbinder::Scope *prevScope_;
+    parser::Program *prevProgram_;
 };
 
 class SavedCheckerContext {

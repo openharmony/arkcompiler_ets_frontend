@@ -17,7 +17,7 @@ declare class A {
     [index/* @@ label */] /* @@ label1 */: /* @@ label2 */string
 /* @@ label3 */}
 
-/* @@ label4 */function main() {
+/* @@ label4 */function main/* @@ label6 */() {
     let a : A = new A();
 }
 
@@ -26,11 +26,6 @@ declare class A {
 /* @@@ label2 Error SyntaxError: ] expected in index signature  */
 /* @@@ label3 Error SyntaxError: An index signature must have a type annotation.  */
 /* @@@ label4 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
+/* @@@ label6 Error TypeError: Native and Declare methods should have explicit return type. */
 /* @@@ label5 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
 /* @@ label5 */
-/* @@? 17:25 Error SyntaxError: Index type expected in index signature */
-/* @@? 17:42 Error SyntaxError: Index type must be number in index signature */
-/* @@? 17:59 Error SyntaxError: ] expected in index signature */
-/* @@? 18:16 Error SyntaxError: An index signature must have a type annotation. */
-/* @@? 20:16 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier */
-/* @@? 31:1 Error SyntaxError: Unexpected token 'eos', expected '}'. */

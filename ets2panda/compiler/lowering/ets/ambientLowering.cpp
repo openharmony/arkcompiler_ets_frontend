@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,14 +53,20 @@ ir::MethodDefinition *CreateMethodFunctionDefinition(ir::DummyNode *node, public
 {
     auto parser = ctx->parser->AsETSParser();
 
-    auto const indexName = node->GetIndexName();
-    auto const returnType = node->GetReturnTypeLiteral()->AsETSTypeReferencePart()->Name()->AsIdentifier()->Name();
+    auto indexName = node->GetIndexName();
+    auto const returnType = node->GetReturnTypeLiteral()->AsETSTypeReferencePart()->Name()->AsIdentifier();
+    if (returnType->IsErrorPlaceHolder()) {
+        return nullptr;
+    }
+    if (indexName == ERROR_LITERAL) {
+        indexName = "_";
+    }
     std::string sourceCode;
     if (funcKind == ir::MethodDefinitionKind::GET) {
-        sourceCode = "$_get(" + std::string(indexName) + " : number) : " + std::string(returnType);
+        sourceCode = "$_get(" + std::string(indexName) + " : number) : " + std::string(returnType->Name());
     } else if (funcKind == ir::MethodDefinitionKind::SET) {
-        sourceCode =
-            "$_set(" + std::string(indexName) + " : number, " + "value : " + std::string(returnType) + " ) : void";
+        sourceCode = "$_set(" + std::string(indexName) + " : number, " + "value : " + std::string(returnType->Name()) +
+                     " ) : void";
     } else {
         UNREACHABLE();
     }
@@ -90,8 +96,10 @@ ir::ClassDefinition *AmbientLowering::CreateIndexerMethodIfNeeded(ir::ClassDefin
                 CreateMethodFunctionDefinition((*it)->AsDummyNode(), ctx, ir::MethodDefinitionKind::GET);
 
             classBody.erase(it);
-            classBody.emplace_back(setDefinition);
-            classBody.emplace_back(getDefinition);
+            if (setDefinition != nullptr && getDefinition != nullptr) {
+                classBody.emplace_back(setDefinition);
+                classBody.emplace_back(getDefinition);
+            }
             break;
         }
         ++it;
