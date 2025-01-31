@@ -1440,14 +1440,16 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
 bool ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
     auto const expressionType = expr->Check(this);
-    auto const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
+    if (expressionType->IsTypeError()) {
+        return false;
+    }
 
-    Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
-
+    Type const *const unboxedExpressionType = MaybeUnboxInRelation(expressionType);
     if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
         expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
     }
 
+    Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
     if (relaxed && indexType != nullptr && indexType->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT)) {
         if (!expr->IsNumberLiteral()) {
             return true;

@@ -217,6 +217,8 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
 
+    std::string ToString() const override;
+
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);

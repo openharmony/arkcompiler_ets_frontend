@@ -67,4 +67,9 @@ BooleanLiteral *BooleanLiteral::Clone(ArenaAllocator *const allocator, AstNode *
     clone->SetRange(Range());
     return clone;
 }
+
+std::string BooleanLiteral::ToString() const
+{
+    return std::string {boolean_ ? "true" : "false"};
+}
 }  // namespace ark::es2panda::ir

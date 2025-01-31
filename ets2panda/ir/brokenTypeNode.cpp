@@ -36,7 +36,7 @@ void BrokenTypeNode::Dump(ir::AstDumper *dumper) const
 
 void BrokenTypeNode::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("*ERROR_TYPE*");
+    dumper->Add(ERROR_TYPE);
 }
 
 void BrokenTypeNode::Compile([[maybe_unused]] compiler::PandaGen *pg) const

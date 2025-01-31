@@ -289,20 +289,23 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
     return checker->GlobalTypeError();
 }
 
-checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::SpreadElement *expr) const
+checker::Type *ETSAnalyzer::Check(ir::SpreadElement *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     Type *exprType = expr->AsSpreadElement()->Argument()->Check(checker);
+
     if (!exprType->IsETSArrayType()) {
-        checker->LogTypeError(
-            {"Spread expression can be applied only to array or tuple type, but '", exprType, "' is provided"},
-            expr->Start());
-        expr->SetTsType(checker->GlobalTypeError());
-        return expr->TsType();
+        if (!exprType->IsTypeError()) {
+            // Don't duplicate error messages for the same error
+            checker->LogTypeError(
+                {"Spread expression can be applied only to array or tuple type, but '", exprType, "' is provided"},
+                expr->Start());
+        }
+        return expr->SetTsType(checker->GlobalTypeError());
     }
+
     checker::Type *elementType = exprType->AsETSArrayType()->ElementType();
-    expr->SetTsType(elementType);
-    return expr->TsType();
+    return expr->SetTsType(elementType);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TemplateElement *expr) const
@@ -1655,6 +1658,11 @@ static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checke
     auto preferredType = expr->PreferredType();
     if (preferredType == nullptr) {
         checker->LogTypeError({"need to specify target type for class composite"}, expr->Start());
+        return false;
+    }
+
+    if (preferredType->IsTypeError()) {
+        //  Don't need to duplicate error message for a single error.
         return false;
     }
 

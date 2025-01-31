@@ -1014,8 +1014,7 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
 
     ConsumeSemicolon(packageDeclaration);
 
-    auto packageName =
-        name->IsIdentifier() ? name->AsIdentifier()->Name() : name->AsTSQualifiedName()->ToString(Allocator());
+    auto packageName = name->IsIdentifier() ? name->AsIdentifier()->Name() : name->AsTSQualifiedName()->Name();
 
     GetProgram()->SetPackageInfo(packageName, ModuleKind::PACKAGE);
 

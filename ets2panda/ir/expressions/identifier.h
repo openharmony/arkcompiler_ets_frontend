@@ -16,10 +16,8 @@
 #ifndef ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 #define ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 
-#include "checker/checkerContext.h"
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
-
 #include <varbinder/varbinder.h>
 
 namespace ark::es2panda::varbinder {
@@ -232,6 +230,8 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
+
+    std::string ToString() const override;
 
     void Accept(ASTVisitorT *v) override
     {

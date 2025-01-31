@@ -96,8 +96,6 @@ public:
         return &errorLogger_;
     }
 
-    static constexpr std::string_view const ERROR_LITERAL = "*ERROR_LITERAL*";
-
 protected:
     virtual void ParseProgram(ScriptKind kind);
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);

@@ -15,7 +15,6 @@
 
 #include "expression.h"
 #include "typeNode.h"
-#include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
 
@@ -30,6 +29,11 @@ AnnotatedExpression::AnnotatedExpression(AnnotatedExpression const &other, Arena
 bool Expression::IsBrokenExpression() const noexcept
 {
     return IsIdentifier() && AsIdentifier()->IsErrorPlaceHolder();
+}
+
+std::string Expression::ToString() const
+{
+    return std::string {INVALID_EXPRESSION};
 }
 
 }  // namespace ark::es2panda::ir

@@ -34,7 +34,5 @@ function foo() {
 /* @@? 21:17 Error TypeError: Unresolved reference c */
 /* @@? 24:5 Error TypeError: Unresolved reference void */
 /* @@? 24:18 Error TypeError: Unresolved reference asyncGenerator */
-/* @@? 24:15 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
-/* @@? 24:15 Error TypeError: Spread expression can be applied only to array or tuple type, but '*TYPE_ERROR*' is provided */
 /* @@? 24:13 Error TypeError: Unresolved reference asyncGenerator */
 /* @@? 24:13 Error TypeError: 'For-of' statement source expression is not of iterable type. */
