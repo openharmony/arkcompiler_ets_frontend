@@ -18,9 +18,6 @@ ast/parser/ets/method_override_throw_4.sts
 ast/parser/ets/method_override_throw_6.sts
 ast/parser/ets/TypeInferFunc.sts
 
-# Issue: #19700
-ast/compiler/ets/returnStatementClone.sts
-
 # Issue: #20639
 ast/parser/ets/extension_function_tests/extension_function_array1.sts
 ast/parser/ets/extension_function_tests/extension_function_array1_primitive.sts
@@ -48,10 +45,6 @@ ast/parser/js/rest_params_1.js
 
 # Issue: #21522
 ast/compiler/ts/varRedeclaration9.ts
-
-# Fail with SEGV. Issue: #21730
-ast/parser/js/test-private-field5.js
-ast/parser/js/test-private-field4.js
 
 # Issue #22140
 ast/parser/ets/InvalidLexer.sts

@@ -28,9 +28,6 @@ conditionalExpressionGenericLUB.sts
 # Failed due to lambda captures
 trailing-lambda-with-capture.sts
 
-# ignored until verifier can't handle if a field name can be static and non-static at the same time
-class-fields-same-name.sts
-
 # Disabled temporarily #I8EM2T implementation struct directly expanded to class
 struct-identifier.sts
 struct-init.sts
@@ -44,10 +41,6 @@ funcRefWithRestArguments.sts
 
 # Wrong type inferred for lambda
 type_param_in_union.sts
-
-# verifier false positive for 64 bit instructions on union types.
-# Issue: #16216
-union_wide_property_access.sts
 
 # 15276
 n_overrideWithNullable.sts
