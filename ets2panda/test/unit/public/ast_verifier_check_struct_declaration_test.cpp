@@ -37,7 +37,7 @@ TEST_F(ASTVerifierTest, StructDeclaration)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_EQ(messages.size(), 1);
 
@@ -63,7 +63,7 @@ TEST_F(ASTVerifierTest, StructWithAnnotation)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_EQ(messages.size(), 1);
 
@@ -85,7 +85,7 @@ TEST_F(ASTVerifierTest, StructWithComponent)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_EQ(messages.size(), 1);
 
@@ -107,7 +107,7 @@ TEST_F(ASTVerifierTest, StructExtendsStruct)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_GT(messages.size(), 1);
 
@@ -129,7 +129,7 @@ TEST_F(ASTVerifierTest, StructExtendsClass)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_EQ(messages.size(), 1);
 
@@ -154,7 +154,7 @@ TEST_F(ASTVerifierTest, StructExtendsEnum)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_EQ(messages.size(), 1);
 
@@ -176,7 +176,7 @@ TEST_F(ASTVerifierTest, StructImplementInterface)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_EQ(messages.size(), 1);
 
@@ -198,7 +198,7 @@ TEST_F(ASTVerifierTest, StructExtendsInterface)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_GT(messages.size(), 0);
 
@@ -218,7 +218,7 @@ TEST_F(ASTVerifierTest, StructExport)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckStructDeclaration>(ast);
+    const auto &messages = Verify<CheckStructDeclaration>(ast);
 
     ASSERT_GT(messages.size(), 0);
 

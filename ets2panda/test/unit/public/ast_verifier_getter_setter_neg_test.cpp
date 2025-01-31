@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,7 +63,7 @@ TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
         }
     });
 
-    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
+    const auto &messages = Verify<GetterSetterValidation>(ast);
 
     ASSERT_EQ(messages.size(), 1);
     ASSERT_EQ(messages[0].Cause(), "GETTER METHOD HAS VOID RETURN TYPE IN RETURN TYPE ANNOTATION");
@@ -106,7 +106,7 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
         }
     });
 
-    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
+    const auto &messages = Verify<GetterSetterValidation>(ast);
 
     ASSERT_EQ(messages.size(), 1);
     ASSERT_EQ(messages[0].Cause(), "MISSING RETURN TYPE ANNOTATION AND RETURN STATEMENT IN GETTER METHOD");
@@ -153,7 +153,7 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
         }
     });
 
-    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
+    const auto &messages = Verify<GetterSetterValidation>(ast);
 
     ASSERT_EQ(messages.size(), 1);
     ASSERT_EQ(messages[0].Cause(), "GETTER METHOD HAS VOID RETURN TYPE");
@@ -201,7 +201,7 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
         }
     });
 
-    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
+    const auto &messages = Verify<GetterSetterValidation>(ast);
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);
@@ -245,7 +245,7 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
         }
     });
 
-    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
+    const auto &messages = Verify<GetterSetterValidation>(ast);
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);
@@ -290,7 +290,7 @@ TEST_F(ASTVerifierTest, ValidateSetterArguments)
         }
     });
 
-    const auto &messages = verifier_.Verify<GetterSetterValidation>(ast);
+    const auto &messages = Verify<GetterSetterValidation>(ast);
 
     // Expecting warning
     ASSERT_EQ(messages.size(), 1);

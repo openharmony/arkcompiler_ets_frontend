@@ -122,9 +122,9 @@ static bool CheckOptionsAfterPhase(const util::Options &options, const parser::P
 static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context &context,
                                  const std::vector<Phase *> &phases, parser::Program &program)
 {
-    auto verifier = ast_verifier::ASTVerifier(context, program);
+    ast_verifier::ASTVerifier verifier(context, program);
     const auto &options = *context.config->options;
-    const auto verifierEachPhase = options.IsVerifierInvariantsEachPhase();
+    const auto verifierEachPhase = options.IsAstVerifierEachPhase();
 
     for (auto *phase : phases) {
         const auto name = std::string {phase->Name()};
@@ -136,27 +136,22 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
             return false;
         }
 
-        if (phase->Apply(&context, &program)) {
-            if (context.checker->ErrorLogger()->IsAnyError()) {
-                compilerImpl->SetIsAnyError(true);
-            }
-            if (!compilerImpl->IsAnyError() && verifierEachPhase) {
-                verifier.Verify(phase->Name());
-            }
-            verifier.IntroduceNewInvariants(phase->Name());
-        } else {
+        if (!phase->Apply(&context, &program) || context.checker->ErrorLogger()->IsAnyError()) {
             compilerImpl->SetIsAnyError(true);
+            // Silence ASTVerifier since an error was already reported:
+            verifier.Suppress();
+        } else {
+            verifier.IntroduceNewInvariants(name);
+        }
+
+        if (!compilerImpl->IsAnyError() && (verifierEachPhase || options.HasVerifierPhase(name))) {
+            verifier.Verify(name);
         }
 
         if (CheckOptionsAfterPhase(options, program, name)) {
             return false;
         }
     }
-
-    if (!compilerImpl->IsAnyError() && !verifierEachPhase) {
-        verifier.Verify("AfterAllPhases");
-    }
-
     return true;
 }
 

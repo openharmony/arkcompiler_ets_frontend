@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,8 +30,7 @@ CheckResult VariableHasScope::operator()(const ir::AstNode *ast)
     }
 
     // we will check invariant for only local variables of identifiers
-    if (const auto maybeVar = GetLocalScopeVariable(ast); maybeVar.has_value()) {
-        const auto var = *maybeVar;
+    if (const auto var = TryGetLocalScopeVariable(ast->AsIdentifier()); var != nullptr) {
         const auto scope = var->GetScope();
         if (scope == nullptr) {
             AddCheckMessage("NULL_SCOPE_LOCAL_VAR", *ast);
@@ -47,34 +46,6 @@ CheckResult VariableHasScope::operator()(const ir::AstNode *ast)
     }
 
     return {CheckDecision::CORRECT, CheckAction::CONTINUE};
-}
-
-std::optional<varbinder::LocalVariable *> VariableHasScope::GetLocalScopeVariable(const ir::AstNode *ast)
-{
-    if (!ast->IsIdentifier()) {
-        return std::nullopt;
-    }
-
-    auto invariantHasVariable = IdentifierHasVariable {};
-    const auto [decision, action] = invariantHasVariable.VerifyNode(ast);
-    AppendMessages(std::move(invariantHasVariable).MoveMessages());
-
-    const auto variable = ast->AsIdentifier()->Variable();
-    if (variable == nullptr) {
-        // NOTE(kkonkuznetsov): variable should not be null
-        // but currently some identifiers do not have variables,
-        // see exceptions in IdentifierHasVariable check
-        return std::nullopt;
-    }
-
-    if (decision == CheckDecision::CORRECT && variable->IsLocalVariable()) {
-        const auto localVar = variable->AsLocalVariable();
-        if (localVar->HasFlag(varbinder::VariableFlags::LOCAL)) {
-            return localVar;
-        }
-    }
-
-    return std::nullopt;
 }
 
 bool VariableHasScope::ScopeEncloseVariable(const varbinder::LocalVariable *var)

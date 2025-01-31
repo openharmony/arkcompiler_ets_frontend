@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,7 +37,7 @@ TEST_F(ASTVerifierTest, FunctionScope)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
+    const auto &messages = Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -59,7 +59,7 @@ TEST_F(ASTVerifierTest, ForUpdateLoopScope)
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
+    const auto &messages = Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -84,7 +84,7 @@ TEST_F(ASTVerifierTest, ForInLoopScope)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
+    const auto &messages = Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -105,7 +105,7 @@ TEST_F(ASTVerifierTest, PartialClass)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
+    const auto &messages = Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);
@@ -132,7 +132,7 @@ TEST_F(ASTVerifierTest, TryCatch)
 
     auto ast = GetAstFromContext<AstNode>(impl_, ctx);
 
-    const auto &messages = verifier_.Verify<CheckScopeDeclaration>(ast);
+    const auto &messages = Verify<CheckScopeDeclaration>(ast);
 
     // Expecting no warnings
     ASSERT_EQ(messages.size(), 0);

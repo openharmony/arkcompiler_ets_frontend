@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -238,23 +238,44 @@ bool Options::Parse(Span<const char *const> args)
     return ProcessEtsSpecificOptions();
 }
 
-void Options::InitCompilerOptions()
+auto VecToSet(const std::vector<std::string> &v)
 {
-    auto vecToSet = [](const std::vector<std::string> &v) { return std::set<std::string>(v.begin(), v.end()); };
-    skipPhases_ = vecToSet(gen::Options::GetSkipPhases());
+    return std::set<std::string>(v.begin(), v.end());
+}
 
-    dumpBeforePhases_ = vecToSet(gen::Options::GetDumpBeforePhases());
-    dumpEtsSrcBeforePhases_ = vecToSet(gen::Options::GetDumpEtsSrcBeforePhases());
-    dumpAfterPhases_ = vecToSet(gen::Options::GetDumpAfterPhases());
-    dumpEtsSrcAfterPhases_ = vecToSet(gen::Options::GetDumpEtsSrcAfterPhases());
-
-    auto verifierInit = [](std::array<bool, gen::verifier_invariants::COUNT> *a, const std::vector<std::string> &v) {
+void Options::InitAstVerifierOptions()
+{
+    auto initSeverity = [](std::array<bool, gen::ast_verifier::COUNT> *a, const std::vector<std::string> &v) {
         for (const auto &str : v) {
-            (*a)[gen::verifier_invariants::FromString(str)] = true;
+            (*a)[gen::ast_verifier::FromString(str)] = true;
         }
     };
-    verifierInit(&verifierWarnings_, gen::Options::GetVerifierInvariantsAsWarnings());
-    verifierInit(&verifierErrors_, gen::Options::GetVerifierInvariantsAsErrors());
+    initSeverity(&verifierWarnings_, gen::Options::GetAstVerifierWarnings());
+    initSeverity(&verifierErrors_, gen::Options::GetAstVerifierErrors());
+
+    astVerifierPhases_ = VecToSet(gen::Options::GetAstVerifierPhases());
+
+    if (HasVerifierPhase("before")) {
+        astVerifierBeforePhases_ = true;
+    }
+    if (HasVerifierPhase("each")) {
+        astVerifierEachPhase_ = true;
+    }
+    if (HasVerifierPhase("after")) {
+        astVerifierAfterPhases_ = true;
+    }
+}
+
+void Options::InitCompilerOptions()
+{
+    skipPhases_ = VecToSet(gen::Options::GetSkipPhases());
+
+    dumpBeforePhases_ = VecToSet(gen::Options::GetDumpBeforePhases());
+    dumpEtsSrcBeforePhases_ = VecToSet(gen::Options::GetDumpEtsSrcBeforePhases());
+    dumpAfterPhases_ = VecToSet(gen::Options::GetDumpAfterPhases());
+    dumpEtsSrcAfterPhases_ = VecToSet(gen::Options::GetDumpEtsSrcAfterPhases());
+
+    InitAstVerifierOptions();
 
     if (IsEtsWarnings()) {
         InitializeWarnings();

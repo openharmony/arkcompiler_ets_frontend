@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,22 +26,26 @@ enum class CheckDecision { CORRECT, INCORRECT };
 enum class CheckAction { CONTINUE, SKIP_SUBTREE };
 
 using CheckResult = std::tuple<CheckDecision, CheckAction>;
-using VerifierInvariants = util::gen::verifier_invariants::Enum;
+using VerifierInvariants = util::gen::ast_verifier::Enum;
+using Enum = VerifierInvariants;
 
 class CheckMessage {
 public:
-    explicit CheckMessage(util::StringView cause, util::StringView message, size_t line)
-        : cause_ {cause}, message_ {message}, line_ {line}
-    {
-    }
+    explicit CheckMessage(util::StringView cause, const ir::AstNode *node) : cause_ {cause}, node_ {node} {}
 
     std::function<void(JsonObjectBuilder &)> DumpJSON() const
     {
         return [this](JsonObjectBuilder &body) {
             body.AddProperty("cause", cause_);
-            body.AddProperty("ast", message_);
-            body.AddProperty("line", line_ + 1);
+            body.AddProperty("ast", node_->DumpJSON());
+            body.AddProperty("line", node_->Start().line + 1);
         };
+    }
+
+    std::string ToString() const
+    {
+        return cause_ + "(AstNodeType::" + std::string(ir::ToString(node_->Type())) + ", line " +
+               std::to_string(node_->Start().line + 1) + ')';
     }
 
     const auto &Cause() const
@@ -51,8 +55,7 @@ public:
 
 private:
     std::string cause_;
-    std::string message_;
-    size_t line_;
+    const ir::AstNode *node_;
 };
 
 using Messages = std::vector<CheckMessage>;
@@ -64,17 +67,7 @@ public:
         messages_.clear();
     }
 
-    void AddCheckMessage(const std::string &cause, const ir::AstNode &node)
-    {
-        const auto loc = node.Start().line;
-        const auto &&dump = node.DumpJSON();
-        messages_.emplace_back(cause.data(), dump.data(), loc);
-    }
-
-    void AppendMessages(const Messages &messages)
-    {
-        messages_.insert(messages_.end(), messages.begin(), messages.end());
-    }
+    void AddCheckMessage(const std::string &cause, const ir::AstNode &node);
 
     auto &&MoveMessages() &&
     {
@@ -94,7 +87,7 @@ template <VerifierInvariants ENUM>
 class InvariantBase : public CheckContext {
 public:
     constexpr static VerifierInvariants ID = ENUM;
-    constexpr static std::string_view NAME = util::gen::verifier_invariants::ToString(ID);
+    constexpr static std::string_view NAME = util::gen::ast_verifier::ToString(ID);
     CheckResult VerifyNode(const ir::AstNode *ast);
 };
 

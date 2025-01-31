@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -45,7 +45,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
+    const auto &messages = Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     impl_->DestroyContext(ctx);
@@ -78,7 +78,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
+    const auto &messages = Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     impl_->DestroyContext(ctx);
@@ -111,7 +111,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
+    const auto &messages = Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     impl_->DestroyContext(ctx);
@@ -156,7 +156,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
+    const auto &messages = Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     impl_->DestroyContext(ctx);
@@ -202,7 +202,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
+    const auto &messages = Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     impl_->DestroyContext(ctx);
@@ -248,7 +248,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    const auto &messages = verifier_.Verify<ModifierAccessValid>(ast);
+    const auto &messages = Verify<ModifierAccessValid>(ast);
     ASSERT_EQ(messages.size(), 1);
 
     impl_->DestroyContext(ctx);

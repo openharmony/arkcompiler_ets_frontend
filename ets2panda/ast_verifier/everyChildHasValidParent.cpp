@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,14 +37,8 @@ CheckResult EveryChildHasValidParent::operator()(const ir::AstNode *ast)
         return false;
     };
 
-    ast->Iterate([&](const ir::AstNode *node) {
+    ast->Iterate([this, ast, maybeOverloadMethod, &result](const ir::AstNode *node) {
         if (ir::AstNode const *parent = node->Parent(); ast != parent) {
-            //  NOTE: Temporary suppress.
-            //  Should be removed after new ENUMs support will be implemented: #14443
-            if (ast->IsClassDeclaration() && parent != nullptr && parent->IsETSNewClassInstanceExpression()) {
-                return;
-            }
-
             //  NOTE: Temporary suppress.
             //  Should be removed after proper overload method's parent setting
             //  For now there is no right decision who is parent of overload method:
