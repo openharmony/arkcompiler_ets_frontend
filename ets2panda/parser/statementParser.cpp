@@ -36,7 +36,6 @@
 #include "ir/module/importDefaultSpecifier.h"
 #include "ir/module/importNamespaceSpecifier.h"
 #include "ir/module/importSpecifier.h"
-#include "ir/statements/assertStatement.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/breakStatement.h"
 #include "ir/statements/classDeclaration.h"
@@ -161,8 +160,6 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
 ir::Statement *ParserImpl::ParseStatementBasedOnTokenType(StatementParsingFlags flags)
 {
     switch (lexer_->GetToken().Type()) {
-        case lexer::TokenType::KEYW_ASSERT:
-            return ParseAssertStatement();
         case lexer::TokenType::KEYW_EXPORT:
             return ParseExportDeclaration(flags);
         case lexer::TokenType::KEYW_IMPORT:
@@ -439,11 +436,6 @@ void ParserImpl::ParseDirectivePrologue(ArenaVector<ir::Statement *> *statements
             break;
         }
     }
-}
-
-ir::Statement *ParserImpl::ParseAssertStatement()
-{
-    ES2PANDA_UNREACHABLE();
 }
 
 bool ParserImpl::ValidateLabeledStatement([[maybe_unused]] lexer::TokenType type)

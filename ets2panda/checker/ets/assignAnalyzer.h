@@ -121,7 +121,6 @@ private:
     void AnalyzeContinue(const ir::ContinueStatement *contStmt);
     void AnalyzeReturn(const ir::ReturnStatement *retStmt);
     void AnalyzeThrow(const ir::ThrowStatement *throwStmt);
-    void AnalyzeAssert(const ir::AssertStatement *assertStmt);
     void AnalyzeExpr(const ir::AstNode *node);
     void AnalyzeExprs(const ArenaVector<ir::Expression *> &exprs);
     void AnalyzeCond(const ir::AstNode *node);

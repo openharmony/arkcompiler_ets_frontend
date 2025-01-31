@@ -61,7 +61,6 @@
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/statements/annotationDeclaration.h"
 #include "ir/statements/annotationUsage.h"
-#include "ir/statements/assertStatement.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/ifStatement.h"
 #include "ir/statements/labelledStatement.h"
@@ -300,28 +299,6 @@ ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags fla
     LogError(diagnostic::NESTED_FUNCTIONS_NOT_ALLOWED);
     ParserImpl::ParseFunctionStatement(flags);  // Try to parse function body but skip result.
     return AllocBrokenStatement(Lexer()->GetToken().Loc());
-}
-
-ir::Statement *ETSParser::ParseAssertStatement()
-{
-    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    Lexer()->NextToken();
-
-    ir::Expression *test = ParseExpression();
-    lexer::SourcePosition endLoc = test->End();
-    ir::Expression *second = nullptr;
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        Lexer()->NextToken();  // eat ':'
-        second = ParseExpression();
-        endLoc = second->End();
-    }
-
-    auto *asStatement = AllocNode<ir::AssertStatement>(test, second);
-    asStatement->SetRange({startLoc, endLoc});
-    ConsumeSemicolon(asStatement);
-
-    return asStatement;
 }
 
 ir::Statement *ETSParser::ParseTryStatement()

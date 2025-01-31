@@ -45,10 +45,6 @@ keywords:
     keyword: [ets]
     custom_handler: [js, ts, as]
 
-  - name: 'assert'
-    token: KEYW_ASSERT
-    keyword: [ets]
-
   - name: 'asserts'
     token: KEYW_ASSERTS
     keyword_like: [ts]

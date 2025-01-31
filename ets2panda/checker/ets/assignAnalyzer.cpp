@@ -39,7 +39,6 @@
 #include "ir/statements/continueStatement.h"
 #include "ir/statements/returnStatement.h"
 #include "ir/statements/tryStatement.h"
-#include "ir/statements/assertStatement.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/arrowFunctionExpression.h"
@@ -319,10 +318,6 @@ bool AssignAnalyzer::AnalyzeStmtNode2(const ir::AstNode *node)
         }
         case ir::AstNodeType::THROW_STATEMENT: {
             AnalyzeThrow(node->AsThrowStatement());
-            break;
-        }
-        case ir::AstNodeType::ASSERT_STATEMENT: {
-            AnalyzeAssert(node->AsAssertStatement());
             break;
         }
         default:
@@ -959,25 +954,6 @@ void AssignAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throwStmt)
 {
     AnalyzeNode(throwStmt->Argument());
     MarkDead();
-}
-
-void AssignAnalyzer::AnalyzeAssert(const ir::AssertStatement *assertStmt)
-{
-    Set initsExit = inits_;
-    Set uninitsExit = uninits_;
-
-    AnalyzeCond(assertStmt->Test());
-
-    uninitsExit.AndSet(uninitsWhenTrue_);
-
-    if (assertStmt->Second() != nullptr) {
-        inits_ = initsWhenFalse_;
-        uninits_ = uninitsWhenFalse_;
-        AnalyzeExpr(assertStmt->Second());
-    }
-
-    inits_ = std::move(initsExit);
-    uninits_ = std::move(uninitsExit);
 }
 
 void AssignAnalyzer::AnalyzeExpr(const ir::AstNode *node)

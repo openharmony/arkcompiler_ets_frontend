@@ -25,7 +25,7 @@
 
 static es2panda_Impl *impl = nullptr;
 
-static auto source = std::string("function main() { \nlet a = 5;\n assert(a == 5);\n  }");
+static auto source = std::string("function main() { \nlet a = 5;\n assertEQ(a, 5);\n  }");
 
 static es2panda_AstNode *letStatement = nullptr;
 static es2panda_AstNode *assertStatement = nullptr;
@@ -46,7 +46,7 @@ static void FindLet(es2panda_AstNode *ast)
 
 static void FindAssert(es2panda_AstNode *ast)
 {
-    if (!impl->IsAssertStatement(ast)) {
+    if (!IsAssertCall(ast)) {
         impl->AstNodeIterateConst(ctx, ast, FindAssert);
         return;
     }
@@ -94,7 +94,7 @@ static bool ChangeAst(es2panda_Context *context, es2panda_AstNode *ast)
     }
     auto mainFuncBody = impl->ScriptFunctionBody(context, mainScriptFunc);
     std::cout << impl->AstNodeDumpJSONConst(context, mainScriptFunc) << std::endl;
-    auto assertStatementTest = impl->AssertStatementTest(context, assertStatement);
+    auto assertStatementTest = AssertStatementTest(context, assertStatement);
     std::cout << impl->AstNodeDumpJSONConst(context, letStatement) << std::endl;
     std::cout << impl->AstNodeDumpJSONConst(context, assertStatementTest) << std::endl;
 
@@ -111,7 +111,7 @@ static bool ChangeAst(es2panda_Context *context, es2panda_AstNode *ast)
         context, Es2pandaVariableDeclarationKind::VARIABLE_DECLARATION_KIND_LET, &declarator, 1);
 
     impl->BinaryExpressionSetLeft(context, assertStatementTest, assertIdent);
-    auto newAssertStatement = impl->CreateAssertStatement(context, assertStatementTest, nullptr);
+    auto newAssertStatement = CreateAssertStatement(context, assertStatementTest, nullptr);
 
     es2panda_AstNode *newMainStatements[2] = {declaration, newAssertStatement};
     impl->BlockStatementSetStatements(context, mainFuncBody, newMainStatements, 2U);

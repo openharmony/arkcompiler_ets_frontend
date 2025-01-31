@@ -121,7 +121,6 @@ private:
     BasicBlock *Build(ir::ArrayExpression *arrayExpressionNode, BasicBlock *bb);
     BasicBlock *Build(ir::ArrowFunctionExpression *arrowFunctionExpressionNode, BasicBlock *bb);
     BasicBlock *Build(ir::AssignmentExpression *assignmentExpressionNode, BasicBlock *bb);
-    BasicBlock *Build(ir::AssertStatement *assertStatementNode, BasicBlock *bb);
     BasicBlock *Build(ir::BinaryExpression *binaryExpressionNode, BasicBlock *bb);
     BasicBlock *Build(ir::BlockExpression *blockExpressionNode, BasicBlock *bb);
     BasicBlock *Build(ir::BlockStatement *blockStatementNode, BasicBlock *bb);

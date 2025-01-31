@@ -325,8 +325,6 @@ CFG::BasicBlock *CFG::BuildETSExpressions(ir::AstNode *node, CFG::BasicBlock *bb
 CFG::BasicBlock *CFG::BuildStatements(ir::AstNode *node, CFG::BasicBlock *bb)
 {
     switch (node->Type()) {
-        case ir::AstNodeType::ASSERT_STATEMENT:
-            return Build(node->AsAssertStatement(), bb);
         case ir::AstNodeType::BLOCK_STATEMENT:
             return Build(node->AsBlockStatement(), bb);
         case ir::AstNodeType::BREAK_STATEMENT:
@@ -426,13 +424,6 @@ CFG::BasicBlock *CFG::Build(ir::TryStatement *tryStatementNode, BasicBlock *bb)
 {
     // NOTE: Implement this
     AddNodeToBB(tryStatementNode, bb);
-    return bb;
-}
-
-CFG::BasicBlock *CFG::Build(ir::AssertStatement *assertStatementNode, BasicBlock *bb)
-{
-    // NOTE: Implement this
-    AddNodeToBB(assertStatementNode, bb);
     return bb;
 }
 

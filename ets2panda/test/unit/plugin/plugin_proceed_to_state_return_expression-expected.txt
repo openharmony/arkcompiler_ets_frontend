@@ -7,7 +7,7 @@ function foo(): string {
 }
 
 let x = foo()
-assert(((x) == ("hello")));
+assertEQ(x, "hello")
 
 PROCEED TO BOUND SUCCESS
 PROCEED TO CHECKED SUCCESS

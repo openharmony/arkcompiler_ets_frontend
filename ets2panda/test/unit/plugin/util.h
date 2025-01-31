@@ -36,6 +36,9 @@ constexpr int NULLPTR_CONTEXT_ERROR_CODE = 6;
 es2panda_Impl *GetImpl();
 
 void CheckForErrors(const std::string &stateName, es2panda_Context *context);
+bool IsAssertCall(es2panda_AstNode *ast);
+es2panda_AstNode *CreateAssertStatement(es2panda_Context *context, es2panda_AstNode *test, es2panda_AstNode *second);
+es2panda_AstNode *AssertStatementTest(es2panda_Context *context, es2panda_AstNode *classInstance);
 
 es2panda_AstNode *CreateIdentifierFromString(es2panda_Context *context, const std::string_view &name);
 

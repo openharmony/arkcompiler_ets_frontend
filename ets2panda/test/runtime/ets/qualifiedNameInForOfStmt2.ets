@@ -27,7 +27,7 @@ namespace NS {
         aa.push(1)
         aa.push(2)
         for(let a of aa) {
-            assert new NS.A(a).value == a
+            assertEQ(new NS.A(a).value, a)
         }
     }
 }

@@ -2187,23 +2187,9 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
 }
 
 // compile methods for STATEMENTS in alphabetical order
-checker::Type *ETSAnalyzer::Check(ir::AssertStatement *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::AssertStatement *st) const
 {
-    ETSChecker *checker = GetETSChecker();
-    Type *testType = st->Test()->Check(checker);
-    if (!(testType->HasTypeFlag(TypeFlag::ETS_BOOLEAN | TypeFlag::BOOLEAN_LIKE) || testType->ToString() == "Boolean")) {
-        checker->LogError(diagnostic::ASSERT_NOT_LOGICAL, {}, st->Test()->Start());
-    }
-
-    if (st->Second() != nullptr) {
-        auto msgType = st->second_->Check(checker);
-        if (!msgType->IsETSStringType()) {
-            checker->LogError(diagnostic::ASSERT_MESSAGE_NOT_STRING, {}, st->Second()->Start());
-            return checker->GlobalTypeError();
-        }
-    }
-
-    return ReturnTypeForStatement(st);
+    ES2PANDA_UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const

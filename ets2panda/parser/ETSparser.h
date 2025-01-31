@@ -424,7 +424,6 @@ private:
     ir::Expression *ParsePostPrimaryExpression(ir::Expression *primaryExpr, lexer::SourcePosition startLoc,
                                                bool ignoreCallExpression, bool *isChainExpression) override;
     ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpr) override;
-    ir::Statement *ParseAssertStatement() override;
     bool ValidateLabeledStatement(lexer::TokenType type) override;
     ir::Expression *ParseCatchParam() override;
     void ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpression *param) override;
