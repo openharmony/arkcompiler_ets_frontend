@@ -284,7 +284,6 @@
             }
           }
         ],
-        "spreadType": null,
         "loc": {
           "start": {
             "line": 18,
@@ -451,7 +450,6 @@
             }
           }
         ],
-        "spreadType": null,
         "loc": {
           "start": {
             "line": 19,

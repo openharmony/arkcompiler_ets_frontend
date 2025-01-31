@@ -71,7 +71,7 @@ function main() {
     let expectedObject : Object[] = [obj, obj, obj]
     let arrayObject : Object[] = [obj, ...objectArray]
     compArray<Object>(arrayObject, expectedObject)
-    
+
     //tuple
     type tupleType = [string, int, boolean]
     let tuple : tupleType = ["first", 2, true]

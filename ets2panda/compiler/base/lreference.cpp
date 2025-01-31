@@ -296,17 +296,11 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) con
         return;
     }
 
-    // Same bypass for tuples, as at MemberExpression::Compile
-    const auto *const savedVregType = etsg_->GetVRegType(baseReg_);
-
     if (objectType->IsETSTupleType()) {
-        etsg_->SetVRegType(baseReg_, objectType);
-    }
-
-    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
-
-    if (objectType->IsETSTupleType()) {
-        etsg_->SetVRegType(baseReg_, savedVregType);
+        etsg_->StoreTupleElement(Node(), baseReg_, propReg_, objectType->AsETSTupleType()->GetLubType());
+    } else {
+        etsg_->StoreArrayElement(Node(), baseReg_, propReg_,
+                                 etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
     }
 }
 
@@ -333,7 +327,7 @@ void ETSLReference::SetValue() const
 
     const auto *const memberExpr = Node()->AsMemberExpression();
     const auto *const memberExprTsType = memberExpr->Object()->TsType()->IsETSTupleType()
-                                             ? memberExpr->Object()->TsType()->AsETSTupleType()->ElementType()
+                                             ? memberExpr->Object()->TsType()->AsETSTupleType()->GetLubType()
                                              : memberExpr->TsType();
 
     if (!memberExpr->IsIgnoreBox()) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,6 +58,11 @@ public:
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
     friend class compiler::ETSCompiler;
+
+    [[nodiscard]] Expression *GetElementNodeAtIdx(const size_t idx) const noexcept
+    {
+        return elements_[idx];
+    }
 
     [[nodiscard]] const ArenaVector<Expression *> &Elements() const noexcept
     {
@@ -142,16 +147,16 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
     checker::Type *CheckPattern(checker::TSChecker *checker);
-    bool HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *currentElement,
-                                     bool isPreferredTuple, std::size_t idx);
+    bool TrySetPreferredTypeForNestedArrayExpr(checker::ETSChecker *checker, ArrayExpression *nestedArrayExpr,
+                                               std::size_t idx) const;
 
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
 
-    void GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, checker::Type *param,
-                                       checker::TypeRelationFlag flags);
+    void SetPreferredTypeBasedOnFuncParam(checker::ETSChecker *checker, checker::Type *param,
+                                          checker::TypeRelationFlag flags);
 
 private:
     ArenaVector<Decorator *> decorators_;

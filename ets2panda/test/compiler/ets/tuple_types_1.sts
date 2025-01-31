@@ -17,12 +17,7 @@ class A { foo() {}}
 class B extends A { bar() {}}
 
 type num_str_str_type = [number, string, string];
-type num_str_str_with_spread = [num_str_str_type, ...number[]];
-
-function foo(a0: number, args: [...number[]]): number {
-    return 2;
-}
-
+type num_str_str_with_array = [num_str_str_type, number[]];
 
 function main(): void {
     const tup_arr_1: num_str_str_type[] = [
@@ -31,38 +26,15 @@ function main(): void {
         [2, "c", "f"],
     ];
 
-    const tup_arr_2: num_str_str_with_spread[] = [
-        [tup_arr_1[0], 250],
-        [tup_arr_1[1], 250, 260],
-        [tup_arr_1[0], 300, 300, 300],
+    const tup_arr_2: num_str_str_with_array[] = [
+        [tup_arr_1[0], [250]],
+        [tup_arr_1[1], [250, 260]],
+        [tup_arr_1[0], [300, 300, 300]],
     ];
 
-    const a_var = tup_arr_2[0][1] + tup_arr_2[1][1] + tup_arr_2[2][1];
-    const b_var = tup_arr_2[1][2] + tup_arr_2[2][2];
-    const c_var = tup_arr_2[2][2];
-
-    foo(tup_arr_1[0][0], [tup_arr_2[0][1]]);
-    foo(tup_arr_1[1][0], [tup_arr_2[1][1], tup_arr_2[1][2]]);
-
-    let arr: Object[] = [1,2,3,4,5];
-    let double_ref_tup: [Number, Number, Number] = [6 as double, 7 as double, 8 as double];
-    let a_arr: A[];
-    let b_tup: [B, B] = [new B(), new B()];
-    let b_arr: B[] = [new B(), new B()];
-
-    arr = double_ref_tup;
-    a_arr = b_tup;
-    b_arr = b_tup;
-
-    let spread_tup: [Number, ...Number[]] = [6 as double,7 as double,8 as double, 9 as double, 10 as double];
-    let num_ref_arr: Number[] = [1 as double,2 as double,3 as double,4 as double,5 as double];
-
-    spread_tup = num_ref_arr;
-
-    let num_tup: [number, number] = [11,2];
-    let num_prim_arr: number[] = [3,4];
-
-    num_prim_arr = num_tup;
+    const a_var = tup_arr_2[0][1][0] + tup_arr_2[1][1][0] + tup_arr_2[2][1][0];
+    const b_var = tup_arr_2[1][1][1] + tup_arr_2[2][1][1];
+    const c_var = tup_arr_2[2][1][2];
 
     let d_var: [number, string] = [1, "A"];
     let e_var: [number, string, boolean] = [1, "A", true];

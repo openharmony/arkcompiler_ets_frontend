@@ -15,6 +15,7 @@
 
 #include "declgenEts2Ts.h"
 
+#include "checker/types/ets/etsTupleType.h"
 #include "generated/diagnostic.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
@@ -245,6 +246,9 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
         case checker::TypeFlag::ETS_UNION:
             GenUnionType(checkerType->AsETSUnionType());
             return;
+        case checker::TypeFlag::ETS_TUPLE:
+            GenTupleType(checkerType->AsETSTupleType());
+            return;
         default:
             LogError(diagnostic::UNSUPPORTED_TYPE, {GetDebugTypeName(checkerType)});
     }
@@ -366,6 +370,14 @@ void TSDeclGen::GenUnionType(const checker::ETSUnionType *unionType)
 {
     GenSeparated(
         unionType->ConstituentTypes(), [this](checker::Type *arg) { GenType(arg); }, " | ");
+}
+
+void TSDeclGen::GenTupleType(const checker::ETSTupleType *tupleType)
+{
+    OutDts("[");
+    GenSeparated(
+        tupleType->GetTupleTypesList(), [this](checker::Type *arg) { GenType(arg); }, " , ");
+    OutDts("]");
 }
 
 void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)

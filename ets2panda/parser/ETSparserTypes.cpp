@@ -249,42 +249,20 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
     ArenaVector<ir::TypeNode *> tupleTypeList(Allocator()->Adapter());
     auto *const tupleType = AllocNode<ir::ETSTuple>(Allocator());
 
-    bool spreadTypePresent = false;
-
-    lexer::SourcePosition endLoc;
-    auto parseElem = [this, options, &tupleTypeList, &tupleType, &spreadTypePresent]() {
-        // Parse named parameter if name presents
-        if ((Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) &&
-            (Lexer()->Lookahead() == lexer::LEX_CHAR_COLON)) {
-            ExpectIdentifier();
-            Lexer()->NextToken();  // eat ':'
-        }
-
-        spreadTypePresent = ParseTriplePeriod(spreadTypePresent);
-
+    auto parseElem = [this, options, &tupleTypeList, &tupleType]() {
         auto *const currentTypeAnnotation = ParseTypeAnnotation(options);
         if (currentTypeAnnotation == nullptr) {  // Error processing.
             Lexer()->NextToken();
             return false;
         }
+
         currentTypeAnnotation->SetParent(tupleType);
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-            // NOTE(mmartin): implement optional types for tuples
-            LogError(diagnostic::OPTIONAL_TYPES_IN_TUPLE_NOT_IMPLEMENTED);
-            Lexer()->NextToken();  // eat '?'
-        }
+        tupleTypeList.push_back(currentTypeAnnotation);
 
-        if (spreadTypePresent && !currentTypeAnnotation->IsTSArrayType()) {
-            LogError(diagnostic::SPREAD_TYPE_MUST_BE_ARRAY);
-        }
-
-        if (spreadTypePresent) {
-            tupleType->SetSpreadType(currentTypeAnnotation);
-        } else {
-            tupleTypeList.push_back(currentTypeAnnotation);
-        }
         return true;
     };
+
+    lexer::SourcePosition endLoc;
     ParseList(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET, lexer::NextTokenFlags::NONE, parseElem, &endLoc, true);
 
     tupleType->SetTypeAnnotationsList(std::move(tupleTypeList));

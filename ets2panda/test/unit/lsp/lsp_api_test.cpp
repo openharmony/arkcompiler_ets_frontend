@@ -527,7 +527,7 @@ TEST_F(LSPAPITests, GetTypeOfSymbolAtLocation2)
     targetNode =
         astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "l"; });
     type = ark::es2panda::lsp::GetTypeOfSymbolAtLocation(checker, targetNode);
-    ASSERT_TRUE(type->IsETSArrayType());
+    ASSERT_TRUE(type->IsETSTupleType());
 
     targetNode =
         astNode->FindChild([](AstNode *node) { return node->IsIdentifier() && node->AsIdentifier()->Name() == "m"; });

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "checker/types/ets/etsTupleType.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/function_helpers.h"
@@ -325,7 +326,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         }
 
         if (argument->IsArrayExpression()) {
-            argument->AsArrayExpression()->GetPrefferedTypeFromFuncParam(this, paramType, flags);
+            argument->AsArrayExpression()->SetPreferredTypeBasedOnFuncParam(this, paramType, flags);
         }
 
         if (argument->IsIdentifier() && ValidateArgumentAsIdentifier(argument->AsIdentifier())) {
@@ -358,6 +359,27 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
     return invocationCtx.IsInvocable() || CheckOptionalLambdaFunction(argument, substitutedSig, index);
 }
 
+bool ETSChecker::IsValidRestArgument(ir::Expression *const argument, Signature *const substitutedSig,
+                                     const TypeRelationFlag flags, const std::size_t index)
+{
+    const auto argumentType = argument->Check(this);
+    auto *const targetType = substitutedSig->RestVar()->TsType();
+    if (targetType->IsETSTupleType()) {
+        // NOTE (mmartin): check tuple assignability for rest arguments
+        LogTypeError("Tuple types for rest arguments are not yet implemented", argument->Start());
+        return false;
+    }
+
+    auto const invocationCtx = checker::InvocationContext(
+        Relation(), argument, argumentType, substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType(),
+        argument->Start(),
+        {"Type '", argumentType, "' is not compatible with rest parameter type '", targetType, "' at index ",
+         index + 1},
+        flags);
+
+    return invocationCtx.IsInvocable();
+}
+
 bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                              TypeRelationFlag flags, bool reportError, const bool unique)
 {
@@ -369,15 +391,7 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         auto &argument = arguments[index];
 
         if (!argument->IsSpreadElement()) {
-            auto const argumentType = argument->Check(this);
-            auto const targetType = substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType();
-            auto const invocationCtx = checker::InvocationContext(
-                Relation(), argument, argumentType,
-                substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType(), argument->Start(),
-                {"Type '", argumentType, "' is not compatible with rest parameter type '", targetType, "' at index ",
-                 index + 1},
-                flags);
-            if (!invocationCtx.IsInvocable()) {
+            if (!IsValidRestArgument(argument, substitutedSig, flags, index)) {
                 return false;
             }
             continue;

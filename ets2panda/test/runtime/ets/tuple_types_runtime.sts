@@ -14,7 +14,7 @@
  */
 
 type num_str_str = [number, string, string];
-type num_str_str_with_spread = [num_str_str, ...number[]];
+type num_str_str_with_array = [num_str_str, number[]];
 
 class A {
     foo(): int {
@@ -47,14 +47,14 @@ function main(): void {
         [25, "C", "F"],
     ];
 
-    const tup_3: num_str_str_with_spread[] = [
-        [tup_2[0], 250],
-        [tup_2[1], 250, 260],
-        [tup_2[0], 300, 300, 300],
+    const tup_3: num_str_str_with_array[] = [
+        [tup_2[0], [250]],
+        [tup_2[1], [250, 260]],
+        [tup_2[0], [300, 300, 300]],
     ];
 
-    const sum = tup_3[0][1] + tup_3[1][1] + tup_3[1][2] + tup_3[2][1] + tup_3[2][2] + tup_3[2][3];
-    assertEQ(sum, 1660)
+    const sum = tup_3[0][1][0] + tup_3[1][1][0] + tup_3[1][1][1] + tup_3[2][1][0] + tup_3[2][1][1] + tup_3[2][1][2];
+    assertEQ(sum, 1660);
 
     // Runs correctly, but fails on verifier
     // It sees the type of `tup_3[0][0]` as an `Object`, what it really is an Array type.
@@ -72,50 +72,22 @@ function main(): void {
     int_update[0]++;
     assertEQ(int_update[0], 45)
 
-    let spread_tup: [Number, ...Number[]] = [6 as double,7 as double,8 as double, 9 as double, 10 as double];
-    let num_arr: Number[] = [1 as double,2 as double,3 as double,4 as double,5 as double,  6 as double];
-
-    spread_tup = num_arr;
-
-    let test_arr: Number[] = [1 as double,2 as double,3 as double,4 as double,5 as double, 6 as double];
-    for(let idx = 0; idx < spread_tup.length; idx++){
-        assertEQ(spread_tup[idx], test_arr[idx])
-    }
-
-    let tup_4: [number, number] = [11,2];
-    let prim_num_arr: number[] = [3,4];
-
-    prim_num_arr = tup_4;
-
-    let test_arr_2: number[] = [11, 2];
-    assertEQ(prim_num_arr[0], test_arr_2[0])
-    assertEQ(prim_num_arr[1], test_arr_2[1])
-
-
     let tup_8: [number, string][];
     tup_8 = [[1, "E"], [2, "F"], [3, "G"]];
     assertTrue(tup_8[0][0] == 1 && tup_8[0][1] == "E")
     assertTrue(tup_8[1][0] == 2 && tup_8[1][1] == "F")
     assertTrue(tup_8[2][0] == 3 && tup_8[2][1] == "G")
 
-    // #15570 - test ArrayExpr assignability with individual element types
-    // let tup_10: [number, int, string, boolean, Object] = [1, 2, "I", false, new Object()];
-    // let var_float: float = tup_10[1];
-    // let var_float_2: float = 2.0;
-    // assertEQ(var_float, var_float_2)
-    // let tup_11: [int, number, string, boolean, Object] = [6, 7, "J", true, 789];
-    // NOTE: Bug in op_assignment lowering (removes const from property)
-    // tup_11[0] += new Short(2 as short);
-    // assertEQ(tup_11[0], 8)
-    // assertEQ(tup_11[4], (789 as Object))
+    let tup_10: [number, int, string, boolean, Object] = [1, 2, "I", false, new Object()];
+    let var_float: float = tup_10[1];
+    let var_float_2: float = 2.0;
+    assertEQ(var_float, var_float_2);
 
-    let tup_12: [number, ...number[]] = [1, 2, 3, 4];
-    try {
-        tup_12[4];
-    } catch (e: ArrayIndexOutOfBoundsError) {
-    } catch (f) {
-        assertTrue(false)
-    }
+    let tup_11: [int, number, string, boolean, Object] = [6, 7, "J", true, 789];
+    tup_11[0] += new Short(2 as short);
+
+    assertEQ(tup_11[0], 8);
+    assertEQ(tup_11[4], (789 as Object));
 
     let tup_13: [number, number] = [8, 9];
     let tup_14: [number, number] = [10, 11];

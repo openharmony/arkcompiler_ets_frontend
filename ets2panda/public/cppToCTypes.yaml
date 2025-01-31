@@ -1531,14 +1531,14 @@ change_types:
         namespace: checker
     new_args:
     - type:
-        name: int32_t
+        name: size_t
         ptr_depth: '|es2panda_arg.type.ptr_depth_int|'
       name: '|arg_name|'
     cast:
         expression:
         reverse_cast:
           start : >-
-            reinterpret_cast<?const? int32_t |es2panda_arg.type.ptr_depth|>
+            reinterpret_cast<?const? size_t |es2panda_arg.type.ptr_depth|>
         var_name: '|arg_name|'
 
   - es2panda_arg:

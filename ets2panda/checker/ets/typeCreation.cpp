@@ -15,8 +15,8 @@
 
 #include "checker/ETSchecker.h"
 
-#include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
+#include "checker/types/globalTypesHolder.h"
 #include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::checker {
@@ -529,7 +529,7 @@ ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectF
                                            std::make_tuple(declNode, flags, Relation()));
 }
 
-std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType,
+std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(const ETSArrayType *arrayType,
                                                                                           size_t dim)
 {
     std::stringstream ss;
@@ -558,7 +558,7 @@ std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySign
     return {internalName, info};
 }
 
-Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim)
+Signature *ETSChecker::CreateBuiltinArraySignature(const ETSArrayType *arrayType, size_t dim)
 {
     auto res = globalArraySignatures_.find(arrayType);
     if (res != globalArraySignatures_.end()) {

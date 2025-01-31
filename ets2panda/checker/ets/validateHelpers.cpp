@@ -298,14 +298,16 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
     }
 }
 
-bool ETSChecker::ValidateTupleMinElementSize(ir::ArrayExpression *const arrayExpr, ETSTupleType *tuple)
+bool ETSChecker::IsArrayExprSizeValidForTuple(const ir::ArrayExpression *const arrayExpr,
+                                              const ETSTupleType *const tuple)
 {
-    size_t size = 0;
-    for (ir::Expression *element : arrayExpr->Elements()) {
+    std::size_t size = 0;
+
+    for (ir::Expression *const element : arrayExpr->Elements()) {
         if (element->IsSpreadElement()) {
-            Type *argType = element->AsSpreadElement()->Argument()->Check(this);
+            const Type *const argType = element->AsSpreadElement()->Argument()->Check(this);
             if (argType->IsETSTupleType()) {
-                size += argType->AsETSTupleType()->GetTupleTypesList().size();
+                size += argType->AsETSTupleType()->GetTupleSize();
                 continue;
             }
             LogError(diagnostic::INVALID_SPREAD_IN_TUPLE, {argType}, element->Start());
@@ -313,8 +315,8 @@ bool ETSChecker::ValidateTupleMinElementSize(ir::ArrayExpression *const arrayExp
         ++size;
     }
 
-    if (size < static_cast<size_t>(tuple->GetMinTupleSize())) {
-        LogError(diagnostic::TUPLE_TOO_FEW_ELEMS, {static_cast<size_t>(tuple->GetMinTupleSize())}, arrayExpr->Start());
+    if (size != tuple->GetTupleSize()) {
+        LogError(diagnostic::TUPLE_TOO_FEW_ELEMS, {size, tuple->GetTupleSize()}, arrayExpr->Start());
         return false;
     }
 

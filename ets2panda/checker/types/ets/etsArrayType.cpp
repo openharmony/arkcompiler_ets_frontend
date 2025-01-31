@@ -19,6 +19,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 #include "checker/types/typeRelation.h"
+#include "checker/types/ets/etsTupleType.h"
 
 namespace ark::es2panda::checker {
 void ETSArrayType::ToString(std::stringstream &ss, bool precise) const
@@ -59,10 +60,21 @@ void ETSArrayType::ToDebugInfoType(std::stringstream &ss) const
 
 uint32_t ETSArrayType::Rank() const
 {
+    const auto arrayHasNestedLevels = [](const Type *const iter) {
+        if (!iter->IsETSArrayType() && !iter->IsETSTupleType()) {
+            return false;
+        }
+
+        const auto *const nestedElementType =
+            iter->IsETSArrayType() ? iter->AsETSArrayType()->ElementType() : iter->AsETSTupleType()->GetLubType();
+
+        return nestedElementType != iter;
+    };
+
     uint32_t rank = 1;
-    auto iter = element_;
-    while (iter->IsETSArrayType() && iter->AsETSArrayType()->ElementType() != iter) {
-        iter = iter->AsETSArrayType()->ElementType();
+    auto *iter = element_;
+    while (arrayHasNestedLevels(iter)) {
+        iter = iter->IsETSArrayType() ? iter->AsETSArrayType()->ElementType() : iter->AsETSTupleType()->GetLubType();
         rank++;
     }
 

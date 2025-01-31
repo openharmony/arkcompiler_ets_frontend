@@ -939,13 +939,13 @@ Type *ETSChecker::GetReadonlyType(Type *type)
 
     NamedTypeStackElement ntse(this, type);
 
-    if (type->IsETSArrayType() && !type->IsETSTupleType()) {
-        ETSArrayType *clonedArrayType = Allocator()->New<ETSArrayType>(type->AsETSArrayType()->ElementType());
+    if (type->IsETSArrayType()) {
+        ETSArrayType *const clonedArrayType = Allocator()->New<ETSArrayType>(type->AsETSArrayType()->ElementType());
         clonedArrayType->AddTypeFlag(TypeFlag::READONLY);
         return clonedArrayType;
     }
     if (type->IsETSTupleType()) {
-        Type *clonedType = type->Clone(this);
+        Type *const clonedType = type->Clone(this);
         clonedType->AddTypeFlag(TypeFlag::READONLY);
         return clonedType;
     }

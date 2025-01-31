@@ -647,6 +647,11 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         return;
     }
 
+    if (target->HasTypeFlag(TypeFlag::ETS_TUPLE)) {
+        conversion::NarrowingReference(relation, this, target->AsETSTupleType());
+        return;
+    }
+
     if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
         conversion::WideningReference(relation, this, target->AsETSObjectType());
         if (relation->IsTrue()) {

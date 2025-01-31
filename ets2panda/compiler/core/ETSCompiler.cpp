@@ -24,6 +24,7 @@
 #include "compiler/function/functionBuilder.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
+#include "checker/types/ets/etsTupleType.h"
 
 namespace ark::es2panda::compiler {
 
@@ -376,10 +377,13 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
     const auto arr = etsg->AllocReg();
     const auto dim = etsg->AllocReg();
 
+    const auto *const arrayExprType =
+        expr->TsType()->IsETSTupleType() ? expr->TsType()->AsETSTupleType()->GetHolderArrayType() : expr->TsType();
+
     const compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
     etsg->LoadAccumulatorInt(expr, static_cast<std::int32_t>(expr->Elements().size()));
     etsg->StoreAccumulator(expr, dim);
-    etsg->NewArray(expr, arr, dim, expr->TsType());
+    etsg->NewArray(expr, arr, dim, arrayExprType);
 
     const auto indexReg = etsg->AllocReg();
     for (std::uint32_t i = 0; i < expr->Elements().size(); ++i) {
@@ -387,7 +391,7 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
         etsg->LoadAccumulatorInt(expr, i);
         etsg->StoreAccumulator(expr, indexReg);
 
-        const compiler::TargetTypeContext ttctx2(etsg, expr->TsType()->AsETSArrayType()->ElementType());
+        const compiler::TargetTypeContext ttctx2(etsg, arrayExprType->AsETSArrayType()->ElementType());
         if (!etsg->TryLoadConstantExpression(expression)) {
             expression->Compile(etsg);
         }
@@ -397,13 +401,15 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
 
         if (expression->TsType()->IsETSArrayType()) {
             etsg->StoreArrayElement(expr, arr, indexReg, expression->TsType());
+        } else if (expr->TsType()->IsETSTupleType()) {
+            etsg->StoreTupleElement(expr, arr, indexReg, expr->TsType()->AsETSTupleType()->GetLubType());
         } else {
             etsg->StoreArrayElement(expr, arr, indexReg, expr->TsType()->AsETSArrayType()->ElementType());
         }
     }
 
     etsg->LoadAccumulator(expr, arr);
-    ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
+    ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), arrayExprType));
 }
 
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
@@ -937,7 +943,7 @@ bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpres
     }
     auto *const objectType = expr->Object()->TsType();
 
-    auto ottctx = compiler::TargetTypeContext(etsg, expr->Object()->TsType());
+    auto ottctx = compiler::TargetTypeContext(etsg, objectType);
     etsg->CompileAndCheck(expr->Object());
 
     compiler::VReg objReg = etsg->AllocReg();
@@ -957,8 +963,11 @@ bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpres
         } else {
             etsg->LoadElementDynamic(expr, objReg);
         }
-    } else {
+    } else if (objectType->IsETSArrayType()) {
         etsg->LoadArrayElement(expr, objReg);
+    } else {
+        ASSERT(objectType->IsETSTupleType());
+        etsg->LoadTupleElement(expr, objReg);
     }
 
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());
@@ -1058,7 +1067,7 @@ bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGe
 {
     auto &propName = expr->PropVar()->Name();
     auto const *const variable = expr->PropVar();
-    if (etsg->Checker()->IsVariableStatic(variable)) {
+    if (checker::ETSChecker::IsVariableStatic(variable)) {
         auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
 
         if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
@@ -1781,6 +1790,7 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
 
     switch (checker::ETSChecker::TypeKind(targetType)) {
         case checker::TypeFlag::ETS_ARRAY:
+        case checker::TypeFlag::ETS_TUPLE:
         case checker::TypeFlag::FUNCTION:
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
@@ -1814,7 +1824,7 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
             break;
         }
         default: {
-            return CompileCastPrimitives(expr);
+            CompileCastPrimitives(expr);
         }
     }
 }
@@ -1827,7 +1837,7 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
         expr->Expr()->Compile(etsg);
     }
 
-    auto *targetType = etsg->Checker()->GetApparentType(expr->TsType());
+    const auto *const targetType = etsg->Checker()->GetApparentType(expr->TsType());
 
     if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
         etsg->ApplyUnboxingConversion(expr->Expr());

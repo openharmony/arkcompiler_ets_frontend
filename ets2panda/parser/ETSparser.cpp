@@ -1388,6 +1388,7 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
         if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
+            // NOTE (mmartin): implement tuple types for rest parameters
             LogError(diagnostic::ONLY_ARRAY_FOR_REST);
         }
         typeAnnotation->SetParent(paramIdent);

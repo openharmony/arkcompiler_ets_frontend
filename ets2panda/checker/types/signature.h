@@ -16,9 +16,10 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_SIGNATURE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_SIGNATURE_H
 
+#include "ir/ets/etsParameterExpression.h"
 #include "type.h"
-#include "ets/etsObjectType.h"
 
+#include "varbinder/declaration.h"
 #include "varbinder/variable.h"
 
 namespace ark::es2panda::public_lib {
