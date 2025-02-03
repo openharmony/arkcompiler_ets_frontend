@@ -32,13 +32,13 @@ AsmTest::~AsmTest()
 }
 
 ark::pandasm::Function *AsmTest::GetFunction(std::string_view functionName,
-                                             const std::unique_ptr<ark::pandasm::Program> &program)
+                                             const std::map<std::string, ark::pandasm::Function> &table)
 {
-    auto it = program->functionTable.find(functionName.data());
-    if (it == program->functionTable.end()) {
+    auto it = table.find(functionName.data());
+    if (it == table.end()) {
         return nullptr;
     }
-    return &it->second;
+    return const_cast<ark::pandasm::Function *>(&it->second);
 }
 
 ark::pandasm::Record *AsmTest::GetRecord(std::string_view recordName,
@@ -138,10 +138,10 @@ void AsmTest::CheckRecordAnnotations(ark::pandasm::Program *program, const std::
     }
 }
 
-void AsmTest::CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+void AsmTest::CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName, bool isStatic,
                                        const AnnotationMap &expectedAnnotations)
 {
-    const auto &functionTable = program->functionTable;
+    const auto &functionTable = isStatic ? program->functionStaticTable : program->functionInstanceTable;
     auto found = functionTable.find(functionName);
     ASSERT_NE(found, functionTable.end()) << "Unexpected function Name: " << functionName;
 
@@ -160,9 +160,10 @@ void AsmTest::CheckFunctionAnnotations(ark::pandasm::Program *program, const std
 }
 
 void AsmTest::CheckFunctionParameterAnnotations(ark::pandasm::Program *program, const std::string &functionName,
-                                                const uint32_t &paramIndex, const AnnotationMap &expectedAnnotations)
+                                                bool isStatic, const uint32_t &paramIndex,
+                                                const AnnotationMap &expectedAnnotations)
 {
-    const auto &functionTable = program->functionTable;
+    const auto &functionTable = isStatic ? program->functionStaticTable : program->functionInstanceTable;
     auto found = functionTable.find(functionName);
     ASSERT_NE(found, functionTable.end());
     ASSERT_LT(paramIndex, found->second.params.size());

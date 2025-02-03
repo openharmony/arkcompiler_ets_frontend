@@ -230,7 +230,7 @@ void ETSEmitter::GenAnnotation()
             annotations.push_back(GenAnnotationAsync(scriptFunc));
             func.metadata->SetAnnotations(std::move(annotations));
         }
-        Program()->functionTable.emplace(func.name, std::move(func));
+        Program()->AddToFunctionTable(std::move(func));
     }
 
     for (auto [extProg, recordTable] : varbinder->GetExternalRecordTable()) {
@@ -272,8 +272,9 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
         if (!isGenStdLib) {
             func.metadata->SetAttribute(Signatures::EXTERNAL);
         }
-
-        Program()->functionTable.emplace(func.name, std::move(func));
+        if (Program()->functionStaticTable.find(func.name) == Program()->functionStaticTable.cend()) {
+            Program()->AddToFunctionTable(std::move(func));
+        }
     }
 }
 
@@ -347,7 +348,7 @@ void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *method
     }
 
     func.metadata->SetAccessFlags(func.metadata->GetAccessFlags() | ACC_ABSTRACT);
-    Program()->functionTable.emplace(func.name, std::move(func));
+    Program()->AddToFunctionTable(std::move(func));
 }
 
 void ETSEmitter::GenClassField(const ir::ClassProperty *prop, pandasm::Record &classRecord, bool external)
@@ -393,7 +394,7 @@ void ETSEmitter::GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker:
     auto func = GenExternalFunction(signature, true);
     func.params.emplace(func.params.begin(), pandasm::Type(ss.str(), 0), EXTENSION);
 
-    Program()->functionTable.emplace(func.name, std::move(func));
+    Program()->AddToFunctionTable(std::move(func));
 
     arrayRecord.metadata->SetAttribute(Signatures::EXTERNAL);
     Program()->recordTable.emplace(arrayRecord.name, std::move(arrayRecord));

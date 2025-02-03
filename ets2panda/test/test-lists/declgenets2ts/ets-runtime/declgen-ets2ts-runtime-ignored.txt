@@ -126,6 +126,7 @@ SpreadExpressionsforFunctionCall_primitive_type.sts
 SpreadExpressionsforFunctionCall_tuple.sts
 SpreadExpressionsforThisAndSuper.sts
 StaticFieldAndNonStaticFieldSameName.sts
+StaticMethodAndNonStaticMethodSameName.sts
 StaticNonStaticDeclarations_01.sts
 StaticNonStaticDeclarations_02.sts
 StaticNonStaticDeclarations_03.sts
