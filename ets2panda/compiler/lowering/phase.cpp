@@ -52,7 +52,6 @@
 #include "compiler/lowering/ets/enumPostCheckLowering.h"
 #include "compiler/lowering/ets/genericBridgesLowering.h"
 #include "compiler/lowering/ets/boxedTypeLowering.h"
-#include "compiler/lowering/ets/implicitThisLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "public/es2panda_lib.h"
@@ -96,7 +95,6 @@ static PartialExportClassGen g_partialExportClassGen;
 static PackageImplicitImport g_packageImplicitImport;
 static GenericBridgesPhase g_genericBridgesLowering;
 static BoxedTypeLowering g_boxedTypeLowering;
-static ImplicitThisLowering g_implicitThisLoweringPhase;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterBind {"plugins-after-bind", ES2PANDA_STATE_BOUND, &util::Plugin::AfterBind};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -134,7 +132,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,
         &g_bigintLowering,
-        &g_implicitThisLoweringPhase,
         &g_opAssignmentLowering,
         &g_extensionAccessorPhase,
         &g_constStringToCharLowering,

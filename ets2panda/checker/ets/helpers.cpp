@@ -242,82 +242,6 @@ void ETSChecker::SaveCapturedVariable(varbinder::Variable *const var, ir::Identi
     }
 }
 
-Type *ETSChecker::ResolveImplicitThisIdentifier(ir::Identifier *ident, varbinder::Variable *resolved)
-{
-    Type *implicitThisType = nullptr;
-    // Implicit this call in lambda with receiver body, setting up filter conditions
-    if (!HasStatus(CheckerStatus::IN_EXTENSION_METHOD) || !HasStatus(CheckerStatus::IN_LAMBDA) ||
-        ident->IsImplicitThis()) {
-        return implicitThisType;
-    }
-    auto *receiverType = Context().ContainingSignature()->Params()[0]->TsType();
-
-    if (ident->Parent()->IsCallExpression() && ident->Parent()->AsCallExpression()->Callee() == ident) {
-        auto *callExpression = ident->Parent()->AsCallExpression();
-        /*
-            If it's a function call, it may be function、function with receiver、receiver.method, need to use virtual
-            memberexpression for checking.
-
-            Example code:
-                class C{
-                    foo():string{
-                        return "c.foo()"
-                    }
-                }
-
-                function process1(con: (this:C)=>void){
-                    let c = new C();
-                    c.con();
-                }
-
-                function main(){
-                    process1((this:C):void => {
-                        foo() // foo() could be 1.Receiver.method c.foo()  2.function with receiver c.foo()  3.normal
-           function foo()
-                    })
-                }
-        */
-        if (callExpression->Arguments().empty() || !callExpression->Arguments()[0]->IsIdentifier() ||
-            !callExpression->Arguments()[0]->AsIdentifier()->IsReceiver()) {
-            auto *thisIdentifier =
-                Allocator()->New<ir::Identifier>(varbinder::TypedBinder::MANDATORY_PARAM_THIS, Allocator());
-            auto *virtualMemberExpression =
-                AllocNode<ir::MemberExpression>(thisIdentifier, ident->Clone(Allocator(), ident->Parent()),
-                                                ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            virtualMemberExpression->SetParent(ident->Parent());
-
-            auto *receiverVar =
-                receiverType->IsETSObjectType()
-                    ? receiverType->AsETSObjectType()->GetProperty(ident->Name(), PropertySearchFlags::SEARCH_METHOD)
-                    : nullptr;
-            auto *globalFunctionVar = ResolveInstanceExtension(virtualMemberExpression);
-            if (receiverVar == nullptr && globalFunctionVar == nullptr) {
-                return nullptr;
-            }
-
-            implicitThisType = virtualMemberExpression->Check(this);
-        }
-    } else {
-        // If it's a field, match it directly in the receiver's properties.
-        auto *receiverVar =
-            receiverType->AsETSObjectType()->GetProperty(ident->Name(), PropertySearchFlags::SEARCH_FIELD);
-        if (receiverVar == nullptr) {
-            return implicitThisType;
-        }
-        implicitThisType = receiverVar->TsType();
-    }
-
-    if (implicitThisType == nullptr) {
-        return nullptr;
-    }
-
-    // if it matches then set the Implicit This Flag
-    resolved = implicitThisType->Variable();
-    ident->SetImplicitThis();
-    ident->SetVariable(resolved);
-    return implicitThisType;
-}
-
 Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
 {
     if (ident->Variable() != nullptr) {
@@ -330,15 +254,6 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
                                                                : varbinder::ResolveBindingOptions::ALL_NON_TYPE;
 
     auto *resolved = FindVariableInFunctionScope(ident->Name(), options);
-
-    // If don't find in functionscope, need to match the implicit this.
-    if (resolved == nullptr) {
-        auto *implicitThisType = ResolveImplicitThisIdentifier(ident, resolved);
-        if (implicitThisType != nullptr) {
-            return implicitThisType;
-        }
-    }
-
     if (resolved == nullptr) {
         // If the reference is not found already in the current class, then it is not bound to the class, so we have to
         // find the reference in the global class first, then in the global scope

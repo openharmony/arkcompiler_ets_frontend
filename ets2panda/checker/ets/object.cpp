@@ -2033,7 +2033,9 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     auto searchName = target->GetReExportAliasValue(memberExpr->Property()->AsIdentifier()->Name());
     auto *prop = target->GetProperty(searchName, searchFlag);
 
-    if (memberExpr->Parent()->IsCallExpression() || prop == nullptr) {
+    if ((memberExpr->Parent()->IsCallExpression() &&
+         memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) ||
+        prop == nullptr) {
         globalFunctionVar = ResolveInstanceExtension(memberExpr);
     }
     if (globalFunctionVar == nullptr ||

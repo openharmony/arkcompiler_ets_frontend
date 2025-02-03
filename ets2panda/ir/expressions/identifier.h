@@ -39,7 +39,6 @@ enum class IdentifierFlags : uint32_t {
     ANNOTATIONDECL = 1U << 6U,
     ANNOTATIONUSAGE = 1U << 7U,
     ERROR_PLACEHOLDER = 1U << 8U,
-    IMPLICIT_THIS = 1U << 9U,
 };
 
 }  // namespace ark::es2panda::ir
@@ -195,21 +194,6 @@ public:
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
         decorators_ = std::move(decorators);
-    }
-
-    [[nodiscard]] bool IsImplicitThis() const noexcept
-    {
-        return (flags_ & IdentifierFlags::IMPLICIT_THIS) != 0;
-    }
-
-    void SetImplicitThis() noexcept
-    {
-        flags_ |= IdentifierFlags::IMPLICIT_THIS;
-    }
-
-    void RemoveImplicitThis() noexcept
-    {
-        flags_ &= ~IdentifierFlags::IMPLICIT_THIS;
     }
 
     [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent) override;
