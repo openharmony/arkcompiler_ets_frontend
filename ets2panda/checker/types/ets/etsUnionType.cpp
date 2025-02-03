@@ -712,11 +712,6 @@ bool ETSUnionType::HasType(Type *type) const
     return false;
 }
 
-bool ETSUnionType::HasNullishType(const ETSChecker *checker) const
-{
-    return HasType(checker->GlobalETSNullType()) || HasType(checker->GlobalETSUndefinedType());
-}
-
 bool ETSUnionType::IsOverlapWith(TypeRelation *relation, Type *type)
 {
     // NOTE(aakmaev): replace this func with intersection type when it will be implemented

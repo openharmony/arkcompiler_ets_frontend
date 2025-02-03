@@ -50,7 +50,6 @@ public:
 
     bool HasObjectType(ETSObjectFlags flag) const;
     bool HasType(Type *type) const;
-    bool HasNullishType(const ETSChecker *checker) const;
 
     bool IsOverlapWith(TypeRelation *relation, Type *type);
 

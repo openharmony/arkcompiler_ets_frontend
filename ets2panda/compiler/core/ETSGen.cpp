@@ -630,8 +630,6 @@ const checker::Type *ETSGen::LoadDefaultValue(const ir::AstNode *node, const che
     if (type->IsETSReferenceType()) {
         if (checker->Relation()->IsSupertypeOf(type, checker->GlobalETSUndefinedType())) {
             LoadAccumulatorUndefined(node);
-        } else if (checker->Relation()->IsSupertypeOf(type, checker->GlobalETSNullType())) {
-            LoadAccumulatorNull(node);
         } else {
             LoadAccumulatorPoison(node, type);
         }

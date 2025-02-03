@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,7 +37,7 @@ interface Listt <T>  {
 class ArrayAsListt<T> implements Listt<T> {
 
     private init(capacity: int, val: T | null): void {
-        this.data = new T[capacity];
+        this.data = new (T | undefined)[capacity];
         for (let i = 0; i < this.data.length; ++i) {
         }
         this.curSize = capacity;
@@ -57,7 +57,7 @@ class ArrayAsListt<T> implements Listt<T> {
 
     public reserve(capacity: int): void {
         if (this.data.length < capacity) {
-            let newData = new T[capacity];
+            let newData = new (T | undefined)[capacity];
             for (let i = 0; i < this.curSize; ++i) {
                newData[i] = this.data[i];
             }
@@ -79,7 +79,7 @@ class ArrayAsListt<T> implements Listt<T> {
     public override pushFront(e: T): void {
         let dst = this.data;
         if (this.curSize == this.data.length) {
-            dst = new T[this.getNewCapacity(this.data.length)];
+            dst = new (T | undefined)[this.getNewCapacity(this.data.length)];
         }
         for (let i = this.curSize; i != 0; --i) {
             dst[i] = this.data[i-1];
@@ -91,7 +91,7 @@ class ArrayAsListt<T> implements Listt<T> {
 
     public override popFront(): T {
         assert (this.curSize > 0): "No data to popFront from ArrayAsList!"
-        let res: T = this.data[0];
+        let res: T = this.data[0] as T;
         for (let i = 1; i < this.curSize; ++i) {
             this.data[i-1] = this.data[i];
         }
@@ -101,7 +101,7 @@ class ArrayAsListt<T> implements Listt<T> {
 
     public override pushBack(e: T): void {
         if (this.curSize == this.data.length) {
-            let newData = new T[this.getNewCapacity(this.data.length)];
+            let newData = new (T | undefined)[this.getNewCapacity(this.data.length)];
             for (let i = 0; i < this.curSize; ++i) {
                 newData[i] = this.data[i];
             }
@@ -114,7 +114,7 @@ class ArrayAsListt<T> implements Listt<T> {
     public override popBack(): T {
         assert (this.curSize > 0): "No data to popBack in ArrayAsList!"
         --this.curSize;
-        return this.data[this.curSize];
+        return this.data[this.curSize] as T;
     }
 
     public override size(): int {
@@ -122,7 +122,7 @@ class ArrayAsListt<T> implements Listt<T> {
     }
 
     public override at(index: int): T {
-        return this.data[index];
+        return this.data[index] as T;
     }
 
     public override has(e: T): boolean {
@@ -140,7 +140,7 @@ class ArrayAsListt<T> implements Listt<T> {
 
     public override forEach(fn: (e: T) => T): Listt<T> | null {
         for (let i = 0; i < this.curSize; ++i) {
-            this.data[i] = fn(this.data[i]);
+            this.data[i] = fn(this.data[i] as T);
         }
         return null;
     }
@@ -148,16 +148,16 @@ class ArrayAsListt<T> implements Listt<T> {
     public override map<U>(fn: (e: T) => U): Listt<U> {
         let res = new ArrayAsListt<U>();
         for (let i = 0; i < this.curSize; ++i) {
-            res.pushBack(fn(this.data[i]));
+            res.pushBack(fn(this.data[i] as T));
         }
         return res;
     }
 
     public override fold(combine: (lhs: T, rhs: T) => T): T | null {
         if (this.curSize > 0) {
-            let res = this.data[0];
+            let res = this.data[0] as T;
             for (let i = 1; i < this.curSize; ++i) {
-                res = combine(res, this.data[i]);
+                res = combine(res, this.data[i] as T);
             }
             return res;
         }
@@ -170,7 +170,7 @@ class ArrayAsListt<T> implements Listt<T> {
     public override foldWith<U>(combine: (lhs: U, rhs: T) => U, initVal: U): U {
         let res = initVal;
         for (let i = 0; i < this.curSize; ++i) {
-            res = combine(res, this.data[i]);
+            res = combine(res, this.data[i] as T);
         }
         return res;
     }
@@ -179,12 +179,12 @@ class ArrayAsListt<T> implements Listt<T> {
         let indicators = new boolean[this.data.length];
         let resAmount = 0;
         for (let i = 0; i < this.curSize; ++i) {
-            indicators[i] = filterCond(this.data[i]);
+            indicators[i] = filterCond(this.data[i] as T);
             if (indicators[i]) {
                 ++resAmount;
             }
         }
-        let res = new T[resAmount];
+        let res = new (T | undefined)[resAmount];
         for (let i = 0, j = 0; i < this.curSize; ++i) {
             if (indicators[i]) {
                 res[j] = this.data[i];
@@ -200,7 +200,7 @@ class ArrayAsListt<T> implements Listt<T> {
         return null;
     }
 
-    private sortPart(arr: T[], l: int, r: int, comparator: (lhs: T, rhs: T) => boolean): void {
+    private sortPart(arr: (T | undefined)[], l: int, r: int, comparator: (lhs: T, rhs: T) => boolean): void {
 
     }
 
@@ -235,6 +235,6 @@ class ArrayAsListt<T> implements Listt<T> {
     }
 
 
-    private data: T[] = [];
+    private data: (T | undefined)[] = [];
     private curSize: int;
 }
