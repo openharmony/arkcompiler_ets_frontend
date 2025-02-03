@@ -14,6 +14,7 @@
  */
 
 #include "checkInfiniteLoop.h"
+#include "ir/expression.h"
 #include "ir/statements/forUpdateStatement.h"
 #include "checker/types/type.h"
 #include "ir/statements/doWhileStatement.h"

@@ -386,6 +386,72 @@ void VariableScope::CheckDirectEval(public_lib::Context *context)
     evalBindings_ = context->contextLiterals.size() - 1;
 }
 
+template <typename T>
+Variable *VariableScope::AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
+{
+    if (!currentVariable) {
+        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::HOIST_VAR)).first->second;
+    }
+
+    switch (currentVariable->Declaration()->Type()) {
+        case DeclType::VAR: {
+            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
+            [[fallthrough]];
+        }
+        case DeclType::PARAM:
+        case DeclType::FUNC: {
+            return currentVariable;
+        }
+        default: {
+            return nullptr;
+        }
+    }
+}
+
+template <typename T>
+Variable *VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                                     ScriptExtension extension)
+{
+    VariableFlags flags = (extension == ScriptExtension::JS) ? VariableFlags::HOIST_VAR : VariableFlags::HOIST;
+
+    if (!currentVariable) {
+        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
+    }
+
+    if (extension != ScriptExtension::JS || IsModuleScope()) {
+        return nullptr;
+    }
+
+    switch (currentVariable->Declaration()->Type()) {
+        case DeclType::VAR:
+        case DeclType::FUNC: {
+            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
+            return currentVariable;
+        }
+        default: {
+            return nullptr;
+        }
+    }
+}
+
+template <typename T>
+Variable *VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *currentVariable,
+                                      Decl *newDecl, VariableFlags flags)
+{
+    ASSERT(!currentVariable);
+    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
+}
+
+template <typename T>
+Variable *VariableScope::AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
+{
+    if (currentVariable) {
+        return nullptr;
+    }
+
+    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::NONE)).first->second;
+}
+
 Variable *ParamScope::AddParam(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags)
 {
     ASSERT(newDecl->IsParameterDecl());
@@ -1097,5 +1163,17 @@ Variable *CatchScope::AddBinding(ArenaAllocator *allocator, Variable *currentVar
     }
 
     return AddLocal(allocator, currentVariable, newDecl, extension);
+}
+
+template <typename T, typename... Args>
+Variable *Scope::PropagateBinding(ArenaAllocator *allocator, util::StringView name, Args &&...args)
+{
+    auto res = bindings_.find(name);
+    if (res == bindings_.end()) {
+        return bindings_.insert({name, allocator->New<T>(std::forward<Args>(args)...)}).first->second;
+    }
+
+    res->second->Reset(std::forward<Args>(args)...);
+    return res->second;
 }
 }  // namespace ark::es2panda::varbinder

@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_VARBINDER_VARBINDER_H
 #define ES2PANDA_VARBINDER_VARBINDER_H
 
+#include "lexer/token/sourceLocation.h"
 #include "varbinder/scope.h"
 
 namespace ark::es2panda::parser {
@@ -38,6 +39,9 @@ class TSFunctionType;
 class ThisExpression;
 class MemberExpression;
 class ClassStaticBlock;
+class Identifier;
+class TSTypeAliasDeclaration;
+class ClassProperty;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::public_lib {

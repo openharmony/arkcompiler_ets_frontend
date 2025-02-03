@@ -23,6 +23,24 @@
 #include "ir/expressions/identifier.h"
 #include "ir/module/importSpecifier.h"
 
+namespace ark::es2panda::ir {
+class ETSImportDeclaration;
+class AstNode;
+class Identifier;
+class ObjectExpression;
+class ETSTypeReference;
+class MethodDefinition;
+class AnnotationUsage;
+class StringLiteral;
+class ETSReExportDeclaration;
+class TSEnumDeclaration;
+class TSQualifiedName;
+class ClassElement;
+class ImportSpecifier;
+class ETSNewClassInstanceExpression;
+
+}  // namespace ark::es2panda::ir
+
 namespace ark::es2panda::varbinder {
 using AliasesByExportedNames = ArenaMap<util::StringView, util::StringView>;
 using ModulesToExportedNamesWithAliases = ArenaMap<util::StringView, AliasesByExportedNames>;
@@ -180,11 +198,7 @@ public:
         defaultImports_ = std::move(defaultImports);
     }
 
-    void AddDynamicImport(ir::ETSImportDeclaration *import)
-    {
-        ASSERT(import->Language().IsDynamic());
-        dynamicImports_.push_back(import);
-    }
+    void AddDynamicImport(ir::ETSImportDeclaration *import);
 
     const ArenaVector<ir::ETSImportDeclaration *> &DynamicImports() const
     {
@@ -232,53 +246,17 @@ public:
                                     const ir::StringLiteral *const importPath);
 
     bool AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
-                                 util::StringView const &value)
-    {
-        if (auto foundMap = selectiveExportAliasMultimap_.find(path); foundMap != selectiveExportAliasMultimap_.end()) {
-            return foundMap->second.insert({key, value}).second;
-        }
-
-        ArenaMap<util::StringView, util::StringView> map(Allocator()->Adapter());
-        bool insertResult = map.insert({key, value}).second;
-        selectiveExportAliasMultimap_.insert({path, map});
-        return insertResult;
-    }
+                                 util::StringView const &value);
 
     [[nodiscard]] const ModulesToExportedNamesWithAliases &GetSelectiveExportAliasMultimap() const noexcept
     {
         return selectiveExportAliasMultimap_;
     }
 
-    util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName)
-    {
-        if (auto relatedMap = selectiveExportAliasMultimap_.find(pathAsKey);
-            relatedMap != selectiveExportAliasMultimap_.end()) {
-            if (auto item = relatedMap->second.find(aliasName); item != relatedMap->second.end()) {
-                return item->second;
-            }
-        }
-
-        return "";
-    }
+    util::StringView FindNameInAliasMap(const util::StringView &pathAsKey, const util::StringView &aliasName);
 
     util::StringView FindLocalNameForImport(const ir::ImportSpecifier *const importSpecifier,
-                                            util::StringView &imported, const ir::StringLiteral *const importPath)
-    {
-        if (importSpecifier->Local() != nullptr) {
-            auto checkImportPathAndName = [&importPath, &imported](const auto &savedSpecifier) {
-                return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
-            };
-            if (!std::any_of(importSpecifiers_.begin(), importSpecifiers_.end(), checkImportPathAndName)) {
-                TopScope()->EraseBinding(imported);
-            }
-
-            importSpecifiers_.emplace_back(importPath->Str(), imported);
-
-            return importSpecifier->Local()->Name();
-        }
-
-        return imported;
-    }
+                                            util::StringView &imported, const ir::StringLiteral *const importPath);
 
 private:
     void BuildClassDefinitionImpl(ir::ClassDefinition *classDef);

@@ -649,6 +649,19 @@ endif()
 panda_add_sanitizers(TARGET es2panda-lib SANITIZERS
   ${PANDA_SANITIZERS_LIST})
 
+# artifacts size with sanitizers and enabled precompiled headers is too big
+if(NOT PANDA_USE_PREBUILT_TARGETS AND NOT PANDA_SANITIZERS_LIST)
+  target_precompile_headers(es2panda-lib
+      PRIVATE
+          util/ustring.h
+          ir/astNode.h
+          compiler/core/pandagen.h
+          compiler/core/ETSGen.h
+          checker/TSchecker.h
+          public/public.h
+  )
+endif()
+
 SET(ES2PANDA_LIB_DIR public)
 SET(LSP_LIB "es2panda_lsp")
 add_subdirectory(${ES2PANDA_LIB_DIR})

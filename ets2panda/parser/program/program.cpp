@@ -15,6 +15,7 @@
 
 #include "program.h"
 
+#include "generated/signatures.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
 #include "ir/astDump.h"
