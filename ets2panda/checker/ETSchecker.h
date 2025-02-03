@@ -519,8 +519,10 @@ public:
     std::vector<util::StringView> GetNameForSynteticObjectType(const util::StringView &source);
     template <checker::PropertyType TYPE>
     void BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleObjType, ir::ETSImportDeclaration *importDecl,
-                                         const varbinder::Scope::VariableMap &bindings);
-    util::StringView FindPropNameForNamespaceImport(const util::StringView &originalName);
+                                         const varbinder::Scope::VariableMap &bindings,
+                                         const util::StringView &importPath);
+    util::StringView FindPropNameForNamespaceImport(const util::StringView &originalName,
+                                                    const util::StringView &importPath);
     void SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,
                                       ir::ETSImportDeclaration *importDecl = nullptr);
     void SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType);

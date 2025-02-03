@@ -14,8 +14,10 @@
  */
 
 function test_func(): void {}
+function aliased_func(): void {}
 
 let msg = "hello";
+let aliasedMsg = "goodbye";
 
 class TestClass {
     test_member = "test_member";
@@ -34,5 +36,7 @@ type aliased = AliasClass;
 export {
     test_func as func, msg,
     TestClass as tc,
-    aliased
+    aliased,
+    aliasedMsg as amsg,
+    aliased_func as afunc
 }
