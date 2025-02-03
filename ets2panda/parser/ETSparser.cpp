@@ -933,11 +933,6 @@ std::optional<lexer::SourcePosition> ETSParser::GetDefaultParamPosition(ArenaVec
 
 ir::TypeNode *ETSParser::ParseLiteralIdent(TypeAnnotationParsingOptions *options)
 {
-    if (const auto keyword = Lexer()->GetToken().KeywordType();
-        keyword == lexer::TokenType::KEYW_IN || keyword == lexer::TokenType::KEYW_OUT) {
-        return ParseWildcardType(options);
-    }
-
     if (Lexer()->GetToken().IsDefinableTypeName()) {
         return GetTypeAnnotationOfPrimitiveType(Lexer()->GetToken().KeywordType(), options);
     }
