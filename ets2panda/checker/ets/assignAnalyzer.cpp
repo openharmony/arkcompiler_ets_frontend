@@ -190,8 +190,7 @@ void AssignAnalyzer::Analyze(const ir::AstNode *node)
     firstNonGlobalAdr_ = nextAdr_;
     AnalyzeNodes(node);
     if (numErrors_ > 0) {
-        checker_->LogTypeError("There were errors during assign analysis (" + std::to_string(numErrors_) + ")",
-                               lastWarningPos_);
+        checker_->LogError(diagnostic::ANALYSIS_ERRORS, {(size_t)numErrors_}, lastWarningPos_);
         lastWarningPos_ = lexer::SourcePosition();
     }
 }

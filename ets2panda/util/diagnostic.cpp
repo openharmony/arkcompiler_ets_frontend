@@ -91,10 +91,12 @@ std::string Format(std::string_view formatString, const std::vector<std::string>
             break;
         }
         result.append(formatString.substr(pos, nextPos - pos));
+        ASSERT_PRINT(paramIndex < params.size(),
+                     "Too few params (" + std::to_string(params.size()) + ") given for " + std::string(formatString));
         result.append(params.at(paramIndex++));
         pos = nextPos + 2U;
     }
-    ASSERT(paramIndex == params.size());
+    ASSERT_PRINT(paramIndex == params.size(), "Placeholder and param count mismatch in " + std::string(formatString));
     result.append(formatString.substr(pos));
     return result;
 }

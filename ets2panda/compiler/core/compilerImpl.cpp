@@ -250,6 +250,7 @@ static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGet
     context.emitter = &emitter;
 
     varbinder->SetContext(&context);
+    context.checker->Initialize(varbinder);
 
     parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
 
@@ -264,10 +265,8 @@ static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGet
         if (unit.options.IsDumpAst()) {
             std::cout << program.Dump() << std::endl;
         }
-    } else {
-        if (!RunPhases(context, getPhases(unit.ext), program)) {
-            return nullptr;
-        }
+    } else if (!RunPhases(context, getPhases(unit.ext), program)) {
+        return nullptr;
     }
 
     if (context.diagnosticEngine->IsAnyError()) {

@@ -44,6 +44,7 @@
 #include "checker/ets/boxingConverter.h"
 #include "checker/ets/unboxingConverter.h"
 #include "util/helpers.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::checker {
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
@@ -54,12 +55,12 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     expr->SetTsType(conditionType);
 
     if (conditionType == nullptr || (!conditionType->IsTypeError() && !conditionType->IsConditionalExprType())) {
-        LogTypeError("Condition must be of possible condition type", expr->Start());
+        LogError(diagnostic::NOT_COND_TYPE, {}, expr->Start());
         return;
     }
 
     if (conditionType->IsETSVoidType()) {
-        LogTypeError("An expression of type 'void' cannot be tested for truthiness", expr->Start());
+        LogError(diagnostic::VOID_IN_LOGIC, {}, expr->Start());
         return;
     }
 
@@ -78,7 +79,7 @@ bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
         return false;
     }
 
-    LogTypeError("Value is possibly nullish.", expr->Start());
+    LogError(diagnostic::POSSIBLY_NULLISH, {}, expr->Start());
     return false;
 }
 
@@ -763,7 +764,7 @@ bool ETSChecker::CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir
             if (CheckAmbientAnnotationFieldInitializerValue(init, expected)) {
                 break;
             }
-            LogTypeError("The initial value does not match the expected value.", init->Start());
+            LogError(diagnostic::AMBIENT_ANNOT_FIELD_INIT_MISMATCH, {}, init->Start());
             return false;
         }
         default:
@@ -814,7 +815,7 @@ bool ETSChecker::CheckAmbientAnnotationFieldInitializerValue(ir::Expression *ini
         case ir::AstNodeType::UNARY_EXPRESSION: {
             if (!IsValidateUnaryExpression(init->AsUnaryExpression()->OperatorType()) ||
                 !IsValidateUnaryExpression(expected->AsUnaryExpression()->OperatorType())) {
-                LogTypeError("Illegal unary operator.", init->Start());
+                LogError(diagnostic::ILLEGAL_UNARY_OP, {}, init->Start());
                 return false;
             }
             if (init->AsUnaryExpression()->OperatorType() != expected->AsUnaryExpression()->OperatorType()) {
@@ -842,37 +843,31 @@ void ETSChecker::CheckAmbientAnnotation(ir::AnnotationDeclaration *annoImpl, ir:
         auto fieldName = field->Id()->Name();
         auto fieldDeclIter = fieldMap.find(fieldName);
         if (fieldDeclIter == fieldMap.end()) {
-            LogTypeError({"Field '", fieldName, "' is not defined in the ambient annotation '",
-                          annoDecl->GetBaseName()->Name(), "'."},
-                         field->Start());
+            LogError(diagnostic::AMBIENT_ANNOT_IMPL_OF_UNDEFINED_FIELD, {fieldName, annoDecl->GetBaseName()->Name()},
+                     field->Start());
             continue;
         }
 
         auto *fieldDecl = fieldDeclIter->second;
         fieldDecl->Check(this);
         if (!Relation()->IsIdenticalTo(field->TsType(), fieldDecl->TsType())) {
-            LogTypeError({"Field '", fieldName, "' has a type mismatch with the ambient annotation '",
-                          annoDecl->GetBaseName()->Name(), "'."},
-                         field->TypeAnnotation()->Start());
+            LogError(diagnostic::AMBIENT_ANNOT_FIELD_TYPE_MISMATCH, {fieldName, annoDecl->GetBaseName()->Name()},
+                     field->TypeAnnotation()->Start());
         }
 
         bool hasValueMismatch = (field->Value() == nullptr) != (fieldDecl->Value() == nullptr);
         bool initializerInvalid = field->Value() != nullptr && fieldDecl->Value() != nullptr &&
                                   !CheckAmbientAnnotationFieldInitializer(field->Value(), fieldDecl->Value());
         if (hasValueMismatch || initializerInvalid) {
-            LogTypeError({"Initializer for field '", fieldName,
-                          "' does not match the expected definition in the ambient annotation '",
-                          annoDecl->GetBaseName()->Name(), "'."},
-                         field->Start());
+            LogError(diagnostic::AMBIENT_ANNOT_FIELD_MISMATCH, {fieldName, annoDecl->GetBaseName()->Name()},
+                     field->Start());
         }
         fieldMap.erase(fieldDeclIter);
     }
 
     for (auto it : fieldMap) {
-        LogTypeError({"Field '", it.second->Key()->AsIdentifier()->Name(), "' in annotation '",
-                      annoDecl->GetBaseName()->Name(),
-                      "' is declared in the ambient declaration but missing in the implementation."},
-                     annoImpl->Start());
+        LogError(diagnostic::AMBIENT_ANNOT_FIELD_MISSING_IMPL,
+                 {it.second->Key()->AsIdentifier()->Name(), annoDecl->GetBaseName()->Name()}, annoImpl->Start());
     }
 }
 
@@ -911,9 +906,7 @@ void ETSChecker::CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &anno
         CheckAnnotationRetention(anno);
         auto annoName = anno->GetBaseName()->Name();
         if (seenAnnotations.find(annoName) != seenAnnotations.end()) {
-            LogTypeError({"Duplicate annotations are not allowed. The annotation '", annoName,
-                          "' has already been applied to this element."},
-                         anno->Start());
+            LogError(diagnostic::ANNOT_DUPLICATE, {annoName}, anno->Start());
         }
         seenAnnotations.insert(annoName);
     }
@@ -983,10 +976,7 @@ void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
 {
     // typeAnnotation check
     if (!ValidateAnnotationPropertyType(property->TsType())) {
-        LogTypeError(
-            "Invalid annotation field type. Only numeric, boolean, string, enum, or "
-            "arrays of these types are permitted for annotation fields.",
-            property->Start());
+        LogError(diagnostic::ANNOT_FIELD_INVALID_TYPE, {}, property->Start());
     }
 
     // The type of the Initializer has been check in the parser,
@@ -995,7 +985,7 @@ void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
     if (property->Value() != nullptr &&
         ((property->Value()->IsMemberExpression() && !property->TsType()->IsETSEnumType()) ||
          property->Value()->IsIdentifier())) {
-        LogTypeError("Invalid value for annotation field, expected a constant literal.", property->Value()->Start());
+        LogError(diagnostic::ANNOTATION_FIELD_NONLITERAL, {}, property->Value()->Start());
     }
 }
 
@@ -1003,8 +993,7 @@ void ETSChecker::CheckSinglePropertyAnnotation(ir::AnnotationUsage *st, ir::Anno
 {
     auto *param = st->Properties().at(0)->AsClassProperty();
     if (annoDecl->Properties().size() > 1) {
-        LogTypeError({"Annotation '", st->GetBaseName()->Name(), "' requires multiple fields to be specified."},
-                     st->Start());
+        LogError(diagnostic::ANNOT_MULTIPLE_FIELD, {st->GetBaseName()->Name()}, st->Start());
     }
     auto singleField = annoDecl->Properties().at(0)->AsClassProperty();
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -1020,9 +1009,7 @@ void ETSChecker::ProcessRequiredFields(ArenaUnorderedMap<util::StringView, ir::C
 {
     for (const auto &entry : fieldMap) {
         if (entry.second->Value() == nullptr) {
-            checker->LogTypeError({"The required field '", entry.first,
-                                   "' must be specified. Fields without default values cannot be omitted."},
-                                  st->Start());
+            checker->LogError(diagnostic::ANNOT_FIELD_NO_VAL, {entry.first}, st->Start());
             continue;
         }
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -1038,9 +1025,7 @@ void ETSChecker::CheckMultiplePropertiesAnnotation(ir::AnnotationUsage *st, util
         auto *param = it->AsClassProperty();
         auto result = fieldMap.find(param->Id()->Name());
         if (result == fieldMap.end()) {
-            LogTypeError({"The parameter '", param->Id()->Name(),
-                          "' does not match any declared property in the annotation '", baseName, "'."},
-                         param->Start());
+            LogError(diagnostic::ANNOT_PROP_UNDEFINED, {param->Id()->Name(), baseName}, param->Start());
             continue;
         }
 
@@ -1439,9 +1424,8 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         bool const rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
         if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);
-            LogTypeError(
-                {"Type '", argumentType, "' is not compatible with type '", parameterType, "' at index ", index + 1},
-                arrowFuncExpr->Start());
+            LogError(diagnostic::LAMBDA_TYPE_MISMATCH, {argumentType, parameterType, index + 1},
+                     arrowFuncExpr->Start());
             return false;
         }
 
@@ -1500,7 +1484,7 @@ void ETSChecker::CheckExceptionClauseType(const std::vector<checker::ETSObjectTy
     for (auto *exception : exceptions) {
         this->Relation()->IsIdenticalTo(clauseType, exception);
         if (this->Relation()->IsTrue()) {
-            LogTypeError("Redeclaration of exception type", catchClause->Start());
+            LogError(diagnostic::EXCEPTION_REDECLARATION, {}, catchClause->Start());
         }
     }
 }

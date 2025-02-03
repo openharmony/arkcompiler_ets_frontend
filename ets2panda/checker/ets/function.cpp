@@ -93,7 +93,7 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
         if (std::find(typeParams.begin(), typeParams.end(), originalTparam) != typeParams.end() &&
             substitution->count(originalTparam) == 0) {
             if (!IsReferenceType(argumentType)) {
-                LogTypeError({argumentType, " is not compatible with type ", tparam}, tparam->GetDeclNode()->Start());
+                LogError(diagnostic::INFERENCE_TYPE_INCOMPAT, {tparam, argumentType}, tparam->GetDeclNode()->Start());
                 return false;
             }
 
@@ -256,9 +256,7 @@ Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, co
 {
     if (signature->MinArgCount() != 0) {
         if (throwError) {
-            LogTypeError(util::DiagnosticMessageParams {"No Matching Parameterless Constructor, parameter count ",
-                                                        signature->MinArgCount()},
-                         pos);
+            LogError(diagnostic::NO_SUCH_PARAMLESS_CTOR_2, {signature->MinArgCount()}, pos);
         }
         return nullptr;
     }
@@ -311,7 +309,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             SetArrayPreferredTypeForNestedMemberExpressions(argument->AsMemberExpression(), paramType);
         } else if (argument->IsSpreadElement()) {
             if (reportError) {
-                LogTypeError("Spread argument cannot be passed for ordinary parameter.", argument->Start());
+                LogError(diagnostic::SPREAD_ONTO_SINGLE_PARAM, {}, argument->Start());
             }
             return false;
         }
@@ -331,7 +329,7 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         }
 
         if (argument->IsIdentifier() && ValidateArgumentAsIdentifier(argument->AsIdentifier())) {
-            LogTypeError("Class name can't be the argument of function or method.", argument->Start());
+            LogError(diagnostic::ARG_IS_CLASS_ID, {}, argument->Start());
             return false;
         }
 
@@ -387,7 +385,7 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
 
         if (restCount > 1U) {
             if (reportError) {
-                LogTypeError("Spread argument for the rest parameter can be only one.", argument->Start());
+                LogError(diagnostic::MULTIPLE_SPREADS, {}, argument->Start());
             }
             return false;
         }
@@ -432,7 +430,7 @@ Signature *ETSChecker::ValidateSignature(
 
     if (argCount < signature->MinArgCount() || (argCount > signature->ArgCount() && !hasRestParameter)) {
         if (reportError) {
-            LogTypeError({"Expected ", signature->MinArgCount(), " arguments, got ", argCount, "."}, pos);
+            LogError(diagnostic::PARAM_COUNT_MISMATCH, {signature->MinArgCount(), argCount}, pos);
         }
         return nullptr;
     }
@@ -469,7 +467,7 @@ Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> 
             return concreteSig;
         }
     }
-    LogTypeError("No matching parameterless constructor", pos);
+    LogError(diagnostic::NO_SUCH_PARAMLESS_CTOR, {}, pos);
     return nullptr;
 }
 
@@ -561,9 +559,7 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
 
     if (compatibleSignatures.empty() && notVisibleSignature != nullptr &&
         ((resolveFlags & TypeRelationFlag::NO_THROW) == 0)) {
-        LogTypeError(
-            {"Signature ", notVisibleSignature->Function()->Id()->Name(), notVisibleSignature, " is not visible here."},
-            pos);
+        LogError(diagnostic::SIG_INVISIBLE, {notVisibleSignature->Function()->Id()->Name(), notVisibleSignature}, pos);
     }
     return compatibleSignatures;
 }
@@ -576,7 +572,7 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
     Signature *mostSpecificSignature = ChooseMostSpecificSignature(compatibleSignatures, argTypeInferenceRequired, pos);
 
     if (mostSpecificSignature == nullptr) {
-        LogTypeError({"Reference to ", compatibleSignatures.front()->Function()->Id()->Name(), " is ambiguous"}, pos);
+        LogError(diagnostic::AMBIGUOUS_FUNC_REF, {compatibleSignatures.front()->Function()->Id()->Name()}, pos);
         return nullptr;
     }
 
@@ -618,7 +614,7 @@ void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
 
             if (index == arguments.size() - 1U) {
                 msg += ")";
-                LogTypeError({"No matching ", signatureKind, " signature for ", msg.c_str()}, pos);
+                LogError(diagnostic::NO_MATCHING_SIG, {signatureKind, msg.c_str()}, pos);
                 return;
             }
 
@@ -626,7 +622,7 @@ void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
         }
     }
 
-    LogTypeError({"No matching ", signatureKind, " signature"}, pos);
+    LogError(diagnostic::NO_MATCHING_SIG_2, {signatureKind}, pos);
 }
 
 Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
@@ -717,9 +713,7 @@ void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature
         } else if (sigType->IsETSObjectType() && mostSpecificType->IsETSObjectType() &&
                    !Relation()->IsAssignableTo(mostSpecificType, sigType)) {
             auto funcName = sig->Function()->Id()->Name();
-            LogTypeError({"Call to `", funcName, "` is ambiguous as `2` versions of `", funcName, "` are available: `",
-                          funcName, prevSig, "` and `", funcName, sig, "`"},
-                         pos);
+            LogError(diagnostic::AMBIGUOUS_CALL, {funcName, funcName, funcName, prevSig, funcName, sig}, pos);
         }
     }
 }
@@ -790,7 +784,7 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
         if (signatures.size() > 1 && std::any_of(signatures.begin(), signatures.end(), [signatures](const auto *param) {
                 return param->RestVar()->TsType() != signatures.front()->RestVar()->TsType();
             })) {
-            LogTypeError({"Call to `", signatures.front()->Function()->Id()->Name(), "` is ambiguous "}, pos);
+            LogError(diagnostic::AMBIGUOUS_CALL_2, {signatures.front()->Function()->Id()->Name()}, pos);
             return nullptr;
         }
         // Else return the signature with the rest parameter
@@ -1008,10 +1002,9 @@ void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType 
     Relation()->SignatureIsIdenticalTo(func->CallSignatures()[0], overload->CallSignatures()[0]);
     if (Relation()->IsTrue() && func->CallSignatures()[0]->GetSignatureInfo()->restVar ==
                                     overload->CallSignatures()[0]->GetSignatureInfo()->restVar) {
-        LogTypeError("Function " + func->Name().Mutf8() + " is already declared.", currentFunc->Start());
+        LogError(diagnostic::FUNCTION_REDECL_BY_TYPE_SIG, {func->Name().Mutf8()}, currentFunc->Start());
     } else if (HasSameAssemblySignatures(func, overload)) {
-        LogTypeError("Function " + func->Name().Mutf8() + " with this assembly signature already declared.",
-                     currentFunc->Start());
+        LogError(diagnostic::FUNCTION_REDECL_BY_ASM_SIG, {func->Name().Mutf8()}, currentFunc->Start());
     }
 }
 
@@ -1078,8 +1071,7 @@ static bool AppendSignatureInfoParam(ETSChecker *checker, SignatureInfo *sigInfo
             return param->Ident()->TsType();
         }
         if (!param->Ident()->IsErrorPlaceHolder()) {
-            checker->LogTypeError({"The type of parameter '", param->Ident()->Name(), "' cannot be inferred"},
-                                  param->Start());
+            checker->LogError(diagnostic::INFER_FAILURE_FUNC_PARAM, {param->Ident()->Name()}, param->Start());
         }
         return checker->GlobalTypeError();
     }());
@@ -1134,7 +1126,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::TSTypeParameterDeclaration *
 void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
 {
     if (func->Params().size() >= 2U) {
-        LogTypeError("0 or 1 argument are allowed", func->Start());
+        LogError(diagnostic::MAIN_INVALID_ARG_COUNT, {}, func->Start());
         return;
     }
 
@@ -1142,12 +1134,12 @@ void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
         auto const *const param = func->Params()[0]->AsETSParameterExpression();
 
         if (param->IsRestParameter()) {
-            LogTypeError("Rest parameter is not allowed in the 'main' function.", param->Start());
+            LogError(diagnostic::MAIN_WITH_REST, {}, param->Start());
         }
 
         const auto paramType = param->Variable()->TsType();
         if (!paramType->IsETSArrayType() || !paramType->AsETSArrayType()->ElementType()->IsETSStringType()) {
-            LogTypeError("Only 'string[]' type argument is allowed.", param->Start());
+            LogError(diagnostic::MAIN_PARAM_NOT_ARR_OF_STRING, {}, param->Start());
         }
     }
 }
@@ -1287,11 +1279,9 @@ bool ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
     if ((source->Function()->IsRethrowing() && target->Function()->IsThrowing()) ||
         (!source->Function()->IsThrowing() &&
          (target->Function()->IsRethrowing() || target->Function()->IsThrowing()))) {
-        LogTypeError(
-            "A method that overrides or hides another method cannot change throw or rethrow clauses of the "
-            "overridden "
-            "or hidden method.",
-            target->Function()->Body() == nullptr ? target->Function()->Start() : target->Function()->Body()->Start());
+        LogError(diagnostic::OVERRIDE_OR_SHADOWER_CHANGES_ERROR_HANDLING_CLAUSE, {},
+                 target->Function()->Body() == nullptr ? target->Function()->Start()
+                                                       : target->Function()->Body()->Start());
         return false;
     }
     return true;
@@ -1375,10 +1365,10 @@ void ETSChecker::ReportOverrideError(Signature *signature, Signature *overridden
         }
     }
 
-    LogTypeError({signature->Function()->Id()->Name(), signature, " in ", signature->Owner(), " cannot override ",
-                  overriddenSignature->Function()->Id()->Name(), overriddenSignature, " in ",
-                  overriddenSignature->Owner(), " because ", reason},
-                 signature->Function()->Start());
+    LogError(diagnostic::CANNOT_OVERRIDE,
+             {signature->Function()->Id()->Name(), signature, signature->Owner(),
+              overriddenSignature->Function()->Id()->Name(), overriddenSignature, overriddenSignature->Owner(), reason},
+             signature->Function()->Start());
 }
 
 bool CheckTypeParameterConstraints(ArenaVector<Type *> typeParamList1, ArenaVector<Type *> typeParamList2,
@@ -1448,8 +1438,7 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
         if (signature->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
             Relation()->IsIdenticalTo(itSubst->Owner(), GlobalETSObjectType()) &&
             !itSubst->HasSignatureFlag(SignatureFlags::PRIVATE)) {
-            LogTypeError("Cannot override non-private method of the class Object from an interface.",
-                         signature->Function()->Start());
+            LogError(diagnostic::INTERFACE_OVERRIDES_OBJECT, {}, signature->Function()->Start());
             return false;
         }
 
@@ -1486,9 +1475,8 @@ void ETSChecker::CheckOverride(Signature *signature)
     lexer::SourcePosition signaturePos = signature->Function()->Start();
     lexer::SourcePosition pos = signaturePos.line == 0 && signaturePos.index == 0 ? ownerPos : signaturePos;
     if (!isOverriding && signature->Function()->IsOverride()) {
-        LogTypeError({"Method ", signature->Function()->Id()->Name(), signature, " in ", signature->Owner(),
-                      " not overriding any method"},
-                     pos);
+        LogError(diagnostic::OVERRIDE_DOESNT_OVERRIDE,
+                 {signature->Function()->Id()->Name(), signature, signature->Owner()}, pos);
     }
 }
 
@@ -1510,7 +1498,7 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
 bool ETSChecker::NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos)
 {
     if (signature == nullptr) {
-        LogTypeError("Signature is not available here.", pos);
+        LogError(diagnostic::SIG_UNAVAILABLE, {}, pos);
         return false;
     }
 
@@ -1521,7 +1509,7 @@ bool ETSChecker::NeedToVerifySignatureVisibility(Signature *signature, const lex
 
 void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr,
                                                 Signature *signature, const lexer::SourcePosition &pos,
-                                                char const *errorMessage)
+                                                const DiagnosticInfo &errorInfo)
 {
     if (!NeedToVerifySignatureVisibility(signature, pos)) {
         return;
@@ -1537,7 +1525,7 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
         if (callExpr->Callee()->IsMemberExpression() &&
             callExpr->Callee()->AsMemberExpression()->Object()->IsThisExpression() &&
             signature->Function()->IsPrivate() && !enclosingFunc->IsPrivate()) {
-            LogTypeError("Cannot reference 'this' in this context.", enclosingFunc->Start());
+            LogError(diagnostic::THIS_OUTSIDE_METHOD_CTX, {}, enclosingFunc->Start());
         }
 
         if (containingClass == declNode->AsTSInterfaceDeclaration()->TsType() && isContainingSignatureInherited) {
@@ -1557,11 +1545,12 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
         return;
     }
 
-    if (errorMessage == nullptr) {
-        LogTypeError({"Signature ", signature->Function()->Id()->Name(), signature, " is not visible here."}, pos);
+    const auto [diagnostic, diagnosticParams] = errorInfo;
+    if (diagnostic == std::nullopt) {
+        LogError(diagnostic::SIG_INVISIBLE, {signature->Function()->Id()->Name(), signature}, pos);
         return;
     }
-    LogTypeError(errorMessage, pos);
+    LogError(diagnostic.value(), diagnosticParams, pos);
 }
 
 void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Variable *const var)
@@ -2024,7 +2013,7 @@ void ETSChecker::EnsureValidCurlyBrace(ir::CallExpression *callExpr)
         return;
     }
 
-    LogTypeError("No matching call signature with trailing lambda", callExpr->Start());
+    LogError(diagnostic::NO_SUCH_SIG_WITH_TRAILING_LAMBDA, {}, callExpr->Start());
 }
 
 ETSObjectType *ETSChecker::GetCachedFunctionalInterface(ir::ETSFunctionType *type)

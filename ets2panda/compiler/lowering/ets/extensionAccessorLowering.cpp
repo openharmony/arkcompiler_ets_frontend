@@ -27,7 +27,7 @@ bool ResolveAssignmentExpressionToExtensionAccessorCall(checker::ETSChecker *che
                                                         ir::MemberExpression *expr)
 {
     if (!assignExpr->Parent()->IsExpressionStatement()) {
-        checker->LogTypeError("Extension getter in wrong usage", assignExpr->Start());
+        checker->LogError(diagnostic::EXTENSION_GETTER_INVALID_CTX, {}, assignExpr->Start());
         return false;
     }
 

@@ -157,7 +157,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 
     auto *const method = sourceType->GetProperty(compiler::Signatures::ITERATOR_METHOD, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogTypeError("Object type doesn't have proper iterator method.", position);
+        checker->LogError(diagnostic::MISSING_ITERATOR_METHOD, {}, position);
         return nullptr;
     }
 
@@ -167,11 +167,11 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, position, "iterator",
                                                                 checker::TypeRelationFlag::NO_THROW);
     if (signature == nullptr) {
-        checker->LogTypeError("Cannot find iterator method with the required signature.", position);
+        checker->LogError(diagnostic::MISSING_ITERATOR_METHOD_WITH_SIG, {}, position);
         return nullptr;
     }
     checker->ValidateSignatureAccessibility(sourceType, nullptr, signature, position,
-                                            "Iterator method is not visible here.");
+                                            {diagnostic::INVISIBLE_ITERATOR, {}});
 
     ES2PANDA_ASSERT(signature->Function() != nullptr);
 
@@ -186,7 +186,7 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     auto *const nextMethod =
         signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
     if (nextMethod == nullptr || !nextMethod->HasFlag(varbinder::VariableFlags::METHOD)) {
-        checker->LogTypeError("Iterator object doesn't have proper next method.", position);
+        checker->LogError(diagnostic::ITERATOR_MISSING_NEXT, {}, position);
         return nullptr;
     }
 
@@ -224,7 +224,7 @@ bool ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checke
         return true;
     }
 
-    checker->LogTypeError("Iterator method must return an object which implements Iterator<T>", position);
+    checker->LogError(diagnostic::ITERATOR_DOESNT_RETURN_ITERABLE, {}, position);
     return false;
 }
 

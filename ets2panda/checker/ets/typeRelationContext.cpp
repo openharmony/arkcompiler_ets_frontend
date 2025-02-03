@@ -33,10 +33,9 @@ bool AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
                                currentArrayElem->Start(), {}, TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.06-CPP,G.FMT.02-CPP) project code style
                  .IsAssignable()) {
-            relation->GetChecker()->LogTypeError(
-                {"Array element at index ", index, " with type '", currentArrayElementType,
-                 "' is not compatible with the target array element type '", target->ElementType(), "'"},
-                currentArrayElem->Start());
+            relation->GetChecker()->LogError(diagnostic::ARRAY_ELEMENT_INIT_TYPE_INCOMPAT,
+                                             {index, currentArrayElementType, target->ElementType()},
+                                             currentArrayElem->Start());
             ok = false;
         }
     }
@@ -136,8 +135,8 @@ static void CheckInstantiationConstraints(ETSChecker *checker, ArenaVector<Type 
         ES2PANDA_ASSERT(typeArg->IsETSReferenceType() || typeArg->IsETSVoidType());
         auto constraint = typeParam->GetConstraintType()->Substitute(relation, substitution);
         if (!relation->IsAssignableTo(typeArg, constraint)) {
-            checker->LogTypeError(  // NOTE(vpukhov): refine message
-                {"Type ", typeArg, " is not assignable to", " constraint type ", constraint}, pos);
+            // NOTE(vpukhov): refine message
+            checker->LogError(diagnostic::INIT_NOT_ASSIGNABLE, {typeArg, constraint}, pos);
         }
     }
 }

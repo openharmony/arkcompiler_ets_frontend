@@ -38,7 +38,7 @@ switch (arg){
 
 /* @@? 31:10 Error TypeError: Switch case type 'int' is not comparable to discriminant type 'String'  */
 /* @@? 33:10 Error TypeError: Switch case type 'null|Int' is not comparable to discriminant type 'String'  */
-/* @@? 35:10 Error TypeError: Class name "A" used in the wrong context */
+/* @@? 35:10 Error TypeError: Class name 'A' used in the wrong context */
 /* @@? 35:10 Error TypeError: Switch case type 'A' is not comparable to discriminant type 'String'  */
 /* @@? 33:5 Error TypeError: Constant expression required */
 /* @@? 35:5 Error TypeError: Constant expression required */

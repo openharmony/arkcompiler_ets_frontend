@@ -68,7 +68,7 @@ void ETSChecker::CheckObjectLiteralKeys(const ArenaVector<ir::Expression *> &pro
         // number kind only used here
         auto propName = propKey->AsIdentifier()->Name();
         if (names.find(propName) != names.end()) {
-            LogTypeError("An object literal cannot have multiple properties with the same name.", property->Start());
+            LogError(diagnostic::OBJ_LIT_PROPERTY_REDECLARATION, {}, property->Start());
         }
         names.insert(propName);
     }

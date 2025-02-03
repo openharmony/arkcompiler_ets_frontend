@@ -122,17 +122,14 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
                          // CC-OFFNXT(G.FMT.02) project code style
                          checker::TypeRelationFlag::NO_BOXING | checker::TypeRelationFlag::NO_THROW)
                      .IsAssignable()) {
-                checker->LogTypeError({"Switch case type '", caseType, "' is not comparable to discriminant type '",
-                                       comparedExprType, "'"},
-                                      test_->Start());
+                checker->LogError(diagnostic::SWITCH_CASE_TYPE_INCOMPARABLE, {caseType, comparedExprType},
+                                  test_->Start());
                 return;
             }
         }
 
         if (!validCaseType) {
-            checker->LogTypeError(
-                {"Switch case type '", caseType, "' is not comparable to discriminant type '", comparedExprType, "'"},
-                test_->Start());
+            checker->LogError(diagnostic::SWITCH_CASE_TYPE_INCOMPARABLE, {caseType, comparedExprType}, test_->Start());
             return;
         }
     } else {

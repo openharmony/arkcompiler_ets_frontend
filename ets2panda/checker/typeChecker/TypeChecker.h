@@ -42,6 +42,12 @@ protected:
         checker_->LogTypeError(list, pos);
     }
 
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
+                  const lexer::SourcePosition &pos)
+    {
+        checker_->LogError(diagnostic, diagnosticParams, pos);
+    }
+
 private:
     Checker *const checker_;
 };

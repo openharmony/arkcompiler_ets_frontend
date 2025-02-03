@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -86,7 +86,7 @@ void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type 
 
             argumentType = checker->MaybeBoxInRelation(argumentType);
             if (argumentType == nullptr) {
-                checker->LogTypeError("Invalid return statement expression", argument_->Start());
+                checker->LogError(diagnostic::INVALID_EXPR_IN_RETURN, {}, argument_->Start());
                 return;
             }
             argument_->AddBoxingUnboxingFlags(checker->GetBoxingFlag(argumentType));
