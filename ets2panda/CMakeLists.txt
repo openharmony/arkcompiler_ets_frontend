@@ -63,6 +63,7 @@ if(PANDA_WITH_ETS)
   MESSAGE("Generated default arktsconfig to ${GENERATED_DIR}/arktsconfig.json")
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${DEFAULT_ARKTSCONFIG}/")
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+  file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin-gtests")
 endif()
 
 # add check for PANDA_PRODUCT_BUILD after normal version tracking will be implemented
@@ -655,6 +656,7 @@ add_subdirectory(${ES2PANDA_LIB_DIR})
 add_subdirectory(aot)
 add_subdirectory(declgen_ets2ts)
 add_subdirectory(lsp)
+add_subdirectory(driver/dependency_analyzer)
 
 if(PANDA_WITH_TESTS)
   add_subdirectory(test)

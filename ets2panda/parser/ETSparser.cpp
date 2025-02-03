@@ -121,7 +121,12 @@ void ETSParser::ParseProgram(ScriptKind kind)
         AddPackageSourcesToParseList();
     }
 
-    auto script = ParseETSGlobalScript(startLoc, statements);
+    ir::ETSModule *script;
+    if ((GetContext().Status() & parser::ParserStatus::DEPENDENCY_ANALYZER_MODE) == 0) {
+        script = ParseETSGlobalScript(startLoc, statements);
+    } else {
+        script = ParseImportsOnly(startLoc, statements);
+    }
 
     AddExternalSource(ParseSources(true));
     GetProgram()->SetAst(script);
@@ -138,6 +143,22 @@ ir::ETSModule *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
     auto topLevelStatements = ParseTopLevelDeclaration();
     statements.insert(statements.end(), topLevelStatements.begin(), topLevelStatements.end());
 
+    etsnolintParser.ApplyETSNolintsToStatements(statements);
+
+    auto ident = AllocNode<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, Allocator());
+    auto *etsModule =
+        AllocNode<ir::ETSModule>(Allocator(), std::move(statements), ident, ir::ModuleFlag::ETSSCRIPT, GetProgram());
+    etsModule->SetRange({startLoc, Lexer()->GetToken().End()});
+    return etsModule;
+}
+
+ir::ETSModule *ETSParser::ParseImportsOnly(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
+{
+    ETSNolintParser etsnolintParser(this);
+    etsnolintParser.CollectETSNolints();
+
+    auto imports = ParseImportDeclarations();
+    statements.insert(statements.end(), imports.begin(), imports.end());
     etsnolintParser.ApplyETSNolintsToStatements(statements);
 
     auto ident = AllocNode<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, Allocator());

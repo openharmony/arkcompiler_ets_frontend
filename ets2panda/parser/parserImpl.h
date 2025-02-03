@@ -96,6 +96,11 @@ public:
         return &errorLogger_;
     }
 
+    void SetParserStatus(ParserStatus status)
+    {
+        GetContext().Status() |= status;
+    }
+
 protected:
     virtual void ParseProgram(ScriptKind kind);
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
