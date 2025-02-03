@@ -752,6 +752,9 @@ std::tuple<ForStatementKind, ir::Expression *, ir::Expression *> ParserImpl::Par
         lexer_->NextToken();
         rightNode = ParseExpression(exprFlags);
     } else {
+        if (IsETSParser()) {
+            ExpectToken(lexer::TokenType::PUNCTUATOR_SEMI_COLON);
+        }
         if (isAwait) {
             LogUnexpectedToken(Lexer()->GetToken());
         }
