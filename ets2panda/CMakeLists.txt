@@ -687,6 +687,12 @@ add_subdirectory(declgen_ets2ts)
 add_subdirectory(lsp)
 add_subdirectory(driver/dependency_analyzer)
 
+if(PANDA_TS_BINDINGS)
+  # Due to installing node js deps, maybe later should be added on lsp and driver too
+  set(ES2PANDA_NAPI_LIB_DIR "bindings")
+  add_subdirectory(${ES2PANDA_NAPI_LIB_DIR})
+endif()
+
 if(PANDA_WITH_TESTS)
   add_subdirectory(test)
 endif()
