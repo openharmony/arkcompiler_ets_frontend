@@ -147,6 +147,18 @@ typedef struct LSPAPI {
 
 LSPAPI const *GetImpl();
 
+typedef struct FileDiagnostic {
+    es2panda_AstNode *node;
+    Diagnostic diagnostic;
+
+    FileDiagnostic(es2panda_AstNode *n, const Diagnostic &diag, Position start, Position end)
+        : node(n),
+          diagnostic(Diagnostic(Range(start, end), diag.tags_, diag.relatedInformation_, diag.severity_, diag.code_,
+                                diag.message_, diag.codeDescription_, diag.source_, diag.data_))
+    {
+    }
+} FileDiagnostic;
+
 // NOLINTEND
 
 #ifdef __cplusplus

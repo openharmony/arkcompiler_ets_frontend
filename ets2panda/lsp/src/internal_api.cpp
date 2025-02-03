@@ -66,6 +66,70 @@ __attribute__((unused)) char *StdStringToCString(ArenaAllocator *allocator, cons
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
 }
 
+Position TransSourcePositionToPosition(lexer::SourcePosition sourcePos)
+{
+    return Position(sourcePos.line, sourcePos.index);
+}
+
+std::string FormatStringFromArgs(const std::string &textStr,
+                                 const std::vector<std::string> &args = std::vector<std::string>())
+{
+    std::stringstream ss;
+    size_t pos = 0;
+    size_t start = 0;
+    while ((pos = textStr.find_first_of('{', start)) != std::string::npos) {
+        ss << textStr.substr(start, pos - start);
+        size_t end = textStr.find('}', pos);
+        if (end == std::string::npos) {
+            ss << textStr.substr(pos);
+            break;
+        }
+        std::string placeholder = textStr.substr(pos, end - pos + 1);
+        std::string indexStr = placeholder.substr(1, placeholder.length() - 2);
+        try {
+            int index = std::stoi(indexStr);
+            if (index >= 0 && index < static_cast<int>(args.size())) {
+                ss << args.at(index);
+            } else {
+                ss << placeholder;
+            }
+        } catch (const std::out_of_range &e) {
+            ss << placeholder;
+        } catch (const std::invalid_argument &e) {
+            ss << placeholder;
+        }
+        start = end + 1;
+    }
+    ss << textStr.substr(start);
+
+    return ss.str();
+}
+
+FileDiagnostic CreateFileDiagnostic(es2panda_AstNode *node, lexer::SourceRange span, Diagnostic diagnostic,
+                                    const std::vector<std::string> &args = std::vector<std::string>())
+{
+    if (!args.empty()) {
+        std::string newMessageStr = FormatStringFromArgs(diagnostic.message_, args);
+        diagnostic.message_ = newMessageStr;
+    }
+    FileDiagnostic fileDiagnostic(node, diagnostic, TransSourcePositionToPosition(span.start),
+                                  TransSourcePositionToPosition(span.end));
+    return fileDiagnostic;
+}
+
+lexer::SourceRange GetErrorRangeForNode(ir::AstNode *node)
+{
+    return lexer::SourceRange(node->Start(), node->End());
+}
+
+FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagnostic,
+                                       const std::vector<std::string> &args)
+{
+    auto span = GetErrorRangeForNode(reinterpret_cast<ir::AstNode *>(node));
+    auto res = CreateFileDiagnostic(node, span, std::move(diagnostic), args);
+    return res;
+}
+
 void GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *searchFileName, bool isPackageModule,
                            References *fileReferences)
 {
