@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -67,5 +67,18 @@ checker::Type *ContinueStatement::Check(checker::TSChecker *checker)
 checker::VerifiedType ContinueStatement::Check(checker::ETSChecker *checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+ContinueStatement *ContinueStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const ident = ident_ != nullptr ? ident_->Clone(allocator, nullptr) : nullptr;
+    auto *const clone = util::NodeAllocator::ForceSetParent<ContinueStatement>(allocator, ident);
+
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+
+    clone->SetRange(Range());
+    return clone;
 }
 }  // namespace ark::es2panda::ir

@@ -93,7 +93,7 @@ ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstN
                 scopes.insert(ast->Scope()->Parent());
             }
         }
-        if (ast->IsIdentifier()) {
+        if (ast->IsIdentifier() && !ast->Parent()->IsLabelledStatement()) {
             auto *var = ast->AsIdentifier()->Variable();
             if (var == nullptr || !var->HasFlag(varbinder::VariableFlags::LOCAL)) {
                 return;
