@@ -16,7 +16,10 @@
 class A {
     public x: Object = new Object {
         static readonly foo: int = 12;
-        /* @@ label */static bar(): void {}
+        static bar(): void {}
     };
 }
-/* @@@ label Error TypeError: Inner class cannot have static methods  */
+
+/* @@? 17:35 Error SyntaxError: Unexpected token: '{'. */
+/* @@? 17:35 Error SyntaxError: Unexpected token: '{'. */
+/* @@? 21:1 Error SyntaxError: Unexpected token '}'. */

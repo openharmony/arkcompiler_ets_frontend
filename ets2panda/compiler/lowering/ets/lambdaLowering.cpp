@@ -836,7 +836,7 @@ static ir::ETSNewClassInstanceExpression *CreateConstructorCall(public_lib::Cont
                                                                info->enclosingFunction->Signature()->TypeParams());
     }
     auto *newExpr = util::NodeAllocator::ForceSetParent<ir::ETSNewClassInstanceExpression>(
-        allocator, allocator->New<ir::OpaqueTypeNode>(constructedType, allocator), std::move(args), nullptr);
+        allocator, allocator->New<ir::OpaqueTypeNode>(constructedType, allocator), std::move(args));
     auto *lambdaOrFuncRefParent = lambdaOrFuncRef->Parent();
     newExpr->SetParent(lambdaOrFuncRefParent);
     // NOTE(dslynko, #19869): Required for correct debug-info generation

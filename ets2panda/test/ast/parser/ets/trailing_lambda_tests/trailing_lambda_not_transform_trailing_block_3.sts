@@ -20,8 +20,9 @@ class A {
 }
 
 function main(): void {
-    new A() {}; // Trailing lambda for class constructor is not supported, expect to throw error.
+    new A() {}; // It is forbidden to extend a class by an anonymous class
 }
 
+/* @@? 23:13 Error SyntaxError: Unexpected token '{'. */
 /* @@? 23:5 Error TypeError: Expected 1 arguments, got 0.  */
 /* @@? 23:5 Error TypeError: No matching construct signature  */

@@ -224,30 +224,6 @@ TEST_F(ASTVerifierTest, PromiseUndefined)
     impl_->DestroyContext(ctx);
 }
 
-TEST_F(ASTVerifierTest, AnonymousClassId)
-{
-    char const *text = R"(
-        interface H {
-        }
-
-        class B {
-            func: H = new H() {
-            }
-        }
-
-        function main() {}
-    )";
-
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, text, "dummy.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
-
-    auto ast = GetAstFromContext<AstNode>(impl_, ctx);
-    const auto &messages = Verify<IdentifierHasVariable>(ast);
-    ASSERT_EQ(messages.size(), 0);
-
-    impl_->DestroyContext(ctx);
-}
-
 TEST_F(ASTVerifierTest, EnumInts)
 {
     char const *text = R"(
