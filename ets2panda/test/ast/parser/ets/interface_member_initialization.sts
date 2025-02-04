@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,10 @@ interface Colors {
 
 function main()
 {
-
+    
 }
 
-/* @@? 17:14 Error SyntaxError: Interface member initialization is prohibited */
+/* @@? 17:14 Error SyntaxError: Interface member initialization is prohibited. */
 /* @@? 17:16 Error SyntaxError: Unexpected token, expected ','. */
-/* @@? 17:16 Error SyntaxError: Unexpected token, expected 'private' or identifier */
-/* @@? 17:17 Error SyntaxError: Identifier expected */
+/* @@? 17:16 Error SyntaxError: Unexpected token, expected 'private' or identifier. */
+/* @@? 17:17 Error SyntaxError: Identifier expected. */

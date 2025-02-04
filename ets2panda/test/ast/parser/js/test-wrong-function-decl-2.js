@@ -16,5 +16,6 @@
 
 function f(a,b,c)/* @@ label */;
 
-/* @@@ label Error SyntaxError: Unexpected token, expected '{'.  */
-/* @@? 21:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected '{'. */
+/* @@@ label1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@ label1 */

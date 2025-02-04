@@ -15,5 +15,5 @@
 
 
 for (;/* @@ label */) {}
-/* @@@ label Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token ')', expected ';'.  */
+/* @@@ label Error SyntaxError: Unexpected token ')'. */
+/* @@@ label Error SyntaxError: Expected ';', got ')'. */

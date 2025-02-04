@@ -194,7 +194,7 @@ let res = add(n, n);
     ASSERT_EQ(result.diagnostic[fifthIndex].range_.end.character_, expectedFifthEndCharacter);
     ASSERT_EQ(result.diagnostic[fifthIndex].severity_, DiagnosticSeverity::Error);
     ASSERT_EQ(std::get<int>(result.diagnostic[fifthIndex].code_), 1);
-    ASSERT_EQ(result.diagnostic[fifthIndex].message_, R"(Label must be followed by a loop statement)");
+    ASSERT_EQ(result.diagnostic[fifthIndex].message_, R"(Label must be followed by a loop statement.)");
     ASSERT_EQ(result.diagnostic[fifthIndex].codeDescription_.href_, "test code description");
 }
 
@@ -238,6 +238,6 @@ let res = add(n, n);
     ASSERT_EQ(result.diagnostic[sevenIndex].range_.end.character_, expectedSeventhEndCharacter);
     ASSERT_EQ(result.diagnostic[sevenIndex].severity_, DiagnosticSeverity::Error);
     ASSERT_EQ(std::get<int>(result.diagnostic[sevenIndex].code_), 1);
-    ASSERT_EQ(result.diagnostic[sevenIndex].message_, R"(return keyword should be used in function body)");
+    ASSERT_EQ(result.diagnostic[sevenIndex].message_, R"(return keyword should be used in function body.)");
     ASSERT_EQ(result.diagnostic[sevenIndex].codeDescription_.href_, "test code description");
 }

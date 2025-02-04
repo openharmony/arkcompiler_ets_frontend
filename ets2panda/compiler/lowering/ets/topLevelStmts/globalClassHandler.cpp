@@ -32,6 +32,7 @@
 #include "util/helpers.h"
 #include "util/ustring.h"
 #include "utils/arena_containers.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::compiler {
 
@@ -97,14 +98,10 @@ void GlobalClassHandler::MergeNamespace(ArenaVector<ir::ETSModule *> &namespaces
         auto res = nsMap.find(ns->Ident()->Name());
         if (res != nsMap.end()) {
             if (res->second->Modifiers() != ns->Modifiers()) {
-                parser->LogSyntaxError("Unable to merge namespaces '" + ns->Ident()->Name().Mutf8() +
-                                           "', because their modifiers are different.",
-                                       ns->Start());
+                parser->LogError(diagnostic::NAMESPACE_MERGE_ERROR, {ns->Ident()->Name().Mutf8()}, ns->Start());
             }
             if (!res->second->Annotations().empty() && !ns->Annotations().empty()) {
-                parser->LogSyntaxError("Annotation conflict! Multiple namespace declarations for '" +
-                                           ns->Ident()->Name().Mutf8() + "' cannot each have annotations.",
-                                       ns->Start());
+                parser->LogError(diagnostic::NAMESPACE_ANNOTATION_CONFLICT, {ns->Ident()->Name().Mutf8()}, ns->Start());
             } else if (!ns->Annotations().empty()) {
                 ASSERT(res->second->Annotations().empty());
                 res->second->SetAnnotations(std::move(ns->Annotations()));

@@ -17,4 +17,4 @@ while /* @@ label */true) {
     console.log("hehehehe")
 }
 
-/* @@@ label Error SyntaxError: Unexpected token 'true', expected '('.  */
+/* @@@ label Error SyntaxError: Expected '(', got 'true'. */

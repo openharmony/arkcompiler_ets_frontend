@@ -15,15 +15,15 @@
 
 let v2 = `--- ${y + abc /* @@ label */${y} = ${ n*2 }!`/* @@ label1 */} ---`;`
 
-/* @@@ label Error SyntaxError: Unexpected token '$', expected '}'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token '}'.  */
-/* @@? 30:1 Error SyntaxError: Invalid left-hand side in prefix operation  */
+/* @@? 16:17 Error TypeError: Unresolved reference y */
 /* @@? 16:17 Error TypeError: Unresolved reference y */
 /* @@? 16:21 Error TypeError: Unresolved reference abc */
-/* @@? 16:49 Error TypeError: Unresolved reference n */
-/* @@? 16:49 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
-/* @@? 16:17 Error TypeError: Unresolved reference y */
 /* @@? 16:21 Error TypeError: Unresolved reference abc */
+/* @@? 16:39 Error SyntaxError: Expected '}', got 'identification literal'. */
 /* @@? 16:49 Error TypeError: Unresolved reference n */
 /* @@? 16:49 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
+/* @@? 16:49 Error TypeError: Unresolved reference n */
+/* @@? 16:49 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
+/* @@? 16:71 Error SyntaxError: Unexpected token '}'. */
 /* @@? 16:76 Error TypeError: Bad operand type, the type of the operand must be numeric type. */
+/* @@? 30:1 Error SyntaxError: Invalid left-hand side in prefix operation. */

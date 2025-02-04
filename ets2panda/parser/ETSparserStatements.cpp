@@ -113,6 +113,7 @@
 #include "ir/ts/tsNonNullExpression.h"
 #include "ir/ts/tsThisType.h"
 #include "generated/signatures.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -148,18 +149,18 @@ static ir::Statement *ValidateExportableStatement(ETSParser *parser, ir::Stateme
         }
         if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
             !(stmt->IsClassDeclaration() || stmt->IsTSInterfaceDeclaration() || stmt->IsTSTypeAliasDeclaration())) {
-            parser->LogSyntaxError("Can only type export class or interface!", stmt->Start());
+            parser->LogError(diagnostic::ONLY_EXPORT_CLASS_OR_INTERFACE, {}, stmt->Start());
         }
         if (stmt->IsAnnotationDeclaration()) {
             if ((memberModifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0U) {
-                parser->LogSyntaxError("Can not export annotation default!", stmt->Start());
+                parser->LogError(diagnostic::INVALID_EXPORT_DEFAULT, {}, stmt->Start());
             }
         }
         stmt->AddModifier(memberModifiers);
     } else {
         if ((memberModifiers &
              (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT | ir::ModifierFlags::EXPORT_TYPE)) != 0U) {
-            parser->LogSyntaxError("Export is allowed only for declarations.", pos);
+            parser->LogError(diagnostic::EXPORT_NON_DECLARATION, {}, pos);
         }
     }
 
@@ -262,7 +263,7 @@ bool ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 {
     if (type != lexer::TokenType::KEYW_DO && type != lexer::TokenType::KEYW_WHILE &&
         type != lexer::TokenType::KEYW_FOR && type != lexer::TokenType::KEYW_SWITCH) {
-        LogSyntaxError("Label must be followed by a loop statement", Lexer()->GetToken().Start());
+        LogError(diagnostic::MISSING_LOOP_AFTER_LABEL, {}, Lexer()->GetToken().Start());
         return false;
     }
 
@@ -284,7 +285,7 @@ ir::Statement *ETSParser::ParseDebuggerStatement()
 ir::Statement *ETSParser::ParseFunctionStatement(const StatementParsingFlags flags)
 {
     ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
-    LogSyntaxError("Nested functions are not allowed");
+    LogError(diagnostic::NESTED_FUNCTIONS_NOT_ALLOWED);
     ParserImpl::ParseFunctionStatement(flags);  // Try to parse function body but skip result.
     return AllocBrokenStatement();
 }
@@ -332,7 +333,7 @@ ir::Statement *ETSParser::ParseTryStatement()
     }
 
     if (catchClauses.empty() && finalizer == nullptr) {
-        LogSyntaxError("A try statement should contain either finally clause or at least one catch clause.", startLoc);
+        LogError(diagnostic::MISSING_CATCH_OR_FINALLY_AFTER_TRY, {}, startLoc);
         return nullptr;
     }
 
@@ -361,7 +362,7 @@ ir::Statement *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingF
 ir::Statement *ETSParser::ParseStructStatement([[maybe_unused]] StatementParsingFlags flags,
                                                ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
-    LogSyntaxError("Illegal start of STRUCT expression", Lexer()->GetToken().Start());
+    LogError(diagnostic::ILLEGAL_START_STRUCT, {}, Lexer()->GetToken().Start());
     ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
                               ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
                           modFlags);  // Try to parse struct and drop the result.

@@ -15,5 +15,5 @@
 
 try /* @@ label */} catch (/* @@ label1 */) {}
 
-/* @@@ label Error SyntaxError: Unexpected token '}', expected '{'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token in catch parameter, expected an identifier  */
+/* @@@ label Error SyntaxError: Expected '{', got '}'. */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected an identifier. */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,4 +17,4 @@
 var a = {foo : {bar : {baz : 5}}};
 a?.foo?.bar?.baz /* @@ label */= a?.foo?.bar?.baz;
 
-/* @@@ label Error SyntaxError: Invalid left-hand side in assignment expression  */
+/* @@@ label Error SyntaxError: Invalid left-hand side in assignment expression.  */

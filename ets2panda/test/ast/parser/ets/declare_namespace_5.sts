@@ -51,7 +51,7 @@ class B {
 /* @@@ label Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
 /* @@@ label1 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
 /* @@@ label2 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
-/* @@@ label3 Error SyntaxError: Field type annotation expected  */
+/* @@@ label3 Error SyntaxError: Field type annotation expected.  */
 /* @@? 23:20 Error TypeError: Unresolved reference foo */
 /* @@? 39:35 Error TypeError: Unresolved reference foo */
 /* @@? 43:11 Error TypeError: Property 'getInstance' does not exist on type 'B' */

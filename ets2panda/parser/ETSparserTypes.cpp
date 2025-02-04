@@ -72,6 +72,7 @@
 #include "ir/ts/tsThisType.h"
 #include "generated/signatures.h"
 #include "util/errorRecovery.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -84,7 +85,7 @@ ir::TypeNode *ETSParser::ParseFunctionReturnType([[maybe_unused]] ParserStatus s
         return nullptr;
     }
     if ((status & ParserStatus::CONSTRUCTOR_FUNCTION) != 0U) {
-        LogSyntaxError("Type annotation isn't allowed for constructor.");
+        LogError(diagnostic::TYPE_ANNOTATION_FOR_CONSTRUCTOR);
     }
     Lexer()->NextToken();  // eat ':'
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR |
@@ -96,7 +97,7 @@ ir::TypeNode *ETSParser::ParseFunctionReturnType([[maybe_unused]] ParserStatus s
 ir::TypeNode *ETSParser::ParsePrimitiveType(TypeAnnotationParsingOptions *options, ir::PrimitiveType type)
 {
     if (((*options) & TypeAnnotationParsingOptions::DISALLOW_PRIMARY_TYPE) != 0) {
-        LogSyntaxError("Primitive type is not allowed here.");
+        LogError(diagnostic::PRIMITIVE_NOT_ALLOWED);
     }
 
     auto *const typeAnnotation = AllocNode<ir::ETSPrimitiveType>(type, Allocator());
@@ -223,7 +224,7 @@ bool ETSParser::ParseTriplePeriod(bool spreadTypePresent)
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
         if (spreadTypePresent) {
-            LogSyntaxError("Only one spread type declaration allowed, at the last index");
+            LogError(diagnostic::ONLY_SPREAD_AT_LAST_INDEX);
         }
 
         spreadTypePresent = true;
@@ -232,7 +233,7 @@ bool ETSParser::ParseTriplePeriod(bool spreadTypePresent)
         // This can't be implemented to any index, with type consistency. If a spread type is in the middle of
         // the tuple, then bounds check can't be made for element access, so the type of elements after the
         // spread can't be determined in compile time.
-        LogSyntaxError("Spread type must be at the last index in the tuple type");
+        LogError(diagnostic::SPREAD_MUST_BE_LAST_IN_TUPLE);
     }
 
     return spreadTypePresent;
@@ -269,12 +270,12 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
         currentTypeAnnotation->SetParent(tupleType);
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
             // NOTE(mmartin): implement optional types for tuples
-            LogSyntaxError("Optional types in tuples are not yet implemented.");
+            LogError(diagnostic::OPTIONAL_TYPES_IN_TUPLE_NOT_IMPLEMENTED);
             Lexer()->NextToken();  // eat '?'
         }
 
         if (spreadTypePresent && !currentTypeAnnotation->IsTSArrayType()) {
-            LogSyntaxError("Spread type must be an array type");
+            LogError(diagnostic::SPREAD_TYPE_MUST_BE_ARRAY);
         }
 
         if (spreadTypePresent) {
@@ -443,16 +444,10 @@ ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
     bool isInUnion = (*options & TypeAnnotationParsingOptions::DISALLOW_UNION) != 0;
     if (isExtensionFunction) {
         if (reportErr && (!IsSimpleReturnThis(Lexer()->GetToken()) || isInUnion)) {
-            LogSyntaxError(
-                "A 'this' type is available only as return type in a non-static method of a class or struct and "
-                "extension functions.",
-                startPos);
+            LogError(diagnostic::THIS_IN_NON_STATIC_METHOD, {}, startPos);
         }
     } else if (reportErr && (!allowThisType || !parseReturnType || isArrowFunc)) {
-        LogSyntaxError(
-            "A 'this' type is available only as return type in a non-static method of a class or struct and extension "
-            "functions.",
-            startPos);
+        LogError(diagnostic::THIS_IN_NON_STATIC_METHOD, {}, startPos);
     }
 
     auto *const thisType = AllocNode<ir::TSThisType>(Allocator());
@@ -498,7 +493,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotationNoPreferParam(TypeAnnotationParsingO
 
     if (typeAnnotation == nullptr) {
         if (reportError) {
-            LogSyntaxError("Invalid Type");
+            LogError(diagnostic::INVALID_TYPE);
             auto typeNode = AllocBrokenType();
             typeNode->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
             return typeNode;
@@ -530,7 +525,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         Lexer()->NextToken();  // eat 'readonly'
         typeAnnotation = ParseTypeAnnotationNoPreferParam(options);
         if (!typeAnnotation->IsTSArrayType() && !typeAnnotation->IsETSTuple()) {
-            LogSyntaxError("'readonly' type modifier is only permitted on array and tuple types.");
+            LogError(diagnostic::READONLY_ONLY_ON_ARRAY_OR_TUPLE);
         }
         typeAnnotation->SetStart(startPos);
         typeAnnotation->AddModifier(ir::ModifierFlags::READONLY_PARAMETER);

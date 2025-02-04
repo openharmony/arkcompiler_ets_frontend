@@ -19,6 +19,6 @@ function main(): void {
     }
 }
 
-/* @@@ label Error SyntaxError: Unexpected token ')', expected ';'.  */
-/* @@? 17:27 Error TypeError: Variable 'i' is accessed before it's initialization. */
 /* @@? 17:23 Error TypeError: Bad operand type, the types of the operands must be numeric type. */
+/* @@? 17:27 Error TypeError: Variable 'i' is accessed before it's initialization. */
+/* @@@ label Error SyntaxError: Expected ';', got ')'. */

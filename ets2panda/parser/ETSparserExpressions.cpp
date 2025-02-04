@@ -19,6 +19,7 @@
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/ets/etsTuple.h"
 #include "util/errorRecovery.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -33,7 +34,7 @@ ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
     lexer::SourcePosition exprStart = Lexer()->GetToken().Start();
     ir::Expression *expr = ParseLeftHandSideExpression(flags);
     if (!expr->IsCallExpression()) {
-        LogSyntaxError("Only call expressions are allowed after 'launch'", exprStart);
+        LogError(diagnostic::ONLY_CALL_AFTER_LAUNCH, {}, exprStart);
         return AllocBrokenExpression();
     }
     auto call = expr->AsCallExpression();
@@ -42,10 +43,6 @@ ir::Expression *ETSParser::ParseLaunchExpression(ExpressionParseFlags flags)
 
     return launchExpression;
 }
-
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-static constexpr char const NO_DEFAULT_FOR_REST[] = "Rest parameter cannot have the default value.";
-// NOLINTEND(modernize-avoid-c-arrays)
 
 static std::string GetArgumentsSourceView(lexer::Lexer *lexer, const util::StringView::Iterator &lexerPos)
 {
@@ -70,24 +67,24 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         Lexer()->NextToken();  // eat '='
 
         if (paramIdent->IsRestElement()) {
-            LogSyntaxError(NO_DEFAULT_FOR_REST);
+            LogError(diagnostic::NO_DEFAULT_FOR_REST);
         }
 
         if ((GetContext().Status() & ParserStatus::ALLOW_DEFAULT_VALUE) != 0) {
-            LogSyntaxError("Default value is allowed only for optional parameters");
+            LogError(diagnostic::DEFAULT_ONLY_FOR_OPTIONAL);
         }
 
         if (defaultUndef != nullptr) {
-            LogSyntaxError("Not enable default value with default undefined");
+            LogError(diagnostic::DEFAULT_UNDEF_NOT_ALLOWED);
         }
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
             Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            LogSyntaxError("You didn't set the value.");
+            LogError(diagnostic::VALUE_IS_NOT_SET);
         }
 
         auto defaultValue = ParseExpression();
         if (!paramIdent->IsIdentifier()) {
-            LogSyntaxError("Identifier is needed here.");
+            LogError(diagnostic::IDENTIFIER_EXPECTED);
             return nullptr;
         }
 
@@ -175,7 +172,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
 
     if (lexer::Token::IsUpdateToken(operatorType)) {
         if (!argument->IsIdentifier() && !argument->IsMemberExpression()) {
-            LogSyntaxError("Invalid left-hand side in prefix operation");
+            LogError(diagnostic::INVALID_LEFT_IN_PREFIX);
         }
     }
 
@@ -333,7 +330,7 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
             return ParseTemplateLiteral();
         }
         case lexer::TokenType::KEYW_TYPE: {
-            LogSyntaxError("Type alias is allowed only as top-level declaration");
+            LogError(diagnostic::TYPE_ALIAS_ONLY_TOP_LEVEL);
             ParseTypeAliasDeclaration();  // Try to parse type alias and drop the result.
             return AllocBrokenExpression();
         }
@@ -745,7 +742,7 @@ void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)
 
         // Display error message even when type declaration is correct
         // `instanceof A<String>;`
-        LogSyntaxError("Invalid right-hand side in 'instanceof' expression");
+        LogError(diagnostic::INVALID_RIGHT_INSTANCEOF);
     }
 }
 

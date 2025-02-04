@@ -22,6 +22,6 @@ class A {
     /* @@ label1 */}
 }
 
-/* @@@ label Error SyntaxError: Unexpected private identifier  */
-/* @@@ label1 Error SyntaxError: Unexpected token '}', expected ')'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token '}'.  */
+/* @@@ label Error SyntaxError: Unexpected private identifier. */
+/* @@@ label1 Error SyntaxError: Expected ')', got '}'. */
+/* @@@ label1 Error SyntaxError: Unexpected token '}'. */

@@ -18,7 +18,8 @@ switch /* @@ label */{
 
 }
 
-/* @@@ label Error SyntaxError: Unexpected token '{', expected '('.  */
-/* @@? 25:1 Error SyntaxError: Unexpected token 'eos', expected ')'.  */
-/* @@? 25:1 Error SyntaxError: Unexpected token 'eos', expected '{'.  */
-/* @@? 25:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
+/* @@@ label Error SyntaxError: Expected '(', got '{'. */
+/* @@@ label1 Error SyntaxError: Expected ')', got 'eos'. */
+/* @@@ label1 Error SyntaxError: Expected '{', got 'eos'. */
+/* @@@ label1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@ label1 */

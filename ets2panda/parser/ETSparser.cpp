@@ -384,7 +384,7 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus)
 
     bool isDeclare = InAmbientContext();
     if (functionContext.IsAsync() && isDeclare) {
-        LogSyntaxError("The modifier async cannot be used in an ambient context.");
+        LogError(diagnostic::ASYNC_IN_AMBIENT_CONTEXT);
     }
 
     // clang-format off
@@ -406,7 +406,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ETSParser::P
     [[maybe_unused]] ParserStatus contextStatus)
 {
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        LogSyntaxError({"Expected token '{', got '", TokenToString(Lexer()->GetToken().Type()), "'"});
+        LogError(diagnostic::EXPECTED_PARAM_GOT_PARAM, {"{", TokenToString(Lexer()->GetToken().Type())});
         return {false, nullptr, Lexer()->GetToken().End(), false};
     }
 
@@ -426,7 +426,7 @@ ir::ScriptFunctionFlags ETSParser::ParseFunctionThrowMarker(bool isRethrowsAllow
             if (isRethrowsAllowed) {
                 throwMarker = ir::ScriptFunctionFlags::RETHROWS;
             } else {
-                LogSyntaxError("Only 'throws' can be used with function types");
+                LogError(diagnostic::ONLY_THROWS_IN_FUN_TYPE);
             }
         }
     }
@@ -469,9 +469,7 @@ ir::AstNode *ETSParser::ParseInnerConstructorDeclaration(ir::ModifierFlags membe
 {
     if ((memberModifiers & (~(ir::ModifierFlags::ACCESS | ir::ModifierFlags::DECLARE | ir::ModifierFlags::NATIVE))) !=
         0) {
-        LogSyntaxError(
-            "The modifier for a constructor should be limited to access modifiers (private, internal, protected, "
-            "public),and 'native' modifiers.");
+        LogError(diagnostic::INVALID_DECORATOR_CONSTRUCTOR);
     }
     auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     memberModifiers |= ir::ModifierFlags::CONSTRUCTOR;
@@ -501,7 +499,7 @@ bool ETSParser::CheckAccessorDeclaration(ir::ModifierFlags memberModifiers)
     }
     ir::ModifierFlags methodModifiersNotAccessorModifiers = ir::ModifierFlags::NATIVE | ir::ModifierFlags::ASYNC;
     if ((memberModifiers & methodModifiersNotAccessorModifiers) != 0) {
-        LogSyntaxError("Modifiers of getter and setter are limited to ('abstract', 'static', 'final', 'override').");
+        LogError(diagnostic::MODIFIERS_OF_GET_SET_LIMITED);
     }
     return true;
 }
@@ -635,10 +633,7 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
     Lexer()->NextToken();  // eat type keyword
 
     if (Lexer()->GetToken().IsReservedTypeName()) {
-        std::string errMsg("Type alias name cannot be '");
-        errMsg.append(TokenToString(Lexer()->GetToken().KeywordType()));
-        errMsg.append("'");
-        LogSyntaxError(errMsg.c_str());
+        LogError(diagnostic::TYPE_ALIAS_INVALID_NAME, {TokenToString(Lexer()->GetToken().KeywordType())});
     }
 
     ir::Identifier *id = ExpectIdentifier();
@@ -678,7 +673,7 @@ std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptF
         }
 
         if (hasRestParameter) {
-            LogSyntaxError("Rest parameter should be the last one.", param->Start());
+            LogError(diagnostic::REST_PARAM_LAST, {}, param->Start());
         }
 
         if (param->IsDefault()) {
@@ -687,15 +682,14 @@ std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptF
         }
 
         if (hasDefaultParameter) {
-            LogSyntaxError("Required parameter follows default parameter(s).", param->Start());
+            LogError(diagnostic::REQUIRED_PARAM_AFTER_DEFAULT, {}, param->Start());
         }
 
         ++requiredParametersNumber;
     }
 
     if (hasDefaultParameter && hasRestParameter) {
-        LogSyntaxError("Both optional and rest parameters are not allowed in function's parameter list.",
-                       function->Start());
+        LogError(diagnostic::REST_AND_DEFAULT_SAME_TIME, {}, function->Start());
     }
 
     return std::make_pair(hasDefaultParameter, requiredParametersNumber);
@@ -810,7 +804,7 @@ void ETSParser::ValidateRestParameter(ir::Expression *param)
     GetContext().Status() |= ParserStatus::HAS_COMPLEX_PARAM;
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         // rest_parameter_04.sts
-        LogSyntaxError("Rest parameter must be the last formal parameter.");
+        LogError(diagnostic::REST_PARAM_NOT_LAST);
         const auto pos = Lexer()->Save();
         Lexer()->NextToken();
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
@@ -967,7 +961,7 @@ void ETSParser::ReportIfVarDeclaration(VariableParsingFlags flags)
 ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers)
 {
     if (!InAmbientContext() && (GetContext().Status() & ParserStatus::IN_NAMESPACE) != 0) {
-        LogSyntaxError("Export declarations are not permitted in a namespace.");
+        LogError(diagnostic::EXPORT_IN_NAMESPACE);
     }
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
@@ -1111,7 +1105,7 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
             if (importKind == ir::ImportKinds::TYPE) {
-                LogSyntaxError("Type import requires selective binding to define the required imported elements.");
+                LogError(diagnostic::TYPE_IMPORT_MISSING_SELECTIVE_BINDING);
             }
             ParseNameSpaceSpecifier(&specifiers);
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
@@ -1170,7 +1164,7 @@ bool ETSParser::IsDefaultImport()
         if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_AS)) {
             return true;
         }
-        LogSyntaxError("Unexpected token, expected 'as'.");
+        LogError(diagnostic::UNEXPECTED_TOKEN_AS);
     }
     return false;
 }
@@ -1211,7 +1205,7 @@ std::pair<ImportSpecifierVector, ImportDefaultSpecifierVector> ETSParser::ParseN
         lexer::TokenType::PUNCTUATOR_RIGHT_BRACE, lexer::NextTokenFlags::KEYWORD_TO_IDENT,
         [this, &result, &resultDefault, &fileName]() {
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
-                LogSyntaxError("The '*' token is not allowed as a selective binding (between braces)");
+                LogError(diagnostic::ASTERIKS_NOT_ALLOWED_IN_SELECTIVE_BINDING);
             }
 
             if (!IsDefaultImport()) {
@@ -1252,7 +1246,7 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
     Lexer()->NextToken();  // eat `*` character
 
     if (!CheckModuleAsModifier()) {
-        LogSyntaxError("Unexpected token.");
+        LogError(diagnostic::UNEXPECTED_TOKEN);
     }
 
     // Note (oeotvos) As a temporary solution we allow the stdlib to use namespace import without an alias, but this
@@ -1306,7 +1300,7 @@ ir::AstNode *ETSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *
 bool ETSParser::CheckModuleAsModifier()
 {
     if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0U) {
-        LogSyntaxError("Escape sequences are not allowed in 'as' keyword");
+        LogError(diagnostic::ESCAPE_SEQUENCES_IN_AS);
     }
 
     return true;
@@ -1345,7 +1339,7 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
         }
 
         default: {
-            LogSyntaxError("Unexpected token, expected an identifier.");
+            LogError(diagnostic::UNEXPECTED_TOKEN_ID);
             return AllocBrokenExpression();
         }
     }
@@ -1353,12 +1347,6 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
     Lexer()->NextToken();
     return parameter;
 }
-
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-static constexpr char const NO_DEFAULT_FOR_REST[] = "Rest parameter cannot have the default value.";
-static constexpr char const ONLY_ARRAY_FOR_REST[] = "Rest parameter should be of an array type.";
-static constexpr char const EXPLICIT_PARAM_TYPE[] = "Parameter declaration should have an explicit type annotation.";
-// NOLINTEND(modernize-avoid-c-arrays)
 
 ir::ETSUnionType *ETSParser::CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation,
                                                              ir::ETSUndefinedType *defaultUndef)
@@ -1397,7 +1385,7 @@ ir::Expression *ETSParser::ParseFunctionReceiver()
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
     Lexer()->NextToken();  // eat 'this';
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
-        LogSyntaxError("The function parameter 'this' must explicitly specify the typeAnnotation.");
+        LogError(diagnostic::FUN_PARAM_THIS_MISSING_TYPE);
         return AllocBrokenExpression();
     }
 
@@ -1422,7 +1410,7 @@ ir::Expression *ETSParser::ParseFunctionParameter()
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
         if (paramIdent->IsRestElement()) {
-            LogSyntaxError(NO_DEFAULT_FOR_REST);
+            LogError(diagnostic::NO_DEFAULT_FOR_REST);
         }
         defaultUndef = AllocNode<ir::ETSUndefinedType>(Allocator());
         defaultUndef->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
@@ -1438,14 +1426,14 @@ ir::Expression *ETSParser::ParseFunctionParameter()
             typeAnnotation = CreateOptionalParameterTypeNode(typeAnnotation, defaultUndef);
         }
         if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
-            LogSyntaxError(ONLY_ARRAY_FOR_REST);
+            LogError(diagnostic::ONLY_ARRAY_FOR_REST);
         }
 
         typeAnnotation->SetParent(paramIdent);
         paramIdent->SetTsTypeAnnotation(typeAnnotation);
         paramIdent->SetEnd(typeAnnotation->End());
     } else if (!isArrow && defaultUndef == nullptr) {
-        LogSyntaxError(EXPLICIT_PARAM_TYPE);
+        LogError(diagnostic::EXPLICIT_PARAM_TYPE);
     }
 
     return ParseFunctionParameterExpression(paramIdent, defaultUndef);
@@ -1471,7 +1459,7 @@ ir::AnnotatedExpression *ETSParser::ParseVariableDeclaratorKey([[maybe_unused]] 
     ir::TypeNode *typeAnnotation = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
         if ((flags & VariableParsingFlags::FOR_OF) != 0U) {
-            LogSyntaxError("Optional variable is not allowed in for of statements");
+            LogError(diagnostic::OPTIONAL_VAR_IN_FOR_OF);
         }
         Lexer()->NextToken();  // eat '?'
         init->AddModifier(ir::ModifierFlags::OPTIONAL);
@@ -1482,7 +1470,7 @@ ir::AnnotatedExpression *ETSParser::ParseVariableDeclaratorKey([[maybe_unused]] 
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::REPORT_ERROR;
         typeAnnotation = ParseTypeAnnotation(&options);
     } else if (tokenType != lexer::TokenType::PUNCTUATOR_SUBSTITUTION && (flags & VariableParsingFlags::FOR_OF) == 0U) {
-        LogSyntaxError("Variable must be initialized or it's type must be declared");
+        LogError(diagnostic::MISSING_INIT_OR_TYPE);
     }
     if (typeAnnotation != nullptr) {
         init->SetTsTypeAnnotation(typeAnnotation);
@@ -1495,7 +1483,7 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclaratorInitializer(ir::Expres
                                                                       const lexer::SourcePosition &startLoc)
 {
     if ((flags & VariableParsingFlags::DISALLOW_INIT) != 0) {
-        LogSyntaxError("for-await-of loop variable declaration may not have an initializer");
+        LogError(diagnostic::FOR_AWAIT_OF_VAR_NOT_INIT);
     }
 
     Lexer()->NextToken();
@@ -1517,7 +1505,7 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclarator(ir::Expression *init,
     }
 
     if (init->AsIdentifier()->TypeAnnotation() == nullptr && (flags & VariableParsingFlags::FOR_OF) == 0U) {
-        LogSyntaxError("Variable must be initialized or it's type must be declared");
+        LogError(diagnostic::MISSING_INIT_OR_TYPE);
     }
 
     lexer::SourcePosition endLoc = init->End();
@@ -1536,7 +1524,7 @@ ir::Expression *ETSParser::ParseCatchParam()
     bool checkRestrictedBinding = true;
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         // tryCatchMissingParam.sts
-        LogSyntaxError("Unexpected token in catch parameter, expected an identifier");
+        LogError(diagnostic::UNEXPECTED_TOKEN_ID);
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
             checkRestrictedBinding = false;
         } else {
@@ -1568,16 +1556,14 @@ void ETSParser::ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpr
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        LogSyntaxError("Catch clause variable cannot have an initializer");
+        LogError(diagnostic::CATCH_CLAUSE_VAR_HAS_INIT);
     }
 }
 
 ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
     if ((flags & StatementParsingFlags::GLOBAL) == 0) {
-        LogSyntaxError(
-            "Import declarations can only be used on the top level and before any other declaration, top level "
-            "statement or directive");
+        LogError(diagnostic::IMPORT_TOP_LEVEL);
     }
 
     char32_t nextChar = Lexer()->Lookahead();
@@ -1696,7 +1682,7 @@ ir::ModifierFlags ETSParser::ParseTypeVarianceModifier(TypeAnnotationParsingOpti
 {
     if ((*options & TypeAnnotationParsingOptions::ALLOW_WILDCARD) == 0 &&
         (*options & TypeAnnotationParsingOptions::ALLOW_DECLARATION_SITE_VARIANCE) == 0) {
-        LogSyntaxError("Variance modifier is not allowed here.");
+        LogError(diagnostic::VARIANCE_NOD_ALLOWED);
     }
 
     switch (Lexer()->GetToken().KeywordType()) {
@@ -1720,7 +1706,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         // ambient_indexer_9.sts
-        LogSyntaxError("Unexpected token at", Lexer()->GetToken().Start());
+        LogUnexpectedToken(Lexer()->GetToken());
         auto pos = Lexer()->Save();
         Lexer()->NextToken();
         while (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
@@ -1740,7 +1726,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
 
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         // ambient_indexer_8.sts
-        LogSyntaxError("Index type expected in index signature", Lexer()->GetToken().Start());
+        LogError(diagnostic::INDEX_TYPE_EXPECTED);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
     }
@@ -1748,7 +1734,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
     // eat ":"
     if (Lexer()->NextToken(); Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NUMBER) {
         // ambient_indexer_3.sts
-        LogSyntaxError("Index type must be number in index signature", Lexer()->GetToken().Start());
+        LogError(diagnostic::INDEX_TYPE_NOT_NUMBER);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::KEYW_NUMBER);
     }
@@ -1756,7 +1742,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
     // eat indexType
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         // ambient_indexer_7.sts
-        LogSyntaxError("] expected in index signature", Lexer()->GetToken().Start());
+        LogError(diagnostic::EXPECTED_BRACKETS_IN_INDEX);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
     }
@@ -1764,7 +1750,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
     // eat "]"
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         // ambient_indexer_4.sts
-        LogSyntaxError("An index signature must have a type annotation.", Lexer()->GetToken().Start());
+        LogError(diagnostic::INDEX_MISSING_TYPE);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
     }
@@ -1772,8 +1758,7 @@ ir::AstNode *ETSParser::ParseAmbientSignature()
     // eat ":"
     if (Lexer()->NextToken(); Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         // ambient_indexer_5.sts
-        LogSyntaxError("Return type of index signature from exported class or interface need to be identifier",
-                       Lexer()->GetToken().Start());
+        LogError(diagnostic::INDEX_MISSING_IDENTIFIER);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
         Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
@@ -1863,7 +1848,7 @@ void ETSParser::CheckDeclare()
     ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE);
 
     if (InAmbientContext()) {
-        LogSyntaxError("A 'declare' modifier cannot be used in an already ambient context.");
+        LogError(diagnostic::DECALRE_IN_AMBIENT_CONTEXT);
     }
 
     GetContext().Status() |= ParserStatus::IN_AMBIENT_CONTEXT;
@@ -1887,7 +1872,7 @@ void ETSParser::CheckDeclare()
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
                 return;
             }
-            LogSyntaxError("Unexpected token.");
+            LogUnexpectedToken(Lexer()->GetToken());
         }
     }
 }
@@ -1914,7 +1899,7 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
         // Parse regular function. Example: `function foo() {}`:
         funcIdentNode = ExpectIdentifier();
     } else if (!canBeAnonymous) {
-        LogSyntaxError("Unexpected token, expected identifier after 'function' keyword");
+        LogError(diagnostic::UNEXPECTED_TOKEN_ID);
         funcIdentNode = AllocBrokenExpression();
     }
 
@@ -1965,12 +1950,12 @@ ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags 
     if (isGetter) {
         func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD | ir::ScriptFunctionFlags::GETTER);
         if (getterValidParamCount != paramCount) {
-            LogSyntaxError("Extension Getter can only have 1 parameter.", startLoc);
+            LogError(diagnostic::EXTENSION_GETTER_WRONG_PARAM, {}, startLoc);
         }
     } else {
         func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD | ir::ScriptFunctionFlags::SETTER);
         if (setterValidParamCount != paramCount) {
-            LogSyntaxError("Extension Setter can only have 2 parameters.", startLoc);
+            LogError(diagnostic::EXTENSION_SETTER_WRONG_PARAM, {}, startLoc);
         }
     }
 

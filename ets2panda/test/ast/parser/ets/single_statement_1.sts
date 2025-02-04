@@ -20,6 +20,6 @@ function main(): int {
     let hehe: int = 10
 }
 
-/* @@@ label1 Error SyntaxError: Lexical declaration is not allowed in single statement context */
-/* @@@ label2 Error SyntaxError: Unexpected token ')'. */
+/* @@@ label1 Error SyntaxError: Lexical declaration is not allowed in single statement context. */
 /* @@? 18:17 Error TypeError: Unresolved reference aaaa */
+/* @@@ label2 Error SyntaxError: Unexpected token ')'. */

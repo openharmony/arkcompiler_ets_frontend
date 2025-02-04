@@ -15,4 +15,4 @@
 
 
 interface /* @@ label */5 { }
-/* @@@ label Error SyntaxError: Identifier expected, got '5'.  */
+/* @@@ label Error SyntaxError: Identifier expected, got 'number literal'. */

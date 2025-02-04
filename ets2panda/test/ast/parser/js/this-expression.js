@@ -16,4 +16,4 @@
 
 this./* @@ label */"foo";
 
-/* @@@ label Error SyntaxError: Identifier expected, got 'foo'.  */
+/* @@@ label Error SyntaxError: Identifier expected, got 'string literal'. */

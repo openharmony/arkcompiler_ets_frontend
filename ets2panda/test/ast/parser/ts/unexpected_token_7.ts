@@ -17,8 +17,7 @@
 export {hehe^, foo}
 
 
-/* @@? 17:13 Error SyntaxError: Unexpected token, expected ',' or '}'.  */
-/* @@? 17:13 Error SyntaxError: Unexpected token '^'.  */
-/* @@? 17:13 Error SyntaxError: Unexpected token '^'.  */
-/* @@? 17:14 Error SyntaxError: Unexpected token ','.  */
-/* @@? 17:19 Error SyntaxError: Unexpected token '}'.  */
+/* @@? 17:13 Error SyntaxError: Unexpected token, expected ',' or '}'. */
+/* @@? 17:13 Error SyntaxError: Unexpected token '^'. */
+/* @@? 17:14 Error SyntaxError: Unexpected token ','. */
+/* @@? 17:19 Error SyntaxError: Unexpected token '}'. */

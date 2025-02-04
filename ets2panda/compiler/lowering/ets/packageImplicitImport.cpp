@@ -14,6 +14,7 @@
  */
 
 #include "packageImplicitImport.h"
+#include <generated/diagnostic.h>
 
 namespace ark::es2panda::compiler {
 
@@ -50,9 +51,8 @@ static void ValidateFolderContainOnlySamePackageFiles(const public_lib::Context 
             //
             // Showing the full path would be more informative, but it also leaks it to the stdout, which is
             // not the best idea
-            ctx->parser->LogSyntaxError("Files '" + prog1->FileName().Mutf8() + "' and '" + prog2->FileName().Mutf8() +
-                                            "' are in the same folder, but have different package names.",
-                                        prog1->PackageStart());
+            ctx->parser->LogError(diagnostic::DIFFERENT_PACKAGE_NAME,
+                                  {prog1->FileName().Mutf8(), prog2->FileName().Mutf8()}, prog1->PackageStart());
         }
     };
 
@@ -79,7 +79,7 @@ static void ValidateImportDeclarationsSourcePath(const public_lib::Context *cons
                 return prog->SourceFilePath() == stmt->AsETSImportDeclaration()->ResolvedSource()->Str();
             });
         if (doesImportFromPackage) {
-            ctx->parser->LogSyntaxError("Package module cannot import from a file in it's own package", stmt->Start());
+            ctx->parser->LogError(diagnostic::PACKAGE_MODULE_IMPORT_OWN_PACKAGE, {}, stmt->Start());
         }
     }
 }

@@ -147,7 +147,7 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
 
         lexer::TokenFlags tokenFlags = lexer_->GetToken().Flags();
         if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            LogSyntaxError("Keyword must not contain escaped characters");
+            LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);
         }
 
         ir::ModifierFlags actualStatus = ir::ModifierFlags::NONE;
@@ -176,11 +176,11 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
         }
 
         if ((prevStatus & actualStatus) == 0) {
-            LogSyntaxError("Unexpected modifier");
+            LogError(diagnostic::UNEXPECTED_MODIFIER);
         }
 
         if ((resultStatus & actualStatus) != 0) {
-            LogSyntaxError("Duplicated modifier is not allowed");
+            LogError(diagnostic::DUPLICATED_MODIFIER);
         }
 
         lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
@@ -237,7 +237,7 @@ void ParserImpl::CheckAccessorPair(const ArenaVector<ir::AstNode *> &properties,
 
         if ((setAccess == ir::ModifierFlags::NONE && getAccess > ir::ModifierFlags::PUBLIC) ||
             (setAccess != ir::ModifierFlags::NONE && getAccess > setAccess)) {
-            LogSyntaxError("A get accessor must be at least as accessible as the setter", key->Start());
+            LogError(diagnostic::GET_ACCESSOR_MUST_BE_AT_LEAST_AS_ACCESSIBLE, {}, key->Start());
         }
     }
 }
@@ -261,7 +261,7 @@ void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *next
     LogIfPrivateIdent(desc, "Unexpected identifier");
 
     if ((lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-        LogSyntaxError("Keyword must not contain escaped characters");
+        LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);
     }
 
     desc->methodKind =
@@ -285,7 +285,7 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
 {
     if (((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 || desc->isGenerator) &&
         (desc->methodKind == ir::MethodDefinitionKind::GET || desc->methodKind == ir::MethodDefinitionKind::SET)) {
-        LogSyntaxError("Invalid accessor");
+        LogError(diagnostic::INVALID_ACCESSOR);
     }
 
     const util::StringView &propNameStr = lexer_->GetToken().Ident();
@@ -293,7 +293,7 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
     if (propNameStr.Is("constructor")) {
         if (lexer_->Lookahead() != lexer::LEX_CHAR_LEFT_PAREN) {
             // test-class-constructor3.ts
-            LogSyntaxError("Classes may not have a field named 'constructor'");
+            LogError(diagnostic::CLASS_FIELD_CONSTRUCTOR);
         }
 
         LogIfPrivateIdent(desc, "Private identifier can not be constructor");
@@ -302,7 +302,7 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
             if ((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 ||
                 desc->methodKind == ir::MethodDefinitionKind::GET ||
                 desc->methodKind == ir::MethodDefinitionKind::SET || desc->isGenerator) {
-                LogSyntaxError("Constructor can not be special method");
+                LogError(diagnostic::SPECIAL_METHOD_CONSTRUCTOR);
             }
 
             desc->methodKind = ir::MethodDefinitionKind::CONSTRUCTOR;
@@ -316,7 +316,7 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
 
         CheckIfStaticConstructor(desc->modifiers);
     } else if (propNameStr.Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC) != 0) {
-        LogSyntaxError("Classes may not have static property named prototype");
+        LogError(diagnostic::STATIC_PROPERTY_PROTOTYPE);
     }
 }
 
@@ -354,11 +354,11 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             LogIfPrivateIdent(desc, "Private identifier name can not be string");
 
             if (lexer_->GetToken().Ident().Is("constructor")) {
-                LogSyntaxError("Classes may not have a field named 'constructor'");
+                LogError(diagnostic::CLASS_FIELD_CONSTRUCTOR);
             }
 
             if (lexer_->GetToken().Ident().Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC) != 0) {
-                LogSyntaxError("Classes may not have a static property named 'prototype'");
+                LogError(diagnostic::STATIC_PROPERTY_PROTOTYPE_REMOOOVE);
             }
 
             propName = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
@@ -384,7 +384,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
             break;
         }
         default: {
-            LogSyntaxError("Unexpected token in class property");
+            LogError(diagnostic::UNEXPECTED_TOKEN);
             propName = AllocBrokenExpression();
         }
     }
@@ -414,11 +414,11 @@ void ParserImpl::ValidateGetterSetter(ir::MethodDefinitionKind methodDefinition,
 {
     if (methodDefinition == ir::MethodDefinitionKind::SET) {
         if (number != 1) {
-            LogSyntaxError("Setter must have exactly one formal parameter");
+            LogError(diagnostic::SETTER_FORMAL_PARAMS);
         }
     } else if (methodDefinition == ir::MethodDefinitionKind::GET) {
         if (number != 0) {
-            LogSyntaxError("Getter must not have formal parameters");
+            LogError(diagnostic::GETTER_FORMAL_PARAMS);
         }
     }
 }
@@ -479,7 +479,7 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
 
     if (desc->classMethod) {
         if ((desc->modifiers & ir::ModifierFlags::DECLARE) != 0) {
-            LogSyntaxError("'declare modifier cannot appear on class elements of this kind.");
+            LogError(diagnostic::DECLARE_MODIFIER_ON_INVALID_CLASS_ELEMENT);
         }
 
         property = ParseClassMethod(desc, properties, propName, &propEnd);
@@ -493,7 +493,7 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
         lexer_->NextToken();  // eat equals
 
         if (InAmbientContext() || (desc->modifiers & ir::ModifierFlags::DECLARE) != 0) {
-            LogSyntaxError("Initializers are not allowed in ambient contexts.");
+            LogError(diagnostic::INITIALIZERS_IN_AMBIENT_CONTEXTS);
         }
 
         value = ParseExpression();
@@ -526,7 +526,7 @@ bool ParserImpl::ValidatePrivateIdentifier()
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT ||
         (lexer_->GetToken().Start().index - iterIdx > 1)) {
-        LogSyntaxError("Unexpected token in private field");
+        LogError(diagnostic::UNEXPECTED_TOKEN_IN_PRIVATE);
         return false;
     }
 
@@ -547,7 +547,7 @@ void ParserImpl::ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, cha
 void ParserImpl::AddPrivateElement(const ir::ClassElement *elem)
 {
     if (!classPrivateContext_.AddElement(elem)) {
-        LogSyntaxError("Private field has already been declared");
+        LogError(diagnostic::PRIVATE_FIELD_REDEC);
     }
 }
 
@@ -707,7 +707,7 @@ ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifie
         static_cast<ir::ClassDefinitionModifiers>(modifiers & ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED);
 
     if (idRequired == ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED) {
-        LogSyntaxError("Unexpected token, expected an identifier.");
+        LogError(diagnostic::UNEXPECTED_TOKEN_ID);
         return AllocBrokenExpression();
     }
 
@@ -727,7 +727,7 @@ bool ParserImpl::CheckClassElement(ir::AstNode *property, ir::MethodDefinition *
     }
 
     if (ctor != nullptr) {
-        LogSyntaxError("Multiple constructor implementations are not allowed.", property->Start());
+        LogError(diagnostic::MULTIPLE_CONSTRUCTOR_IMPLEMENTATIONS, {}, property->Start());
     }
     ctor = def;
 
@@ -757,7 +757,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     ir::Identifier *identNode = ParseClassIdent(modifiers);
 
     if (identNode == nullptr && (modifiers & ir::ClassDefinitionModifiers::DECLARATION) != 0U) {
-        LogSyntaxError("Unexpected token, expected an identifier.");
+        LogError(diagnostic::UNEXPECTED_TOKEN_ID);
         return nullptr;  // ir::ClassDefinition
     }
 
@@ -843,7 +843,7 @@ void ParserImpl::ValidateRestParameter(ir::Expression *param)
         }
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
             // for now test exists for js extension only
-            LogSyntaxError("Rest parameter must be the last formal parameter.");
+            LogError(diagnostic::REST_PARAM_NOT_LAST);
 
             lexer_->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
         }
@@ -875,7 +875,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 
         if (parameter->IsETSParameterExpression() && parameter->AsETSParameterExpression()->Ident()->IsReceiver() &&
             !params.empty()) {
-            LogSyntaxError("Function Parameter 'this' must be the first.");
+            LogError(diagnostic::FUNC_PARAM_THIS_FIRST);
             return false;
         }
 
@@ -897,7 +897,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 
 ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] ir::TypeNode *typeAnnotation)
 {
-    LogSyntaxError("Unexpected token, expected function identifier");
+    LogError(diagnostic::UNEXPECTED_TOKEN_ID_FUN);
     return AllocBrokenExpression();
 }
 
@@ -938,7 +938,7 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
     }
 
     if (GetContext().IsExtensionAccessor() && !hasReceiver) {
-        LogSyntaxError("Extension Accessor must have a receiver.");
+        LogError(diagnostic::EXTENSION_ACCESSOR_RECEIVER);
     }
 
     ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(true);
@@ -986,14 +986,14 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
     if (inPattern) {
         argument = ParsePatternElement(ExpressionParseFlags::IN_REST);
         if ((flags & ExpressionParseFlags::OBJECT_PATTERN) != 0 && !argument->IsIdentifier()) {
-            LogSyntaxError("RestParameter must be followed by an identifier in declaration contexts");
+            LogError(diagnostic::RESTPARAM_ID_IN_DEC_CONTEXT);
         }
     } else {
         argument = ParseExpression(flags);
     }
 
     if (inPattern && argument->IsAssignmentExpression()) {
-        LogSyntaxError("RestParameter does not support an initializer");
+        LogError(diagnostic::RESTPARAM_INIT);
     }
 
     auto nodeType = inPattern ? ir::AstNodeType::REST_ELEMENT : ir::AstNodeType::SPREAD_ELEMENT;
@@ -1011,20 +1011,14 @@ void ParserImpl::CheckRestrictedBinding()
 void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType)
 {
     if (keywordType == lexer::TokenType::KEYW_ARGUMENTS || keywordType == lexer::TokenType::KEYW_EVAL) {
-        LogSyntaxError(
-            "'eval' or 'arguments' can't be defined or assigned to "
-            "in strict mode code",
-            lexer_->GetToken().Start());
+        LogError(diagnostic::EVAL_OR_ARGUMENTS_IN_STRICT_MODE, {}, lexer_->GetToken().Start());
     }
 }
 
 void ParserImpl::CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos)
 {
     if (ident.Is("eval") || ident.Is("arguments")) {
-        LogSyntaxError(
-            "'eval' or 'arguments' can't be defined or assigned to "
-            "in strict mode code",
-            pos);
+        LogError(diagnostic::EVAL_OR_ARGUMENTS_IN_STRICT_MODE, {}, pos);
     }
 }
 
@@ -1050,7 +1044,7 @@ void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node)
             break;
         }
         default: {
-            LogSyntaxError("Invalid left-hand side in assignment expression");
+            LogError(diagnostic::INVALID_LEFT_SIDE_IN_ASSIGNMENT);
         }
     }
 }
@@ -1115,19 +1109,18 @@ void ParserImpl::ValidateArrowParameterBindings(const ir::Expression *node)
             break;
         }
         default: {
-            LogSyntaxError("Unexpected ArrowParameter element");
+            LogError(diagnostic::UNEXPECTED_ARROWPARAM_ELEMENT);
         }
     }
 }
 
 void ParserImpl::LogParameterModifierError(ir::ModifierFlags status)
 {
-    LogSyntaxError({"'",
-                    (status & ir::ModifierFlags::STATIC) != 0  ? "static"
-                    : (status & ir::ModifierFlags::ASYNC) != 0 ? "async"
-                                                               : "declare",
-                    "' modifier cannot appear on a parameter."},
-                   lexer_->GetToken().Start());
+    LogError(diagnostic::PARAM_MODIFIER_CANNOT_APPEAR_ON_PARAMETER,
+             {(status & ir::ModifierFlags::STATIC) != 0  ? "static"
+              : (status & ir::ModifierFlags::ASYNC) != 0 ? "async"
+                                                         : "declare"},
+             lexer_->GetToken().Start());
 }
 
 ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder([[maybe_unused]] std::optional<NodeFormatType> nodeFormat)
@@ -1215,7 +1208,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
     }
 
     if (token.IsDefinableTypeName() && isUserDefinedType) {
-        LogSyntaxError("Cannot be used as user-defined type.");
+        LogError(diagnostic::NOT_ALLOWED_USER_DEFINED_TYPE);
     }
 
     auto const &tokenStart = token.Start();
@@ -1232,7 +1225,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier([[maybe_unused]] bool isReference, 
         if ((options & TypeAnnotationParsingOptions::REPORT_ERROR) == 0) {
             return nullptr;
         }
-        LogSyntaxError({"Identifier expected, got '", token.ToString(), "'."}, tokenStart);
+        LogError(diagnostic::IDENTIFIER_EXPECTED_HERE, {TokenToString(tokenType)}, tokenStart);
         lexer_->NextToken();
         return AllocBrokenExpression();
     }
@@ -1256,9 +1249,9 @@ void ParserImpl::ExpectToken(lexer::TokenType tokenType, bool consumeToken)
     }
 
     if (tokenType != lexer::TokenType::LITERAL_IDENT) {
-        LogSyntaxError({UNEXPECTED_TOKEN, token.ToString(), "', expected '", TokenToString(tokenType), "'."});
+        LogError(diagnostic::EXPECTED_PARAM_GOT_PARAM, {TokenToString(tokenType), TokenToString(actualType)});
     } else {
-        LogSyntaxError({UNEXPECTED_TOKEN, token.ToString(), "', expected identifier."});
+        LogError(diagnostic::UNEXPECTED_TOKEN_ID);
     }
 
     if (!consumeToken) {
@@ -1281,7 +1274,7 @@ void ParserImpl::ExpectToken(lexer::TokenType tokenType, bool consumeToken)
 
 void ParserImpl::LogUnexpectedToken(lexer::TokenType tokenType)
 {
-    LogSyntaxError(std::string(UNEXPECTED_TOKEN).append(TokenToString(tokenType)).append("'."));
+    LogError(diagnostic::UNEXPECTED_TOKEN_PARAM, {TokenToString(tokenType)});
 }
 
 void ParserImpl::LogUnexpectedToken(lexer::Token const &token)
@@ -1292,12 +1285,12 @@ void ParserImpl::LogUnexpectedToken(lexer::Token const &token)
 void ParserImpl::LogExpectedToken(lexer::TokenType tokenType)
 {
     if (tokenType != lexer::TokenType::LITERAL_IDENT && tokenType != lexer::TokenType::LITERAL_STRING) {
-        LogSyntaxError("Unexpected token, expected '"s + TokenToString(tokenType) + "'."s);
+        LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM, {TokenToString(tokenType)});
     } else if (tokenType == lexer::TokenType::LITERAL_IDENT) {
-        LogSyntaxError("Unexpected token, expected an identifier.");
+        LogError(diagnostic::UNEXPECTED_TOKEN_ID);
         lexer_->GetToken().SetTokenStr(ERROR_LITERAL);
     } else if (tokenType == lexer::TokenType::LITERAL_STRING) {
-        LogSyntaxError("Unexpected token, expected string literal.");
+        LogError(diagnostic::UNEXPECTED_TOKEN_STRING_LITERAL);
         lexer_->GetToken().SetTokenStr(ERROR_LITERAL);
     }
     lexer_->GetToken().SetTokenType(tokenType);
@@ -1354,7 +1347,7 @@ bool ParserImpl::CheckModuleAsModifier()
     }
 
     if ((lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) != 0U) {
-        LogSyntaxError("Escape sequences are not allowed in 'as' keyword");
+        LogError(diagnostic::ESCAPE_SEQUENCES_IN_AS);
     }
 
     return true;
@@ -1385,7 +1378,7 @@ bool ParserImpl::ParseList(std::optional<lexer::TokenType> termToken, lexer::Nex
         }
         if (termToken == Lexer()->GetToken().Type() || (!termToken.has_value() && !hasSep)) {
             if (hasSep && !allowTrailingSep) {
-                LogSyntaxError("Trailing comma is not allowed in this context");
+                LogError(diagnostic::TRAILING_COMMA_NOT_ALLOWED);
             }
             break;
         }
@@ -1393,8 +1386,8 @@ bool ParserImpl::ParseList(std::optional<lexer::TokenType> termToken, lexer::Nex
             continue;
         }
         if (termToken.has_value()) {
-            LogSyntaxError({"Unexpected token, expected '", lexer::TokenToString(sep), "' or '",
-                            lexer::TokenToString(termToken.value()), "'."});
+            LogError(diagnostic::UNEXPECTED_TOKEN_EXPECTED_PARAM_OR_PARAM,
+                     {lexer::TokenToString(sep), lexer::TokenToString(termToken.value())});
         } else {
             LogExpectedToken(sep);
         }

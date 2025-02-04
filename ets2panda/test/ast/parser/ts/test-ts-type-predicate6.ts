@@ -16,4 +16,4 @@
 
 var var1: (is: number | string) => asserts /* @@ label */(number | string);
 
-/* @@@ label Error SyntaxError: Unexpected token '('.  */
+/* @@@ label Error SyntaxError: Unexpected token '('. */

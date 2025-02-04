@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-class A
+class A 
 /* @@ label */}
 
-/* @@@ label Error SyntaxError: Unexpected token '}', expected '{'. */
-/* @@? 21:1 Error SyntaxError: Unexpected token 'eos', expected '}'. */
+/* @@@ label Error SyntaxError: Expected '{', got '}'. */
+/* @@@ label1 Error SyntaxError: Expected '}', got 'eos'. */
+/* @@ label1 */

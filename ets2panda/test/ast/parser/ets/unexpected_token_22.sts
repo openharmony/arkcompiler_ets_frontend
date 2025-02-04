@@ -28,7 +28,7 @@ function callAsyncLambda(): void {
     }
 
     assertEQ(is_call_async_lambda, false);
-    await /* @@ label */async_lambda();
+    await async_lambda();
     assertEQ(is_call_async_lambda, true);
 }
 
@@ -39,5 +39,5 @@ function main(): void {
 /* @@? 25:43 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 25:44 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 25:60 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@@ label Error TypeError: This expression is not callable. */
-/* @@@ label Error TypeError: 'await' expressions require Promise object as argument. */
+/* @@? 31:11 Error TypeError: This expression is not callable. */
+/* @@? 31:11 Error TypeError: 'await' expressions require Promise object as argument. */

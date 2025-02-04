@@ -115,6 +115,7 @@
 #include "ir/ts/tsNonNullExpression.h"
 #include "ir/ts/tsThisType.h"
 #include "generated/signatures.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -142,7 +143,7 @@ ir::Statement *ETSParser::ParseEnumDeclaration(bool isConst, bool isStatic)
 ir::Statement *ETSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
 {
     if ((flags & VariableParsingFlags::CONST) == 0) {
-        LogSyntaxError("Variable declaration expected.");
+        LogError(diagnostic::VAR_DEC_EXPECTED);
     }
 
     // According to the ArkTS specification:
@@ -152,10 +153,6 @@ ir::Statement *ETSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
 }
 
 // NOLINTBEGIN(cert-err58-cpp)
-static std::string const INVALID_ENUM_TYPE = "Invalid enum initialization type"s;
-static std::string const INVALID_ENUM_VALUE = "Invalid enum initialization value"s;
-static std::string const MISSING_COMMA_IN_ENUM = "Missing comma between enum constants"s;
-static std::string const TRAILING_COMMA_IN_ENUM = "Trailing comma is not allowed in enum constant list"s;
 // NOLINTEND(cert-err58-cpp)
 
 ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, const lexer::SourcePosition &enumStart,
@@ -168,7 +165,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        LogSyntaxError("An enum must have at least one enum constant");
+        LogError(diagnostic::ENUM_MUST_HAVE_ONE_CONST);
         return nullptr;  // Error processing.
     }
 
@@ -193,7 +190,7 @@ ir::Expression *ETSParser::ParseEnumExpression()
     auto endLoc = Lexer()->GetToken().Start();
     expression = ParseExpression();
     if (expression == nullptr) {
-        LogSyntaxError(INVALID_ENUM_VALUE, endLoc);
+        LogError(diagnostic::INVALID_ENUM_VALUE, {}, endLoc);
         // Continue to parse the rest of Enum.
         return AllocNode<ir::NumberLiteral>(lexer::Number(0));
     }
@@ -212,7 +209,7 @@ bool ETSParser::ParseNumberEnumHelper()
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
         // enum15.sts; will be zero by default
-        LogSyntaxError(INVALID_ENUM_TYPE);
+        LogError(diagnostic::INVALID_ENUM_TYPE, {}, Lexer()->GetToken().Start());
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_NUMBER);
         Lexer()->GetToken().SetTokenStr(ERROR_LITERAL);
     }

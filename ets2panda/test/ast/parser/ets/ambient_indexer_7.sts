@@ -21,10 +21,10 @@ declare class A {
     let a : A = new A();
 }
 
-/* @@@ label Error SyntaxError: ] expected in index signature  */
+/* @@@ label Error SyntaxError: ] expected in index signature.  */
 /* @@@ label1 Error SyntaxError: An index signature must have a type annotation.  */
-/* @@@ label2 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier  */
+/* @@@ label2 Error SyntaxError: Return type of index signature from exported class or interface need to be identifier.  */
 /* @@@ label3 Error SyntaxError: Unexpected token 'function'.  */
-/* @@@ label5 Error TypeError: Native and Declare methods should have explicit return type. */
-/* @@@ label4 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
+/* @@@ label5 Error TypeError: Native and Declare methods should have explicit return type.  */
+/* @@@ label4 Error SyntaxError: Expected '}', got 'eos'.  */
 /* @@ label4 */

@@ -119,7 +119,7 @@ ir::ModifierFlags ETSParser::ParseClassModifiers()
 
         lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
         if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            LogSyntaxError("Keyword must not contain escaped characters");  // Lexer will do it.
+            LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
         }
 
         switch (Lexer()->GetToken().KeywordType()) {
@@ -141,7 +141,7 @@ ir::ModifierFlags ETSParser::ParseClassModifiers()
         }
 
         if ((flags & currentFlag) != 0) {
-            LogSyntaxError("Duplicated modifier is not allowed");
+            LogError(diagnostic::DUPLICATED_MODIFIER);
         }
 
         Lexer()->NextToken();
@@ -199,7 +199,7 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
 
     lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
     if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-        LogSyntaxError("Keyword must not contain escaped characters");  // Lexer will do it.
+        LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
     }
 
     ir::ModifierFlags accessFlag = ir::ModifierFlags::NONE;
@@ -233,7 +233,7 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
     if (((GetContext().Status() & ParserStatus::FUNCTION) != 0) &&
         (accessFlag == ir::ModifierFlags::PUBLIC || accessFlag == ir::ModifierFlags::PRIVATE ||
          accessFlag == ir::ModifierFlags::PROTECTED)) {
-        LogSyntaxError("Local class declaration members can not have access modifies", Lexer()->GetToken().Start());
+        LogError(diagnostic::LOCAL_CLASS_ACCESS_MOD, {}, Lexer()->GetToken().Start());
     }
 
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
@@ -259,7 +259,7 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seenStatic)
 
         lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
         if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            LogSyntaxError("Keyword must not contain escaped characters");  // Lexer will do it.
+            LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
         }
 
         switch (Lexer()->GetToken().KeywordType()) {
@@ -277,7 +277,7 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seenStatic)
         }
 
         if ((flags & currentFlag) != 0) {
-            LogSyntaxError("Duplicated modifier is not allowed");
+            LogError(diagnostic::DUPLICATED_MODIFIER);
         }
 
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
@@ -362,21 +362,21 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
 
         lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
         if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
-            LogSyntaxError("Keyword must not contain escaped characters");  // Lexer will do it.
+            LogError(diagnostic::KEYWORD_CONTAINS_ESCAPED_CHARS);  // Lexer will do it.
         }
 
         currentFlag = ParseClassMethodModifierFlag();
         if ((flags & currentFlag) != 0) {
-            LogSyntaxError("Duplicated modifier is not allowed");
+            LogError(diagnostic::DUPLICATED_MODIFIER);
         }
 
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
         flags |= currentFlag;
         if ((flags & ir::ModifierFlags::ASYNC) != 0) {
             if ((flags & ir::ModifierFlags::NATIVE) != 0) {
-                LogSyntaxError("Native method cannot be async");
+                LogError(diagnostic::NATIVE_METHOD_ASYNC);
             } else if ((flags & ir::ModifierFlags::ABSTRACT) != 0) {
-                LogSyntaxError("Abstract method cannot be async");
+                LogError(diagnostic::ABSTRACT_METHOD_ASYNC);
             }
         }
     }
@@ -405,13 +405,13 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     if (Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_SUBSTITUTION)) {
         initializer = ParseExpression();
     } else if (typeAnnotation == nullptr) {
-        LogSyntaxError("Field type annotation expected");
+        LogError(diagnostic::FIELD_TPYE_ANNOTATION_MISSING);
     }
 
     bool isDeclare = (modifiers & ir::ModifierFlags::DECLARE) != 0;
 
     if (isDeclare && initializer != nullptr) {
-        LogSyntaxError("Initializers are not allowed in ambient contexts.");
+        LogError(diagnostic::INITIALIZERS_IN_AMBIENT_CONTEXTS);
     }
 
     auto *field = AllocNode<ir::ClassProperty>(fieldName, initializer, typeAnnotation, modifiers, Allocator(), false);
@@ -520,7 +520,7 @@ std::pair<bool, bool> ETSParser::HandleClassElementModifiers(ArenaVector<ir::Ann
     UpdateMemberModifiers(memberModifiers, seenStatic);
 
     if (!annotations.empty() && (memberModifiers & ir::ModifierFlags::ABSTRACT) != 0) {
-        LogSyntaxError("Annotations cannot be applied to an abstract class or method.", Lexer()->GetToken().Start());
+        LogError(diagnostic::ANNOTATION_ABSTRACT, {}, Lexer()->GetToken().Start());
     }
 
     return {seenStatic, isStepToken};
@@ -572,7 +572,7 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
         case lexer::TokenType::KEYW_PUBLIC:
         case lexer::TokenType::KEYW_PRIVATE:
         case lexer::TokenType::KEYW_PROTECTED: {
-            LogSyntaxError("Access modifier must precede field and method modifiers.");
+            LogError(diagnostic::ACCESS_BEFORE_FIELD_METHOD);
             Lexer()->NextToken();
             return AllocBrokenStatement();
         }
@@ -794,13 +794,12 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
 
     if ((GetContext().Status() & ParserStatus::FUNCTION) != 0) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_PRIVATE) {
-            LogSyntaxError("Local interface declaration members can not have access modifiers",
-                           Lexer()->GetToken().Start());
+            LogError(diagnostic::LOCAL_CLASS_ACCESS_MOD, {}, Lexer()->GetToken().Start());
         }
     }
 
     if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_PRIVATE) {
-        LogSyntaxError("Unexpected token, expected 'private' or identifier");
+        LogError(diagnostic::UNEXPECTED_TOKEN_PRIVATE_ID);
     }
 
     Lexer()->NextToken();
@@ -823,7 +822,7 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     ir::TypeNode *typeAnnotation = nullptr;
     if (!Lexer()->TryEatTokenType(lexer::TokenType::PUNCTUATOR_COLON)) {
         // interfaces3.sts
-        LogSyntaxError("Interface fields must have type annotation.");
+        LogError(diagnostic::INTERFACE_FIELDS_TYPE_ANNOTATION);
 
         Lexer()->GetToken().SetTokenType(lexer::TokenType::PUNCTUATOR_COLON);
         Lexer()->NextToken();  // additional check
@@ -833,7 +832,7 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     name->SetTsTypeAnnotation(typeAnnotation);
     typeAnnotation->SetParent(name);
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL) {
-        LogSyntaxError("Initializers are not allowed on interface properties.");
+        LogError(diagnostic::INITIALIZERS_INTERFACE_PROPS);
         Lexer()->NextToken();  // Error processing: eat '='.
     }
 
@@ -874,7 +873,8 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
 {
     ir::Identifier *name = nullptr;
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        LogSyntaxError({"Expected method name, got '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
+        LogError(diagnostic::EXPECTED_PARAM_GOT_PARAM,
+                 {"method name", lexer::TokenToString(Lexer()->GetToken().Type())});
         name = AllocBrokenExpression();
     } else {
         name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
@@ -896,11 +896,11 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         if (methodKind == ir::MethodDefinitionKind::SET || methodKind == ir::MethodDefinitionKind::GET) {
-            LogSyntaxError("Getter and setter methods must be abstracts in the interface body", startLoc);
+            LogError(diagnostic::GETTER_SETTER_NOT_ABSTRACT, {}, startLoc);
         }
         body = ParseBlockStatement();
     } else if ((flags & (ir::ModifierFlags::PRIVATE)) != 0 && !isDeclare) {
-        LogSyntaxError("Private interface methods must have body", startLoc);
+        LogError(diagnostic::PRIVATE_INTERFACE_MISSING_BODY, {}, startLoc);
     }
 
     functionContext.AddFlag(throwMarker);
@@ -964,7 +964,7 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
     if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_READONLY)) {
         char32_t nextCp = Lexer()->Lookahead();
         if (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN) {
-            LogSyntaxError("Modifier 'readonly' cannot be applied to an interface method", startLoc);
+            LogError(diagnostic::READONLY_INTERFACE_METHOD, {}, startLoc);
             ir::ModifierFlags modfiers = ParseInterfaceMethodModifiers();
             auto *method = ParseInterfaceMethod(modfiers, ir::MethodDefinitionKind::METHOD);
             method->SetStart(startLoc);
@@ -978,7 +978,7 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 
     ir::ModifierFlags modfiers = ParseInterfaceMethodModifiers();
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        LogSyntaxError("Identifier expected");
+        LogError(diagnostic::ID_EXPECTED);
         return AllocBrokenExpression();
     }
 
@@ -1004,7 +1004,7 @@ bool ETSParser::CheckClassElement(ir::AstNode *property, [[maybe_unused]] ir::Me
     if (property->IsClassStaticBlock()) {
         if (std::any_of(properties.cbegin(), properties.cend(),
                         [](const auto *prop) { return prop->IsClassStaticBlock(); })) {
-            LogSyntaxError("Only one static block is allowed", property->Start());
+            LogError(diagnostic::MULTIPLE_STATIC_BLOCK, {}, property->Start());
         }
 
         auto *id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
@@ -1036,7 +1036,7 @@ void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const
 
     auto const checkAsynchronous = [this, function, &name, &position]() -> void {
         if (function->IsAsyncFunc()) {
-            LogSyntaxError({ir::PREDEFINED_METHOD, name.Utf8(), "' cannot be asynchronous."}, position);
+            LogError(diagnostic::SPECIAL_PREDEFINED_METHOD_CANNOT_BE_ASYNC, {std::string(name)}, position);
         }
     };
 
@@ -1050,8 +1050,7 @@ void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const
         }
 
         if (!isValid) {
-            LogSyntaxError({ir::PREDEFINED_METHOD, name.Utf8(), "' should have exactly one required parameter."},
-                           position);
+            LogError(diagnostic::SPECIAL_PREDEFINED_METHOD_SHOULD_HAVE_ONE_PARAM, {std::string(name)}, position);
         }
     } else if (name.Is(compiler::Signatures::SET_INDEX_METHOD)) {
         checkAsynchronous();
@@ -1065,14 +1064,13 @@ void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const
         }
 
         if (!isValid) {
-            LogSyntaxError({ir::PREDEFINED_METHOD, name.Utf8(), "' should have exactly two required parameters."},
-                           position);
+            LogError(diagnostic::SPECIAL_PREDEFINED_METHOD_SHOULD_HAVE_TWO_PARAMS, {std::string(name)}, position);
         }
     } else if (name.Is(compiler::Signatures::ITERATOR_METHOD)) {
         checkAsynchronous();
 
         if (!function->Params().empty()) {
-            LogSyntaxError({ir::PREDEFINED_METHOD, name.Utf8(), "' should not have parameters."}, position);
+            LogError(diagnostic::SPECIAL_PREDEFINED_METHOD_SHOULD_NOT_HAVE_PARAMS, {std::string(name)}, position);
         }
     }
 }
@@ -1136,8 +1134,11 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_FUNCTION) {
             // async_function_bas.sts
-            LogSyntaxError({isAsync ? "'async'" : "'native'", " flags must be used for functions only at top-level."});
-
+            if (isAsync) {
+                LogError(diagnostic::ASYNC_FLAG_ONLY_FOR_TOP_FUN);
+            } else {
+                LogError(diagnostic::NATIVE_FLAG_ONLY_FOR_TOP_FUN);
+            }
             Lexer()->GetToken().SetTokenType(lexer::TokenType::KEYW_FUNCTION);
         }
     }
