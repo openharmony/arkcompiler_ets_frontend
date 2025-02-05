@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -154,7 +154,7 @@ bool ArkTsConfig::Pattern::Match(const std::string &path) const
     }
     if (!value.has_extension()) {
         // default extensions to match
-        pattern += R"(.*(\.ts|\.d\.ts|\.sts)$)";
+        pattern += R"(.*(\.ts|\.ets|\.sts)$)";
     }
     std::smatch m;
     auto res = std::regex_match(path, m, std::regex(pattern));
