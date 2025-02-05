@@ -15,23 +15,38 @@
 
 #include "dep_analyzer.h"
 
-void DepAnalyzer::DebugPrint()
+void DepAnalyzer::Dump(std::string &outFilePath)
+{
+    std::ofstream outFile(outFilePath);
+    if (!outFile) {
+        std::cerr << "Error when opening a file " << outFilePath << std::endl;
+        return;
+    }
+
+    for (auto const &sp : sourcePaths_) {
+        outFile << sp << std::endl;
+    }
+
+    outFile.close();
+}
+
+void DepAnalyzer::Dump(std::ostream &ostr)
 {
     for (auto const &sp : sourcePaths_) {
-        std::cout << sp << std::endl;
+        ostr << sp << std::endl;
     }
 }
 
 void DepAnalyzer::AddImports(ark::es2panda::parser::ETSParser *parser)
 {
     ark::es2panda::util::StringView firstSourceFilePath = parser->GetGlobalProgramAbsName();
-    sourcePaths_.push_back(std::string(firstSourceFilePath));
+    sourcePaths_.emplace_back(std::string(firstSourceFilePath));
 
     ark::es2panda::util::ImportPathManager *manager = parser->GetImportPathManager();
     auto &parseList = manager->ParseList();
 
-    for (auto pl : parseList) {
-        sourcePaths_.push_back(std::string(pl.sourcePath));
+    for (auto &pl : parseList) {
+        sourcePaths_.emplace_back(std::string(pl.sourcePath));
     }
 }
 

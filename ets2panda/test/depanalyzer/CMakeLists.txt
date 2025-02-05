@@ -29,6 +29,8 @@ add_custom_target(path_getter
 add_dependencies(panda_gen_files path_getter)
 
 panda_add_gtest(
+        TEST_GROUP es2panda_gtests
+        STASH_LIST ets_stash_list
         NAME es2panda_depanalyz_tests
         SOURCES
             test.cpp
@@ -41,8 +43,6 @@ panda_add_gtest(
             ${ES2PANDA_PATH}
             ${ES2PANDA_BINARY_ROOT}
             ${GEN_INCLUDE_DIR}
-            ${CMAKE_CURRENT_SOURCE_DIR}/../..
-            ${CMAKE_CURRENT_SOURCE_DIR}
         SANITIZERS
             ${PANDA_SANITIZERS_LIST}
 )

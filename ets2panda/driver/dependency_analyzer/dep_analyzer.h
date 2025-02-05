@@ -26,7 +26,8 @@
 class DepAnalyzer {
 public:
     int AnalyzeDeps(int argc, const char **argv);
-    void DebugPrint();
+    void Dump(std::string &outFilePath);
+    void Dump(std::ostream &ostr = std::cout);
 
     const std::vector<std::string> &GetSourcePaths()
     {
