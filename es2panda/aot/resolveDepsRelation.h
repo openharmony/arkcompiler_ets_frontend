@@ -45,8 +45,8 @@ public:
 
 private:
     void FillRecord2ProgramMap(std::unordered_map<std::string, std::string> &record2ProgramMap);
-    bool CollectCommonjsRecords(const std::vector<panda::pandasm::Field> &fieldList,
-                                const std::string &progKey, const std::string &recordName);
+    bool CollectCommonjsAndJsonRecords(const std::vector<panda::pandasm::Field> &fieldList,
+                                       const std::string &progKey, const std::string &recordName);
     void CollectDepsIfNeeded(const std::string &ohmurl);
     void DumpDepsRelations();
 

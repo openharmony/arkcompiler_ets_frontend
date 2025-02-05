@@ -723,6 +723,7 @@ class CompilerProjectTest(Test):
         self.abc_input_filenames = None
         self.record_names_path = os.path.join(os.path.join(self.projects_path, self.project), 'recordnames.txt')
         self.abc_inputs_path = os.path.join(os.path.join(self.projects_path, self.project), 'abcinputs')
+        self.deps_json_path = os.path.join(os.path.join(self.projects_path, self.project), 'deps-json.json')
 
     def remove_project(self, runner):
         project_path = runner.build_dir + "/" + self.project
@@ -843,6 +844,11 @@ class CompilerProjectTest(Test):
                 abc_files_infos[belonging_abc_input].append(file_info)
             else:
                 f.writelines(file_info)
+        if (os.path.exists(self.deps_json_path)):
+            record_name = self.get_record_name(self.deps_json_path)
+            file_info = ('%s;%s;%s;%s;%s;%s\n' % (self.deps_json_path, record_name, 'esm',
+                                               os.path.relpath(self.deps_json_path, self.projects_path), record_name,
+                                               'false'))
         self.gen_abc_input_files_infos(runner, abc_files_infos, f)
         f.close()
 
