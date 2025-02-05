@@ -56,3 +56,5 @@ test262/data/test/built-ins/TypedArray/prototype/copyWithin/coerced-values-end.j
 test262/data/test/built-ins/TypedArray/prototype/some/callbackfn-not-callable-throws.js
 test262/data/test/built-ins/TypedArray/prototype/copyWithin/negative-target.js
 test262/data/test/built-ins/TypedArray/prototype/fill/coerced-indexes.js
+test262/data/test/built-ins/TypedArray/prototype/set/array-arg-offset-tointeger.js
+test262/data/test/built-ins/TypedArray/prototype/every/callbackfn-not-callable-throws.js
