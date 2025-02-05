@@ -28,7 +28,7 @@ import {
   isInterfaceScope,
   isObjectLiteralScope,
   Scope,
-  ScopeKind
+  ScopeKind,
 } from '../../../src/utils/ScopeAnalyzer';
 import type {
   Label,
@@ -37,9 +37,11 @@ import type {
 import {
   createSourceFile,
   factory,
+  FunctionDeclaration,
+  ParameterDeclaration,
   ScriptTarget,
   SyntaxKind,
-  SymbolFlags
+  SymbolFlags,
 } from 'typescript';
 import type {
   __String,
@@ -446,6 +448,22 @@ describe('ScopeAnalyzer ut', function () {
             assert.strictEqual(scope, undefined);
           });
         });
+      });
+
+      describe('getScopeOfNode', () => {
+        let filePath = 'test/ut/utils/ScopeAnalyzer/analyzeFunctionType.ts';
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        let sourceFile = createSourceFile(filePath, fileContent, ScriptTarget.ES2015, true);
+        let checker = TypeUtils.createChecker(sourceFile);
+        let scopeManager = createScopeManager();
+        scopeManager.analyze(sourceFile, checker, false);
+
+        const functionDeclaration = sourceFile.statements[0] as FunctionDeclaration;
+        const parameter = functionDeclaration.parameters[0] as ParameterDeclaration;
+        const node = parameter.name as Identifier;
+
+        const scope = scopeManager.getScopeOfNode(node);
+        assert.strictEqual(scope.defs.size, 1, 'Scope should have exactly 1 definition');
       });
 
       describe('analyzeImportEqualsDeclaration', function () {

@@ -16,6 +16,7 @@
 import {
   forEachChild,
   getModifiers,
+  getOriginalNode,
   isCatchClause,
   isClassDeclaration,
   isConstructorDeclaration,
@@ -23,6 +24,7 @@ import {
   isExportSpecifier,
   isFunctionDeclaration,
   isFunctionLike,
+  isFunctionTypeNode,
   isIdentifier,
   isImportSpecifier,
   isMethodDeclaration,
@@ -34,7 +36,7 @@ import {
   isGetAccessor,
   isSetAccessor,
   isPropertyDeclaration,
-  getOriginalNode
+  isParameter,
 } from 'typescript';
 
 import type {
@@ -930,6 +932,15 @@ namespace secharmony {
     function analyzeSymbol(node: Identifier): void {
       // ignore all identifiers that treat as property in property access
       if (NodeUtils.isPropertyAccessNode(node)) {
+        return;
+      }
+
+      /*
+       *  Skip obfuscating the parameters of a FunctionType node.
+       *  For example, type MyFunc = (param: number) => void;
+       *  'param' is the parameter of 'MyFunc', so it will not be obfuscated by default.
+       */
+      if (isParameter(node.parent) && isFunctionTypeNode(node.parent.parent)) {
         return;
       }
 
