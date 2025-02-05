@@ -81,6 +81,7 @@ public:
     ImportData GetImportData(const util::StringView &path, util::gen::extension::Enum extension) const;
     void MarkAsParsed(const StringView &path);
 
+    util::StringView FormModuleNameSolelyByAbsolutePath(const util::Path &path, const lexer::SourcePosition &srcPos);
     util::StringView FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos);
 
 private:

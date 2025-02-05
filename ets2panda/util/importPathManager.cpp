@@ -337,19 +337,24 @@ static std::string FormRelativeModuleName(std::string relPath)
     return relPath;
 }
 
+util::StringView ImportPathManager::FormModuleNameSolelyByAbsolutePath(const util::Path &path,
+                                                                       const lexer::SourcePosition &srcPos)
+{
+    std::string filePath(path.GetAbsolutePath());
+    if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
+        diagnosticEngine_.LogFatalError(
+            program_, util::DiagnosticMessageParams {"Source file ", util::StringView(filePath), " outside ets-path"},
+            srcPos);
+        return "";
+    }
+    auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
+    return util::UString(name, allocator_).View();
+}
+
 util::StringView ImportPathManager::FormModuleName(const util::Path &path, const lexer::SourcePosition &srcPos)
 {
     if (!absoluteEtsPath_.empty()) {
-        std::string filePath(path.GetAbsolutePath());
-        if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
-            diagnosticEngine_.LogFatalError(
-                program_,
-                util::DiagnosticMessageParams {"Source file ", util::StringView(filePath), " outside ets-path"},
-                srcPos);
-            return "";
-        }
-        auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
-        return util::UString(name, allocator_).View();
+        return FormModuleNameSolelyByAbsolutePath(path, srcPos);
     }
     if (arktsConfig_->Package().empty()) {
         return path.GetFileName();
@@ -365,7 +370,7 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
         }
         return FormUnitName(unitName) + "." + FormRelativeModuleName(filePath.substr(unitPath.size()));
     };
-    if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl()); res) {
+    if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl() + pathDelimiter_.data()); res) {
         return util::UString(res.value(), allocator_).View();
     }
     if (!stdLib_.empty()) {
@@ -386,6 +391,11 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
             return util::UString(res.value(), allocator_).View();
         }
     }
+    // NOTE (hurton): as a last step, try resolving using the BaseUrl again without a path delimiter at the end
+    if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl()); res) {
+        return util::UString(res.value(), allocator_).View();
+    }
+
     diagnosticEngine_.LogFatalError(
         program_, util::DiagnosticMessageParams {"Unresolved module name", util::StringView(filePath)}, srcPos);
     return "";
