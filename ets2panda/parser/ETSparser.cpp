@@ -970,6 +970,12 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
            Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+
+    if ((modifiers & ir::ModifierFlags::DEFAULT_EXPORT) != 0) {
+        // Unexpected token 'default'. Only declarations can be marked with 'export default'.
+        LogSyntaxError("Unexpected token 'default'. Only declarations are allowed after 'export default'");
+    }
+
     ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
