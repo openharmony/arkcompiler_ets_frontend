@@ -36,5 +36,5 @@ class /* @@ label4 */{/* @@ label5 */}
 /* @@@ label4 Error SyntaxError: Identifier expected, got '{'.  */
 /* @@@ label5 Error SyntaxError: Unexpected token '}', expected: '{'.  */
 /* @@? 41:1 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@? 1:1 Error SyntaxError: Variable '*ERROR_LITERAL*' has already been declared. */
+/* @@? 1:1 Error TypeError: Variable '*ERROR_LITERAL*' has already been declared. */
 /* @@? 24:17 Error TypeError: Type '"abc"' cannot be assigned to type 'double' */

@@ -45,7 +45,7 @@ public:
     bool PerformForModule(public_lib::Context *ctx, parser::Program *program) override;
 
     static std::pair<bool, std::size_t> HasDefaultParam(const ir::ScriptFunction *function, parser::Program *program,
-                                                        util::ErrorLogger *logger);
+                                                        util::DiagnosticEngine &diagnosticEngine);
     static void ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, public_lib::Context *ctx);
 };
 

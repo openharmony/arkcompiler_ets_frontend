@@ -22,8 +22,9 @@
 namespace ark::es2panda::parser {
 class ASParser : public ThrowingTypedParser {
 public:
-    ASParser(Program *program, const util::Options &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : ThrowingTypedParser(program, &options, status)
+    ASParser(Program *program, const util::Options &options, util::DiagnosticEngine &diagnosticEngine,
+             ParserStatus status = ParserStatus::NO_OPTS)
+        : ThrowingTypedParser(program, &options, diagnosticEngine, status)
     {
     }
 

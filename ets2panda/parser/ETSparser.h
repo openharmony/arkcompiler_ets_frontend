@@ -33,8 +33,9 @@ namespace ark::es2panda::parser {
 
 class ETSParser final : public TypedParser {
 public:
-    ETSParser(Program *program, const util::Options &options, ParserStatus status);
-    ETSParser(Program *program, std::nullptr_t options);
+    ETSParser(Program *program, const util::Options &options, util::DiagnosticEngine &diagnosticEngine,
+              ParserStatus status);
+    ETSParser(Program *program, std::nullptr_t options, util::DiagnosticEngine &diagnosticEngine);
 
     ETSParser() = delete;
     NO_COPY_SEMANTIC(ETSParser);

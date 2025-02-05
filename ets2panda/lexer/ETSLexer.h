@@ -22,8 +22,8 @@
 namespace ark::es2panda::lexer {
 class ETSLexer final : public Lexer {
 public:
-    explicit ETSLexer(const parser::ParserContext *parserContext, util::ErrorLogger *errorLogger)
-        : Lexer(parserContext, errorLogger, false)
+    explicit ETSLexer(const parser::ParserContext *parserContext, util::DiagnosticEngine &diagnosticEngine)
+        : Lexer(parserContext, diagnosticEngine, false)
     {
         SkipWhiteSpaces();
     }

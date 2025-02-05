@@ -88,9 +88,9 @@ private:
     static std::unique_ptr<pandasm::Program> GetProgram(ark::Span<const char *const> args, std::string_view fileName,
                                                         std::string_view src)
     {
-        auto options = std::make_unique<es2panda::util::Options>(args[0]);
+        auto de = util::DiagnosticEngine();
+        auto options = std::make_unique<es2panda::util::Options>(args[0], de);
         if (!options->Parse(args)) {
-            std::cerr << options->ErrorMsg() << std::endl;
             return nullptr;
         }
 
@@ -101,7 +101,7 @@ private:
         es2panda::Compiler compiler(options->GetExtension(), options->GetThread());
         es2panda::SourceFile input(fileName, src, options->IsModule());
 
-        return std::unique_ptr<pandasm::Program>(compiler.Compile(input, *options));
+        return std::unique_ptr<pandasm::Program>(compiler.Compile(input, *options, de));
     }
 
     pandasm::Function *GetFunction(std::string_view functionName)

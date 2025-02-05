@@ -20,11 +20,12 @@
 #include "checker/types/ts/unionType.h"
 
 namespace ark::es2panda::checker {
-Checker::Checker()
+Checker::Checker(util::DiagnosticEngine &diagnosticEngine)
     : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
       context_(this, CheckerStatus::NO_OPTS),
       globalTypes_(allocator_.New<GlobalTypesHolder>(&allocator_)),
-      relation_(allocator_.New<TypeRelation>(this))
+      relation_(allocator_.New<TypeRelation>(this)),
+      diagnosticEngine_(diagnosticEngine)
 {
 }
 
@@ -35,70 +36,32 @@ void Checker::Initialize(varbinder::VarBinder *varbinder)
     program_ = varbinder_->Program();
 }
 
-std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> list)
-{
-    std::stringstream ss;
-
-    for (const auto &it : list) {
-        if (std::holds_alternative<char *>(it)) {
-            ss << (std::get<char *>(it));
-        } else if (std::holds_alternative<util::StringView>(it)) {
-            ss << (std::get<util::StringView>(it));
-        } else if (std::holds_alternative<lexer::TokenType>(it)) {
-            ss << (TokenToString(std::get<lexer::TokenType>(it)));
-        } else if (std::holds_alternative<const Type *>(it)) {
-            std::get<const Type *>(it)->ToString(ss);
-        } else if (std::holds_alternative<AsSrc>(it)) {
-            std::get<AsSrc>(it).GetType()->ToStringAsSrc(ss);
-        } else if (std::holds_alternative<size_t>(it)) {
-            ss << (std::to_string(std::get<size_t>(it)));
-        } else if (std::holds_alternative<const Signature *>(it)) {
-            std::get<const Signature *>(it)->ToString(ss, nullptr, true);
-        } else {
-            UNREACHABLE();
-        }
-    }
-
-    return ss.str();
-}
-
-void Checker::LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
                        const lexer::SourcePosition &pos)
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    errorLogger_.WriteLog(
-        Error {program_->SourceFilePath().Utf8(), &diagnostic, std::move(diagnosticParams), loc.line, loc.col});
+    auto loc = pos.ToLocation(program_);
+    diagnosticEngine_.LogDiagnostic(&diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
+                                    loc.line, loc.col);
 }
 
-void Checker::LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void Checker::LogTypeError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos)
 {
-    LogTypeError(FormatMsg(list), pos);
+    diagnosticEngine_.LogSemanticError(program_, list, pos);
 }
 
 void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition &pos)
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    errorLogger_.WriteLog(Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col});
+    diagnosticEngine_.LogSemanticError(program_, message, pos);
 }
 
 void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    // NOTE: This should go to stderr but currently the test system does not handle stderr messages
-    auto fileName = program_->SourceFilePath().Utf8();
-    fileName = fileName.substr(fileName.find_last_of(ark::os::file::File::GetPathDelim()) + 1);
-    std::cout << "Warning: " << message << " [" << fileName << ":" << loc.line << ":" << loc.col << "]" << std::endl;
+    diagnosticEngine_.LogWarning(program_, message, pos);
 }
 
-void Checker::ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void Checker::ReportWarning(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos)
 {
-    Warning(FormatMsg(list), pos);
+    diagnosticEngine_.LogWarning(program_, list, pos);
 }
 
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)
@@ -128,7 +91,7 @@ bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const std::string &e
     return true;
 }
 
-bool Checker::IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<DiagnosticMessageElement> list,
                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
@@ -153,7 +116,7 @@ bool Checker::IsTypeAssignableTo(Type *source, Type *target, const std::string &
     return true;
 }
 
-bool Checker::IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+bool Checker::IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<DiagnosticMessageElement> list,
                                  const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
@@ -178,7 +141,7 @@ bool Checker::IsTypeComparableTo(Type *source, Type *target, const std::string &
     return true;
 }
 
-bool Checker::IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+bool Checker::IsTypeComparableTo(Type *source, Type *target, std::initializer_list<DiagnosticMessageElement> list,
                                  const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
@@ -225,7 +188,7 @@ checker::SemanticAnalyzer *Checker::GetAnalyzer() const
 
 bool Checker::IsAnyError()
 {
-    return ErrorLogger()->IsAnyError() || VarBinder()->GetContext()->parser->ErrorLogger()->IsAnyError();
+    return DiagnosticEngine().IsAnyError();
 }
 
 }  // namespace ark::es2panda::checker

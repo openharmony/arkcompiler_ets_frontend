@@ -734,7 +734,7 @@ Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *va
     if ((var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsClassDefinition() ||
          var->Declaration()->Node()->AsTSTypeParameter()->Parent()->Parent()->IsTSInterfaceDeclaration()) &&
         HasStatus(CheckerStatus::IN_STATIC_CONTEXT)) {
-        return TypeError(var, FormatMsg({"Cannot make a static reference to the non-static type ", var->Name()}), pos);
+        return TypeError(var, {"Cannot make a static reference to the non-static type ", var->Name()}, pos);
     }
 
     return var->TsType();
@@ -1361,7 +1361,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);
             const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(parameterType);
-            const std::initializer_list<TypeErrorMessageElement> list = {
+            const std::initializer_list<DiagnosticMessageElement> list = {
                 "Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1};
             LogTypeError(list, arrowFuncExpr->Start());
             return false;

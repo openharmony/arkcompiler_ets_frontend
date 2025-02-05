@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,8 @@ public:
             Allocator()->New<parser::Program>(Allocator(), Allocator()->New<varbinder::ETSBinder>(Allocator()));
         program->VarBinder()->SetProgram(program);
         program->VarBinder()->InitTopScope();
-        auto etsParser = parser::ETSParser(program, nullptr);
+        auto diagnosticEngine = util::DiagnosticEngine();
+        auto etsParser = parser::ETSParser(program, nullptr, diagnosticEngine);
         auto expr = etsParser.CreateExpression(strExpr);
         return {program, expr};
     }

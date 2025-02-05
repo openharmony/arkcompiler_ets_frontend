@@ -43,21 +43,21 @@
 #include "ir/statements/functionDeclaration.h"
 #include "lexer/lexer.h"
 #include "parser/ETSparser.h"
-#include "util/errorHandler.h"
 #include "util/errorRecovery.h"
 
 using namespace std::literals::string_literals;
 
 namespace ark::es2panda::parser {
-ParserImpl::ParserImpl(Program *program, const util::Options *options, ParserStatus status)
-    : program_(program), context_(program_, status), options_(options)
+ParserImpl::ParserImpl(Program *program, const util::Options *options, util::DiagnosticEngine &diagnosticEngine,
+                       ParserStatus status)
+    : program_(program), context_(program_, status), options_(options), diagnosticEngine_(diagnosticEngine)
 {
 }
 
 std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const SourceFile &sourceFile)
 {
     program_->SetSource(sourceFile);
-    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&context_, &errorLogger_);
+    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&context_, diagnosticEngine_);
     lexer_ = lexer.get();
     return lexer;
 }
@@ -991,7 +991,7 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
     ir::Expression *argument {};
     if (inPattern) {
         argument = ParsePatternElement(ExpressionParseFlags::IN_REST);
-        if ((flags & ExpressionParseFlags::OBJECT_PATTERN) != 0 && (argument == nullptr || !argument->IsIdentifier())) {
+        if ((flags & ExpressionParseFlags::OBJECT_PATTERN) != 0 && !argument->IsIdentifier()) {
             LogSyntaxError("RestParameter must be followed by an identifier in declaration contexts");
         }
     } else {
@@ -1294,65 +1294,42 @@ void ParserImpl::LogExpectedToken(lexer::TokenType tokenType)
     lexer_->GetToken().SetTokenType(tokenType);
 }
 
-void ParserImpl::LogError(ErrorType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos)
-{
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    errorLogger_.WriteLog(Error {errorType, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col});
-}
-
 void ParserImpl::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos)
 {
-    LogError(ErrorType::SYNTAX, errorMessage, pos);
+    diagnosticEngine_.LogSyntaxError(program_, errorMessage, pos);
 }
 
 void ParserImpl::LogSyntaxError(std::string_view const errorMessage)
 {
-    LogSyntaxError(errorMessage, lexer_->GetToken().Start());
+    diagnosticEngine_.LogSyntaxError(program_, errorMessage, lexer_->GetToken().Start());
 }
 
-void ParserImpl::LogSyntaxError(std::initializer_list<std::string_view> list)
+void ParserImpl::LogSyntaxError(util::DiagnosticMessageParams list)
 {
-    LogSyntaxError(list, lexer_->GetToken().Start());
+    diagnosticEngine_.LogSyntaxError(program_, list, lexer_->GetToken().Start());
 }
 
-void ParserImpl::LogSyntaxError(std::initializer_list<std::string_view> list, const lexer::SourcePosition &pos)
+void ParserImpl::LogSyntaxError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos)
 {
-    std::stringstream ss;
-
-    for (const auto &it : list) {
-        ss << it;
-    }
-
-    std::string err = ss.str();
-
-    LogSyntaxError(std::string_view {err}, pos);
+    diagnosticEngine_.LogSyntaxError(program_, list, pos);
 }
 
-void ParserImpl::LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
                           const lexer::SourcePosition &pos)
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    errorLogger_.WriteLog(
-        Error {program_->SourceFilePath().Utf8(), &diagnostic, std::move(diagnosticParams), loc.line, loc.col});
+    auto loc = pos.ToLocation(program_);
+    diagnosticEngine_.LogDiagnostic(&diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
+                                    loc.line, loc.col);
 }
 
-void ParserImpl::LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams)
+void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams)
 {
     LogError(diagnostic, std::move(diagnosticParams), lexer_->GetToken().Start());
 }
 
 void ParserImpl::LogGenericError(std::string_view errorMessage)
 {
-    LogError(ErrorType::GENERIC, errorMessage, lexer_->GetToken().Start());
-}
-
-void ParserImpl::ThrowAllocationError(std::string_view message) const
-{
-    throw Error(ErrorType::GENERIC, program_->SourceFilePath().Utf8(), message);
+    diagnosticEngine_.LogFatalError(program_, errorMessage, lexer_->GetToken().Start());
 }
 
 ScriptExtension ParserImpl::Extension() const

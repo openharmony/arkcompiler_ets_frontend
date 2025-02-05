@@ -286,7 +286,7 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Optio
 
     CheckWarnings(Program(), options);
 
-    return !ErrorLogger()->IsAnyError();
+    return !DiagnosticEngine().IsAnyError();
 }
 
 evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin()
@@ -335,7 +335,7 @@ void ETSChecker::CheckWarnings(parser::Program *program, const util::Options &op
 {
     const auto &etsWarningCollection = options.GetEtsWarningCollection();
     for (const auto warning : etsWarningCollection) {
-        ETSWarningAnalyzer(Program()->Ast(), program, warning, options.IsEtsWarningsWerror());
+        ETSWarningAnalyzer(Program()->Ast(), program, warning, DiagnosticEngine());
     }
 }
 
@@ -564,7 +564,7 @@ Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::string_view messa
     return InvalidateType(node);
 }
 
-Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::initializer_list<TypeErrorMessageElement> list,
+Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, util::DiagnosticMessageParams list,
                             const lexer::SourcePosition &at)
 {
     LogTypeError(list, at);
@@ -574,6 +574,14 @@ Type *ETSChecker::TypeError(ir::Typed<ir::AstNode> *node, std::initializer_list<
 Type *ETSChecker::TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at)
 {
     LogTypeError(message, at);
+    var->SetTsType(GlobalTypeError());
+    return var->TsType();
+}
+
+Type *ETSChecker::TypeError(varbinder::Variable *var, util::DiagnosticMessageParams list,
+                            const lexer::SourcePosition &at)
+{
+    LogTypeError(list, at);
     var->SetTsType(GlobalTypeError());
     return var->TsType();
 }

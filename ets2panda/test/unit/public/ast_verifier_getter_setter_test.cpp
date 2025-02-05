@@ -16,17 +16,19 @@
 #include "ast_verifier_test.h"
 #include "checker/ETSchecker.h"
 #include "ir/astNode.h"
-
+#include "util/diagnosticEngine.h"
 #include <gtest/gtest.h>
 
 using ark::es2panda::checker::ETSChecker;
 using ark::es2panda::compiler::ast_verifier::GetterSetterValidation;
 using ark::es2panda::ir::AstNode;
+using ark::es2panda::util::DiagnosticEngine;
 
 namespace {
 TEST_F(ASTVerifierTest, ValidateCorrectGetterSetter)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(
@@ -56,7 +58,8 @@ TEST_F(ASTVerifierTest, ValidateCorrectGetterSetter)
 
 TEST_F(ASTVerifierTest, ValidateAbstractGettersSetters)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(
@@ -81,7 +84,8 @@ TEST_F(ASTVerifierTest, ValidateAbstractGettersSetters)
 
 TEST_F(ASTVerifierTest, ValidateAmbientGettersSetters)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(

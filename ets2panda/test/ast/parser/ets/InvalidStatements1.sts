@@ -71,5 +71,5 @@ throw
 /* @@@ label8 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
 /* @@@ label Error SyntaxError: Can only type export class or interface!  */
 /* @@@ label1 Error SyntaxError: Can only type export class or interface!  */
-/* @@? 22:20 Error SyntaxError: Variable 'x' has already been declared. */
+/* @@? 22:20 Error TypeError: Variable 'x' has already been declared. */
 /* @@? 28:1 Error TypeError: Function f is already declared. */

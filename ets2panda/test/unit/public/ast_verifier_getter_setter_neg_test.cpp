@@ -16,7 +16,7 @@
 #include "ast_verifier_test.h"
 #include "checker/ETSchecker.h"
 #include "ir/astNode.h"
-
+#include "util/diagnosticEngine.h"
 #include <gtest/gtest.h>
 
 using ark::es2panda::checker::ETSChecker;
@@ -25,11 +25,12 @@ using ark::es2panda::ir::AstNode;
 using ark::es2panda::ir::ETSParameterExpression;
 using ark::es2panda::ir::Identifier;
 using ark::es2panda::ir::MethodDefinitionKind;
-
+using ark::es2panda::util::DiagnosticEngine;
 namespace {
 TEST_F(ASTVerifierTest, ValidateGetterReturnTypeAnnotation)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(
@@ -116,7 +117,8 @@ TEST_F(ASTVerifierTest, ValidateGetterHasReturnStatement)
 
 TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(
@@ -163,7 +165,8 @@ TEST_F(ASTVerifierTest, ValidateGetterVoidReturnStatement)
 
 TEST_F(ASTVerifierTest, ValidateGetterArguments)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(
@@ -212,7 +215,8 @@ TEST_F(ASTVerifierTest, ValidateGetterArguments)
 
 TEST_F(ASTVerifierTest, ValidateSetterReturnType)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(
@@ -256,7 +260,8 @@ TEST_F(ASTVerifierTest, ValidateSetterReturnType)
 
 TEST_F(ASTVerifierTest, ValidateSetterArguments)
 {
-    ETSChecker checker {};
+    DiagnosticEngine de {};
+    ETSChecker checker {de};
 
     char const *text =
         R"(

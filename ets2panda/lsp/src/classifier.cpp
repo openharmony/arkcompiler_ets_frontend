@@ -35,8 +35,7 @@ std::unique_ptr<lexer::Lexer> InitLexer(es2panda_Context *context)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto parserContext = parser::ParserContext(ctx->parserProgram, parser::ParserStatus::NO_OPTS);
-    auto errorLogger = util::ErrorLogger();
-    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&parserContext, &errorLogger);
+    std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&parserContext, *ctx->diagnosticEngine);
     return lexer;
 }
 

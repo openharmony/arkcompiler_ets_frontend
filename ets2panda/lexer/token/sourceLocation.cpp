@@ -16,6 +16,7 @@
 #include "sourceLocation.h"
 
 #include "lexer/token/letters.h"
+#include "parser/program/program.h"
 
 #include <cstdint>
 
@@ -126,4 +127,10 @@ size_t LineIndex::GetOffset(SourceLocation loc) const noexcept
 
     return offset;
 }
+
+SourceLocation SourcePosition::ToLocation(const parser::Program *program) const
+{
+    return lexer::LineIndex(program->SourceCode()).GetLocation(*this);
+}
+
 }  // namespace ark::es2panda::lexer

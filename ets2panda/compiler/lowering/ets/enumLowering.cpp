@@ -19,7 +19,6 @@
 #include "checker/types/type.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
-#include "util/errorHandler.h"
 #include "varbinder/ETSBinder.h"
 #include "varbinder/variable.h"
 
@@ -70,7 +69,7 @@ ir::MethodDefinition *MakeMethodDef(checker::ETSChecker *const checker, ir::Clas
 
 void EnumLoweringPhase::LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    util::ErrorHandler::LogSyntaxError(context_->parser->ErrorLogger(), program_, errorMessage, pos);
+    context_->diagnosticEngine->LogSyntaxError(program_, errorMessage, pos);
 }
 
 template <typename TypeNode>

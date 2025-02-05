@@ -18,4 +18,4 @@
  }
 
  /* @@@ label Error SyntaxError: Setter must have exactly one formal parameter */
-/* @@? 1:3 Error SyntaxError: Class 'Set' is already defined with different type. */
+/* @@? 1:3 Error TypeError: Class 'Set' is already defined with different type. */

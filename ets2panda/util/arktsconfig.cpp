@@ -45,6 +45,7 @@ template <class... Ts>
 static bool Check(bool cond, const Ts &...msgs)
 {
     if (!cond) {
+        // NOTE(schernykh): Replace with diagnosticEngine
         ((std::cerr << "ArkTsConfig error: ") << ... << msgs);
         std::cerr << '\n';
         return false;

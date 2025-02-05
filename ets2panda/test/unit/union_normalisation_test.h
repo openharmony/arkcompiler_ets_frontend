@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,8 @@ public:
     UnionNormalizationTest()
         : allocator_(std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER)),
           publicContext_ {std::make_unique<public_lib::Context>()},
-          program_ {parser::Program::NewProgram<varbinder::ETSBinder>(Allocator())}
+          program_ {parser::Program::NewProgram<varbinder::ETSBinder>(Allocator())},
+          checker_ {diagnosticEngine_}
     {
     }
 
@@ -79,9 +80,8 @@ public:
     void InitializeChecker(Span<const char *const> args, std::string_view fileName, std::string_view src,
                            checker::ETSChecker *checker, parser::Program *program)
     {
-        auto options = std::make_unique<ark::es2panda::util::Options>(args[0]);
+        auto options = std::make_unique<ark::es2panda::util::Options>(args[0], diagnosticEngine_);
         if (!options->Parse(args)) {
-            std::cerr << options->ErrorMsg() << std::endl;
             return;
         }
 
@@ -91,10 +91,11 @@ public:
 
         Compiler compiler(options->GetExtension(), options->GetThread());
         SourceFile input(fileName, src, options->IsModule());
-        compiler::CompilationUnit unit {input, *options, 0, options->GetExtension()};
+        compiler::CompilationUnit unit {input, *options, 0, options->GetExtension(), diagnosticEngine_};
         auto getPhases = compiler::GetPhaseList(ScriptExtension::STS);
 
-        auto parser = Parser(program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
+        auto parser =
+            Parser(program, unit.options, diagnosticEngine_, static_cast<parser::ParserStatus>(unit.rawParserStatus));
         auto analyzer = Analyzer(checker);
         checker->SetAnalyzer(&analyzer);
 
@@ -115,7 +116,7 @@ public:
         publicContext_->analyzer = publicContext_->checker->GetAnalyzer();
         publicContext_->emitter = &emitter;
         publicContext_->parserProgram = program;
-
+        publicContext_->diagnosticEngine = &diagnosticEngine_;
         parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
         for (auto *phase : getPhases) {
             if (!phase->Apply(publicContext_.get(), program)) {
@@ -160,6 +161,7 @@ private:
     std::unique_ptr<ArenaAllocator> allocator_;
     std::unique_ptr<public_lib::Context> publicContext_;
     parser::Program program_;
+    util::DiagnosticEngine diagnosticEngine_;
     checker::ETSChecker checker_;
 };
 

@@ -136,7 +136,7 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
             return false;
         }
 
-        if (!phase->Apply(&context, &program) || context.checker->ErrorLogger()->IsAnyError()) {
+        if (!phase->Apply(&context, &program) || context.diagnosticEngine->IsAnyError()) {
             compilerImpl->SetIsAnyError(true);
             // Silence ASTVerifier since an error was already reported:
             verifier.Suppress();
@@ -197,13 +197,14 @@ using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExten
 
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const PhaseListGetter &getPhases,
-                                        CompilerImpl *compilerImpl)
+static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGetter &getPhases,
+                                 CompilerImpl *compilerImpl)
 {
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
     auto program = parser::Program::NewProgram<VarBinder>(&allocator);
-    auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
-    auto checker = Checker();
+    auto parser =
+        Parser(&program, unit.options, unit.diagnosticEngine, static_cast<parser::ParserStatus>(unit.rawParserStatus));
+    auto checker = Checker(unit.diagnosticEngine);
     auto analyzer = Analyzer(&checker);
     checker.SetAnalyzer(&analyzer);
 
@@ -228,6 +229,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     context.analyzer = checker.GetAnalyzer();
     context.parserProgram = &program;
     context.codeGenCb = MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>();
+    context.diagnosticEngine = &unit.diagnosticEngine;
 
     auto emitter = Emitter(&context);
     context.emitter = &emitter;
@@ -235,7 +237,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     varbinder->SetContext(&context);
 
     parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
-    compilerImpl->SetIsAnyError(parser.ErrorLogger()->IsAnyError());
+    compilerImpl->SetIsAnyError(context.diagnosticEngine->IsAnyError());
 
     if (unit.ext == ScriptExtension::STS) {
         if (!RunVerifierAndPhases(compilerImpl, context, getPhases(unit.ext), program)) {
@@ -261,25 +263,28 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
 {
     switch (unit.ext) {
         case ScriptExtension::TS: {
-            return CreateCompiler<parser::TSParser, varbinder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
-                                  compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList, this);
+            return compiler::Compile<parser::TSParser, varbinder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
+                                     compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
+                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList,
+                                                                                       this);
         }
         case ScriptExtension::AS: {
-            return CreateCompiler<parser::ASParser, varbinder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
-                                  compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList, this);
+            return compiler::Compile<parser::ASParser, varbinder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
+                                     compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
+                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList,
+                                                                                       this);
         }
         case ScriptExtension::STS: {
-            return CreateCompiler<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
-                                  compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
-                                  compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetPhaseList,
-                                                                                      this);
+            return compiler::Compile<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
+                                     compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
+                                     compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetPhaseList,
+                                                                                         this);
         }
         case ScriptExtension::JS: {
-            return CreateCompiler<parser::JSParser, varbinder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
-                                  compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList, this);
+            return compiler::Compile<parser::JSParser, varbinder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
+                                     compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
+                                     compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList,
+                                                                                       this);
         }
         default: {
             UNREACHABLE();

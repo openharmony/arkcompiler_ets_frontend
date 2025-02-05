@@ -32,7 +32,7 @@ class auxilliary  {
 
 /* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
 /* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
-/* @@? 19:12 Error SyntaxError: Cannot find type 'ets'. */
+/* @@? 19:12 Error TypeError: Cannot find type 'ets'. */
 /* @@? 19:16 Error TypeError: 'lang' type does not exist. */
 /* @@? 19:21 Error TypeError: 'String' type does not exist. */
 /* @@? 29:20 Error TypeError: Type 'inner<T>' is generic but type argument were not provided. */

@@ -24,7 +24,7 @@
 #include "parser/context/parserContext.h"
 #include "parser/parserFlags.h"
 #include "parser/program/program.h"
-#include "util/errorLogger.h"
+#include "util/diagnosticEngine.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::lexer {
@@ -63,7 +63,8 @@ enum class TypeAnnotationParsingOptions : uint32_t {
 
 class ParserImpl {
 public:
-    explicit ParserImpl(Program *program, const util::Options *options, ParserStatus status = ParserStatus::NO_OPTS);
+    explicit ParserImpl(Program *program, const util::Options *options, util::DiagnosticEngine &diagnosticEngine,
+                        ParserStatus status = ParserStatus::NO_OPTS);
     NO_COPY_SEMANTIC(ParserImpl);
     NO_MOVE_SEMANTIC(ParserImpl);
     virtual ~ParserImpl() = default;
@@ -89,11 +90,9 @@ public:
         return reinterpret_cast<const ETSParser *>(this);
     }
 
-    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos);
-
-    util::ErrorLogger *ErrorLogger()
+    util::DiagnosticEngine &DiagnosticEngine()
     {
-        return &errorLogger_;
+        return diagnosticEngine_;
     }
 
     void SetParserStatus(ParserStatus status)
@@ -111,8 +110,6 @@ protected:
     bool ValidatePrivateIdentifier();
 
     static ir::VariableDeclaratorFlag GetFlag(VariableParsingFlags flags);
-
-    void ThrowAllocationError(std::string_view message) const;
 
     void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags);
     void CheckPropertyKeyAsyncModifier(ParserStatus *methodStatus);
@@ -179,14 +176,19 @@ protected:
     friend class lexer::RegExpParser;
 
     void LogError(ErrorType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
-    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams = {});
-    void LogError(const diagnostic::Diagnostic &diagnostic, std::vector<std::string> diagnosticParams,
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams = {});
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
                   const lexer::SourcePosition &pos);
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);
+
+public:
     void LogSyntaxError(std::string_view errorMessage);
-    void LogSyntaxError(std::initializer_list<std::string_view> list);
-    void LogSyntaxError(std::initializer_list<std::string_view> list, const lexer::SourcePosition &pos);
+    void LogSyntaxError(util::DiagnosticMessageParams list);
+    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos);
+    void LogSyntaxError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos);
+
+protected:
     void LogParameterModifierError(ir::ModifierFlags status);
     void LogGenericError(std::string_view errorMessage);
     // Error handling
@@ -199,9 +201,7 @@ protected:
     {
         auto *ret = util::NodeAllocator::ForceSetParent<T>(
             Allocator(), std::forward<Args>(args)...);  // Note: replace with AllocNode
-        if (ret == nullptr) {
-            ThrowAllocationError("Unsuccessful allocation during parsing");
-        }
+        ASSERT(ret != nullptr);
         return ret;
     }
 
@@ -563,7 +563,7 @@ private:
     uint32_t classId_ {};
     lexer::Lexer *lexer_ {};
     const util::Options *options_;
-    util::ErrorLogger errorLogger_;
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 }  // namespace ark::es2panda::parser
 

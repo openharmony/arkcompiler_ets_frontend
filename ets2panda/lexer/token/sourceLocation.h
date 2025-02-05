@@ -18,12 +18,16 @@
 
 #include "macros.h"
 #include "util/ustring.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <vector>
 
+namespace ark::es2panda::parser {
+class Program;
+}  // namespace ark::es2panda::parser
 namespace ark::es2panda::lexer {
+
+class SourceLocation;
 class SourcePosition {
 public:
     explicit SourcePosition() noexcept = default;
@@ -31,7 +35,7 @@ public:
     DEFAULT_COPY_SEMANTIC(SourcePosition);
     DEFAULT_MOVE_SEMANTIC(SourcePosition);
     ~SourcePosition() = default;
-
+    SourceLocation ToLocation(const parser::Program *program) const;
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     size_t index {};
     size_t line {};

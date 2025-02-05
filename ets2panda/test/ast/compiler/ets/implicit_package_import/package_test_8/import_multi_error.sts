@@ -22,7 +22,7 @@ export let a: String = "SubpackageA";
 
 /* @@? 18:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
 /* @@? 19:1 Error SyntaxError: Package module cannot import from a file in it's own package  */
-/* @@? 20:1 Error SyntaxError: Variable 'myvar' has already been declared. */
-/* @@? 21:1 Error SyntaxError: Variable 'myvar2' has already been declared. */
-/* @@? 18:21 Error SyntaxError: Cannot find import: ./package_module  */
-/* @@? 19:22 Error SyntaxError: Cannot find import: ./package_module  */
+/* @@? 20:1 Error TypeError: Variable 'myvar' has already been declared. */
+/* @@? 21:1 Error TypeError: Variable 'myvar2' has already been declared. */
+/* @@? 18:21 Error TypeError: Cannot find import: ./package_module  */
+/* @@? 19:22 Error TypeError: Cannot find import: ./package_module  */

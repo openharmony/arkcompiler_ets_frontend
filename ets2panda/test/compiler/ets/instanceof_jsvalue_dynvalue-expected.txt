@@ -1,4 +1,3 @@
-TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_jsvalue_dynvalue.sts:23:12]
 {
   "type": "Program",
   "statements": [
@@ -999,3 +998,4 @@ TypeError: Right-hand side of instanceof expression must represent a type. [inst
     }
   }
 }
+TypeError: Right-hand side of instanceof expression must represent a type. [instanceof_jsvalue_dynvalue.sts:23:12]

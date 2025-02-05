@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +27,6 @@ namespace ark::es2panda::parser {
 class ThrowingTypedParser : public TypedParser {
 public:
     using TypedParser::TypedParser;
-
     [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;
     [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage) const;
     [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list) const;

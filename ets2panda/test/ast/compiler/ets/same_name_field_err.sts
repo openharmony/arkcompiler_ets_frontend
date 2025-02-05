@@ -23,4 +23,4 @@ function main(): void {
     assert SameName.a == 32;
 }
 
-/* @@? 19:12 Error SyntaxError: Variable 'a' has already been declared.  */
+/* @@? 19:12 Error TypeError: Variable 'a' has already been declared.  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -138,7 +138,7 @@ private:
 
     // utils
     void Warning(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
+    void Warning(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &pos);
     bool Trackable(const ir::AstNode *node) const;
     bool IsConstUninitializedField(const ir::AstNode *node) const;
     bool IsConstUninitializedStaticField(const ir::AstNode *node) const;

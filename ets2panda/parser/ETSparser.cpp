@@ -77,15 +77,16 @@ class FunctionContext;
 
 using namespace std::literals::string_literals;
 
-ETSParser::ETSParser(Program *program, const util::Options &options, ParserStatus status)
-    : TypedParser(program, &options, status), globalProgram_(GetProgram())
+ETSParser::ETSParser(Program *program, const util::Options &options, util::DiagnosticEngine &diagnosticEngine,
+                     ParserStatus status)
+    : TypedParser(program, &options, diagnosticEngine, status), globalProgram_(GetProgram())
 {
     namespaceNestedRank_ = 0;
-    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), ErrorLogger(), options);
+    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), options, program, diagnosticEngine);
 }
 
-ETSParser::ETSParser(Program *program, std::nullptr_t)
-    : TypedParser(program, nullptr, ParserStatus::NO_OPTS), globalProgram_(GetProgram())
+ETSParser::ETSParser(Program *program, std::nullptr_t, util::DiagnosticEngine &diagnosticEngine)
+    : TypedParser(program, nullptr, diagnosticEngine, ParserStatus::NO_OPTS), globalProgram_(GetProgram())
 {
     namespaceNestedRank_ = 0;
 }
@@ -98,7 +99,7 @@ bool ETSParser::IsETSParser() const noexcept
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
-    auto lexer = std::make_unique<lexer::ETSLexer>(&GetContext(), ErrorLogger());
+    auto lexer = std::make_unique<lexer::ETSLexer>(&GetContext(), DiagnosticEngine());
     SetLexer(lexer.get());
     return lexer;
 }
@@ -1025,7 +1026,8 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
     if (!Lexer()->TryEatTokenType(lexer::TokenType::KEYW_PACKAGE)) {
         // NOTE(vpukhov): the *unnamed* modules are to be removed entirely
         bool isUnnamed = GetOptions().IsEtsUnnamed() && GetProgram() == globalProgram_;
-        util::StringView moduleName = isUnnamed ? "" : importPathManager_->FormModuleName(GetProgram()->SourceFile());
+        util::StringView moduleName =
+            isUnnamed ? "" : importPathManager_->FormModuleName(GetProgram()->SourceFile(), startLoc);
         GetProgram()->SetPackageInfo(moduleName, ModuleKind::MODULE);
         return nullptr;
     }
@@ -1057,13 +1059,14 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
 
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
     auto importPath = Lexer()->GetToken().Ident();
-
-    auto resolvedImportPath = importPathManager_->ResolvePath(GetProgram()->AbsoluteName(), importPath);
+    auto resolvedImportPath =
+        importPathManager_->ResolvePath(GetProgram()->AbsoluteName(), importPath, Lexer()->GetToken().Start());
     if (globalProgram_->AbsoluteName() != resolvedImportPath) {
         importPathManager_->AddToParseList(resolvedImportPath,
                                            (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U
                                                ? util::ImportFlags::DEFAULT_IMPORT
-                                               : util::ImportFlags::NONE);
+                                               : util::ImportFlags::NONE,
+                                           Lexer()->GetToken().Start());
     }
 
     auto *resolvedSource = AllocNode<ir::StringLiteral>(resolvedImportPath);
@@ -1514,11 +1517,6 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclarator(ir::Expression *init,
 {
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         return ParseVariableDeclaratorInitializer(init, flags, startLoc);
-    }
-
-    if ((flags & VariableParsingFlags::CONST) != 0 &&
-        static_cast<uint32_t>(flags & VariableParsingFlags::ACCEPT_CONST_NO_INIT) == 0U && !InAmbientContext()) {
-        LogSyntaxError("Missing initializer in const declaration");
     }
 
     if (init->AsIdentifier()->TypeAnnotation() == nullptr && (flags & VariableParsingFlags::FOR_OF) == 0U) {
@@ -1990,7 +1988,8 @@ ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags 
 
 void ETSParser::AddPackageSourcesToParseList()
 {
-    importPathManager_->AddToParseList(GetProgram()->SourceFileFolder(), util::ImportFlags::IMPLICIT_PACKAGE_IMPORT);
+    importPathManager_->AddToParseList(GetProgram()->SourceFileFolder(), util::ImportFlags::IMPLICIT_PACKAGE_IMPORT,
+                                       Lexer()->GetToken().Start());
 
     // Global program file is always in the same folder that we scanned, but we don't need to parse it twice
     importPathManager_->MarkAsParsed(globalProgram_->SourceFilePath());

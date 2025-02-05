@@ -16,7 +16,7 @@
 #include "ETSNolintParser.h"
 
 namespace ark::es2panda::parser {
-ETSNolintParser::ETSNolintParser(const ParserImpl *mainParser) : parser_(mainParser)
+ETSNolintParser::ETSNolintParser(ParserImpl *mainParser) : parser_(mainParser)
 {
     line_ = parser_->Lexer()->Line();
 }
@@ -209,9 +209,6 @@ bool ETSNolintParser::ValidETSNolintArg(const std::string &warningName) const
     return util::gen::ets_warnings::FromString(warningName) != ETSWarnings::INVALID;
 }
 
-static constexpr char const UNEXPECTED_CHAR[] = "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].";
-static constexpr char const INVALID_ARGUMENT[] = "Invalid argument for ETSNOLINT!";
-
 std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
 {
     std::set<ETSWarnings> warningsCollection;
@@ -231,14 +228,13 @@ std::set<ETSWarnings> ETSNolintParser::ParseETSNolintArgs()
         cp = PeekSymbol();
         if (cp != lexer::LEX_CHAR_MINUS && cp != lexer::LEX_CHAR_COMMA && cp != lexer::LEX_CHAR_RIGHT_PAREN &&
             (cp < lexer::LEX_CHAR_LOWERCASE_A || cp > lexer::LEX_CHAR_LOWERCASE_Z)) {
-            const_cast<util::ErrorLogger &>(parser_->errorLogger_)
-                .WriteLog(Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), UNEXPECTED_CHAR,
-                                 line_ + 1, 0});
+            parser_->DiagnosticEngine().LogSyntaxError(
+                parser_->GetProgram(), "Unexpected character for ETSNOLINT argument! [VALID ONLY: a-z, '-'].",
+                lexer::SourceLocation {line_ + 1, 0});
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && !ValidETSNolintArg(warningName)) {
-            const_cast<util::ErrorLogger &>(parser_->errorLogger_)
-                .WriteLog(Error {ErrorType::SYNTAX, parser_->GetProgram()->SourceFilePath().Utf8(), INVALID_ARGUMENT,
-                                 line_ + 1, 0});
+            parser_->DiagnosticEngine().LogSyntaxError(parser_->GetProgram(), "Invalid argument for ETSNOLINT!",
+                                                       lexer::SourceLocation {line_ + 1, 0});
         }
         if ((cp == lexer::LEX_CHAR_COMMA || cp == lexer::LEX_CHAR_RIGHT_PAREN) && ValidETSNolintArg(warningName)) {
             warningsCollection.insert(MapETSNolintArg(warningName));

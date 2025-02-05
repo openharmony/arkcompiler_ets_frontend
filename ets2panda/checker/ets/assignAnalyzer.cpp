@@ -203,7 +203,7 @@ void AssignAnalyzer::Warning(const std::string_view message, const lexer::Source
     checker_->Warning(message, pos);
 }
 
-void AssignAnalyzer::Warning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+void AssignAnalyzer::Warning(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos)
 {
     ++numErrors_;
     lastWarningPos_ = pos;

@@ -81,7 +81,7 @@ namespace ark::es2panda::parser {
 std::unique_ptr<lexer::Lexer> ASParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
-    auto lexer = std::make_unique<lexer::ASLexer>(&GetContext(), ErrorLogger());
+    auto lexer = std::make_unique<lexer::ASLexer>(&GetContext(), DiagnosticEngine());
     SetLexer(lexer.get());
     return lexer;
 }

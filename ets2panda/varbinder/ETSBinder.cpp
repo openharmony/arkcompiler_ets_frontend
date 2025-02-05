@@ -1404,11 +1404,7 @@ bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const
 
 void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
 {
-    lexer::LineIndex index(Program()->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    GetContext()->checker->ErrorLogger()->WriteLog(
-        Error {ErrorType::SYNTAX, Program()->SourceFilePath().Utf8(), msg, loc.line, loc.col});
+    GetContext()->diagnosticEngine->LogSemanticError(Program(), msg, pos);
 }
 
 }  // namespace ark::es2panda::varbinder

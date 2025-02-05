@@ -16,4 +16,4 @@
 @interface MyAnno {}
 class /* @@ label */MyAnno {}
 
-/* @@@ label Error SyntaxError: Variable 'MyAnno' has already been declared.  */
+/* @@@ label Error TypeError: Variable 'MyAnno' has already been declared.  */

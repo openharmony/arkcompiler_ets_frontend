@@ -238,7 +238,7 @@ void TypeRelation::RaiseError(const std::string &errMsg, const lexer::SourcePosi
     checker_->LogTypeError(errMsg, loc);
 }
 
-void TypeRelation::RaiseError(std::initializer_list<TypeErrorMessageElement> list,
+void TypeRelation::RaiseError(std::initializer_list<DiagnosticMessageElement> list,
                               const lexer::SourcePosition &loc) const
 {
     checker_->LogTypeError(list, loc);

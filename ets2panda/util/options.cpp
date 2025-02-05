@@ -14,10 +14,10 @@
  */
 
 #include "options.h"
-
+#include "util/diagnosticEngine.h"
+#include "util/ustring.h"
 #include "os/filesystem.h"
 #include "utils/pandargs.h"
-
 #include "arktsconfig.h"
 
 #include <random>
@@ -68,19 +68,20 @@ static std::string GetVersion()
 }
 
 template <typename T>
-bool Options::CallPandArgParser(const std::vector<std::string> &args, T &options)
+bool Options::CallPandArgParser(const std::vector<std::string> &args, T &options,
+                                util::DiagnosticEngine &diagnosticEngine)
 {
     ark::PandArgParser parser;
     options.AddOptions(&parser);
 
     if (!parser.Parse(args)) {
-        std::cerr << parser.GetErrorString();
+        diagnosticEngine.LogFatalError(parser.GetErrorString());
         std::cerr << parser.GetHelpString();
         return false;
     }
 
     if (auto optionsErr = options.Validate(); optionsErr) {
-        std::cerr << "Error: " << optionsErr.value().GetMessage() << std::endl;
+        diagnosticEngine.LogFatalError(optionsErr.value().GetMessage());
         return false;
     }
 
@@ -95,12 +96,12 @@ bool Options::CallPandArgParser(const std::vector<std::string> &args)
     parser.EnableTail();
     parser.EnableRemainder();
     if (!parser.Parse(args) || IsHelp()) {
-        errorMsg_ = Usage(parser);
+        std::cerr << Usage(parser);
         return false;
     }
 
     if (auto optionsErr = Validate(); optionsErr) {
-        std::cerr << "Error: " << optionsErr.value().GetMessage() << std::endl;
+        diagnosticEngine_.LogFatalError(optionsErr.value().GetMessage());
         return false;
     }
 
@@ -156,15 +157,14 @@ bool Options::ParseInputOutput()
 {
     auto isDebuggerEvalMode = IsDebuggerEval();
     if (isDebuggerEvalMode && compilationMode_ != CompilationMode::SINGLE_FILE) {
-        errorMsg_ = "Error: When compiling with --debugger-eval-mode single input file must be provided";
+        diagnosticEngine_.LogFatalError("When compiling with --debugger-eval-mode single input file must be provided");
         return false;
     }
 
     if (compilationMode_ == CompilationMode::SINGLE_FILE) {
         std::ifstream inputStream(SourceFileName());
         if (inputStream.fail()) {
-            errorMsg_ = "Failed to open file: ";
-            errorMsg_.append(SourceFileName());
+            diagnosticEngine_.LogFatalError({"Failed to open file: ", std::string_view(SourceFileName())});
             return false;
         }
 
@@ -179,7 +179,7 @@ bool Options::ParseInputOutput()
 
     if (WasSetOutput()) {
         if (compilationMode_ == CompilationMode::PROJECT) {
-            errorMsg_ = "Error: When compiling in project mode --output key is not needed";
+            diagnosticEngine_.LogFatalError("When compiling in project mode --output key is not needed");
             return false;
         }
     } else {
@@ -202,12 +202,13 @@ bool Options::Parse(Span<const char *const> args)
     }
 
     if (IsVersion()) {
-        errorMsg_ = GetVersion();
+        std::cerr << GetVersion();
         return false;
     }
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
-    if ((WasSetBcoCompiler() && !CallPandArgParser(GetBcoCompiler(), ark::compiler::g_options)) ||
-        (WasSetBcoOptimizer() && !CallPandArgParser(GetBcoOptimizer(), ark::bytecodeopt::g_options))) {
+    if ((WasSetBcoCompiler() && !CallPandArgParser(GetBcoCompiler(), ark::compiler::g_options, diagnosticEngine_)) ||
+        (WasSetBcoOptimizer() &&
+         !CallPandArgParser(GetBcoOptimizer(), ark::bytecodeopt::g_options, diagnosticEngine_))) {
         return false;
     }
 #endif
@@ -220,12 +221,12 @@ bool Options::Parse(Span<const char *const> args)
         return false;
     }
     if (extension_ != ScriptExtension::JS && IsModule()) {
-        errorMsg_ = "Error: --module is not supported for this extension.";
+        diagnosticEngine_.LogFatalError("--module is not supported for this extension.");
         return false;
     }
 
     if ((WasSetDumpEtsSrcBeforePhases() || WasSetDumpEtsSrcAfterPhases()) && extension_ != ScriptExtension::STS) {
-        errorMsg_ = "--dump-ets-src-* option is valid only with ETS extension";
+        diagnosticEngine_.LogFatalError("--dump-ets-src-* option is valid only with ETS extension");
         return false;
     }
 
@@ -319,22 +320,25 @@ bool Options::DetermineExtension()
 {
     if (compilationMode_ == CompilationMode::PROJECT) {
         if (WasSetExtension() && gen::Options::GetExtension() != "sts") {
-            errorMsg_ = "Error: only '--extension=sts' is supported for project compilation mode.";
+            diagnosticEngine_.LogFatalError("Error: only '--extension=sts' is supported for project compilation mode.");
             return false;
         }
         extension_ = ScriptExtension::STS;
         return true;
     }
     std::string sourceFileExtension = SourceFileName().substr(SourceFileName().find_last_of('.') + 1);
+#ifdef ENABLE_AFTER_21192
+    // NOTE(mkaskov): Enable after #21192
     if (!SourceFileName().empty() && WasSetExtension() && gen::Options::GetExtension() != sourceFileExtension) {
-        std::cerr << "Warning: Not matching extensions! Sourcefile: " << sourceFileExtension
-                  << ", Manual(used): " << gen::Options::GetExtension() << std::endl;
+        diagnosticEngine_.LogWarning({"Not matching extensions! Sourcefile: ", std::string_view(sourceFileExtension),
+                                      ", Manual(used): ", std::string_view(gen::Options::GetExtension())});
     }
+#endif  // ENABLE_AFTER_21192
     auto tempExtension = WasSetExtension() ? gen::Options::GetExtension() : sourceFileExtension;
     if (gen::extension::FromString(tempExtension) == ScriptExtension::INVALID) {
-        errorMsg_ =
+        diagnosticEngine_.LogFatalError(
             "Unknown extension of sourcefile, set the '--extension' option or change the file extension "
-            "(available options: js, ts, as, sts)";
+            "(available options: js, ts, as, sts)");
         return false;
     }
 
@@ -342,15 +346,14 @@ bool Options::DetermineExtension()
     switch (extension_) {
 #ifndef PANDA_WITH_ECMASCRIPT
         case ScriptExtension::JS: {
-            errorMsg_ = "js extension is not supported within current build";
+            diagnosticEngine_.LogFatalError("js extension is not supported within current build");
             return false;
         }
 #endif
         case ScriptExtension::STS: {
             std::ifstream inputStream(GetArktsconfig());
             if (inputStream.fail()) {
-                errorMsg_ = "Failed to open arktsconfig: ";
-                errorMsg_.append(GetArktsconfig());
+                diagnosticEngine_.LogFatalError({"Failed to open arktsconfig: ", std::string_view(GetArktsconfig())});
                 return false;
             }
             return true;
@@ -378,8 +381,7 @@ std::optional<ArkTsConfig> Options::ParseArktsConfig()
 {
     auto config = ArkTsConfig {GetArktsconfig()};
     if (!config.Parse()) {
-        errorMsg_ = "Invalid ArkTsConfig path: ";
-        errorMsg_.append(GetArktsconfig());
+        diagnosticEngine_.LogFatalError({"Invalid ArkTsConfig path: ", std::string_view(GetArktsconfig())});
         return std::nullopt;
     }
     return std::make_optional(config);

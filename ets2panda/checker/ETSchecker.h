@@ -73,9 +73,9 @@ using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Subs
 
 class ETSChecker final : public Checker {
 public:
-    explicit ETSChecker()
+    explicit ETSChecker(util::DiagnosticEngine &diagnosticEngine)
         // NOLINTNEXTLINE(readability-redundant-member-init)
-        : Checker(),
+        : Checker(diagnosticEngine),
           arrayTypes_(Allocator()->Adapter()),
           pendingConstraintCheckRecords_(Allocator()->Adapter()),
           globalArraySignatures_(Allocator()->Adapter()),
@@ -148,9 +148,11 @@ public:
     [[nodiscard]] Type *InvalidateType(ir::Typed<ir::AstNode> *node);
     [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, std::string_view message,
                                   const lexer::SourcePosition &at);
-    [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, std::initializer_list<TypeErrorMessageElement> list,
+    [[nodiscard]] Type *TypeError(ir::Typed<ir::AstNode> *node, util::DiagnosticMessageParams list,
                                   const lexer::SourcePosition &at);
     [[nodiscard]] Type *TypeError(varbinder::Variable *var, std::string_view message, const lexer::SourcePosition &at);
+    [[nodiscard]] Type *TypeError(varbinder::Variable *var, util::DiagnosticMessageParams list,
+                                  const lexer::SourcePosition &at);
 
     void InitializeBuiltins(varbinder::ETSBinder *varbinder);
     void InitializeBuiltin(varbinder::Variable *var, const util::StringView &name);

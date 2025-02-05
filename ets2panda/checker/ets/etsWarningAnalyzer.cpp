@@ -1,6 +1,6 @@
 
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,7 +70,7 @@ void ETSWarningAnalyzer::AnalyzeClassDefForFinalModifier(const ir::ClassDefiniti
         }
     }
 
-    ETSThrowWarning("Suggest 'final' modifier for class", classDef->Ident()->Start());
+    LogWarning("Suggest 'final' modifier for class", classDef->Ident()->Start());
 }
 
 void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefinition *methodDef,
@@ -113,7 +113,7 @@ void ETSWarningAnalyzer::AnalyzeClassMethodForFinalModifier(const ir::MethodDefi
     }
 
     if (suggestFinal) {
-        ETSThrowWarning("Suggest 'final' modifier for method", methodDef->Function()->Start());
+        LogWarning("Suggest 'final' modifier for method", methodDef->Function()->Start());
     }
 }
 
@@ -141,11 +141,11 @@ void ETSWarningAnalyzer::CheckTopLevelExpressions(const ir::Expression *expressi
         lexer::SourcePosition pos = exprCallee->Start();
         if (exprCallee->IsMemberExpression()) {
             pos = exprCallee->AsMemberExpression()->Object()->Start();
-            ETSThrowWarning("Prohibit top-level statements", pos);
+            LogWarning("Prohibit top-level statements", pos);
         }
     } else if (expression->IsAssignmentExpression()) {
         const auto assignmentExpr = expression->AsAssignmentExpression();
-        ETSThrowWarning("Prohibit top-level statements", assignmentExpr->Left()->Start());
+        LogWarning("Prohibit top-level statements", assignmentExpr->Left()->Start());
     }
 }
 
@@ -164,7 +164,7 @@ void ETSWarningAnalyzer::CheckProhibitedTopLevelStatements(const ir::Statement *
         case ir::AstNodeType::CLASS_PROPERTY:
             break;
         default:
-            ETSThrowWarning("Prohibit top-level statements", statement->Start());
+            LogWarning("Prohibit top-level statements", statement->Start());
             break;
     }
 }
@@ -216,7 +216,7 @@ void ETSWarningAnalyzer::ETSWarningBoostEqualityStatement(const ir::AstNode *nod
         if (binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
             binExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
             if (binExpr->Right()->IsNullLiteral() && !binExpr->Left()->IsNullLiteral()) {
-                ETSThrowWarning("Boost Equality Statement. Change sides of binary expression", node->Start());
+                LogWarning("Boost Equality Statement. Change sides of binary expression", node->Start());
             }
         }
     }
@@ -228,7 +228,7 @@ void ETSWarningAnalyzer::ETSWarningRemoveAsync(const ir::AstNode *node)
     if (node->IsMethodDefinition() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_REMOVE_ASYNC)) {
         const auto methodDefinition = node->AsMethodDefinition();
         if (methodDefinition->IsAsync()) {
-            ETSThrowWarning("Replace asynchronous function with coroutine", methodDefinition->Start());
+            LogWarning("Replace asynchronous function with coroutine", methodDefinition->Start());
         }
     }
     node->Iterate([&](auto *childNode) { ETSWarningRemoveAsync(childNode); });
@@ -239,7 +239,7 @@ void ETSWarningAnalyzer::ETSWarningRemoveLambda(const ir::AstNode *node)
     ASSERT(node != nullptr);
 
     if (node->IsArrowFunctionExpression() && !program_->NodeContainsETSNolint(node, ETSWarnings::ETS_REMOVE_LAMBDA)) {
-        ETSThrowWarning("Replace the lambda function with a regular function", node->Start());
+        LogWarning("Replace the lambda function with a regular function", node->Start());
     }
     node->Iterate([&](auto *childNode) { ETSWarningRemoveLambda(childNode); });
 }
@@ -251,28 +251,28 @@ void ETSWarningAnalyzer::CheckTypeOfBoxing(const ir::AstNode *node)
     if ((flags & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0) {
         switch (static_cast<ir::BoxingUnboxingFlags>(flags & ir::BoxingUnboxingFlags::BOXING_FLAG)) {
             case ir::BoxingUnboxingFlags::BOX_TO_INT:
-                ETSThrowWarning("Implicit Boxing to Int" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Int" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN:
-                ETSThrowWarning("Implicit Boxing to Boolean" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Boolean" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_BYTE:
-                ETSThrowWarning("Implicit Boxing to Byte" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Byte" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_CHAR:
-                ETSThrowWarning("Implicit Boxing to Char" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Char" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE:
-                ETSThrowWarning("Implicit Boxing to Double" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Double" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_FLOAT:
-                ETSThrowWarning("Implicit Boxing to Float" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Float" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_LONG:
-                ETSThrowWarning("Implicit Boxing to Long" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Long" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::BOX_TO_SHORT:
-                ETSThrowWarning("Implicit Boxing to Short" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Boxing to Short" + GetBoxingUnboxingType(node), node->Start());
                 break;
             default:
                 break;
@@ -287,31 +287,31 @@ void ETSWarningAnalyzer::CheckTypeOfUnboxing(const ir::AstNode *node)
     if ((flags & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0) {
         switch (static_cast<ir::BoxingUnboxingFlags>(flags & ir::BoxingUnboxingFlags::UNBOXING_FLAG)) {
             case ir::BoxingUnboxingFlags::UNBOX_TO_INT:
-                ETSThrowWarning("Implicit Unboxing to int" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to int" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN:
-                ETSThrowWarning("Implicit Unboxing to boolean" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to boolean" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_BYTE:
-                ETSThrowWarning("Implicit Unboxing to byte" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to byte" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_CHAR:
-                ETSThrowWarning("Implicit Unboxing to char" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to char" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE:
-                ETSThrowWarning("Implicit Unboxing to double" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to double" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT:
-                ETSThrowWarning("Implicit Unboxing to float" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to float" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_LONG:
-                ETSThrowWarning("Implicit Unboxing to long" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to long" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_SHORT:
-                ETSThrowWarning("Implicit Unboxing to short" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to short" + GetBoxingUnboxingType(node), node->Start());
                 break;
             case ir::BoxingUnboxingFlags::UNBOX_TO_ENUM:
-                ETSThrowWarning("Implicit Unboxing to enum" + GetBoxingUnboxingType(node), node->Start());
+                LogWarning("Implicit Unboxing to enum" + GetBoxingUnboxingType(node), node->Start());
                 break;
             default:
                 break;
@@ -386,19 +386,9 @@ void ETSWarningAnalyzer::ETSWarningImplicitBoxingUnboxing(const ir::AstNode *nod
     node->Iterate([&](auto *childNode) { ETSWarningImplicitBoxingUnboxing(childNode); });
 }
 
-void ETSWarningAnalyzer::ETSThrowWarning(const std::string &message, const lexer::SourcePosition &pos)
+void ETSWarningAnalyzer::LogWarning(const std::string &message, const lexer::SourcePosition &pos)
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation location = index.GetLocation(pos);
-
-    if (etsWerror_) {
-        throw Error(ErrorType::ETS_WARNING, ark::es2panda::util::BaseName(program_->SourceFilePath().Utf8()), message,
-                    location.line, location.col);
-    }
-
-    std::cout << "ETS Warning: " << message << "."
-              << " [" << ark::es2panda::util::BaseName(program_->SourceFilePath().Utf8()) << ":" << location.line << ":"
-              << location.col << "]" << std::endl;
+    diagnosticEngine_.LogWarning(program_, message, pos);
 }
 
 }  // namespace ark::es2panda::checker

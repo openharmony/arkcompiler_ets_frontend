@@ -1,4 +1,3 @@
-TypeError: Bad operand type, the types of the operands must be same type. [dynamic_instanceof_error.sts:24:11]
 {
   "type": "Program",
   "statements": [
@@ -1018,3 +1017,4 @@ TypeError: Bad operand type, the types of the operands must be same type. [dynam
     }
   }
 }
+TypeError: Bad operand type, the types of the operands must be same type. [dynamic_instanceof_error.sts:24:11]

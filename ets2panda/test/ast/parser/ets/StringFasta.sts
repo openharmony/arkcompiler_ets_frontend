@@ -123,14 +123,14 @@ function main(): void {
 }
 
 /* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@? 18:46 Error SyntaxError: Cannot find type 'HashMap'. */
-/* @@? 18:18 Error SyntaxError: Cannot find type 'HashMap'. */
-/* @@? 19:50 Error SyntaxError: Cannot find type 'HashMap'. */
-/* @@? 19:22 Error SyntaxError: Cannot find type 'HashMap'. */
-/* @@? 52:35 Error SyntaxError: Cannot find type 'HashMap'. */
-/* @@? 54:26 Error SyntaxError: Cannot find type 'HashMap'. */
-/* @@? 84:41 Error SyntaxError: Cannot find type 'HashMap'. */
-/* @@? 95:34 Error SyntaxError: Cannot find type 'HashMap'. */
+/* @@? 18:46 Error TypeError: Cannot find type 'HashMap'. */
+/* @@? 18:18 Error TypeError: Cannot find type 'HashMap'. */
+/* @@? 19:50 Error TypeError: Cannot find type 'HashMap'. */
+/* @@? 19:22 Error TypeError: Cannot find type 'HashMap'. */
+/* @@? 52:35 Error TypeError: Cannot find type 'HashMap'. */
+/* @@? 54:26 Error TypeError: Cannot find type 'HashMap'. */
+/* @@? 84:41 Error TypeError: Cannot find type 'HashMap'. */
+/* @@? 95:34 Error TypeError: Cannot find type 'HashMap'. */
 /* @@? 21:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
 /* @@? 22:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */
 /* @@? 23:9 Error TypeError: Static property 'IUB' must be accessed through it's class 'StringFasta' */

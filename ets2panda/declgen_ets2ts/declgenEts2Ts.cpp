@@ -110,7 +110,7 @@ void TSDeclGen::ThrowError(const std::string_view message, const lexer::SourcePo
     lexer::LineIndex index(program_->SourceCode());
     const lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::GENERIC, program_->SourceFilePath().Utf8(), "declgen ets2ts: " + std::string(message),
+    throw Error {ErrorType::FATAL, program_->SourceFilePath().Utf8(), "declgen ets2ts: " + std::string(message),
                  loc.line, loc.col};
 }
 

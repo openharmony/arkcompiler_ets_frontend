@@ -34,6 +34,7 @@ using ScriptExtension = util::gen::extension::Enum;
 constexpr std::string_view ES2PANDA_VERSION = "0.1";
 namespace util {
 class Options;
+class DiagnosticEngine;
 }  // namespace util
 namespace parser {
 class ParserImpl;
@@ -48,7 +49,7 @@ class VarBinder;
 }  // namespace varbinder
 
 namespace diagnostic {
-class Diagnostic;
+class DiagnosticKind;
 }  // namespace diagnostic
 
 enum class CompilationMode {
@@ -88,13 +89,7 @@ struct SourceFile {
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
-enum class ErrorType {
-    INVALID,
-    GENERIC,
-    SYNTAX,
-    TYPE,
-    ETS_WARNING,
-};
+enum ErrorType { BEGIN = 0, FATAL = BEGIN, SYNTAX, SEMANTIC, WARNING, PLUGIN, COUNT = PLUGIN, INVALID };
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 inline static constexpr char const ERROR_LITERAL[] = "*ERROR_LITERAL*";
@@ -109,15 +104,16 @@ public:
         : type_(type), file_(file), message_(message)
     {
     }
-    explicit Error(ErrorType type, std::string_view file, std::string_view message, size_t line, size_t column) noexcept
-        : type_(type), file_(file), message_(message), line_(line), col_(column)
+    explicit Error(ErrorType type, std::string_view file, std::string_view message, size_t line, size_t offset) noexcept
+        : type_(type), file_(file), message_(message), line_(line), offset_(offset)
     {
     }
-    explicit Error(std::string_view file, const diagnostic::Diagnostic *diagnostic,
-                   std::vector<std::string> diagnosticParams, size_t line, size_t column) noexcept
+    // NOTE(schernykh): replace with util::DiagnosticMessegeParams
+    explicit Error(const diagnostic::DiagnosticKind *diagnostic, std::vector<std::string> diagnosticParams,
+                   std::string_view file, size_t line, size_t offset) noexcept
         : file_(file),
           line_(line),
-          col_(column),
+          offset_(offset),
           diagnosticKind_(diagnostic),
           diagnosticParams_(std::move(diagnosticParams))
     {
@@ -128,37 +124,50 @@ public:
 
     ErrorType Type() const noexcept;
 
-    const char *TypeString() const noexcept
+    // NOTE(schernykh): move out from class
+    static const char *TypeString(ErrorType type)
     {
-        switch (Type()) {
+        switch (type) {
+            case ErrorType::FATAL:
+                return "Fatal error";
             case ErrorType::SYNTAX:
                 return "SyntaxError";
-            case ErrorType::TYPE:
+            case ErrorType::SEMANTIC:
                 return "TypeError";
-            case ErrorType::ETS_WARNING:
-                return "System ArkTS: warning treated as error.";
+            case ErrorType::WARNING:
+                return "Warning";
+            case ErrorType::PLUGIN:
+                return "Plugin error";
             default:
-                break;
+                UNREACHABLE();
         }
-
-        return "Error";
     }
 
-    const char *what() const noexcept override
+    static bool IsError(ErrorType type)
     {
-        return message_.c_str();
-    }
-
-    int ErrorCode() const noexcept
-    {
-        return errorCode_;
+        switch (type) {
+            case ErrorType::FATAL:
+            case ErrorType::SYNTAX:
+            case ErrorType::SEMANTIC:
+            case ErrorType::PLUGIN:
+                return true;
+            case ErrorType::WARNING:
+                return false;
+            default:
+                UNREACHABLE();
+        }
     }
 
     std::string Message() const;
 
-    const std::string &File() const noexcept
+    const std::string &File() const
     {
         return file_;
+    }
+
+    std::pair<size_t, size_t> GetLoc() const
+    {
+        return {line_, offset_};
     }
 
     size_t Line() const
@@ -166,9 +175,43 @@ public:
         return line_;
     }
 
-    size_t Col() const
+    size_t Offset() const
     {
-        return col_;
+        return offset_;
+    }
+
+    bool operator<(const Error &rhs) const
+    {
+        if (file_ != rhs.File()) {
+            return file_ < rhs.File();
+        }
+        if (line_ != rhs.Line()) {
+            return line_ < rhs.Line();
+        }
+        if (offset_ != rhs.Offset()) {
+            return offset_ < rhs.Offset();
+        }
+        if (type_ != rhs.Type()) {
+            return type_ < rhs.Type();
+        }
+        return false;
+    }
+
+    bool operator==(const Error &rhs) const
+    {
+        if (file_ != rhs.File()) {
+            return false;
+        }
+        if (line_ != rhs.Line()) {
+            return false;
+        }
+        if (offset_ != rhs.Offset()) {
+            return false;
+        }
+        if (type_ != rhs.Type()) {
+            return false;
+        }
+        return message_ == rhs.Message();
     }
 
 private:
@@ -176,9 +219,8 @@ private:
     std::string file_;
     std::string message_ {};
     size_t line_ {};
-    size_t col_ {};
-    int errorCode_ {1};
-    const diagnostic::Diagnostic *diagnosticKind_ {nullptr};
+    size_t offset_ {};
+    const diagnostic::DiagnosticKind *diagnosticKind_ {nullptr};
     std::vector<std::string> diagnosticParams_ {};
 };
 
@@ -191,7 +233,8 @@ public:
     NO_COPY_SEMANTIC(Compiler);
     NO_MOVE_SEMANTIC(Compiler);
 
-    pandasm::Program *Compile(const SourceFile &input, const util::Options &options, uint32_t parseStatus = 0);
+    pandasm::Program *Compile(const SourceFile &input, const util::Options &options,
+                              util::DiagnosticEngine &diagnosticEngine, uint32_t parseStatus = 0);
 
     static void DumpAsm(const pandasm::Program *prog);
 
@@ -217,6 +260,10 @@ private:
     Error error_;
     ScriptExtension ext_;
 };
+
+// g_diagnosticEngine used only for flush diagnostic before unexpected process termination:
+// - inside SIGSEGV handler
+extern util::DiagnosticEngine *g_diagnosticEngine;
 }  // namespace ark::es2panda
 
 #endif

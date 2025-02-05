@@ -22,6 +22,7 @@
 #include "ir/expressions/literals/booleanLiteral.h"
 #include "macros.h"
 #include "varbinder/ETSBinder.h"
+#include "util/diagnosticEngine.h"
 
 using ark::es2panda::ScriptExtension;
 using ark::es2panda::checker::ETSChecker;
@@ -42,6 +43,7 @@ using ark::es2panda::ir::SequenceExpression;
 using ark::es2panda::ir::StringLiteral;
 using ark::es2panda::lexer::Number;
 using ark::es2panda::lexer::TokenType;
+using ark::es2panda::util::DiagnosticEngine;
 using ark::es2panda::util::StringView;
 using ark::es2panda::varbinder::FunctionScope;
 using ark::es2panda::varbinder::LetDecl;
@@ -124,7 +126,8 @@ TEST_F(ASTVerifierTest, ScopeNodeTest)
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
 {
-    ETSChecker etschecker {};
+    DiagnosticEngine de {};
+    ETSChecker etschecker {de};
 
     auto left = NumberLiteral(Number {1});
     auto right = NumberLiteral(Number {6});
@@ -139,7 +142,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
 {
-    ETSChecker etschecker {};
+    DiagnosticEngine de {};
+    ETSChecker etschecker {de};
 
     constexpr uint32_t LEFT1_PARAM = 1;
     constexpr uint32_t LEFT2_PARAM = 12;
@@ -161,7 +165,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
 {
-    ETSChecker etschecker {};
+    DiagnosticEngine de {};
+    ETSChecker etschecker {de};
 
     const StringView leftParam("1");
     constexpr uint32_t RIGHT_PARAM = 1;
@@ -178,7 +183,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
 {
-    ETSChecker etschecker {};
+    DiagnosticEngine de {};
+    ETSChecker etschecker {de};
 
     auto left = BooleanLiteral(true);
     auto right = NumberLiteral(Number {1});
@@ -193,7 +199,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
 
 TEST_F(ASTVerifierTest, SequenceExpressionType)
 {
-    auto checker = ETSChecker();
+    auto de = DiagnosticEngine();
+    auto checker = ETSChecker(de);
     auto *last = Tree(Node<NumberLiteral>(Number {3}));
     auto *sequenceExpression = Tree(Node<SequenceExpression>(
         Nodes<Expression>(Node<NumberLiteral>(Number {1}), Node<NumberLiteral>(Number {2}), last)));

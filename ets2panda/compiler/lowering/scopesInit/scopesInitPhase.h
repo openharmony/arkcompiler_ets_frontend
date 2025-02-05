@@ -86,7 +86,7 @@ protected:
     void IterateNoTParams(ir::ClassDefinition *classDef);
 
 protected:
-    void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+    void LogSemanticError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
 
     void VisitFunctionExpression(ir::FunctionExpression *funcExpr) override;
     void VisitScriptFunction(ir::ScriptFunction *scriptFunction) override;
