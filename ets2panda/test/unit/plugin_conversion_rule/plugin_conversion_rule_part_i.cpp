@@ -66,12 +66,12 @@ es2panda_AstNode *classInstance/*return_args:*/, size_t *returnTypeLen)
  	    auto *ctxAllocator = ctx->allocator;
  	    auto resultVector = ((reinterpret_cast< ir::AnnotationAllowed<ir::AstNode> *>(classInstance))->Annotations());
  	    *returnTypeLen = resultVector.size();
- 	    auto res = ctxAllocator->New<es2panda_AstNode *[]>(*returnTypeLen);
+ 	    auto apiRes = ctxAllocator->New<es2panda_AstNode *[]>(*returnTypeLen);
  	    for (size_t i = 0; i < *returnTypeLen; ++i) {
  	        auto toPush = reinterpret_cast< es2panda_AstNode *>(resultVector.at(i));
- 		    res[i] = reinterpret_cast<es2panda_AstNode *>(toPush);
+ 		    apiRes[i] = reinterpret_cast<es2panda_AstNode *>(toPush);
  	    };
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -98,9 +98,9 @@ size_t targetSignaturesLen/*return_args:*/)
             auto *targetSignaturesElement1E2p = reinterpret_cast<checker::Signature *>(targetSignaturesElement1);
             targetSignaturesArenaVector->push_back(targetSignaturesElement1E2p);
         }
-        auto res = ((reinterpret_cast< checker::ObjectType *>(classInstance))->
+        auto apiRes = ((reinterpret_cast< checker::ObjectType *>(classInstance))->
     SignatureRelatedToSomeSignature(relationE2p, sourceSignatureE2p, targetSignaturesArenaVector));
-        return res;
+        return apiRes;
     }
     )"};
 
@@ -119,12 +119,12 @@ es2panda_AstNode *classInstance/*return_args:*/, size_t *returnTypeLen)
  	    auto *ctxAllocator = ctx->allocator;
  	    auto resultVector = ((reinterpret_cast<const ir::BlockStatement *>(classInstance))->Statements());
  	    *returnTypeLen = resultVector.size();
- 	    auto res = ctxAllocator->New<es2panda_AstNode *[]>(*returnTypeLen);
+ 	    auto apiRes = ctxAllocator->New<es2panda_AstNode *[]>(*returnTypeLen);
  	    for (size_t i = 0; i < *returnTypeLen; ++i) {
  	        auto toPush = reinterpret_cast<es2panda_AstNode *>(resultVector.at(i));
- 		    res[i] = reinterpret_cast<es2panda_AstNode *>(toPush);
+ 		    apiRes[i] = reinterpret_cast<es2panda_AstNode *>(toPush);
  	    };
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -174,12 +174,12 @@ es2panda_Type *classInstance/*return_args:*/, size_t *returnTypeLen)
         auto resultVector = ((reinterpret_cast<const checker::ETSObjectType *>(classInstance))->Fields());
  	    /* WARNING! This section has not been tested! */
  	    *returnTypeLen = resultVector.size();
- 	    auto res = ctxAllocator->New<es2panda_Variable *[]>(*returnTypeLen);
+ 	    auto apiRes = ctxAllocator->New<es2panda_Variable *[]>(*returnTypeLen);
  	    for (size_t i = 0; i < *returnTypeLen; ++i) {
  	        auto toPush = reinterpret_cast<es2panda_Variable *>(resultVector.at(i));
- 		    res[i] = (es2panda_Variable *)(toPush);
+ 		    apiRes[i] = (es2panda_Variable *)(toPush);
  	    };
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -203,9 +203,9 @@ size_t insertingNodesLen/*return_args:*/)
             auto *insertingNodesElement1E2p = reinterpret_cast<ir::AstNode *>(insertingNodesElement1);
             insertingNodesVector.push_back(insertingNodesElement1E2p);
         }
-        auto res = reinterpret_cast< es2panda_AstNode *>((reinterpret_cast<Context *>(context)->parser->AsETSParser())
-    ->CreateFormattedTopLevelStatement(sourceCodeE2p, insertingNodesVector));
-        return res;
+        auto apiRes = reinterpret_cast< es2panda_AstNode *>((reinterpret_cast<Context *>(context)->parser
+            ->AsETSParser())->CreateFormattedTopLevelStatement(sourceCodeE2p, insertingNodesVector));
+        return apiRes;
     }
     )"};
 
@@ -224,12 +224,12 @@ es2panda_AstNode *classInstance/*return_args:*/, size_t *returnTypeLen)
  	    auto *ctxAllocator = ctx->allocator;
  	    auto resultVector = ((reinterpret_cast<const ir::ETSReExportDeclaration *>(classInstance))->GetUserPaths());
  	    *returnTypeLen = resultVector.size();
- 	    auto res = ctxAllocator->New< char *[]>(*returnTypeLen);
+ 	    auto apiRes = ctxAllocator->New< char *[]>(*returnTypeLen);
  	    for (size_t i = 0; i < *returnTypeLen; ++i) {
  	        auto toPush = StringViewToCString(reinterpret_cast<Context *>(context)->allocator, (resultVector.at(i)));
- 		    res[i] = reinterpret_cast< char *>(toPush);
+ 		    apiRes[i] = reinterpret_cast< char *>(toPush);
  	    };
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -245,9 +245,9 @@ TEST_F(PluginConversionRuleUnitTest, ArenaSetInputParameter)
 es2panda_Type *classInstance, [[maybe_unused]] char *hash/*return_args:*/)
     {
         util::StringView hashE2p{hash};
-        auto res = reinterpret_cast<es2panda_Type *>
+        auto apiRes = reinterpret_cast<es2panda_Type *>
     ((reinterpret_cast<checker::ETSObjectType *>(classInstance))->GetInstantiatedType(hashE2p));
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -266,13 +266,13 @@ es2panda_RecordTable *classInstance/*return_args:*/, size_t *returnTypeLen)
  	    auto *ctxAllocator = ctx->allocator;
  	    auto resultSet = ((reinterpret_cast<const varbinder::RecordTable *>(classInstance))->ClassDefinitions());
  	    *returnTypeLen = resultSet.size();
- 	    auto res = ctxAllocator->New< es2panda_AstNode *[]>(*returnTypeLen);
+ 	    auto apiRes = ctxAllocator->New< es2panda_AstNode *[]>(*returnTypeLen);
  	    size_t i = 0;
  	    for (auto elem : resultSet) {
  		    auto toPush = reinterpret_cast< es2panda_AstNode *>(elem);
- 		    res[i] = reinterpret_cast< es2panda_AstNode *>(toPush);
+ 		    apiRes[i] = reinterpret_cast< es2panda_AstNode *>(toPush);
  	    };
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -315,15 +315,15 @@ es2panda_Type *classInstance/*return_args:*/, es2panda_Variable ***arenaMapValue
  	    auto *ctxAllocator = ctx->allocator;
  	    auto resultMap = ((reinterpret_cast<checker::UnionType *>(classInstance))->CachedSyntheticProperties());
  	    *returnTypeLen = resultMap.size();
- 	    auto res = ctxAllocator->New<char *[]>(*returnTypeLen);
+ 	    auto apiRes = ctxAllocator->New<char *[]>(*returnTypeLen);
  	    *arenaMapValueArray = ctxAllocator->New<es2panda_Variable *[]>(*returnTypeLen);
  	    size_t i = 0;
  	    for (auto [key, value] : resultMap) {
- 		    res[i] = StringViewToCString(reinterpret_cast<Context *>(context)->allocator, (key));
+ 		    apiRes[i] = StringViewToCString(reinterpret_cast<Context *>(context)->allocator, (key));
  		    (*arenaMapValueArray)[i] = reinterpret_cast< es2panda_Variable *>(value);
  		    ++i;
  	    };
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -347,9 +347,9 @@ es2panda_Type **returnTypeSecond)
  	    auto resultPair = ((reinterpret_cast<checker::ETSUnionType *>(classInstance))
     ->GetComplimentaryType(checkerE2p, sourceTypeE2p));
  	    *returnTypeSecond = reinterpret_cast<es2panda_Type *>(const_cast<checker::Type *>(resultPair.second));
- 	    auto res = reinterpret_cast<es2panda_Type *>(resultPair.first);
+ 	    auto apiRes = reinterpret_cast<es2panda_Type *>(resultPair.first);
         ;
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -370,15 +370,15 @@ es2panda_Scope *classInstance/*return_args:*/, es2panda_Variable ***arenaMapValu
  	    auto *ctxAllocator = ctx->allocator;
  	    auto resultMap = ((reinterpret_cast<const varbinder::Scope *>(classInstance))->OrderedBindings(allocatorE2p));
  	    *returnTypeLen = resultMap.size();
- 	    auto res = ctxAllocator->New<char *[]>(*returnTypeLen);
+ 	    auto apiRes = ctxAllocator->New<char *[]>(*returnTypeLen);
  	    *arenaMapValueArray = ctxAllocator->New<es2panda_Variable *[]>(*returnTypeLen);
  	    size_t i = 0;
  	    for (auto [key, value] : resultMap) {
- 		    res[i] = StringViewToCString(reinterpret_cast<Context *>(context)->allocator, (key));
+ 		    apiRes[i] = StringViewToCString(reinterpret_cast<Context *>(context)->allocator, (key));
  		    (*arenaMapValueArray)[i] = reinterpret_cast<es2panda_Variable *>(value);
  		    ++i;
  	    };
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -405,9 +405,9 @@ size_t substitutionLen/*return_args:*/)
  		    auto *substitutionElement2E2p = reinterpret_cast<checker::Type *>(substitutionElement2);
  		    (*substitutionArenaMap)[substitutionElement1E2p] = substitutionElement2E2p;
  	    }
-        auto res = reinterpret_cast< es2panda_Signature *>
+        auto apiRes = reinterpret_cast< es2panda_Signature *>
     ((reinterpret_cast< checker::Signature *>(classInstance))->Substitute(relationE2p, substitutionArenaMap));
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -422,8 +422,9 @@ TEST_F(PluginConversionRuleUnitTest, IrTypedPtrReturnValue)
     extern "C"  es2panda_AstNode *AstNodeAsTyped([[maybe_unused]] es2panda_Context *context,
 es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<es2panda_AstNode *>((reinterpret_cast<ir::AstNode *>(classInstance))->AsTyped());
-	    return res;
+        auto apiRes = reinterpret_cast<es2panda_AstNode *>((reinterpret_cast<ir::AstNode *>(classInstance))
+            ->AsTyped());
+	    return apiRes;
     }
     )"};
 
@@ -438,9 +439,9 @@ TEST_F(PluginConversionRuleUnitTest, IrTypedPtrMethodCall)
     extern "C" const es2panda_Type *TypedTsTypeConst([[maybe_unused]] es2panda_Context *context,
 es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_Type *>
+        auto apiRes = reinterpret_cast<const es2panda_Type *>
     ((reinterpret_cast<const ir::Typed<ir::AstNode> *>(classInstance))->TsType());
-	    return res;
+	    return apiRes;
     }
     )"};
 
@@ -471,9 +472,9 @@ TEST_F(PluginConversionRuleUnitTest, AstNodePtrReturnValue)
     extern "C" const es2panda_AstNode *AstNodeParentConst([[maybe_unused]] es2panda_Context *context,
 es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_AstNode *>
+        auto apiRes = reinterpret_cast<const es2panda_AstNode *>
 ((reinterpret_cast<const ir::AstNode *>(classInstance))->Parent());
-	    return res;
+	    return apiRes;
     }
     )"};
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,7 +63,6 @@ public:
     checker::VerifiedType Check(checker::ETSChecker *checker) override;
     ir::TypeNode *CreateTypeAnnotation(checker::ETSChecker *checker);
     ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType);
-    void AddChildLambda(ArrowFunctionExpression *childLambda);
     bool IsVarFromSubscope(const varbinder::Variable *var) const;
 
     void Accept(ASTVisitorT *v) override

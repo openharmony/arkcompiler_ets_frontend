@@ -44,9 +44,9 @@ TEST_F(PluginConversionRuleUnitTest, SignaturerInfoPtrReturnValue)
     extern "C" const es2panda_SignatureInfo *SignatureGetSignatureInfoConst([[maybe_unused]] es2panda_Context *context,
     es2panda_Signature *classInstance/*return_args:*/)
     {
-        auto res = reinterpret_cast<const es2panda_SignatureInfo *>((reinterpret_cast<
+        auto apiRes = reinterpret_cast<const es2panda_SignatureInfo *>((reinterpret_cast<
                    const checker::Signature *>(classInstance))->GetSignatureInfo());
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -79,9 +79,9 @@ TEST_F(PluginConversionRuleUnitTest, CheckerContextPtrCall)
     extern "C" Es2pandaCheckerStatus CheckerContextStatusConst([[maybe_unused]] es2panda_Context *context,
     es2panda_CheckerContext *classInstance/*return_args:*/)
     {
-        auto res = IrToE2pCheckerStatus((reinterpret_cast<const checker::CheckerContext *>
+        auto apiRes = IrToE2pCheckerStatus((reinterpret_cast<const checker::CheckerContext *>
                    (classInstance))->Status());
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -165,9 +165,9 @@ TEST_F(PluginConversionRuleUnitTest, UtilStringViewReturnValue)
     extern "C" const char *FunctionScopeNameConst([[maybe_unused]] es2panda_Context *context,
     es2panda_Scope *classInstance/*return_args:*/)
     {
-        auto res = StringViewToCString(reinterpret_cast<Context *>(context)->allocator,
+        auto apiRes = StringViewToCString(reinterpret_cast<Context *>(context)->allocator,
                    ((reinterpret_cast<const varbinder::FunctionScope *>(classInstance))->Name()));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -183,9 +183,9 @@ TEST_F(PluginConversionRuleUnitTest, StringViewInputParameter)
     {
         std::string_view sourceCodeE2p {sourceCode};
         auto flagsE2p = E2pToIrExpressionParseFlags(flags);
-        auto res = reinterpret_cast< es2panda_AstNode *>((reinterpret_cast<Context *>(context)->parser->
+        auto apiRes = reinterpret_cast< es2panda_AstNode *>((reinterpret_cast<Context *>(context)->parser->
                    AsETSParser())->CreateExpression(sourceCodeE2p, flagsE2p));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -199,9 +199,9 @@ TEST_F(PluginConversionRuleUnitTest, StringViewReturnValue)
     extern "C" const char *IdentifierNameConst([[maybe_unused]] es2panda_Context *context,
     es2panda_AstNode *classInstance/*return_args:*/)
     {
-        auto res = StringViewToCString(reinterpret_cast<Context *>(context)->allocator,
+        auto apiRes = StringViewToCString(reinterpret_cast<Context *>(context)->allocator,
                    ((reinterpret_cast<const ir::Identifier *>(classInstance))->Name()));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -230,9 +230,9 @@ TEST_F(PluginConversionRuleUnitTest, StringReturnValue)
     extern "C"  char *SrcDumperStrConst([[maybe_unused]] es2panda_Context *context,
     es2panda_SrcDumper *classInstance/*return_args:*/)
     {
-     auto res = StdStringToCString(reinterpret_cast<Context *>(context)->allocator,
+     auto apiRes = StdStringToCString(reinterpret_cast<Context *>(context)->allocator,
                 ((reinterpret_cast<const ir::SrcDumper *>(classInstance))->Str()));
-	 return res;
+	 return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -280,9 +280,9 @@ TEST_F(PluginConversionRuleUnitTest, VarbinderEnumMemberResultReturnValue)
     extern "C" es2panda_variantDoubleCharArrayBool EnumVariableValueConst([[maybe_unused]] es2panda_Context *context,
     es2panda_Variable *classInstance/*return_args:*/)
     {
-        auto res = EnumMemberResultToEs2pandaVariant(reinterpret_cast<Context *>(context)->allocator,
+        auto apiRes = EnumMemberResultToEs2pandaVariant(reinterpret_cast<Context *>(context)->allocator,
                    ((reinterpret_cast<const varbinder::EnumVariable *>(classInstance))->Value()));
-    	return res;
+    	return apiRes;
     })"};
 
     std::string targetAPIWithNoSpace = RemoveWhitespace(targetCAPI);
@@ -332,9 +332,9 @@ TEST_F(PluginConversionRuleUnitTest, NodePredicateInputParameter)
     {
         std::function<bool(ir::AstNode *)> cbE2p = [cb](ir::AstNode *traverserLambdaNode)
         {return cb(reinterpret_cast<es2panda_AstNode *>(traverserLambdaNode));};
-        auto res = reinterpret_cast< es2panda_AstNode *>
+        auto apiRes = reinterpret_cast< es2panda_AstNode *>
                    ((reinterpret_cast<const ir::AstNode *>(classInstance))->FindChild(cbE2p));
-    	return res;
+    	return apiRes;
     }
 
 )"};

@@ -51,10 +51,10 @@ change_types:
             \tauto resultVector = "
           end: ";\n
             \t*|return_args.0.name| = resultVector|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
             \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -97,10 +97,10 @@ change_types:
             \tauto resultVector = "
           end: ";\n
             \t*|return_args.0.name| = resultVector|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
             \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -141,10 +141,10 @@ change_types:
           end: ";\n
             \t/* WARNING! This section has not been tested! */\n
             \t*|return_args.0.name| = resultVector|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
             \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = (|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|)(toPush);\n
+            \t\tapiRes[i] = (|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|)(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -189,10 +189,10 @@ change_types:
           end: ";\n
             \t/* WARNING! This section has not been tested! */\n
             \t*|return_args.0.name| = resultVector|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
             \tauto toPush = |reverse_template_nested_expression_1_start|(resultVector|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = (|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|)(toPush);\n
+            \t\tapiRes[i] = (|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|)(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -234,10 +234,10 @@ change_types:
           end: ";\n
             \t/* WARNING! This section has not been tested! */\n
             \t*|return_args.0.name| = resultArray|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tfor (size_t i = 0; i < *|return_args.0.name|; ++i) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(resultArray|accessor|at(i))|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
 
@@ -279,11 +279,11 @@ change_types:
             \tauto resultSet = "
           end: ";\n
             \t*|return_args.0.name| = resultSet|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -325,11 +325,11 @@ change_types:
             \tauto resultSet = "
           end: ";\n
             \t*|return_args.0.name| = resultSet|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
   - es2panda_arg:
@@ -371,11 +371,11 @@ change_types:
             \tauto resultSet = "
           end: ";\n
             \t*|return_args.0.name| = resultSet|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.0.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto elem : resultSet) {\n
             \t\tauto toPush = |reverse_template_nested_expression_1_start|(elem)|reverse_template_nested_expression_1_end|;\n
-            \t\tres[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
+            \t\tapiRes[i] = reinterpret_cast<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|>(toPush);\n
             \t}"
 
 
@@ -520,11 +520,11 @@ change_types:
             \tauto resultMap = "
           end: ";\n
             \t*|return_args.1.name| = resultMap|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
             \t*|return_args.0.name| = ctxAllocator->New<|new_args.1.type.const| |new_args.1.type.name| |new_args.1.type.ptr_depth - 1||new_args.1.type.ref_depth|[]>(*|return_args.1.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto [key, value] : resultMap) {\n
-            \t\tres[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
@@ -580,11 +580,11 @@ change_types:
             \tauto resultMap = "
           end: ";\n
             \t*|return_args.1.name| = resultMap|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
             \t*|return_args.0.name| = ctxAllocator->New<|new_args.1.type.const| |new_args.1.type.name| |new_args.1.type.ptr_depth - 1||new_args.1.type.ref_depth|[]>(*|return_args.1.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto [key, value] : (*resultMap)) {\n
-            \t\tres[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
@@ -756,11 +756,11 @@ change_types:
             \tauto resultMap = "
           end: ";\n
             \t*|return_args.1.name| = resultMap|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
             \t*|return_args.0.name| = ctxAllocator->New<|new_args.1.type.const| |new_args.1.type.name| |new_args.1.type.ptr_depth - 1||new_args.1.type.ref_depth|[]>(*|return_args.1.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto [key, value] : resultMap) {\n
-            \t\tres[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
@@ -794,7 +794,7 @@ change_types:
             \tauto resultPair = "
           end: ";\n
             \t*|arg_name|Second = |reverse_template_nested_expression_2_start|(const_cast<|new_args.1.namespace||es2panda_arg.type.template_args.1.type.name| |es2panda_arg.type.template_args.1.type.ptr_depth|>(resultPair|accessor|second))|reverse_template_nested_expression_2_end|;\n
-            \tauto res = |reverse_template_nested_expression_1_start|(resultPair|accessor|first)|reverse_template_nested_expression_1_end|;\n
+            \tauto apiRes = |reverse_template_nested_expression_1_start|(resultPair|accessor|first)|reverse_template_nested_expression_1_end|;\n
             "
 
   - es2panda_arg:
@@ -845,11 +845,11 @@ change_types:
             \tauto resultMap = "
           end: ";\n
             \t*|return_args.1.name| = resultMap|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
             \t*|return_args.0.name| = ctxAllocator->New<|new_args.1.type.const| |new_args.1.type.name| |new_args.1.type.ptr_depth - 1||new_args.1.type.ref_depth|[]>(*|return_args.1.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto [key, value] : resultMap) {\n
-            \t\tres[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
@@ -904,11 +904,11 @@ change_types:
             \tauto resultMap = "
           end: ";\n
             \t*|return_args.1.name| = resultMap|accessor|size();\n
-            \tauto res = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
+            \tauto apiRes = ctxAllocator->New<|new_args.0.type.const| |new_args.0.type.name| |new_args.0.type.ptr_depth - 1||new_args.0.type.ref_depth|[]>(*|return_args.1.name|);\n
             \t*|return_args.0.name| = ctxAllocator->New<|new_args.1.type.const| |new_args.1.type.name| |new_args.1.type.ptr_depth - 1||new_args.1.type.ref_depth|[]>(*|return_args.1.name|);\n
             \tsize_t i = 0;\n
             \tfor (auto [key, value] : (*resultMap)) {\n
-            \t\tres[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
+            \t\tapiRes[i] = |reverse_template_nested_expression_1_start|(key)|reverse_template_nested_expression_1_end|;\n
             \t\t(*|return_args.0.name|)[i] = |reverse_template_nested_expression_2_start|(value)|reverse_template_nested_expression_2_end|;\n
             \t\t++i;\n
             \t}"
@@ -931,7 +931,7 @@ change_types:
             \tauto resultPtr = "
           end: ";\n
             \tauto &resultRef = *resultPtr;\n
-            \tauto *res = |reverse_template_nested_expression_1_start|(resultRef)|reverse_template_nested_expression_1_end|;"
+            \tauto *apiRes = |reverse_template_nested_expression_1_start|(resultRef)|reverse_template_nested_expression_1_end|;"
 
   - es2panda_arg:
       name: '|arg_name|'
@@ -998,7 +998,7 @@ change_types:
     cast:
         expression: >-
           auto |es2panda_arg.type.ptr_depth||arg_name|E2p =
-          reinterpret_cast<ir::Typed<AstNode> |es2panda_arg.type.ptr_depth|>(|arg_name|);
+          reinterpret_cast<ir::Typed<ir::AstNode> |es2panda_arg.type.ptr_depth|>(|arg_name|);
         reverse_cast:
           start: >-
             reinterpret_cast<?const? es2panda_AstNode |es2panda_arg.type.ptr_depth|>
@@ -1012,7 +1012,7 @@ change_types:
             (reinterpret_cast<?const? ir::Typed<ir::AstNode> *>(classInstance))->
         constructor_cast:
           start: >-
-            ctxAllocator->New<ir::Typed<AstNode>>(
+            ctxAllocator->New<ir::Typed<ir::AstNode>>(
           end: )
         var_name: '|arg_name|E2p'
 
@@ -3735,7 +3735,7 @@ change_types:
           auto resMethod =
         end: ";\n
           \t(*|arg_name|MemberProxyType) = reinterpret_cast<es2panda_Type *>(resMethod.memberProxyType);\n
-          \tauto res = reinterpret_cast<es2panda_Signature *>(resMethod.globalSignature)"
+          \tauto apiRes = reinterpret_cast<es2panda_Signature *>(resMethod.globalSignature)"
       var_name: "checker::ETSEnumType::Method {es2pandaGlobalSignature, es2pandaMemberProxyType}"
 
   - es2panda_arg:
