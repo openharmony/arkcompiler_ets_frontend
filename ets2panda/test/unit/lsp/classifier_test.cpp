@@ -13,17 +13,18 @@
  * limitations under the License.
  */
 
+#include "lsp/include/internal_api.h"
 #include "lsp/include/classifier.h"
-#include <cstddef>
-#include <tuple>
 #include "lsp_api_test.h"
 #include "public/es2panda_lib.h"
 
+using ark::es2panda::lsp::Initializer;
+
 TEST_F(LSPAPITests, GetSyntacticClassifications1)
 {
-    es2panda_Context *ctx =
-        CreateContextAndProceedToState(impl_, cfg_, R"(class A {};)", "class-name.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("class-name.sts", ES2PANDA_STATE_PARSED, R"(class A {};)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 6;
     size_t const length = 1;
@@ -34,14 +35,15 @@ TEST_F(LSPAPITests, GetSyntacticClassifications1)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications2)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(enum Color {Red, Blue, Green};)",
-                                                           "enum-name.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("enum-name.sts", ES2PANDA_STATE_PARSED, R"(enum Color {Red, Blue, Green};)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 5;
     size_t const length = 5;
@@ -52,14 +54,15 @@ TEST_F(LSPAPITests, GetSyntacticClassifications2)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications3)
 {
+    Initializer initializer = Initializer();
     es2panda_Context *ctx =
-        CreateContextAndProceedToState(impl_, cfg_, R"(interface I {};)", "interface-name.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+        initializer.CreateContext("interface-name.sts", ES2PANDA_STATE_PARSED, R"(interface I {};)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
     size_t const length = 1;
@@ -70,14 +73,15 @@ TEST_F(LSPAPITests, GetSyntacticClassifications3)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications4)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(class Foo<T> {};)",
-                                                           "type-parameter-name.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("type-parameter-name.sts", ES2PANDA_STATE_PARSED, R"(class Foo<T> {};)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
     size_t const length = 1;
@@ -88,14 +92,15 @@ TEST_F(LSPAPITests, GetSyntacticClassifications4)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications5)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(type tmp = Long|null;)",
-                                                           "type-alias-name.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("type-alias-name.sts", ES2PANDA_STATE_PARSED, R"(type tmp = Long|null;)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 5;
     size_t const length = 3;
@@ -106,14 +111,15 @@ TEST_F(LSPAPITests, GetSyntacticClassifications5)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications6)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(function A(a:number) {};)",
-                                                           "parameter-name.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("parameter-name.sts", ES2PANDA_STATE_PARSED, R"(function A(a:number) {};)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 11;
     size_t const length = 1;
@@ -124,14 +130,14 @@ TEST_F(LSPAPITests, GetSyntacticClassifications6)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications7)
 {
-    es2panda_Context *ctx =
-        CreateContextAndProceedToState(impl_, cfg_, R"(let num = 1;)", "number-type.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("number-type.sts", ES2PANDA_STATE_PARSED, R"(let num = 1;)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
     size_t const length = 1;
@@ -142,14 +148,14 @@ TEST_F(LSPAPITests, GetSyntacticClassifications7)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications8)
 {
-    es2panda_Context *ctx =
-        CreateContextAndProceedToState(impl_, cfg_, R"(let str = "123";)", "string-type.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("string-type.sts", ES2PANDA_STATE_PARSED, R"(let str = "123";)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 10;
     size_t const length = 5;
@@ -160,15 +166,15 @@ TEST_F(LSPAPITests, GetSyntacticClassifications8)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications9)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, R"(let a = true;
-let b = false;)",
-                                                           "boolean-type.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("boolean-type.sts", ES2PANDA_STATE_PARSED, R"(let a = true;
+let b = false;)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 0;
     size_t const length = 28;
@@ -188,14 +194,14 @@ let b = false;)",
         ASSERT_EQ(result.at(i)->length, expectedLength);
         ASSERT_EQ(result.at(i)->name, expectedName);
     }
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications10)
 {
-    es2panda_Context *ctx =
-        CreateContextAndProceedToState(impl_, cfg_, R"(type tmp = null;)", "null-type.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("null-type.sts", ES2PANDA_STATE_PARSED, R"(type tmp = null;)");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
 
     size_t const start = 0;
     size_t const length = 28;
@@ -214,18 +220,18 @@ TEST_F(LSPAPITests, GetSyntacticClassifications10)
         ASSERT_EQ(result.at(i)->length, expectedLength);
         ASSERT_EQ(result.at(i)->name, expectedName);
     }
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications11)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(
-        impl_, cfg_,
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext(
+        "punctuator-type1.sts", ES2PANDA_STATE_PARSED,
         "let a = 1;\nlet b = 2;\nclass C {foo(){}};\nlet c = new C();\na + b;\na & b;\na += b;\na |= b;\na &= b;\na < "
         "b;\nc?.foo;\na - b;\na | b;\na -= b;\na ^= b;\na && b;\na > b;\n!a;\na * b;\na ^ b;\na *= b;\na <<= b;\na || "
-        "b;\n",
-        "punctuator-type1.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+        "b;\n");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
     size_t const start = 0;
     size_t const length = 428;
     auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
@@ -267,17 +273,17 @@ TEST_F(LSPAPITests, GetSyntacticClassifications11)
         ASSERT_EQ(result.at(i)->length, expectedLength);
         ASSERT_EQ(result.at(i)->name, expectedName);
     }
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSyntacticClassifications12)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(
-        impl_, cfg_,
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext(
+        "punctuator-type2.sts", ES2PANDA_STATE_PARSED,
         "a === b;\na <= b;\na / b;\na >> b;\na /= b;\na >>= b;\na++;\na == b;\na >= b;\na % b;\na << b;\na %= "
-        "b;\na >>>= b;\na--;\na = b;\nlet var1: [...number[]];\n(a);\nlet d:[];\n{a};\nc??b;\na != b;\na !== b;\n",
-        "punctuator-type2.sts", ES2PANDA_STATE_PARSED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+        "b;\na >>>= b;\na--;\na = b;\nlet var1: [...number[]];\n(a);\nlet d:[];\n{a};\nc??b;\na != b;\na !== b;\n");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_PARSED);
     size_t const start = 0;
     size_t const length = 428;
     auto result = ark::es2panda::lsp::GetSyntacticClassifications(ctx, start, length);
@@ -317,14 +323,15 @@ TEST_F(LSPAPITests, GetSyntacticClassifications12)
         ASSERT_EQ(result.at(i)->length, expectedLength);
         ASSERT_EQ(result.at(i)->name, expectedName);
     }
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSemanticClassifications1)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "class Foo{};\nlet a:Foo = new Foo();",
-                                                           "class-name.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("class-name.sts", ES2PANDA_STATE_CHECKED, "class Foo{};\nlet a:Foo = new Foo();");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 19;
     size_t const length = 3;
@@ -336,14 +343,15 @@ TEST_F(LSPAPITests, GetSemanticClassifications1)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSemanticClassifications2)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "class Foo{};\nlet a:Foo = new Foo();",
-                                                           "class-name.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("class-name.sts", ES2PANDA_STATE_CHECKED, "class Foo{};\nlet a:Foo = new Foo();");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 29;
     size_t const length = 3;
@@ -355,14 +363,15 @@ TEST_F(LSPAPITests, GetSemanticClassifications2)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSemanticClassifications3)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "enum Color {Red, Blue, Green};\nlet a:Color",
-                                                           "enum-name.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("enum-name.sts", ES2PANDA_STATE_CHECKED,
+                                                      "enum Color {Red, Blue, Green};\nlet a:Color");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 37;
     size_t const length = 5;
@@ -373,14 +382,15 @@ TEST_F(LSPAPITests, GetSemanticClassifications3)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSemanticClassifications4)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "interface I {};\nlet a:I",
-                                                           "interface-name.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("interface-name.sts", ES2PANDA_STATE_CHECKED, "interface I {};\nlet a:I");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 22;
     size_t const length = 1;
@@ -391,14 +401,15 @@ TEST_F(LSPAPITests, GetSemanticClassifications4)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }
 
 TEST_F(LSPAPITests, GetSemanticClassifications5)
 {
-    es2panda_Context *ctx = CreateContextAndProceedToState(impl_, cfg_, "type tmp = Long|null;\nlet a:tmp",
-                                                           "type-alias-name.sts", ES2PANDA_STATE_CHECKED);
-    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("type-alias-name.sts", ES2PANDA_STATE_CHECKED, "type tmp = Long|null;\nlet a:tmp");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     size_t const start = 28;
     size_t const length = 3;
@@ -409,5 +420,5 @@ TEST_F(LSPAPITests, GetSemanticClassifications5)
     ASSERT_EQ(result.at(0)->start, start);
     ASSERT_EQ(result.at(0)->length, length);
     ASSERT_EQ(result.at(0)->name, expectedName);
-    impl_->DestroyContext(ctx);
+    initializer.DestroyContext(ctx);
 }

@@ -25,20 +25,23 @@ namespace ark::es2panda::lsp {
 
 class Initializer {
 public:
-    static Initializer &GetInstance()
-    {
-        static Initializer init;
-        return init;
-    }
+    Initializer();
+
+    ~Initializer();
 
     ark::ArenaAllocator *Allocator()
     {
         return allocator_;
     }
 
-    es2panda_Context *CreateContext(char const *fileName, es2panda_ContextState state)
+    es2panda_Context *CreateContext(char const *fileName, es2panda_ContextState state, char const *fileSource = nullptr)
     {
-        auto ctx = impl_->CreateContextFromFile(cfg_, fileName);
+        es2panda_Context *ctx = nullptr;
+        if (fileSource != nullptr) {
+            ctx = impl_->CreateContextFromString(cfg_, fileSource, fileName);
+        } else {
+            ctx = impl_->CreateContextFromFile(cfg_, fileName);
+        }
         impl_->ProceedToState(ctx, state);
         return ctx;
     }
@@ -52,25 +55,20 @@ public:
     NO_MOVE_SEMANTIC(Initializer);
 
 private:
-    // NOLINTBEGIN(modernize-use-equals-delete)
-    Initializer();
-    ~Initializer();
-    // NOLINTEND(modernize-use-equals-delete)
     es2panda_Impl const *impl_;
     es2panda_Config *cfg_;
     ark::ArenaAllocator *allocator_;
 };
 
 ir::AstNode *GetTouchingToken(es2panda_Context *context, size_t pos, bool flagFindFirstMatch);
-void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *referenceFileContext,
-                           char const *searchFileName, bool isPackageModule, FileReferences *fileReferences);
+void GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *searchFileName, bool isPackageModule,
+                           References *fileReferences);
 ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator);
 ir::AstNode *GetOriginalNode(ir::AstNode *astNode);
 checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode);
 std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position);
-CommentRange *GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, ArenaAllocator *allocator);
-ArenaVector<Diagnostic *> GetSemanticDiagnosticsForFile(es2panda_Context *context, ArenaAllocator *allocator);
-ArenaVector<Diagnostic *> GetSyntacticDiagnosticsForFile(es2panda_Context *context, ArenaAllocator *allocator);
+void GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, CommentRange *result);
+Diagnostic CreateDiagnosticForError(es2panda_Context *context, const Error &error);
 size_t GetTokenPosOfNode(const ir::AstNode *astNode);
 
 }  // namespace ark::es2panda::lsp
