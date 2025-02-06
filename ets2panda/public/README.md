@@ -374,6 +374,15 @@ You can find generated files in `<build>/tools/es2panda/generated/es2panda_lib`.
 
 ## IDL
 
+### About our IDL specification (idlize package):
+- IDL is basically Webidl2 with some adjustments.
+- Webidl uses DomString, idlize uses string.
+
+Usefull links:
+- `idlize` package - [link](https://gitee.com/nikolay-igotti/idlize).
+- `sdk-idl` examples - [link](https://gitee.com/nikolay-igotti/interface_sdk-idl).
+
+
 ### How to check IDL for correctness:
 ```bash
 # Cmake
@@ -395,38 +404,149 @@ cat <build>/tools/es2panda/generated/es2panda_lib/generated/headers/arkoala_api_
 ```
 
 
-### How to interpret type names in .idl:
-For example let's see type `[constant, ptr_2] es2panda_Variable` from `es2panda_lib.idl`:
+### IDL generation rules:
+Manually written functions from the `es2panda_lib.h` were also manually transferred to `es2panda_lib.idl.rb`.
+Other methods are generated automatically.
 
-Read from right:
-- `ptr_2`: means that ptr_depth = 2 e.g. `**` in C/C++.
-- `constant`: means that type has `const` modifier
-- `es2panda_Variable`: base type, that is used in es2panda API
-
-As result:
+#### 1. Classes, structures, types from C++ represented in IDL as interfaces:
 ```c++
-// Type in .idl:
-[constant, ptr_2] es2panda_Variable
+// C++
+typedef struct es2panda_Config es2panda_Config;
 
-// Equals to
-
-// Type in .h/.cpp
-const es2panda_Variable **
+// IDL
+[Entity=Class] interface es2panda_Config {};
 ```
 
-### Cutsom complex types which should be hardcoded when generating from idl:
-Due to the specifics of IDL there are some custom types:
-- `void *` is represented as `void_ptr` in IDL.
-- `void (*func)(es2panda_AstNode *, void *)` argument is represented as `AstNodeForEachFunction func` argument in IDL.
-- `es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *)` type is represented as `NodeTransformer` type in IDL.
-- `void (*NodeTraverser)(es2panda_AstNode *)` type is represented as `NodeTraverser` type in IDL.
-- `bool (*NodePredicate)(es2panda_AstNode *)` type is represented as `NodePredicate` type in IDL.
-- `es2panda_Variable *(*PropertyProcessor)(es2panda_Variable *, es2panda_Type *)` type is represented as `PropertyProcessor` type in IDL.
-- `void (*PropertyTraverser)(const es2panda_Variable *)` type is represented as `PropertyTraverser` type in IDL.
-- `void (*ClassBuilder)(es2panda_AstNode **nodes, size_t size)` type is represented as `ClassBuilder` type in IDL.
-- `void (*MethodBuilder)(es2panda_AstNode **statements, size_t sizeStatements, es2panda_AstNode **expression, size_t sizeExpression, es2panda_Type **type)` type is represented as `MethodBuilder` type in IDL.
-- `void (*ClassInitializerBuilder)(es2panda_AstNode **statements, size_t sizeStatements, es2panda_AstNode **expression, size_t sizeExpression)` type is represented as `ClassInitializerBuilder` type in IDL.
+#### 2. Enums are represented as `dictionary` in IDL with pre-calculated values.
 
+#### 3. Pointers to a function are represented as an interface with a single `Do` method whose signature matches that of the target function.
+```c++
+// C++
+typedef es2panda_AstNode *(*NodeTransformer)(es2panda_AstNode *);
+
+// IDL
+interface NodeTransformer {
+    AstNode Do(AstNode e2p_node);
+};
+```
+
+#### 4. C-pointers representation:
+All arguments except primitive types in IDL are the first pointer to an object.
+E.g. `AstNode *` in C equals to `AstNode` in IDL.
+
+For deeper ones:
+- `AstNode **` => `sequence<AstNode>`
+- `AstNode ***` => `sequence<sequence<AstNode>>`
+- etc.
+
+For primitive types:
+- `int` => `i32`
+- `int *` => `sequence<i32>`
+- `int **` => `sequence<sequence<i32>>`
+- etc.
+
+Exception:
+- `void *` => `VoidPtr`
+
+#### 5. Return argument `size_t *returnTypeLen` is omitted and not represented in IDL. Other return arguments are represented.
+
+#### 6. es2panda classes conversion:
+All the types/classes listed below are represented in the IDL without any changes:
+- ast_nodes:
+    - Classes from macro `AST_NODE_MAPPING`
+    - Classes from macro `AST_NODE_REINTERPRET_MAPPING`
+    - `AstNode`
+    - `Expression`
+    - `Statement`
+    - `TypeNode`
+- ast_node_additional_children:
+    - `TypedStatement`
+    - `ClassElement`
+    - `AnnotatedExpression`
+    - `Literal`
+    - `LoopStatement`
+    - `MaybeOptionalExpression`
+    - `Property`
+- ast_types:
+    - Classes from macro`TYPE_MAPPING`
+    - `Type`
+- ast_type_additional_children:
+    - `ETSStringType`
+    - `ETSDynamicType`
+    - `ETSAsyncFuncReturnType`
+    - `ETSDynamicFunctionType`
+    - `ETSEnumType`
+    - `ETSBigIntType`
+- ast_variables:
+    - `Variable`
+    - `LocalVariable`
+    - `GlobalVariable`
+    - `ModuleVariable`
+    - `EnumVariable`
+- scopes:
+    - Classes from macro `SCOPE_TYPES`
+    - `Scope`
+    - `VariableScope`
+- declarations:
+    - Classes from macro `DECLARATION_KINDS`
+    - `Decl`
+
+Other types/classes are represented in the same way as in C-API.
+
+
+#### 7. Primitive types conversion:
+- `bool` => `boolean`
+- `int` => `i32`
+- `size_t` => `u32`
+- `char` => `i8`
+- `int8_t` => `i8`
+- `uint8_t` => `u8`
+- `int16_t` => `i16`
+- `char16_t` => `i16`
+- `int32_t` => `i32`
+- `uint32_t` => `u32`
+- `int64_t` => `i64`
+- `uint64_t` => `u64`
+- `float` => `f32`
+- `double` => `f64`
+- `sequence<i8>` => `String`
+
+#### 8. Classes representation:
+Example:
+```c++
+// C++
+class UnaryExpression : public Expression {
+    explicit UnaryExpression(Expression *const argument);
+    Expression *Argument();
+    const Expression *Argument() const
+}
+
+// C-API
+es2panda_AstNode *(*CreateUnaryExpression)(es2panda_Context *context, es2panda_AstNode *argument);
+es2panda_AstNode *(*UnaryExpressionArgument)(es2panda_Context *context, es2panda_AstNode *classInstance);
+const es2panda_AstNode *(*UnaryExpressionArgumentConst)(es2panda_Context *context, es2panda_AstNode *classInstance);
+
+// IDL
+[Entity=Class, Es2pandaAstNodeType=147, cpp_namespace=ir] interface UnaryExpression: Expression {
+    static UnaryExpression Create(es2panda_Context context, Expression argument);
+    [get] Expression Argument(es2panda_Context context);
+    [get] Expression ArgumentConst(es2panda_Context context);
+}
+```
+
+More detailed:
+- `Entity=Class` indicates that it's a class in es2panda.
+- `Es2pandaAstNodeType` precalculated AstNodeType. This property is not present if the class does not have `AstNodeType` value.
+- `cpp_namespace` namespace in C++ es2panda.
+- `: Expression` Inherits the `Expression` class.
+- `Create` - class constructor.
+- `static` - all constructors marked as static methods.
+- `[get]` - marker for probably getter-methods. We do not guarantee 100% accuracy!
+
+#### 9. Class inheritance in IDL:
+- Some classes inherit `T`. It was decided to leave them for the sake of completeness.
+- If class inherits Template class e.g. `: public Annotated<Expression>` in IDL it is represented as `: Expression`.
+- If class has multi-inheritance, then inheritance is omitted and not represented in IDL.
 
 ## Tests:
 Tests are located in `ets_frontend/ets2panda/test/unit/public`, their names start with "e2p_test_plugin".
