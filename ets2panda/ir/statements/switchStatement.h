@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_STATEMENT_SWITCH_STATEMENT_H
 
 #include "varbinder/scope.h"
+#include "ir/expression.h"
 #include "ir/statement.h"
 
 namespace ark::es2panda::checker {
@@ -49,6 +50,14 @@ public:
     [[nodiscard]] Expression *Discriminant() noexcept
     {
         return discriminant_;
+    }
+
+    void SetDiscriminant(Expression *discriminant) noexcept
+    {
+        if (discriminant != nullptr) {
+            discriminant->SetParent(this);
+        }
+        discriminant_ = discriminant;
     }
 
     [[nodiscard]] const ArenaVector<SwitchCaseStatement *> &Cases() const noexcept

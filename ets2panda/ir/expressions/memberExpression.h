@@ -235,8 +235,6 @@ protected:
     }
 
 private:
-    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveEnumMember(checker::ETSChecker *checker,
-                                                                             checker::ETSEnumType *type) const;
     std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
     checker::Type *AdjustType(checker::ETSChecker *checker, checker::Type *type);
     checker::Type *SetAndAdjustType(checker::ETSChecker *checker, checker::ETSObjectType *objectType);

@@ -42,9 +42,6 @@ checker::ETSObjectType *BoxingConverter::Convert(ETSChecker const *checker, Type
             return typeHolder->GlobalFloatBuiltinType()->AsETSObjectType();
         case checker::TypeFlag::DOUBLE:
             return typeHolder->GlobalDoubleBuiltinType()->AsETSObjectType();
-        case checker::TypeFlag::ETS_INT_ENUM:
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            return source->AsETSEnumType()->BoxedType()->AsETSObjectType();
         default:
             UNREACHABLE();
     }

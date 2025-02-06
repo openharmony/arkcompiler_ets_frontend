@@ -62,7 +62,6 @@ private:
                                          ETSChecker *checker) const;
     void CheckClassProperty(ETSChecker *checker, ir::ScriptFunction *scriptFunc) const;
 
-    checker::Type *CheckEnumMemberExpression(ETSEnumType *const baseType, ir::MemberExpression *const expr) const;
     checker::Type *ResolveMemberExpressionByBaseType(ETSChecker *checker, checker::Type *baseType,
                                                      ir::MemberExpression *expr) const;
 

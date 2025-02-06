@@ -95,7 +95,9 @@ void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident)
 void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident)
 {
     auto const resolved = ident->Variable();
-    if (resolved->Declaration()->Node()->IsTSEnumDeclaration() &&
+    // Handles Enum[enumVar] MemberExpression
+    if (resolved->Declaration()->Node()->IsClassDefinition() &&
+        resolved->Declaration()->Node()->AsClassDefinition()->TsType()->IsETSEnumType() &&
         ident->Parent()->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::ELEMENT_ACCESS)) {
         return;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "variableNameIdentifierNameSame.h"
 #include "ir/expressions/identifier.h"
-#include "checker/types/ets/etsEnumType.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/ets/etsImportDeclaration.h"
 
@@ -53,16 +52,6 @@ namespace ark::es2panda::compiler::ast_verifier {
         }
 
         parent = parent->Parent();
-    }
-
-    parent = id->Parent();
-    if (parent->IsMemberExpression() && parent->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType()) {
-        const bool isValueOfMethod = (id->Name() == checker::ETSEnumType::VALUE_OF_METHOD_NAME);
-        const bool isToStringMethod = (variable->Name() == checker::ETSEnumType::TO_STRING_METHOD_NAME);
-        if (isValueOfMethod && isToStringMethod) {
-            // For string enums valueOf method calls toString method
-            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
-        }
     }
 
     AddCheckMessage("IDENTIFIER_NAME_DIFFERENCE", *id);

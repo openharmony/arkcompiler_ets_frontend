@@ -62,12 +62,12 @@ function main(): void {
   //cons.print( "Ordinal (as int): Color.Red = " + Color.Red as int + ", = Red = " + red1 as int + ", ValueOf(Red) = " + red2 as int + "\n")
   //cons.print( "ToString: Color.Red = '" + Color.Red.toString() + "', = Red = '" + red1.toString() + "', ValueOf(Red) = '" + red2.toString() + "'\n")
 
-  assertEQ(red1 as int, 1)
+  assertEQ(red1 as int, 2)
   assertEQ(red1.valueOf(), 2)
   assertEQ(red1.getName(), "Red")
   assertEQ(red1.toString(), "2")
 
-  assertEQ(red2 as int, 1)
+  assertEQ(red2 as int, 2)
   assertEQ(red2.valueOf(), 2)
   assertEQ(red2.getName(), "Red")
   assertEQ(red2.toString(), "2")
@@ -76,18 +76,18 @@ function main(): void {
   assertEQ(red2, Color.Red)
   assertEQ(red2, red1)
 
-  let ord: int = 2;
+  let ord: int = 3;
   blue = ord as Color;
-  assertEQ(blue as int, 2)
+  assertEQ(blue as int, 3)
   assertEQ(blue.valueOf(), 3)
   assertEQ(blue.getName(), "Blue")
   assertEQ(blue.toString(), "3")
 
   try {
     let yellow: Color = Color.getValueOf("Yellow");
-    assertTrue(false)
-  } catch (e: Exception) {
-    assertTrue((e as Object).toString().startsWith("No enum constant Color.Yellow"))
+    assertTrue( false)
+  } catch (e: Error) {
+    assertTrue( (e as Object).toString().startsWith("Error: No enum constant Color.Yellow"))
   } catch (e) {}
 
   ord = 0;
@@ -97,14 +97,14 @@ function main(): void {
 
   try {
     let x = 5 as Color;
-    assertTrue(false)
-  } catch (e: Exception) {
-    assertTrue((e as Object).toString().startsWith("No enum constant in Color with ordinal value 5"))
+    assertTrue( false)
+  } catch (e: Error) {
+    assertTrue( (e as Object).toString().startsWith("Error: No enum Color with value 5"))
   }
 
-  assertEQ(2 as Color as int, 2)
-  assertEQ(Color.Blue as int as Color, Color.Blue)
-  assertEQ((Color.Green as int + 1) as Color, (Color.Blue as int - 1) as Color)
+  assertEQ( 2 as Color as int, 2)
+  assertEQ( Color.Blue as int as Color, Color.Blue)
+  assertEQ( (Color.Green as int + 2) as Color, (Color.Blue as int - 1) as Color)
   try {
     assertEQ((Color.Green as int + 1) as Color, Color.getValueOf("Red"))
   } catch (e) {

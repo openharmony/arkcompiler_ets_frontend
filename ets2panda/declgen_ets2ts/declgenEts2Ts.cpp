@@ -140,12 +140,7 @@ void TSDeclGen::GenDeclarations()
         } else if (globalStatement->IsTSEnumDeclaration()) {
             GenEnumDeclaration(globalStatement->AsTSEnumDeclaration());
         } else if (globalStatement->IsClassDeclaration()) {
-            // The classes generated for enums starts with '#' but those are invalid names and
-            // not requred for the ts code
-            if (globalStatement->AsClassDeclaration()->Definition()->Ident()->Name().Mutf8().find('#') ==
-                std::string::npos) {
-                GenClassDeclaration(globalStatement->AsClassDeclaration());
-            }
+            GenClassDeclaration(globalStatement->AsClassDeclaration());
         } else if (globalStatement->IsTSInterfaceDeclaration()) {
             GenInterfaceDeclaration(globalStatement->AsTSInterfaceDeclaration());
         } else if (globalStatement->IsTSTypeAliasDeclaration()) {
@@ -219,6 +214,14 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
     if (HandleBasicTypes(checkerType)) {
         return;
     }
+    if (checkerType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
+        OutDts("number");
+        return;
+    }
+    if (checkerType->IsETSStringEnumType()) {
+        OutDts("string");
+        return;
+    }
 
     if (checkerType->IsETSFunctionType()) {
         HandleFunctionType(checkerType);
@@ -272,7 +275,6 @@ bool TSDeclGen::HandleETSSpecificTypes(const checker::Type *checkerType)
         case checker::TypeFlag::ETS_PARTIAL_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NEVER:
         case checker::TypeFlag::ETS_READONLY:
-        case checker::TypeFlag::ETS_INT_ENUM:
             OutDts(checkerType->ToString());
             return true;
 
@@ -477,11 +479,11 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
     }
 }
 
-void TSDeclGen::GenEnumType(const checker::ETSEnumType *enumType)
+void TSDeclGen::GenEnumMember(const ir::TSEnumDeclaration *enumDecl)
 {
-    for (auto *member : enumType->GetMembers()) {
+    for (auto *member : enumDecl->Members()) {
         auto indent = GetIndent();
-        OutDts(indent);
+        OutDts(INDENT);
         OutTs(indent);
         if (!member->IsTSEnumMember()) {
             LogError(diagnostic::INCORRECT_ENUM_MEMBER, {}, member->Start());
@@ -857,10 +859,8 @@ void TSDeclGen::GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl)
     OutEndlDts();
     OutTs("export const enum ", enumName, " {");
     OutEndlTs();
-
-    ES2PANDA_ASSERT(enumDecl->TsType()->IsETSEnumType());
-    GenEnumType(enumDecl->TsType()->AsETSEnumType());
-
+    ES2PANDA_ASSERT(enumDecl->TsType()->IsETSIntEnumType());
+    GenEnumMember(enumDecl);
     OutTs("}");
     OutEndlTs();
     OutDts("}");
@@ -1181,6 +1181,11 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
     }
 
     const auto propName = GetKeyIdent(classProp->Key())->Name().Mutf8();
+    // The class property generated for enums starts with "#" are invalid properties, and should not be generated.
+    if (propName.find('#') != std::string::npos) {
+        DebugPrint("  Skip Generate enum PropDeclaration: " + propName);
+        return;
+    }
     DebugPrint("  GenPropDeclaration: " + propName);
 
     ProcessIndent();

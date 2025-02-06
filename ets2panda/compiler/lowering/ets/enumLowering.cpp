@@ -14,15 +14,17 @@
  */
 
 #include "enumLowering.h"
-#include "checker/types/ets/etsEnumType.h"
+
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsEnumType.h"
 #include "checker/types/type.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/util.h"
 #include "varbinder/ETSBinder.h"
-#include "varbinder/variable.h"
 
 namespace ark::es2panda::compiler {
+
+using AstNodePtr = ir::AstNode *;
 
 namespace {
 
@@ -120,14 +122,6 @@ bool EnumLoweringPhase::CheckEnumMemberType(const ArenaVector<ir::AstNode *> &en
     return function;
 }
 
-util::UString EnumLoweringPhase::GetEnumClassName(checker::ETSChecker *checker,
-                                                  const ir::TSEnumDeclaration *const enumDecl)
-{
-    util::UString className(util::StringView("#"), checker->Allocator());
-    className.Append(enumDecl->Key()->Name());
-    return className;
-}
-
 template <typename ElementMaker>
 [[nodiscard]] ir::Identifier *EnumLoweringPhase::MakeArray(const ir::TSEnumDeclaration *const enumDecl,
                                                            ir::ClassDefinition *const enumClass,
@@ -144,21 +138,53 @@ template <typename ElementMaker>
     auto *const arrayIdent = checker_->AllocNode<ir::Identifier>(name, Allocator());
     auto *const arrayClassProp = checker_->AllocNode<ir::ClassProperty>(
         arrayIdent, arrayExpr, typeAnnotation,
-        ir::ModifierFlags::STATIC | ir::ModifierFlags::PROTECTED | ir::ModifierFlags::READONLY, Allocator(), false);
+        ir::ModifierFlags::STATIC | ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY, Allocator(), false);
     arrayClassProp->SetParent(enumClass);
     enumClass->Body().push_back(arrayClassProp);
 
     return arrayIdent;
 }
 
+void EnumLoweringPhase::CreateEnumItemFields(const ir::TSEnumDeclaration *const enumDecl,
+                                             ir::ClassDefinition *const enumClass)
+{
+    int32_t ordinal = 0;
+    auto createEnumItemField = [this, enumClass, &ordinal](ir::TSEnumMember *const member) {
+        auto *const enumMemberIdent =
+            checker_->AllocNode<ir::Identifier>(member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
+        auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumClass->Ident()->Name());
+
+        auto *const ordinalLiteral = checker_->AllocNode<ir::NumberLiteral>(lexer::Number(ordinal));
+        ordinal++;
+        ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
+        newExprArgs.push_back(ordinalLiteral);
+        auto enumTypeAnnotation1 = enumTypeAnnotation->Clone(Allocator(), nullptr);
+        auto *const newExpression =
+            checker_->AllocNode<ir::ETSNewClassInstanceExpression>(enumTypeAnnotation1, std::move(newExprArgs));
+
+        auto *field = checker_->AllocNode<ir::ClassProperty>(
+            enumMemberIdent, newExpression, enumTypeAnnotation,
+            ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY, Allocator(), false);
+        enumMemberIdent->SetRange(member->Key()->Range());
+        newExpression->SetRange(member->Init()->Range());
+        field->SetRange(member->Range());
+        field->SetOrigEnumMember(member->AsTSEnumMember());
+        field->SetParent(enumClass);
+        return field;
+    };
+    for (auto *const member : enumDecl->Members()) {
+        enumClass->Body().push_back(createEnumItemField(member->AsTSEnumMember()));
+    }
+}
+
 ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl,
                                                         ir::ClassDefinition *const enumClass)
 {
-    auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
+    auto *const stringTypeAnnotation = MakeTypeReference(checker_, STRING_REFERENCE_TYPE);  // NOTE String -> Builtin?
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation, Allocator());
 
     // clang-format off
-    return MakeArray(enumDecl, enumClass, "NamesArray", arrayTypeAnnotation,
+    return MakeArray(enumDecl, enumClass, NAMES_ARRAY_NAME, arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
                         auto *const enumNameStringLiteral =
                             checker_->AllocNode<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
@@ -168,32 +194,28 @@ ir::Identifier *EnumLoweringPhase::CreateEnumNamesArray(const ir::TSEnumDeclarat
 }
 
 ir::ClassDeclaration *EnumLoweringPhase::CreateClass(ir::TSEnumDeclaration *const enumDecl,
-                                                     const DeclarationFlags flags)
+                                                     const DeclarationFlags flags, bool isIntEnum)
 {
-    auto *ident = Allocator()->New<ir::Identifier>(GetEnumClassName(checker_, enumDecl).View(), Allocator());
+    auto *ident = Allocator()->New<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
+    ident->SetRange(enumDecl->Key()->Range());
+    auto enumFlag = isIntEnum ? ir::ClassDefinitionModifiers::INT_ENUM_TRANSFORMED
+                              : ir::ClassDefinitionModifiers::STRING_ENUM_TRANSFORMED;
+    auto baseClassDefinitionFlag = ir::ClassDefinitionModifiers::CLASS_DECL | enumFlag;
     auto *classDef = checker_->AllocNode<ir::ClassDefinition>(
         Allocator(), ident,
-        flags.isLocal ? ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL
-                      : ir::ClassDefinitionModifiers::CLASS_DECL,
-        enumDecl->IsDeclare() ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE, Language(Language::Id::ETS));
+        flags.isLocal ? baseClassDefinitionFlag | ir::ClassDefinitionModifiers::LOCAL : baseClassDefinitionFlag,
+        enumDecl->IsDeclare() ? ir::ModifierFlags::FINAL | ir::ModifierFlags::DECLARE : ir::ModifierFlags::FINAL,
+        Language(Language::Id::ETS));
 
     auto *classDecl = checker_->AllocNode<ir::ClassDeclaration>(classDef, Allocator());
 
-    if (flags.isLocal) {
-        enumDecl->Parent()->AsBlockStatement()->Statements().push_back(classDecl);
-        classDecl->SetParent(enumDecl->Parent());
-    } else if (flags.isNamespace) {
-        enumDecl->Parent()->AsClassDefinition()->Body().push_back(classDecl);
-        classDecl->SetParent(enumDecl->Parent());
-    } else if (flags.isTopLevel) {
-        program_->Ast()->Statements().push_back(classDecl);
-        classDecl->SetParent(program_->Ast());
-    } else {  // Maybe support local enums in the future
-        UNREACHABLE();
+    if (enumDecl->IsExported()) {
+        classDecl->AddModifier(ir::ModifierFlags::EXPORT);
+    } else if (enumDecl->IsDefaultExported()) {
+        classDecl->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
     }
 
     classDef->SetOrigEnumDecl(enumDecl);
-    enumDecl->SetBoxedClass(classDef);
 
     CreateOrdinalField(classDef);
     if (!enumDecl->IsDeclare()) {
@@ -225,7 +247,7 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
 
     auto *const identClone = id->Clone(Allocator(), nullptr);
     auto *const methodDef = checker_->AllocNode<ir::MethodDefinition>(
-        ir::MethodDefinitionKind::METHOD, identClone, funcExpr, ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC,
+        ir::MethodDefinitionKind::METHOD, identClone, funcExpr, ir::ModifierFlags::PRIVATE | ir::ModifierFlags::STATIC,
         Allocator(), false);
     methodDef->SetParent(enumClass);
     enumClass->Body().push_back(methodDef);
@@ -233,10 +255,11 @@ void EnumLoweringPhase::CreateCCtorForEnumClass(ir::ClassDefinition *const enumC
 
 ir::ClassProperty *EnumLoweringPhase::CreateOrdinalField(ir::ClassDefinition *const enumClass)
 {
-    auto *const fieldIdent = Allocator()->New<ir::Identifier>("ordinal", Allocator());
+    auto *const fieldIdent = Allocator()->New<ir::Identifier>(ORDINAL_NAME, Allocator());
     auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
     auto *field = checker_->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, intTypeAnnotation,
-                                                         ir::ModifierFlags::PROTECTED, Allocator(), false);
+                                                         ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY,
+                                                         Allocator(), false);
 
     enumClass->Body().push_back(field);
     field->SetParent(enumClass);
@@ -248,7 +271,7 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
     auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
-    auto *const inputOrdinalParam = MakeFunctionParam(checker_, "ordinal", intTypeAnnotation);
+    auto *const inputOrdinalParam = MakeFunctionParam(checker_, PARAM_ORDINAL, intTypeAnnotation);
     params.push_back(inputOrdinalParam);
 
     auto *id = checker_->AllocNode<ir::Identifier>("constructor", Allocator());
@@ -262,17 +285,18 @@ ir::ScriptFunction *EnumLoweringPhase::CreateFunctionForCtorOfEnumClass(ir::Clas
     auto *func = checker_->AllocNode<ir::ScriptFunction>(
         Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
-                                                scriptFlags,                     // CC-OFF(G.FMT.02) project code style
-                                                ir::ModifierFlags::CONSTRUCTOR,  // CC-OFF(G.FMT.02) project code style
+                                                scriptFlags,  // CC-OFF(G.FMT.02) project code style
+                                                ir::ModifierFlags::CONSTRUCTOR |
+                                                    ir::ModifierFlags::PRIVATE,  // CC-OFF(G.FMT.02) project code style
                                                 Language(Language::Id::ETS)});   // CC-OFF(G.FMT.02) project code style
 
     func->SetIdent(id);
 
     auto *thisExpr = Allocator()->New<ir::ThisExpression>();
-    auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
+    auto *fieldIdentifier = Allocator()->New<ir::Identifier>(ORDINAL_NAME, Allocator());
     auto *leftHandSide = checker_->AllocNode<ir::MemberExpression>(
         thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-    auto *rightHandSide = checker_->AllocNode<ir::Identifier>("ordinal", Allocator());
+    auto *rightHandSide = checker_->AllocNode<ir::Identifier>(PARAM_ORDINAL, Allocator());
     rightHandSide->SetVariable(inputOrdinalParam->Ident()->Variable());
     auto *initializer = checker_->AllocNode<ir::AssignmentExpression>(leftHandSide, rightHandSide,
                                                                       lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
@@ -298,91 +322,105 @@ void EnumLoweringPhase::CreateCtorForEnumClass(ir::ClassDefinition *const enumCl
 void EnumLoweringPhase::ProcessEnumClassDeclaration(ir::TSEnumDeclaration *const enumDecl,
                                                     const DeclarationFlags &flags, ir::ClassDeclaration *enumClassDecl)
 {
+    varbinder::Variable *var = nullptr;
+    auto *ident = enumClassDecl->Definition()->Ident();
     if (flags.isLocal) {
-        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, NearestScope(enumDecl->Parent()));
+        auto *scope = NearestScope(enumDecl->Parent());
+        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
+        var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
     } else if (flags.isTopLevel) {
-        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, program_->GlobalScope());
+        auto *scope = program_->GlobalClassScope();
+        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
-        auto *ident = enumClassDecl->Definition()->Ident();
-        auto *var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::BINDINGS);
-        ident->SetVariable(var);
+        var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::ALL);
+        if (var != nullptr) {
+            program_->GlobalScope()->InsertBinding(ident->Name(), var);
+        }
     } else if (flags.isNamespace) {
-        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, enumDecl->Parent()->Scope());
+        auto *scope = enumDecl->Parent()->Scope();
+        auto localCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder_, scope);
         InitScopesPhaseETS::RunExternalNode(enumClassDecl, varbinder_);
-        auto *ident = enumClassDecl->Definition()->Ident();
-        auto *var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::DECLARATION);
-        ident->SetVariable(var);
+        var = varbinder_->GetScope()->FindLocal(ident->Name(), varbinder::ResolveBindingOptions::DECLARATION);
     } else {
         UNREACHABLE();
     }
+    if (var != nullptr) {
+        // Although it enum was transformed to class, it should still be regarded as enum.
+        var->RemoveFlag(varbinder::VariableFlags::CLASS);
+        var->AddFlag(varbinder::VariableFlags::ENUM_LITERAL);
+    }
 }
 
-void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
-                                                              const DeclarationFlags flags)
+ir::ClassDeclaration *EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
+                                                                               const DeclarationFlags flags)
 {
-    auto *const enumClassDecl = CreateClass(enumDecl, flags);
+    auto *const enumClassDecl = CreateClass(enumDecl, flags, true);
     auto *const enumClass = enumClassDecl->Definition();
 
+    CreateEnumItemFields(enumDecl, enumClass);
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
     auto *const valuesArrayIdent = CreateEnumValuesArray(enumDecl, enumClass);
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
     auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl, enumClass);
-    auto *const boxedItemsArrayIdent = CreateBoxedEnumItemsArray(enumDecl, enumClass);
 
     CreateEnumGetNameMethod(enumDecl, enumClass, namesArrayIdent);
 
-    CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent);
+    CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent, itemsArrayIdent);
 
-    CreateEnumValueOfMethod(enumDecl, enumClass, valuesArrayIdent);
+    CreateEnumFromValueMethod(enumDecl, enumClass, valuesArrayIdent, itemsArrayIdent, true);
+
+    CreateEnumValueOfMethod(enumDecl, enumClass, valuesArrayIdent, true);
 
     CreateEnumToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
 
     CreateEnumValuesMethod(enumDecl, enumClass, itemsArrayIdent);
 
-    CreateEnumFromIntMethod(enumDecl, enumClass, itemsArrayIdent, checker::ETSEnumType::FROM_INT_METHOD_NAME,
-                            enumDecl->Key()->Name());
+    CreateEnumGetOrdinalMethod(enumDecl, enumClass);
 
-    CreateUnboxingMethod(enumDecl, enumClass, itemsArrayIdent);
-
-    CreateEnumFromIntMethod(enumDecl, enumClass, boxedItemsArrayIdent, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
-                            GetEnumClassName(checker_, enumDecl).View());
+    CreateEnumDollarGetMethod(enumDecl, enumClass);
 
     SetDefaultPositionInUnfilledClassNodes(enumClassDecl, enumDecl);
 
+    enumClassDecl->SetParent(enumDecl->Parent());
     ProcessEnumClassDeclaration(enumDecl, flags, enumClassDecl);
+
+    return enumClassDecl;
 }
 
-void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
-                                                                 const DeclarationFlags flags)
+ir::ClassDeclaration *EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl,
+                                                                                  const DeclarationFlags flags)
 {
-    auto *const enumClassDecl = CreateClass(enumDecl, flags);
+    auto *const enumClassDecl = CreateClass(enumDecl, flags, false);
     auto *const enumClass = enumClassDecl->Definition();
 
+    CreateEnumItemFields(enumDecl, enumClass);
     auto *const namesArrayIdent = CreateEnumNamesArray(enumDecl, enumClass);
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumDecl, enumClass);
     auto *const itemsArrayIdent = CreateEnumItemsArray(enumDecl, enumClass);
-    auto *const boxedItemsArrayIdent = CreateBoxedEnumItemsArray(enumDecl, enumClass);
 
     CreateEnumGetNameMethod(enumDecl, enumClass, namesArrayIdent);
 
-    CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent);
+    CreateEnumGetValueOfMethod(enumDecl, enumClass, namesArrayIdent, itemsArrayIdent);
+
+    CreateEnumFromValueMethod(enumDecl, enumClass, stringValuesArrayIdent, itemsArrayIdent, false);
+
+    CreateEnumValueOfMethod(enumDecl, enumClass, stringValuesArrayIdent, false);
 
     CreateEnumToStringMethod(enumDecl, enumClass, stringValuesArrayIdent);
 
     CreateEnumValuesMethod(enumDecl, enumClass, itemsArrayIdent);
 
-    CreateEnumFromIntMethod(enumDecl, enumClass, itemsArrayIdent, checker::ETSEnumType::FROM_INT_METHOD_NAME,
-                            enumDecl->Key()->Name());
+    CreateEnumGetOrdinalMethod(enumDecl, enumClass);
 
-    CreateUnboxingMethod(enumDecl, enumClass, itemsArrayIdent);
-
-    CreateEnumFromIntMethod(enumDecl, enumClass, boxedItemsArrayIdent, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
-                            GetEnumClassName(checker_, enumDecl).View());
+    CreateEnumDollarGetMethod(enumDecl, enumClass);
 
     SetDefaultPositionInUnfilledClassNodes(enumClassDecl, enumDecl);
 
+    enumClassDecl->SetParent(enumDecl->Parent());
     ProcessEnumClassDeclaration(enumDecl, flags, enumClassDecl);
+
+    return enumClassDecl;
 }
 
 static EnumLoweringPhase::DeclarationFlags GetDeclFlags(ir::TSEnumDeclaration *const enumDecl)
@@ -405,30 +443,36 @@ bool EnumLoweringPhase::PerformForModule(public_lib::Context *ctx, parser::Progr
     checker_ = ctx->checker->AsETSChecker();
     varbinder_ = ctx->parserProgram->VarBinder()->AsETSBinder();
     program_ = program;
-    program->Ast()->IterateRecursively([this, &isPerformedSuccess](ir::AstNode *ast) -> void {
-        if (ast->IsTSEnumDeclaration()) {
-            auto *enumDecl = ast->AsTSEnumDeclaration();
-            auto const flags = GetDeclFlags(enumDecl);
-            //  Skip processing possibly invalid enum declaration (for multi-error reporting)
-            if (!flags.IsValid() || enumDecl->Members().empty()) {
-                return;
+    program->Ast()->TransformChildrenRecursively(
+        [this, &isPerformedSuccess](ir::AstNode *ast) -> AstNodePtr {
+            if (ast->IsTSEnumDeclaration()) {
+                auto *enumDecl = ast->AsTSEnumDeclaration();
+                auto const flags = GetDeclFlags(enumDecl);
+                //  Skip processing possibly invalid enum declaration (for multi-error reporting)
+                if (!flags.IsValid() || enumDecl->Members().empty()) {
+                    return ast;
+                }
+                bool hasLoggedError = false;
+                auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
+                if (itemInit->IsNumberLiteral() &&
+                    CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError)) {
+                    return CreateEnumIntClassFromEnumDeclaration(enumDecl, flags);
+                }
+                if (itemInit->IsStringLiteral() &&
+                    CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError)) {
+                    return CreateEnumStringClassFromEnumDeclaration(enumDecl, flags);
+                }
+                if (!hasLoggedError) {
+                    LogSyntaxError("Invalid enum initialization value", itemInit->Start());
+                    isPerformedSuccess = false;
+                } else {
+                    isPerformedSuccess = false;
+                }
+                return ast;
             }
-            bool hasLoggedError = false;
-            if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init();
-                itemInit->IsNumberLiteral() &&
-                CheckEnumMemberType<ir::NumberLiteral>(enumDecl->Members(), hasLoggedError)) {
-                CreateEnumIntClassFromEnumDeclaration(enumDecl, flags);
-            } else if (itemInit->IsStringLiteral() &&
-                       CheckEnumMemberType<ir::StringLiteral>(enumDecl->Members(), hasLoggedError)) {
-                CreateEnumStringClassFromEnumDeclaration(enumDecl, flags);
-            } else if (!hasLoggedError) {
-                LogSyntaxError("Invalid enum initialization value", itemInit->Start());
-                isPerformedSuccess = false;
-            } else {
-                isPerformedSuccess = false;
-            }
-        }
-    });
+            return ast;
+        },
+        Name());
     return isPerformedSuccess;
 }
 
@@ -438,14 +482,14 @@ ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclara
     auto *const intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(intType, Allocator());
     // clang-format off
-    return MakeArray(enumDecl, enumClass, "ValuesArray", arrayTypeAnnotation,
+    return MakeArray(enumDecl, enumClass, VALUES_ARRAY_NAME, arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
                         auto *const enumValueLiteral = checker_->AllocNode<ir::NumberLiteral>(
                             lexer::Number(member->AsTSEnumMember()
                                                 ->Init()
                                                 ->AsNumberLiteral()
                                                 ->Number()
-                                                .GetValue<checker::ETSIntEnumType::ValueType>()));
+                                                .GetValue<std::int32_t>()));
                         return enumValueLiteral;
                     });
     // clang-format on
@@ -454,11 +498,11 @@ ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclara
 ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumDeclaration *const enumDecl,
                                                                ir::ClassDefinition *const enumClass)
 {
-    auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
+    auto *const stringTypeAnnotation = MakeTypeReference(checker_, STRING_REFERENCE_TYPE);  // NOTE String -> Builtin?
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(stringTypeAnnotation, Allocator());
 
     // clang-format off
-    return MakeArray(enumDecl, enumClass, "StringValuesArray", arrayTypeAnnotation,
+    return MakeArray(enumDecl, enumClass, STRING_VALUES_ARRAY_NAME, arrayTypeAnnotation,
                      [this](const ir::TSEnumMember *const member) {
                         auto *const init = member->AsTSEnumMember()->Init();
                         util::StringView stringValue;
@@ -467,7 +511,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumD
                             stringValue = init->AsStringLiteral()->Str();
                         } else {
                             auto str = std::to_string(
-                                init->AsNumberLiteral()->Number().GetValue<checker::ETSIntEnumType::ValueType>());
+                                init->AsNumberLiteral()->Number().GetValue<std::int32_t>());
                             stringValue = util::UString(str, Allocator()).View();
                         }
 
@@ -480,13 +524,13 @@ ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumD
 ir::Identifier *EnumLoweringPhase::CreateEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl,
                                                         ir::ClassDefinition *const enumClass)
 {
-    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
+    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumClass->Ident()->Name());
     auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation, Allocator());
     // clang-format off
-    return MakeArray(enumDecl, enumClass, "ItemsArray", arrayTypeAnnotation,
-                     [this, enumDecl](const ir::TSEnumMember *const member) {
+    return MakeArray(enumDecl, enumClass, ITEMS_ARRAY_NAME, arrayTypeAnnotation,
+                     [this, enumClass, enumDecl](const ir::TSEnumMember *const member) {
                         auto *const enumTypeIdent =
-                            checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
+                            checker_->AllocNode<ir::Identifier>(enumClass->Ident()->Name(), Allocator());
                         enumTypeIdent->SetRange(enumDecl->Key()->Range());
                         auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
                             member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
@@ -498,37 +542,13 @@ ir::Identifier *EnumLoweringPhase::CreateEnumItemsArray(const ir::TSEnumDeclarat
     // clang-format on
 }
 
-ir::Identifier *EnumLoweringPhase::CreateBoxedEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl,
-                                                             ir::ClassDefinition *const enumClass)
+ir::MemberExpression *EnumLoweringPhase::CreateOrdinalAccessExpression()
 {
-    auto boxedClassName = GetEnumClassName(checker_, enumDecl).View();
-    auto *const enumTypeAnnotation = MakeTypeReference(checker_, boxedClassName);
-    auto *const arrayTypeAnnotation = checker_->AllocNode<ir::TSArrayType>(enumTypeAnnotation, Allocator());
-    // clang-format off
-    return MakeArray(enumDecl, enumClass, "BoxedItemsArray", arrayTypeAnnotation,
-                     [this, enumDecl, &boxedClassName](const ir::TSEnumMember *const member) {
-                        auto *const enumTypeIdent =
-                            checker_->AllocNode<ir::Identifier>(enumDecl->Key()->Name(), Allocator());
-                        enumTypeIdent->SetRange(enumDecl->Key()->Range());
-                        auto *const enumMemberIdent = checker_->AllocNode<ir::Identifier>(
-                            member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
-                        enumMemberIdent->SetRange(member->AsTSEnumMember()->Key()->Range());
-                        auto *const enumMemberExpr = checker_->AllocNode<ir::MemberExpression>(
-                            enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-
-                        auto intType = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
-                        auto asExpression = checker_->AllocNode<ir::TSAsExpression>(enumMemberExpr, intType, false);
-
-                        ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
-                        newExprArgs.push_back(asExpression);
-
-                        auto boxedTypeRef = MakeTypeReference(checker_, boxedClassName);
-
-                        auto *const newExpression = checker_->AllocNode<ir::ETSNewClassInstanceExpression>(
-                            boxedTypeRef, std::move(newExprArgs));
-                        return newExpression;
-                    });
-    // clang-format on
+    auto *thisExpr = checker_->AllocNode<ir::ThisExpression>();
+    auto *fieldIdentifier = checker_->AllocNode<ir::Identifier>(ORDINAL_NAME, checker_->Allocator());
+    auto *ordinalAccessExpr = checker_->AllocNode<ir::MemberExpression>(
+        thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    return ordinalAccessExpr;
 }
 
 namespace {
@@ -544,34 +564,6 @@ ir::MemberExpression *CreateStaticAccessMemberExpression(checker::ETSChecker *ch
                                                     ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 }
 
-ir::BinaryExpression *CreateIfTest(checker::ETSChecker *checker, ir::Identifier *const enumClassIdentifier,
-                                   ir::Identifier *const itemsArrayIdentifier,
-                                   ir::ETSParameterExpression *const parameter)
-{
-    auto *const lengthIdent = checker->AllocNode<ir::Identifier>("length", checker->Allocator());
-    auto *const propertyAccessExpr =
-        CreateStaticAccessMemberExpression(checker, enumClassIdentifier, itemsArrayIdentifier);
-    auto *const valuesArrayLengthExpr = checker->AllocNode<ir::MemberExpression>(
-        propertyAccessExpr, lengthIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-    auto *const paramRefIdent = MakeParamRefIdent(checker, parameter);
-    auto *const expr = checker->AllocNode<ir::BinaryExpression>(paramRefIdent, valuesArrayLengthExpr,
-                                                                lexer::TokenType::PUNCTUATOR_LESS_THAN);
-    paramRefIdent->SetParent(expr);
-    return expr;
-}
-ir::ReturnStatement *CreateReturnEnumStatement(checker::ETSChecker *checker, ir::Identifier *const enumClassIdentifier,
-                                               ir::Identifier *const itemsArrayIdentifier,
-                                               ir::ETSParameterExpression *const parameter)
-{
-    auto *const paramRefIdent = MakeParamRefIdent(checker, parameter);
-    auto *const propertyAccessExpr =
-        CreateStaticAccessMemberExpression(checker, enumClassIdentifier, itemsArrayIdentifier);
-    auto *const arrayAccessExpr = checker->AllocNode<ir::MemberExpression>(
-        propertyAccessExpr, paramRefIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-    auto *const returnStatement = checker->AllocNode<ir::ReturnStatement>(arrayAccessExpr);
-    return returnStatement;
-}
-
 ir::ThrowStatement *CreateThrowStatement(checker::ETSChecker *checker, ir::ETSParameterExpression *const parameter,
                                          const util::UString &messageString)
 {
@@ -584,84 +576,51 @@ ir::ThrowStatement *CreateThrowStatement(checker::ETSChecker *checker, ir::ETSPa
     ArenaVector<ir::Expression *> newExprArgs(checker->Allocator()->Adapter());
     newExprArgs.push_back(newExprArg);
 
-    auto *const exceptionReference = MakeTypeReference(checker, "Exception");
+    auto *const exceptionReference = MakeTypeReference(checker, "Error");
     auto *const newExpr =
         checker->AllocNode<ir::ETSNewClassInstanceExpression>(exceptionReference, std::move(newExprArgs));
     return checker->AllocNode<ir::ThrowStatement>(newExpr);
 }
 
-ir::ReturnStatement *CreateReturnWitAsStatement(checker::ETSChecker *checker, ir::Identifier *const enumClassIdentifier,
-                                                ir::Identifier *const arrayIdentifier,
-                                                ir::ETSParameterExpression *const parameter)
+ir::ReturnStatement *CreateReturnStatement(checker::ETSChecker *checker, ir::Identifier *const enumClassIdentifier,
+                                           ir::Identifier *const arrayIdentifier, ir::Expression *const parameter)
 {
-    auto *const paramRefIdent = MakeParamRefIdent(checker, parameter);
-    auto intType = checker->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, checker->Allocator());
-    auto asExpression = checker->AllocNode<ir::TSAsExpression>(paramRefIdent, intType, false);
-    paramRefIdent->SetParent(asExpression);
-
     auto *const propertyAccessExpr = CreateStaticAccessMemberExpression(checker, enumClassIdentifier, arrayIdentifier);
 
     auto *const arrayAccessExpr = checker->AllocNode<ir::MemberExpression>(
-        propertyAccessExpr, asExpression, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+        propertyAccessExpr, parameter, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
 
     return checker->AllocNode<ir::ReturnStatement>(arrayAccessExpr);
 }
 
-}  // namespace
-
-void EnumLoweringPhase::CreateEnumFromIntMethod(const ir::TSEnumDeclaration *const enumDecl,
-                                                ir::ClassDefinition *const enumClass, ir::Identifier *const arrayIdent,
-                                                const util::StringView &methodName,
-                                                const util::StringView &returnTypeName)
+ir::CallExpression *CreateCallInstanceMethod(checker::ETSChecker *checker, std::string_view methodName,
+                                             ir::Expression *thisArg)
 {
-    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
-    auto *const inputOrdinalParameter = MakeFunctionParam(checker_, "ordinal", intTypeAnnotation);
-    auto *const inArraySizeExpr = CreateIfTest(checker_, enumClass->Ident(), arrayIdent, inputOrdinalParameter);
-    auto *const returnEnumStmt =
-        CreateReturnEnumStatement(checker_, enumClass->Ident(), arrayIdent, inputOrdinalParameter);
-    auto *const ifOrdinalExistsStmt = checker_->AllocNode<ir::IfStatement>(inArraySizeExpr, returnEnumStmt, nullptr);
+    auto methodId = checker->AllocNode<ir::Identifier>(methodName, checker->Allocator());
+    auto callee = checker->AllocNode<ir::MemberExpression>(thisArg, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS,
+                                                           false, false);
 
-    auto const messageString = util::UString(std::string_view("No enum constant in "), Allocator())
-                                   .Append(enumDecl->Key()->Name())
-                                   .Append(" with ordinal value ");
-
-    auto *const throwNoEnumStmt = CreateThrowStatement(checker_, inputOrdinalParameter, messageString);
-
-    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputOrdinalParameter);
-
-    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(ifOrdinalExistsStmt);
-    body.push_back(throwNoEnumStmt);
-    auto *const returnTypeAnnotation = MakeTypeReference(checker_, returnTypeName);
-
-    auto *const function = MakeFunction({std::move(params), std::move(body), returnTypeAnnotation, enumDecl,
-                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
-    function->AddFlag(ir::ScriptFunctionFlags::THROWS);
-    auto *const ident = checker_->AllocNode<ir::Identifier>(methodName, Allocator());
-
-    function->SetIdent(ident);
-
-    MakeMethodDef(checker_, enumClass, ident, function);
+    ArenaVector<ir::Expression *> callArguments({}, checker->Allocator()->Adapter());
+    return checker->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
 }
+
+}  // namespace
 
 void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *const enumDecl,
                                                  ir::ClassDefinition *const enumClass,
                                                  ir::Identifier *const stringValuesArrayIdent)
 {
-    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
-    auto *const inputEnumIdent = MakeFunctionParam(checker_, "ordinal", enumTypeAnnotation);
+    auto *ordinalAccessExpr = CreateOrdinalAccessExpression();
     auto *const returnStmt =
-        CreateReturnWitAsStatement(checker_, enumClass->Ident(), stringValuesArrayIdent, inputEnumIdent);
+        CreateReturnStatement(checker_, enumClass->Ident(), stringValuesArrayIdent, ordinalAccessExpr);
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputEnumIdent);
-    auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
-    auto *const function = MakeFunction({std::move(params), std::move(body), stringTypeAnnotation, enumDecl,
-                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const stringTypeAnnotation = MakeTypeReference(checker_, STRING_REFERENCE_TYPE);  // NOTE String -> Builtin?
+    auto *const function =
+        MakeFunction({std::move(params), std::move(body), stringTypeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
 
     auto *const functionIdent =
         checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::TO_STRING_METHOD_NAME, Allocator());
@@ -672,20 +631,20 @@ void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *co
 
 void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
                                                 ir::ClassDefinition *const enumClass,
-                                                ir::Identifier *const valuesArrayIdent)
+                                                ir::Identifier *const valuesArrayIdent, bool isIntEnum)
 {
-    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
-    auto *const inputEnumIdent = MakeFunctionParam(checker_, "e", enumTypeAnnotation);
-    auto *const returnStmt = CreateReturnWitAsStatement(checker_, enumClass->Ident(), valuesArrayIdent, inputEnumIdent);
+    auto *ordinalAccessExpr = CreateOrdinalAccessExpression();
+    auto *const returnStmt = CreateReturnStatement(checker_, enumClass->Ident(), valuesArrayIdent, ordinalAccessExpr);
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputEnumIdent);
-    auto *const intTypeAnnotation = checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
-    auto *const function = MakeFunction({std::move(params), std::move(body), intTypeAnnotation, enumDecl,
-                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const typeAnnotation =
+        isIntEnum ? checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator())->AsTypeNode()
+                  : MakeTypeReference(checker_, STRING_REFERENCE_TYPE)->AsTypeNode();
+    auto *const function =
+        MakeFunction({std::move(params), std::move(body), typeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
     auto *const functionIdent =
         checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::VALUE_OF_METHOD_NAME, Allocator());
     function->SetIdent(functionIdent);
@@ -697,19 +656,17 @@ void EnumLoweringPhase::CreateEnumGetNameMethod(const ir::TSEnumDeclaration *con
                                                 ir::ClassDefinition *const enumClass,
                                                 ir::Identifier *const namesArrayIdent)
 {
-    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
-    auto *const inputEnumIdent = MakeFunctionParam(checker_, "ordinal", enumTypeAnnotation);
-    auto *const returnStmt = CreateReturnWitAsStatement(checker_, enumClass->Ident(), namesArrayIdent, inputEnumIdent);
+    auto ordinalAccessExpr = CreateOrdinalAccessExpression();
+    auto *const returnStmt = CreateReturnStatement(checker_, enumClass->Ident(), namesArrayIdent, ordinalAccessExpr);
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputEnumIdent);
-    auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
+    auto *const stringTypeAnnotation = MakeTypeReference(checker_, STRING_REFERENCE_TYPE);  // NOTE String -> Builtin?
 
-    auto *const function = MakeFunction({std::move(params), std::move(body), stringTypeAnnotation, enumDecl,
-                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const function =
+        MakeFunction({std::move(params), std::move(body), stringTypeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
     auto *const functionIdent =
         checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::GET_NAME_METHOD_NAME, Allocator());
 
@@ -758,8 +715,8 @@ ir::UpdateExpression *CreateForLoopUpdate(checker::ETSChecker *checker, ir::Iden
     return incrementExpr;
 }
 
-ir::IfStatement *CreateIf(checker::ETSChecker *checker, const ir::TSEnumDeclaration *const enumDecl,
-                          ir::MemberExpression *propertyAccessExpr, ir::Identifier *const loopIdentifier,
+ir::IfStatement *CreateIf(checker::ETSChecker *checker, ir::MemberExpression *propertyAccessExpr,
+                          ir::MemberExpression *itemAccessExpr, ir::Identifier *const loopIdentifier,
                           ir::ETSParameterExpression *const parameter)
 {
     auto *const forLoopIdentClone1 = loopIdentifier->Clone(checker->Allocator(), nullptr);
@@ -770,11 +727,13 @@ ir::IfStatement *CreateIf(checker::ETSChecker *checker, const ir::TSEnumDeclarat
     auto *const namesEqualExpr = checker->AllocNode<ir::BinaryExpression>(paramRefIdent, namesArrayElementExpr,
                                                                           lexer::TokenType::PUNCTUATOR_EQUAL);
     paramRefIdent->SetParent(namesEqualExpr);
-    auto *const forLoopIdentClone2 = loopIdentifier->Clone(checker->Allocator(), nullptr);
-    auto *const enumTypeAnnotation = MakeTypeReference(checker, enumDecl->Key()->Name());
-    auto asExpression = checker->AllocNode<ir::TSAsExpression>(forLoopIdentClone2, enumTypeAnnotation, false);
 
-    auto *const returnStmt = checker->AllocNode<ir::ReturnStatement>(asExpression);
+    auto *const forLoopIdentClone2 = loopIdentifier->Clone(checker->Allocator(), nullptr);
+
+    auto *const itemsArrayElementExpr = checker->AllocNode<ir::MemberExpression>(
+        itemAccessExpr, forLoopIdentClone2, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+
+    auto *const returnStmt = checker->AllocNode<ir::ReturnStatement>(itemsArrayElementExpr);
     return checker->AllocNode<ir::IfStatement>(namesEqualExpr, returnStmt, nullptr);
 }
 
@@ -782,26 +741,28 @@ ir::IfStatement *CreateIf(checker::ETSChecker *checker, const ir::TSEnumDeclarat
 
 void EnumLoweringPhase::CreateEnumGetValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
                                                    ir::ClassDefinition *const enumClass,
-                                                   ir::Identifier *const namesArrayIdent)
+                                                   ir::Identifier *const namesArrayIdent,
+                                                   ir::Identifier *const itemsArrayIdent)
 {
-    auto *const forLoopIIdent = checker_->AllocNode<ir::Identifier>("i", checker_->Allocator());
+    auto *const forLoopIIdent = checker_->AllocNode<ir::Identifier>(IDENTIFIER_I, checker_->Allocator());
     auto *const forLoopInitVarDecl = CreateForLoopInitVariableDeclaration(checker_, forLoopIIdent);
     auto *const forLoopTest = CreateForLoopTest(checker_, enumClass->Ident(), namesArrayIdent, forLoopIIdent);
     auto *const forLoopUpdate = CreateForLoopUpdate(checker_, forLoopIIdent);
-    auto *const stringTypeAnnotation = MakeTypeReference(checker_, "String");  // NOTE String -> Builtin?
-    auto *const inputNameIdent = MakeFunctionParam(checker_, "name", stringTypeAnnotation);
+    auto *const stringTypeAnnotation = MakeTypeReference(checker_, STRING_REFERENCE_TYPE);  // NOTE String -> Builtin?
+    auto *const inputNameIdent = MakeFunctionParam(checker_, PARAM_NAME, stringTypeAnnotation);
     auto *const ifStmt =
-        CreateIf(checker_, enumDecl, CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), namesArrayIdent),
-                 forLoopIIdent, inputNameIdent);
+        CreateIf(checker_, CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), namesArrayIdent),
+                 CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), itemsArrayIdent), forLoopIIdent,
+                 inputNameIdent);
 
     auto *const forLoop =
         checker_->AllocNode<ir::ForUpdateStatement>(forLoopInitVarDecl, forLoopTest, forLoopUpdate, ifStmt);
 
     util::UString messageString(util::StringView("No enum constant "), Allocator());
-    messageString.Append(enumDecl->Key()->Name());
+    messageString.Append(enumClass->Ident()->Name());
     messageString.Append('.');
 
-    [[maybe_unused]] auto *const throwStmt = CreateThrowStatement(checker_, inputNameIdent, messageString);
+    auto *const throwStmt = CreateThrowStatement(checker_, inputNameIdent, messageString);
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(forLoop);
@@ -809,13 +770,56 @@ void EnumLoweringPhase::CreateEnumGetValueOfMethod(const ir::TSEnumDeclaration *
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     params.push_back(inputNameIdent);
-    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
+    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumClass->Ident()->Name());
 
     auto *const function = MakeFunction({std::move(params), std::move(body), enumTypeAnnotation, enumDecl,
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
-    function->AddFlag(ir::ScriptFunctionFlags::THROWS);
     auto *const functionIdent =
         checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::GET_VALUE_OF_METHOD_NAME, Allocator());
+
+    function->SetIdent(functionIdent);
+    MakeMethodDef(checker_, enumClass, functionIdent, function);
+}
+
+void EnumLoweringPhase::CreateEnumFromValueMethod(ir::TSEnumDeclaration const *const enumDecl,
+                                                  ir::ClassDefinition *const enumClass,
+                                                  ir::Identifier *const valuesArrayIdent,
+                                                  ir::Identifier *const itemsArrayIdent, bool isIntEnum)
+{
+    auto *const forLoopIIdent = checker_->AllocNode<ir::Identifier>(IDENTIFIER_I, checker_->Allocator());
+    auto *const forLoopInitVarDecl = CreateForLoopInitVariableDeclaration(checker_, forLoopIIdent);
+    auto *const forLoopTest = CreateForLoopTest(checker_, enumClass->Ident(), valuesArrayIdent, forLoopIIdent);
+    auto *const forLoopUpdate = CreateForLoopUpdate(checker_, forLoopIIdent);
+    auto *const typeAnnotation =
+        isIntEnum ? checker_->AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator())->AsTypeNode()
+                  : MakeTypeReference(checker_, STRING_REFERENCE_TYPE)->AsTypeNode();
+    auto *const inputValueIdent = MakeFunctionParam(checker_, PARAM_VALUE, typeAnnotation);
+    auto *const ifStmt =
+        CreateIf(checker_, CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), valuesArrayIdent),
+                 CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), itemsArrayIdent), forLoopIIdent,
+                 inputValueIdent);
+
+    auto *const forLoop =
+        checker_->AllocNode<ir::ForUpdateStatement>(forLoopInitVarDecl, forLoopTest, forLoopUpdate, ifStmt);
+
+    util::UString messageString(util::StringView("No enum "), Allocator());
+    messageString.Append(enumClass->Ident()->Name());
+    messageString.Append(" with value ");
+
+    auto *const throwStmt = CreateThrowStatement(checker_, inputValueIdent, messageString);
+
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
+    body.push_back(forLoop);
+    body.push_back(throwStmt);
+
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    params.push_back(inputValueIdent);
+    auto *const enumTypeAnnotation = MakeTypeReference(checker_, enumClass->Ident()->Name());
+
+    auto *const function = MakeFunction({std::move(params), std::move(body), enumTypeAnnotation, enumDecl,
+                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::FROM_VALUE_METHOD_NAME, Allocator());
 
     function->SetIdent(functionIdent);
     MakeMethodDef(checker_, enumClass, functionIdent, function);
@@ -832,7 +836,7 @@ void EnumLoweringPhase::CreateEnumValuesMethod(const ir::TSEnumDeclaration *cons
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     auto *const enumArrayTypeAnnotation =
-        checker_->AllocNode<ir::TSArrayType>(MakeTypeReference(checker_, enumDecl->Key()->Name()), Allocator());
+        checker_->AllocNode<ir::TSArrayType>(MakeTypeReference(checker_, enumClass->Ident()->Name()), Allocator());
 
     auto *const function = MakeFunction({std::move(params), std::move(body), enumArrayTypeAnnotation, enumDecl,
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
@@ -843,34 +847,46 @@ void EnumLoweringPhase::CreateEnumValuesMethod(const ir::TSEnumDeclaration *cons
     MakeMethodDef(checker_, enumClass, functionIdent, function);
 }
 
-void EnumLoweringPhase::CreateUnboxingMethod(ir::TSEnumDeclaration const *const enumDecl,
-                                             ir::ClassDefinition *const enumClass,
-                                             ir::Identifier *const itemsArrayIdent)
-
+void EnumLoweringPhase::CreateEnumGetOrdinalMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                                   ir::ClassDefinition *const enumClass)
 {
+    auto ordinalAccessExpr = CreateOrdinalAccessExpression();
+    auto *const returnStmt = checker_->AllocNode<ir::ReturnStatement>(ordinalAccessExpr);
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-
-    auto *thisExpr = Allocator()->New<ir::ThisExpression>();
-    auto *fieldIdentifier = Allocator()->New<ir::Identifier>("ordinal", Allocator());
-    auto *arrayIndexExpr = checker_->AllocNode<ir::MemberExpression>(
-        thisExpr, fieldIdentifier, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-
-    auto *const propertyAccessExpr = CreateStaticAccessMemberExpression(checker_, enumClass->Ident(), itemsArrayIdent);
-    auto *const arrayAccessExpr = checker_->AllocNode<ir::MemberExpression>(
-        propertyAccessExpr, arrayIndexExpr, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-
-    auto *const returnStmt = checker_->AllocNode<ir::ReturnStatement>(arrayAccessExpr);
     body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-
-    auto *const returnTypeAnnotation = MakeTypeReference(checker_, enumDecl->Key()->Name());
+    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT, Allocator());
 
     auto *const function =
-        MakeFunction({std::move(params), std::move(body), returnTypeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
+        MakeFunction({std::move(params), std::move(body), intTypeAnnotation, enumDecl, ir::ModifierFlags::PUBLIC});
 
     auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::UNBOX_METHOD_NAME, Allocator());
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::GET_ORDINAL_METHOD_NAME, Allocator());
+    function->SetIdent(functionIdent);
+
+    MakeMethodDef(checker_, enumClass, functionIdent, function);
+}
+
+void EnumLoweringPhase::CreateEnumDollarGetMethod(ir::TSEnumDeclaration const *const enumDecl,
+                                                  ir::ClassDefinition *const enumClass)
+{
+    auto *const inputTypeAnnotation = MakeTypeReference(checker_, enumClass->Ident()->Name());
+    auto *const inputNameIdent = MakeFunctionParam(checker_, "e", inputTypeAnnotation);
+    auto *const paramRefIdent = MakeParamRefIdent(checker_, inputNameIdent);
+    auto *const callExpr =
+        CreateCallInstanceMethod(checker_, checker::ETSEnumType::GET_NAME_METHOD_NAME, paramRefIdent);
+    auto *const returnStmt = checker_->AllocNode<ir::ReturnStatement>(callExpr);
+    ArenaVector<ir::Statement *> body(Allocator()->Adapter());
+    body.push_back(returnStmt);
+
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    params.push_back(inputNameIdent);
+    auto *const stringTypeAnnotation = MakeTypeReference(checker_, STRING_REFERENCE_TYPE);
+    auto *const function = MakeFunction({std::move(params), std::move(body), stringTypeAnnotation, enumDecl,
+                                         ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
+    auto *const functionIdent =
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::DOLLAR_GET_METHOD_NAME, Allocator());
     function->SetIdent(functionIdent);
 
     MakeMethodDef(checker_, enumClass, functionIdent, function);

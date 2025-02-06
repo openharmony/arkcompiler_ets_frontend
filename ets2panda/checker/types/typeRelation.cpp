@@ -192,7 +192,8 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
 
         // NOTE: Can't cache if the node has BoxingUnboxingFlags. These flags should be stored and restored on the node
         // on cache hit.
-        if (UncheckedCast() && node_->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE) {
+        if (UncheckedCast() && node_->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE &&
+            !node_->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
             checker_->UncheckedCastableResult().cached.insert(
                 {{source->Id(), target->Id()}, {result_, RelationType::UNCHECKED_CASTABLE}});
         }

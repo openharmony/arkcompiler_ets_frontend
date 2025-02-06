@@ -575,8 +575,6 @@ static void CompileInstanceof(compiler::ETSGen *etsg, const ir::BinaryExpression
         etsg->IsInstanceDynamic(expr, lhs, rhs);
     } else {
         auto target = expr->Right()->TsType();
-        // NOTE(vpukhov): #20510 lowering
-        target = target->IsETSEnumType() ? etsg->Checker()->MaybeBoxType(target) : target;
         etsg->IsInstance(expr, lhs, target);
     }
     ES2PANDA_ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
@@ -740,53 +738,6 @@ void ETSCompiler::Compile(const ir::BlockExpression *expr) const
     expr->Scope()->SetParent(oldParent);
 }
 
-bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const
-{
-    ETSGen *etsg = GetETSGen();
-    auto *const calleeObject = expr->callee_->AsMemberExpression()->Object();
-    auto const *const enumInterface = [calleeType = calleeObject->TsType()]() -> checker::ETSEnumType const * {
-        if (calleeType == nullptr) {
-            return nullptr;
-        }
-        return calleeType->IsETSEnumType() ? calleeType->AsETSEnumType() : nullptr;
-    }();
-
-    if (enumInterface != nullptr) {
-        ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
-
-        checker::Signature *const signature = [expr, calleeObject, enumInterface, &arguments]() {
-            const auto &memberProxyMethodName = expr->Signature()->InternalName();
-
-            if (memberProxyMethodName == checker::ETSIntEnumType::TO_STRING_METHOD_NAME) {
-                arguments.push_back(calleeObject);
-                return enumInterface->ToStringMethod().globalSignature;
-            }
-            if (memberProxyMethodName == checker::ETSIntEnumType::VALUE_OF_METHOD_NAME) {
-                arguments.push_back(calleeObject);
-                return enumInterface->ValueOfMethod().globalSignature;
-            }
-            if (memberProxyMethodName == checker::ETSIntEnumType::GET_NAME_METHOD_NAME) {
-                arguments.push_back(calleeObject);
-                return enumInterface->GetNameMethod().globalSignature;
-            }
-            if (memberProxyMethodName == checker::ETSIntEnumType::VALUES_METHOD_NAME) {
-                return enumInterface->ValuesMethod().globalSignature;
-            }
-            if (memberProxyMethodName == checker::ETSIntEnumType::GET_VALUE_OF_METHOD_NAME) {
-                arguments.push_back(expr->Arguments().front());
-                return enumInterface->GetValueOfMethod().globalSignature;
-            }
-            UNREACHABLE();
-        }();
-
-        ES2PANDA_ASSERT(signature->ReturnType() == expr->Signature()->ReturnType());
-        etsg->CallExact(expr, signature, arguments);
-        etsg->SetAccumulatorType(expr->TsType());
-    }
-
-    return enumInterface != nullptr;
-}
-
 void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg &calleeReg) const
 {
     ETSGen *etsg = GetETSGen();
@@ -846,12 +797,6 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
 
     auto const callee = expr->Callee();
     checker::Signature *const signature = expr->Signature();
-
-    if (signature->HasSignatureFlag(checker::SignatureFlags::PROXY) && callee->IsMemberExpression()) {
-        if (IsSucceedCompilationProxyMemberExpr(expr)) {
-            return;
-        }
-    }
 
     ASSERT(!callee->TsType()->IsETSArrowType());  // should have been lowered
 
@@ -991,10 +936,6 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
         return;
     }
 
-    if (HandleEnumTypes(expr, etsg)) {
-        return;
-    }
-
     if (HandleStaticProperties(expr, etsg)) {
         return;
     }
@@ -1044,19 +985,6 @@ bool ETSCompiler::HandleArrayTypeLengthProperty(const ir::MemberExpression *expr
 
         auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
         etsg->LoadArrayLength(expr, objReg);
-        etsg->ApplyConversion(expr, expr->TsType());
-        return true;
-    }
-    return false;
-}
-
-// NOTE(vpukhov): #20510 lowering
-bool ETSCompiler::HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg) const
-{
-    auto *const exprType = etsg->Checker()->GetApparentType(expr->TsType());
-    if (exprType->IsETSEnumType() && exprType->AsETSEnumType()->IsLiteralType()) {
-        auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-        etsg->LoadAccumulatorInt(expr, exprType->AsETSEnumType()->GetOrdinal());
         etsg->ApplyConversion(expr, expr->TsType());
         return true;
     }
@@ -1806,23 +1734,6 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
             etsg->CastToDynamic(expr, targetType->AsETSDynamicType());
             break;
         }
-        // NOTE(vpukhov): #20510 lowering
-        case checker::TypeFlag::ETS_STRING_ENUM:
-            [[fallthrough]];
-        case checker::TypeFlag::ETS_INT_ENUM: {
-            auto *const acuType = etsg->GetAccumulatorType();
-            if (acuType->IsETSEnumType()) {
-                break;
-            }
-            ES2PANDA_ASSERT(acuType->IsIntType());
-            auto *const signature = expr->TsType()->AsETSEnumType()->FromIntMethod().globalSignature;
-            compiler::RegScope rs(etsg);
-            auto arg = etsg->AllocReg();
-            etsg->StoreAccumulator(expr, arg);
-            etsg->CallExact(expr, signature->InternalName(), arg);
-            etsg->SetAccumulatorType(signature->ReturnType());
-            break;
-        }
         default: {
             CompileCastPrimitives(expr);
         }
@@ -1888,6 +1799,5 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const {}
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSEnumDeclaration *st) const {}
 
 }  // namespace ark::es2panda::compiler

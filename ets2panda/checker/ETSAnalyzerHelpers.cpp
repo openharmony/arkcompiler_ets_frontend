@@ -28,7 +28,7 @@ static bool IsValidReceiverParameter(Type *const thisType)
         return true;
     }
 
-    if (!thisType->IsETSObjectType()) {
+    if (!thisType->IsETSObjectType() || thisType->IsETSEnumType()) {
         return false;
     }
 
@@ -544,7 +544,9 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
         expr->SetTsType(tsType);
         return;
     }
-
+    if (operandType->IsETSEnumType()) {
+        expr->Argument()->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    }
     expr->SetTsType(checker->GlobalETSBooleanType());
 }
 

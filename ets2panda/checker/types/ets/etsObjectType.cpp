@@ -630,10 +630,6 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
     if (TryCastFloating(relation, target)) {
         return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BOXED_ENUM) && target->HasTypeFlag(TypeFlag::ETS_ENUM)) {
-        conversion::Unboxing(relation, this);
-        return true;
-    }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN) && target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
         conversion::Unboxing(relation, this);
         return true;

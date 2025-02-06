@@ -1102,17 +1102,9 @@ void InitScopesPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration 
 
 void InitScopesPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
 {
-    {
-        const auto enumCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), enumDecl);
-        BindScopeNode(enumCtx.GetScope(), enumDecl);
-        Iterate(enumDecl);
-    }
-    auto name = FormInterfaceOrEnumDeclarationIdBinding(enumDecl->Key());
-    if (auto *decl = AddOrGetDecl<varbinder::EnumLiteralDecl>(VarBinder(), name, enumDecl, enumDecl->Start(), name,
-                                                              enumDecl, enumDecl->IsConst());
-        decl != nullptr) {
-        decl->BindScope(enumDecl->Scope());
-    }
+    const auto enumCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), enumDecl);
+    BindScopeNode(enumCtx.GetScope(), enumDecl);
+    Iterate(enumDecl);
 }
 
 void InitScopesPhaseETS::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAlias)
@@ -1325,10 +1317,6 @@ void InitScopesPhaseETS::AddGlobalDeclaration(ir::AstNode *node)
         case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
             ident = node->AsTSInterfaceDeclaration()->Id();
             isBuiltin = node->AsTSInterfaceDeclaration()->IsFromExternal();
-            break;
-        }
-        case ir::AstNodeType::TS_ENUM_DECLARATION: {
-            ident = node->AsTSEnumDeclaration()->Key();
             break;
         }
         case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION: {

@@ -21,4 +21,3 @@
 
 /* @@? 20:2 Error TypeError: Cannot find type 'ClassAuthor'. */
 /* @@? 20:18 Error SyntaxError: Invalid Type. */
-/* @@? 20:24 Error TypeError: Bad operand type, the types of the operands must be numeric type. */

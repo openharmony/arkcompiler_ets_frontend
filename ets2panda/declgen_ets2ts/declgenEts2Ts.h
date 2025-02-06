@@ -85,7 +85,6 @@ private:
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
     void GenObjectType(const checker::ETSObjectType *objectType);
-    void GenEnumType(const checker::ETSEnumType *enumType);
     void GenUnionType(const checker::ETSUnionType *unionType);
     void GenTupleType(const checker::ETSTupleType *tupleType);
 
@@ -93,6 +92,7 @@ private:
     void GenReExportDeclaration(const ir::ETSReExportDeclaration *reExportDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
     void GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl);
+    void GenEnumMember(const ir::TSEnumDeclaration *enumDecl);
     void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
     void GenMethodDeclaration(const ir::MethodDefinition *methodDef);

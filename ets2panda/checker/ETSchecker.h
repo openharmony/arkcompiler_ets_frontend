@@ -276,9 +276,6 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType, bool isCachePolluting = false);
-    ETSIntEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
-    ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
-
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
     Type *CreateETSUnionType(Type *const (&arr)[N])  // NOLINT(modernize-avoid-c-arrays)
@@ -331,6 +328,10 @@ public:
     checker::Type *CheckBinaryOperatorMulDivMod(
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
+    checker::Type *CheckBinaryOperatorForIntEnums(const checker::Type *const leftType,
+                                                  const checker::Type *const rightType);
+    checker::Type *CheckBinaryBitwiseOperatorForIntEnums(const checker::Type *const leftType,
+                                                         const checker::Type *const rightType);
     checker::Type *CheckBinaryOperatorPlusForEnums(const checker::Type *const leftType,
                                                    const checker::Type *const rightType);
     checker::Type *CheckBinaryOperatorPlus(
@@ -532,7 +533,6 @@ public:
                                      const ir::TSTypeParameterInstantiation *typeParams);
     static ir::TypeNode *ResolveTypeNodeForTypeArg(const ir::TSTypeAliasDeclaration *typeAliasNode,
                                                    const ir::TSTypeParameterInstantiation *typeParams, size_t idx);
-    Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantType(Type *type);
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
@@ -804,9 +804,6 @@ public:
     void CollectReturnStatements(ir::AstNode *parent);
     ir::ETSParameterExpression *AddParam(util::StringView name, ir::TypeNode *type);
 
-    [[nodiscard]] ir::ScriptFunction *FindFunction(ir::TSEnumDeclaration const *const enumDecl,
-                                                   const std::string_view &name);
-
     evaluate::ScopedDebugInfoPlugin *GetDebugInfoPlugin();
     const evaluate::ScopedDebugInfoPlugin *GetDebugInfoPlugin() const;
 
@@ -844,9 +841,6 @@ public:
     }
 
 private:
-    ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
-                                   bool buildPorxyParam, Type *returnType, bool buildProxy = true);
-
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
                           const ETSObjectType *classType);

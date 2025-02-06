@@ -195,7 +195,6 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
                     return ast;
                 }
             }
-
             if (ast->IsTSAsExpression() && ast->AsTSAsExpression()->Expr()->TsType() != nullptr &&
                 ast->AsTSAsExpression()->Expr()->TsType()->IsETSUnionType() &&
                 ast->AsTSAsExpression()->TsType() != nullptr &&

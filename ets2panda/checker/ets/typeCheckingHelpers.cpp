@@ -67,6 +67,11 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     if (conditionType->IsETSPrimitiveType()) {
         FlagExpressionWithUnboxing(testType, conditionType, expr);
     }
+
+    // For T_S compatibility
+    if (conditionType->IsETSEnumType()) {
+        expr->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    }
 }
 
 bool ETSChecker::CheckNonNullish(ir::Expression const *expr)
@@ -320,7 +325,7 @@ bool Type::IsETSMethodType() const
         TypeFlag::TYPE_ERROR | TypeFlag::ETS_NULL | TypeFlag::ETS_UNDEFINED | TypeFlag::ETS_OBJECT |
         TypeFlag::ETS_TYPE_PARAMETER | TypeFlag::WILDCARD | TypeFlag::ETS_NONNULLISH |
         TypeFlag::ETS_REQUIRED_TYPE_PARAMETER | TypeFlag::ETS_NEVER | TypeFlag::ETS_UNION | TypeFlag::ETS_ARRAY |
-        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE;
+        TypeFlag::FUNCTION | TypeFlag::ETS_PARTIAL_TYPE_PARAMETER | TypeFlag::ETS_TUPLE | TypeFlag::ETS_ENUM;
 
     // Issues
     if (type->IsETSVoidType()) {  // NOTE(vpukhov): #19701 void refactoring
@@ -337,12 +342,16 @@ bool Type::IsETSMethodType() const
 
 bool Type::IsETSPrimitiveType() const
 {
-    static constexpr TypeFlag ETS_PRIMITIVE =
-        TypeFlag::ETS_NUMERIC | TypeFlag::CHAR | TypeFlag::ETS_BOOLEAN | TypeFlag::ETS_ENUM;
+    static constexpr TypeFlag ETS_PRIMITIVE = TypeFlag::ETS_NUMERIC | TypeFlag::CHAR | TypeFlag::ETS_BOOLEAN;
 
     // Do not modify
     ES2PANDA_ASSERT(!HasTypeFlag(ETS_PRIMITIVE) == IsSaneETSReferenceType(this));
     return HasTypeFlag(ETS_PRIMITIVE);
+}
+
+bool Type::IsETSPrimitiveOrEnumType() const
+{
+    return IsETSPrimitiveType() || IsETSEnumType();
 }
 
 bool Type::IsETSReferenceType() const
@@ -466,9 +475,6 @@ Type *ETSChecker::GetTypeFromVariableDeclaration(varbinder::Variable *const var)
             variableType = classDef->TsType();
             break;
         }
-
-        case varbinder::DeclType::ENUM_LITERAL:
-            [[fallthrough]];
         case varbinder::DeclType::CONST:
             [[fallthrough]];
         case varbinder::DeclType::READONLY:
@@ -716,25 +722,6 @@ Type *ETSChecker::GetTypeFromClassReference(varbinder::Variable *var)
     auto *classType = BuildBasicClassProperties(classDef);
     var->SetTsType(classType);
     return classType;
-}
-
-Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable *var)
-{
-    if (var->TsType() != nullptr) {
-        return var->TsType();
-    }
-
-    auto *const enumDecl = var->Declaration()->Node()->AsTSEnumDeclaration();
-    if (enumDecl->BoxedClass()->TsType() == nullptr) {
-        BuildBasicClassProperties(enumDecl->BoxedClass());
-    }
-    if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
-        return CreateEnumIntTypeFromEnumDeclaration(enumDecl);
-    } else if (itemInit->IsStringLiteral()) {  // NOLINT(readability-else-after-return)
-        return CreateEnumStringTypeFromEnumDeclaration(enumDecl);
-    } else {  // NOLINT(readability-else-after-return)
-        return TypeError(var, "Invalid enumeration value type.", enumDecl->Start());
-    }
 }
 
 Type *ETSChecker::GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos)
@@ -1145,9 +1132,6 @@ ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxingType)
             return ir::BoxingUnboxingFlags::BOX_TO_FLOAT;
         case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::BOX_TO_DOUBLE;
-        case TypeFlag::ETS_INT_ENUM:
-        case TypeFlag::ETS_STRING_ENUM:
-            return ir::BoxingUnboxingFlags::BOX_TO_ENUM;
         default:
             UNREACHABLE();
     }
@@ -1173,9 +1157,6 @@ ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxingTy
             return ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT;
         case TypeFlag::DOUBLE:
             return ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE;
-        case TypeFlag::ETS_INT_ENUM:
-        case TypeFlag::ETS_STRING_ENUM:
-            return ir::BoxingUnboxingFlags::UNBOX_TO_ENUM;
         default:
             UNREACHABLE();
     }

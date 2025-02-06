@@ -503,4 +503,9 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::DummyNode *node) const
 {
     UNREACHABLE();
 }
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSEnumDeclaration *st) const
+{
+    UNREACHABLE();
+}
 }  // namespace ark::es2panda::compiler

@@ -15,6 +15,8 @@
 
 #include "checker/ETSchecker.h"
 
+#include "checker/types/ets/etsEnumType.h"
+#include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
 #include "checker/types/globalTypesHolder.h"
 #include "ir/statements/annotationDeclaration.h"
@@ -117,175 +119,6 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType, bool isCachePoll
     return arrayType;
 }
 
-namespace {
-[[nodiscard]] checker::ETSFunctionType *MakeProxyFunctionType(
-    checker::ETSChecker *const checker, const util::StringView &name,
-    const std::initializer_list<varbinder::LocalVariable *> &params, ir::ScriptFunction *const globalFunction,
-    checker::Type *const returnType)
-{
-    auto *const signatureInfo = checker->CreateSignatureInfo();
-    signatureInfo->params.insert(signatureInfo->params.end(), params);
-    signatureInfo->minArgCount = signatureInfo->params.size();
-
-    auto *const signature = checker->CreateSignature(signatureInfo, returnType, globalFunction);
-    signature->SetInternalName(name);
-    signature->AddSignatureFlag(checker::SignatureFlags::PROXY);
-
-    return checker->CreateETSMethodType(name, {{signature}, checker->Allocator()->Adapter()});
-}
-
-[[nodiscard]] checker::Signature *MakeGlobalSignature(checker::ETSChecker *const checker,
-                                                      ir::ScriptFunction *const function,
-                                                      checker::Type *const returnType)
-{
-    auto *const signatureInfo = checker->CreateSignatureInfo();
-    signatureInfo->params.reserve(function->Params().size());
-    for (const auto *const param : function->Params()) {
-        signatureInfo->params.push_back(param->AsETSParameterExpression()->Variable()->AsLocalVariable());
-    }
-    signatureInfo->minArgCount = signatureInfo->params.size();
-
-    auto *const signature = checker->CreateSignature(signatureInfo, returnType, function);
-    signature->AddSignatureFlag(checker::SignatureFlags::PUBLIC | checker::SignatureFlags::STATIC);
-    function->SetSignature(signature);
-
-    return signature;
-}
-
-void SetTypesForScriptFunction(checker::ETSChecker *const checker, ir::ScriptFunction *function)
-{
-    for (auto *const p : function->Params()) {
-        auto *const param = p->AsETSParameterExpression();
-        auto const paramType = param->TypeAnnotation()->Check(checker);
-        param->SetTsType(paramType);
-        param->Ident()->SetTsType(paramType);
-        param->Ident()->Variable()->SetTsType(paramType);
-    }
-}
-
-}  // namespace
-
-ETSEnumType::Method ETSChecker::MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
-                                           bool buildPorxyParam, Type *returnType, bool buildProxy)
-{
-    auto function = FindFunction(enumDecl, name);
-    if (function == nullptr) {
-        return {};
-    }
-
-    SetTypesForScriptFunction(this, function);
-
-    if (buildPorxyParam) {
-        return {MakeGlobalSignature(this, function, returnType),
-                MakeProxyFunctionType(
-                    this, name, {function->Params()[0]->AsETSParameterExpression()->Variable()->AsLocalVariable()},
-                    function, returnType)};
-    }
-    return {MakeGlobalSignature(this, function, returnType),
-            buildProxy ? MakeProxyFunctionType(this, name, {}, function, returnType) : nullptr};
-}
-
-[[nodiscard]] ir::ScriptFunction *ETSChecker::FindFunction(ir::TSEnumDeclaration const *const enumDecl,
-                                                           const std::string_view &name)
-{
-    if (enumDecl->BoxedClass() == nullptr) {
-        return nullptr;
-    }
-
-    for (auto m : enumDecl->BoxedClass()->Body()) {
-        if (m->IsMethodDefinition()) {
-            if (m->AsMethodDefinition()->Id()->Name() == name) {
-                return m->AsMethodDefinition()->Function();
-            }
-        }
-    }
-    return nullptr;
-}
-
-template <typename EnumType>
-// CC-OFFNXT(huge_method, G.FUN.01-CPP) solid logic
-EnumType *ETSChecker::CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
-{
-    static_assert(std::is_same_v<EnumType, ETSIntEnumType> || std::is_same_v<EnumType, ETSStringEnumType>);
-    SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass(),
-                                     Context().ContainingSignature());
-
-    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
-    ES2PANDA_ASSERT(enumVar != nullptr);
-
-    checker::ETSEnumType::UType ordinal = -1;
-    auto *const enumType = Allocator()->New<EnumType>(enumDecl, ordinal++);
-    auto *const boxedEnumType = enumDecl->BoxedClass()->TsType();
-
-    enumType->SetVariable(enumVar);
-    enumVar->SetTsType(enumType);
-
-    auto const getNameMethod =
-        MakeMethod(enumDecl, ETSEnumType::GET_NAME_METHOD_NAME, false, GlobalETSStringLiteralType());
-    enumType->SetGetNameMethod(getNameMethod);
-
-    auto getValueOfMethod = MakeMethod(enumDecl, ETSEnumType::GET_VALUE_OF_METHOD_NAME, true, enumType);
-    enumType->SetGetValueOfMethod(getValueOfMethod);
-
-    auto const fromIntMethod = MakeMethod(enumDecl, ETSEnumType::FROM_INT_METHOD_NAME, false, enumType, false);
-    enumType->SetFromIntMethod(fromIntMethod);
-
-    auto const boxedFromIntMethod =
-        MakeMethod(enumDecl, ETSEnumType::BOXED_FROM_INT_METHOD_NAME, false, boxedEnumType, false);
-    enumType->SetBoxedFromIntMethod(boxedFromIntMethod);
-
-    auto const unboxMethod = MakeMethod(enumDecl, ETSEnumType::UNBOX_METHOD_NAME, false, enumType);
-    enumType->SetUnboxMethod(unboxMethod);
-
-    auto const toStringMethod =
-        MakeMethod(enumDecl, ETSEnumType::TO_STRING_METHOD_NAME, false, GlobalETSStringLiteralType());
-    enumType->SetToStringMethod(toStringMethod);
-
-    ETSEnumType::Method valueOfMethod = toStringMethod;
-    if constexpr (std::is_same_v<EnumType, ETSIntEnumType>) {
-        valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, false, GlobalIntType());
-    }
-    enumType->SetValueOfMethod(valueOfMethod);
-
-    auto const valuesMethod =
-        MakeMethod(enumDecl, ETSEnumType::VALUES_METHOD_NAME, false, CreateETSArrayType(enumType));
-    enumType->SetValuesMethod(valuesMethod);
-
-    for (auto *const member : enumType->GetMembers()) {
-        if (auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable(); memberVar != nullptr) {
-            auto *const enumLiteralType = Allocator()->New<EnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
-            enumLiteralType->SetVariable(memberVar);
-            memberVar->SetTsType(enumLiteralType);
-
-            enumLiteralType->SetGetNameMethod(getNameMethod);
-            enumLiteralType->SetGetValueOfMethod(getValueOfMethod);
-            enumLiteralType->SetFromIntMethod(fromIntMethod);
-            enumLiteralType->SetBoxedFromIntMethod(boxedFromIntMethod);
-            enumLiteralType->SetUnboxMethod(unboxMethod);
-            enumLiteralType->SetValueOfMethod(valueOfMethod);
-            enumLiteralType->SetToStringMethod(toStringMethod);
-            enumLiteralType->SetValuesMethod(valuesMethod);
-        } else {
-            ASSERT(IsAnyError());
-        }
-    }
-    return enumType;
-}
-
-ETSIntEnumType *ETSChecker::CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
-{
-    auto etsEnumType = CreateEnumTypeFromEnumDeclaration<ETSIntEnumType>(enumDecl);
-    enumDecl->SetTsType(etsEnumType);
-    return etsEnumType;
-}
-
-ETSStringEnumType *ETSChecker::CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl)
-{
-    auto etsEnumType = CreateEnumTypeFromEnumDeclaration<ETSStringEnumType>(enumDecl);
-    enumDecl->SetTsType(etsEnumType);
-    return etsEnumType;
-}
-
 Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
 {
     if (constituentTypes.empty()) {
@@ -299,6 +132,7 @@ Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
     if (newConstituentTypes.size() == 1) {
         return newConstituentTypes[0];
     }
+
     return Allocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
 }
 
@@ -514,11 +348,16 @@ std::tuple<Language, bool> ETSChecker::CheckForDynamicLang(ir::AstNode *declNode
 
 ETSObjectType *ETSChecker::CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags)
 {
-    if (declNode->IsClassDefinition() && (declNode->AsClassDefinition()->OrigEnumDecl() != nullptr)) {
-        flags |= ETSObjectFlags::BOXED_ENUM;
-    }
-
     auto const [name, internalName] = GetObjectTypeDeclNames(declNode);
+
+    if (declNode->IsClassDefinition() && (declNode->AsClassDefinition()->IsEnumTransformed())) {
+        if (declNode->AsClassDefinition()->IsIntEnumTransformed()) {
+            return Allocator()->New<ETSIntEnumType>(Allocator(), name, internalName, declNode, Relation());
+        } else {
+            ES2PANDA_ASSERT(declNode->AsClassDefinition()->IsStringEnumTransformed());
+            return Allocator()->New<ETSStringEnumType>(Allocator(), name, internalName, declNode, Relation());
+        }
+    }
 
     if (auto [lang, hasDecl] = CheckForDynamicLang(declNode, internalName); lang.IsDynamic()) {
         return Allocator()->New<ETSDynamicType>(Allocator(), std::make_tuple(name, internalName, lang),
