@@ -38,4 +38,3 @@ function main(): void {
 /* @@@ label1 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
 /* @@@ label2 Error TypeError: Call to `foo` is ambiguous as `2` versions of `foo` are available: `foo(callback: (p1: Int, p2: String) => Boolean): void` and `foo(callback: (p1: Double, p2: String) => Boolean): void`  */
 /* @@@ label3 Error TypeError: Reference to foo is ambiguous  */
-/* @@? 32:25 Error TypeError: The type of parameter 'x' cannot be determined */

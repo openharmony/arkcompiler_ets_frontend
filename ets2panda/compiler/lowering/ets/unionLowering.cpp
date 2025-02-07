@@ -105,13 +105,7 @@ static void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::V
         return;
     }
 
-    auto const *const parent = expr->Parent();
-    if (parent->IsExpression() &&
-        (parent->AsExpression()->TsType() == nullptr || parent->AsExpression()->TsType()->IsTypeError())) {
-        ASSERT(checker->IsAnyError());
-        return;
-    }
-
+    [[maybe_unused]] auto const *const parent = expr->Parent();
     ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
              parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)));
     expr->SetPropVar(
@@ -184,9 +178,7 @@ bool UnionLowering::PerformForModule(public_lib::Context *ctx, parser::Program *
     program->Ast()->TransformChildrenRecursively(
         // CC-OFFNXT(G.FMT.14-CPP) project code style
         [checker](ir::AstNode *ast) -> ir::AstNode * {
-            if (ast->IsMemberExpression() && ast->AsMemberExpression()->TsType() != nullptr &&
-                !ast->AsMemberExpression()->TsType()->IsTypeError() &&
-                ast->AsMemberExpression()->Object()->TsType() != nullptr) {
+            if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr) {
                 auto *objType =
                     checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
                 if (objType->IsETSUnionType()) {
@@ -218,7 +210,7 @@ bool UnionLowering::PostconditionForModule(public_lib::Context *ctx, const parse
         auto *objType =
             checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
         auto *parent = ast->Parent();
-        if (!(parent->IsCallExpression() &&
+        if (!(parent->IsCallExpression() && parent->AsCallExpression()->Signature() != nullptr &&
               parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE))) {
             return false;
         }

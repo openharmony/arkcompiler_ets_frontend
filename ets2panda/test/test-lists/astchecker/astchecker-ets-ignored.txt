@@ -57,3 +57,14 @@ ast/parser/ets/ambient_indexer_5.sts
 ast/parser/ets/ambient_indexer_7.sts
 ast/parser/ets/ambient_indexer_8.sts
 ast/parser/ets/ambient_indexer_9.sts
+
+# Issue: #22662
+ast/parser/ets/recordKeyTypeCheck04.sts
+ast/compiler/ets/recordWithLambdaFunction1.sts
+
+# Issue: #22663
+ast/compiler/ets/implicit_this_method_trailing.sts
+
+# Issue: #22664
+ast/compiler/ets/recordWithLambdaFunction2.sts
+ast/compiler/ets/extension_accessor_tests/extensionGetterInWrongUsage.sts

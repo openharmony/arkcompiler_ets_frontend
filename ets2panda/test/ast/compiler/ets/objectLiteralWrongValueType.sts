@@ -22,4 +22,3 @@ let c: C = {
 };
 
 /* @@@ label Error TypeError: Type '"ouch"' is not compatible with type 'int' at property 'f'  */
-/* @@? 21:22 Error TypeError: Type '"ouch"' cannot be assigned to type 'int' */

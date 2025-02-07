@@ -65,7 +65,7 @@ static std::pair<ir::ClassDeclaration *, ir::ScriptFunction *> FindEnclosingClas
             function = curr->AsScriptFunction();
         }
     }
-    return {nullptr, function};
+    UNREACHABLE();
 }
 
 static bool CheckIfNeedThis(ir::ArrowFunctionExpression *lambda, checker::ETSChecker *checker)
@@ -192,18 +192,14 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
         }
 
         auto *oldParamType = oldParam->AsETSParameterExpression()->TypeAnnotation()->GetType(checker);
-        auto *newParamType = oldParamType != nullptr
-                                 ? oldParamType->Substitute(checker->Relation(), calleeParameterInfo.substitution)
-                                 : checker->GlobalTypeError();
+        auto *newParamType = oldParamType->Substitute(checker->Relation(), calleeParameterInfo.substitution);
         auto *newParam = oldParam->AsETSParameterExpression()->Clone(allocator, nullptr);
         varbinder::Variable *var = nullptr;
 
-        if (!newParamType->IsTypeError()) {
-            var = std::get<1U>(varBinder->AddParamDecl(newParam));
-            var->SetTsType(newParamType);
-            var->SetScope(calleeParameterInfo.paramScope);
-            varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
-        }
+        var = std::get<1U>(varBinder->AddParamDecl(newParam));
+        var->SetTsType(newParamType);
+        var->SetScope(calleeParameterInfo.paramScope);
+        varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
 
         newParam->SetVariable(var);
         newParam->Ident()->SetTsType(newParam->SetTsType(newParamType));
@@ -865,27 +861,16 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     if (lambda->Function()->Signature() == nullptr) {
         lambda->Check(checker);
     }
-
-    if (lambda->TsType()->IsTypeError()) {
-        return lambda;
-    }
     ASSERT(lambda->TsType()->IsETSFunctionType());
 
     LambdaInfo info;
     std::tie(info.calleeClass, info.enclosingFunction) = FindEnclosingClassAndFunction(lambda);
-    if (info.calleeClass == nullptr || info.calleeClass->Definition()->TsType() == nullptr) {
-        ASSERT(checker->IsAnyError());
-        return lambda;
-    }
     info.name = CreateCalleeName(allocator);
     auto capturedVars = FindCaptured(allocator, lambda);
     info.capturedVars = &capturedVars;
     info.callReceiver = CheckIfNeedThis(lambda, checker) ? allocator->New<ir::ThisExpression>() : nullptr;
 
     auto *callee = CreateCalleeDefault(ctx, lambda, &info);
-    if (callee->TsType()->IsTypeError()) {
-        return lambda;
-    }
 
     ValidateDefaultParameters(ctx, lambda, callee);
 
@@ -1047,10 +1032,6 @@ static ir::ArrowFunctionExpression *CreateWrappingLambda(public_lib::Context *ct
     varBinder->ResolveReferencesForScopeWithContext(lambda, nearestScope);
 
     auto [enclosingClass, _] = FindEnclosingClassAndFunction(parent);
-    if (enclosingClass == nullptr) {
-        ASSERT(ctx->checker->IsAnyError());
-        return nullptr;
-    }
 
     auto checkerCtx = checker::SavedCheckerContext(ctx->checker, checker::CheckerStatus::IN_CLASS,
                                                    enclosingClass->Definition()->TsType()->AsETSObjectType());
@@ -1182,10 +1163,6 @@ static ir::AstNode *InsertInvokeArguments(public_lib::Context *ctx, ir::CallExpr
 
 static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpression *call)
 {
-    if (call->TsType() == nullptr || call->TsType()->IsTypeError()) {
-        return call;
-    }
-
     auto *allocator = ctx->allocator;
     auto *checker = ctx->checker->AsETSChecker();
 

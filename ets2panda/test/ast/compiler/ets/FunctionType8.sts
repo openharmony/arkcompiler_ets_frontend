@@ -38,4 +38,3 @@ function main(): void {
 
 /* @@? 36:3 Error TypeError: Expected 1 arguments, got 2. */
 /* @@? 36:3 Error TypeError: No matching call signature for invoke0(int, int) */
-/* @@? 30:26 Error TypeError: Cannot deduce call signature */

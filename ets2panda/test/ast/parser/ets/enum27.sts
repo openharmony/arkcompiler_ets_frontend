@@ -23,4 +23,3 @@ enum Date {
 
 /* @@@ label Error SyntaxError: Invalid enum initialization value  */
 /* @@@ label1 Error SyntaxError: Invalid enum initialization value  */
-/* @@? 1:3 Error TypeError: Class 'Date' is already defined with different type. */

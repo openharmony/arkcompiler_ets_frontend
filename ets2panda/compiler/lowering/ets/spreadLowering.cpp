@@ -223,8 +223,7 @@ bool SpreadConstructionPhase::PerformForModule(public_lib::Context *ctx, parser:
 
     program->Ast()->TransformChildrenRecursively(
         [&checker, &varbinder, &ctx](ir::AstNode *const node) -> AstNodePtr {
-            if (node->IsArrayExpression() && node->AsArrayExpression()->TsType() != nullptr &&
-                !node->AsArrayExpression()->TsType()->IsTypeError() &&
+            if (node->IsArrayExpression() &&
                 std::any_of(node->AsArrayExpression()->Elements().begin(), node->AsArrayExpression()->Elements().end(),
                             [](const auto *param) { return param->Type() == ir::AstNodeType::SPREAD_ELEMENT; })) {
                 auto scopeCtx =

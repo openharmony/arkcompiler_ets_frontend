@@ -129,10 +129,6 @@ static void FillClassBody(public_lib::Context *ctx, ArenaVector<ir::AstNode *> *
     auto *checker = ctx->checker->AsETSChecker();
 
     for (auto *it : ifaceBody) {
-        if (it->IsIdentifier() && it->AsIdentifier()->IsErrorPlaceHolder()) {
-            continue;
-        }
-
         ASSERT(it->IsMethodDefinition());
         auto *ifaceMethod = it->AsMethodDefinition();
 

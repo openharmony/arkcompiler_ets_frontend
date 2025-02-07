@@ -160,16 +160,13 @@ ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expre
 ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
     auto checker = ctx->checker->AsETSChecker();
-    if (expr->TsType() == nullptr || expr->TsType()->IsTypeError()) {
-        ASSERT(ctx->checker->IsAnyError());
-        return expr;
-    }
 
     if (!expr->PreferredType()->IsETSObjectType()) {
         // Unexpected preferred type
         return expr;
     }
 
+    ASSERT(expr->TsType() != nullptr);
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
     if (!(ss.str() == "escompat.Record" || ss.str() == "escompat.Map")) {

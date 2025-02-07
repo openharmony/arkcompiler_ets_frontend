@@ -61,7 +61,7 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
         const auto &err = compiler.GetError();
 
         if (err.Type() == ErrorType::INVALID) {
-            if (compiler.IsAnyError()) {
+            if (diagnosticEngine.IsAnyError()) {
                 return 1;
             }
             // Intentional exit or --parse-only option usage.

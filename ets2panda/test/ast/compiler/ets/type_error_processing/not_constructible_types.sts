@@ -38,4 +38,3 @@ WeakSet [12] = new undefined()
 /* @@? 26:1 Error TypeError: Class name "WeakSet" used in the wrong context */
 /* @@? 26:1 Error TypeError: Object type doesn't have proper index access method. */
 /* @@? 26:16 Error TypeError: Type 'undefined' is not constructible. */
-/* @@? 1:3 Error TypeError: Property '$_set' does not exist on type 'WeakSet' */

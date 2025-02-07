@@ -35,10 +35,6 @@ static ir::AstNode *HandleImplicitThisLowering(public_lib::Context *ctx, ir::Arr
             }
 
             auto *ident = ast->AsIdentifier();
-            if (ident->TsType() != nullptr && ident->TsType()->IsTypeError()) {
-                return ast;
-            }
-
             auto thisid = checker->Allocator()->New<ir::Identifier>(varbinder::TypedBinder::MANDATORY_PARAM_THIS,
                                                                     checker->Allocator());
             auto mem =

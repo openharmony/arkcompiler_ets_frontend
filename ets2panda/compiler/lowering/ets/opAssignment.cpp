@@ -362,17 +362,11 @@ bool OpAssignmentLowering::PerformForModule(public_lib::Context *ctx, parser::Pr
         [ctx](ir::AstNode *ast) {
             if (ast->IsAssignmentExpression() &&
                 ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-                auto *const expr = ast->AsAssignmentExpression();
-                auto *const exprType = expr->TsType();
-                if (exprType != nullptr && !exprType->IsTypeError()) {
-                    return HandleOpAssignment(ctx, expr);
-                }
-            } else if (ast->IsUpdateExpression()) {
-                auto *const expr = ast->AsUpdateExpression();
-                auto *const exprType = expr->TsType();
-                if (exprType != nullptr && !exprType->IsTypeError()) {
-                    return HandleUpdate(ctx, expr);
-                }
+                return HandleOpAssignment(ctx, ast->AsAssignmentExpression());
+            }
+
+            if (ast->IsUpdateExpression()) {
+                return HandleUpdate(ctx, ast->AsUpdateExpression());
             }
 
             return ast;

@@ -89,7 +89,8 @@ public:
     // NOTE(schernykh): should be removed
     Error GetAnyError() const;
 
-    bool IsAnyError() const;
+    [[nodiscard]] bool IsAnyError(std::optional<ErrorType> errorType = std::nullopt) const noexcept;
+    [[nodiscard]] std::size_t ErrorCount(std::optional<ErrorType> errorType = std::nullopt) const noexcept;
 
     template <typename... T>
     void LogDiagnostic(const es2panda::diagnostic::DiagnosticKind *diagnosticKind, T &&...args)

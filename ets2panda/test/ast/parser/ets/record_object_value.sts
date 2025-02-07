@@ -61,7 +61,3 @@ function main(){
 /* @@@ label1 Error TypeError: Type '"100"' is not compatible with type 'double' at property 'salary'  */
 /* @@@ label2 Error TypeError: type PersonInfoInterface has no property named agee  */
 /* @@@ label3 Error TypeError: type PersonInfoInterface has no property named other  */
-/* @@? 46:35 Error TypeError: Type '"10"' cannot be assigned to type 'double' */
-/* @@? 47:47 Error TypeError: Type '"100"' cannot be assigned to type 'double' */
-/* @@? 51:32 Error TypeError: Property 'agee' does not exist on type 'gensym%%_7' */
-/* @@? 52:51 Error TypeError: Property 'other' does not exist on type 'gensym%%_7' */

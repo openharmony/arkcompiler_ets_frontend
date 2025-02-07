@@ -21,4 +21,3 @@ let c: C = {
 };
 
 /* @@@ label Error TypeError: type C has no property named f  */
-/* @@? 20:19 Error TypeError: Property 'f' does not exist on type 'C' */

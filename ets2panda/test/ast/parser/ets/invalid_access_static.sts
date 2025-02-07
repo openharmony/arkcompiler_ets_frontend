@@ -21,5 +21,3 @@ let a = new G<String>();
 a./* @@ label */y++;
 
 /* @@@ label Error TypeError: 'y' is a static property of 'G'  */
-/* @@? 21:1 Error TypeError: 'y' is a static property of 'G' */
-/* @@? 21:1 Error TypeError: 'y' is a static property of 'G' */

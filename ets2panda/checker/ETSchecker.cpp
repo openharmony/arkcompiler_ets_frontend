@@ -286,7 +286,7 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const util::Optio
 
     CheckWarnings(Program(), options);
 
-    return !DiagnosticEngine().IsAnyError();
+    return !IsAnyError();
 }
 
 evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin()

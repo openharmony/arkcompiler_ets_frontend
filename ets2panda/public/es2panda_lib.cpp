@@ -345,7 +345,7 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         ctx->parser->ParseScript(*ctx->sourceFile,
                                  ctx->config->options->GetCompilationMode() == CompilationMode::GEN_STD_LIB);
         ctx->state = ES2PANDA_STATE_PARSED;
-        if (ctx->parser->DiagnosticEngine().IsAnyError()) {
+        if (ctx->diagnosticEngine->IsAnyError()) {
             handleError(ctx->parser->DiagnosticEngine().GetAnyError());
         }
     } catch (Error &e) {
@@ -417,10 +417,8 @@ __attribute__((unused)) static Context *Check(Context *ctx)
 
             ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
         } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::CheckerPhase::NAME);
-        if (ctx->checker->DiagnosticEngine().IsAnyError()) {
-            handleError(ctx->checker->DiagnosticEngine().GetAnyError());
-        } else if (ctx->parser->DiagnosticEngine().IsAnyError()) {
-            handleError(ctx->parser->DiagnosticEngine().GetAnyError());
+        if (ctx->diagnosticEngine->IsAnyError()) {
+            handleError(ctx->diagnosticEngine->GetAnyError());
         } else {
             ctx->state = ES2PANDA_STATE_CHECKED;
         }
