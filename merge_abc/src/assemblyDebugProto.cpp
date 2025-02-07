@@ -20,16 +20,12 @@ void DebuginfoIns::Serialize(const panda::pandasm::debuginfo::Ins &debug, protoP
 {
     protoDebug.set_linenumber(debug.line_number);
     protoDebug.set_columnnumber(debug.column_number);
-    protoDebug.set_boundleft(debug.bound_left);
-    protoDebug.set_boundright(debug.bound_right);
 }
 
 void DebuginfoIns::Deserialize(const protoPanda::DebuginfoIns &protoDebug, panda::pandasm::debuginfo::Ins &debug)
 {
     debug.line_number = protoDebug.linenumber();
     debug.column_number = protoDebug.columnnumber();
-    debug.bound_left = protoDebug.boundleft();
-    debug.bound_right = protoDebug.boundright();
 }
 
 void LocalVariable::Serialize(const panda::pandasm::debuginfo::LocalVariable &debug,

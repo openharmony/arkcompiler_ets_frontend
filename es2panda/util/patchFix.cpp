@@ -176,18 +176,18 @@ std::vector<std::pair<std::string, std::string>> PatchFix::GenerateFunctionAndCl
     ss << ") {" << std::endl;
 
     for (const auto &ins : func->ins) {
-        ss << (ins.set_label ? "" : "\t") << ins.ToString("", true, func->GetTotalRegs()) << " ";
-        if (ins.opcode == panda::pandasm::Opcode::CREATEARRAYWITHBUFFER ||
-            ins.opcode == panda::pandasm::Opcode::CREATEOBJECTWITHBUFFER) {
-            int64_t bufferIdx = GetLiteralIdxFromStringId(ins.ids[0]);
+        ss << (ins->IsLabel() ? "" : "\t") << ins->ToString("", true, func->GetTotalRegs()) << " ";
+        if (ins->opcode == panda::pandasm::Opcode::CREATEARRAYWITHBUFFER ||
+            ins->opcode == panda::pandasm::Opcode::CREATEOBJECTWITHBUFFER) {
+            int64_t bufferIdx = GetLiteralIdxFromStringId(ins->GetId(0));
             ss << ExpandLiteral(bufferIdx, literalBuffers) << " ";
-        } else if (ins.opcode == panda::pandasm::Opcode::DEFINECLASSWITHBUFFER) {
-            CollectFunctionsWithDefinedClasses(func->name, ins.ids[0]);
-            int64_t bufferIdx = GetLiteralIdxFromStringId(ins.ids[1]);
+        } else if (ins->opcode == panda::pandasm::Opcode::DEFINECLASSWITHBUFFER) {
+            CollectFunctionsWithDefinedClasses(func->name, ins->GetId(0));
+            int64_t bufferIdx = GetLiteralIdxFromStringId(ins->GetId(1));
             std::string literalStr = ExpandLiteral(bufferIdx, literalBuffers);
             auto classHash = Helpers::GetHashString(literalStr);
-            hashList.push_back(std::pair<std::string, std::string>(ins.ids[0], classHash));
-            CollectClassMemberFunctions(ins.ids[0], bufferIdx, literalBuffers);
+            hashList.push_back(std::pair<std::string, std::string>(ins->GetId(0), classHash));
+            CollectClassMemberFunctions(ins->GetId(0), bufferIdx, literalBuffers);
         }
         ss << " ";
     }
@@ -319,27 +319,27 @@ uint32_t PatchFix::GetPatchLexicalIdx(const std::string &variableName)
     return topScopeLexEnvs_[variableName];
 }
 
-bool IsFunctionOrClassDefineIns(panda::pandasm::Ins &ins)
+bool IsFunctionOrClassDefineIns(panda::pandasm::Ins *ins)
 {
-    if (ins.opcode == panda::pandasm::Opcode::DEFINEMETHOD ||
-        ins.opcode == panda::pandasm::Opcode::DEFINEFUNC ||
-        ins.opcode == panda::pandasm::Opcode::DEFINECLASSWITHBUFFER) {
+    if (ins->opcode == panda::pandasm::Opcode::DEFINEMETHOD ||
+        ins->opcode == panda::pandasm::Opcode::DEFINEFUNC ||
+        ins->opcode == panda::pandasm::Opcode::DEFINECLASSWITHBUFFER) {
         return true;
     }
     return false;
 }
 
-bool IsStPatchVarIns(panda::pandasm::Ins &ins)
+bool IsStPatchVarIns(panda::pandasm::Ins *ins)
 {
-    return ins.opcode == panda::pandasm::Opcode::WIDE_STPATCHVAR;
+    return ins->opcode == panda::pandasm::Opcode::WIDE_STPATCHVAR;
 }
 
 void PatchFix::CollectFuncDefineIns(panda::pandasm::Function *func)
 {
     for (size_t i = 0; i < func->ins.size(); ++i) {
-        if (IsFunctionOrClassDefineIns(func->ins[i])) {
-            funcDefineIns_.push_back(func->ins[i]);  // push define ins
-            funcDefineIns_.push_back(func->ins[i + 1]);  // push store ins
+        if (IsFunctionOrClassDefineIns(func->ins[i].get())) {
+            funcDefineIns_.push_back(func->ins[i].get());  // push define ins
+            funcDefineIns_.push_back(func->ins[i + 1].get());  // push store ins
         }
     }
 }
@@ -377,31 +377,23 @@ void PatchFix::HandleModifiedDefinedClassFunc(panda::pandasm::Program *prog)
     }
 }
 
-void PatchFix::AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::Ins> &ins)
+void PatchFix::AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::InsPtr> &ins)
 {
-    panda::pandasm::Ins returnUndefine;
-    returnUndefine.opcode = pandasm::Opcode::RETURNUNDEFINED;
-
+    auto returnUndefined = new pandasm::Returnundefined();
     if (ins.size() == 0) {
-        ins.push_back(returnUndefine);
+        ins.emplace_back(returnUndefined);
         return;
     }
 
-    panda::pandasm::Ins newLexenv;
-    newLexenv.opcode = pandasm::Opcode::NEWLEXENV;
-    newLexenv.imms.reserve(1);
-    auto newFuncNum = long(ins.size() / 2);  // each new function has 2 ins: define and store
-    newLexenv.imms.emplace_back(newFuncNum);
-
-    ins.insert(ins.begin(), newLexenv);
-    ins.push_back(returnUndefine);
+    auto newLexenv = new pandasm::Newlexenv(long(ins.size() / 2));  // each new function has 2 ins: define and stor
+    ins.emplace(ins.begin(), newLexenv);
+    ins.emplace_back(returnUndefined);
 }
 
-void PatchFix::AddTailInsForPatchFuncMain1(std::vector<panda::pandasm::Ins> &ins)
+void PatchFix::AddTailInsForPatchFuncMain1(std::vector<panda::pandasm::InsPtr> &ins)
 {
-    panda::pandasm::Ins returnUndefined;
-    returnUndefined.opcode = pandasm::Opcode::RETURNUNDEFINED;
-    ins.push_back(returnUndefined);
+    auto returnUndefined = new pandasm::Returnundefined();
+    ins.emplace_back(returnUndefined);
 }
 
 void PatchFix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFuncMain0,
@@ -415,19 +407,19 @@ void PatchFix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchF
         patchFuncMain1.params.emplace_back(panda::pandasm::Type("any", 0), patchFuncMain1.language);
     }
 
-    std::vector<panda::pandasm::Ins> patchMain0DefineIns;
-    std::vector<panda::pandasm::Ins> patchMain1DefineIns;
+    std::vector<panda::pandasm::InsPtr> patchMain0DefineIns;
+    std::vector<panda::pandasm::InsPtr> patchMain1DefineIns;
 
     for (size_t i = 0; i < funcDefineIns_.size(); ++i) {
         if (IsFunctionOrClassDefineIns(funcDefineIns_[i])) {
-            auto &name = funcDefineIns_[i].ids[0];
+            auto name = funcDefineIns_[i]->GetId(0);
             if (newFuncNames_.count(name) && IsStPatchVarIns(funcDefineIns_[i + 1])) {
-                patchMain0DefineIns.push_back(funcDefineIns_[i]);
-                patchMain0DefineIns.push_back(funcDefineIns_[i + 1]);
+                patchMain0DefineIns.emplace_back(funcDefineIns_[i]->DeepCopy());
+                patchMain0DefineIns.emplace_back(funcDefineIns_[i + 1]->DeepCopy());
                 continue;
             }
             if (patchFuncNames_.count(name) || modifiedClassNames_.count(name)) {
-                patchMain1DefineIns.push_back(funcDefineIns_[i]);
+                patchMain1DefineIns.emplace_back(funcDefineIns_[i]->DeepCopy());
                 continue;
             }
         }
@@ -436,8 +428,8 @@ void PatchFix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchF
     AddHeadAndTailInsForPatchFuncMain0(patchMain0DefineIns);
     AddTailInsForPatchFuncMain1(patchMain1DefineIns);
 
-    patchFuncMain0.ins = patchMain0DefineIns;
-    patchFuncMain1.ins = patchMain1DefineIns;
+    patchFuncMain0.ins = std::move(patchMain0DefineIns);
+    patchFuncMain1.ins = std::move(patchMain1DefineIns);
 
     patchFuncMain0.return_type = panda::pandasm::Type("any", 0);
     patchFuncMain1.return_type = panda::pandasm::Type("any", 0);
