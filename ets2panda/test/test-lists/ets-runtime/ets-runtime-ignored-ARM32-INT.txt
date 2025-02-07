@@ -1,6 +1,3 @@
-# panda#11106
-LongLiteralLimits.sts
-
 # panda#11502
 nullCoalesc.sts
 
