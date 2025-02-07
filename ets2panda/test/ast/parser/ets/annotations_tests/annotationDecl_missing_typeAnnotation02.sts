@@ -20,4 +20,3 @@ class A{}
 /* @@ label */}
 
 /* @@@ label Error SyntaxError: Missing type annotation for property 'testProperty1'.  */
-/* @@? 19:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */

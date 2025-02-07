@@ -22,9 +22,10 @@
 
 /* @@? 20:18 Error SyntaxError: Invalid Type */
 /* @@? 20:18 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 20:18 Error SyntaxError: Unexpected token 'number literal', expected: '=>'. */
+/* @@? 20:18 Error SyntaxError: Unexpected token '1', expected '=>'. */
+/* @@? 20:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:19 Error SyntaxError: Unexpected token ')'. */
 /* @@? 20:21 Error SyntaxError: Unexpected token '=>'. */
-/* @@? 20:21 Error SyntaxError: Unexpected token: '=>'. */
+/* @@? 20:21 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 20:2 Error TypeError: Cannot find type 'ClassAuthor'. */

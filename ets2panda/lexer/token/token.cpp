@@ -67,10 +67,30 @@ bool Token::IsUnary() const
             type_ == TokenType::KEYW_AWAIT);
 }
 
-bool Token::IsPropNameLiteral() const
+bool Token::IsPropNameLiteral() const noexcept
 {
     return (type_ == TokenType::LITERAL_STRING || type_ == TokenType::LITERAL_NUMBER ||
             type_ == TokenType::LITERAL_TRUE || type_ == TokenType::LITERAL_FALSE);
+}
+
+bool Token::IsLiteral() const noexcept
+{
+    return (type_ == TokenType::LITERAL_IDENT || IsPropNameLiteral() || type_ == TokenType::LITERAL_CHAR ||
+            type_ == TokenType::LITERAL_REGEXP || type_ == TokenType::LITERAL_NULL);
+}
+
+std::string_view Token::ToString() const noexcept
+{
+    if (!IsLiteral()) {
+        return TokenToString(type_);
+    }
+
+    auto const str = Ident().Utf8();
+    if (!str.empty() && str.data()[0U] == '\n') {
+        return "eos";
+    }
+
+    return str;
 }
 
 bool Token::IsKeyword() const
@@ -452,11 +472,11 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
         case TokenType::KEYW_NATIVE:
             return "native";
         case TokenType::LITERAL_IDENT:
-            return "identification literal";
+            return "<identifier>";
         case TokenType::LITERAL_NUMBER:
-            return "number literal";
+            return "<number literal>";
         case TokenType::LITERAL_STRING:
-            return "string literal";
+            return "<string literal>";
         default:
             return "";
     }

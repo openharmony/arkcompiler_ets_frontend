@@ -196,16 +196,19 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const Cal
                                  ? oldParamType->Substitute(checker->Relation(), calleeParameterInfo.substitution)
                                  : checker->GlobalTypeError();
         auto *newParam = oldParam->AsETSParameterExpression()->Clone(allocator, nullptr);
-        newParam->SetVariable(nullptr);  // Remove the cloned variable.
-        auto *var = std::get<1U>(varBinder->AddParamDecl(newParam));
-        var->SetTsType(newParamType);
-        var->SetScope(calleeParameterInfo.paramScope);
+        varbinder::Variable *var = nullptr;
+
+        if (!newParamType->IsTypeError()) {
+            var = std::get<1U>(varBinder->AddParamDecl(newParam));
+            var->SetTsType(newParamType);
+            var->SetScope(calleeParameterInfo.paramScope);
+            varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
+        }
+
         newParam->SetVariable(var);
-        newParam->SetTsType(newParamType);
-        newParam->Ident()->SetTsType(newParamType);
+        newParam->Ident()->SetTsType(newParam->SetTsType(newParamType));
         newParam->TypeAnnotation()->SetTsType(newParamType);
-        resParams.push_back(newParam);
-        varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
+        resParams.emplace_back(newParam);
         ++i;
 
         if (newParam->TypeAnnotation()->IsETSFunctionType()) {
@@ -880,6 +883,9 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     info.callReceiver = CheckIfNeedThis(lambda, checker) ? allocator->New<ir::ThisExpression>() : nullptr;
 
     auto *callee = CreateCalleeDefault(ctx, lambda, &info);
+    if (callee->TsType()->IsTypeError()) {
+        return lambda;
+    }
 
     ValidateDefaultParameters(ctx, lambda, callee);
 

@@ -15,20 +15,15 @@
 
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
-#include <utility>
 
 #include "macros.h"
 #include "parser/parserFlags.h"
-#include "parser/parserStatusContext.h"
 #include "util/errorRecovery.h"
 #include "util/helpers.h"
-#include "util/language.h"
 #include "utils/arena_containers.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
-#include "lexer/ETSLexer.h"
-#include "checker/types/ets/etsEnumType.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"
@@ -276,13 +271,13 @@ bool ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 
 bool ETSParser::ValidateForInStatement()
 {
-    LogSyntaxError({"Unexpected token: '", lexer::TokenToString(lexer::TokenType::KEYW_IN), "'."});
+    LogUnexpectedToken(lexer::TokenType::KEYW_IN);
     return false;
 }
 
 ir::Statement *ETSParser::ParseDebuggerStatement()
 {
-    LogSyntaxError({"Unexpected token: '", lexer::TokenToString(lexer::TokenType::KEYW_DEBUGGER), "'."});
+    LogUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
     return AllocBrokenStatement();
 }
 

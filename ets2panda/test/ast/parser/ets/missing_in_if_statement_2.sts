@@ -15,5 +15,5 @@
 
 if /* @@ label */true /* @@ label1 */{ console.log("hello!") }
 
-/* @@@ label Error SyntaxError: Unexpected token '', expected: '('.  */
-/* @@@ label1 Error SyntaxError: Unexpected token '{', expected: ')'.  */
+/* @@@ label Error SyntaxError: Unexpected token 'true', expected '('.  */
+/* @@@ label1 Error SyntaxError: Unexpected token '{', expected ')'.  */

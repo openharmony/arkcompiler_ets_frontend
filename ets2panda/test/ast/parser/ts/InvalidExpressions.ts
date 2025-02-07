@@ -36,21 +36,21 @@ let x = new Type(1, 2, ;
 /* @@? 22:13 Error SyntaxError: Unexpected token. */
 /* @@? 22:20 Error SyntaxError: Unexpected token. */
 /* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
-/* @@? 22:24 Error SyntaxError: Unexpected token: ':'. */
 /* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
-/* @@? 22:30 Error SyntaxError: Unexpected token: ')'. */
+/* @@? 22:24 Error SyntaxError: Unexpected token ':'. */
 /* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
-/* @@? 22:30 Error SyntaxError: Unexpected token: ')'. */
 /* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
-/* @@? 22:32 Error SyntaxError: Unexpected token: '=>'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:30 Error SyntaxError: Unexpected token ')'. */
+/* @@? 22:32 Error SyntaxError: Unexpected token '=>'. */
 /* @@? 24:3 Error SyntaxError: Unexpected token '#'. */
 /* @@? 24:5 Error SyntaxError: Unexpected token in private field */
-/* @@? 24:5 Error SyntaxError: Unexpected token 'number literal'. */
+/* @@? 24:5 Error SyntaxError: Unexpected token '19'. */
 /* @@? 25:2 Error SyntaxError: Unexpected token '#'. */
 /* @@? 25:7 Error SyntaxError: Unexpected private identifier */
-/* @@? 27:1 Error SyntaxError: Unexpected token: 'let'. */
+/* @@? 27:1 Error SyntaxError: Unexpected token 'let'. */
 /* @@? 27:13 Error SyntaxError: 'new.Target' is not allowed here */
 /* @@? 28:30 Error SyntaxError: Cannot use new with import(...) */
-/* @@? 29:24 Error SyntaxError: Unexpected token: ')'. */
-/* @@? 30:24 Error SyntaxError: Unexpected token: ';'. */
+/* @@? 29:24 Error SyntaxError: Unexpected token ')'. */
+/* @@? 30:24 Error SyntaxError: Unexpected token ';'. */
 /* @@? 30:24 Error SyntaxError: Unexpected token, expected ',' or ')'. */

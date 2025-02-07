@@ -17,10 +17,10 @@
     testProperty2: number
 }
 
-@MyAnno({testProperty1: "123", testProperty2: 123/* @@ label */;/* @@ label1 */})
+@MyAnno({testProperty1: "123", testProperty2: 123; })
 class A{}
 
-/* @@@ label Error SyntaxError: Unexpected token ';', expected: ','.  */
-/* @@@ label Error SyntaxError: Identifier expected, got ';'.  */
-/* @@@ label1 Error SyntaxError: Invalid argument passed to '*ERROR_LITERAL*'  */
+/* @@? 20:50 Error SyntaxError: Unexpected token ';', expected ','. */
+/* @@? 20:50 Error SyntaxError: Identifier expected, got ';'. */
+/* @@? 20:52 Error SyntaxError: Identifier expected, got '}'. */
 /* @@? 20:2 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined. */

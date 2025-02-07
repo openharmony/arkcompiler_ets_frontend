@@ -18,5 +18,5 @@ let a = {
   ...a,
 }
 
-/* @@@ label Error SyntaxError: Unexpected token, expected: ']'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected ']'.  */
 /* @@? 16:5 Error TypeError: Cannot infer type for a because class composite needs an explicit target type */

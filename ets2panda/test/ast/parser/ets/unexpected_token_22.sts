@@ -28,7 +28,7 @@ function callAsyncLambda(): void {
     }
 
     assert(is_call_async_lambda == false);
-    await async_lambda();
+    await /* @@ label */async_lambda();
     assert(is_call_async_lambda == true);
 }
 
@@ -36,7 +36,8 @@ function main(): void {
     callAsyncLambda();
 }
 
-/* @@? 25:43 Error SyntaxError: Unexpected token, expected: '('. */
+/* @@? 25:43 Error SyntaxError: Unexpected token, expected '('. */
 /* @@? 25:44 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 25:60 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 25:43 Error TypeError: Type '(*ERROR_LITERAL*: Promise<void>) => Promise<undefined>' cannot be assigned to type '() => Promise<void>' */
+/* @@@ label Error TypeError: This expression is not callable. */
+/* @@@ label Error TypeError: 'await' expressions require Promise object as argument. */

@@ -61,6 +61,9 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     ANNOTATION_NOT_ALLOW = 1U << 17U
 };
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+inline constexpr char const UNEXPECTED_TOKEN[] = "Unexpected token '";
+
 class ParserImpl {
 public:
     explicit ParserImpl(Program *program, const util::Options *options, util::DiagnosticEngine &diagnosticEngine,
@@ -181,6 +184,7 @@ protected:
                   const lexer::SourcePosition &pos);
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);
+    void LogUnexpectedToken(lexer::Token const &token);
 
 public:
     void LogSyntaxError(std::string_view errorMessage);

@@ -30,26 +30,22 @@ interface I {
 // This should be the last test to show the absent of the '}'.
 
 
+/* @@@ label Error SyntaxError: Unexpected token, expected ','.  */
 /* @@@ label Error SyntaxError: Identifier expected  */
-/* @@@ label Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@@ label Error TypeError: Interface expected here.  */
 /* @@@ label1 Error SyntaxError: Identifier expected  */
-/* @@@ label2 Error SyntaxError: Unexpected token, expected: ','.  */
+/* @@@ label1 Error TypeError: Interface expected here.  */
+/* @@? 18:1 Error TypeError: Variable 'C' has already been declared. */
+/* @@@ label2 Error SyntaxError: Unexpected token, expected ','.  */
 /* @@@ label3 Error SyntaxError: Identifier expected  */
+/* @@? 20:1 Error TypeError: Variable 'C' has already been declared. */
 /* @@@ label4 Error SyntaxError: Identifier expected  */
 /* @@@ label5 Error SyntaxError: Implements clause can not be empty  */
-/* @@@ label6 Error SyntaxError: Unexpected token, expected: ','.  */
-/* @@@ label6 Error SyntaxError: Unexpected token ',', expected: '{'.  */
-/* @@@ label7 Error SyntaxError: Unexpected token: '{'.  */
-/* @@@ label8 Error SyntaxError: Interface declaration cannot have 'implements' clause.  */
-/* @@@ label9 Error SyntaxError: 'override' modifier cannot appear in interfaces  */
-/* @@? 56:1 Error SyntaxError: Unexpected token, expected: '}'.  */
-/* @@? 18:1 Error TypeError: Variable 'C' has already been declared. */
-/* @@? 20:1 Error TypeError: Variable 'C' has already been declared. */
 /* @@? 24:7 Error TypeError: Variable 'A' has already been declared. */
+/* @@@ label6 Error SyntaxError: Unexpected token, expected ','.  */
+/* @@@ label6 Error SyntaxError: Unexpected token ',', expected '{'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token '{'.  */
+/* @@@ label8 Error SyntaxError: Interface declaration cannot have 'implements' clause.  */
 /* @@? 28:1 Error TypeError: Variable 'I' has already been declared. */
-/* @@? 1:1 Error TypeError: Cannot find type '*ERROR_LITERAL*'. */
-/* @@? 1:1 Error TypeError: Cannot find type '*ERROR_LITERAL*'. */
-/* @@? 1:1 Error TypeError: Cannot find type '*ERROR_LITERAL*'. */
-/* @@? 1:1 Error TypeError: Cannot find type '*ERROR_LITERAL*'. */
-/* @@? 16:35 Error TypeError: Interface expected here. */
-/* @@? 16:52 Error TypeError: Interface expected here. */
+/* @@@ label9 Error SyntaxError: 'override' modifier cannot appear in interfaces  */
+/* @@? 52:1 Error SyntaxError: Unexpected token, expected '}'. */

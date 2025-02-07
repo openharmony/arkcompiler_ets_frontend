@@ -15,4 +15,4 @@
 
 if (true /* @@ label */{ console.log("hello!") }
 
-/* @@@ label Error SyntaxError: Unexpected token '{', expected: ')'.  */
+/* @@@ label Error SyntaxError: Unexpected token '{', expected ')'.  */

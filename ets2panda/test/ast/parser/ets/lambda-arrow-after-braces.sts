@@ -18,7 +18,6 @@ function main() : void{
     ({}/* @@ label */=>z)
 /* @@ label1 */}
 
-/* @@@ label Error SyntaxError: Unexpected token: '=>'.  */
-/* @@@ label1 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@@ label2 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label2 */
+/* @@@ label Error SyntaxError: Unexpected token '=>'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected ')'.  */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */

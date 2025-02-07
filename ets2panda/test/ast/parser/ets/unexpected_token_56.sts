@@ -18,9 +18,9 @@ for await (/* @@ label1 */;/* @@ label2 */;i < count/* @@ label3 */; ++i/* @@ la
 }
 for (let i? : Number = 1;;)  { break; }
 
-/* @@@ label1 Error SyntaxError: Unexpected token */
+/* @@@ label1 Error SyntaxError: Unexpected token ';'. */
 /* @@@ label2 Error SyntaxError: Unexpected token ';'. */
-/* @@@ label3 Error SyntaxError: Unexpected token ';', expected: ')'. */
+/* @@@ label3 Error SyntaxError: Unexpected token ';', expected ')'. */
 /* @@@ label Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label Error SyntaxError: Unexpected token ')'.  */
 /* @@? 16:44 Error TypeError: Unresolved reference i */

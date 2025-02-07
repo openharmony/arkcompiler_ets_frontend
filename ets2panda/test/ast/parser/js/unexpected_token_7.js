@@ -18,8 +18,8 @@ class Foo {
     a: int {
       this.#bar = 0
 
-/* @@? 18:6 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 18:12 Error SyntaxError: Unexpected token, expected: ';'.  */
-/* @@? 19:11 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 18:6 Error SyntaxError: Unexpected token, expected ';'.  */
+/* @@? 18:12 Error SyntaxError: Unexpected token, expected ';'.  */
+/* @@? 19:11 Error SyntaxError: Unexpected token, expected ';'.  */
 /* @@? 26:1 Error SyntaxError: Private field has already been declared  */
-/* @@? 26:1 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@? 26:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */

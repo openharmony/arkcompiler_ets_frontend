@@ -12,7 +12,7 @@
 
 export a /* @@ label */from /* @@ label1 */"./type"
 
-/* @@@ label Error SyntaxError: Unexpected token 'identification literal'. */
-/* @@@ label1 Error SyntaxError: Unexpected token 'string literal'. */
+/* @@@ label Error SyntaxError: Unexpected token 'from'. */
+/* @@@ label1 Error SyntaxError: Unexpected token './type'. */
 /* @@? 13:8 Error SyntaxError: Cannot find name 'a' to export */
 /* @@? 13:24 Error TypeError: Unresolved reference from */

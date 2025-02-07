@@ -27,14 +27,15 @@ funct\u{0069}on
 `string ${expr
 
 /* @@? 16:7 Error SyntaxError: Invalid RegExp flag  */
-/* @@? 16:7 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 16:7 Error SyntaxError: Unexpected token 'ar'.  */
 /* @@? 18:8 Error SyntaxError: Invalid RegExp flag  */
 /* @@? 20:5 Error SyntaxError: Unterminated RegExp  */
 /* @@? 20:5 Error SyntaxError: Expected an identifier  */
-/* @@? 20:5 Error SyntaxError: Unexpected token 'identification literal'.  */
+/* @@? 20:5 Error SyntaxError: Unexpected token '
+'.  */
 /* @@? 22:1 Error SyntaxError: Unexpected strict mode reserved keyword  */
 /* @@? 24:1 Error SyntaxError: Escape sequences are not allowed in keywords  */
-/* @@? 40:67 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@? 40:67 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
 /* @@? 40:67 Error SyntaxError: Unterminated string  */
 /* @@? 40:67 Error SyntaxError: Unexpected token, expected '${' or '`'  */
 /* @@? 40:67 Error SyntaxError: Unexpected token, expected '`'  */

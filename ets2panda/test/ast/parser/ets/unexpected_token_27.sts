@@ -17,5 +17,5 @@ interface A {}
 interface B {}
 class C implements A, B /* @@ label */[}
 
-/* @@@ label Error SyntaxError: Unexpected token, expected: ','.  */
-/* @@@ label Error SyntaxError: Unexpected token ',', expected: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token, expected ','.  */
+/* @@@ label Error SyntaxError: Unexpected token ',', expected '{'.  */

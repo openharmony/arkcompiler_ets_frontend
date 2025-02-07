@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ function main(): void {
     }
 }
 
-/* @@? 19:17 Error SyntaxError: Unexpected token, expected: ')'.  */
-/* @@? 19:19 Error SyntaxError: Unexpected token 'identification literal'. */
+/* @@? 19:17 Error SyntaxError: Unexpected token, expected ')'.  */
+/* @@? 19:19 Error SyntaxError: Unexpected token 'x'. */
 /* @@? 19:22 Error SyntaxError: Unexpected token ')'. */
 /* @@? 19:22 Error SyntaxError: Unexpected token ')'. */

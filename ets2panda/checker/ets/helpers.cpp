@@ -68,7 +68,9 @@ bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var)
 
 void ETSChecker::LogUnresolvedReferenceError(ir::Identifier *const ident)
 {
-    LogTypeError({"Unresolved reference ", ident->Name()}, ident->Start());
+    if (!ident->IsErrorPlaceHolder()) {
+        LogTypeError({"Unresolved reference ", ident->Name()}, ident->Start());
+    }
 }
 
 void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident)

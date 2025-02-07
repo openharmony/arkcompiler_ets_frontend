@@ -31,10 +31,15 @@ template <typename T, typename... Args>
 T *AddOrGetDecl(varbinder::VarBinder *varBinder, util::StringView name, ir::AstNode *ast,
                 const lexer::SourcePosition &pos, Args &&...args)
 {
+    if (name.Is(ERROR_LITERAL)) {
+        return nullptr;
+    }
+
     if (auto *var = varBinder->GetScope()->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
         var != nullptr && var->Declaration() != nullptr && var->Declaration()->Node() == ast) {
         return reinterpret_cast<T *>(var->Declaration());
     }
+
     return varBinder->AddDecl<T>(pos, args...);
 }
 
@@ -204,11 +209,14 @@ void ScopesInitPhase::VisitCatchClause(ir::CatchClause *catchClause)
     CallNode(param);
 
     if (param != nullptr) {
-        auto [param_decl, var] = VarBinder()->AddParamDecl(param);
-        (void)param_decl;
-        if (param->IsIdentifier()) {
-            var->SetScope(catchParamScope);
-            param->AsIdentifier()->SetVariable(var);
+        if (auto *const var = std::get<1>(VarBinder()->AddParamDecl(param)); var != nullptr) {
+            if (param->IsIdentifier()) {
+                var->SetScope(catchParamScope);
+                param->AsIdentifier()->SetVariable(var);
+            }
+        } else {
+            ASSERT(Context()->diagnosticEngine->IsAnyError());
+            param->SetTsType(Context()->checker->AsETSChecker()->GlobalTypeError());
         }
     }
 
@@ -471,7 +479,12 @@ std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVa
     if (auto var = id->Variable(); var != nullptr) {
         return {var->Declaration(), var};
     }
+
     auto name = id->Name();
+    if (name.Is(ERROR_LITERAL)) {
+        return {nullptr, nullptr};
+    }
+
     switch (flag) {
         case ir::VariableDeclaratorFlag::LET:
             return VarBinder()->NewVarDecl<varbinder::LetDecl>(startLoc, name);
@@ -614,8 +627,10 @@ void ScopeInitTyped::VisitTSEnumMember(ir::TSEnumMember *enumMember)
     } else {
         UNREACHABLE();
     }
-    auto *decl = AddOrGetDecl<varbinder::EnumDecl>(VarBinder(), name, enumMember, key->Start(), name);
-    decl->BindNode(enumMember);
+    if (auto *decl = AddOrGetDecl<varbinder::EnumDecl>(VarBinder(), name, enumMember, key->Start(), name);
+        decl != nullptr) {
+        decl->BindNode(enumMember);
+    }
 }
 
 void ScopeInitTyped::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
@@ -647,8 +662,10 @@ void ScopeInitTyped::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
 void ScopeInitTyped::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
 {
     auto name = typeParam->Name()->Name();
-    auto decl = AddOrGetDecl<varbinder::TypeParameterDecl>(VarBinder(), name, typeParam, typeParam->Start(), name);
-    decl->BindNode(typeParam);
+    if (auto *decl = AddOrGetDecl<varbinder::TypeParameterDecl>(VarBinder(), name, typeParam, typeParam->Start(), name);
+        decl != nullptr) {
+        decl->BindNode(typeParam);
+    }
     Iterate(typeParam);
 }
 
@@ -978,11 +995,7 @@ void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression 
         var->SetScope(VarBinder()->GetScope());
         Iterate(paramExpr);
     } else {
-        ASSERT(VarBinder()->GetContext()->checker->IsAnyError());
-        if (VarBinder()->IsETSBinder()) {
-            paramExpr->SetTsType(VarBinder()->GetContext()->checker->AsETSChecker()->GlobalTypeError());
-            paramExpr->Ident()->SetTsType(VarBinder()->GetContext()->checker->AsETSChecker()->GlobalTypeError());
-        }
+        paramExpr->SetTsType(paramExpr->Ident()->SetTsType(Context()->checker->AsETSChecker()->GlobalTypeError()));
     }
 }
 
@@ -1075,9 +1088,11 @@ void InitScopesPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration 
         BindScopeNode(localScope.GetScope(), interfaceDecl);
     }
     auto name = FormInterfaceOrEnumDeclarationIdBinding(interfaceDecl->Id());
-    auto *decl = AddOrGetDecl<varbinder::InterfaceDecl>(VarBinder(), name, interfaceDecl, interfaceDecl->Start(),
-                                                        Allocator(), name, interfaceDecl);
-    decl->AsInterfaceDecl()->Add(interfaceDecl);
+    if (auto *decl = AddOrGetDecl<varbinder::InterfaceDecl>(VarBinder(), name, interfaceDecl, interfaceDecl->Start(),
+                                                            Allocator(), name, interfaceDecl);
+        decl != nullptr) {
+        decl->AsInterfaceDecl()->Add(interfaceDecl);
+    }
 }
 
 void InitScopesPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
@@ -1088,9 +1103,11 @@ void InitScopesPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
         Iterate(enumDecl);
     }
     auto name = FormInterfaceOrEnumDeclarationIdBinding(enumDecl->Key());
-    auto *decl = AddOrGetDecl<varbinder::EnumLiteralDecl>(VarBinder(), name, enumDecl, enumDecl->Start(), name,
-                                                          enumDecl, enumDecl->IsConst());
-    decl->BindScope(enumDecl->Scope());
+    if (auto *decl = AddOrGetDecl<varbinder::EnumLiteralDecl>(VarBinder(), name, enumDecl, enumDecl->Start(), name,
+                                                              enumDecl, enumDecl->IsConst());
+        decl != nullptr) {
+        decl->BindScope(enumDecl->Scope());
+    }
 }
 
 void InitScopesPhaseETS::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAlias)
@@ -1247,6 +1264,10 @@ void InitScopesPhaseETS::AttachLabelToScope(ir::AstNode *node)
     }
 
     auto decl = AddOrGetDecl<varbinder::LabelDecl>(VarBinder(), label->Name(), stmt, label->Start(), label->Name());
+    if (decl == nullptr) {
+        return;
+    }
+
     decl->BindNode(stmt);
 
     auto var = VarBinder()->GetScope()->FindLocal(label->Name(), varbinder::ResolveBindingOptions::BINDINGS);

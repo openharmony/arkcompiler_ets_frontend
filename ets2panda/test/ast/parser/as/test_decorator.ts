@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,5 +18,5 @@ function a(): void {
     /* @@ label2 */@a
 /* @@ label */}
 
-/* @@@ label Error SyntaxError: Unexpected token: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token '}'.  */
 /* @@@ label2 Error SyntaxError: Decorators are not valid here */

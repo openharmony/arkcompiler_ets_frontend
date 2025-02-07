@@ -16,4 +16,4 @@
 
 try {} catch (e: Error) {} finally /* @@ label */}
 
-/* @@@ label Error SyntaxError: Unexpected token '}', expected: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token '}', expected '{'.  */

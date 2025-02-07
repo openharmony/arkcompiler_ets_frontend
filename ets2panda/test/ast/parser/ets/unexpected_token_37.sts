@@ -20,13 +20,12 @@
     console.log("h")
 }
 
-/* @@@ label1 Error SyntaxError: Unexpected token 'identification literal', expected: '{'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token 'catch', expected '{'.  */
 /* @@@ label2 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
 /* @@@ label2 Error SyntaxError: Unexpected token ':'.  */
 /* @@@ label2 Error SyntaxError: Unexpected token ':'.  */
 /* @@@ label3 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label3 Error SyntaxError: Unexpected token ')'.  */
 /* @@@ label4 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label5 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@? 32:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
 /* @@@ label Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
-/* @@ label5 */

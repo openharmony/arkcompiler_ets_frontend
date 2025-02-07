@@ -434,7 +434,7 @@ ir::Statement *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bo
     switch (auto tokenType = Lexer()->GetToken().Type(); tokenType) {
         case lexer::TokenType::KEYW_STATIC: {
             if (!allowStatic) {
-                LogUnexpectedToken(Lexer()->GetToken().Type());
+                LogUnexpectedToken(Lexer()->GetToken());
             }
             [[fallthrough]];
         }
@@ -446,7 +446,7 @@ ir::Statement *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bo
             }
 
             if (auto const tokType = Lexer()->GetToken().Type(); tokType != lexer::TokenType::KEYW_CLASS) {
-                LogUnexpectedToken(tokType);
+                LogUnexpectedToken(Lexer()->GetToken());
             }
             [[fallthrough]];
         }
@@ -454,7 +454,7 @@ ir::Statement *ETSParser::CreateClassDeclaration(std::string_view sourceCode, bo
             return ParseClassDeclaration(modifiers);
         }
         default: {
-            LogUnexpectedToken(tokenType);
+            LogUnexpectedToken(Lexer()->GetToken());
             return nullptr;
         }
     }

@@ -37,15 +37,15 @@ foo(/* @@ label8 */,)
 
 
 /* @@@ label Error SyntaxError: Rest parameter must be the last formal parameter.  */
-/* @@@ label1 Error SyntaxError: Unexpected token, expected: '{'.  */
+/* @@@ label1 Error SyntaxError: Unexpected token, expected '{'.  */
 /* @@@ label2 Error SyntaxError: Unexpected token, expected an identifier.  */
-/* @@@ label3 Error SyntaxError: Unexpected token: ','.  */
-/* @@@ label4 Error SyntaxError: Unexpected token: ','.  */
-/* @@@ label5 Error SyntaxError: Unexpected token: ','.  */
+/* @@@ label3 Error SyntaxError: Unexpected token ','.  */
+/* @@@ label4 Error SyntaxError: Unexpected token ','.  */
+/* @@@ label5 Error SyntaxError: Unexpected token ','.  */
 /* @@@ label6 Error SyntaxError: Unexpected token, expected ',' or ')'.  */
-/* @@@ label6 Error SyntaxError: Unexpected token 'identification literal'.  */
-/* @@@ label7 Error SyntaxError: Unexpected token ')'.  */
-/* @@@ label7 Error SyntaxError: Unexpected token: ')'.  */
-/* @@@ label8 Error SyntaxError: Unexpected token: ','.  */
-/* @@@ label9 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label9 */
+/* @@@ label6 Error SyntaxError: Unexpected token 'a'. */
+/* @@@ label7 Error SyntaxError: Unexpected token ')'. */
+/* @@@ label7 Error SyntaxError: Unexpected token ')'. */
+/* @@@ label7 Error SyntaxError: Unexpected token ')'. */
+/* @@@ label8 Error SyntaxError: Unexpected token ','. */
+/* @@? 52:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */

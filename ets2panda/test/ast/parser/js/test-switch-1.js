@@ -16,9 +16,8 @@
 
 switch
 
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '('.  */
-/* @@@ label Error SyntaxError: Unexpected token: 'eos'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: ')'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '{'.  */
-/* @@@ label Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
-/* @@ label */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected '('.  */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos'.  */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected ')'.  */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected '{'.  */
+/* @@? 24:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */

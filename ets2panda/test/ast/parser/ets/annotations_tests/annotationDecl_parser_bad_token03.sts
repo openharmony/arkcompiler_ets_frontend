@@ -14,13 +14,10 @@
  */
 @interface MyAnno {
     testProperty1: string = 
-    testProperty2/* @@ label1 */: /* @@ label2 */number
+    testProperty2/* @@ label1 */: number
 /* @@ label3 */}
 
 /* @@@ label1 Error SyntaxError: Identifier expected, got ':'.  */
-/* @@@ label2 Error SyntaxError: Missing type annotation for property.  */
 /* @@@ label3 Error SyntaxError: Missing type annotation for property 'number'.  */
 /* @@? 17:5 Error TypeError: Unresolved reference testProperty2 */
 /* @@? 17:5 Error TypeError: Invalid value for annotation field, expected a constant literal. */
-/* @@? 1:1 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */
-/* @@? 17:50 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */

@@ -18,4 +18,3 @@
 }
 
 /* @@? 18:1 Error SyntaxError: Invalid Type */
-/* @@? 17:5 Error TypeError: Invalid annotation field type. Only numeric, boolean, string, enum, or arrays of these types are permitted for annotation fields. */

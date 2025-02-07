@@ -22,9 +22,9 @@ import.meta
 
 
 /* @@? 20:15 Error SyntaxError: The only valid meta property for import is import.Meta  */
-/* @@? 21:1 Error SyntaxError: Unexpected token 'import', expected: ')'.  */
+/* @@? 21:1 Error SyntaxError: Unexpected token 'import', expected ')'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  *//* @@? 20:15 Error SyntaxError: The only valid meta property for import is import.Meta  */
 /* @@? 20:15 Error SyntaxError: The only valid meta property for import is import.Meta  */
-/* @@? 21:1 Error SyntaxError: Unexpected token 'import', expected: ')'.  */
+/* @@? 21:1 Error SyntaxError: Unexpected token 'import', expected ')'.  */

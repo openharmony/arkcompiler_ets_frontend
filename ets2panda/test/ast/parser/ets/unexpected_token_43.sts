@@ -15,7 +15,7 @@
 
 let v2 = `--- ${y + abc /* @@ label */${y} = ${ n*2 }!`/* @@ label1 */} ---`;`
 
-/* @@@ label Error SyntaxError: Unexpected token 'identification literal', expected: '}'.  */
+/* @@@ label Error SyntaxError: Unexpected token '$', expected '}'.  */
 /* @@@ label1 Error SyntaxError: Unexpected token '}'.  */
 /* @@? 30:1 Error SyntaxError: Invalid left-hand side in prefix operation  */
 /* @@? 16:17 Error TypeError: Unresolved reference y */

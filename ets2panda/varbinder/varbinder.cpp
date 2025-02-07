@@ -259,7 +259,7 @@ void VarBinder::BuildVarDeclaratorId(ir::AstNode *childNode)
             auto *ident = childNode->AsIdentifier();
             const auto &name = ident->Name();
 
-            if (util::Helpers::IsGlobalIdentifier(name)) {
+            if (util::Helpers::IsGlobalIdentifier(name) || name.Is(ERROR_LITERAL)) {
                 break;
             }
 

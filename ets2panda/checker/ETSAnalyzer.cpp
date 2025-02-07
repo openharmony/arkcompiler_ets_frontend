@@ -33,22 +33,25 @@ ETSChecker *ETSAnalyzer::GetETSChecker() const
 checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
 {
     ETSChecker *checker = GetETSChecker();
+    checker::Type *exceptionType = checker->GlobalTypeError();
 
-    if (st->Param() == nullptr) {
+    if (st->Param() != nullptr) {
+        ASSERT(st->Param()->IsIdentifier());
+
+        ir::Identifier *paramIdent = st->Param()->AsIdentifier();
+        if (!paramIdent->IsErrorPlaceHolder()) {
+            if (paramIdent->TypeAnnotation() != nullptr) {
+                checker::Type *catchParamAnnotationType = paramIdent->TypeAnnotation()->GetType(checker);
+                exceptionType = checker->CheckExceptionOrErrorType(catchParamAnnotationType, st->Param()->Start());
+            } else {
+                exceptionType = checker->GlobalETSObjectType();
+            }
+            paramIdent->Variable()->SetTsType(exceptionType);
+        }
+        paramIdent->SetTsType(exceptionType);
+    } else {
         ASSERT(checker->IsAnyError());
-        return st->SetTsType(checker->GlobalTypeError());
     }
-
-    ir::Identifier *paramIdent = st->Param()->AsIdentifier();
-    checker::ETSObjectType *exceptionType = checker->GlobalETSObjectType();
-
-    if (paramIdent->TypeAnnotation() != nullptr) {
-        checker::Type *catchParamAnnotationType = paramIdent->TypeAnnotation()->GetType(checker);
-        exceptionType = checker->CheckExceptionOrErrorType(catchParamAnnotationType, st->Param()->Start());
-    }
-
-    paramIdent->Variable()->SetTsType(exceptionType);
-    paramIdent->SetTsType(exceptionType);
 
     st->Body()->Check(checker);
 
@@ -96,8 +99,10 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
         checker->AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
     }
 
-    st->SetTsType(checker->CheckVariableDeclaration(st->Id(), st->TypeAnnotation(), st->Value(), st->Modifiers()));
-    return st->TsType();
+    checker::Type *propertyType =
+        checker->CheckVariableDeclaration(st->Id(), st->TypeAnnotation(), st->Value(), st->Modifiers());
+
+    return st->SetTsType(propertyType != nullptr ? propertyType : checker->GlobalTypeError());
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
@@ -154,7 +159,7 @@ static void HandleNativeAndAsyncMethods(ETSChecker *checker, ir::MethodDefinitio
             }
         }
 
-        if (node->Function()->HasBody()) {
+        if (node->Function()->HasBody() && !node->TsType()->IsTypeError()) {
             ComposeAsyncImplMethod(checker, node);
         }
     }
@@ -2288,14 +2293,16 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
     ScopeContext scopeCtx(checker, st->Scope());
     for (auto *it : st->Properties()) {
         auto *property = it->AsClassProperty();
-        property->Check(checker);
-        checker->CheckAnnotationPropertyType(property);
+        if (checker::Type *propertyType = property->Check(checker); !propertyType->IsTypeError()) {
+            checker->CheckAnnotationPropertyType(property);
+        }
     }
 
     auto *annoDecl = st->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
     if (annoDecl != st && annoDecl->IsDeclare()) {
         checker->CheckAmbientAnnotation(st, annoDecl);
     }
+
     return ReturnTypeForStatement(st);
 }
 
@@ -2723,11 +2730,12 @@ checker::Type *ETSAnalyzer::Check(ir::SwitchStatement *st) const
 checker::Type *ETSAnalyzer::Check(ir::ThrowStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    auto argType = st->argument_->Check(checker);
-    checker->CheckExceptionOrErrorType(argType, st->Start());
 
-    if (checker->Relation()->IsAssignableTo(argType, checker->GlobalBuiltinExceptionType())) {
-        checker->CheckThrowingStatements(st);
+    if (checker::Type *argType = st->argument_->Check(checker); !argType->IsTypeError()) {
+        checker->CheckExceptionOrErrorType(argType, st->Start());
+        if (checker->Relation()->IsAssignableTo(argType, checker->GlobalBuiltinExceptionType())) {
+            checker->CheckThrowingStatements(st);
+        }
     }
 
     checker->AddStatus(CheckerStatus::MEET_THROW);
@@ -2752,8 +2760,7 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
 
         checker->Context().RestoreSmartCasts(smartCasts);
 
-        if (auto const exceptionType = catchClause->Check(checker);
-            exceptionType != nullptr && catchClause->Param() != nullptr) {
+        if (auto const exceptionType = catchClause->Check(checker); !exceptionType->IsTypeError()) {
             auto *clauseType = exceptionType->AsETSObjectType();
             checker->CheckExceptionClauseType(exceptions, catchClause, clauseType);
             exceptions.emplace_back(clauseType);

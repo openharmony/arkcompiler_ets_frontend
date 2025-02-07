@@ -351,7 +351,7 @@ void TypedParser::CheckDeclare()
             return;
         }
         default: {
-            LogUnexpectedToken(Lexer()->GetToken().Type());
+            LogUnexpectedToken(Lexer()->GetToken());
         }
     }
 }

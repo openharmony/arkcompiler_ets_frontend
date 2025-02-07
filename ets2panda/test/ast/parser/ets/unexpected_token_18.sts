@@ -16,5 +16,5 @@
 try {} catch (e: number) /* @@ label */}
 
 /* @@@ label Error SyntaxError: Unexpected token '}', expected '{'.  */
-/* @@@ label Error SyntaxError: Unexpected token '}', expected: '{'.  */
+/* @@@ label Error SyntaxError: Unexpected token '}', expected '{'.  */
 /* @@? 16:15 Error TypeError: Argument must be an instance of 'Exception' or 'Error' */

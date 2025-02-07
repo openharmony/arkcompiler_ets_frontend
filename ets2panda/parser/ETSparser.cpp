@@ -548,7 +548,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
 
     auto *memberName = ExpectIdentifier(false, false, TypeAnnotationParsingOptions::NO_OPTS);  // don't report error
     if (memberName == nullptr) {                                                               // log error here
-        LogUnexpectedToken(Lexer()->GetToken().Type());
+        LogUnexpectedToken(Lexer()->GetToken());
         Lexer()->NextToken();
         return AllocBrokenStatement();
     }
@@ -579,7 +579,7 @@ ir::Statement *ETSParser::ParseTypeDeclarationAbstractFinal(bool allowStatic, ir
         return ParseStructDeclaration(modifiers, flags);
     }
 
-    LogUnexpectedToken(Lexer()->GetToken().Type());
+    LogUnexpectedToken(Lexer()->GetToken());
     return nullptr;
 }
 
@@ -593,7 +593,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
     switch (tokenType) {
         case lexer::TokenType::KEYW_STATIC:
             if (!allowStatic) {
-                LogUnexpectedToken(Lexer()->GetToken().Type());
+                LogUnexpectedToken(Lexer()->GetToken());
             }
 
             Lexer()->NextToken();
@@ -621,7 +621,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
             }
             [[fallthrough]];
         default:
-            LogUnexpectedToken(Lexer()->GetToken().Type());
+            LogUnexpectedToken(Lexer()->GetToken());
             return AllocBrokenStatement();
     }
 }
@@ -1173,7 +1173,7 @@ bool ETSParser::IsDefaultImport()
         if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_AS)) {
             return true;
         }
-        LogSyntaxError("Unexpected token, expected: 'as'.");
+        LogSyntaxError("Unexpected token, expected 'as'.");
     }
     return false;
 }

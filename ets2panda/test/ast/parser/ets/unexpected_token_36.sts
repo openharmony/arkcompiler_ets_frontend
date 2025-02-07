@@ -31,10 +31,11 @@ export class AccessNSieve {
     }
   }
 }
-/* @@? 29:13 Error SyntaxError: Unexpected token 'identification literal', expected: ';'. */
-/* @@? 29:14 Error SyntaxError: Unexpected token ':', expected: ';'. */
+
+/* @@? 29:13 Error SyntaxError: Unexpected token 'i', expected ';'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':', expected ';'. */
 /* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
-/* @@? 29:14 Error SyntaxError: Unexpected token ':', expected: ')'. */
+/* @@? 29:14 Error SyntaxError: Unexpected token ':', expected ')'. */
 /* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
 /* @@? 29:14 Error SyntaxError: Unexpected token ':'. */
 /* @@? 29:14 Error SyntaxError: Unexpected token ':'. */

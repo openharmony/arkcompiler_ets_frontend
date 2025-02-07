@@ -54,20 +54,20 @@ throw
 /* @@@ label Error SyntaxError: Can only type export class or interface!  */
 /* @@@ label1 Error SyntaxError: Can only type export class or interface!  */
 /* @@@ label2 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@@ label3 Error SyntaxError: Unexpected token: 'let'.  */
+/* @@@ label3 Error SyntaxError: Unexpected token 'let'.  */
 /* @@@ label4 Error SyntaxError: Illegal start of STRUCT expression  */
-/* @@@ label5 Error SyntaxError: Unexpected token: 'let'.  */
+/* @@@ label5 Error SyntaxError: Unexpected token 'let'.  */
 /* @@@ label6 Error SyntaxError: Nested functions are not allowed  */
-/* @@@ label7 Error SyntaxError: Unexpected token 'let', expected: '{'.  */
-/* @@@ label9 Error SyntaxError: Unexpected token 'identification literal', expected: '{'.  */
+/* @@@ label7 Error SyntaxError: Unexpected token 'let', expected '{'.  */
+/* @@@ label9 Error SyntaxError: Unexpected token 'x', expected '{'.  */
 /* @@@ label10 Error SyntaxError: Label must be followed by a loop statement  */
-/* @@@ label12 Error SyntaxError: Unexpected token 'let', expected: '{'.  */
+/* @@@ label12 Error SyntaxError: Unexpected token 'let', expected '{'.  */
 /* @@@ label13 Error SyntaxError: Unexpected token '{'.  */
-/* @@@ label14 Error SyntaxError: Unexpected token: 'let'.  */
+/* @@@ label14 Error SyntaxError: Unexpected token 'let'.  */
 /* @@@ label15 Error SyntaxError: Illegal newline after throw  */
-/* @@@ label16 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@? 76:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
 /* @@@ label11 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
-/* @@? 76:1 Error SyntaxError: Unexpected token 'eos', expected: '}'.  */
+/* @@? 76:1 Error SyntaxError: Unexpected token 'eos', expected '}'.  */
 /* @@@ label8 Error SyntaxError: A try statement should contain either finally clause or at least one catch clause.  */
 /* @@@ label Error SyntaxError: Can only type export class or interface!  */
 /* @@@ label1 Error SyntaxError: Can only type export class or interface!  */

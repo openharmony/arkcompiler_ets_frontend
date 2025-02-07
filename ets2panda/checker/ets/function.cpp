@@ -1050,6 +1050,12 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
 void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
                                          const ir::MethodDefinition *const currentFunc)
 {
+    // Don't necessary to check overload for invalid functions
+    if (func->Name().Is(ERROR_LITERAL)) {
+        ASSERT(IsAnyError());
+        return;
+    }
+
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
 
     Relation()->IsIdenticalTo(func, overload);
@@ -1148,8 +1154,10 @@ static bool AddParameterToSignatureInfo(ETSChecker *checker, SignatureInfo *sign
 
     auto *const paramTypeAnnotation = parameter->TypeAnnotation();
     if (paramIdent->TsType() == nullptr && paramTypeAnnotation == nullptr) {
-        checker->LogTypeError({"The type of parameter '", paramIdent->Name(), "' cannot be determined"},
-                              parameter->Start());
+        if (!paramIdent->IsErrorPlaceHolder()) {
+            checker->LogTypeError({"The type of parameter '", paramIdent->Name(), "' cannot be determined"},
+                                  parameter->Start());
+        }
         parameter->SetTsType(paramIdent->SetTsType(checker->GlobalTypeError()));
         paramVar->SetTsType(checker->GlobalTypeError());
         return false;
@@ -1998,13 +2006,18 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expr
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *const paramNew = paramOld->Clone(Allocator(), paramOld->Parent())->AsETSParameterExpression();
 
-        auto *const var = std::get<1>(VarBinder()->AddParamDecl(paramNew));
+        varbinder::Variable *var = nullptr;
+        Type *paramType = GlobalTypeError();
 
-        var->SetTsType(paramOld->Ident()->Variable()->TsType());
-        var->SetScope(paramCtx.GetScope());
+        if (paramOld->Ident()->Variable() != nullptr) {
+            var = std::get<1>(VarBinder()->AddParamDecl(paramNew));
+            paramType = paramOld->Ident()->Variable()->TsType();
+            var->SetTsType(paramType);
+            var->SetScope(paramCtx.GetScope());
+        }
+
         paramNew->SetVariable(var);
-
-        paramNew->SetTsType(paramOld->Ident()->Variable()->TsType());
+        paramNew->SetTsType(paramType);
 
         outParams.emplace_back(paramNew);
     }

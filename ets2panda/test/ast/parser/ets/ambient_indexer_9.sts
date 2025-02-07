@@ -28,7 +28,5 @@ function main() {
 /* @@? 1:7 Error SyntaxError: Unexpected token, expected an identifier. */
 /* @@? 1:7 Error SyntaxError: Parameter declaration should have an explicit type annotation. */
 /* @@? 1:7 Error SyntaxError: Unexpected token, expected ',' or ')'. */
-/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */
-/* @@? 1:1 Error TypeError: The type of parameter '*ERROR_LITERAL*' cannot be determined */
 /* @@? 1:3 Error TypeError: Native and Declare methods should have explicit return type. */
 /* @@? 1:3 Error TypeError: Native and Declare methods should have explicit return type. */

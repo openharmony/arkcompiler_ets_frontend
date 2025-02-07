@@ -17,8 +17,8 @@ class Foo {
     bar! = Int
   }
 
-/* @@? 17:8 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 17:8 Error SyntaxError: Unexpected token, expected ';'.  */
 /* @@? 1:1 Node {
     "type": "Program"
 }  */
-/* @@? 17:8 Error SyntaxError: Unexpected token, expected: ';'.  */
+/* @@? 17:8 Error SyntaxError: Unexpected token, expected ';'.  */
