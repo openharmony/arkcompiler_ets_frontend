@@ -15,6 +15,7 @@
 
 #include "compiler/core/compilerImpl.h"
 #include "generated/diagnostic.h"
+#include "util/diagnostic.h"
 
 namespace ark::es2panda {
 constexpr size_t DEFAULT_THREAD_COUNT = 2;
@@ -22,41 +23,6 @@ constexpr size_t DEFAULT_THREAD_COUNT = 2;
 namespace util {
 class Options;
 }  // namespace util
-
-std::string Format(std::string_view formatString, const std::vector<std::string> &params)
-{
-    std::string result;
-    size_t pos = 0;
-    size_t paramIndex = 0;
-    while (pos < formatString.size()) {
-        auto nextPos = formatString.find("{}", pos);
-        if (nextPos == std::string::npos) {
-            break;
-        }
-        result.append(formatString.substr(pos, nextPos - pos));
-        result.append(params.at(paramIndex++));
-        pos = nextPos + 2U;
-    }
-    ASSERT(paramIndex == params.size());
-    result.append(formatString.substr(pos));
-    return result;
-}
-
-ErrorType Error::Type() const noexcept
-{
-    if (diagnosticKind_ != nullptr) {
-        return diagnosticKind_->Type();
-    }
-    return type_;
-}
-
-std::string Error::Message() const
-{
-    if (diagnosticKind_ != nullptr) {
-        return Format(diagnosticKind_->Message(), diagnosticParams_);
-    }
-    return message_;
-}
 
 template <class T>
 T DirName(T const &path, T const &delims = ark::os::file::File::GetPathDelim())
@@ -109,7 +75,7 @@ pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options
 {
     try {
         return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_, diagnosticEngine});
-    } catch (const class Error &e) {
+    } catch (const class util::ThrowableDiagnostic &e) {
         error_ = e;
         return nullptr;
     }

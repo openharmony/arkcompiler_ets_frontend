@@ -421,19 +421,20 @@ void GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, CommentRa
 }
 
 // convert from es2panda error type to LSP severity
-DiagnosticSeverity GetSeverity(ErrorType errorType)
+DiagnosticSeverity GetSeverity(util::DiagnosticType errorType)
 {
-    ASSERT(errorType != ErrorType::INVALID);
-    if (errorType == ErrorType::WARNING) {
+    ASSERT(errorType != util::DiagnosticType::INVALID);
+    if (errorType == util::DiagnosticType::WARNING) {
         return DiagnosticSeverity::Warning;
     }
-    if (errorType == ErrorType::SYNTAX || errorType == ErrorType::SEMANTIC || errorType == ErrorType::FATAL) {
+    if (errorType == util::DiagnosticType::SYNTAX || errorType == util::DiagnosticType::SEMANTIC ||
+        errorType == util::DiagnosticType::FATAL) {
         return DiagnosticSeverity::Error;
     }
     throw std::runtime_error("Unknown error type!");
 }
 
-Diagnostic CreateDiagnosticForError(es2panda_Context *context, const Error &error)
+Diagnostic CreateDiagnosticForError(es2panda_Context *context, const util::DiagnosticBase &error)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());

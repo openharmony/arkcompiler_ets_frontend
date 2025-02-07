@@ -708,8 +708,7 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
     }
 
     if (init->IsMemberExpression() && init->AsMemberExpression()->Object()->IsObjectExpression()) {
-        LogTypeError({"Class composite must be constructed separately before referring their members."},
-                     ident->Start());
+        LogTypeError("Class composite must be constructed separately before referring their members.", ident->Start());
     }
 
     if (annotationType != nullptr && annotationType->HasTypeFlag(TypeFlag::TYPE_ERROR)) {
@@ -1181,7 +1180,7 @@ bool ETSChecker::CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation)
     if (parent->IsTSTypeParameterInstantiation() || parent->IsTSTypeParameter()) {
         return true;
     }
-    LogTypeError({"'void' used as type annotation."}, typeAnnotation->Start());
+    LogTypeError(util::DiagnosticMessageParams {"'void' used as type annotation."}, typeAnnotation->Start());
     return false;
 }
 void ETSChecker::ApplySmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept
@@ -1751,8 +1750,7 @@ std::optional<const ir::AstNode *> ETSChecker::FindJumpTarget(ir::AstNode *node)
         iter = iter->Parent();
     }
 
-    LogTypeError({"Control flow redirection statement can not be used out of loop or switch statement."},
-                 node->Start());
+    LogTypeError("Control flow redirection statement can not be used out of loop or switch statement.", node->Start());
     return nullptr;
 }
 

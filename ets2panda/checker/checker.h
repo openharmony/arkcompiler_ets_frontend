@@ -59,7 +59,6 @@ using TypeOrNode = std::variant<Type *, ir::AstNode *>;
 using IndexInfoTypePair = std::pair<Type *, Type *>;
 using PropertyMap = std::unordered_map<util::StringView, varbinder::LocalVariable *>;
 using ArgRange = std::pair<uint32_t, uint32_t>;
-using DiagnosticMessageElement = util::DiagnosticMessageElement;
 
 class Checker {
 public:
@@ -166,25 +165,26 @@ public:
     virtual Type *GetTypeOfVariable(varbinder::Variable *var) = 0;
     virtual void ResolveStructuredTypeMembers(Type *type) = 0;
 
-    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams = {});
-    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {});
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
                   const lexer::SourcePosition &pos);
     void LogTypeError(std::string_view message, const lexer::SourcePosition &pos);
-    void LogTypeError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos);
+    void LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
     void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
-    void ReportWarning(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos);
+    void ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
     bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeIdenticalTo(Type *source, Type *target, util::DiagnosticMessageParams list,
+    bool IsTypeIdenticalTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
                            const lexer::SourcePosition &errPos);
     bool IsTypeAssignableTo(Type *source, Type *target);
     bool IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeAssignableTo(Type *source, Type *target, util::DiagnosticMessageParams list,
+    bool IsTypeAssignableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
                             const lexer::SourcePosition &errPos);
     bool IsTypeComparableTo(Type *source, Type *target);
     bool IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
-    bool IsTypeComparableTo(Type *source, Type *target, util::DiagnosticMessageParams list,
+    bool IsTypeComparableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
                             const lexer::SourcePosition &errPos);
     bool AreTypesComparable(Type *source, Type *target);
     bool IsTypeEqualityComparableTo(Type *source, Type *target);
@@ -256,7 +256,7 @@ private:
 
 class TypeStackElement {
 public:
-    explicit TypeStackElement(Checker *checker, void *element, util::DiagnosticMessageParams list,
+    explicit TypeStackElement(Checker *checker, void *element, const util::DiagnosticMessageParams &list,
                               const lexer::SourcePosition &pos, bool isRecursive = false)
         : checker_(checker), element_(element), hasErrorChecker_(false), isRecursive_(isRecursive), cleanup_(true)
     {

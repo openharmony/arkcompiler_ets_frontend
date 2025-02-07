@@ -19,6 +19,7 @@
 #include "macros.h"
 #include "util/arktsconfig.h"
 #include "util/plugin.h"
+#include "util/diagnostic.h"
 #include "generated/options.h"
 
 namespace ark::pandasm {
@@ -46,10 +47,6 @@ class CompilerImpl;
 namespace varbinder {
 class VarBinder;
 }  // namespace varbinder
-
-namespace diagnostic {
-class DiagnosticKind;
-}  // namespace diagnostic
 
 enum class CompilationMode {
     GEN_STD_LIB,
@@ -88,140 +85,11 @@ struct SourceFile {
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
-enum ErrorType { BEGIN = 0, FATAL = BEGIN, SYNTAX, SEMANTIC, WARNING, PLUGIN, COUNT = PLUGIN, INVALID };
-
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 inline static constexpr char const ERROR_LITERAL[] = "*ERROR_LITERAL*";
 inline static constexpr char const ERROR_TYPE[] = "*ERROR_TYPE*";
 inline static constexpr char const INVALID_EXPRESSION[] = "...";
 // NOLINTEND(modernize-avoid-c-arrays)
-
-class Error : public std::exception {
-public:
-    Error() noexcept = default;
-    explicit Error(ErrorType type, std::string_view file, std::string_view message) noexcept
-        : type_(type), file_(file), message_(message)
-    {
-    }
-    explicit Error(ErrorType type, std::string_view file, std::string_view message, size_t line, size_t offset) noexcept
-        : type_(type), file_(file), message_(message), line_(line), offset_(offset)
-    {
-    }
-    // NOTE(schernykh): replace with util::DiagnosticMessegeParams
-    explicit Error(const diagnostic::DiagnosticKind *diagnostic, std::vector<std::string> diagnosticParams,
-                   std::string_view file, size_t line, size_t offset) noexcept
-        : file_(file),
-          line_(line),
-          offset_(offset),
-          diagnosticKind_(diagnostic),
-          diagnosticParams_(std::move(diagnosticParams))
-    {
-    }
-    ~Error() override = default;
-    DEFAULT_COPY_SEMANTIC(Error);
-    DEFAULT_MOVE_SEMANTIC(Error);
-
-    ErrorType Type() const noexcept;
-
-    // NOTE(schernykh): move out from class
-    static const char *TypeString(ErrorType type)
-    {
-        switch (type) {
-            case ErrorType::FATAL:
-                return "Fatal error";
-            case ErrorType::SYNTAX:
-                return "SyntaxError";
-            case ErrorType::SEMANTIC:
-                return "TypeError";
-            case ErrorType::WARNING:
-                return "Warning";
-            case ErrorType::PLUGIN:
-                return "Plugin error";
-            default:
-                UNREACHABLE();
-        }
-    }
-
-    static bool IsError(ErrorType type)
-    {
-        switch (type) {
-            case ErrorType::FATAL:
-            case ErrorType::SYNTAX:
-            case ErrorType::SEMANTIC:
-            case ErrorType::PLUGIN:
-                return true;
-            case ErrorType::WARNING:
-                return false;
-            default:
-                UNREACHABLE();
-        }
-    }
-
-    std::string Message() const;
-
-    const std::string &File() const
-    {
-        return file_;
-    }
-
-    std::pair<size_t, size_t> GetLoc() const
-    {
-        return {line_, offset_};
-    }
-
-    size_t Line() const
-    {
-        return line_;
-    }
-
-    size_t Offset() const
-    {
-        return offset_;
-    }
-
-    bool operator<(const Error &rhs) const
-    {
-        if (file_ != rhs.File()) {
-            return file_ < rhs.File();
-        }
-        if (line_ != rhs.Line()) {
-            return line_ < rhs.Line();
-        }
-        if (offset_ != rhs.Offset()) {
-            return offset_ < rhs.Offset();
-        }
-        if (type_ != rhs.Type()) {
-            return type_ < rhs.Type();
-        }
-        return false;
-    }
-
-    bool operator==(const Error &rhs) const
-    {
-        if (file_ != rhs.File()) {
-            return false;
-        }
-        if (line_ != rhs.Line()) {
-            return false;
-        }
-        if (offset_ != rhs.Offset()) {
-            return false;
-        }
-        if (type_ != rhs.Type()) {
-            return false;
-        }
-        return message_ == rhs.Message();
-    }
-
-private:
-    ErrorType type_ {ErrorType::INVALID};
-    std::string file_;
-    std::string message_ {};
-    size_t line_ {};
-    size_t offset_ {};
-    const diagnostic::DiagnosticKind *diagnosticKind_ {nullptr};
-    std::vector<std::string> diagnosticParams_ {};
-};
 
 class Compiler {
 public:
@@ -237,7 +105,7 @@ public:
 
     static void DumpAsm(const pandasm::Program *prog);
 
-    const Error &GetError() const noexcept
+    const util::ThrowableDiagnostic &GetError() const noexcept
     {
         return error_;
     }
@@ -252,7 +120,7 @@ public:
 private:
     std::vector<util::Plugin> const plugins_;
     compiler::CompilerImpl *compiler_;
-    Error error_;
+    util::ThrowableDiagnostic error_;
     ScriptExtension ext_;
 };
 

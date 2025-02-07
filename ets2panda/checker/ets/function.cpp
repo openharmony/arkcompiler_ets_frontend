@@ -333,7 +333,9 @@ Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, co
 
     if (parameterCount != 0) {
         if (reportError) {
-            LogTypeError({"No Matching Parameterless Constructor, parameter count ", parameterCount}, pos);
+            LogTypeError(util::DiagnosticMessageParams {"No Matching Parameterless Constructor, parameter count ",
+                                                        parameterCount},
+                         pos);
         }
         return nullptr;
     }
@@ -559,7 +561,7 @@ Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> 
 
     if (compatibleSignature == nullptr) {
         if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0) {
-            LogTypeError({"No matching parameterless constructor"}, pos);
+            LogTypeError("No matching parameterless constructor", pos);
         }
     }
     return compatibleSignature;
@@ -1661,7 +1663,7 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
 bool ETSChecker::NeedToVerifySignatureVisibility(Signature *signature, const lexer::SourcePosition &pos)
 {
     if (signature == nullptr) {
-        LogTypeError({"Signature is not available here."}, pos);
+        LogTypeError("Signature is not available here.", pos);
         return false;
     }
 
@@ -1688,7 +1690,7 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
         if (callExpr->Callee()->IsMemberExpression() &&
             callExpr->Callee()->AsMemberExpression()->Object()->IsThisExpression() &&
             signature->Function()->IsPrivate() && !enclosingFunc->IsPrivate()) {
-            LogTypeError({"Cannot reference 'this' in this context."}, enclosingFunc->Start());
+            LogTypeError("Cannot reference 'this' in this context.", enclosingFunc->Start());
         }
 
         if (containingClass == declNode->AsTSInterfaceDeclaration()->TsType() && isContainingSignatureInherited) {
@@ -2159,7 +2161,7 @@ void ETSChecker::EnsureValidCurlyBrace(ir::CallExpression *callExpr)
         return;
     }
 
-    LogTypeError({"No matching call signature with trailing lambda"}, callExpr->Start());
+    LogTypeError("No matching call signature with trailing lambda", callExpr->Start());
 }
 
 ETSObjectType *ETSChecker::GetCachedFunctionalInterface(ir::ETSFunctionType *type)

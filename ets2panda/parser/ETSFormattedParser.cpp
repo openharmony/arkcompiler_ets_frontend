@@ -479,7 +479,7 @@ ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags m
     }
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
-        LogSyntaxError({"Constructor should not be async."});
+        LogSyntaxError("Constructor should not be async.");
         UNREACHABLE();
     }
 

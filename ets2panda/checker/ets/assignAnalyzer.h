@@ -138,7 +138,7 @@ private:
 
     // utils
     void Warning(std::string_view message, const lexer::SourcePosition &pos);
-    void Warning(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &pos);
+    void Warning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
     bool Trackable(const ir::AstNode *node) const;
     bool IsConstUninitializedField(const ir::AstNode *node) const;
     bool IsConstUninitializedStaticField(const ir::AstNode *node) const;

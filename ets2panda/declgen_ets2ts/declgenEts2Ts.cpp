@@ -110,8 +110,8 @@ void TSDeclGen::ThrowError(const std::string_view message, const lexer::SourcePo
     lexer::LineIndex index(program_->SourceCode());
     const lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::FATAL, program_->SourceFilePath().Utf8(), "declgen ets2ts: " + std::string(message),
-                 loc.line, loc.col};
+    throw util::ThrowableDiagnostic {util::DiagnosticType::FATAL, "declgen ets2ts: " + std::string(message),
+                                     program_->SourceFilePath().Utf8(), loc.line, loc.col};
 }
 
 const ir::Identifier *TSDeclGen::GetKeyIdent(const ir::Expression *key)

@@ -14,6 +14,7 @@
  */
 
 #include "options.h"
+#include "util/diagnostic.h"
 #include "util/diagnosticEngine.h"
 #include "util/ustring.h"
 #include "os/filesystem.h"
@@ -164,7 +165,8 @@ bool Options::ParseInputOutput()
     if (compilationMode_ == CompilationMode::SINGLE_FILE) {
         std::ifstream inputStream(SourceFileName());
         if (inputStream.fail()) {
-            diagnosticEngine_.LogFatalError({"Failed to open file: ", std::string_view(SourceFileName())});
+            diagnosticEngine_.LogFatalError(
+                util::DiagnosticMessageParams {"Failed to open file: ", util::StringView(SourceFileName())});
             return false;
         }
 
@@ -353,7 +355,8 @@ bool Options::DetermineExtension()
         case ScriptExtension::STS: {
             std::ifstream inputStream(GetArktsconfig());
             if (inputStream.fail()) {
-                diagnosticEngine_.LogFatalError({"Failed to open arktsconfig: ", std::string_view(GetArktsconfig())});
+                diagnosticEngine_.LogFatalError(
+                    util::DiagnosticMessageParams {"Failed to open arktsconfig: ", GetArktsconfig()});
                 return false;
             }
             return true;
@@ -381,7 +384,8 @@ std::optional<ArkTsConfig> Options::ParseArktsConfig()
 {
     auto config = ArkTsConfig {GetArktsconfig()};
     if (!config.Parse()) {
-        diagnosticEngine_.LogFatalError({"Invalid ArkTsConfig path: ", std::string_view(GetArktsconfig())});
+        diagnosticEngine_.LogFatalError(
+            util::DiagnosticMessageParams {"Invalid ArkTsConfig path: ", util::StringView(GetArktsconfig())});
         return std::nullopt;
     }
     return std::make_optional(config);

@@ -17,6 +17,7 @@
 #include <cstring>
 #include <cstdint>
 
+#include "util/diagnostic.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/scope.h"
 #include "public/public.h"
@@ -287,9 +288,9 @@ __attribute__((unused)) static es2panda_Context *CreateContext(es2panda_Config *
         res->emitter = new compiler::ETSEmitter(res);
         res->program = nullptr;
         res->state = ES2PANDA_STATE_NEW;
-    } catch (Error &e) {
+    } catch (util::ThrowableDiagnostic &e) {
         std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
            << e.Offset() << "]";
         res->errorMessage = ss.str();
         res->state = ES2PANDA_STATE_ERROR;
@@ -333,9 +334,9 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         ctx->errorMessage = "Bad state at entry to Parse, needed NEW";
         return ctx;
     }
-    auto handleError = [ctx](Error const &e) {
+    auto handleError = [ctx](const util::DiagnosticBase &e) {
         std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
            << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
@@ -348,12 +349,8 @@ __attribute__((unused)) static Context *Parse(Context *ctx)
         if (ctx->diagnosticEngine->IsAnyError()) {
             handleError(ctx->parser->DiagnosticEngine().GetAnyError());
         }
-    } catch (Error &e) {
-        std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
-           << e.Offset() << "]";
-        ctx->errorMessage = ss.str();
-        ctx->state = ES2PANDA_STATE_ERROR;
+    } catch (const util::ThrowableDiagnostic &e) {
+        handleError(e);
     }
 
     return ctx;
@@ -379,9 +376,9 @@ __attribute__((unused)) static Context *Bind(Context *ctx)
             ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
         } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::ResolveIdentifiers::NAME);
         ctx->state = ES2PANDA_STATE_BOUND;
-    } catch (Error &e) {
+    } catch (util::ThrowableDiagnostic &e) {
         std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
            << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
@@ -401,9 +398,9 @@ __attribute__((unused)) static Context *Check(Context *ctx)
 
     ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
 
-    auto handleError = [ctx](Error const &e) {
+    auto handleError = [ctx](const util::DiagnosticBase &e) {
         std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
            << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
@@ -422,7 +419,7 @@ __attribute__((unused)) static Context *Check(Context *ctx)
         } else {
             ctx->state = ES2PANDA_STATE_CHECKED;
         }
-    } catch (Error &e) {
+    } catch (const util::ThrowableDiagnostic &e) {
         handleError(e);
     }
     return ctx;
@@ -446,9 +443,9 @@ __attribute__((unused)) static Context *Lower(Context *ctx)
         }
 
         ctx->state = ES2PANDA_STATE_LOWERED;
-    } catch (Error &e) {
+    } catch (util::ThrowableDiagnostic &e) {
         std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
            << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
@@ -490,9 +487,9 @@ __attribute__((unused)) static Context *GenerateAsm(Context *ctx)
         ctx->program = emitter->Finalize(ctx->config->options->IsDumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
 
         ctx->state = ES2PANDA_STATE_ASM_GENERATED;
-    } catch (Error &e) {
+    } catch (util::ThrowableDiagnostic &e) {
         std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
            << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
@@ -518,9 +515,9 @@ __attribute__((unused)) Context *GenerateBin(Context *ctx)
                               [ctx](const std::string &str) { ctx->errorMessage = str; });
 
         ctx->state = ES2PANDA_STATE_BIN_GENERATED;
-    } catch (Error &e) {
+    } catch (util::ThrowableDiagnostic &e) {
         std::stringstream ss;
-        ss << Error::TypeString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
+        ss << util::DiagnosticTypeToString(e.Type()) << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << ","
            << e.Offset() << "]";
         ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;

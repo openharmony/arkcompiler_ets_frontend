@@ -37,7 +37,7 @@ public:
 protected:
     explicit TypeChecker(Checker *checker) : checker_(checker) {}
 
-    void LogTypeError(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &pos)
+    void LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
     {
         checker_->LogTypeError(list, pos);
     }

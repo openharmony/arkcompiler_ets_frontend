@@ -1313,25 +1313,26 @@ void ParserImpl::LogSyntaxError(std::string_view const errorMessage)
     diagnosticEngine_.LogSyntaxError(program_, errorMessage, lexer_->GetToken().Start());
 }
 
-void ParserImpl::LogSyntaxError(util::DiagnosticMessageParams list)
+void ParserImpl::LogSyntaxError(const util::DiagnosticMessageParams &list)
 {
     diagnosticEngine_.LogSyntaxError(program_, list, lexer_->GetToken().Start());
 }
 
-void ParserImpl::LogSyntaxError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos)
+void ParserImpl::LogSyntaxError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
     diagnosticEngine_.LogSyntaxError(program_, list, pos);
 }
 
-void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
-                          const lexer::SourcePosition &pos)
+void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                          const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
 {
     auto loc = pos.ToLocation(program_);
-    diagnosticEngine_.LogDiagnostic(&diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
+    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
                                     loc.line, loc.col);
 }
 
-void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams)
+void ParserImpl::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                          const util::DiagnosticMessageParams &diagnosticParams)
 {
     LogError(diagnostic, std::move(diagnosticParams), lexer_->GetToken().Start());
 }

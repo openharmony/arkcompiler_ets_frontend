@@ -16,6 +16,7 @@
 #include "importPathManager.h"
 #include "es2panda.h"
 #include <libpandabase/os/filesystem.h>
+#include "util/diagnostic.h"
 #include "util/diagnosticEngine.h"
 
 #ifdef USE_UNIX_SYSCALL
@@ -98,8 +99,9 @@ util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &import
     auto resolvedPath = arktsConfig_->ResolvePath(importPath.Mutf8());
     if (!resolvedPath) {
         diagnosticEngine_.LogFatalError(program_,
-                                        {"Can't find prefix for ", util::StringView(importPath.Mutf8()), "' in ",
-                                         util::StringView(arktsConfig_->ConfigPath())},
+                                        util::DiagnosticMessageParams {"Can't find prefix for ",
+                                                                       util::StringView(importPath.Mutf8()), "' in ",
+                                                                       util::StringView(arktsConfig_->ConfigPath())},
                                         srcPos);
         return "";
     }
@@ -113,8 +115,9 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringVi
 {
     DIR *dir = opendir(directoryPath.Mutf8().c_str());
     if (dir == nullptr) {
-        diagnosticEngine_.LogFatalError(program_, {"Cannot open folder: ", util::StringView(directoryPath.Mutf8())},
-                                        srcPos);
+        diagnosticEngine_.LogFatalError(
+            program_, util::DiagnosticMessageParams {"Cannot open folder: ", util::StringView(directoryPath.Mutf8())},
+            srcPos);
         return;
     }
 
@@ -191,7 +194,9 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, const Imp
 
     if (!ark::os::file::File::IsRegularFile(resolvedPath.Mutf8())) {
         diagnosticEngine_.LogFatalError(
-            program_, {"Not an available source path: ", util::StringView(resolvedPath.Mutf8())}, srcPos);
+            program_,
+            util::DiagnosticMessageParams {"Not an available source path: ", util::StringView(resolvedPath.Mutf8())},
+            srcPos);
         return;
     }
 
@@ -305,7 +310,8 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
     if (auto it = dynamicPaths.find(path.Mutf8()); it != dynamicPaths.cend()) {
         return path;
     }
-    diagnosticEngine_.LogFatalError(program_, {"Not supported path: ", util::StringView(path.Mutf8())}, srcPos);
+    diagnosticEngine_.LogFatalError(
+        program_, util::DiagnosticMessageParams {"Not supported path: ", util::StringView(path.Mutf8())}, srcPos);
     return "";
 }
 
@@ -336,8 +342,10 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
     if (!absoluteEtsPath_.empty()) {
         std::string filePath(path.GetAbsolutePath());
         if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
-            diagnosticEngine_.LogFatalError(program_, {"Source file ", util::StringView(filePath), " outside ets-path"},
-                                            srcPos);
+            diagnosticEngine_.LogFatalError(
+                program_,
+                util::DiagnosticMessageParams {"Source file ", util::StringView(filePath), " outside ets-path"},
+                srcPos);
             return "";
         }
         auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
@@ -378,7 +386,8 @@ util::StringView ImportPathManager::FormModuleName(const util::Path &path, const
             return util::UString(res.value(), allocator_).View();
         }
     }
-    diagnosticEngine_.LogFatalError(program_, {"Unresolved module name", util::StringView(filePath)}, srcPos);
+    diagnosticEngine_.LogFatalError(
+        program_, util::DiagnosticMessageParams {"Unresolved module name", util::StringView(filePath)}, srcPos);
     return "";
 }
 

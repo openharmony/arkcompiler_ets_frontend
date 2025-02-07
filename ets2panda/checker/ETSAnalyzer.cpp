@@ -453,9 +453,10 @@ static bool CheckArrayElementType(ETSChecker *checker, T *newArrayInstanceExpr)
             return false;
         }
     } else if (!checker->Relation()->IsSupertypeOf(elementType, checker->GlobalETSUndefinedType())) {
-        checker->LogTypeError({"Cannot use array creation expression with non-constructable element type which is "
-                               "non-assignable from undefined."},
-                              newArrayInstanceExpr->Start());
+        checker->LogTypeError(
+            "Cannot use array creation expression with non-constructable element type which is "
+            "non-assignable from undefined.",
+            newArrayInstanceExpr->Start());
         return false;
     }
     return true;
@@ -754,6 +755,7 @@ static ArenaVector<std::pair<Type *, ir::Expression *>> GetElementTypes(ir::Arra
     return elementTypes;
 }
 
+// CC-OFFNXT(huge_depth[C++]) solid logic
 static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::vector<checker::Type *> targetElementType,
                          bool isPreferredTuple)
 {
@@ -774,21 +776,21 @@ static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
 
             auto *compareType = tupleType->GetTypeAtIndex(idx);
             if (compareType == nullptr) {
-                checker->LogTypeError({"Too many elements in array initializer for tuple with size of ",
-                                       static_cast<uint32_t>(tupleType->GetTupleSize())},
-                                      currentElement->Start());
+                util::DiagnosticMessageParams params {"Too many elements in array initializer for tuple with size of ",
+                                                      static_cast<size_t>(tupleType->GetTupleSize())};
+                checker->LogTypeError(params, currentElement->Start());
                 checkResult = false;
                 continue;
             }
-            // clang-format off
-            if (!AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
-                                   currentElement->Start(), {}, TypeRelationFlag::NO_THROW).IsAssignable()) {
-                checker->LogTypeError({"Array initializer's type is not assignable to tuple type at index: ", idx},
-                                      currentElement->Start());
-                                      checkResult=false;
+            auto ctx = AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
+                                         currentElement->Start(), {}, TypeRelationFlag::NO_THROW);
+            if (!ctx.IsAssignable()) {
+                util::DiagnosticMessageParams params {
+                    "Array initializer's type is not assignable to tuple type at index: ", idx};
+                checker->LogTypeError(params, currentElement->Start());
+                checkResult = false;
                 continue;
             }
-            // clang-format on
 
             elementType = compareType;
         }
@@ -1214,8 +1216,7 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
         bool isSignatureExtensionAccessor = (signature != nullptr) && (signature->Function()->IsExtensionAccessor());
         if (isSignatureExtensionAccessor && !isReturnTypeLambda &&
             !checker->HasStatus(CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK)) {
-            checker->LogTypeError({"Extension accessor can't be used as a method call or function call."},
-                                  expr->Start());
+            checker->LogTypeError("Extension accessor can't be used as a method call or function call.", expr->Start());
             return nullptr;
         }
         // NOTE(xingshunxiang): we can't use extension accessor as a call,
@@ -1260,7 +1261,7 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
     bool etsExtensionFuncHelperType = calleeType->IsETSExtensionFuncHelperType();
     if (!isFunctionalInterface && !calleeType->IsETSFunctionType() && !isConstructorCall &&
         !etsExtensionFuncHelperType && !isUnionTypeWithFunctionalInterface) {
-        checker->LogTypeError({"Type '", calleeType, "' has no call signatures."}, expr->Start());
+        checker->LogError(diagnostic::NO_CALL_SINGATURE, {calleeType}, expr->Start());
         return checker->GlobalTypeError();
     }
 
@@ -1660,7 +1661,7 @@ static bool ValidatePreferredType(ir::ObjectExpression *expr, ETSChecker *checke
 {
     auto preferredType = expr->PreferredType();
     if (preferredType == nullptr) {
-        checker->LogTypeError({"need to specify target type for class composite"}, expr->Start());
+        checker->LogTypeError("need to specify target type for class composite", expr->Start());
         return false;
     }
 
@@ -1761,7 +1762,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
 
     for (ir::Expression *propExpr : expr->Properties()) {
         if (!propExpr->IsProperty()) {
-            checker->LogTypeError({"The object literal properties must be key-value pairs"}, expr->Start());
+            checker->LogTypeError("The object literal properties must be key-value pairs", expr->Start());
             return;
         }
         ir::Expression *key = propExpr->AsProperty()->Key();
@@ -1773,7 +1774,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker
         } else if (key->IsIdentifier()) {
             pname = key->AsIdentifier()->Name();
         } else {
-            checker->LogTypeError({"key in class composite should be either identifier or string literal"},
+            checker->LogTypeError("key in class composite should be either identifier or string literal",
                                   expr->Start());
             return;
         }
@@ -2913,8 +2914,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
     }
 
     const checker::CastingContext ctx(
-        checker->Relation(),
-        std::initializer_list<DiagnosticMessageElement> {"Cannot cast type '", sourceType, "' to '", targetType, "'"},
+        checker->Relation(), {"Cannot cast type '", sourceType, "' to '", targetType, "'"},
         checker::CastingContext::ConstructorData {expr->Expr(), sourceType, targetType, expr->Expr()->Start()});
 
     if (sourceType->IsETSDynamicType() && targetType->IsLambdaObject()) {

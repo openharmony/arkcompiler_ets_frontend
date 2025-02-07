@@ -50,7 +50,8 @@ void ThrowingTypedParser::ThrowSyntaxError(std::string_view errorMessage, const 
     lexer::LineIndex index(GetProgram()->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::SYNTAX, GetProgram()->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col};
+    throw util::ThrowableDiagnostic {util::DiagnosticType::SYNTAX, errorMessage, GetProgram()->SourceFilePath().Utf8(),
+                                     loc.line, loc.col};
 }
 
 }  // namespace ark::es2panda::parser

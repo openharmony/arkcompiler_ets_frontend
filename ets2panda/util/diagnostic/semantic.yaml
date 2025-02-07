@@ -15,3 +15,7 @@ semantic:
 - name: ASYNC_FUNCTION_RETURN_TYPE
   id: 1
   message: Return type of async function must be 'Promise'.
+
+- name: NO_CALL_SINGATURE
+  id: 2
+  message: Type '{}' has no call signatures.

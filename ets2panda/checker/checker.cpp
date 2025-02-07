@@ -36,15 +36,15 @@ void Checker::Initialize(varbinder::VarBinder *varbinder)
     program_ = varbinder_->Program();
 }
 
-void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
-                       const lexer::SourcePosition &pos)
+void Checker::LogError(const diagnostic::DiagnosticKind &diagnostic,
+                       const util::DiagnosticMessageParams &diagnosticParams, const lexer::SourcePosition &pos)
 {
     auto loc = pos.ToLocation(program_);
-    diagnosticEngine_.LogDiagnostic(&diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
+    diagnosticEngine_.LogDiagnostic(diagnostic, std::move(diagnosticParams), program_->SourceFilePath().Utf8(),
                                     loc.line, loc.col);
 }
 
-void Checker::LogTypeError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos)
+void Checker::LogTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
     diagnosticEngine_.LogSemanticError(program_, list, pos);
 }
@@ -59,7 +59,7 @@ void Checker::Warning(const std::string_view message, const lexer::SourcePositio
     diagnosticEngine_.LogWarning(program_, message, pos);
 }
 
-void Checker::ReportWarning(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos)
+void Checker::ReportWarning(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
     diagnosticEngine_.LogWarning(program_, list, pos);
 }
@@ -91,7 +91,7 @@ bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const std::string &e
     return true;
 }
 
-bool Checker::IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<DiagnosticMessageElement> list,
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
@@ -116,7 +116,7 @@ bool Checker::IsTypeAssignableTo(Type *source, Type *target, const std::string &
     return true;
 }
 
-bool Checker::IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<DiagnosticMessageElement> list,
+bool Checker::IsTypeAssignableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
                                  const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
@@ -141,7 +141,7 @@ bool Checker::IsTypeComparableTo(Type *source, Type *target, const std::string &
     return true;
 }
 
-bool Checker::IsTypeComparableTo(Type *source, Type *target, std::initializer_list<DiagnosticMessageElement> list,
+bool Checker::IsTypeComparableTo(Type *source, Type *target, const util::DiagnosticMessageParams &list,
                                  const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
