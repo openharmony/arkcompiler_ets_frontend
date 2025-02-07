@@ -99,8 +99,8 @@ private:
     std::string ExpandLiteral(int64_t bufferIdx, LiteralBuffers &literalBuffers);
     std::string ConvertLiteralToString(std::vector<panda::pandasm::LiteralArray::Literal> &literalBuffer);
     void CollectFuncDefineIns(panda::pandasm::Function *func);
-    void AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::Ins> &ins);
-    void AddTailInsForPatchFuncMain1(std::vector<panda::pandasm::Ins> &ins);
+    void AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::InsPtr> &ins);
+    void AddTailInsForPatchFuncMain1(std::vector<panda::pandasm::InsPtr> &ins);
     void CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFuncMain0,
         panda::pandasm::Function &patchFuncMain1);
     bool IsAnonymousOrSpecialOrDuplicateFunction(const std::string &funcName);
@@ -135,7 +135,7 @@ private:
     ArenaUnorderedMap<std::string, uint32_t> topScopeLexEnvs_;
     ArenaSet<std::string> patchFuncNames_;
     ArenaSet<std::string> newFuncNames_;
-    ArenaVector<panda::pandasm::Ins> funcDefineIns_;
+    ArenaVector<panda::pandasm::Ins *> funcDefineIns_;
     ArenaSet<std::string> modifiedClassNames_;
     ArenaUnorderedMap<std::string, std::vector<std::string>> classMemberFunctions_;
     ArenaUnorderedMap<std::string, std::vector<std::string>> funcDefinedClasses_;

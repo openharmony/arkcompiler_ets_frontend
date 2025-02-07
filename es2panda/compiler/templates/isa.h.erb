@@ -57,11 +57,9 @@ public:
         return 0;
     }
 
-    void Transform(pandasm::Ins *ins) const override
+    pandasm::Ins *Transform() const override
     {
-        ins->opcode = pandasm::Opcode::INVALID;
-        ins->set_label = true;
-        ins->label = id_;
+        return new pandasm::LabelIns(id_);
     }
 
     ICSlot SetIcSlot(IcSizeType currentSlot) override
@@ -236,30 +234,21 @@ public:
         return <%= reg_cnt %>;
     }
 
-    void Transform(pandasm::Ins* ins) const override
+    pandasm::Ins *Transform() const override
     {
-        ins->opcode = pandasm::Opcode::<%= node_kind %>;
-% if op_map['reg'].length != 0
-        ins->regs.reserve(<%= op_map['reg'].length %>);
+% pa_ins_args_list = Array.new
+% ctor_arg_list.each do |arg|
+%   type = arg.split(" ")[0]
+%   name = arg.split(" ")[1]
+%   if type == "util::StringView"
+%     pa_ins_args_list.push("#{name}_.Mutf8()")
+%   elsif type == "Label*"
+%     pa_ins_args_list.push("#{name}_->Id()")
+%   else
+%     pa_ins_args_list.push("#{name}_")
+%   end
 % end
-% if op_map['imm'].length != 0
-        ins->imms.reserve(<%= op_map['imm'].length %>);
-% end
-% if op_map['str'].length + op_map['lbl'].length != 0
-        ins->ids.reserve(<%= op_map['str'].length + op_map['lbl'].length %>);
-% end
-% for reg in op_map['reg']
-        ins->regs.emplace_back(<%= reg %>);
-% end
-% for imm in op_map['imm']
-        ins->imms.emplace_back(<%= imm %>);
-% end
-% for str in op_map['str']
-        ins->ids.emplace_back(<%= str %>.Mutf8());
-% end
-% for lbl in op_map['lbl']
-        ins->ids.emplace_back(<%= lbl %>->Id());
-% end
+        return new pandasm::<%= class_name %>(<%= pa_ins_args_list.join(", ") %>);
     }
 
     ICSlot SetIcSlot(IcSizeType slot) override

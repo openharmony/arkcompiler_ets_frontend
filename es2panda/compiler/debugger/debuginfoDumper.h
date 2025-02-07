@@ -36,7 +36,7 @@ public:
 private:
     template <typename T>
     void WrapArray(const char *name, const std::vector<T> &array, bool comma = true);
-    void WriteIns(const pandasm::Ins &ins);
+    void WriteIns(const pandasm::InsPtr &ins);
     void WriteMetaData(const std::vector<pandasm::AnnotationData> &metaData);
     void WriteProperty(const char *key, const Value &value, bool comma = true);
     void WritePosInfo(const pandasm::debuginfo::Ins &posInfo);

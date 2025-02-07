@@ -34,7 +34,7 @@
 namespace panda::pandasm {
 struct Program;
 struct Function;
-struct Ins;
+class Ins;
 struct Record;
 }  // namespace panda::pandasm
 
