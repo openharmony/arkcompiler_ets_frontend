@@ -1680,11 +1680,11 @@ static void SetTypeforRecordProperties(const ir::ObjectExpression *expr, checker
     auto valueType = typeArguments[1];  //  Record<K, V>  type arguments
 
     for (auto recordProperty : recordProperties) {
-        if (!recordProperty->AsProperty()->Value()->IsObjectExpression()) {
-            continue;
+        auto recordPropertyExpr = recordProperty->AsProperty()->Value();
+        if (recordPropertyExpr->IsObjectExpression()) {
+            auto objectExpr = recordPropertyExpr->AsObjectExpression();
+            objectExpr->SetPreferredType(valueType);
         }
-        auto recordPropertyExpr = recordProperty->AsProperty()->Value()->AsObjectExpression();
-        recordPropertyExpr->SetPreferredType(valueType);
         recordPropertyExpr->Check(checker);
     }
 }
