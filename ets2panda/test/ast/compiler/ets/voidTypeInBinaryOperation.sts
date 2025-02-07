@@ -20,5 +20,6 @@ function main(): void {
   assertTrue(false || check())
 }
 
-/* @@? 20:14 Error TypeError: Bad operand type, the types of the operands must be of possible condition type.  */
+/* @@? 20:3 Error TypeError: No matching call signature for assertTrue(void)   */
 /* @@? 20:23 Error TypeError: Cannot use type 'void' as value.   */
+/* @@? 20:23 Error TypeError: Type 'void' is not compatible with type 'boolean' at index 1   */

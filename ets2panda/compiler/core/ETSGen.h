@@ -124,6 +124,15 @@ public:
     template <bool BEFORE_LOGICAL_NOT = false, bool FALSE_LABEL_EXISTED = true>
     void ResolveConditionalResultIfTrue(const ir::AstNode *node, Label *ifFalse = nullptr);
 
+    template <typename CondCompare, typename NegCondCompare>
+    void BranchConditional(const ir::AstNode *node, Label *endLabel);
+
+    void ConditionalFloat(const ir::AstNode *node);
+
+    void BranchConditionalIfFalse(const ir::AstNode *node, Label *endLabel);
+
+    void BranchConditionalIfTrue(const ir::AstNode *node, Label *endLabel);
+
     void BranchIfFalse(const ir::AstNode *node, Label *ifFalse)
     {
         Sa().Emit<Jeqz>(node, ifFalse);

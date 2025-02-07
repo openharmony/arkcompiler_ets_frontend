@@ -340,9 +340,9 @@ public:
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
     // CC-OFFNXT(G.FUN.01-CPP) solid logic
-    checker::Type *CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
-                                              lexer::SourcePosition pos, checker::Type *leftType,
-                                              checker::Type *rightType, Type *unboxedL, Type *unboxedR);
+    checker::Type *CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::BinaryExpression *expr,
+                                              checker::Type *leftType, checker::Type *rightType, Type *unboxedL,
+                                              Type *unboxedR);
     std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::TokenType operationType,
                                                               lexer::SourcePosition pos, checker::Type *leftType,
                                                               checker::Type *rightType);
@@ -552,7 +552,9 @@ public:
     Type *ApplyUnaryOperatorPromotion(Type *type, bool createConst = true, bool doPromotion = true,
                                       bool isCondExpr = false);
     Type *HandleBooleanLogicalOperators(Type *leftType, Type *rightType, lexer::TokenType tokenType);
-    Type *HandleBooleanLogicalOperatorsExtended(Type *leftType, Type *rightType, ir::BinaryExpression *expr);
+
+    bool HandleLogicalPotentialResult(ir::Expression *left, ir::Expression *right, ir::BinaryExpression *expr,
+                                      checker::Type *leftType);
 
     checker::Type *FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags,
                                            ir::Expression *init);

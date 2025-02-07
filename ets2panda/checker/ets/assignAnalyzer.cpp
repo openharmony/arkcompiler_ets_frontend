@@ -606,7 +606,7 @@ void AssignAnalyzer::AnalyzeVarDef(const ir::VariableDeclaration *varDef)
         NewVar(var);
 
         if (var->Init() != nullptr) {
-            AnalyzeNode(var->Init());
+            AnalyzeExpr(var->Init());
             LetInit(var);
         }
     }
