@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2023-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -28,21 +28,21 @@ case "$ARGUMENT" in
 esac
 done
 
+if [ -x "$(command -v gcovr)" ]; then
+    echo "gcovr found"
+    gcovr --version
+else
+    echo "gcovr not found"
+    exit 1
+fi
+
 python $PANDA_ROOT/tools/es2panda/scripts/test_runner.py \
     --builddir $PANDA_BINARY_ROOT --arkdir $PANDA_ROOT --all
 
 gcov $PANDA_BINARY_ROOT/tools/es2panda/CMakeFiles/es2panda-lib.dir/*/*
 
-if [ -x "$(command -v gcovr)" ]; then
-    echo "gcovr found"
-    gcovr --version
-    gcovr -v -r $PANDA_ROOT/tools/es2panda/ \
-        -e $PANDA_ROOT/tools/es2panda/test \
-        --object-directory=$PANDA_BINARY_ROOT --html-details --html -o report.html
-
-else
-    echo "gcovr not found"
-    exit 1
-fi
+gcovr -v -r $PANDA_ROOT/tools/es2panda/ \
+    -e $PANDA_ROOT/tools/es2panda/test \
+    --object-directory=$PANDA_BINARY_ROOT --html-details --html -o report.html
 
 exit 0
