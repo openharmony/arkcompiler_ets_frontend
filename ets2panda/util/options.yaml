@@ -217,6 +217,7 @@ options:
     - VariableHasScope
     AfterCheckerPhase:
     - NodeHasType
+    - NoPrimitiveTypes
     - IdentifierHasVariable
     - ReferenceTypeAnnotationIsNull
     - ArithmeticOperationValid
@@ -257,6 +258,7 @@ options:
     - NodeHasParent
     # - NodeHasSourceRange
     - NodeHasType
+    - NoPrimitiveTypes
     - ReferenceTypeAnnotationIsNull
     - SequenceExpressionHasLastType
     - VariableHasEnclosingScope

@@ -102,11 +102,11 @@ protected:
 // NOTE(dkofanov) Fix and enable ImportExportAccessValid:
 using InvariantsRegistry =
     InvariantsRegistryImpl<NodeHasParent, NodeHasSourceRange, EveryChildHasValidParent, EveryChildInParentRange,
-                           CheckStructDeclaration, VariableHasScope, NodeHasType, IdentifierHasVariable,
-                           ReferenceTypeAnnotationIsNull, ArithmeticOperationValid, SequenceExpressionHasLastType,
-                           CheckInfiniteLoop, ForLoopCorrectlyInitialized, VariableHasEnclosingScope,
-                           ModifierAccessValid, VariableNameIdentifierNameSame, CheckAbstractMethod,
-                           GetterSetterValidation, CheckScopeDeclaration, CheckConstProperties>;
+                           CheckStructDeclaration, VariableHasScope, NodeHasType, NoPrimitiveTypes,
+                           IdentifierHasVariable, ReferenceTypeAnnotationIsNull, ArithmeticOperationValid,
+                           SequenceExpressionHasLastType, CheckInfiniteLoop, ForLoopCorrectlyInitialized,
+                           VariableHasEnclosingScope, ModifierAccessValid, VariableNameIdentifierNameSame,
+                           CheckAbstractMethod, GetterSetterValidation, CheckScopeDeclaration, CheckConstProperties>;
 
 /*
  * ASTVerifier checks whether various conditions are invariant (across AST transformations).
@@ -163,6 +163,8 @@ public:
                  i <= VerifierInvariants::AFTER_CHECKER_PHASE_LAST; i++) {
                 allowed_[i] = true;
             }
+            // NOTE(dkofanov): This should be called after "NumberLowering" phase:
+            std::get<NoPrimitiveTypes>(invariants_).SetNumberLoweringOccured();
         }
         if (occurredPhaseName == "UnionLowering") {
             std::get<IdentifierHasVariable>(invariants_).SetUnionLoweringOccurred();
