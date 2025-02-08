@@ -15,3 +15,11 @@ syntax:
 - name: MISSING_TYPE_ANNOTATION
   id: 1
   message: Missing type annotation for property{}.
+
+- name: IMPROPER_NESTING_CLASS
+  id: 2
+  message: Unexpected token. A constructor, method, accessor, or property was expected.
+
+- name: IMPROPER_NESTING_INTERFACE
+  id: 3
+  message: Property or signature expected.

@@ -71,6 +71,7 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsThisType.h"
 #include "generated/signatures.h"
+#include "generated/diagnostic.h"
 
 namespace ark::es2panda::parser {
 class FunctionContext;
@@ -437,7 +438,7 @@ ir::AstNode *ETSParser::ParseInnerTypeDeclaration(ir::ModifierFlags memberModifi
                                                   bool isStepToken, bool seenStatic)
 {
     if ((GetContext().Status() & ParserStatus::IN_NAMESPACE) == 0) {
-        LogSyntaxError("Local type declaration (class, struct, interface and enum) support is not yet implemented.");
+        LogError(diagnostic::IMPROPER_NESTING_CLASS);
     }
 
     // remove saved_pos nolint

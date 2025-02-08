@@ -38,7 +38,7 @@ class NestedEnums  {
     }
 }
 
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
-/* @@@ label2 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
-/* @@@ label3 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected.  */
+/* @@@ label1 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
+/* @@@ label2 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
+/* @@@ label3 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */

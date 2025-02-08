@@ -19,5 +19,5 @@ struct A {
     }
 }
 
-/* @@? 17:5 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@? 17:5 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 16:1 Error TypeError: Structs are only used to define UI components, it should be translated at 'plugin after parser' phase. */

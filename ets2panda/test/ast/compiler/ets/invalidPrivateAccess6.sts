@@ -38,6 +38,6 @@ class D {
     }
 }
 
-/* @@@ label Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented.  */
-/* @@@ label1 Error SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. */
+/* @@@ label Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected.  */
+/* @@@ label1 Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected. */
 /* @@? 37:11 Error TypeError: Property c is not visible here. */
