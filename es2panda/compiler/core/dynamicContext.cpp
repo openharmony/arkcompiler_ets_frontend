@@ -77,7 +77,10 @@ LexEnvContext::~LexEnvContext()
     const auto &labelSet = catchTable_->LabelSet();
     const auto *node = envScope_->Scope()->Node();
 
-    pg_->SetLabel(node, labelSet.TryEnd());
+    if (!GetTryEndFlag()) {
+        pg_->SetLabel(node, labelSet.TryEnd());
+    }
+    SetTryEndFlag(false);
     pg_->Branch(node, labelSet.CatchEnd());
 
     pg_->SetLabel(node, labelSet.CatchBegin());
@@ -116,11 +119,22 @@ void LexEnvContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
             }
             iter = iter->Prev();
         }
+        SetTryEndLabel(node);
         pg_->PopLexEnv(node);
         return;
     }
 
+    SetTryEndLabel(node);
     pg_->PopLexEnv(node);
+}
+
+void LexEnvContext::SetTryEndLabel(const ir::AstNode *node)
+{
+    if (!GetTryEndFlag()) {
+        SetTryEndFlag(true);
+        const auto &labelSet = catchTable_->LabelSet();
+        pg_->SetLabel(node, labelSet.TryEnd());
+    }
 }
 
 IteratorContext::IteratorContext(PandaGen *pg, const Iterator &iterator, LabelTarget target)
