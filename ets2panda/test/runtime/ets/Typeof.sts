@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -49,15 +49,15 @@ function main() {
   let x06: float
   let x07: double
   let x08: bigint
-  assert(typeof x00 == "boolean")
-  assert(typeof x01 == "number")
-  assert(typeof x02 == "number")
-  assert(typeof x03 == "number")
-  assert(typeof x04 == "number")
-  assert(typeof x05 == "number")
-  assert(typeof x06 == "number")
-  assert(typeof x07 == "number")
-  assert(typeof x08 == "bigint")
+  assertEQ(typeof x00, "boolean")
+  assertEQ(typeof x01, "number")
+  assertEQ(typeof x02, "number")
+  assertEQ(typeof x03, "number")
+  assertEQ(typeof x04, "number")
+  assertEQ(typeof x05, "number")
+  assertEQ(typeof x06, "number")
+  assertEQ(typeof x07, "number")
+  assertEQ(typeof x08, "bigint")
 
   let x000: Boolean
   let x001: Byte
@@ -68,15 +68,15 @@ function main() {
   let x006: Float
   let x007: Double
   let x008: BigInt
-  assert(typeof x000 == "boolean")
-  assert(typeof x001 == "number")
-  assert(typeof x002 == "number")
-  assert(typeof x003 == "number")
-  assert(typeof x004 == "number")
-  assert(typeof x005 == "number")
-  assert(typeof x006 == "number")
-  assert(typeof x007 == "number")
-  assert(typeof x008 == "bigint")
+  assertEQ(typeof x000, "boolean")
+  assertEQ(typeof x001, "number")
+  assertEQ(typeof x002, "number")
+  assertEQ(typeof x003, "number")
+  assertEQ(typeof x004, "number")
+  assertEQ(typeof x005, "number")
+  assertEQ(typeof x006, "number")
+  assertEQ(typeof x007, "number")
+  assertEQ(typeof x008, "bigint")
 
   let x0 = new Boolean()
   let x1 = new Byte()
@@ -87,15 +87,15 @@ function main() {
   let x6 = new Float()
   let x7 = new Double()
   let x8 = new BigInt()
-  assert(typeof x0 == "boolean")
-  assert(typeof x1 == "number")
-  assert(typeof x2 == "number")
-  assert(typeof x3 == "number")
-  assert(typeof x4 == "number")
-  assert(typeof x5 == "number")
-  assert(typeof x6 == "number")
-  assert(typeof x7 == "number")
-  assert(typeof x8 == "bigint")
+  assertEQ(typeof x0, "boolean")
+  assertEQ(typeof x1, "number")
+  assertEQ(typeof x2, "number")
+  assertEQ(typeof x3, "number")
+  assertEQ(typeof x4, "number")
+  assertEQ(typeof x5, "number")
+  assertEQ(typeof x6, "number")
+  assertEQ(typeof x7, "number")
+  assertEQ(typeof x8, "bigint")
 
   // ---------------
   // ids with literals
@@ -105,11 +105,11 @@ function main() {
   let l2 = undefined
   let l3 = true
   let l4 = false
-  assert(typeof l0 == "string")
-  assert(typeof l1 == "object")
-  assert(typeof l2 == "undefined")
-  assert(typeof l3 == "boolean")
-  assert(typeof l4 == "boolean")
+  assertEQ(typeof l0, "string")
+  assertEQ(typeof l1, "object")
+  assertEQ(typeof l2, "undefined")
+  assertEQ(typeof l3, "boolean")
+  assertEQ(typeof l4, "boolean")
 
   // ---------------
   // ids with objects and enums
@@ -123,60 +123,60 @@ function main() {
   let o6: Object | undefined = test2(1)
   let o7: Object | undefined = test2(0)
   let o8: (a: boolean) => boolean | long[] = test
-  assert(typeof o0 == "string")
-  assert(typeof o1 == "object")
-  assert(typeof o2 == "boolean")
-  assert(typeof o3 == "object")
-  assert(typeof o4 == "object")
-  assert(typeof o5 == "object")
-  assert(typeof o6 == "undefined")
-  assert(typeof o7 == "object")
-  assert(typeof o8 == "function")
+  assertEQ(typeof o0, "string")
+  assertEQ(typeof o1, "object")
+  assertEQ(typeof o2, "boolean")
+  assertEQ(typeof o3, "object")
+  assertEQ(typeof o4, "object")
+  assertEQ(typeof o5, "object")
+  assertEQ(typeof o6, "undefined")
+  assertEQ(typeof o7, "object")
+  assertEQ(typeof o8, "function")
 
   let e0 = Color.Red
   let e1: Color
-  assert(typeof e0 == "number")
-  assert(typeof e1 == "number")
+  assertEQ(typeof e0, "number")
+  assertEQ(typeof e1, "number")
 
   // ===============
   // for expressions
   // ---------------
   // exprs with numbers (objects)
 
-  assert(typeof new Boolean() == "boolean")
-  assert(typeof new Byte() == "number")
-  assert(typeof new Char() == "number")
-  assert(typeof new Short() == "number")
-  assert(typeof new Int() == "number")
-  assert(typeof new Long() == "number")
-  assert(typeof new Float() == "number")
-  assert(typeof new Number() == "number")
-  assert(typeof new BigInt() == "bigint")
+  assertEQ(typeof new Boolean(), "boolean")
+  assertEQ(typeof new Byte(), "number")
+  assertEQ(typeof new Char(), "number")
+  assertEQ(typeof new Short(), "number")
+  assertEQ(typeof new Int(), "number")
+  assertEQ(typeof new Long(), "number")
+  assertEQ(typeof new Float(), "number")
+  assertEQ(typeof new Number(), "number")
+  assertEQ(typeof new BigInt(), "bigint")
 
   // ---------------
   // exprs with literals
-  assert(typeof "123" == "string")
-  assert(typeof null == "object")
-  assert(typeof undefined == "undefined")
-  assert(typeof true == "boolean")
-  assert(typeof false == "boolean")
-  assert(typeof 1n == "bigint")
+  assertEQ(typeof "123", "string")
+  assertEQ(typeof null, "object")
+  assertEQ(typeof undefined, "undefined")
+  assertEQ(typeof true, "boolean")
+  assertEQ(typeof false, "boolean")
+  assertEQ(typeof 1n, "bigint")
 
   // ---------------
   // exprs with objects and enums
-  assert(typeof new String() == "string")
-  assert(typeof [1, 2] == "object")
-  assert(typeof test(true) == "boolean")
-  assert(typeof test(false) == "object")
-  assert(typeof test1(1) == "object")
-  assert(typeof test1(0) == "object")
-  assert(typeof test2(1) == "undefined")
-  assert(typeof test1(0) == "object")
-  assert(typeof ("123" + "124") == "string")
+  assertEQ(typeof new String(), "string")
+  assertEQ(typeof [1, 2], "object")
+  assertEQ(typeof test(true), "boolean")
+  assertEQ(typeof test(false), "object")
+  assertEQ(typeof test1(1), "object")
+  assertEQ(typeof test1(0), "object")
+  assertEQ(typeof test2(1), "undefined")
+  assertEQ(typeof test1(0), "object")
+  assertEQ(typeof ("123" + "124"), "string")
   x004 = 9
   x4 = 6
-  assert(typeof (x4 + x004) == "number")
+  assertEQ(typeof (x4 + x004), "number")
   x8 = 1n
   x08 = new BigInt(10)
-  assert(typeof (x8 + x08) == "bigint")
+  assertEQ(typeof (x8 + x08), "bigint")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,36 +24,36 @@ function main(): void {
 function ClassEquality(): void {
     let a : A = new A();
     let b = a;
-    assert (a === b);
+    assertTrue(a === b)
     let c : A = new A();
-    assert (a !== c);
+    assertTrue(a !== c)
 }
 
 
 function NullEquality(): void {
     let a : A | null = null;
     let b = a;
-    assert (a === b);
+    assertTrue(a === b)
     let c : A | null = null;
-    assert (c === null);
-    assert (null === null);
+    assertTrue(c === null)
+    assertTrue(null === null)
 }
 
 
 function ArrayEquality(): void {
     let a : int[] = [1, 2, 3];
     let b = a;
-    assert (a === b);
+    assertTrue(a === b)
     let c : int[] = [1, 2, 3];
-    assert (a !== c);
+    assertTrue(a !== c)
 }
 
 function NumericEquality(): void {
     let a : Int = 1;
     let b = a;
-    assert (a === b);
+    assertTrue(a === b)
     let c : Int = 1;
-    assert (a !== c);
+    assertTrue(a !== c)
     let d : Double = 1.0;
-    assert (a !== c);
+    assertTrue(a !== c)
 }

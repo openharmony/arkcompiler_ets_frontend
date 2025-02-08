@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,30 +22,30 @@ class MyType {
 }
 
 function main(): void {
-    assert foo1() == 8;
+    assertEQ( foo1(), 8)
 
-    assert foo2() == 30;
-    assert foo2(new MyType(5)) == 25;
+    assertEQ( foo2(), 30)
+    assertEQ( foo2(new MyType(5)), 25)
 
-    assert foo3(new MyType(5)) == 55;
-    assert foo3(new MyType(5), new MyType(10)) == 45;
+    assertEQ( foo3(new MyType(5)), 55)
+    assertEQ( foo3(new MyType(5), new MyType(10) ), 45)
 
-    assert foo4() == 0;
+    assertEQ( foo4(), 0)
 
-    assert foo5() == 0;
-    assert foo5(new MyType(5)) == -1;
+    assertEQ( foo5(), 0)
+    assertEQ( foo5(new MyType(5)), -1)
 
-    assert foo6(new MyType(5)) == 0;
-    assert foo6(new MyType(5), new MyType(10)) == -1;
+    assertEQ( foo6(new MyType(5)), 0)
+    assertEQ( foo6(new MyType(5), new MyType(10)), -1)
 
-    assert foo7() == 0;
-    assert foo8() == 0;
+    assertEQ( foo7(), 0)
+    assertEQ( foo8(), 0)
 
-    assert foo9(new MyType(10)) == 15;
-    assert foo10(new MyType(10)) == 25;
+    assertEQ( foo9(new MyType(10)), 15)
+    assertEQ( foo10(new MyType(10)), 25)
 
-    assert foo11(new MyType(10), new MyType(5)) == 20;
-    assert foo12(new MyType(10), new MyType(5)) == 30;
+    assertEQ( foo11(new MyType(10), new MyType(5)), 20)
+    assertEQ( foo12(new MyType(10), new MyType(5)), 30)
 }
 
 function foo1(a: MyType|null = new MyType(8)): int {
@@ -60,7 +60,7 @@ function foo2(a: MyType = new MyType(10), b: MyType = new MyType(20)): int {
 }
 
 function foo3(a: MyType = new MyType(10), b: MyType = new MyType(20), c: MyType = new MyType(30)): int {
-    assert a.x == 5;
+    assertEQ( a.x, 5)
 
     return a.x + b.x + c.x;
 }
@@ -83,7 +83,7 @@ function foo5(a?: MyType, b?: MyType): int {
 }
 
 function foo6(a?: MyType, b?: MyType, c?: MyType): int {
-    assert a!.x == 5;
+    assertEQ( a!.x, 5)
     if (b == null && c == null) {
         return 0;
     }
@@ -102,7 +102,7 @@ function foo7(a: MyType = new MyType(5), b?: MyType): int {
 }
 
 function foo8(a?: MyType, b: MyType = new MyType(5), c?: MyType): int {
-    assert b.x == 5;
+    assertEQ( b.x, 5)
 
     if (a == null && c == null) {
         return 0;

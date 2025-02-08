@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,10 +40,10 @@ function main() {
     QualifiedNamespace.resetQualifiedState();
 
     // Test access to deeply qualified namespace members
-    assert QualifiedNamespace.LevelOne.LevelTwo.qualifiedFunction() == "Qualified Function": "Qualified function access failed";
-    assert QualifiedNamespace.LevelOne.LevelTwo.qualifiedValue == 100: "Qualified value access failed";
+    assertEQ( QualifiedNamespace.LevelOne.LevelTwo.qualifiedFunction(), "Qualified Function",  "Qualified function access failed")
+    assertEQ( QualifiedNamespace.LevelOne.LevelTwo.qualifiedValue, 100,  "Qualified value access failed")
 
     // Test modification of qualified value
     QualifiedNamespace.LevelOne.LevelTwo.qualifiedValue = QualifiedNamespace.LevelOne.LevelTwo.qualifiedValue + 50;
-    assert QualifiedNamespace.LevelOne.LevelTwo.qualifiedValue == 150: "Qualified value update failed";
+    assertEQ( QualifiedNamespace.LevelOne.LevelTwo.qualifiedValue, 150,  "Qualified value update failed")
 }

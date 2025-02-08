@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +30,7 @@ function conversion3(x: int): long {
 }
 
 function main() : void {
-    assert(conversion1(1,2) as Int == 3);
-    assert(conversion2(5) == (5 as long));
-    assert(conversion3(7) == (7 as long));
+    assertEQ(conversion1(1,2) as Int, 3)
+    assertEQ(conversion2(5), (5 as long))
+    assertEQ(conversion3(7), (7 as long))
 }

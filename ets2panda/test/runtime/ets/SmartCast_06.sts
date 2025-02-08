@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,11 +52,11 @@ function foo(x: int): string
 
 
 function main(): void {
-  assert(foo(0) == "case 0");
-  assert(foo(1) == "case 1");
-  assert(foo(2) == "case 2");
-  assert(foo(3) == "case 3");
-  assert(foo(4) == "case 4");
-  assert(foo(5) == "case 5");
-  assert(foo(7) == "default");
+  assertEQ(foo(0), "case 0")
+  assertEQ(foo(1), "case 1")
+  assertEQ(foo(2), "case 2")
+  assertEQ(foo(3), "case 3")
+  assertEQ(foo(4), "case 4")
+  assertEQ(foo(5), "case 5")
+  assertEQ(foo(7), "default")
 }

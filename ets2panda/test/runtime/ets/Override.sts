@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,19 +35,19 @@ class A implements I {
 
 function main(): void {
   let a = new A();
-  assert a.self().x == 42;
-  assert a.fn() == "";
-  assert a.fn2().length == 1;
-  assert a.fn3()[0] == 0;
-  assert a.fn4()[0][0] == 0;
-  assert a.fn5()[0] == "";
+  assertEQ( a.self().x, 42)
+  assertEQ( a.fn(), "")
+  assertEQ( a.fn2().length, 1)
+  assertEQ( a.fn3()[0], 0)
+  assertEQ( a.fn4()[0][0], 0)
+  assertEQ( a.fn5()[0], "")
 
   // let i: I = a;
-  // assert i.self() instanceof A;
-  // assert (i.fn() as String) == "";
-  // assert (i.fn2() as Object[])[0] == new Object();
-  // assert (i.fn3() as int[])[0] == 0;
-  // assert (i.fn4() as String[])[0] == "";
+  // assertTrue( i.self() instanceof A)
+  // assertEQ( (i.fn() as String), "")
+  // assertEQ( (i.fn2() as Object[])[0], new Object()
+  // assertEQ( (i.fn3() as int[])[0], 0)
+  // assertEQ( (i.fn4() as String[])[0], "")
 }
 
 

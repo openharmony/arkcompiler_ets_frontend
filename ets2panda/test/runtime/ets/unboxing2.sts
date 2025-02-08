@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,22 +34,22 @@ class A {
 }
 
 function main() {
-  assert global_boolean_ == true;
-  assert global_byte_ == 20;
-  assert global_char_ == c'a';
-  assert global_double_ == 2.2222222222;
-  assert global_float_ == 2.22 as float;
-  assert global_int_ == 200000;
-  assert global_long_ == 2147483647;
-  assert global_short_ == 20;
+  assertEQ( global_boolean_, true)
+  assertEQ( global_byte_, 20)
+  assertEQ( global_char_, c'a')
+  assertEQ( global_double_, 2.2222222222)
+  assertEQ( global_float_, 2.22 as float)
+  assertEQ( global_int_, 200000)
+  assertEQ( global_long_, 2147483647)
+  assertEQ( global_short_, 20)
 
   let a = new A();
-  assert a.boolean_ == true;
-  assert a.byte_ == 20;
-  assert a.char_ == c'a';
-  assert a.double_ == 2.2222222222;
-  assert a.float_ == 2.22 as float;
-  assert a.int_ == 200000;
-  assert a.long_ == 2147483647;
-  assert a.short_ == 20;
+  assertEQ( a.boolean_, true)
+  assertEQ( a.byte_, 20)
+  assertEQ( a.char_, c'a')
+  assertEQ( a.double_, 2.2222222222)
+  assertEQ( a.float_, 2.22 as float)
+  assertEQ( a.int_, 200000)
+  assertEQ( a.long_, 2147483647)
+  assertEQ( a.short_, 20)
 }

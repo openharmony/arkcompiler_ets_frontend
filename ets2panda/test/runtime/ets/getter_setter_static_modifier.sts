@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -66,14 +66,14 @@ function main(): void {
     const leg = Creature.legs;
     const brain = Creature.brain;
 
-    assert leg == 0;
-    assert brain == 3;
+    assertEQ( leg, 0)
+    assertEQ( brain, 3)
 
     const jump = Carry.Jump;
     const move = Carry.Move;
 
-    assert jump == 100;
-    assert move == 10;
+    assertEQ( jump, 100)
+    assertEQ( move, 10)
 
     Glass.Size = 150;
     Glass.Transparent = 500;
@@ -81,8 +81,8 @@ function main(): void {
     const size = Glass.Size;
     const transparent = Glass.Transparent;
 
-    assert size == 150;
-    assert Glass.Size == 150;
-    assert transparent == 500;
-    assert Glass.Transparent == 500;
+    assertEQ( size, 150)
+    assertEQ( Glass.Size, 150)
+    assertEQ( transparent, 500)
+    assertEQ( Glass.Transparent, 500)
 }

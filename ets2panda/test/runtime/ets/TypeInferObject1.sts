@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,7 +36,7 @@ class B <U, T, K> {
 }
 
 function func1<U, T, K>(arg: A<T, U>, arg1: K){
-    assert(typeof arg1 == "number");
+    assertEQ(typeof arg1, "number")
     return new A<U, T>(arg.value2, arg.value1);
 }
 
@@ -50,22 +50,22 @@ function func3<U, T>(arg: A<T, U>){
 
 function main(): void {
     let a = new A<int, String>(10, "Test");
-    assert(typeof a == "object");
-    assert(typeof a.value1 == "number");
-    assert(typeof a.value2 == "string");
+    assertEQ(typeof a, "object")
+    assertEQ(typeof a.value1, "number")
+    assertEQ(typeof a.value2, "string")
 
     let funcValue1 = func1(a, 12);
-    assert(typeof funcValue1.value1 == "string");
-    assert(typeof funcValue1.value2 == "number"): `got ${typeof funcValue1.value2}`;
+    assertEQ(typeof funcValue1.value1, "string")
+    assertEQ(typeof funcValue1.value2, "number",  `got ${typeof funcValue1.value2}`)
 
     let b = new B<int, String, int>(10, "Test", 40);
     let funcValue2 = func2(b);
-    assert(typeof funcValue2.value1 == "string");
-    assert(typeof funcValue2.value2 == "number");
-    assert(typeof funcValue2.value3 == "number");
+    assertEQ(typeof funcValue2.value1, "string")
+    assertEQ(typeof funcValue2.value2, "number")
+    assertEQ(typeof funcValue2.value3, "number")
 
     let c = new A<int, String>(10, "Test");
     let funcValue3 = func3(c);
-    assert(typeof funcValue3.value1 == "string");
-    assert(typeof funcValue3.value2 == "number");
+    assertEQ(typeof funcValue3.value1, "string")
+    assertEQ(typeof funcValue3.value2, "number")
 }

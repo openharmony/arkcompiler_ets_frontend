@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,9 +22,9 @@ struct cls {
 
 function main(): void {
     let a : cls = new cls();
-    assert (a.const_member_int == 10)
-    assert (a.member_int == 20)
-    assert (cls.const_static_member_int == 30)
-    assert (cls.static_member_int == 40)
+    assertEQ( (a.const_member_int, 10)
+    assertEQ( (a.member_int, 20)
+    assertEQ( (cls.const_static_member_int, 30)
+    assertEQ( (cls.static_member_int, 40)
     return;
 }

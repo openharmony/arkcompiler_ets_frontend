@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,18 +14,18 @@
  */
 
 interface IBase { foo () {
-    assert(false);
+    assertTrue(false)
 }}
 
 interface I1 extends IBase { foo () {
-    assert(false);
+    assertTrue(false)
 }}
 
 interface I2 extends IBase {}
 
 class C implements I1, I2 {
     foo() {
-        assert(true);
+        assertTrue(true)
     }
 }
 

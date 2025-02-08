@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,15 +29,15 @@ class C extends B {
 
 function foo(c: Int|String|A|null|undefined): void {
   if (c instanceof String)  {
-    assert(c.length == 11);
+    assertEQ(c.length, 11)
   } else if (c instanceof C) {
-    assert(c.bar() == "Class C");
+    assertEQ(c.bar(), "Class C")
   } else if (c instanceof Int) {
-    assert(c * c == 49);
+    assertEQ(c * c, 49)
   } else if (c === undefined) {
-     assert(c == undefined);
+     assertEQ(c, undefined)
   } else {
-     assert(c == null);
+     assertEQ(c, null)
   }
 }
 

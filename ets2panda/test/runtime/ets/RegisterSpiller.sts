@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,16 +15,16 @@
 
 function main(): void {
     let str: String = "hello\nworld\n";
-    assert str.charAt(2) == c'l';
-    assert str.length == 12;
-    assert str.charAt(str.length as int - 1) == c'\n';
+    assertEQ( str.charAt(2), c'l')
+    assertEQ( str.length, 12)
+    assertEQ( str.charAt(str.length as int - 1), c'\n')
 
     let a: String = "abc";
     let b: String = "ace";
     let c: String = "abc";
-    assert !a.equals(b);
-    assert a.equals(c);
-    assert !b.equals(c);
+    assertTrue( !a.equals(b))
+    assertTrue( a.equals(c))
+    assertTrue( !b.equals(c))
 
     let n2: int = 41;
     let n3: long = 42;
@@ -32,13 +32,13 @@ function main(): void {
     let n5: double = 44.44;
     let n6: double = random();
     let n7: double = random() + 42;
-    assert n6 >= 0.0 && n6 <= 1.0;
-    assert n7 >= 42.0 && n7 <= 43.0;
+    assertTrue( n6 >= 0.0 && n6 <= 1.0)
+    assertTrue( n7 >= 42.0 && n7 <= 43.0)
 
     let s1: String = "This ";
     let s2: String = "is ";
     let s3: String = "another ";
     let s4: String = "string";
     let s5: String = "This is another string";
-    assert (s1 + s2 + s3 + s4).equals(s5);
+    assertTrue((s1 + s2 + s3 + s4).equals(s5))
 }

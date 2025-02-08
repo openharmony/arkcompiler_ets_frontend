@@ -26,9 +26,9 @@
  function main(){
     let $$m = new A();
     let b = $$m.$$a$aa$$;
-    assert(b == true);
+    assertEQ(b, true)
     let c = $$m.$$b$bb$$;
-    assert(c == 1);
+    assertEQ(c, 1)
     let d = $$m.$$c$cc$$;
-    assert(d == "apple");
+    assertEQ(d, "apple")
  }

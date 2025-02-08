@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,10 +33,10 @@ function main(){
     let c = new C<string>();
     let d = new D<string>();
  
-    assert(b.foo(5) == a.foo(5));
-    assert(b.foo(6) != a.foo(5));
-    assert(b.foo(5) != a.foo(6));
-    assert(c.foo("x") == d.foo("x"));
-    assert(c.foo("x") != d.foo("y"));
-    assert(c.foo("y") != d.foo("x"));
+    assertEQ(b.foo(5), a.foo(5))
+    assertNE(b.foo(6), a.foo(5))
+    assertNE(b.foo(5), a.foo(6))
+    assertEQ(c.foo("x"), d.foo("x"))
+    assertNE(c.foo("x"), d.foo("y"))
+    assertNE(c.foo("y"), d.foo("x"))
 }

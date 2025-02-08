@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,9 +22,9 @@ enum Color {
 }
 
 function main() : void{
-    assert Color.Red == 0
-    assert Color.Blue == 1
-    assert Color.Purple == 13
-    assert Color.Green == 14
-    assert Color.Yellow == 15
+    assertEQ( Color.Red, 0)
+    assertEQ( Color.Blue, 1)
+    assertEQ( Color.Purple, 13)
+    assertEQ( Color.Green, 14)
+    assertEQ( Color.Yellow, 15)
 }

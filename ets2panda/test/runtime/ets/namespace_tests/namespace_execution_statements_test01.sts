@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -61,25 +61,25 @@ function main() {
     ComprehensiveNamespace.resetState();
 
     // 1. Test variable assignment
-    assert ComprehensiveNamespace.counter == 5: "Counter should be 5 after assignment";
+    assertEQ( ComprehensiveNamespace.counter, 5,  "Counter should be 5 after assignment")
 
     // 2. Test assignment expression
-    assert ComprehensiveNamespace.message == "Initial message": "Message should be the initial value";
+    assertEQ( ComprehensiveNamespace.message, "Initial message",  "Message should be the initial value")
 
     // 3. Test function call
     ComprehensiveNamespace.incrementCounter();
-    assert ComprehensiveNamespace.counter == 6: "Counter should be 6 after increment";
+    assertEQ( ComprehensiveNamespace.counter, 6,  "Counter should be 6 after increment")
 
     ComprehensiveNamespace.resetMessage();
-    assert ComprehensiveNamespace.message == "Message reset inside namespace": "Message should be reset after function call";
+    assertEQ( ComprehensiveNamespace.message, "Message reset inside namespace",  "Message should be reset after function call")
 
     // 4. Test conditional statement
     ComprehensiveNamespace.checkCounter();
-    assert ComprehensiveNamespace.message == "Counter is greater than 5": "Condition failed for counter > 5";
+    assertEQ( ComprehensiveNamespace.message, "Counter is greater than 5",  "Condition failed for counter > 5")
 
     // 5. Test loop statement
     let loopResult = ComprehensiveNamespace.loopTest();
-    assert loopResult == 15: "Loop test failed, sum should be 15";
+    assertEQ( loopResult, 15,  "Loop test failed, sum should be 15")
 }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,21 +26,21 @@ function main(): int {
 function classEquality(): void {
   let a = new A;
   let b = a;
-  assert (a == b);
+  assertEQ(a, b)
   b = new A;
-  assert (a != b);
+  assertEQ(a, b)
 }
 
 function arrayEquality(): void {
   let a : int[] = null;
   let b = a;
-  assert (a == b);
+  assertEQ(a, b)
 }
 
 function functiontypeEquality(): void {
   let a : (x : double, y : double) => double;
   let b = a;
-  assert (a == b);
+  assertEQ(a, b)
 }
 
 function nullEquality(): void {
@@ -48,61 +48,61 @@ function nullEquality(): void {
   let hit : int = 0;
 
   if (a == null) {
-    assert(false);
+    assertTrue(false)
   } else {
     hit = 1;
   }
-  assert (hit == 1);
+  assertEQ(hit, 1)
 
   if (a != null) {
     hit = 2;
   } else {
-    assert(false);
+    assertTrue(false)
   }
-  assert (hit == 2);
+  assertEQ(hit, 2)
 
   if (null == a) {
-    assert(false);
+    assertTrue(false)
   } else {
     hit = 3;
   }
-  assert (hit == 3);
+  assertEQ(hit, 3)
 
   if (null != a) {
     hit = 4;
   } else {
-    assert(false);
+    assertTrue(false)
   }
-  assert (hit == 4);
+  assertEQ(hit, 4)
 
 
   a = null;
 
   if (a != null) {
-    assert(false);
+    assertTrue(false)
   } else {
     hit = 1;
   }
-  assert (hit == 1);
+  assertEQ(hit, 1)
 
   if (a == null) {
     hit = 2;
   } else {
-    assert(false);
+    assertTrue(false)
   }
-  assert (hit == 2);
+  assertEQ(hit, 2)
 
   if (null != a) {
-    assert(false);
+    assertTrue(false)
   } else {
     hit = 3;
   }
-  assert (hit == 3);
+  assertEQ(hit, 3)
 
   if (null == a) {
     hit = 4;
   } else {
-    assert(false);
+    assertTrue(false)
   }
-  assert (hit == 4);
+  assertEQ(hit, 4)
 }

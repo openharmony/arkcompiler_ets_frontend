@@ -19,9 +19,9 @@ function main(): void {
       return x--;
     };
     let r = g();
-    assert(x == 54);
+    assertEQ(x, 54)
     return r;
   }
 
-  assert(f(55) == 55);
+  assertEQ(f(55), 55)
 }

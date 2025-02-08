@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,31 +17,31 @@
 function main(): void {
 
     enum Color { Red, Green, Blue = 0}
-    assert(Color.Red ? false : true);
-    assert(Color.Green ? true : false);
-    assert(!Color.Green ? false : true);
-    assert(Color.Blue ? false : true);
+    assertTrue(Color.Red ? false : true)
+    assertTrue(Color.Green ? true : false)
+    assertTrue(!Color.Green ? false : true)
+    assertTrue(Color.Blue ? false : true)
 
-    while (Color.Red) { assert(false); }
+    while (Color.Red) { assertTrue(false)}
     while (Color.Green) { break; }
-    while (Color.Blue) { assert(false); }
+    while (Color.Blue) { assertTrue(false)}
 
     let i = 0;
-    do {i++; if (i==2) break; } while (Color.Red); assert(i==1);
+    do {i++; if (i==2) break; } while (Color.Red); assertEQ(i, 1)
     i = 0;
-    do {i++; if (i==2) break; } while (Color.Green); assert(i==2);
+    do {i++; if (i==2) break; } while (Color.Green); assertEQ(i, 2)
     i = 0;
-    do {i++; if (i==2) break; } while (Color.Blue); assert(i==1);
+    do {i++; if (i==2) break; } while (Color.Blue); assertEQ(i, 1)
 
     let stop = false;
-    for (let i = 0; Color.Red; ++i) { stop = true; break; } assert (stop == false);
+    for (let i = 0; Color.Red; ++i) { stop = true; break; } assertEQ(stop, false)
     stop = false;
-    for (let i = 0; Color.Green; ++i) { stop = true; break; } assert (stop == true);
+    for (let i = 0; Color.Green; ++i) { stop = true; break; } assertEQ(stop, true)
     stop = false;
-    for (let i = 0; Color.Blue; ++i) { stop = true; break; } assert (stop == false);
+    for (let i = 0; Color.Blue; ++i) { stop = true; break; } assertEQ(stop, false)
 
-    if (Color.Red) assert(false);
-    if (Color.Green) assert(true);
-    if (Color.Blue) assert(false);
+    if (Color.Red) assertTrue(false)
+    if (Color.Green) assertTrue(true)
+    if (Color.Blue) assertTrue(false)
 
 }

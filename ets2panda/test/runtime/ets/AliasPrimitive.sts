@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,12 +18,12 @@ type AliasAlias<T> = AliasPrimitive<T>;
 
 function fn(p: double)
 {
-    assert(p == 42);
+    assertEQ(p, 42)
 }
 
 function fn(p: Double)
 {
-    assert(false);
+    assertTrue(false)
 }
 
 function main() {

@@ -29,9 +29,9 @@ function foo2(x: boolean): (a: int) => int {
 }
 
 function main(): void {
-    assert(foo(false)() == 2);
-    assert(foo(true)() == 1);
+    assertEQ(foo(false)(), 2)
+    assertEQ(foo(true)(), 1)
     foo1();
-    assert(foo2(false)(0) == 2);
-    assert(foo2(true)(0) == 1);
+    assertEQ(foo2(false)(0), 2)
+    assertEQ(foo2(true)(0), 1)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,21 +29,21 @@ function extension(this: Fruit): int {
 function asFuncCall() {
     let fruit = new Fruit();
     let res1: int = fruit.price;
-    assert res1 == 1 : "expected: " + 1 + " actual: " + res1;
+    assertEQ( res1, 1 )
     let res2: int = extension(fruit);
-    assert res2 == 25 : "expected: " + 25 + " actual: " + res2;
+    assertEQ( res2, 25 )
     let res3: int = fruit.price;
-    assert res3 == 25 : "expected: " + 25 + " actual: " + res3;
+    assertEQ( res3, 25 )
 }
 
 function asMethodCall() {
     let fruit = new Fruit();
     let res1: int = fruit.price;
-    assert res1 == 1 : "expected: " + 1 + " actual: " + res1;
+    assertEQ( res1, 1 )
     let res2: int = fruit.extension();
-    assert res2 == 25 : "expected: " + 25 + " actual: " + res2;
+    assertEQ( res2, 25 )
     let res3: int = fruit.price;
-    assert res3 == 25 : "expected: " + 25 + " actual: " + res3;
+    assertEQ( res3, 25 )
 }
 
 function main() {

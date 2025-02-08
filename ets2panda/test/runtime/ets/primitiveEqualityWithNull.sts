@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,15 +14,15 @@
  */
 
 function main(){
-    assert(!((1 as byte) == null))
-    assert(!(null == (1 as short)))
-    assert(!(1 == null))
-    assert(!(null == (1 as long)))
-    assert(!(1.2f == null))
-    assert(!(null == 1.2))
-    assert(!(c'a'== null))
-    assert(!(null == true))
-    assert(!(false == null))
-    assert(null == null)
-    assert(null == undefined)
+    assertTrue(!((1 as byte) == null))
+    assertTrue(!(null == (1 as short)))
+    assertTrue(!(1 == null))
+    assertTrue(!(null == (1 as long)))
+    assertTrue(!(1.2f == null))
+    assertTrue(!(null == 1.2))
+    assertTrue(!(c'a'== null))
+    assertTrue(!(null == true))
+    assertTrue(!(false == null))
+    assertEQ(null, null)
+    assertEQ(null, undefined)
 }

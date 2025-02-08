@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,35 +16,35 @@
 function main():void{
     let boo = new bar()
 
-    assert boo.foo1() == 10;
-    assert boo.foo2() == "a";
-    assert boo.foo3() == true;
+    assertEQ( boo.foo1(), 10)
+    assertEQ( boo.foo2(), "a")
+    assertEQ( boo.foo3(), true)
 
-    assert boo.foo4() == 30;
-    assert boo.foo4(new Int(5)) == 25;
+    assertEQ( boo.foo4(), 30)
+    assertEQ( boo.foo4(new Int(5)), 25)
 
-    assert boo.foo5(new Int(5)) == 55;
-    assert boo.foo5(new Int(5),new Int(10)) == 45;
+    assertEQ( boo.foo5(new Int(5)), 55)
+    assertEQ( boo.foo5(new Int(5),new Int(10)), 45)
 
 
-    assert boo.foo6() == undefined;
-    assert boo.foo7() == undefined;
-    assert boo.foo8() == undefined;
+    assertEQ( boo.foo6(), undefined)
+    assertEQ( boo.foo7(), undefined)
+    assertEQ( boo.foo8(), undefined)
 
-    assert boo.foo9() == 0;
-    assert boo.foo9(new Int(5)) == -1;
+    assertEQ( boo.foo9(), 0)
+    assertEQ( boo.foo9(new Int(5)), -1)
 
-    assert boo.foo10(new Int(5)) == 0;
-    assert boo.foo10(new Int(5),new Int(10)) == -1;
+    assertEQ( boo.foo10(new Int(5)), 0)
+    assertEQ( boo.foo10(new Int(5),new Int(10)), -1)
 
-    assert boo.foo11() == 0;
-    assert boo.foo12() == 0;
+    assertEQ( boo.foo11(), 0)
+    assertEQ( boo.foo12(), 0)
 
-    assert boo.foo13(new Int(10)) == 15;
-    assert boo.foo14(new Int(10)) == 25;
+    assertEQ( boo.foo13(new Int(10)), 15)
+    assertEQ( boo.foo14(new Int(10)), 25)
 
-    assert boo.foo15(new Int(10),new Int(5)) == 20;
-    assert boo.foo16(new Int(10),new Int(5)) == 30;
+    assertEQ( boo.foo15(new Int(10),new Int(5)), 20)
+    assertEQ( boo.foo16(new Int(10),new Int(5)), 30)
 }
 
 class bar {
@@ -65,7 +65,7 @@ class bar {
     }
 
     foo5(a : Int = 10, b : Int = 20, c : Int = 30) : Int {
-        assert a == 5;
+        assertEQ( a, 5)
 
         return a + b + c;
     }
@@ -93,7 +93,7 @@ class bar {
     }
 
     foo10(a? : Int, b? : Int, c? : Int) : Int {
-        assert a! == 5;
+        assertEQ( a!, 5)
         if(b == undefined && c == undefined){
             return 0;
         }
@@ -112,7 +112,7 @@ class bar {
     }
 
     foo12(a? : Int, b : Int = 5, c? : Int) : Int {
-        assert b == 5;
+        assertEQ( b, 5)
 
         if(a == undefined && c == undefined){
             return 0;

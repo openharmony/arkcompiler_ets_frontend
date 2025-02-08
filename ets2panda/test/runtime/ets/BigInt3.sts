@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,23 +14,23 @@
  */
 
 function test_module(): void {
-    assert new BigInt(10).operatorModule(new BigInt(3)) == (1n);
-    assert new BigInt(10).operatorModule(new BigInt(-3)) == (1n);
-    assert new BigInt(-10).operatorModule(new BigInt(3)) == (-1n);
-    assert new BigInt(-10).operatorModule(new BigInt(-3)) == (-1n);
-    assert new BigInt(100).operatorModule(new BigInt(50)) == (0n);
-    assert new BigInt(100).operatorModule(new BigInt(-50)) == (0n);
-    assert new BigInt(-100).operatorModule(new BigInt(50)) == (0n);
-    assert new BigInt(-100).operatorModule(new BigInt(-50)) == (0n);
-    assert new BigInt(3124378143267041203423n).operatorModule(new BigInt(43621978)) == (18802883n);
-    assert new BigInt(-3124378143267041203423n).operatorModule(new BigInt(43621978)) == (-18802883n);
-    assert new BigInt(3124378143267041203423n).operatorModule(new BigInt(-43621978)) == (18802883n);
-    assert new BigInt(-3124378143267041203423n).operatorModule(new BigInt(-43621978)) == (-18802883n);
-    assert new BigInt(100).operatorModule(new BigInt(250)) == (100n);
-    assert new BigInt(-100).operatorModule(new BigInt(250)) == (-100n);
-    assert new BigInt(100).operatorModule(new BigInt(-250)) == (100n);
-    assert new BigInt(-100).operatorModule(new BigInt(-250)) == (-100n);
-    assert new BigInt(0).operatorModule(new BigInt(8)) == (0n);
+    assertEQ( new BigInt(10).operatorModule(new BigInt(3)), (1n))
+    assertEQ( new BigInt(10).operatorModule(new BigInt(-3)), (1n))
+    assertEQ( new BigInt(-10).operatorModule(new BigInt(3)), (-1n))
+    assertEQ( new BigInt(-10).operatorModule(new BigInt(-3)), (-1n))
+    assertEQ( new BigInt(100).operatorModule(new BigInt(50)), (0n))
+    assertEQ( new BigInt(100).operatorModule(new BigInt(-50)), (0n))
+    assertEQ( new BigInt(-100).operatorModule(new BigInt(50)), (0n))
+    assertEQ( new BigInt(-100).operatorModule(new BigInt(-50)), (0n))
+    assertEQ( new BigInt(3124378143267041203423n).operatorModule(new BigInt(43621978)), (18802883n))
+    assertEQ( new BigInt(-3124378143267041203423n).operatorModule(new BigInt(43621978)), (-18802883n))
+    assertEQ( new BigInt(3124378143267041203423n).operatorModule(new BigInt(-43621978)), (18802883n))
+    assertEQ( new BigInt(-3124378143267041203423n).operatorModule(new BigInt(-43621978)), (-18802883n))
+    assertEQ( new BigInt(100).operatorModule(new BigInt(250)), (100n))
+    assertEQ( new BigInt(-100).operatorModule(new BigInt(250)), (-100n))
+    assertEQ( new BigInt(100).operatorModule(new BigInt(-250)), (100n))
+    assertEQ( new BigInt(-100).operatorModule(new BigInt(-250)), (-100n))
+    assertEQ( new BigInt(0).operatorModule(new BigInt(8)), (0n))
 }
 
 function main() : void {

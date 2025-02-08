@@ -29,5 +29,5 @@ class B extends A {
 
 function main() {
     new B().foo<B>(new B())
-    assert(res == 2)
+    assertEQ(res, 2)
 }

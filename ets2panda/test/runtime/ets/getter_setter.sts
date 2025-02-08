@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,59 +38,59 @@ function main(): void {
     let obj: A = new A();
 
     let h = obj.field;
-    assert h == 30;
+    assertEQ( h, 30)
     let z = obj.field + obj.field;
-    assert z == 60;
+    assertEQ( z, 60)
     let u = obj.field + 10;
-    assert u == 40;
+    assertEQ( u, 40)
     let i = 10 + obj.field;
-    assert i == 40;
+    assertEQ( i, 40)
 
     obj.field = 10;
     let k = obj.field;
-    assert k == 10;
+    assertEQ( k, 10)
 
     obj.field = obj.field;
     k = obj.field;
-    assert k == 10;
+    assertEQ( k, 10)
 
     obj.field = obj.field + obj.field;
     k = obj.field;
-    assert obj.field == 20;
+    assertEQ( obj.field, 20)
 
     obj.field = obj.field + 10;
     k = obj.field;
-    assert k == 30;
+    assertEQ( k, 30)
 
     obj.field = 10 + obj.field;
     k = obj.field;
-    assert k == 40;
+    assertEQ( k, 40)
 
     obj.field = 10 * obj.field;
     k = obj.field;
-    assert k == 400;
+    assertEQ( k, 400)
 
     obj.field = obj.field / 2;
     k = obj.field;
-    assert k == 200;
+    assertEQ( k, 200)
 
     obj.field = 1;
     obj.field = obj.field & 0;
     k = obj.field;
-    assert k == 0;
+    assertEQ( k, 0)
 
     obj.bfield = true;
     obj.bfield = obj.bfield & false;
     let boolk = obj.bfield;
-    assert boolk == false;
+    assertEQ( boolk, false)
 
     obj.bfield = true;
     obj.bfield = obj.bfield | false;
     boolk = obj.bfield;
-    assert boolk == true;
+    assertEQ( boolk, true)
 
     obj.bfield = true;
     obj.bfield = obj.bfield | obj.bfield;
     boolk = obj.bfield;
-    assert boolk == true;
+    assertEQ( boolk, true)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,20 +17,20 @@ enum Color { Red, Green = 10, Blue }
 enum Commands { Open = "fopen",  Close = "fclose" }
 
 function foo(c: Color, d: Commands): Color {
-    assert (c == Color.Green);
-    assert (d == Commands.Close);
+    assertEQ(c, Color.Green)
+    assertEQ(d, Commands.Close)
     return c;
 }
 
 function main() {
     let lambda = (c: Color, d: Commands) => { 
-        assert (c == Color.Green);
-        assert (d == Commands.Close);
+        assertEQ(c, Color.Green)
+        assertEQ(d, Commands.Close)
         return d;
     };
 
     let green = Color.Green;
     let close = Commands.Close;
-    assert (foo(green, close) == Color.Green);
-    assert (lambda(green, close) == Commands.Close);
+    assertEQ(foo(green, close), Color.Green)
+    assertEQ(lambda(green, close), Commands.Close)
 }

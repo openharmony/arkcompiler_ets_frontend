@@ -30,64 +30,64 @@ function main(): void {
 
     // left side
     objectos.field += 10;
-    assert objectos.field == 40;
+    assertEQ( objectos.field, 40)
 
     objectos.field -= 200;
-    assert objectos.field == -160;
+    assertEQ( objectos.field, -160)
 
     objectos.field += 260;
     objectos.field *= 10;
-    assert objectos.field == 1000;
+    assertEQ( objectos.field, 1000)
 
     objectos.field /= 100;
-    assert objectos.field == 10;
+    assertEQ( objectos.field, 10)
 
     objectos.field = 16;
     objectos.field >>= 2
-    assert objectos.field == 4;
+    assertEQ( objectos.field, 4)
 
     objectos.field = 16;
     objectos.field >>>= 1
-    assert objectos.field == 8;
+    assertEQ( objectos.field, 8)
 
     objectos.field = 8;
     objectos.field <<= 1
-    assert objectos.field == 16;
+    assertEQ( objectos.field, 16)
 
     objectos.field = 5;
     objectos.field %= 2
-    assert objectos.field == 1;
+    assertEQ( objectos.field, 1)
 
     objectos.field = 15;
     objectos.field &= 7
-    assert objectos.field == 7;
+    assertEQ( objectos.field, 7)
 
     objectos.field = 15;
     objectos.field |= 7
-    assert objectos.field == 15;
+    assertEQ( objectos.field, 15)
 
     objectos.field = 15;
     objectos.field ^= 7
-    assert objectos.field == 8;
+    assertEQ( objectos.field, 8)
 
     // left and right side
 
     objectos.field = 100;
     objectos.field += objectos.field;
-    assert objectos.field == 200;
+    assertEQ( objectos.field, 200)
 
     objectos.field -= objectos.field;
-    assert objectos.field == 0;
+    assertEQ( objectos.field, 0)
 
     objectos.field += 100;
     objectos.field *= objectos.field;
-    assert objectos.field == 10000;
+    assertEQ( objectos.field, 10000)
 
     objectos.field /= objectos.field;
-    assert objectos.field == 1;
+    assertEQ( objectos.field, 1)
 
     objectos.field |= objectos.field
-    assert objectos.field == 1;
+    assertEQ( objectos.field, 1)
 
     // right side
 
@@ -95,42 +95,42 @@ function main(): void {
     objectos.field = 2;
 
     value += objectos.field;
-    assert value == 102;
+    assertEQ( value, 102)
 
     value -= objectos.field;
-    assert value == 100;
+    assertEQ( value, 100)
 
     value *= objectos.field;
-    assert value == 200;
+    assertEQ( value, 200)
 
     value /= objectos.field;
-    assert value == 100;
+    assertEQ( value, 100)
 
     value = 16;
     value >>= objectos.field
-    assert value == 4;
+    assertEQ( value, 4)
 
     value = 16;
     value >>>= objectos.field
-    assert value == 4;
+    assertEQ( value, 4)
 
     value = 8;
     value <<= objectos.field
-    assert value == 32;
+    assertEQ( value, 32)
 
     value = 5;
     value %= objectos.field
-    assert value == 1;
+    assertEQ( value, 1)
 
     value = 15;
     value &= objectos.field
-    assert value == 2;
+    assertEQ( value, 2)
 
     value = 15;
     value |= objectos.field
-    assert value == 15;
+    assertEQ( value, 15)
 
     value = 15;
     value ^= objectos.field
-    assert value == 13;
+    assertEQ( value, 13)
 }

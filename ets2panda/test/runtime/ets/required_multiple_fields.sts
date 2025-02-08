@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,12 +27,12 @@ interface I2{
 
 function main() {
     let x: Required<I> = {i: 1.9, j :"some str", k:10};
-    assert(x.i == 1.9)
-    assert(x.j == "some str")
-    assert(x.k == 10)
+    assertEQ(x.i, 1.9)
+    assertEQ(x.j, "some str")
+    assertEQ(x.k, 10)
 
     let x2: Required<I2> = {i: 1.9, j :"some str", k:10};
-    assert(x2.i == 1.9)
-    assert(x2.j == "some str")
-    assert(x2.k  == 10)
+    assertEQ(x2.i, 1.9)
+    assertEQ(x2.j, "some str")
+    assertEQ(x2.k , 10)
 }

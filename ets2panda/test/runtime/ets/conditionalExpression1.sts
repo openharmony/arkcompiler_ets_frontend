@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,13 +20,13 @@ function main(): void {
     let d : int = 10000;
 
     let x : int = (a == b ? 2 : 4)
-    assert x == 2;
+    assertEQ( x, 2)
 
     let y : int = (c == d ? 8 : 16)
-    assert y == 16;
+    assertEQ( y, 16)
 
-    assert(foo(true) == "true");
-    assert(foo(false) == "false");
+    assertEQ(foo(true), "true")
+    assertEQ(foo(false), "false")
 }
 
 function foo(b: boolean): String {

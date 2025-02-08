@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,16 +32,16 @@ function asFuncCall() {
     let fruit = new Fruit();
     let res: int = name(fruit);
     let res2: int = name2(fruit);
-    assert res == 6 : "expected: " + 6 + " actual: " + res;
-    assert res2 == 6 : "expected: " + 6 + " actual: " + res2;
+    assertEQ( res, 6 )
+    assertEQ( res2, 6 )
 }
 
 function asMethodCall() {
     let fruit = new Fruit();
     let res: int = fruit.name();
     let res2: int = fruit.name2();
-    assert res == 6 : "expected: " + 6 + " actual: " + res;
-    assert res2 == 6 : "expected: " + 6 + " actual: " + res2;
+    assertEQ( res, 6 )
+    assertEQ( res2, 6 )
 }
 
 function main() {

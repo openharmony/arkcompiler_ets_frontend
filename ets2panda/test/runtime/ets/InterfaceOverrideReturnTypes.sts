@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,9 +50,9 @@ class D implements B {
 function main() {
     let c = new C();
     c.foo();
-    assert c.getValue() == "foo(): A"
+    assertEQ( c.getValue(), "foo(): A")
 
     let d = new D();
     d.foo();
-    assert d.getValue() == "foo(): B"
+    assertEQ( d.getValue(), "foo(): B")
 }

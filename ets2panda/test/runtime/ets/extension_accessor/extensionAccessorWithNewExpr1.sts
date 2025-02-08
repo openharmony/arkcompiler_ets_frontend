@@ -26,70 +26,70 @@ set bfield(this: A, b: boolean) { this.bfield_ = b; }
 function main(): void {
     A.field_ = 30;
     A.bfield_ = true;
-    assert (new A().field == 30);
+    assertEQ(new A().field, 30)
     new A().field = 29;
-    assert (new A().field == 29);
+    assertEQ(new A().field, 29)
     new A().field = 15 + 15;
 
     let z = new A().field + new A().field;
-    assert z == 60;
+    assertEQ( z, 60)
     z = new A().field + new A().field + new A().field;
-    assert z == 90
+    assertEQ( z, 90)
 
     let u = new A().field + 10;
-    assert u == 40;
+    assertEQ( u, 40)
     let i = 10 + new A().field;
-    assert i == 40;
+    assertEQ( i, 40)
     u = 10 + new A().field + new A().field + 10;
     new A().field =  10 + new A().field + new A().field + 10;
-    assert u == 80
-    assert new A().field == 80;
+    assertEQ( u, 80)
+    assertEQ( new A().field, 80)
 
     new A().field = 10;
     let k = new A().field;
-    assert k == 10;
+    assertEQ( k, 10)
 
     new A().field = new A().field;
     k = new A().field;
-    assert k == 10;
+    assertEQ( k, 10)
 
     new A().field = new A().field + new A().field;
     k = new A().field;
-    assert new A().field == 20;
+    assertEQ( new A().field, 20)
 
     new A().field = new A().field + 10;
     k = new A().field;
-    assert k == 30;
+    assertEQ( k, 30)
 
     new A().field = 10 + new A().field;
     k = new A().field;
-    assert k == 40;
+    assertEQ( k, 40)
 
     new A().field = 10 * new A().field;
     k = new A().field;
-    assert k == 400;
+    assertEQ( k, 400)
 
     new A().field = new A().field / 2;
     k = new A().field;
-    assert k == 200;
+    assertEQ( k, 200)
 
     new A().field = 1;
     new A().field = new A().field & 0;
     k = new A().field;
-    assert k == 0;
+    assertEQ( k, 0)
 
     new A().bfield = true;
     new A().bfield = new A().bfield & false;
     let boolk = new A().bfield;
-    assert boolk == false;
+    assertEQ( boolk, false)
 
     new A().bfield = true;
     new A().bfield = new A().bfield | false;
     boolk = new A().bfield;
-    assert boolk == true;
+    assertEQ( boolk, true)
 
     new A().bfield = true;
     new A().bfield = new A().bfield | new A().bfield;
     boolk = new A().bfield;
-    assert boolk == true;
+    assertEQ( boolk, true)
 }

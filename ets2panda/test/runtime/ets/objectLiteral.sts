@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,10 +33,10 @@ function returnC(): C {
 
 function test(c: int, f: int, x: int, s: String, ivv: int) {} // should not prevent calling the next fun
 function test(c: C, f: int, x: int, s: String, ivv: int) {
-    assert c.f == f
-    assert c.x == x
-    assert c.s == s
-    assert c.iv.v == ivv
+    assertEQ( c.f, f)
+    assertEQ( c.x, x)
+    assertEQ( c.s, s)
+    assertEQ( c.iv.v, ivv)
 }
 
 function main(): int {

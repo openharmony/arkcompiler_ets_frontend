@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,24 +18,24 @@ function main():void{
     while(([false,true])[x1]){
         break;
     }
-    assert(([false,true])[x1])
+    assertTrue(([false,true])[x1])
 
     let x2:Int = 1;
     let i = 4;
     while(([false,true])[x2] && i > 0){
         --i;
     }
-    assert(([false,true])[x2])
+    assertTrue(([false,true])[x2])
 
     let x3 = [false,true]
     while(x3[1]){
         break;
     }
-    assert(x3[1])
+    assertTrue(x3[1])
 
     let x4 = [true,false]
     while(!x4[1]){
         break;
     }
-    assert(!x4[1])
+    assertTrue(!x4[1])
 }

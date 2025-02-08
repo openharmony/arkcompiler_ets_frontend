@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,10 +34,10 @@ function main() {
     BasicNamespace.counter = 0;
 
     // Test access to namespace members
-    assert BasicNamespace.greet() == "Hello, BasicNamespace!": "Namespace function failed";
-    assert BasicNamespace.counter == 0: "Initial counter value is incorrect";
+    assertEQ( BasicNamespace.greet(), "Hello, BasicNamespace!",  "Namespace function failed")
+    assertEQ( BasicNamespace.counter, 0,  "Initial counter value is incorrect")
 
     // Test function usage and variable updates
     BasicNamespace.incrementCounter();
-    assert BasicNamespace.counter == 1: "Counter increment failed";
+    assertEQ( BasicNamespace.counter, 1,  "Counter increment failed")
 }

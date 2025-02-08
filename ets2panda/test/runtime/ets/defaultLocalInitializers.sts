@@ -15,12 +15,12 @@
 
 function erase<T>(v: T): object | null | undefined { return v }
 
-assert(erase((() => {
+assertTrue(erase((() => {
     let r: boolean | undefined;
     return r;
 })()) === undefined)
 
-assert(erase((() => {
+assertTrue(erase((() => {
     let r: boolean | null | undefined;
     return r;
 })()) === undefined)

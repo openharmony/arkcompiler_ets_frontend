@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,14 +34,14 @@ function foo3(param: number | string | int[]): number | string | int[]{
 }
 
 function main(){
-    assert foo1(1) == 1
-    assert foo1("123") == "123"
-    assert foo2(1) == 1
-    assert foo2("123") == "123"
-    assert foo3(1) == 1
-    assert foo3("123") == "123"
+    assertEQ( foo1(1), 1)
+    assertEQ( foo1("123"), "123")
+    assertEQ( foo2(1), 1)
+    assertEQ( foo2("123"), "123")
+    assertEQ( foo3(1), 1)
+    assertEQ( foo3("123"), "123")
     let a = foo3([1, 2, 3]) as int[]
-    assert a[0]==1
-    assert a[1]==2
-    assert a[2]==3
+    assertEQ( a[0], 1)
+    assertEQ( a[1], 2)
+    assertEQ( a[2], 3)
 }

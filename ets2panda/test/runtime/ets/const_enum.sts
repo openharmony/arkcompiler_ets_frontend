@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,14 +17,14 @@ const enum Comparison { LessThan = -1, EqualTo = 0, GreaterThan = 1 };
 
 function main() : void {
     let c1 = Comparison.LessThan;
-    assert(c1 == Comparison.LessThan);
-    assert(c1.valueOf() == -1);
+    assertEQ(c1, Comparison.LessThan)
+    assertEQ(c1.valueOf(), -1)
 
     let c2 = Comparison.EqualTo;
-    assert(c2 == Comparison.EqualTo);
-    assert(c2.valueOf() == 0);
+    assertEQ(c2, Comparison.EqualTo)
+    assertEQ(c2.valueOf(), 0)
 
     let c3 = Comparison.GreaterThan;
-    assert(c3 == Comparison.GreaterThan);
-    assert(c3.valueOf() == 1);
+    assertEQ(c3, Comparison.GreaterThan)
+    assertEQ(c3.valueOf(), 1)
 }

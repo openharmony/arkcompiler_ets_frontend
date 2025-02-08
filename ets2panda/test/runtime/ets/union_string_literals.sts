@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@ let a: UT1 = "bcd"
 
 function foo<T extends "abc"|"ff">(a: T): string {
     let b: "abc"|"ff" = a
-    assert b == "abc"
+    assertEQ( b, "abc")
     b = "ff"
     return b
 }
@@ -62,27 +62,27 @@ function f5(x: "aa"|"bbb") {
 }
 
 function main(): void {
-    assert foo<"abc">("abc") == "ff";
-    assert foo<"ff"|"abc">("abc") == "ff";
+    assertEQ( foo<"abc">("abc"), "ff")
+    assertEQ( foo<"ff"|"abc">("abc"), "ff")
 
-    assert a == "bcd"
+    assertEQ( a, "bcd")
 
-    assert bar("abc") == "abc"
-    assert bar(42) == 42
+    assertEQ( bar("abc"), "abc")
+    assertEQ( bar(42), 42)
 
     let x = baz("bcd")
     x = "some string"
-    assert x == "some string"
-    assert baz("ab1") == "ab1"
+    assertEQ( x, "some string")
+    assertEQ( baz("ab1"), "ab1")
     x = "abc"
 
-    assert f1("abc", x)
-    assert f2("abc", x)
-    assert !f2("abc", "xyz")
+    assertTrue( f1("abc", x))
+    assertTrue( f2("abc", x))
+    assertTrue( !f2("abc", "xyz"))
 
-    assert f3() == "bb"
-    assert f3("aa") == "aa"
+    assertEQ( f3(), "bb")
+    assertEQ( f3("aa"), "aa")
 
-    assert f5("aa") == 2
-    assert f5("bbb") == 3
+    assertEQ( f5("aa"), 2)
+    assertEQ( f5("bbb"), 3)
 }

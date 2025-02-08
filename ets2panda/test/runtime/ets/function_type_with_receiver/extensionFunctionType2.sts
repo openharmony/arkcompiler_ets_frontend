@@ -25,12 +25,12 @@ function foo(this: A): string {
 
 let show2: (this: A) => string;
 show2 = show;
-assert show2(a) == "Hi,Bob";
-assert a.show2() == "Hi,Bob"; 
-assert show2(new A()) == "Hi,Bob";
-assert new A().show2() == "Hi,Bob"; 
+assertEQ( show2(a), "Hi,Bob")
+assertEQ( a.show2(), "Hi,Bob" )
+assertEQ( show2(new A()), "Hi,Bob")
+assertEQ( new A().show2(), "Hi,Bob" )
 show2 = foo;
-assert show2(a) == "Hello,Bob";
-assert a.show2() == "Hello,Bob"; 
-assert show2(new A()) == "Hello,Bob";
-assert new A().show2() == "Hello,Bob"; 
+assertEQ( show2(a), "Hello,Bob")
+assertEQ( a.show2(), "Hello,Bob" )
+assertEQ( show2(new A()), "Hello,Bob")
+assertEQ( new A().show2(), "Hello,Bob" )

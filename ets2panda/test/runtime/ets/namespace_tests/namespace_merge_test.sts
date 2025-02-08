@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,10 +28,10 @@ namespace A{
 }
 
 function main(){
-    assert A.a == 1
-    assert A.b == 2
-    assert A.c == 3
-    assert A.foo1() == "foo1"
-    assert A.foo2() == "foo2"
-    assert A.foo3() == "foo3"
+    assertEQ( A.a, 1)
+    assertEQ( A.b, 2)
+    assertEQ( A.c, 3)
+    assertEQ( A.foo1(), "foo1")
+    assertEQ( A.foo2(), "foo2")
+    assertEQ( A.foo3(), "foo3")
 }

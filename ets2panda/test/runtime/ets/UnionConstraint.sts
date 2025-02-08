@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,10 +22,10 @@ function id_sx(x: string | X) { return id(x) }
 function main() {
     let x = new X();
 
-    assert(id(1.1) == 1.1);
-    assert(id("a") == "a");
-    assert(id(x) == x);
+    assertEQ(id(1.1), 1.1)
+    assertEQ(id("a"), "a")
+    assertEQ(id(x), x)
 
-    assert(id_s("a") == "a");
-    assert(id_sx(x) == x);
+    assertEQ(id_s("a"), "a")
+    assertEQ(id_sx(x), x)
 }

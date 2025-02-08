@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -68,29 +68,29 @@ enum Color {
 }
 
 function main() {
-    assert(Color.A.toString() == a);
-    assert(Color.B.toString() == b);
-    assert(Color.C.toString() == c);
-    assert(Color.D.toString() == d);
-    assert(Color.E.toString() == e);
-    assert(Color.F.toString() == f);
-    assert(Color.G.toString() == g);
-    assert(Color.H.toString() == h);
-    assert(Color.I.toString() == i);
-    assert(Color.J.toString() == j);
-    assert(Color.K.toString() == k);
-    assert(Color.L.toString() == l);
-    assert(Color.M.toString() == m);
-    assert(Color.N.toString() == n);
-    assert(Color.O.toString() == o);
-    assert(Color.P.toString() == p);
-    assert(Color.Q.toString() == q);
-    assert(Color.R.toString() == r);
-    assert(Color.S.toString() == s);
-    assert(Color.T.toString() == t);
-    assert(Color.U.toString() == u);
-    assert(Color.V.toString() == v);
-    assert(Color.X.toString() == x);
-    assert(Color.Y.toString() == y);
-    assert(Color.Z.toString() == z);
+    assertEQ(Color.A.toString(), a)
+    assertEQ(Color.B.toString(), b)
+    assertEQ(Color.C.toString(), c)
+    assertEQ(Color.D.toString(), d)
+    assertEQ(Color.E.toString(), e)
+    assertEQ(Color.F.toString(), f)
+    assertEQ(Color.G.toString(), g)
+    assertEQ(Color.H.toString(), h)
+    assertEQ(Color.I.toString(), i)
+    assertEQ(Color.J.toString(), j)
+    assertEQ(Color.K.toString(), k)
+    assertEQ(Color.L.toString(), l)
+    assertEQ(Color.M.toString(), m)
+    assertEQ(Color.N.toString(), n)
+    assertEQ(Color.O.toString(), o)
+    assertEQ(Color.P.toString(), p)
+    assertEQ(Color.Q.toString(), q)
+    assertEQ(Color.R.toString(), r)
+    assertEQ(Color.S.toString(), s)
+    assertEQ(Color.T.toString(), t)
+    assertEQ(Color.U.toString(), u)
+    assertEQ(Color.V.toString(), v)
+    assertEQ(Color.X.toString(), x)
+    assertEQ(Color.Y.toString(), y)
+    assertEQ(Color.Z.toString(), z)
 }

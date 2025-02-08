@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,6 @@ function main() {
     let n: null = fnull();
     let u: undefined = fundefined();
 
-    assert(n as null | undefined == u as null | undefined);
-    assert(n as null | undefined !== u as null | undefined);
+    assertEQ(n as null | undefined, u as null | undefined)
+    assertTrue(n as null | undefined !== u as null | undefined)
 }

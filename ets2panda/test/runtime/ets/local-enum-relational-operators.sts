@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,16 +19,16 @@ function main():void {
     enum Color2 {First = "red", Second = "green", Third = "red"}
 
     if (Color1.Red < Color1.Blue)
-        assert(false)
+        assertTrue(false)
     if (Color1.Red > Color1.Blue)
-        assert(false)
+        assertTrue(false)
     if (Color1.Red == Color1.Blue)
-        assert(true)
+        assertTrue(true)
 
     if (Color2.First < Color2.Third)
-        assert(false)
+        assertTrue(false)
     if (Color2.First > Color2.Third)
-        assert(false)
+        assertTrue(false)
     if (Color2.First == Color2.Third)
-        assert(true)
+        assertTrue(true)
 }

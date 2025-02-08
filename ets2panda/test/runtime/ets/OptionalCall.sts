@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,19 +25,19 @@ function foo(a: Int | null): (() => Int) | undefined {
 
 function main(): void {
     let a = new Int(3);
-    // assert foo(a)?.() == 3; // bug
-    assert foo(a)?.() == a;
+    // assertEQ( foo(a)?.(), 3 // bug)
+    assertEQ( foo(a)?.(), a)
 
-    assert foo(null)?.() == null;
-    assert null == foo(null)?.();
+    assertEQ( foo(null)?.(), null)
+    assertEQ( null, foo(null)?.())
 
-    assert foo(null)?.() == undefined;
-    assert undefined == foo(null)?.();
+    assertEQ( foo(null)?.(), undefined)
+    assertEQ( undefined, foo(null)?.())
 
-    assert new Int(3) != foo(null)?.();
+    assertNE( new Int(3), foo(null)?.())
 
     let b = new Bar();
-    assert b.cb?.() == 3;
+    assertEQ( b.cb?.(), 3)
     b.cb = undefined;
-    assert b.cb?.() == undefined;
+    assertEQ( b.cb?.(), undefined)
 }

@@ -20,14 +20,14 @@ abstract class C{
 
 function main(){
     let x:C = {field1:1000,field2:"some str"}
-    assert(x.field1 == 1000)
-    assert(x.field2 == "some str")
+    assertEQ(x.field1, 1000)
+    assertEQ(x.field2, "some str")
 
     let x2:C = {field2:"some str"}
-    assert(x2.field1 == undefined)
-    assert(x2.field2 == "some str")
+    assertEQ(x2.field1, undefined)
+    assertEQ(x2.field2, "some str")
 
     let x3:C = {}
-    assert(x3.field1 == undefined)
-    assert(x3.field2 == undefined)
+    assertEQ(x3.field1, undefined)
+    assertEQ(x3.field2, undefined)
 }
