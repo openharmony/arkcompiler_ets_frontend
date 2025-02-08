@@ -126,7 +126,9 @@ namespace secharmony {
    */
   const createRenameIdentifierFactory = function (option: IOptions): TransformerFactory<Node> | null {
     const profile: INameObfuscationOption | undefined = option?.mNameObfuscation;
-    const unobfuscationOption: IUnobfuscationOption | undefined = option?.mUnobfuscationOption;
+    const shouldPrintKeptNames: boolean = !!(option.mUnobfuscationOption?.mPrintKeptNames);
+    const enablePropertyObf: boolean = !!(profile?.mRenameProperties);
+
     if (!profile || !profile.mEnable) {
       return null;
     }
@@ -276,7 +278,7 @@ namespace secharmony {
           const path: string = getNameWithScopeLoc(scope, original);
           // No allow to rename reserved names.
           if (!Reflect.has(def, 'obfuscateAsProperty') &&
-            isInLocalWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, path) ||
+            isInLocalWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, path, shouldPrintKeptNames) ||
             (!exportObfuscation && scope.exportNames.has(def.name)) ||
             isSkippedGlobal(enableToplevel, scope)) {
             scope.mangledNames.add(mangled);
@@ -326,7 +328,7 @@ namespace secharmony {
           const originalName: string = def.name;
           const path: string = getNameWithScopeLoc(scope, originalName);
           let mangledName: string;
-          if (isInPropertyWhitelist(originalName, UnobfuscationCollections.unobfuscatedPropMap)) {
+          if (isInPropertyWhitelist(originalName, UnobfuscationCollections.unobfuscatedPropMap, shouldPrintKeptNames)) {
             mangledName = originalName;
           } else {
             mangledName = getMangledPropertyParameters(scope, generator, originalName);
@@ -369,7 +371,7 @@ namespace secharmony {
       }
 
       function getPropertyMangledName(original: string, nameWithScope: string): string {
-        if (isInTopLevelWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope)) {
+        if (isInTopLevelWhitelist(original, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope, enablePropertyObf, shouldPrintKeptNames)) {
           return original;
         }
 
@@ -377,7 +379,7 @@ namespace secharmony {
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
         while (!mangledName) {
           let tmpName = globalGenerator.getName();
-          if (isReservedTopLevel(tmpName) ||
+          if (isReservedTopLevel(tmpName, enablePropertyObf) ||
             tmpName === original) {
             continue;
           }
@@ -823,8 +825,7 @@ namespace secharmony {
       if (isInitializedReservedList) {
         return;
       }
-      if (profile?.mRenameProperties) {
-        PropCollections.enablePropertyObfuscation = true;
+      if (enablePropertyObf) {
         const tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
         tmpReservedProps.forEach(item => {
           PropCollections.reservedProperties.add(item);

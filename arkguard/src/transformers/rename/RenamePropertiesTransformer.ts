@@ -76,6 +76,7 @@ namespace secharmony {
    */
   const createRenamePropertiesFactory = function (option: IOptions): TransformerFactory<Node> | null {
     let profile: INameObfuscationOption | undefined = option?.mNameObfuscation;
+    let shouldPrintKeptNames: boolean = !!(option.mUnobfuscationOption?.mPrintKeptNames);
 
     if (!profile || !profile.mEnable || !profile.mRenameProperties) {
       return null;
@@ -181,14 +182,14 @@ namespace secharmony {
         }
 
         if (isStringLiteralLike(node) && profile?.mKeepStringProperty) {
-          if (UnobfuscationCollections.printKeptName) {
+          if (shouldPrintKeptNames) {
             needToRecordProperty(node.text, UnobfuscationCollections.unobfuscatedPropMap);
           }
           return node;
         }
 
         let original: string = node.text;
-        if (isInPropertyWhitelist(original, UnobfuscationCollections.unobfuscatedPropMap)) {
+        if (isInPropertyWhitelist(original, UnobfuscationCollections.unobfuscatedPropMap, shouldPrintKeptNames)) {
           return node;
         }
 

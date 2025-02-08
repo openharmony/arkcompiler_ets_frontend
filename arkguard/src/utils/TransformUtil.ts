@@ -65,7 +65,8 @@ type IdentifiersAndStructs = {shadowIdentifiers: Identifier[], shadowStructs: St
 /**
  * separate wildcards from specific items.
  */
-export function separateUniversalReservedItem(originalArray: string[] | undefined): ReservedNameInfo {
+export function separateUniversalReservedItem(originalArray: string[] | undefined,
+  shouldPrintKeptName: boolean): ReservedNameInfo {
   if (!originalArray) {
     throw new Error('Unable to handle the empty array.');
   }
@@ -79,7 +80,7 @@ export function separateUniversalReservedItem(originalArray: string[] | undefine
       const regexPattern = wildcardTransformer(reservedItem);
       const regexOperator = new RegExp(`^${regexPattern}$`);
       reservedInfo.universalReservedArray.push(regexOperator);
-      recordWildcardMapping(reservedItem, regexOperator);
+      recordWildcardMapping(reservedItem, regexOperator, shouldPrintKeptName);
     } else {
       reservedInfo.specificReservedArray.push(reservedItem);
     }
@@ -87,8 +88,9 @@ export function separateUniversalReservedItem(originalArray: string[] | undefine
   return reservedInfo;
 }
 
-function recordWildcardMapping(originString: string, regExpression: RegExp): void {
-  if (UnobfuscationCollections.printKeptName) {
+function recordWildcardMapping(originString: string, regExpression: RegExp,
+  shouldPrintKeptName: boolean): void {
+  if (shouldPrintKeptName) {
     UnobfuscationCollections.reservedWildcardMap.set(regExpression, originString);
   }
 }
@@ -150,7 +152,8 @@ export function handleReservedConfig(config: IOptions, optionName: string, reser
   }
   if (needSeparate) {
     // separate items which contain wildcards from others
-    const reservedInfo: ReservedNameInfo = separateUniversalReservedItem(reservedConfig[reservedListName]);
+    const reservedInfo: ReservedNameInfo =
+      separateUniversalReservedItem(reservedConfig[reservedListName], !!(config.mUnobfuscationOption?.mPrintKeptNames));
     reservedConfig[reservedListName] = reservedInfo.specificReservedArray;
     reservedConfig[universalLisName] = reservedInfo.universalReservedArray;
   }
@@ -163,8 +166,8 @@ export function isReservedLocalVariable(mangledName: string): boolean {
     UnobfuscationCollections.reservedExportName?.has(mangledName);
 }
 
-export function isReservedTopLevel(originalName: string): boolean {
-  if (PropCollections.enablePropertyObfuscation) {
+export function isReservedTopLevel(originalName: string, enablePropertyObf: boolean): boolean {
+  if (enablePropertyObf) {
     return isReservedProperty(originalName);
   }
 
@@ -200,8 +203,9 @@ export enum WhitelistType {
   ENUM = 'enum'
 }
 
-function needToRecordTopLevel(originalName: string, recordMap: Map<string, Set<string>>, nameWithScope: string): boolean {
-  if (PropCollections.enablePropertyObfuscation) {
+function needToRecordTopLevel(originalName: string, recordMap: Map<string, Set<string>>,
+  nameWithScope: string, enablePropertyObf: boolean): boolean {
+  if (enablePropertyObf) {
     return needToRecordProperty(originalName, recordMap, nameWithScope);
   }
 
@@ -305,34 +309,34 @@ export function needToRecordProperty(originalName: string, recordMap?: Map<strin
   return reservedFlag;
 }
 
-export function isInTopLevelWhitelist(originalName: string, recordMap: Map<string, Set<string>>, nameWithScope: string): boolean {
-  if (UnobfuscationCollections.printKeptName) {
-    return needToRecordTopLevel(originalName, recordMap, nameWithScope);
+export function isInTopLevelWhitelist(originalName: string, recordMap: Map<string, Set<string>>,
+  nameWithScope: string, enablePropertyObf: boolean, shouldPrintKeptNames: boolean): boolean {
+  if (shouldPrintKeptNames) {
+    return needToRecordTopLevel(originalName, recordMap, nameWithScope, enablePropertyObf);
   }
 
-  return isReservedTopLevel(originalName);
+  return isReservedTopLevel(originalName, enablePropertyObf);
 }
 
-export function isInPropertyWhitelist(originalName: string, recordMap: Map<string, Set<string>>): boolean {
-  if (UnobfuscationCollections.printKeptName) {
+export function isInPropertyWhitelist(originalName: string, recordMap: Map<string, Set<string>>,
+  shouldPrintKeptNames: boolean): boolean {
+  if (shouldPrintKeptNames) {
     return needToRecordProperty(originalName, recordMap);
   }
 
   return isReservedProperty(originalName);
 }
 
-export function isInLocalWhitelist(originalName: string, recordMap: Map<string, Set<string>>, nameWithScope: string): boolean {
-  if (UnobfuscationCollections.printKeptName) {
+export function isInLocalWhitelist(originalName: string, recordMap: Map<string, Set<string>>,
+  nameWithScope: string, shouldPrintKeptNames: boolean): boolean {
+  if (shouldPrintKeptNames) {
     return needToReservedLocal(originalName, recordMap, nameWithScope);
   }
 
   return isReservedLocalVariable(originalName);
 }
 
-export function recordReservedName(originalName: string, type: string, recordObj?: Map<string, Set<string>>): void {
-  if (!UnobfuscationCollections.printKeptName || !recordObj) {
-    return;
-  }
+function recordReservedName(originalName: string, type: string, recordObj: Map<string, Set<string>>): void {
   if (!recordObj.has(originalName)) {
     recordObj.set(originalName, new Set());
   }

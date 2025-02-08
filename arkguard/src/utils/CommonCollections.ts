@@ -15,8 +15,6 @@
 
 // This records the collections related to property obfuscation.
 export namespace PropCollections {
-  // whether enable property obfuscation
-  export let enablePropertyObfuscation: boolean = false;
   // global mangled properties table used by all files in a project
   export let globalMangledTable: Map<string, string> = new Map();
   // used for property cache
@@ -41,8 +39,6 @@ export namespace PropCollections {
 
 // This records the collections related to whitelists
 export namespace UnobfuscationCollections {
-  // printKeptName: by user configuration, it decides whether to print unobfuscation names and whitelists.
-  export let printKeptName: boolean = false;
   // whitelist
   export let reservedSdkApiForProp: Set<string> = new Set();
   export let reservedSdkApiForGlobal: Set<string> = new Set();
@@ -65,7 +61,6 @@ export namespace UnobfuscationCollections {
   export let reservedWildcardMap: Map<RegExp, string> = new Map();
 
   export function clear(): void {
-    printKeptName = false;
     reservedSdkApiForProp.clear();
     reservedSdkApiForGlobal.clear();
     reservedSdkApiForLocal.clear();
@@ -77,6 +72,7 @@ export namespace UnobfuscationCollections {
     reservedEnum.clear();
     unobfuscatedPropMap.clear();
     unobfuscatedNamesMap.clear();
+    reservedWildcardMap.clear();
   }
 }
 

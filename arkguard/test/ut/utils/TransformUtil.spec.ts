@@ -89,14 +89,13 @@ describe('test for TransformUtil', function () {
   describe('test for function separateUniversalReservedItem', function () {
     it('should throw errors because originalArray is undefined', function () {
       assert.throws(() => {
-        separateUniversalReservedItem(undefined);
+        separateUniversalReservedItem(undefined, false);
       }, Error, 'Unable to handle the empty array.');
     });
 
     it('should return reservedInfo because originalArray is defined', function () {
-      UnobfuscationCollections.printKeptName = true;
       let originalArray: string[] = ['*', '?', 'originalArray'];
-      let reservedInfo: ReservedNameInfo = separateUniversalReservedItem(originalArray);
+      let reservedInfo: ReservedNameInfo = separateUniversalReservedItem(originalArray, true);
 
       assert.deepStrictEqual(reservedInfo.universalReservedArray, [/^.*$/, /^.$/]);
       assert.deepStrictEqual(reservedInfo.specificReservedArray, ['originalArray']);
@@ -124,10 +123,8 @@ describe('test for TransformUtil', function () {
     describe('printKeptName is true', function () {
       it('isInTopLevelWhitelist returns false', function() {
         const originalName: string = 'isInTopLevelWhitelist';
-        UnobfuscationCollections.printKeptName = true;
-        PropCollections.enablePropertyObfuscation = true;
 
-        const needToRecordProperty: boolean = isInTopLevelWhitelist(originalName, recordMap, nameWithScope);
+        const needToRecordProperty: boolean = isInTopLevelWhitelist(originalName, recordMap, nameWithScope, true, true);
         assert.isFalse(needToRecordProperty);
 
         PropCollections.clearPropsCollections();
@@ -137,14 +134,12 @@ describe('test for TransformUtil', function () {
       it('isInTopLevelWhitelist returns true', function() {
         const originalName1: string = '__global';
         const originalName2: string = 'abc';
-        UnobfuscationCollections.printKeptName = true;
-        PropCollections.enablePropertyObfuscation = false;
         UnobfuscationCollections.reservedSdkApiForGlobal.add('abc');
         UnobfuscationCollections.reservedExportName.add('abc');
         PropCollections.reservedProperties.add('abc');
 
-        const reservedFlag1: boolean = isInTopLevelWhitelist(originalName1, recordMap, nameWithScope);
-        const reservedFlag2: boolean = isInTopLevelWhitelist(originalName2, recordMap, nameWithScope);
+        const reservedFlag1: boolean = isInTopLevelWhitelist(originalName1, recordMap, nameWithScope, false, true);
+        const reservedFlag2: boolean = isInTopLevelWhitelist(originalName2, recordMap, nameWithScope, false, true);
         assert.isTrue(reservedFlag1);
         assert.isTrue(reservedFlag2);
 
@@ -156,9 +151,7 @@ describe('test for TransformUtil', function () {
     describe('printKeptName is false', function () {
       it('isInTopLevelWhitelist returns false', function () {
         const originalName: string = 'isInTopLevelWhitelist';
-        UnobfuscationCollections.printKeptName = false;
-        PropCollections.enablePropertyObfuscation = true;
-        const isReservedTopLevel: boolean = isInTopLevelWhitelist(originalName, recordMap, nameWithScope);
+        const isReservedTopLevel: boolean = isInTopLevelWhitelist(originalName, recordMap, nameWithScope, true, false);
         assert.isFalse(isReservedTopLevel);
 
         PropCollections.clearPropsCollections();
@@ -167,10 +160,7 @@ describe('test for TransformUtil', function () {
 
       it('isInTopLevelWhitelist returns true', function () {
         const originalName: string = '__global';
-        UnobfuscationCollections.printKeptName = false;
-        PropCollections.enablePropertyObfuscation = false;
-
-        const isReservedTopLevel: boolean = isInTopLevelWhitelist(originalName, recordMap, nameWithScope);
+        const isReservedTopLevel: boolean = isInTopLevelWhitelist(originalName, recordMap, nameWithScope, false, false);
         assert.isTrue(isReservedTopLevel);
 
         PropCollections.clearPropsCollections();
@@ -184,7 +174,6 @@ describe('test for TransformUtil', function () {
     const recordMap: Map<string, Set<string>> = new Map();
 
     it('printKeptName is true', function () {
-      UnobfuscationCollections.printKeptName = true;
       UnobfuscationCollections.reservedSdkApiForProp.add('isInPropertyWhitelist');
       UnobfuscationCollections.reservedLangForProperty.add('isInPropertyWhitelist');
       UnobfuscationCollections.reservedStruct.add('isInPropertyWhitelist');
@@ -193,7 +182,7 @@ describe('test for TransformUtil', function () {
       UnobfuscationCollections.reservedEnum.add('isInPropertyWhitelist');
       PropCollections.reservedProperties.add('isInPropertyWhitelist');
 
-      const needToRecordProperty: boolean = isInPropertyWhitelist(originalName, recordMap);
+      const needToRecordProperty: boolean = isInPropertyWhitelist(originalName, recordMap, true);
       assert.isTrue(needToRecordProperty);
 
       PropCollections.clearPropsCollections();
@@ -201,8 +190,7 @@ describe('test for TransformUtil', function () {
     });
 
     it('printKeptName is false', function () {
-      UnobfuscationCollections.printKeptName = false;
-      const isReservedProperty: boolean = isInPropertyWhitelist(originalName, recordMap);
+      const isReservedProperty: boolean = isInPropertyWhitelist(originalName, recordMap, false);
       assert.isFalse(isReservedProperty);
       UnobfuscationCollections.clear();
     });
@@ -213,13 +201,12 @@ describe('test for TransformUtil', function () {
       const originalName: string = 'isInLocalWhitelist';
       const recordMap: Map<string, Set<string>> = new Map();
       const nameWithScope: string = '246810';
-      UnobfuscationCollections.printKeptName = true;
       LocalVariableCollections.reservedLangForLocal.add('isInLocalWhitelist');
       UnobfuscationCollections.reservedSdkApiForLocal.add('isInLocalWhitelist');
       UnobfuscationCollections.reservedExportName.add('isInLocalWhitelist');
       LocalVariableCollections.reservedConfig.add('isInLocalWhitelist');
 
-      const reservedFlag: boolean = isInLocalWhitelist(originalName, recordMap, nameWithScope);
+      const reservedFlag: boolean = isInLocalWhitelist(originalName, recordMap, nameWithScope, true);
       assert.isTrue(reservedFlag);
 
       LocalVariableCollections.clear();
@@ -230,9 +217,8 @@ describe('test for TransformUtil', function () {
       const originalName: string = 'originalName';
       const recordMap: Map<string, Set<string>> = new Map();
       const nameWithScope: string = '12345';
-      UnobfuscationCollections.printKeptName = false;
 
-      const isReservedLocalVariable: boolean = isInLocalWhitelist(originalName, recordMap, nameWithScope);
+      const isReservedLocalVariable: boolean = isInLocalWhitelist(originalName, recordMap, nameWithScope,false);
       assert.isFalse(isReservedLocalVariable);
       UnobfuscationCollections.clear();
     });
@@ -240,30 +226,28 @@ describe('test for TransformUtil', function () {
     it('The local variables whitelist should be the same when printKeptName is enabled and disabled', function () {
       const recordMap: Map<string, Set<string>> = new Map();
       const nameWithScope: string = '246810';
-      UnobfuscationCollections.printKeptName = true;
       LocalVariableCollections.reservedLangForLocal.add('isInLocalWhitelist1');
       UnobfuscationCollections.reservedSdkApiForLocal.add('isInLocalWhitelist2');
       UnobfuscationCollections.reservedExportName.add('isInLocalWhitelist3');
       LocalVariableCollections.reservedConfig.add('isInLocalWhitelist4');
       UnobfuscationCollections.reservedSdkApiForProp.add('notInLocalWhitelist');
 
-      const reservedFlag1: boolean = isInLocalWhitelist('isInLocalWhitelist1', recordMap, nameWithScope);
-      const reservedFlag2: boolean = isInLocalWhitelist('isInLocalWhitelist2', recordMap, nameWithScope);
-      const reservedFlag3: boolean = isInLocalWhitelist('isInLocalWhitelist3', recordMap, nameWithScope);
-      const reservedFlag4: boolean = isInLocalWhitelist('isInLocalWhitelist4', recordMap, nameWithScope);
-      const reservedFlag5: boolean = isInLocalWhitelist('notInLocalWhitelist', recordMap, nameWithScope);
+      const reservedFlag1: boolean = isInLocalWhitelist('isInLocalWhitelist1', recordMap, nameWithScope, true);
+      const reservedFlag2: boolean = isInLocalWhitelist('isInLocalWhitelist2', recordMap, nameWithScope, true);
+      const reservedFlag3: boolean = isInLocalWhitelist('isInLocalWhitelist3', recordMap, nameWithScope, true);
+      const reservedFlag4: boolean = isInLocalWhitelist('isInLocalWhitelist4', recordMap, nameWithScope, true);
+      const reservedFlag5: boolean = isInLocalWhitelist('notInLocalWhitelist', recordMap, nameWithScope, true);
       assert.isTrue(reservedFlag1);
       assert.isTrue(reservedFlag2);
       assert.isTrue(reservedFlag3);
       assert.isTrue(reservedFlag4);
       assert.isFalse(reservedFlag5);
 
-      UnobfuscationCollections.printKeptName = false;
-      const isReservedLocalVariable1: boolean = isInLocalWhitelist('isInLocalWhitelist1', recordMap, nameWithScope);
-      const isReservedLocalVariable2: boolean = isInLocalWhitelist('isInLocalWhitelist2', recordMap, nameWithScope);
-      const isReservedLocalVariable3: boolean = isInLocalWhitelist('isInLocalWhitelist3', recordMap, nameWithScope);
-      const isReservedLocalVariable4: boolean = isInLocalWhitelist('isInLocalWhitelist4', recordMap, nameWithScope);
-      const isReservedLocalVariable5: boolean = isInLocalWhitelist('notInLocalWhitelist', recordMap, nameWithScope);
+      const isReservedLocalVariable1: boolean = isInLocalWhitelist('isInLocalWhitelist1', recordMap, nameWithScope, false);
+      const isReservedLocalVariable2: boolean = isInLocalWhitelist('isInLocalWhitelist2', recordMap, nameWithScope, false);
+      const isReservedLocalVariable3: boolean = isInLocalWhitelist('isInLocalWhitelist3', recordMap, nameWithScope, false);
+      const isReservedLocalVariable4: boolean = isInLocalWhitelist('isInLocalWhitelist4', recordMap, nameWithScope, false);
+      const isReservedLocalVariable5: boolean = isInLocalWhitelist('notInLocalWhitelist', recordMap, nameWithScope, false);
       assert.isTrue(isReservedLocalVariable1);
       assert.isTrue(isReservedLocalVariable2);
       assert.isTrue(isReservedLocalVariable3);
