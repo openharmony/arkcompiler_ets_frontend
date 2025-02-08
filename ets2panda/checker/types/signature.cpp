@@ -56,12 +56,14 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     }
 
     if (signatureInfo_->restVar != nullptr) {
+        auto *newRestVar = signatureInfo_->restVar;
         auto *newRestType = signatureInfo_->restVar->TsType()->Substitute(relation, substitution);
         if (newRestType != signatureInfo_->restVar->TsType()) {
             anyChange = true;
-            newSigInfo->restVar = signatureInfo_->restVar->Copy(allocator, signatureInfo_->restVar->Declaration());
-            newSigInfo->restVar->SetTsType(newRestType);
+            newRestVar = signatureInfo_->restVar->Copy(allocator, signatureInfo_->restVar->Declaration());
+            newRestVar->SetTsType(newRestType);
         }
+        newSigInfo->restVar = newRestVar;
     }
 
     if (!anyChange) {
@@ -73,14 +75,18 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
         return this;
     }
 
-    auto *result = allocator->New<Signature>(newSigInfo, newReturnType);
-    result->func_ = func_;
-    result->flags_ = flags_;
-    result->internalName_ = internalName_;
-    result->ownerObj_ = ownerObj_;
-    result->ownerVar_ = ownerVar_;
+    return CreateSignatureForSubstitute(allocator, newSigInfo, newReturnType);
+}
 
-    return result;
+Signature *Signature::CreateSignatureForSubstitute(ArenaAllocator *allocator, SignatureInfo *sigInfo, Type *returnType)
+{
+    auto *signature = allocator->New<Signature>(sigInfo, returnType);
+    signature->func_ = func_;
+    signature->flags_ = flags_;
+    signature->internalName_ = internalName_;
+    signature->ownerObj_ = ownerObj_;
+    signature->ownerVar_ = ownerVar_;
+    return signature;
 }
 
 void Signature::ToAssemblerType(std::stringstream &ss) const
