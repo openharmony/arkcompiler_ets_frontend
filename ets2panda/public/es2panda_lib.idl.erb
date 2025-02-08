@@ -182,8 +182,8 @@ interface es2panda_Impl {
     void LogTypeError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
     void LogWarning(es2panda_Context context, String warnMsg, es2panda_SourcePosition pos);
     void LogSyntaxError(es2panda_Context context, String errorMsg, es2panda_SourcePosition pos);
-    void InitScopesPhaseETSRunExternalNode(es2panda_Context ctx, AstNode node);
     Scope AstNodeFindNearestScope(es2panda_Context ctx, AstNode node);
+    Scope AstNodeRebind(es2panda_Context ctx, AstNode node);
     void AstNodeRecheck(es2panda_Context ctx, AstNode node);
     Es2pandaEnum Es2pandaEnumFromString(es2panda_Context ctx, String str);
     String Es2pandaEnumToString(es2panda_Context ctx, Es2pandaEnum id);
@@ -221,19 +221,19 @@ interface es2panda_Impl {
 %   namespaceClasses&.each do |className, classData|
 [Entity=Class<%=
     classData.ast_node_type_value ? ", Es2pandaAstNodeType=#{classData.ast_node_type_value}" : ''
-%>, nameaspace=<%= namespaceName %>] interface <%= className %><%=
+%>, cpp_namespace=<%= namespaceName %>] interface <%= className %><%=
     ": #{classData.extends_classname}" if classData && classData.extends_classname
 %> {
 %     classData.class_constructors&.each_with_index do |constructor, index|
 %     api_class_type = Es2pandaLibApi::Arg.type_to_idl(classData.constructor_type.idl_type)
 
     /* <%= constructor['raw_decl'] %> */
-    static <%= api_class_type %> Create<%= constructor['overload'] %>(es2panda_Context context<%=
+    static <%= api_class_type %> Create<%= constructor['idl_overload'] %>(es2panda_Context context<%=
     constructor['args']&.map { |arg| if arg.lib_args_to_str.strip != ''
      then ', ' + arg.lib_args_to_idl end}&.join('')
 %>);
 %       if classData.updater_allowed
-    static <%= api_class_type %> Update<%= constructor['overload'] %>(es2panda_Context context, <%=
+    static <%= api_class_type %> Update<%= constructor['idl_overload'] %>(es2panda_Context context, <%=
         api_class_type %> original<%=
     constructor['args']&.map { |arg| if arg.lib_args_to_str.strip != ''
      then ', ' + arg.lib_args_to_idl end}&.join('')
@@ -247,7 +247,7 @@ interface es2panda_Impl {
     method_info['get_modifier'] ? "[#{method_info['get_modifier']}] " : ''
 %><%=
     Es2pandaLibApi::Arg.type_to_idl(method_info['return_type'].idl_type)
-%> <%=method_info['overload_name']%>(es2panda_Context context<%=
+%> <%=method_info['idl_name']%>(es2panda_Context context<%=
     method_info['args']&.map { |arg| if arg.lib_args_to_str.strip != '' && arg.lib_args_to_str.strip != 'const'
     then ', ' + arg.lib_args_to_idl end}&.join('')
 %><%=

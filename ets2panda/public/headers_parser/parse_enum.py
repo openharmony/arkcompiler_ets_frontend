@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 #
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -69,12 +69,12 @@ def parse_enum_class_body(data: str) -> dict:
     while value_start != -1 and value_start < len(data):
         value = data[value_start:value_end].strip(" \n")
 
-        if value != "" and (is_union_value(value) == False):
+        if value != "" and not is_union_value(value):
             if "flags" not in res:
                 res["flags"] = []
             res["flags"].append(get_name_of_enum_value(value))
 
-        elif value != "" and (is_union_value(value) == True):
+        elif value != "" and is_union_value(value):
 
             union_flag: Dict[str, Any] = {}
             union_flag["name"] = get_name_of_enum_value(value)
@@ -83,7 +83,7 @@ def parse_enum_class_body(data: str) -> dict:
             if (union_flag["flags"] != []) and ("flag_unions" not in res):
                 res["flag_unions"] = []
                 res["flag_unions"].append(union_flag)
-            elif (union_flag["flags"] != []) and ("flag_unions" not in res) == False:
+            elif (union_flag["flags"] != []) and ("flag_unions" in res):
                 res["flag_unions"].append(union_flag)
 
         if value_end == len(data):

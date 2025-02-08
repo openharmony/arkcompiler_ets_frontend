@@ -284,7 +284,6 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/resolveResult.h
     ${ES2PANDA_ROOT}/parser/ETSparser.h
     ${ES2PANDA_ROOT}/parser/parserFlags.h
-    ${ES2PANDA_ROOT}/es2panda.h
     ${ES2PANDA_ROOT}/ast_verifier/ASTVerifier.h
     ${ES2PANDA_ROOT}/ast_verifier/checkContext.h
 )
@@ -294,7 +293,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/options.yaml
     ${LIBGEN_DIR}/gen/headers/ir/astNodeMapping.yaml
     ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
-    ${LIBGEN_DIR}/gen/headers/es2panda.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/labelledStatement.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/unknownType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/throwStatement.yaml

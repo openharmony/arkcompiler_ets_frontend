@@ -623,7 +623,7 @@ module Es2pandaLibApi
 
   class ClassData < SimpleDelegator
     @class_base_namespace = ''
-    @extends_classname = ''
+    @extends_classname = nil
     @ast_node_type_value = nil
 
     attr_reader :class_base_namespace
@@ -738,6 +738,7 @@ module Es2pandaLibApi
       res = []
       usings = usings_map
       constructor_overload = {}
+      idl_constructor_overload = {}
       dig(:constructors)&.each do |constructor|
         if check_no_gen_constructor(constructor)
           args = []
@@ -758,6 +759,7 @@ module Es2pandaLibApi
             Es2pandaLibApi.log('info', "Supported constructor for class '#{class_name}'\n")
 
             res << { 'overload' => get_new_method_name(constructor_overload, '', ''),
+            'idl_overload' => get_new_method_name(idl_constructor_overload, '', '', true),
             'args' => args, 'raw_decl' => constructor.raw_declaration }
           end
         else
@@ -872,8 +874,8 @@ module Es2pandaLibApi
       return res
     end
 
-    def get_new_method_name(function_overload, name, const)
-      function_name = if check_for_same_class_name then class_base_namespace.capitalize
+    def get_new_method_name(function_overload, name, const, skip_namespace_overload = false)
+      function_name = if (check_for_same_class_name && !skip_namespace_overload) then class_base_namespace.capitalize
       else '' end + name + (const != '' ? 'Const' : '')
       overload_name = function_name
 
@@ -906,6 +908,7 @@ module Es2pandaLibApi
     def class_methods
       res = []
       function_overload = {}
+      idl_function_overload = {}
       usings = usings_map
       dig(:methods)&.each do |method|
         if check_no_gen_method(method)
@@ -934,6 +937,7 @@ module Es2pandaLibApi
 
             res << { 'name' => method.name, 'const' => const, 'return_arg_to_str' => return_type.return_args_to_str,
                      'overload_name' => get_new_method_name(function_overload, method.name, const), 'args' => args,
+                     'idl_name' => get_new_method_name(idl_function_overload, method.name, const, true),
                      'return_type' => return_type, 'return_expr' => return_expr, 'raw_decl' => method.raw_declaration,
                      'const_return' => const_return, 'get_modifier' => method['additional_attributes'] }
           end
@@ -1320,6 +1324,16 @@ module Es2pandaLibApi
     end
   end
 
+  def extends_to_idl(extends)
+    return nil unless extends && !extends.include?(',')
+    if extends.include?('std::')
+        Es2pandaLibApi.log('warning', "Unsupported inheritance from '#{extends}'\n")
+        return nil
+    end
+
+    extends.gsub(/[<>]/, ' ').split.last.split('::').last
+  end
+
   def wrap_data(data)
     return unless data
 
@@ -1369,9 +1383,7 @@ module Es2pandaLibApi
     data['ir']&.class_definitions&.each do |class_definition|
       class_data = ClassData.new(class_definition&.public)
       class_data.class_base_namespace = 'ir'
-      if class_definition.respond_to?('extends')
-        class_data.extends_classname = class_definition.extends.gsub(/[<>]/, ' ').split.last
-      end
+      class_data.extends_classname = extends_to_idl(class_definition.extends)
       flag_name = @ast_node_mapping.find { |elem| elem[1] == class_definition.name }&.first
       class_data.ast_node_type_value = Enums.get_astnodetype_value(flag_name)
       @classes['ir'][class_definition.name] = class_data
@@ -1381,8 +1393,10 @@ module Es2pandaLibApi
     data['checker']&.class_definitions&.each do |class_definition|
       if @ast_types.include?(class_definition.name) || ast_type_additional_children.include?(class_definition.name) ||
          additional_classes_to_generate.include?(class_definition.name)
-        @classes['checker'][class_definition.name] = ClassData.new(class_definition&.public)
-        @classes['checker'][class_definition.name].class_base_namespace = 'checker'
+        class_data = ClassData.new(class_definition&.public)
+        class_data.class_base_namespace = 'checker'
+        class_data.extends_classname = extends_to_idl(class_definition.extends)
+        @classes['checker'][class_definition.name] = class_data
       end
     end
 
@@ -1391,16 +1405,20 @@ module Es2pandaLibApi
       if scopes.include?(class_definition.name) || declarations.include?(class_definition.name) ||
          ast_variables.find { |x| x[1] == class_definition.name } ||
          additional_classes_to_generate.include?(class_definition.name)
-        @classes['varbinder'][class_definition.name] = ClassData.new(class_definition&.public)
-        @classes['varbinder'][class_definition.name].class_base_namespace = 'varbinder'
+        class_data = ClassData.new(class_definition&.public)
+        class_data.class_base_namespace = 'varbinder'
+        class_data.extends_classname = extends_to_idl(class_definition.extends)
+        @classes['varbinder'][class_definition.name] = class_data
       end
     end
 
     @classes['parser'] = {} unless @classes['parser']
     data['parser']&.class_definitions&.each do |class_definition|
       if additional_classes_to_generate.include?(class_definition.name)
-        @classes['parser'][class_definition.name] = ClassData.new(class_definition&.public)
-        @classes['parser'][class_definition.name].class_base_namespace = 'parser'
+        class_data = ClassData.new(class_definition&.public)
+        class_data.class_base_namespace = 'parser'
+        class_data.extends_classname = extends_to_idl(class_definition.extends)
+        @classes['parser'][class_definition.name] = class_data
       end
     end
 
@@ -1425,7 +1443,8 @@ module Es2pandaLibApi
                   :stat_add_class, :stat_add_unsupported_type, :ast_node_additional_children, :code_gen_children,
                   :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables, :deep_to_h,
                   :no_usings_replace_info, :declarations, :check_template_type_presents, :structs, :structs_to_generate,
-                  :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type
+                  :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type,
+                  :extends_to_idl
 end
 
 def Gen.on_require(data)

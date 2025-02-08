@@ -65,7 +65,6 @@ def parse_header(src_path: str, dest_path: str) -> None:
         except Exception:  # pylint: disable=W0718
             os.fdopen(os.open(dest_path, os.O_CREAT, mode=511), "w", encoding="utf-8").close()
 
-            warning_log(f"Can't parse '{src_path}'")
             error_log(f"Error! Can't parse '{src_path}'\n{traceback.format_exc()}\n")
             parsing_failed_msg(src_path)
 
