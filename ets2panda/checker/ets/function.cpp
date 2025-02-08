@@ -353,7 +353,7 @@ bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, i
 {
     Type *targetType = substitutedSig->Params()[index]->TsType();
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    Type *argumentType = TryGetTypeFromExtensionAccessor(argument);
+    Type *argumentType = argument->Check(this);
 
     flags |= TypeRelationFlag::ONLY_CHECK_WIDENING;
 
@@ -983,39 +983,33 @@ void ETSChecker::CheckObjectLiteralArguments(Signature *signature, ArenaVector<i
     }
 }
 
-checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
+// Note: this function is extracted to reduce the size of `BuildMethodSignature`
+static bool CollectOverload(checker::ETSChecker *checker, ir::MethodDefinition *method, ETSFunctionType *funcType)
 {
-    if (method->TsType() != nullptr) {
-        return method->TsType()->AsETSFunctionType();
-    }
-
-    bool isConstructSig = method->IsConstructor();
-
-    method->Function()->Id()->SetVariable(method->Id()->Variable());
-    BuildFunctionSignature(method->Function(), isConstructSig);
-    if (method->Function()->Signature() == nullptr) {
-        return method->Id()->Variable()->SetTsType(GlobalTypeError());
-    }
-    auto *funcType = BuildMethodType(method->Function());
-    std::vector<checker::ETSFunctionType *> overloads;
-
-    method->InitializeOverloadInfo();
-
     ir::OverloadInfo &ldInfo = method->GetOverloadInfo();
+    ArenaVector<ETSFunctionType *> overloads(checker->Allocator()->Adapter());
 
     for (ir::MethodDefinition *const currentFunc : method->Overloads()) {
         ldInfo.isDeclare &= currentFunc->IsDeclare();
 
         currentFunc->Function()->Id()->SetVariable(currentFunc->Id()->Variable());
-        BuildFunctionSignature(currentFunc->Function(), isConstructSig);
+        checker->BuildFunctionSignature(currentFunc->Function(), method->IsConstructor());
         if (currentFunc->Function()->Signature() == nullptr) {
-            return method->Id()->Variable()->SetTsType(GlobalTypeError());
+            method->Id()->Variable()->SetTsType(checker->GlobalTypeError());
+            return false;
         }
-        auto *const overloadType = BuildMethodType(currentFunc->Function());
-        ldInfo.needHelperOverload |= CheckIdenticalOverloads(funcType, overloadType, currentFunc, ldInfo.isDeclare);
+        auto *const overloadType = checker->BuildMethodType(currentFunc->Function());
+        ldInfo.needHelperOverload |=
+            checker->CheckIdenticalOverloads(funcType, overloadType, currentFunc, ldInfo.isDeclare);
 
         currentFunc->SetTsType(overloadType);
-        funcType->AddCallSignature(currentFunc->Function()->Signature());
+        auto overloadSig = currentFunc->Function()->Signature();
+        funcType->AddCallSignature(overloadSig);
+        if (overloadSig->IsExtensionAccessor()) {
+            funcType->GetExtensionAccessorSigs().emplace_back(overloadSig);
+        } else if (overloadSig->IsExtensionFunction()) {
+            funcType->GetExtensionFunctionSigs().emplace_back(overloadSig);
+        }
         overloads.push_back(overloadType);
 
         ldInfo.minArg = std::min(ldInfo.minArg, currentFunc->Function()->Signature()->MinArgCount());
@@ -1029,10 +1023,30 @@ checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
         for (size_t compareFuncCounter = baseFuncCounter + 1; compareFuncCounter < overloads.size();
              compareFuncCounter++) {
             auto *compareOverloadType = overloads.at(compareFuncCounter);
-            ldInfo.needHelperOverload |= CheckIdenticalOverloads(
+            ldInfo.needHelperOverload |= checker->CheckIdenticalOverloads(
                 overloadType, compareOverloadType, method->Overloads()[compareFuncCounter], ldInfo.isDeclare);
         }
     }
+    return true;
+}
+
+checker::Type *ETSChecker::BuildMethodSignature(ir::MethodDefinition *method)
+{
+    if (method->TsType() != nullptr) {
+        return method->TsType()->AsETSFunctionType();
+    }
+
+    method->Function()->Id()->SetVariable(method->Id()->Variable());
+    BuildFunctionSignature(method->Function(), method->IsConstructor());
+    if (method->Function()->Signature() == nullptr) {
+        return method->Id()->Variable()->SetTsType(GlobalTypeError());
+    }
+    auto *funcType = BuildMethodType(method->Function());
+    method->InitializeOverloadInfo();
+    if (!CollectOverload(this, method, funcType)) {
+        return GlobalTypeError();
+    }
+    ir::OverloadInfo &ldInfo = method->GetOverloadInfo();
 
     ldInfo.needHelperOverload &= ldInfo.isDeclare;
     if (ldInfo.needHelperOverload) {
@@ -1224,7 +1238,6 @@ void ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstru
         auto thisVar = func->Scope()->ParamScope()->Params().front();
         thisVar->SetTsType(Context().ContainingClass());
     }
-
     auto *signatureInfo = ComposeSignatureInfo(func->TypeParams(), func->Params());
     auto *returnType = func->GetPreferredReturnType() != nullptr
                            ? func->GetPreferredReturnType()
@@ -2000,6 +2013,7 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signatur
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::ARROW;
+    bool trailingLambdaHasReceiver = false;
     if (IsLastParameterLambdaWithReceiver(sig)) {
         auto *actualLambdaType =
             sig->Function()->Params().back()->AsETSParameterExpression()->TypeAnnotation()->AsETSFunctionType();
@@ -2013,11 +2027,13 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr, Signatur
         funcScope->InsertBinding(receiverVarClone->Name(), receiverVarClone);
         receiverOfTrailingBlock->AsETSParameterExpression()->Ident()->SetVariable(receiverVarClone);
         params.emplace_back(receiverOfTrailingBlock);
-        flags |= ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD;
+        trailingLambdaHasReceiver = true;
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *funcNode = AllocNode<ir::ScriptFunction>(
-        Allocator(), SFunctionData {trailingBlock, ir::FunctionSignature(nullptr, std::move(params), nullptr), flags});
+        Allocator(),
+        SFunctionData {trailingBlock,
+                       ir::FunctionSignature(nullptr, std::move(params), nullptr, trailingLambdaHasReceiver), flags});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
     funcParamScope->BindNode(funcNode);

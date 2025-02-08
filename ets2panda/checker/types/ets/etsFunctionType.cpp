@@ -20,12 +20,21 @@ namespace ark::es2panda::checker {
 
 ETSFunctionType::ETSFunctionType([[maybe_unused]] ETSChecker *checker, util::StringView name,
                                  ArenaVector<Signature *> &&signatures)
-    : Type(TypeFlag::FUNCTION | TypeFlag::ETS_METHOD), callSignatures_(std::move(signatures)), name_(name)
+    : Type(TypeFlag::FUNCTION | TypeFlag::ETS_METHOD),
+      callSignatures_(std::move(signatures)),
+      extensionFunctionSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
+      extensionAccessorSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
+      name_(name)
 {
     auto flag = TypeFlag::NONE;
     for (auto *sig : callSignatures_) {
         flag |= sig->HasSignatureFlag(SignatureFlags::GETTER) ? TypeFlag::GETTER : TypeFlag::NONE;
         flag |= sig->HasSignatureFlag(SignatureFlags::SETTER) ? TypeFlag::SETTER : TypeFlag::NONE;
+        if (sig->IsExtensionAccessor()) {
+            extensionAccessorSigs_.emplace_back(sig);
+        } else if (sig->IsExtensionFunction()) {
+            extensionFunctionSigs_.emplace_back(sig);
+        }
     }
     AddTypeFlag(flag);
 }
@@ -33,6 +42,8 @@ ETSFunctionType::ETSFunctionType([[maybe_unused]] ETSChecker *checker, util::Str
 ETSFunctionType::ETSFunctionType(ETSChecker *checker, Signature *signature)
     : Type(TypeFlag::FUNCTION),
       callSignatures_({{signature->ToArrowSignature(checker)}, checker->Allocator()->Adapter()}),
+      extensionFunctionSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
+      extensionAccessorSigs_(ArenaVector<Signature *>(checker->Allocator()->Adapter())),
       name_(""),
       assemblerName_(checker->GlobalBuiltinFunctionType(signature->MinArgCount(), signature->HasRestParameter())
                          ->AsETSObjectType()

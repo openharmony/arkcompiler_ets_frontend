@@ -180,7 +180,6 @@ static SignatureFlags ConvertToSignatureFlags(ir::ModifierFlags inModifiers, ir:
 
     convertFlag(ir::ScriptFunctionFlags::THROWS, SignatureFlags::THROWS);
     convertFlag(ir::ScriptFunctionFlags::RETHROWS, SignatureFlags::RETHROWS);
-    convertFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD, SignatureFlags::EXTENSION_FUNCTION);
 
     convertFlag(ir::ScriptFunctionFlags::CONSTRUCTOR, SignatureFlags::CONSTRUCTOR);
     convertFlag(ir::ScriptFunctionFlags::SETTER, SignatureFlags::SETTER);
@@ -204,11 +203,14 @@ Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir
         return nullptr;
     }
     auto signature = Allocator()->New<Signature>(info, returnType, func);
-    signature->AddSignatureFlag(ConvertToSignatureFlags(func->Modifiers(), func->Flags()));
+    auto convertedFlag = ConvertToSignatureFlags(func->Modifiers(), func->Flags());
+    func->HasReceiver() ? signature->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION | convertedFlag)
+                        : signature->AddSignatureFlag(convertedFlag);
     return signature;
 }
 
-Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff)
+Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunctionFlags sff,
+                                       bool hasReceiver)
 {
     if (info == nullptr) {  // #23134
         ES2PANDA_ASSERT(IsAnyError());
@@ -217,7 +219,9 @@ Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir
     auto signature = Allocator()->New<Signature>(info, returnType, nullptr);
     signature->AddSignatureFlag(ConvertToSignatureFlags(ir::ModifierFlags::NONE, sff));
     // synthetic arrow type signature flags
-    signature->AddSignatureFlag(SignatureFlags::ABSTRACT | SignatureFlags::CALL | SignatureFlags::PUBLIC);
+    auto extraFlags = SignatureFlags::ABSTRACT | SignatureFlags::CALL | SignatureFlags::PUBLIC;
+    hasReceiver ? signature->AddSignatureFlag(SignatureFlags::EXTENSION_FUNCTION | extraFlags)
+                : signature->AddSignatureFlag(extraFlags);
     return signature;
 }
 
@@ -405,7 +409,7 @@ Signature *ETSChecker::CreateBuiltinArraySignature(const ETSArrayType *arrayType
     }
 
     auto [internalName, info] = CreateBuiltinArraySignatureInfo(arrayType, dim);
-    auto *signature = CreateSignature(info, GlobalVoidType(), ir::ScriptFunctionFlags::NONE);
+    auto *signature = CreateSignature(info, GlobalVoidType(), ir::ScriptFunctionFlags::NONE, false);
     signature->SetInternalName(internalName);
     globalArraySignatures_.insert({arrayType, signature});
 

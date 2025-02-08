@@ -1922,9 +1922,6 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
 
     ir::ScriptFunction *func =
         ParseFunction(newStatus | ParserStatus::FUNCTION_DECLARATION | ParserStatus::ALLOW_RECEIVER);
-    if (func->HasReceiver()) {
-        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
-    }
     if (funcIdentNode != nullptr) {  // Error processing.
         func->SetIdent(funcIdentNode);
     }
@@ -1961,12 +1958,12 @@ ir::FunctionDeclaration *ETSParser::ParseAccessorWithReceiver(ir::ModifierFlags 
     size_t getterValidParamCount = 1;
     size_t setterValidParamCount = 2;
     if (isGetter) {
-        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD | ir::ScriptFunctionFlags::GETTER);
+        func->AddFlag(ir::ScriptFunctionFlags::GETTER);
         if (getterValidParamCount != paramCount) {
             LogError(diagnostic::EXTENSION_GETTER_WRONG_PARAM, {}, startLoc);
         }
     } else {
-        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD | ir::ScriptFunctionFlags::SETTER);
+        func->AddFlag(ir::ScriptFunctionFlags::SETTER);
         if (setterValidParamCount != paramCount) {
             LogError(diagnostic::EXTENSION_SETTER_WRONG_PARAM, {}, startLoc);
         }

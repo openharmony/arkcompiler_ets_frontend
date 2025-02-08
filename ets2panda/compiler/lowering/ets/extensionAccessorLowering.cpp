@@ -22,15 +22,9 @@ namespace ark::es2panda::compiler {
 
 static ir::AstNode *CheckAndReturnNode(checker::ETSChecker *checker, ir::AstNode *node);
 
-bool ResolveAssignmentExpressionToExtensionAccessorCall(checker::ETSChecker *checker,
-                                                        ir::AssignmentExpression *assignExpr,
-                                                        ir::MemberExpression *expr)
+static bool ResolveAssignmentExpressionToExtensionAccessorCall(ir::AssignmentExpression *assignExpr,
+                                                               ir::MemberExpression *expr)
 {
-    if (!assignExpr->Parent()->IsExpressionStatement()) {
-        checker->LogError(diagnostic::EXTENSION_GETTER_INVALID_CTX, {}, assignExpr->Start());
-        return false;
-    }
-
     auto *curParent = assignExpr->Parent()->AsExpressionStatement();
     ir::AstNode *callExpr = nullptr;
     if (expr->Object()->IsETSNewClassInstanceExpression()) {
@@ -57,10 +51,19 @@ static bool IsAssignExprExtensionSetter(ir::AstNode *node)
            IsMemberExprExtensionAccessor(node->AsAssignmentExpression()->Left());
 }
 
+// Note: In check phase, extension accessor 'a.m' get its type from returnType of Signature. In this lowering, `a.m` is
+// lowered to 'a.m()', so its Type should be switched to the functionType of extension accessor, and in the reCheck,
+// `a.m` will not be checked again
+static void SwitchType(ir::MemberExpression *expr)
+{
+    expr->SetTsType(expr->ExtensionAccessorType());
+}
+
 static void TryHandleExtensionAccessor(checker::ETSChecker *checker, ir::MemberExpression *expr)
 {
     checker::SavedCheckerContextStatus ccStatusHelper(&checker->Context(),
                                                       checker::CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK);
+    SwitchType(expr);
     auto oldParent = expr->Parent();
     if (IsAssignExprExtensionSetter(oldParent) && expr == oldParent->AsAssignmentExpression()->Left()) {
         auto *assignExpr = oldParent->AsAssignmentExpression();
@@ -70,16 +73,19 @@ static void TryHandleExtensionAccessor(checker::ETSChecker *checker, ir::MemberE
         auto *rightExpr = assignExpr->AsAssignmentExpression()->Right();
         rightExpr->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
         if (IsMemberExprExtensionAccessor(rightExpr)) {
+            SwitchType(rightExpr->AsMemberExpression());
             checker::Type *tsType = rightExpr->AsMemberExpression()->TsType();
+            checker::ETSFunctionType *eAccType = rightExpr->AsMemberExpression()->ExtensionAccessorType();
             auto *copyedRight = rightExpr->Clone(checker->Allocator(), nullptr);
             copyedRight->AsMemberExpression()->SetTsType(tsType);
+            copyedRight->AsMemberExpression()->SetExtensionAccessorType(eAccType);
             rightExpr =
                 checker->CreateExtensionAccessorCall(checker, copyedRight->AsMemberExpression(),
                                                      ArenaVector<ir::Expression *>(checker->Allocator()->Adapter()));
         }
         rightExpr->SetParent(callExpr);
         callExpr->AsCallExpression()->Arguments().emplace_back(rightExpr);
-        if (!ResolveAssignmentExpressionToExtensionAccessorCall(checker, assignExpr, expr)) {
+        if (!ResolveAssignmentExpressionToExtensionAccessorCall(assignExpr, expr)) {
             return;
         };
         CheckLoweredNode(checker->VarBinder()->AsETSBinder(), checker, callExpr);

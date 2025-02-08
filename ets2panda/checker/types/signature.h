@@ -266,6 +266,16 @@ public:
         return HasSignatureFlag(SignatureFlags::FINAL);
     }
 
+    [[nodiscard]] bool IsExtensionFunction() const noexcept
+    {
+        return HasSignatureFlag(SignatureFlags::EXTENSION_FUNCTION);
+    }
+
+    [[nodiscard]] bool IsExtensionAccessor() const noexcept
+    {
+        return IsExtensionFunction() && HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
+    }
+
     void ToAssemblerType(std::stringstream &ss) const;
 
     [[nodiscard]] util::StringView InternalName() const;

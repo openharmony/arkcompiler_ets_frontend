@@ -433,9 +433,6 @@ ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()
 {
     auto newStatus = ParserStatus::ARROW_FUNCTION | ParserStatus::ALLOW_RECEIVER;
     auto *func = ParseFunction(newStatus);
-    if (func->HasReceiver()) {
-        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
-    }
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func, Allocator());
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;

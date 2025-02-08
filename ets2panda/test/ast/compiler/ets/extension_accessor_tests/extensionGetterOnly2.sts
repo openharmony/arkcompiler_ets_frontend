@@ -14,19 +14,26 @@
  */
 
 class A {
-    static xstate: int = 0;
+    field_: int;
 }
-
-get x(this: A): int { return A.xstate }
-set x(this: A, v: int) { A.xstate = v }
 
 class B {
-    get y() : A { return new A() }
+    field_: int;
 }
 
-function main(): void {
-    let b = new B();
-    b.y.x = 123;
-    assertEQ(A.xstate, 123)
-    assertEQ(b.y.x, 123)
+set field(this: B, n: int) {
+    this.field_ = n;
 }
+
+get field(this: A): int {
+    return this.field_;
+}
+new A()./* @@ label1 */field = 1;
+new A()./* @@ label2 */field += 1;
+new A()./* @@ label3 */field++;
+++new A()./* @@ label4 */field;
+
+/* @@@ label1 Error TypeError: Cannot assign to this property because it is readonly. */
+/* @@@ label2 Error TypeError: Cannot assign to this property because it is readonly. */
+/* @@@ label3 Error TypeError: Cannot assign to this property because it is readonly. */
+/* @@@ label4 Error TypeError: Cannot assign to this property because it is readonly. */

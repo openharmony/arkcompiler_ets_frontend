@@ -107,7 +107,7 @@ static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir:
     auto *lcType = expr->TsType();
     if (checker->IsExtensionETSFunctionType(lcType) && expr->IsMemberExpression() &&
         expr->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR)) {
-        lcType = expr->AsMemberExpression()->ExtensionAccessorReturnType();
+        lcType = expr->AsMemberExpression()->ExtensionAccessorType();
     }
     if (auto *lcTypeAsPrimitive = checker->MaybeUnboxInRelation(lcType); lcTypeAsPrimitive != nullptr) {
         lcType = lcTypeAsPrimitive;

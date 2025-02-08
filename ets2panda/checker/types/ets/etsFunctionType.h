@@ -79,6 +79,18 @@ public:
         return FindSpecificSignature([](auto const *const sig) -> bool { return sig->Function()->IsSetter(); });
     }
 
+    [[nodiscard]] ArenaVector<Signature *> &GetExtensionAccessorSigs()
+    {
+        ES2PANDA_ASSERT(!IsETSArrowType());
+        return extensionAccessorSigs_;
+    }
+
+    [[nodiscard]] ArenaVector<Signature *> &GetExtensionFunctionSigs()
+    {
+        ES2PANDA_ASSERT(!IsETSArrowType());
+        return extensionFunctionSigs_;
+    }
+
     [[nodiscard]] Signature *FirstAbstractSignature() const noexcept
     {
         return FindSpecificSignature(
@@ -97,6 +109,15 @@ public:
     ETSFunctionType *MethodToArrow(ETSChecker *checker);
     ETSObjectType *ArrowToFunctionalInterface(ETSChecker *checker);
     ETSObjectType *ArrowToFunctionalInterfaceDesiredArity(ETSChecker *checker, size_t arity);
+    [[nodiscard]] bool IsExtensionFunctionType() const
+    {
+        return !extensionFunctionSigs_.empty() || !extensionAccessorSigs_.empty();
+    }
+
+    [[nodiscard]] bool IsExtensionAccessorType() const
+    {
+        return !extensionAccessorSigs_.empty();
+    }
 
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;
@@ -140,6 +161,8 @@ public:
 
 private:
     ArenaVector<Signature *> callSignatures_;
+    ArenaVector<Signature *> extensionFunctionSigs_;
+    ArenaVector<Signature *> extensionAccessorSigs_;
     util::StringView const name_;
     util::StringView const assemblerName_;
     ETSFunctionType *invokeToArrowSignature_;

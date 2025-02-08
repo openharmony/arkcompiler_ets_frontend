@@ -607,4 +607,23 @@ Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type)
     }
 }
 
+Signature *ETSChecker::FindExtensionSetterInMap(util::StringView name, ETSObjectType *type)
+{
+    return GetGlobalTypesHolder()->FindExtensionSetterInMap(name, type);
+}
+
+Signature *ETSChecker::FindExtensionGetterInMap(util::StringView name, ETSObjectType *type)
+{
+    return GetGlobalTypesHolder()->FindExtensionGetterInMap(name, type);
+}
+
+void ETSChecker::InsertExtensionSetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+{
+    GetGlobalTypesHolder()->InsertExtensionSetterToMap(name, type, sig);
+}
+
+void ETSChecker::InsertExtensionGetterToMap(util::StringView name, ETSObjectType *type, Signature *sig)
+{
+    GetGlobalTypesHolder()->InsertExtensionGetterToMap(name, type, sig);
+}
 }  // namespace ark::es2panda::checker

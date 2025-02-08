@@ -1752,7 +1752,7 @@ varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalFunction(const ir::M
 {
     auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
     auto *globalFunctionVar = Scope()->FindInGlobal(propertyName, VO::STATIC_METHODS).variable;
-    if (globalFunctionVar == nullptr || !IsExtensionETSFunctionType(this->GetTypeOfVariable(globalFunctionVar))) {
+    if (globalFunctionVar == nullptr || !IsExtensionETSFunctionType(globalFunctionVar->TsType())) {
         return nullptr;
     }
 
@@ -1763,7 +1763,7 @@ varbinder::Variable *ETSChecker::GetExtensionFuncVarInGlobalField(const ir::Memb
 {
     auto propertyName = memberExpr->Property()->AsIdentifier()->Name();
     auto *globalFieldVar = Scope()->FindInGlobal(propertyName, VO::STATIC_VARIABLES).variable;
-    if (globalFieldVar == nullptr || !IsExtensionETSFunctionType(this->GetTypeOfVariable(globalFieldVar))) {
+    if (globalFieldVar == nullptr || !IsExtensionETSFunctionType(globalFieldVar->TsType())) {
         return nullptr;
     }
 
@@ -1922,32 +1922,74 @@ void ETSChecker::ValidateReadonlyProperty(const ir::MemberExpression *const memb
     }
 }
 
-void ETSChecker::ValidateGetterSetter(const ir::MemberExpression *const memberExpr,
-                                      const varbinder::LocalVariable *const prop, PropertySearchFlags searchFlag)
+ETSFunctionType *ETSChecker::ResolveAccessorTypeByFlag(ir::MemberExpression *const memberExpr,
+                                                       ETSFunctionType *propType, ETSFunctionType *funcType,
+                                                       PropertySearchFlags searchFlag)
 {
-    auto *propType = prop->TsType()->AsETSFunctionType();
-    ES2PANDA_ASSERT((propType->FindGetter() != nullptr) == propType->HasTypeFlag(TypeFlag::GETTER));
-    ES2PANDA_ASSERT((propType->FindSetter() != nullptr) == propType->HasTypeFlag(TypeFlag::SETTER));
-
+    ETSFunctionType *finalRes = nullptr;
     auto const &sourcePos = memberExpr->Property()->Start();
     auto callExpr = memberExpr->Parent()->IsCallExpression() ? memberExpr->Parent()->AsCallExpression() : nullptr;
-
     if ((searchFlag & PropertySearchFlags::IS_GETTER) != 0) {
-        if (!propType->HasTypeFlag(TypeFlag::GETTER)) {
-            LogError(diagnostic::READ_FROM_WRITEONLY_PROP, {}, sourcePos);
-            return;
+        if (propType != nullptr && propType->HasTypeFlag(TypeFlag::GETTER)) {
+            ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindGetter(), sourcePos);
+            finalRes = propType;
         }
-        ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindGetter(), sourcePos);
+
+        if (funcType != nullptr && funcType->IsExtensionAccessorType() &&
+            FindRelativeExtensionGetter(memberExpr, funcType) != nullptr) {
+            finalRes = funcType;
+        }
+
+        if (finalRes == nullptr) {
+            LogError(diagnostic::READ_FROM_WRITEONLY_PROP, {}, sourcePos);
+            return finalRes;
+        }
     }
 
     if ((searchFlag & PropertySearchFlags::IS_SETTER) != 0) {
-        ValidateReadonlyProperty(memberExpr, propType, sourcePos);
-        if (propType->FindSetter() == nullptr) {
-            LogError(diagnostic::ASSIGN_TO_READONLY_PROP, {}, sourcePos);
-            return;
+        finalRes = nullptr;
+        if (propType != nullptr) {
+            ValidateReadonlyProperty(memberExpr, propType, sourcePos);
+            if (propType->FindSetter() != nullptr) {
+                ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindSetter(), sourcePos);
+                finalRes = propType;
+            }
         }
-        ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindSetter(), sourcePos);
+
+        if (funcType != nullptr && funcType->IsExtensionAccessorType() &&
+            FindRelativeExtensionSetter(memberExpr, funcType) != nullptr) {
+            finalRes = funcType;
+        }
+
+        if (finalRes == nullptr) {
+            LogError(diagnostic::ASSIGN_TO_READONLY_PROP, {}, sourcePos);
+        }
     }
+
+    return finalRes;
+}
+
+// Note: Need to validate extension Accessor and original Accessor.
+std::vector<ResolveResult *> ETSChecker::ValidateAccessor(ir::MemberExpression *const memberExpr,
+                                                          varbinder::LocalVariable *const oAcc,
+                                                          varbinder::Variable *const eAcc,
+                                                          PropertySearchFlags searchFlag)
+{
+    auto *funcType = eAcc != nullptr ? eAcc->TsType()->AsETSFunctionType() : nullptr;
+    auto *propType = oAcc != nullptr ? oAcc->TsType()->AsETSFunctionType() : nullptr;
+    searchFlag = memberExpr->Parent()->IsUpdateExpression() ? searchFlag | PropertySearchFlags::IS_SETTER : searchFlag;
+    ETSFunctionType *finalRes = ResolveAccessorTypeByFlag(memberExpr, propType, funcType, searchFlag);
+    std::vector<ResolveResult *> resolveRes = {};
+    if (finalRes == nullptr) {
+        return resolveRes;
+    }
+
+    if (finalRes == propType) {
+        resolveRes.emplace_back(Allocator()->New<ResolveResult>(oAcc, ResolvedKind::PROPERTY));
+        return resolveRes;
+    }
+    resolveRes.emplace_back(Allocator()->New<ResolveResult>(eAcc, ResolvedKind::EXTENSION_ACCESSOR));
+    return resolveRes;
 }
 
 ir::ClassProperty *ETSChecker::FindClassProperty(const ETSObjectType *const objectType, const ETSFunctionType *propType)
@@ -1993,6 +2035,14 @@ bool ETSChecker::FindPropertyInAssignment(const ir::AstNode *it, const std::stri
     }) != nullptr;
 }
 
+static bool IsExtensionAccessorCallUse(checker::ETSChecker *checker, const ir::MemberExpression *const memberExpr,
+                                       ResolvedKind resolvedKind)
+{
+    return resolvedKind == ResolvedKind::EXTENSION_ACCESSOR &&
+           !checker->HasStatus(CheckerStatus::IN_EXTENSION_ACCESSOR_CHECK) &&
+           memberExpr->Parent()->IsCallExpression() && memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr;
+}
+
 static ResolvedKind DecideResolvedKind(Type *typeOfGlobalFunctionVar)
 {
     ES2PANDA_ASSERT(typeOfGlobalFunctionVar != nullptr);
@@ -2001,8 +2051,7 @@ static ResolvedKind DecideResolvedKind(Type *typeOfGlobalFunctionVar)
         return ResolvedKind::EXTENSION_FUNCTION;
     }
 
-    auto const *callSig = typeOfGlobalFunctionVar->AsETSFunctionType()->CallSignaturesOfMethodOrArrow()[0];
-    if (callSig->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER)) {
+    if (typeOfGlobalFunctionVar->AsETSFunctionType()->IsExtensionAccessorType()) {
         return ResolvedKind::EXTENSION_ACCESSOR;
     }
 
@@ -2022,8 +2071,6 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
         return resolveRes;
     }
 
-    varbinder::Variable *globalFunctionVar = nullptr;
-
     if (target->GetDeclNode() != nullptr && target->GetDeclNode()->IsClassDefinition() &&
         !target->GetDeclNode()->AsClassDefinition()->IsClassDefinitionChecked()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2037,49 +2084,39 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
     auto searchName = target->GetReExportAliasValue(memberExpr->Property()->AsIdentifier()->Name());
     auto *prop = target->GetProperty(searchName, searchFlag);
-
-    if ((memberExpr->Parent()->IsCallExpression() &&
-         memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) ||
-        prop == nullptr) {
-        globalFunctionVar = ResolveInstanceExtension(memberExpr);
-    }
-    if (globalFunctionVar == nullptr ||
-        (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE))) {
-        /*
-            Instance extension function can only be called by class instance, if a property is accessed by
-            CLASS or INTERFACE type, it couldn't be an instance extension function call
-
-            Example code:
-                class A {}
-                static function xxx(this:A) {}
-                function main() {
-                    A.xxx()
-                }
-
-            !NB: When supporting static extension function, the above code case would be supported
-        */
+    varbinder::Variable *const globalFunctionVar = ResolveInstanceExtension(memberExpr);
+    if (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
+        // Note: extension function only for instance.
         ValidateResolvedProperty(&prop, target, memberExpr->Property()->AsIdentifier(), searchFlag);
-        if (prop == nullptr) {
-            return resolveRes;
+        if (prop != nullptr) {
+            resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
         }
-    } else {
-        ResolvedKind resolvedKind = DecideResolvedKind(globalFunctionVar->TsType());
-        resolveRes.emplace_back(Allocator()->New<ResolveResult>(globalFunctionVar, resolvedKind));
-
-        if (prop == nullptr) {
-            // No matched property, but have possible matched global extension function
-            return resolveRes;
-        }
+        return resolveRes;
     }
 
     if (HasStatus(CheckerStatus::IN_GETTER)) {
         WarnForEndlessLoopInGetterSetter(memberExpr);
     }
 
-    resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
+    // Note: validate originalAccessor and extensionAccessor.
+    if ((IsVariableGetterSetter(prop) || IsVariableExtensionAccessor(globalFunctionVar)) &&
+        ((searchFlag & PropertySearchFlags::IS_GETTER) != 0 || (searchFlag & PropertySearchFlags::IS_SETTER) != 0)) {
+        return ValidateAccessor(const_cast<ir::MemberExpression *>(memberExpr), prop, globalFunctionVar, searchFlag);
+    }
 
-    if (IsVariableGetterSetter(prop)) {
-        ValidateGetterSetter(memberExpr, prop, searchFlag);
+    if (globalFunctionVar != nullptr) {
+        ResolvedKind resolvedKind = DecideResolvedKind(globalFunctionVar->TsType());
+        if (IsExtensionAccessorCallUse(this, memberExpr, resolvedKind)) {
+            LogError(diagnostic::EXTENSION_ACCESSOR_INVALID_CALL, {}, memberExpr->Start());
+            return resolveRes;
+        }
+        resolveRes.emplace_back(Allocator()->New<ResolveResult>(globalFunctionVar, resolvedKind));
+    } else {
+        ValidateResolvedProperty(&prop, target, memberExpr->Property()->AsIdentifier(), searchFlag);
+    }
+
+    if (prop != nullptr) {
+        resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
     }
     return resolveRes;
 }

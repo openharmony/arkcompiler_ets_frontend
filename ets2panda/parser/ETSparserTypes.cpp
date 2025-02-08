@@ -210,9 +210,6 @@ ir::TypeNode *ETSParser::ParseFunctionType(TypeAnnotationParsingOptions *options
     }
 
     ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(false);
-    if (hasReceiver) {
-        throwMarker |= ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD;
-    }
     auto *funcType = AllocNode<ir::ETSFunctionType>(
         ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation, hasReceiver), throwMarker, Allocator());
     funcType->SetRange({startLoc, returnTypeAnnotation->End()});

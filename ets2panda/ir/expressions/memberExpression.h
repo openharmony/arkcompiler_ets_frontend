@@ -162,16 +162,15 @@ public:
         return objType_;
     }
 
-    [[nodiscard]] checker::Type *ExtensionAccessorReturnType() const
+    [[nodiscard]] checker::ETSFunctionType *ExtensionAccessorType() const
     {
-        ES2PANDA_ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
-        return extensionAccessorReturnType_;
+        return extensionAccessorType_;
     }
 
-    void SetExtensionAccessorReturnType(checker::Type *eaccReturnType)
+    void SetExtensionAccessorType(checker::ETSFunctionType *eAccessorType)
     {
         ES2PANDA_ASSERT(HasMemberKind(ir::MemberExpressionKind::EXTENSION_ACCESSOR));
-        extensionAccessorReturnType_ = eaccReturnType;
+        extensionAccessorType_ = eAccessorType;
     }
 
     void SetPropVar(varbinder::LocalVariable *propVar) noexcept
@@ -203,7 +202,6 @@ public:
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
-    checker::Type *GetExtensionAccessorReturnType(checker::ETSChecker *checker);
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -256,7 +254,7 @@ private:
     bool ignoreBox_ {false};
     checker::Type *uncheckedType_ {};
     checker::ETSObjectType *objType_ {};
-    checker::Type *extensionAccessorReturnType_ {};
+    checker::ETSFunctionType *extensionAccessorType_ {};
 };
 }  // namespace ark::es2panda::ir
 

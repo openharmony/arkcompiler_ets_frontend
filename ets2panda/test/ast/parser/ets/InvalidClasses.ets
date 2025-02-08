@@ -124,7 +124,6 @@ interface I1 {
 /* @@? 72:13 Error SyntaxError: Interface fields must have type annotation. */
 /* @@? 72:14 Error SyntaxError: Invalid Type. */
 /* @@? 74:5 Error SyntaxError: Extension Getter can only have 1 parameter. */
-/* @@? 74:14 Error TypeError: Extension function can only defined for class, interface or array. */
 /* @@? 74:25 Error SyntaxError: Extension Accessor must have a receiver. */
 /* @@? 78:8 Error SyntaxError: Label must be followed by a loop statement. */
 /* @@? 78:8 Error TypeError: Type name 'number' used in the wrong context */
