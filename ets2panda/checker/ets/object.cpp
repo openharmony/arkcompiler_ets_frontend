@@ -1584,7 +1584,7 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
 
     if (classType->GetDeclNode()->IsClassDefinition() && classType->GetDeclNode()->AsClassDefinition()->IsGlobal()) {
         LogTypeError({"Cannot reference '", msg, "' in this context."}, node->Start());
-        return classType;
+        return GlobalBuiltinErrorType();
     }
 
     return classType;
