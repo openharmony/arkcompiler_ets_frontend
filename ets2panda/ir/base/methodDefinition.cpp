@@ -208,12 +208,6 @@ void MethodDefinition::Dump(ir::SrcDumper *dumper) const
         dumper->Endl();
     }
 
-    // Do not dump default constructor
-    if (Parent() != nullptr && Parent()->IsClassDefinition() && value_->IsFunctionExpression() &&
-        value_->AsFunctionExpression()->Function() != nullptr &&
-        value_->AsFunctionExpression()->Function()->IsImplicitSuperCallNeeded()) {
-        return;
-    }
     for (auto *anno : value_->AsFunctionExpression()->Function()->Annotations()) {
         anno->Dump(dumper);
     }
