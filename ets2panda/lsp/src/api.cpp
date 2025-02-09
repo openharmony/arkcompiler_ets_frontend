@@ -77,18 +77,32 @@ extern "C" TextSpan *GetSpanOfEnclosingComment(char const *fileName, size_t pos,
                : nullptr;
 }
 
-extern "C" ArenaVector<Diagnostic *> GetSemanticDiagnostics(char const *fileName)
+extern "C" DiagnosticReferences *GetSemanticDiagnostics(char const *fileName)
 {
     Initializer &initializer = Initializer::GetInstance();
     auto allocator = initializer.Allocator();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto semanticDiagnostics = GetSemanticDiagnosticsForFile(context, allocator);
+    DiagnosticReferences *result = allocator->New<DiagnosticReferences>(&semanticDiagnostics);
     initializer.DestroyContext(context);
-    return semanticDiagnostics;
+
+    return result;
 }
 
-LSPAPI g_lspImpl = {GetDefinitionAtPosition, GetFileReferences,         GetPrecedingToken,
-                    GetCurrentTokenValue,    GetSpanOfEnclosingComment, GetSemanticDiagnostics};
+extern "C" DiagnosticReferences *GetSyntacticDiagnostics(char const *fileName)
+{
+    Initializer &initializer = Initializer::GetInstance();
+    auto allocator = initializer.Allocator();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto synctacticDiagnostics = GetSyntacticDiagnosticsForFile(context, allocator);
+    DiagnosticReferences *result = allocator->New<DiagnosticReferences>(&synctacticDiagnostics);
+    initializer.DestroyContext(context);
+
+    return result;
+}
+
+LSPAPI g_lspImpl = {GetDefinitionAtPosition,   GetFileReferences,      GetPrecedingToken,      GetCurrentTokenValue,
+                    GetSpanOfEnclosingComment, GetSemanticDiagnostics, GetSyntacticDiagnostics};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()

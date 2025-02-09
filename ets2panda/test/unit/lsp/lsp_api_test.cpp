@@ -564,7 +564,6 @@ add("1", 2);
     ASSERT_EQ(std::get<int>(semanticDiagnostics[0]->code_), 1);
     ASSERT_STREQ(semanticDiagnostics[0]->message_, R"(Type '"hello"' cannot be assigned to type 'double')");
     ASSERT_STREQ(semanticDiagnostics[0]->codeDescription_.href_, "test code description");
-    ASSERT_STREQ(std::get<const char *>(semanticDiagnostics[0]->data_), "semantic");
     auto const expectedSecondStartLine = 6;
     auto const expectedSecondStartCharacter = 5;
     auto const expectedSecondEndLine = 6;
@@ -577,7 +576,158 @@ add("1", 2);
     ASSERT_EQ(std::get<int>(semanticDiagnostics[1]->code_), 1);
     ASSERT_STREQ(semanticDiagnostics[1]->message_, R"(Type '"1"' is not compatible with type 'double' at index 1)");
     ASSERT_STREQ(semanticDiagnostics[1]->codeDescription_.href_, "test code description");
-    ASSERT_STREQ(std::get<const char *>(semanticDiagnostics[1]->data_), "semantic");
+    impl_->DestroyContext(context);
+}
+
+TEST_F(LSPAPITests, GetSyntacticDiagnosticsForFile1)
+{
+    const char *source = R"delimiter(
+function add(a: number, b: number) {
+    return a + b;
+}
+let n = 333;
+let res = add(n, n);
+)delimiter";
+    es2panda_Context *context = CreateContextAndProceedToState(
+        impl_, cfg_, source, "GetSyntacticDiagnosticsNoError.sts", ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(context), ES2PANDA_STATE_CHECKED);
+    auto allocator = reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->allocator;
+    auto syntacticDiagnostics = ark::es2panda::lsp::GetSyntacticDiagnosticsForFile(context, allocator);
+    ASSERT_EQ(syntacticDiagnostics.size(), 0);
+    impl_->DestroyContext(context);
+}
+
+TEST_F(LSPAPITests, GetSyntacticDiagnosticsForFile2)
+{
+    const char *source = R"delimiter(
+functon add(a: number, b: number) {
+    return a + b;
+}
+let n = 333;
+let res = add(n, n);
+)delimiter";
+    es2panda_Context *context = CreateContextAndProceedToState(
+        impl_, cfg_, source, "GetSyntacticDiagnosticsForFile.sts", ES2PANDA_STATE_CHECKED);
+    auto allocator = reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->allocator;
+    auto syntacticDiagnostics = ark::es2panda::lsp::GetSyntacticDiagnosticsForFile(context, allocator);
+    auto const expectedErrorCount = 13;
+    ASSERT_EQ(syntacticDiagnostics.size(), expectedErrorCount);
+    auto const expectedFirstStartLine = 2;
+    auto const expectedFirstStartCharacter = 9;
+    auto const expectedFirstEndLine = 2;
+    auto const expectedFirstEndCharacter = 12;
+    ASSERT_EQ(syntacticDiagnostics[0]->range_.start.line_, expectedFirstStartLine);
+    ASSERT_EQ(syntacticDiagnostics[0]->range_.start.character_, expectedFirstStartCharacter);
+    ASSERT_EQ(syntacticDiagnostics[0]->range_.end.line_, expectedFirstEndLine);
+    ASSERT_EQ(syntacticDiagnostics[0]->range_.end.character_, expectedFirstEndCharacter);
+    ASSERT_EQ(syntacticDiagnostics[0]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(syntacticDiagnostics[0]->code_), 1);
+    auto const expectedSecondStartLine = 3;
+    auto const expectedSecondStartCharacter = 18;
+    auto const expectedSecondEndLine = 3;
+    auto const expectedSecondEndCharacter = 18;
+    ASSERT_EQ(syntacticDiagnostics[1]->range_.start.line_, expectedSecondStartLine);
+    ASSERT_EQ(syntacticDiagnostics[1]->range_.start.character_, expectedSecondStartCharacter);
+    ASSERT_EQ(syntacticDiagnostics[1]->range_.end.line_, expectedSecondEndLine);
+    ASSERT_EQ(syntacticDiagnostics[1]->range_.end.character_, expectedSecondEndCharacter);
+    ASSERT_EQ(syntacticDiagnostics[1]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(syntacticDiagnostics[1]->code_), 1);
+    auto const thirdIndex = 2;
+    auto const expectedThirdStartLine = 3;
+    auto const expectedThirdStartCharacter = 18;
+    auto const expectedThirdEndLine = 3;
+    auto const expectedThirdEndCharacter = 18;
+    ASSERT_EQ(syntacticDiagnostics[thirdIndex]->range_.start.line_, expectedThirdStartLine);
+    ASSERT_EQ(syntacticDiagnostics[thirdIndex]->range_.start.character_, expectedThirdStartCharacter);
+    ASSERT_EQ(syntacticDiagnostics[thirdIndex]->range_.end.line_, expectedThirdEndLine);
+    ASSERT_EQ(syntacticDiagnostics[thirdIndex]->range_.end.character_, expectedThirdEndCharacter);
+    ASSERT_EQ(syntacticDiagnostics[thirdIndex]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(syntacticDiagnostics[thirdIndex]->code_), 1);
+    ASSERT_STREQ(syntacticDiagnostics[thirdIndex]->message_, R"(Unexpected token ':'.)");
+    impl_->DestroyContext(context);
+}
+
+TEST_F(LSPAPITests, GetSyntacticDiagnosticsForFile3)
+{
+    const char *source = R"delimiter(
+functon add(a: number, b: number) {
+    return a + b;
+}
+let n = 333;
+let res = add(n, n);
+)delimiter";
+    es2panda_Context *context = CreateContextAndProceedToState(
+        impl_, cfg_, source, "GetSyntacticDiagnosticsForFile.sts", ES2PANDA_STATE_CHECKED);
+    auto allocator = reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->allocator;
+    auto syntacticDiagnostics = ark::es2panda::lsp::GetSyntacticDiagnosticsForFile(context, allocator);
+    auto const forthIndex = 5;
+    auto const expectedForthStartLine = 3;
+    auto const expectedForthStartCharacter = 18;
+    auto const expectedForthEndLine = 3;
+    auto const expectedForthEndCharacter = 18;
+    ASSERT_EQ(syntacticDiagnostics[forthIndex]->range_.start.line_, expectedForthStartLine);
+    ASSERT_EQ(syntacticDiagnostics[forthIndex]->range_.start.character_, expectedForthStartCharacter);
+    ASSERT_EQ(syntacticDiagnostics[forthIndex]->range_.end.line_, expectedForthEndLine);
+    ASSERT_EQ(syntacticDiagnostics[forthIndex]->range_.end.character_, expectedForthEndCharacter);
+    ASSERT_EQ(syntacticDiagnostics[forthIndex]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(syntacticDiagnostics[forthIndex]->code_), 1);
+    ASSERT_STREQ(syntacticDiagnostics[forthIndex]->message_, R"(Unexpected token ','.)");
+    ASSERT_STREQ(syntacticDiagnostics[forthIndex]->codeDescription_.href_, "test code description");
+    auto const fifthIndex = 8;
+    auto const expectedFifththStartLine = 2;
+    auto const expectedFifthStartCharacter = 27;
+    auto const expectedFifthEndLine = 2;
+    auto const expectedFifthEndCharacter = 33;
+    ASSERT_EQ(syntacticDiagnostics[fifthIndex]->range_.start.line_, expectedFifththStartLine);
+    ASSERT_EQ(syntacticDiagnostics[fifthIndex]->range_.start.character_, expectedFifthStartCharacter);
+    ASSERT_EQ(syntacticDiagnostics[fifthIndex]->range_.end.line_, expectedFifthEndLine);
+    ASSERT_EQ(syntacticDiagnostics[fifthIndex]->range_.end.character_, expectedFifthEndCharacter);
+    ASSERT_EQ(syntacticDiagnostics[fifthIndex]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(syntacticDiagnostics[fifthIndex]->code_), 1);
+    ASSERT_STREQ(syntacticDiagnostics[fifthIndex]->message_, R"(Label must be followed by a loop statement)");
+    ASSERT_STREQ(syntacticDiagnostics[fifthIndex]->codeDescription_.href_, "test code description");
+    impl_->DestroyContext(context);
+}
+
+TEST_F(LSPAPITests, GetSyntacticDiagnosticsForFile4)
+{
+    const char *source = R"delimiter(
+functon add(a: number, b: number) {
+    return a + b;
+}
+let n = 333;
+let res = add(n, n);
+)delimiter";
+    es2panda_Context *context = CreateContextAndProceedToState(
+        impl_, cfg_, source, "GetSyntacticDiagnosticsForFile.sts", ES2PANDA_STATE_CHECKED);
+    auto allocator = reinterpret_cast<ark::es2panda::public_lib::Context *>(context)->allocator;
+    auto syntacticDiagnostics = ark::es2panda::lsp::GetSyntacticDiagnosticsForFile(context, allocator);
+    auto const sixthIndex = 9;
+    auto const expectedSixthStartLine = 3;
+    auto const expectedSixthStartCharacter = 18;
+    auto const expectedSixthEndLine = 3;
+    auto const expectedSixthEndCharacter = 18;
+    ASSERT_EQ(syntacticDiagnostics[sixthIndex]->range_.start.line_, expectedSixthStartLine);
+    ASSERT_EQ(syntacticDiagnostics[sixthIndex]->range_.start.character_, expectedSixthStartCharacter);
+    ASSERT_EQ(syntacticDiagnostics[sixthIndex]->range_.end.line_, expectedSixthEndLine);
+    ASSERT_EQ(syntacticDiagnostics[sixthIndex]->range_.end.character_, expectedSixthEndCharacter);
+    ASSERT_EQ(syntacticDiagnostics[sixthIndex]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(syntacticDiagnostics[sixthIndex]->code_), 1);
+    ASSERT_STREQ(syntacticDiagnostics[sixthIndex]->message_, R"(Unexpected token ')'.)");
+    ASSERT_STREQ(syntacticDiagnostics[sixthIndex]->codeDescription_.href_, "test code description");
+    auto const sevenIndex = 12;
+    auto const expectedSeventhStartLine = 3;
+    auto const expectedSeventhStartCharacter = 5;
+    auto const expectedSeventhEndLine = 3;
+    auto const expectedSeventhEndCharacter = 18;
+    ASSERT_EQ(syntacticDiagnostics[sevenIndex]->range_.start.line_, expectedSeventhStartLine);
+    ASSERT_EQ(syntacticDiagnostics[sevenIndex]->range_.start.character_, expectedSeventhStartCharacter);
+    ASSERT_EQ(syntacticDiagnostics[sevenIndex]->range_.end.line_, expectedSeventhEndLine);
+    ASSERT_EQ(syntacticDiagnostics[sevenIndex]->range_.end.character_, expectedSeventhEndCharacter);
+    ASSERT_EQ(syntacticDiagnostics[sevenIndex]->severity_, DiagnosticSeverity::Error);
+    ASSERT_EQ(std::get<int>(syntacticDiagnostics[sevenIndex]->code_), 1);
+    ASSERT_STREQ(syntacticDiagnostics[sevenIndex]->message_, R"(return keyword should be used in function body)");
+    ASSERT_STREQ(syntacticDiagnostics[sevenIndex]->codeDescription_.href_, "test code description");
     impl_->DestroyContext(context);
 }
 

@@ -18,6 +18,7 @@
 #include "internal_api.h"
 #include "checker/types/type.h"
 #include "ir/astNode.h"
+#include "lexer/token/sourceLocation.h"
 #include "macros.h"
 #include "public/public.h"
 
@@ -367,39 +368,36 @@ DiagnosticSeverity GetSeverity(ErrorType errorType)
     throw std::runtime_error("Unknown error type!");
 }
 
-const char *GetCategory(ErrorType errorType)
-{
-    switch (errorType) {
-        case ErrorType::SYNTAX:
-            return "syntax";
-        case ErrorType::SEMANTIC:
-            return "semantic";
-        default:
-            return "invalide";
-    }
-}
-
 Diagnostic *CreateDiagnosticForError(es2panda_Context *context, const Error &error, ArenaAllocator *allocator)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
     auto offset = index.GetOffset(lexer::SourceLocation(error.Line(), error.Offset()));
     auto touchingToken = GetTouchingToken(context, offset, false);
-    auto sourceRange = touchingToken->Range();
-    auto sourceStartLocation = index.GetLocation(sourceRange.start);
-    auto sourceEndLocation = index.GetLocation(sourceRange.end);
+    lexer::SourceRange sourceRange;
+    lexer::SourceLocation sourceStartLocation;
+    lexer::SourceLocation sourceEndLocation;
+    char *source;
+    if (touchingToken == nullptr) {
+        sourceStartLocation = index.GetLocation(lexer::SourcePosition(error.Offset(), error.Line()));
+        sourceEndLocation = index.GetLocation(lexer::SourcePosition(error.Offset(), error.Line()));
+        source = StdStringToCString(allocator, "");
+    } else {
+        sourceRange = touchingToken->Range();
+        sourceStartLocation = index.GetLocation(sourceRange.start);
+        sourceEndLocation = index.GetLocation(sourceRange.end);
+        source = StdStringToCString(allocator, touchingToken->DumpEtsSrc());
+    }
     auto range = Range(Position(sourceStartLocation.line, sourceStartLocation.col),
                        Position(sourceEndLocation.line, sourceEndLocation.col));
     auto severity = GetSeverity(error.Type());
     auto code = 1;
     const char *message = StdStringToCString(allocator, error.Message());
     auto codeDescription = CodeDescription("test code description");
-    auto source = StdStringToCString(allocator, touchingToken->DumpEtsSrc());
     auto tags = ArenaVector<DiagnosticTag>(allocator->Adapter());
     auto relatedInformation = ArenaVector<DiagnosticRelatedInformation>(allocator->Adapter());
-    auto data = GetCategory(error.Type());
-    auto diagnostic = allocator->New<Diagnostic>(range, tags, relatedInformation, severity, code, message,
-                                                 codeDescription, source, data);
+    auto diagnostic =
+        allocator->New<Diagnostic>(range, tags, relatedInformation, severity, code, message, codeDescription, source);
     return diagnostic;
 }
 
@@ -412,6 +410,17 @@ ArenaVector<Diagnostic *> GetSemanticDiagnosticsForFile(es2panda_Context *contex
         semanticDiagnostics.push_back(CreateDiagnosticForError(context, diagnostic, allocator));
     }
     return semanticDiagnostics;
+}
+
+ArenaVector<Diagnostic *> GetSyntacticDiagnosticsForFile(es2panda_Context *context, ArenaAllocator *allocator)
+{
+    ArenaVector<Diagnostic *> syntacticDiagnostics(allocator->Adapter());
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(ErrorType::SYNTAX);
+    for (const auto &diagnostic : diagnostics) {
+        syntacticDiagnostics.push_back(CreateDiagnosticForError(context, diagnostic, allocator));
+    }
+    return syntacticDiagnostics;
 }
 
 size_t GetTokenPosOfNode(const ir::AstNode *astNode)

@@ -124,6 +124,14 @@ typedef struct Diagnostic {
     }
 } Diagnostic;
 
+typedef struct DiagnosticReferences {
+    ark::ArenaVector<Diagnostic *> *diagnostic_;
+    DiagnosticReferences(ark::ArenaVector<Diagnostic *> *diagnostic)
+    {
+        this->diagnostic_ = diagnostic;
+    }
+} DiagnosticReferences;
+
 enum class CommentKind { SINGLE_LINE, MULTI_LINE };
 
 typedef struct CommentRange {
@@ -161,7 +169,8 @@ typedef struct LSPAPI {
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(char const *fileName, size_t position);
     TextSpan *(*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
-    ark::ArenaVector<Diagnostic *> (*getSemanticDiagnostics)(char const *fileName);
+    DiagnosticReferences *(*getSemanticDiagnostics)(char const *fileName);
+    DiagnosticReferences *(*getSyntacticDiagnostics)(char const *fileName);
 } LSPAPI;
 
 LSPAPI const *GetImpl();
