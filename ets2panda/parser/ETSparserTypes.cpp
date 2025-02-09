@@ -297,9 +297,28 @@ ir::TypeNode *ETSParser::ParsePotentialFunctionalType(TypeAnnotationParsingOptio
 {
     auto savePos = Lexer()->Save();
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+
+    auto isPotentiallyOptionalWithTypeAnnotation = [this]() {
+        bool res = false;
+
+        if (Lexer()->Lookahead() != lexer::LEX_CHAR_QUESTION) {
+            return res;
+        }
+
+        auto currentPos = Lexer()->Save();
+        // jump to '?' token
+        Lexer()->NextToken();
+
+        if (Lexer()->Lookahead() == lexer::LEX_CHAR_COLON) {
+            res = true;
+        }
+
+        Lexer()->Rewind(currentPos);
+        return res;
+    };
     if (((*options) & TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE) == 0 &&
         (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
-         Lexer()->Lookahead() == lexer::LEX_CHAR_COLON || Lexer()->Lookahead() == lexer::LEX_CHAR_QUESTION)) {
+         Lexer()->Lookahead() == lexer::LEX_CHAR_COLON || isPotentiallyOptionalWithTypeAnnotation())) {
         GetContext().Status() |= (ParserStatus::ALLOW_DEFAULT_VALUE | ParserStatus::ALLOW_RECEIVER);
         // '(' is consumed in `ParseFunctionType`
         Lexer()->Rewind(savePos);
