@@ -12,9 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+
+@Retention("SOURCE")
 @interface Anno{}
 
 // annotations for interface
 interface I1<@Anno @Anno() T>{}
 
-/* @@? 18:21 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */
+/* @@? 20:21 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element.  */

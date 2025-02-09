@@ -14,10 +14,13 @@
 */
 
 // Annotation declaration:
+@Retention("SOURCE")
 @interface Anno {
     name: string = "Jim"
     id: int = 1
 }
+
+@Retention("SOURCE")
 @interface Anno2 {
     name: string
 }

@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+
+@Retention("SOURCE")
 @interface Anno{}
 
 // annotations for as expression
@@ -21,6 +23,6 @@ let a = 1 as @Anno @Anno() Int
 class C1<@Anno @Anno() T>{}
 new C1<Int>() instanceof @Anno @Anno() C1
 
-/* @@? 18:28 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 22:40 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
-/* @@? 21:17 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element. */
+/* @@? 20:28 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
+/* @@? 24:40 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
+/* @@? 23:17 Error TypeError: Duplicate annotations are not allowed. The annotation 'Anno' has already been applied to this element. */

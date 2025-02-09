@@ -13,14 +13,17 @@
  * limitations under the License.
 */
 
+@Retention("SOURCE")
 @interface Message{
    msg: string = ""
    id: int = 0
 }
 
+@Retention("SOURCE")
 @interface Anno1{
 }
 
+@Retention("SOURCE")
 @interface Anno2{
 }
 

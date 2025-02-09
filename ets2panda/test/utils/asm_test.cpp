@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <gtest/gtest.h>
 #include <algorithm>
 #include "asm_test.h"
 #include "assembly-field.h"
@@ -136,6 +137,15 @@ void AsmTest::CheckRecordAnnotations(ark::pandasm::Program *program, const std::
     }
 }
 
+void AsmTest::CheckRecordWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName)
+{
+    const auto &recordTable = program->recordTable;
+    ASSERT_FALSE(recordTable.empty()) << "No records found in the program.";
+    auto found = recordTable.find(recordName);
+    ASSERT_NE(found, recordTable.end());
+    ASSERT(found->second.metadata->GetAnnotations().empty());
+}
+
 void AsmTest::CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName, bool isStatic,
                                        const AnnotationMap &expectedAnnotations)
 {
@@ -155,6 +165,15 @@ void AsmTest::CheckFunctionAnnotations(ark::pandasm::Program *program, const std
         // Check the fields for the matched annotation name
         CheckAnnotation(expected.second, *it);
     }
+}
+
+void AsmTest::CheckFunctionWithoutAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+                                              bool isStatic)
+{
+    const auto &functionTable = isStatic ? program->functionStaticTable : program->functionInstanceTable;
+    auto found = functionTable.find(functionName);
+    ASSERT_NE(found, functionTable.end()) << "Unexpected function Name: " << functionName;
+    ASSERT(found->second.metadata->GetAnnotations().empty());
 }
 
 void AsmTest::CheckFunctionParameterAnnotations(ark::pandasm::Program *program, const std::string &functionName,
@@ -181,6 +200,16 @@ void AsmTest::CheckFunctionParameterAnnotations(ark::pandasm::Program *program, 
     }
 }
 
+void AsmTest::CheckFunctionParameterWithoutAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+                                                       bool isStatic, const uint32_t &paramIndex)
+{
+    const auto &functionTable = isStatic ? program->functionStaticTable : program->functionInstanceTable;
+    auto found = functionTable.find(functionName);
+    ASSERT_NE(found, functionTable.end());
+    ASSERT_LT(paramIndex, found->second.params.size());
+    ASSERT(found->second.params.at(paramIndex).metadata->GetAnnotations().empty());
+}
+
 void AsmTest::CheckClassFieldAnnotations(ark::pandasm::Program *program, const std::string &recordName,
                                          const std::string &fieldName, const AnnotationMap &expectedAnnotations)
 {
@@ -203,6 +232,19 @@ void AsmTest::CheckClassFieldAnnotations(ark::pandasm::Program *program, const s
         // Check the fields for the matched annotation name
         CheckAnnotation(expected.second, *it);
     }
+}
+
+void AsmTest::CheckClassFieldWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                                const std::string &fieldName)
+{
+    const auto &recordTable = program->recordTable;
+    auto found = recordTable.find(recordName);
+    ASSERT_NE(found, recordTable.end());
+    auto &filedList = found->second.fieldList;
+    auto result = std::find_if(filedList.begin(), filedList.end(),
+                               [&fieldName](const ark::pandasm::Field &field) { return field.name == fieldName; });
+    ASSERT_NE(result, filedList.end()) << "Cannot find classProperty '" << fieldName << "'.";
+    ASSERT(result->metadata->GetAnnotations().empty());
 }
 
 void AsmTest::SetCurrentProgram(std::string_view src)

@@ -18,6 +18,7 @@
 
 #include "ir/annotationAllowed.h"
 #include "ir/expression.h"
+#include "ir/expressions/identifier.h"
 #include "ir/statements/annotationUsage.h"
 
 namespace ark::es2panda::checker {

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+@Retention("SOURCE")
 @interface MyAnno {
     testProperty1: string
     testProperty2: string
@@ -25,5 +26,5 @@ class B{
     y : string
 }
 
-/* @@? 22:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined. */
-/* @@? 24:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined. */
+/* @@? 23:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined. */
+/* @@? 25:6 Error TypeError: The number of arguments provided for the annotation exceeds the number of fields defined. */

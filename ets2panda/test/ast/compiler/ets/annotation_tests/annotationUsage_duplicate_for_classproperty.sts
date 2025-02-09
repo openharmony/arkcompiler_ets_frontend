@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@Retention("SOURCE")
 @interface MyAnno {
     testProperty1: string
     testProperty2: number
@@ -23,4 +25,4 @@ class A{
     x : int
 }
 
-/* @@? 22:6 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */
+/* @@? 24:6 Error TypeError: Duplicate annotations are not allowed. The annotation 'MyAnno' has already been applied to this element.  */

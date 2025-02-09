@@ -71,15 +71,26 @@ public:
     void CheckRecordAnnotations(ark::pandasm::Program *program, const std::string &recordName,
                                 const AnnotationMap &expectedAnnotations);
 
+    void CheckRecordWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName);
+
     void CheckFunctionAnnotations(ark::pandasm::Program *program, const std::string &functionName, bool isStatic,
                                   const AnnotationMap &expectedAnnotations);
+
+    void CheckFunctionWithoutAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+                                         bool isStatic);
 
     void CheckFunctionParameterAnnotations(ark::pandasm::Program *program, const std::string &functionName,
                                            bool isStatic, const uint32_t &paramIndex,
                                            const AnnotationMap &expectedAnnotations);
 
+    void CheckFunctionParameterWithoutAnnotations(ark::pandasm::Program *program, const std::string &functionName,
+                                                  bool isStatic, const uint32_t &paramIndex);
+
     void CheckClassFieldAnnotations(ark::pandasm::Program *program, const std::string &recordName,
                                     const std::string &fieldName, const AnnotationMap &expectedAnnotations);
+
+    void CheckClassFieldWithoutAnnotations(ark::pandasm::Program *program, const std::string &recordName,
+                                           const std::string &fieldName);
 
     void SetCurrentProgram(std::string_view src);
 

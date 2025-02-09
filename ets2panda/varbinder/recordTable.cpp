@@ -18,6 +18,7 @@
 #include "varbinder/ETSBinder.h"
 #include "ir/base/classDefinition.h"
 #include "ir/expressions/identifier.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "checker/types/ets/etsObjectType.h"

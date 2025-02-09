@@ -14,7 +14,6 @@
  */
 
 #include "annotationUsage.h"
-
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"

@@ -19,3 +19,19 @@ semantic:
 - name: NO_CALL_SINGATURE
   id: 2
   message: Type '{}' has no call signatures.
+
+- name: INVALID_ANNOTATION_RETENTION
+  id: 3
+  message: Annotation '@Retention' can only be applied to annotation declarations.
+
+- name: ANNOTATION_POLICY_INVALID
+  id: 4
+  message: Invalid value for 'policy' field. The policy must be one of the following:'SOURCE', 'CLASS', or 'RUNTIME'.
+
+- name: ANNOTATION_ON_LAMBDA_LOCAL_TYPE
+  id: 5
+  message: Annotations without 'SOURCE' cannot be used on lambda expressions, local declarations, or types.
+
+- name: STANDARD_ANNOTATION_REQUIRED
+  id: 6
+  message: Only standard annotations are allowed to be applied on annotations.

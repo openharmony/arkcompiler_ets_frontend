@@ -17,6 +17,7 @@
 
 #include "varbinder/tsBinding.h"
 #include "public/public.h"
+#include "ir/statements/annotationDeclaration.h"
 
 namespace ark::es2panda::varbinder {
 VariableScope *Scope::EnclosingVariableScope()

@@ -33,6 +33,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/dummyNode.h"
 #include "ir/ets/etsReExportDeclaration.h"
+#include "ir/statements/annotationDeclaration.h"
 #include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
 

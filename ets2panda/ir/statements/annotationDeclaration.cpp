@@ -36,6 +36,13 @@ void AnnotationDeclaration::TransformChildren(const NodeTransformer &cb, std::st
             expr_ = transformedNode->AsIdentifier();
         }
     }
+
+    for (auto *&it : VectorIterationGuard(Annotations())) {
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsAnnotationUsage();
+        }
+    }
 }
 void AnnotationDeclaration::Iterate(const NodeTraverser &cb) const
 {
@@ -46,14 +53,21 @@ void AnnotationDeclaration::Iterate(const NodeTraverser &cb) const
     for (auto *it : VectorIterationGuard(properties_)) {
         cb(it);
     }
+
+    for (auto *it : VectorIterationGuard(Annotations())) {
+        cb(it);
+    }
 }
 
 void AnnotationDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"Expr", expr_}, {"properties", properties_}});
+    dumper->Add({{"Expr", expr_}, {"properties", properties_}, {"annotations", AstDumper::Optional(Annotations())}});
 }
 void AnnotationDeclaration::Dump(ir::SrcDumper *dumper) const
 {  // re-understand
+    for (auto *anno : Annotations()) {
+        anno->Dump(dumper);
+    }
     ES2PANDA_ASSERT(expr_ != nullptr);
     dumper->Add("@interface ");
     expr_->Dump(dumper);

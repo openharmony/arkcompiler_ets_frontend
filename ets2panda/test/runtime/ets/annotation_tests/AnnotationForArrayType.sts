@@ -13,15 +13,14 @@
  * limitations under the License.
 */
 
+@Retention("SOURCE")
 @interface Message{
    msg: string = ""
    id: int = 0
 }
 
-@interface Anno1{
-}
-
-@interface Anno2{
+@Retention("SOURCE")
+@interface Anno{
 }
 
 class MyClass{}
@@ -31,7 +30,7 @@ type C = MyClass
 
 
 // annotations for elementType of array
-let array: @Message @Anno2 Int[][]
+let array: @Message @Anno Int[][]
 let deepArray: @Message Number[][][][][]
 
 function main(){}

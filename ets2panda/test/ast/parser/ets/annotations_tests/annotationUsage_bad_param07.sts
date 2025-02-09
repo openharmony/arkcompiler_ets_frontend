@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+@Retention("SOURCE")
 @interface MyAnno {
     testProperty1: string
 }
@@ -21,4 +22,4 @@
 function foo(@MyAnno ...a/* @@ label */){}
 
 /* @@@ label Error SyntaxError: Parameter declaration should have an explicit type annotation.  */
-/* @@? 21:15 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */
+/* @@? 22:15 Error TypeError: The required field 'testProperty1' must be specified. Fields without default values cannot be omitted. */

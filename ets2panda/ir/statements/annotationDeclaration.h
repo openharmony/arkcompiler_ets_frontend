@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_ANNOTATION_DECLARATION_H
 #define ES2PANDA_IR_STATEMENT_ANNOTATION_DECLARATION_H
 
+#include "ir/annotationAllowed.h"
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "ir/statement.h"
@@ -23,14 +24,29 @@
 #include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
-class AnnotationDeclaration : public Statement {
+
+using ENUMBITOPS_OPERATORS;
+
+enum class RetentionPolicy : uint32_t { SOURCE = 1U << 0U, BYTECODE = 1U << 1U, RUNTIME = 1U << 2U };
+}  // namespace ark::es2panda::ir
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::ir::RetentionPolicy> : std::true_type {
+};
+
+namespace ark::es2panda::ir {
+class AnnotationDeclaration : public AnnotationAllowed<Statement> {
 public:
     explicit AnnotationDeclaration(Expression *expr, ArenaAllocator *allocator)
-        : Statement(AstNodeType::ANNOTATION_DECLARATION), expr_(expr), properties_(allocator->Adapter())
+        : AnnotationAllowed<Statement>(AstNodeType::ANNOTATION_DECLARATION, allocator),
+          expr_(expr),
+          properties_(allocator->Adapter())
     {
     }
-    explicit AnnotationDeclaration(Expression *expr, ArenaVector<AstNode *> &&properties)
-        : Statement(AstNodeType::ANNOTATION_DECLARATION), expr_(expr), properties_(std::move(properties))
+    explicit AnnotationDeclaration(Expression *expr, ArenaVector<AstNode *> &&properties, ArenaAllocator *allocator)
+        : AnnotationAllowed<Statement>(AstNodeType::ANNOTATION_DECLARATION, allocator),
+          expr_(expr),
+          properties_(std::move(properties))
     {
     }
 
@@ -72,6 +88,36 @@ public:
     void AddProperties(ArenaVector<AstNode *> &&properties)
     {
         properties_ = std::move(properties);
+    }
+
+    [[nodiscard]] bool IsSourceRetention() const noexcept
+    {
+        return (policy_ & RetentionPolicy::SOURCE) != 0;
+    }
+
+    [[nodiscard]] bool IsBytecodeRetention() const noexcept
+    {
+        return (policy_ & RetentionPolicy::BYTECODE) != 0;
+    }
+
+    [[nodiscard]] bool IsRuntimeRetention() const noexcept
+    {
+        return (policy_ & RetentionPolicy::RUNTIME) != 0;
+    }
+
+    void SetSourceRetention() noexcept
+    {
+        policy_ = RetentionPolicy::SOURCE;
+    }
+
+    void SetBytecodeRetention() noexcept
+    {
+        policy_ = RetentionPolicy::BYTECODE;
+    }
+
+    void SetRuntimeRetention() noexcept
+    {
+        policy_ = RetentionPolicy::RUNTIME;
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
@@ -116,6 +162,7 @@ private:
     varbinder::LocalScope *scope_ {};
     Expression *expr_;
     ArenaVector<AstNode *> properties_;
+    RetentionPolicy policy_ = RetentionPolicy::BYTECODE;
 };
 }  // namespace ark::es2panda::ir
 

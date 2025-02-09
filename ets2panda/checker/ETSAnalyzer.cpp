@@ -21,6 +21,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
+#include "types/signature.h"
 
 namespace ark::es2panda::checker {
 
@@ -78,7 +79,6 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     if (st->TsType() != nullptr) {
         return st->TsType();
     }
-
     ETSChecker *checker = GetETSChecker();
 
     ES2PANDA_ASSERT(st->Id() != nullptr);
@@ -2301,6 +2301,11 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationDeclaration *st) const
     }
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
+
+    for (auto *anno : st->Annotations()) {
+        checker->CheckStandardAnnotation(anno);
+        anno->Check(checker);
+    }
 
     ScopeContext scopeCtx(checker, st->Scope());
     for (auto *it : st->Properties()) {

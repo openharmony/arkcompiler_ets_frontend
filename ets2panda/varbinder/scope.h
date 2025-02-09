@@ -21,7 +21,6 @@
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 #include "varbinder/variableFlags.h"
-
 #include <unordered_map>
 #include <vector>
 

@@ -13,14 +13,14 @@
  * limitations under the License.
 */
 
+@Retention("SOURCE")
 @interface Message{
    msg: string = ""
    id: int
 }
 
+@Retention("SOURCE")
 @interface Anno{}
-
-@interface Anno1{}
 
 // annotations for elementType of array
 let array: @Anno Int[][]

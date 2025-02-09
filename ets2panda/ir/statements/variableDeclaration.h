@@ -18,6 +18,7 @@
 
 #include "ir/annotationAllowed.h"
 #include "ir/statement.h"
+#include "ir/expressions/identifier.h"
 #include "ir/statements/annotationUsage.h"
 #include "variableDeclarator.h"
 

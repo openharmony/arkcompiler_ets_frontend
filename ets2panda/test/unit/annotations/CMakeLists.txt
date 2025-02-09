@@ -29,3 +29,9 @@ ets2panda_add_gtest(es2panda_annotations_for_function
 ets2panda_add_gtest(es2panda_annotations_for_class
     CPP_SOURCES annotations_for_class.cpp    
 )
+ets2panda_add_gtest(annotations_retention_policy
+    CPP_SOURCES annotations_retention_policy.cpp    
+)
+ets2panda_add_gtest(annotations_for_namespace
+    CPP_SOURCES annotations_for_namespace.cpp    
+)

@@ -387,6 +387,9 @@ void ETSBinder::BuildAnnotationDeclaration(ir::AnnotationDeclaration *annoDecl)
     for (auto *property : annoDecl->Properties()) {
         ResolveReference(property);
     }
+    for (auto *anno : annoDecl->Annotations()) {
+        ResolveReference(anno);
+    }
 }
 
 void ETSBinder::BuildAnnotationUsage(ir::AnnotationUsage *annoUsage)

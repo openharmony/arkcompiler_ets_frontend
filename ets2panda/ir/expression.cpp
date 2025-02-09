@@ -14,6 +14,7 @@
  */
 
 #include "expression.h"
+#include "ir/expressions/identifier.h"
 #include "typeNode.h"
 
 namespace ark::es2panda::ir {

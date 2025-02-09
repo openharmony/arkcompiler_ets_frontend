@@ -15,7 +15,10 @@
 
 enum Color{RED, BLUE, GREEN}
 
+@Retention("SOURCE")
 @interface Anno{}
+
+@Retention("SOURCE")
 @interface ClassAuthor {
     authorName: string = "Jim"
     authorAge: number = -35

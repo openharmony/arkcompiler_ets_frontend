@@ -902,6 +902,8 @@ void ETSChecker::CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &anno
     }
     std::unordered_set<util::StringView> seenAnnotations;
     for (const auto &anno : annotations) {
+        anno->Check(this);
+        CheckAnnotationRetention(anno);
         auto annoName = anno->GetBaseName()->Name();
         if (seenAnnotations.find(annoName) != seenAnnotations.end()) {
             LogTypeError({"Duplicate annotations are not allowed. The annotation '", annoName,
@@ -909,7 +911,66 @@ void ETSChecker::CheckAnnotations(const ArenaVector<ir::AnnotationUsage *> &anno
                          anno->Start());
         }
         seenAnnotations.insert(annoName);
-        anno->Check(this);
+    }
+}
+
+static bool IsValidSourceRetentionUsage(ir::AnnotationUsage *anno, ir::AnnotationDeclaration *annoDecl)
+{
+    bool isTransformedClassProperty = anno->Parent()->IsClassProperty() &&
+                                      anno->Parent()->Parent()->IsClassDefinition() &&
+                                      anno->Parent()->Parent()->AsClassDefinition()->IsModule();
+    return (!anno->Parent()->IsClassDefinition() && !anno->Parent()->IsScriptFunction() &&
+            !anno->Parent()->IsETSModule() && !anno->Parent()->IsTSInterfaceDeclaration() &&
+            !anno->Parent()->IsETSParameterExpression() && !anno->Parent()->IsClassProperty() &&
+            !annoDecl->IsSourceRetention()) ||
+           (isTransformedClassProperty && !annoDecl->IsSourceRetention());
+}
+
+void ETSChecker::CheckAnnotationRetention(ir::AnnotationUsage *anno)
+{
+    if (anno->GetBaseName()->Name().Mutf8() == compiler::Signatures::BUILTIN_RETENTION &&
+        !anno->Parent()->IsAnnotationDeclaration()) {
+        LogError(diagnostic::INVALID_ANNOTATION_RETENTION, {}, anno->Start());
+        return;
+    }
+    if (anno->GetBaseName()->Variable() == nullptr ||
+        !anno->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+        return;
+    }
+    auto *annoDecl = anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    annoDecl->Check(this);
+    if (IsValidSourceRetentionUsage(anno, annoDecl)) {
+        LogError(diagnostic::ANNOTATION_ON_LAMBDA_LOCAL_TYPE, {}, anno->Start());
+    }
+}
+
+void ETSChecker::HandleAnnotationRetention(ir::AnnotationUsage *anno, ir::AnnotationDeclaration *annoDecl)
+{
+    auto policyStr = anno->Properties()[0]->AsClassProperty()->Value()->AsStringLiteral()->Str().Mutf8();
+    if (policyStr == compiler::Signatures::SOURCE_POLICY) {
+        annoDecl->SetSourceRetention();
+    } else if (policyStr == compiler::Signatures::BYTECODE_POLICY) {
+        annoDecl->SetBytecodeRetention();
+    } else if (policyStr == compiler::Signatures::RUNTIME_POLICY) {
+        annoDecl->SetRuntimeRetention();
+    } else {
+        LogError(diagnostic::ANNOTATION_POLICY_INVALID, {}, anno->Properties()[0]->Start());
+    }
+}
+
+void ETSChecker::CheckStandardAnnotation(ir::AnnotationUsage *anno)
+{
+    if (anno->GetBaseName()->Variable() == nullptr) {
+        return;
+    }
+    ASSERT(anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration() != nullptr);
+    auto *annoDecl = anno->GetBaseName()->Variable()->Declaration()->Node()->AsAnnotationDeclaration();
+    auto annoName = annoDecl->InternalName().Mutf8();
+    if (annoName.rfind(compiler::Signatures::STD_ANNOTATIONS) != 0) {
+        LogError(diagnostic::STANDARD_ANNOTATION_REQUIRED, {}, anno->Start());
+    }
+    if (annoName == compiler::Signatures::STD_ANNOTATIONS_RETENTION) {
+        HandleAnnotationRetention(anno, anno->Parent()->AsAnnotationDeclaration());
     }
 }
 

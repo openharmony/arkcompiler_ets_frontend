@@ -13,13 +13,16 @@
  * limitations under the License.
 */
 
+@Retention("SOURCE")
 @interface Message{
    msg: string = ""
    id: int
 }
 
+@Retention("SOURCE")
 @interface Anno{}
 
+@Retention("SOURCE")
 @interface Anno1{}
 
 // annotations for function(parameter list, return type and type parameter)

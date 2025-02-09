@@ -13,12 +13,14 @@
  * limitations under the License.
 */
 
+@Retention("SOURCE")
 @interface Message{
    msg: string = ""
    id: int
 }
 
 // annotations for annotation field type
+@Retention("SOURCE")
 @interface TestAnno{
    a: @Message({id:1}) @TestAnno string = "1"
 }

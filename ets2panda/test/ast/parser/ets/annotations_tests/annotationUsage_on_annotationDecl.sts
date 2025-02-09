@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@Retention("SOURCE")
 @interface MyAnno1 {
     testProperty1: string
     testProperty2: number
@@ -23,4 +25,4 @@
     testProperty2: number
 }
 
-/* @@? 21:2 Error SyntaxError: Annotations are not allowed on this type of declaration.  */
+/* @@? 22:2 Error TypeError: Only standard annotations are allowed to be applied on annotations.  */
