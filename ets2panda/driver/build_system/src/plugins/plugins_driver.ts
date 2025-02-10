@@ -15,6 +15,12 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { 
+  Logger,
+  LogData,
+  LogDataFactory
+} from '../logger';
+import { ErrorCode } from '../error_code';
 
 export enum PluginHook {
   NEW = 'afterNew',
@@ -81,6 +87,7 @@ export class PluginDriver {
   private sortedPlugins: Map<PluginHook, PluginExecutor[] | undefined>;
   private allPlugins: Map<string, Plugins>;
   private context: PluginContext;
+  private logger: Logger = Logger.getInstance();
 
   constructor() {
     this.sortedPlugins = new Map<PluginHook, PluginExecutor[] | undefined>();
@@ -113,7 +120,12 @@ export class PluginDriver {
           init: initFunction
         };
       } catch (error) {
-        console.log('Failed to load plugin: ', error);
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_LOAD_PLUGIN_FAIL,
+          'Failed to load plugin.',
+          error as string
+        );
+        this.logger.printError(logData);
         return {
           name: key,
           init: undefined
@@ -178,7 +190,7 @@ export class PluginDriver {
       return;
     }
     plugins.forEach((executor: PluginExecutor) => {
-      console.log('executing plugin: ', executor.name);
+      this.logger.printInfo(`executing plugin: ${executor.name}`);
       return (executor.handler as Function).apply(this.context);
     });
   }

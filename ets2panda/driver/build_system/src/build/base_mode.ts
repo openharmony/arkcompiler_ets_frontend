@@ -35,6 +35,12 @@ import {
   PluginDriver,
   PluginHook
 } from '../plugins/plugins_driver';
+import { 
+  Logger,
+  LogData,
+  LogDataFactory
+} from '../logger'
+import { ErrorCode } from '../error_code'
 
 interface ArkTSConfigObject {
   compilerOptions: {
@@ -83,6 +89,7 @@ export abstract class BaseMode {
   moduleInfos: Map<string, ModuleInfo>;
   mergedAbcFile: string;
   abcLinkerCmd: string[];
+  logger: Logger;
 
   constructor(buildConfig: Record<string, BuildConfigType>) {
     this.buildConfig = buildConfig;
@@ -99,6 +106,8 @@ export abstract class BaseMode {
     this.moduleInfos = new Map<string, ModuleInfo>();
     this.mergedAbcFile = path.resolve(this.outputDir, MERGED_ABC_FILE);
     this.abcLinkerCmd = ['"' + this.buildConfig.abcLinkerPath + '"'];
+
+    this.logger = Logger.getInstance();
   }
 
   public compile(fileInfo: CompileFileInfo): void {
@@ -114,25 +123,29 @@ export abstract class BaseMode {
       fileInfo.abcFilePath,
     ];
 
-    ets2pandaCmd.push(fileInfo.filePath);
-    console.log("ets2pandaCmd: ", ets2pandaCmd);
+    this.logger.printInfo('ets2pandaCmd: ' + ets2pandaCmd.toString());
     try {
       arktsGlobal.config = arkts.createConfig(ets2pandaCmd);
       const source = fs.readFileSync(fileInfo.filePath).toString();
       arktsGlobal.context = arkts.createContextFromString(arktsGlobal.config, source, fileInfo.filePath);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_PARSED);
-      console.log('parsed');
+      this.logger.printInfo('parsed');
       PluginDriver.getInstance().runPluginHook(PluginHook.PARSED);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_CHECKED);
       PluginDriver.getInstance().runPluginHook(PluginHook.CHECKED);
 
       arkts.proceedToState(arkts.Es2pandaContextState.ES2PANDA_STATE_BIN_GENERATED);
-      console.log('bin generated');
+      this.logger.printInfo('bin generated');
     } catch (error) {
       if (error instanceof Error) {
-        console.error(`compile abc files failed. Error: ${error.message}`);
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_COMPILE_ABC_FAIL,
+          'Compile abc files failed.',
+          error.message
+        );
+        this.logger.printError(logData);
       }
     } finally {
       PluginDriver.getInstance().runPluginHook(PluginHook.CLEAN);
@@ -156,14 +169,19 @@ export abstract class BaseMode {
     this.abcLinkerCmd.push('@' + '"' + linkerInputFile + '"');
 
     let abcLinkerCmdStr: string = this.abcLinkerCmd.join(' ');
-    console.log(abcLinkerCmdStr);
+    this.logger.printInfo(abcLinkerCmdStr);
 
     ensurePathExists(this.mergedAbcFile);
     try {
       child_process.execSync(abcLinkerCmdStr).toString();
     } catch(error) {
       if (error instanceof Error) {
-        console.error(`Link abc files failed. Error: ${error.message}`);
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_LINK_ABC_FAIL,
+          'Link abc files failed.',
+          error.message
+        );
+        this.logger.printError(logData);
       }
     }
   }
@@ -171,8 +189,11 @@ export abstract class BaseMode {
   private writeArkTSConfigFile(packageName: string, moduleRootPath: string, sourceRoots: string[],
     arktsConfigFile: string, pathSection: Record<string, string[]>): void {
     if (!this.sourceRoots || this.sourceRoots.length == 0) {
-      console.error("ERROR: SourceRoots not set from hvigor"); // Replace with hivgor throw to stop build process
-      return;
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_SOURCEROOTS_NOT_SET_FAIL,
+        'SourceRoots not set from hvigor.'
+      );
+      this.logger.printErrorAndExit(logData); // Replace with hivgor throw to stop build process
     }
     let baseUrl: string = path.resolve(moduleRootPath, sourceRoots[0]);
     pathSection[packageName] = [baseUrl];
@@ -187,8 +208,15 @@ export abstract class BaseMode {
     ensurePathExists(arktsConfigFile);
     fs.writeFileSync(arktsConfigFile, JSON.stringify(arktsConfig, null, 2), 'utf-8');
     let moduleInfo: ModuleInfo | undefined = this.moduleInfos.get(moduleRootPath);
-    moduleInfo ? (moduleInfo.arktsConfigFile = arktsConfigFile) :
-      console.error(`ERROR: Unrecognized ModuleRootPath: ${moduleRootPath}`);
+    if (!moduleInfo) {
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_UNRECOGNIZED_MODULEROOTPATH,
+        'Unrecognized ModuleRootPath.',
+        '',
+        moduleRootPath
+      );
+      this.logger.printError(logData);
+    }
   }
 
   private generateArkTSConfigForModules(): void {
@@ -214,8 +242,12 @@ export abstract class BaseMode {
   }
 
   private generateModuleInfos(): void {
-    if (!this.packageName || !this.moduleRootPath || !this.sourceRoots) {
-      console.error("ERROR: main module info from hvigor is not correct");
+    if (!this.packageName || !this.moduleRootPath || !this.sourceRoots) { // BUILDSYSTEM_MODULE_INFO_NOT_CORRECT_FAIL
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_MODULE_INFO_NOT_CORRECT_FAIL,
+        'Main module info from hvigor is not correct.'
+      );
+      this.logger.printError(logData);
     }
     let mainModuleInfo: ModuleInfo = {
       packageName: this.packageName,
@@ -228,7 +260,11 @@ export abstract class BaseMode {
     this.moduleInfos.set(this.moduleRootPath, mainModuleInfo);
     this.dependentModuleList.forEach((module: DependentModule) => {
       if (!module.packageName || !module.modulePath || !module.sourceRoots || !module.entryFile) {
-        console.error("ERROR: dependent module info from hvigor is not correct");
+        const logData: LogData = LogDataFactory.newInstance(
+          ErrorCode.BUILDSYSTEM_DEPENDENT_MODULE_INFO_NOT_CORRECT_FAIL,
+          'Dependent module info from hvigor is not correct.'
+        );
+        this.logger.printError(logData);
       }
       let moduleInfo: ModuleInfo = {
         packageName: module.packageName,
@@ -258,7 +294,13 @@ export abstract class BaseMode {
           return;
         }
       }
-      console.error(`ERROR: File "${file}" does not belong to any module in moduleInfos.`);
+      const logData: LogData = LogDataFactory.newInstance(
+        ErrorCode.BUILDSYSTEM_FILE_NOT_BELONG_TO_ANY_MODULE_FAIL,
+        'File does not belong to any module in moduleInfos.',
+        '',
+        file
+      );
+      this.logger.printError(logData);
     });
   }
 
