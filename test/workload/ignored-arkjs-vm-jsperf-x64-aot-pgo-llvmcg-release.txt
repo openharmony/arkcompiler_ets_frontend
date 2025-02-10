@@ -1,6 +1,6 @@
 # Known failures list for jsperf - release-x64-aot-llvmcg
 
-#18793
+#18851
 TestCaseError_RegExp_Error_unicodeSets
 TestCaseError_Set_Error_symmetricDifference
 AsyncGenerator_next

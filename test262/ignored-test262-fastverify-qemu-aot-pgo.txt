@@ -1,4 +1,4 @@
-#20113
+#21819
 test262/data/test_es2021/intl402/Collator/ignore-invalid-unicode-ext-values.js
 test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
 test262/data/test_es2021/intl402/DateTimeFormat/date-time-options.js
@@ -163,16 +163,12 @@ test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPerio
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-narrow-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/formatToParts/dayPeriod-short-en.js
 
-#19278
+#20456
 test262/data/test_es2021/intl402/NumberFormat/constructor-order.js
-
-#19265
+test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-grapheme-iterable.js
 test262/data/test_es2021/built-ins/DataView/prototype/setFloat64/toindex-byteoffset.js
 
-#20456
-test262/data/test_es2021/intl402/Segmenter/prototype/segment/segment-grapheme-iterable.js
-
-#18626
+#18855
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-long-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-narrow-en.js
 test262/data/test_es2021/intl402/DateTimeFormat/prototype/format/dayPeriod-short-en.js

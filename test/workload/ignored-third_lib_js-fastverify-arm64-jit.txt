@@ -1,5 +1,5 @@
 # Known failures list for  third_lib_js-debug-arm64-jit
-#20145
+#21456
 hi-base32_test
 gson_test
 
@@ -12,10 +12,10 @@ memory-cache_test
 #18383
 memory-cache_test
 
-#20145
+#21456
 js-sha256_test
 
-#19246
+#21663
 jsDiff_test
 crypto-js_test
 
@@ -25,7 +25,7 @@ rebound_test
 #20374
 base64_test
 
-#20257
+#21663
 mathjs_test
 pdview_test
 
