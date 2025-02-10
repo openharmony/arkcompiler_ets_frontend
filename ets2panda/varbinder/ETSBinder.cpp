@@ -546,6 +546,11 @@ void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringVie
 void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                   const ir::ETSImportDeclaration *const import)
 {
+    // NOTE issue #23214: enable it after fix default import in dynamic import
+    if (specifier->IsImportDefaultSpecifier()) {
+        ThrowError(specifier->Start(), "Default import is currently not implemented in dynamic import");
+        return;
+    }
     const auto name = [specifier]() {
         if (specifier->IsImportNamespaceSpecifier()) {
             return specifier->AsImportNamespaceSpecifier()->Local()->Name();
