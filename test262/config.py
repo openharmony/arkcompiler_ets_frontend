@@ -97,13 +97,13 @@ with open(os.path.join("test262", "module_tests.txt")) as m_file:
 with open(os.path.join("test262", "dynamicImport_tests.txt")) as d_file:
     DYNAMIC_IMPORT_LIST = d_file.read().splitlines()
 
-SENDABLE_GIT_HASH = "3b438d2b80d14eb7f24d280ceac5030e7a81abd2"
+SENDABLE_GIT_HASH = "a0fa6f3636ffd11120d5465193b9d38455dcd102"
 TEST262_GIT_HASH = "6f4601d095a3899d6102f2c320b671495cbe8757"
 HARNESS_GIT_HASH = "9c499f028eb24e67781435c0bb442e00343eb39d"
 ESHOST_GIT_HASH = "fa2d4d27d9d6152002bdef36ee2d17e98b886268"
 ESNEXT_GIT_HASH = "281eb10b2844929a7c0ac04527f5b42ce56509fd"
 
-SENDABLE_GIT_URL = "https://gitee.com/ark_standalone_build/test262_sendable.git"
+SENDABLE_GIT_URL = "https://gitee.com/arkcompiler_sendable/test262_sendable.git"
 TEST262_GIT_URL = "https://gitee.com/hufeng20/test262.git"
 ESHOST_GIT_URL = "https://gitee.com/hufeng20/eshost.git"
 HARNESS_GIT_URL = "https://gitee.com/hufeng20/test262-harness.git"
