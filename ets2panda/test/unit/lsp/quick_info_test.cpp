@@ -62,3 +62,112 @@ TEST_F(LSPAPITests, getPropertySymbolFromContextualType2)
 
     initializer.DestroyContext(ctx);
 }
+
+TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo1)
+{
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+                                  "interface objI { key : string; }\nlet obj : objI = { key:\"valueaaaaaaaaa,\" }");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    size_t const offset = 54;
+    auto node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, offset);
+    ASSERT_NE(node, nullptr);
+    auto nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    auto propertyDef = nodeAtLocationForQuickInfo->AsMethodDefinition();
+    ASSERT_EQ(propertyDef->Key()->AsIdentifier()->Name(), "key");
+
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo2)
+{
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+                                  "class Test {\n  private _a: number = 1;\n  public get a(): number {\n    "
+                                  "return this._a;\n  }\n  public static ccc:number = 1\n\n  constructor(a : "
+                                  "number) {\n  }\n}\n\nlet a = 1\nlet test: Test = new Test(a)\nlet t_a = test.a");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    size_t const offset = 8;
+    auto node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, offset);
+    ASSERT_NE(node, nullptr);
+    auto nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::CLASS_DEFINITION);
+
+    size_t const position = 191;
+    node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, position);
+    ASSERT_NE(node, nullptr);
+    nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::CLASS_DEFINITION);
+
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo3)
+{
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+                                  "function func():string {\n  return \"func\"\n}\nlet f = func();");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    size_t const offset = 11;
+    auto node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, offset);
+    ASSERT_NE(node, nullptr);
+    auto nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::METHOD_DEFINITION);
+
+    size_t const position = 53;
+    node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, position);
+    ASSERT_NE(node, nullptr);
+    nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::METHOD_DEFINITION);
+
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo4)
+{
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+                                  "type NullableObject = Object | null\nlet nullOb: NullableObject = null");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    size_t const offset = 11;
+    auto node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, offset);
+    ASSERT_NE(node, nullptr);
+    auto nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION);
+
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, GetNodeAtLocationForQuickInfo5)
+{
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext(
+        "quick-info-test.sts", ES2PANDA_STATE_CHECKED,
+        "enum Color {\n  Red = \"red\",\n  Blue = \"blue\"\n}\n\nlet myColor: Color = Color.Red;");
+    ASSERT_EQ(ContextState(ctx), ES2PANDA_STATE_CHECKED);
+    size_t const offset = 7;
+    auto node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, offset);
+    ASSERT_NE(node, nullptr);
+    auto nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::TS_ENUM_DECLARATION);
+
+    size_t const position = 70;
+    node = ark::es2panda::lsp::GetTokenForQuickInfo(ctx, position);
+    ASSERT_NE(node, nullptr);
+    nodeAtLocationForQuickInfo = ark::es2panda::lsp::GetNodeAtLocationForQuickInfo(node);
+    ASSERT_NE(nodeAtLocationForQuickInfo, nullptr);
+    ASSERT_EQ(nodeAtLocationForQuickInfo->Type(), ark::es2panda::ir::AstNodeType::TS_ENUM_DECLARATION);
+
+    initializer.DestroyContext(ctx);
+}

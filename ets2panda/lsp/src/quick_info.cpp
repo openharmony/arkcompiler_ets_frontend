@@ -33,6 +33,7 @@ bool IsIncludedToken(const ir::AstNode *node)
         ir::AstNodeType::NUMBER_LITERAL,
         ir::AstNodeType::TEMPLATE_LITERAL,
         ir::AstNodeType::TEMPLATE_ELEMENT,
+        ir::AstNodeType::ASSIGNMENT_EXPRESSION,
     };
     return INCLUDED_TOKEN_TYPES.find(type) != INCLUDED_TOKEN_TYPES.end();
 }
@@ -126,6 +127,79 @@ ir::AstNode *GetPropertyNodeFromContextualType(ir::AstNode *node, ir::AstNode *c
         }
     }
     return node;
+}
+
+bool IsDeclaration(ir::AstNode *node)
+{
+    return node->Type() == ir::AstNodeType::CLASS_DECLARATION ||
+           node->Type() == ir::AstNodeType::FUNCTION_DECLARATION ||
+           node->Type() == ir::AstNodeType::IMPORT_DECLARATION ||
+           node->Type() == ir::AstNodeType::ANNOTATION_DECLARATION ||
+           node->Type() == ir::AstNodeType::EXPORT_ALL_DECLARATION ||
+           node->Type() == ir::AstNodeType::EXPORT_DEFAULT_DECLARATION ||
+           node->Type() == ir::AstNodeType::EXPORT_NAMED_DECLARATION ||
+           node->Type() == ir::AstNodeType::ETS_PACKAGE_DECLARATION ||
+           node->Type() == ir::AstNodeType::ETS_IMPORT_DECLARATION ||
+           node->Type() == ir::AstNodeType::STRUCT_DECLARATION ||
+           node->Type() == ir::AstNodeType::TS_ENUM_DECLARATION ||
+           node->Type() == ir::AstNodeType::TS_SIGNATURE_DECLARATION ||
+           node->Type() == ir::AstNodeType::TS_TYPE_PARAMETER_DECLARATION ||
+           node->Type() == ir::AstNodeType::TS_MODULE_DECLARATION ||
+           node->Type() == ir::AstNodeType::TS_IMPORT_EQUALS_DECLARATION ||
+           node->Type() == ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION ||
+           node->Type() == ir::AstNodeType::TS_INTERFACE_DECLARATION ||
+           node->Type() == ir::AstNodeType::VARIABLE_DECLARATION;
+}
+
+bool IsDefinition(ir::AstNode *node)
+{
+    return node->Type() == ir::AstNodeType::CLASS_DEFINITION || node->Type() == ir::AstNodeType::METHOD_DEFINITION;
+}
+
+bool IsIdentifierOfDeclaration(ir::AstNode *node)
+{
+    return node->Parent()->Type() == ir::AstNodeType::IMPORT_SPECIFIER ||
+                   (node->Parent()->Type() == ir::AstNodeType::EXPORT_SPECIFIER)
+               ? node->Type() == ir::AstNodeType::IDENTIFIER
+               : node->Type() == ir::AstNodeType::IDENTIFIER && IsDeclaration(node->Parent());
+}
+
+ir::AstNode *GetNodeAtLocation(ir::AstNode *node)
+{
+    if (node->IsProgram()) {
+        return node->Modifiers() == ir::ModifierFlags::EXPORT ? node : nullptr;
+    }
+    auto parent = node->Parent();
+    if (IsIdentifierOfDeclaration(node)) {
+        return parent;
+    }
+    if (node->Type() == ir::AstNodeType::IDENTIFIER) {
+        if (IsDeclaration(parent) || IsDefinition(parent)) {
+            return parent;
+        }
+        if (parent->Type() == ir::AstNodeType::MEMBER_EXPRESSION) {
+            return parent->AsMemberExpression()->Object()->AsIdentifier()->Variable()->Declaration()->Node();
+        }
+        return node->Variable()->Declaration()->Node();
+    }
+
+    if (node->Type() == ir::AstNodeType::TS_THIS_TYPE) {
+        return node->AsTSThisType()->Variable()->Declaration()->Node();
+    }
+    return nullptr;
+}
+
+ir::AstNode *GetNodeAtLocationForQuickInfo(ir::AstNode *node)
+{
+    if (node != nullptr) {
+        auto object = GetContainingObjectLiteralNode(node);
+        if (object != nullptr) {
+            auto contextualTypeNode = GetContextualTypeNode(object->Parent());
+            return GetPropertyNodeFromContextualType(object, contextualTypeNode);
+        }
+        return GetNodeAtLocation(node);
+    }
+    return nullptr;
 }
 
 }  // namespace ark::es2panda::lsp
