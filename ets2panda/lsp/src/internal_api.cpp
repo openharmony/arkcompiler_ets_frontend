@@ -591,4 +591,114 @@ ir::AstNode *GetImplementationAtPosition(es2panda_Context *context, size_t pos)
     return GetDefinitionAtPosition(context, pos);
 }
 
+ArenaVector<ir::AstNode *> RemoveRefDuplicates(const ArenaVector<ir::AstNode *> &nodes, ArenaAllocator *allocator)
+{
+    auto hashFunc = [](const ir::AstNode *node) {
+        return std::hash<int>()(node->Start().index) ^ std::hash<int>()(node->End().index);
+    };
+    auto equalFunc = [](const ir::AstNode *lhs, const ir::AstNode *rhs) {
+        return lhs->Start().index == rhs->Start().index && lhs->End().index == rhs->End().index;
+    };
+
+    ArenaUnorderedSet<ir::AstNode *, decltype(hashFunc), decltype(equalFunc)> uniqueNodes(
+        nodes.size(), hashFunc, equalFunc, allocator->Adapter());
+    for (auto node : nodes) {
+        uniqueNodes.insert(node);
+    }
+
+    return ArenaVector<ir::AstNode *>(uniqueNodes.begin(), uniqueNodes.end(), allocator->Adapter());
+}
+
+ir::AstNode *FindDeclarationForIdentifier(ir::Identifier *node)
+{
+    auto idVar = node->Variable();
+    if (idVar == nullptr) {
+        return nullptr;
+    }
+    auto decl = idVar->Declaration();
+    if (decl == nullptr) {
+        return nullptr;
+    }
+    return decl->Node();
+}
+
+void FindAllChildHelper(ArenaVector<ir::AstNode *> &results, const ir::NodePredicate &cb, ir::AstNode *ast)
+{
+    if (cb(ast)) {
+        results.push_back(ast);
+    }
+
+    ast->Iterate([&results, cb](ir::AstNode *child) { FindAllChildHelper(results, cb, child); });
+}
+
+ArenaVector<ir::AstNode *> FindAllChild(const ir::NodePredicate &cb, const ir::AstNode *ast, ArenaAllocator *allocator)
+{
+    ArenaVector<ir::AstNode *> results(allocator->Adapter());
+    ast->Iterate([&results, cb](ir::AstNode *child) { FindAllChildHelper(results, cb, child); });
+    return results;
+}
+
+ArenaVector<ir::AstNode *> FindReferencesByName(ir::AstNode *ast, ir::AstNode *decl, ir::AstNode *node,
+                                                ArenaAllocator *allocator)
+{
+    ASSERT(node->IsIdentifier());
+    auto name = node->AsIdentifier()->Name();
+    auto checkFunc = [&name, &decl](ir::AstNode *child) {
+        return child->IsIdentifier() && FindDeclarationForIdentifier(child->AsIdentifier()) == decl &&
+               child->AsIdentifier()->Name() == name;
+    };
+    auto references = FindAllChild(checkFunc, ast, allocator);
+
+    auto uniqueReferences = RemoveRefDuplicates(references, allocator);
+    std::sort(uniqueReferences.begin(), uniqueReferences.end(), [](const ir::AstNode *a, const ir::AstNode *b) {
+        return (a->Start().index != b->Start().index) ? a->Start().index < b->Start().index
+                                                      : a->End().index < b->End().index;
+    });
+    return uniqueReferences;
+}
+
+HighlightSpanKind GetHightlightSpanKind(ir::AstNode *identifierDeclaration, ir::Identifier *node)
+{
+    if (identifierDeclaration->Start().index == node->Start().index &&
+        identifierDeclaration->End().index == node->End().index) {
+        return HighlightSpanKind::WRITTEN_REFERENCE;
+    }
+    return HighlightSpanKind::REFERENCE;
+}
+
+DocumentHighlights GetSemanticDocumentHighlights(es2panda_Context *context, size_t position)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    std::string fileName(ctx->sourceFile->filePath);
+    auto touchingToken = GetTouchingToken(context, position, false);
+    if (!touchingToken->IsIdentifier()) {
+        return DocumentHighlights(fileName, {});
+    }
+    auto decl = FindDeclarationForIdentifier(touchingToken->AsIdentifier());
+    if (decl == nullptr) {
+        return DocumentHighlights(fileName, {});
+    }
+    auto references = FindReferencesByName(ctx->parserProgram->Ast(), decl, touchingToken, ctx->allocator);
+
+    auto highlightSpans = std::vector<HighlightSpan>();
+    // Find the identifier's declaration. We consider the first found to be the identifier's declaration.
+    ir::AstNode *identifierDeclaration = decl->FindChild([&touchingToken](ir::AstNode *child) {
+        return child->IsIdentifier() && child->AsIdentifier()->Name() == touchingToken->AsIdentifier()->Name();
+    });
+    for (const auto &reference : references) {
+        auto start = reference->Start().index;
+        auto length = reference->AsIdentifier()->Name().Length();
+        TextSpan textSpan = {start, length};
+        TextSpan contextSpan = {0, 0};
+        auto kind = GetHightlightSpanKind(identifierDeclaration, reference->AsIdentifier());
+        highlightSpans.emplace_back(fileName, false, textSpan, contextSpan, kind);
+    }
+    return DocumentHighlights(fileName, highlightSpans);
+}
+
+DocumentHighlights GetDocumentHighlightsImpl(es2panda_Context *context, size_t position)
+{
+    return GetSemanticDocumentHighlights(context, position);
+}
+
 }  // namespace ark::es2panda::lsp

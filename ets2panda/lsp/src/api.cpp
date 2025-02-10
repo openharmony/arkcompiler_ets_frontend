@@ -175,9 +175,20 @@ extern "C" ReferenceLocationList GetReferenceLocationAtPosition(char const *file
     return list;
 }
 
+extern "C" DocumentHighlightsReferences GetDocumentHighlights(char const *fileName, size_t position)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    DocumentHighlightsReferences result = {};
+    result.documentHighlights_.push_back(GetDocumentHighlightsImpl(context, position));
+    initializer.DestroyContext(context);
+    return result;
+}
+
 LSPAPI g_lspImpl = {GetDefinitionAtPosition, GetFileReferences,       GetReferencesAtPosition,
                     GetPrecedingToken,       GetCurrentTokenValue,    GetSpanOfEnclosingComment,
-                    GetSemanticDiagnostics,  GetSyntacticDiagnostics, GetReferenceLocationAtPosition};
+                    GetSemanticDiagnostics,  GetSyntacticDiagnostics, GetReferenceLocationAtPosition,
+                    GetDocumentHighlights};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()
