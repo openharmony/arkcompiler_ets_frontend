@@ -25,6 +25,6 @@ function main() {
 
     assertTrue(apple && true)
     assertTrue(true && !!(apple))
-    assertTrue( !(!(apple) || false))
+    assertTrue(!(!(apple) || false))
     assertTrue(false || !!(apple))
 }

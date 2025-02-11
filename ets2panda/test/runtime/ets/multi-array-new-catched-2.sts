@@ -28,5 +28,5 @@ function main(): void {
      catched = true;
    }
 
-   assertTrue( catched)
+   assertTrue(catched)
 }

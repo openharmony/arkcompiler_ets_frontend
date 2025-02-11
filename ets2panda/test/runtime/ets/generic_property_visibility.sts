@@ -23,5 +23,5 @@ class DataNode<Data> {
 }
 
 function main() {
-    assertEQ( DataNode.attach<Object>(), 1)
+    assertEQ(DataNode.attach<Object>(), 1)
 }

@@ -28,18 +28,18 @@ function main() {
     
     
 
-    assertEQ( dst, "undefined")
-    assertEQ( dst_s, "undefined")
-    assertEQ( a_dst, "A_undefined")
-    assertEQ( dst_a, "undefinedA_")
-    assertEQ( n_dst, "nullA_undefined")
-    assertEQ( udef + s, "undefined_str_")
-    assertEQ( s + udef, "_str_undefined")
-    assertEQ( a + n, "A_null")
-    assertEQ( a + s, "A__str_")
-    assertEQ( a + s + udef, "A__str_undefined")
-    assertEQ( a + udef + a, "A_undefinedA_")
-    assertEQ( udef + s + n, "undefined_str_null")
+    assertEQ(dst, "undefined")
+    assertEQ(dst_s, "undefined")
+    assertEQ(a_dst, "A_undefined")
+    assertEQ(dst_a, "undefinedA_")
+    assertEQ(n_dst, "nullA_undefined")
+    assertEQ(udef + s, "undefined_str_")
+    assertEQ(s + udef, "_str_undefined")
+    assertEQ(a + n, "A_null")
+    assertEQ(a + s, "A__str_")
+    assertEQ(a + s + udef, "A__str_undefined")
+    assertEQ(a + udef + a, "A_undefinedA_")
+    assertEQ(udef + s + n, "undefined_str_null")
 
     let p1 = 1
     let p2 = 2

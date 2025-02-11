@@ -19,12 +19,12 @@ function main(): void {
   let c: Object = new object();
   let d: Object = new Object();
 
-  assertTrue( a instanceof Object)
-  assertTrue( a instanceof object)
-  assertTrue( b instanceof Object)
-  assertTrue( b instanceof object)
-  assertTrue( c instanceof Object)
-  assertTrue( c instanceof object)
-  assertTrue( d instanceof Object)
-  assertTrue( d instanceof object)
+  assertTrue(a instanceof Object)
+  assertTrue(a instanceof object)
+  assertTrue(b instanceof Object)
+  assertTrue(b instanceof object)
+  assertTrue(c instanceof Object)
+  assertTrue(c instanceof object)
+  assertTrue(d instanceof Object)
+  assertTrue(d instanceof object)
 }

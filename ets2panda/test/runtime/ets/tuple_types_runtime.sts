@@ -136,5 +136,5 @@ function main(): void {
     let number_tup: [Double, Double] = [42.0, 43.0];
     let tn: TupleProvider<number> = new TupleProvider<number>(number_tup);
     let result: [Number, Number] = tn.publish();
-    assertEQ( result[0], 42.0)
+    assertEQ(result[0], 42.0)
 }

@@ -32,64 +32,64 @@ function main(): void {
     new A().field = 15 + 15;
 
     let z = new A().field + new A().field;
-    assertEQ( z, 60)
+    assertEQ(z, 60)
     z = new A().field + new A().field + new A().field;
-    assertEQ( z, 90)
+    assertEQ(z, 90)
 
     let u = new A().field + 10;
-    assertEQ( u, 40)
+    assertEQ(u, 40)
     let i = 10 + new A().field;
-    assertEQ( i, 40)
+    assertEQ(i, 40)
     u = 10 + new A().field + new A().field + 10;
     new A().field =  10 + new A().field + new A().field + 10;
-    assertEQ( u, 80)
-    assertEQ( new A().field, 80)
+    assertEQ(u, 80)
+    assertEQ(new A().field, 80)
 
     new A().field = 10;
     let k = new A().field;
-    assertEQ( k, 10)
+    assertEQ(k, 10)
 
     new A().field = new A().field;
     k = new A().field;
-    assertEQ( k, 10)
+    assertEQ(k, 10)
 
     new A().field = new A().field + new A().field;
     k = new A().field;
-    assertEQ( new A().field, 20)
+    assertEQ(new A().field, 20)
 
     new A().field = new A().field + 10;
     k = new A().field;
-    assertEQ( k, 30)
+    assertEQ(k, 30)
 
     new A().field = 10 + new A().field;
     k = new A().field;
-    assertEQ( k, 40)
+    assertEQ(k, 40)
 
     new A().field = 10 * new A().field;
     k = new A().field;
-    assertEQ( k, 400)
+    assertEQ(k, 400)
 
     new A().field = new A().field / 2;
     k = new A().field;
-    assertEQ( k, 200)
+    assertEQ(k, 200)
 
     new A().field = 1;
     new A().field = new A().field & 0;
     k = new A().field;
-    assertEQ( k, 0)
+    assertEQ(k, 0)
 
     new A().bfield = true;
     new A().bfield = new A().bfield & false;
     let boolk = new A().bfield;
-    assertEQ( boolk, false)
+    assertEQ(boolk, false)
 
     new A().bfield = true;
     new A().bfield = new A().bfield | false;
     boolk = new A().bfield;
-    assertEQ( boolk, true)
+    assertEQ(boolk, true)
 
     new A().bfield = true;
     new A().bfield = new A().bfield | new A().bfield;
     boolk = new A().bfield;
-    assertEQ( boolk, true)
+    assertEQ(boolk, true)
 }

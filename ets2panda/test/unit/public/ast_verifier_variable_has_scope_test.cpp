@@ -50,9 +50,9 @@ TEST_F(ASTVerifierTest, TestUnions)
         function assert_ccexc(f: () => void) {
             try {
                 f();
-                assert false : "exception expected";
+                assertTrue(false, "exception expected");
             } catch (e) {
-                assert(e instanceof ClassCastError);
+                assertTrue(e instanceof ClassCastError);
             }
         }
 

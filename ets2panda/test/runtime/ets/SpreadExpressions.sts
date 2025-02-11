@@ -24,7 +24,7 @@ function compMultiArray<T>(arrayMulti1: T[][], arrayMulti2: T[][]) {
 function compArray<T>(array1: T[], array2: T[]) {
     let i : int = 0
     for (let element1 of array1) {
-        assertEQ( element1, array2[i])
+        assertEQ(element1, array2[i])
         i++
     }
 }

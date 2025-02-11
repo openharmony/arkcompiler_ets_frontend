@@ -86,40 +86,40 @@ function main() : void {
     let b: KlassB = new KlassB();
     let c: KlassC = new KlassC();
 
-    assertEQ(a.Foo() , "KlassA::Foo()");
-    assertEQ(b.Foo() , "KlassB::Foo()");
-    assertEQ(c.Foo() , "KlassC::Foo()");
+    assertEQ(a.Foo(), "KlassA::Foo()");
+    assertEQ(b.Foo(), "KlassB::Foo()");
+    assertEQ(c.Foo(), "KlassC::Foo()");
 
     let d: KlassA = new KlassC();
     let f: KlassB = new KlassC();
 
-    assertEQ(d.Foo() , "KlassC::Foo()");
-    assertEQ(f.Foo() , "KlassC::Foo()");
-    assertEQ(c.Bar() , "KlassB::Bar()");
+    assertEQ(d.Foo(), "KlassC::Foo()");
+    assertEQ(f.Foo(), "KlassC::Foo()");
+    assertEQ(c.Bar(), "KlassB::Bar()");
 
     let objA : A = new A();
     let objB : B = new B();
 
-    assertEQ(c.Baz(objB, objB) , "KlassC::Baz(B, B)");
-    assertEQ(c.Baz(objA, objB) , "KlassB::Baz(A, B)");
-    assertEQ(c.Baz(objA, objA) , "KlassA::Baz(A, A)");
+    assertEQ(c.Baz(objB, objB), "KlassC::Baz(B, B)");
+    assertEQ(c.Baz(objA, objB), "KlassB::Baz(A, B)");
+    assertEQ(c.Baz(objA, objA), "KlassA::Baz(A, A)");
 
     c.CheckThisAndSuper();
 
-    assertEQ(Foo(objA, objB) , "GLOBAL::Foo(A, B)");
-    assertEQ(Foo(objB, objB) , "GLOBAL::Foo(B, B)");
+    assertEQ(Foo(objA, objB), "GLOBAL::Foo(A, B)");
+    assertEQ(Foo(objB, objB), "GLOBAL::Foo(B, B)");
 
-    assertEQ(Baz(new Int(1)) , "GLOBAL::Baz(Int)");
-    assertEQ(Baz(new Char(c'1')) , "GLOBAL::Baz(Char)");
-    assertEQ(Baz(new Short(1 as short)) , "GLOBAL::Baz(Short)");
-    assertEQ(Baz("hello") , "GLOBAL::Baz(String)");
+    assertEQ(Baz(new Int(1)), "GLOBAL::Baz(Int)");
+    assertEQ(Baz(new Char(c'1')), "GLOBAL::Baz(Char)");
+    assertEQ(Baz(new Short(1 as short)), "GLOBAL::Baz(Short)");
+    assertEQ(Baz("hello"), "GLOBAL::Baz(String)");
 
-    assertEQ(Bar(1) , "GLOBAL::Bar(int)");
-    assertEQ(Bar(c'1') , "GLOBAL::Bar(char)");
-    assertEQ(Bar(3.14) , "GLOBAL::Bar(double)");
+    assertEQ(Bar(1), "GLOBAL::Bar(int)");
+    assertEQ(Bar(c'1'), "GLOBAL::Bar(char)");
+    assertEQ(Bar(3.14), "GLOBAL::Bar(double)");
 
-    assertEQ(Bar2(1) , "GLOBAL::Bar2(long)");
-    assertEQ(Bar2(1 as long) , "GLOBAL::Bar2(long)");
-    assertEQ(Bar2(1.1) , "GLOBAL::Bar2(double)");
+    assertEQ(Bar2(1), "GLOBAL::Bar2(long)");
+    assertEQ(Bar2(1 as long), "GLOBAL::Bar2(long)");
+    assertEQ(Bar2(1.1), "GLOBAL::Bar2(double)");
 
 }

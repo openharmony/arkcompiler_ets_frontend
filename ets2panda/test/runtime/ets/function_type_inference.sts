@@ -19,5 +19,5 @@ function foo(): int {
 
 function main(){
     let goo = foo;
-    assertEQ( goo(), 1)
+    assertEQ(goo(), 1)
 }

@@ -15,5 +15,5 @@
 
 function main() {
     let a ?: number = 1
-    assertEQ( a, 1)
+    assertEQ(a, 1)
 }

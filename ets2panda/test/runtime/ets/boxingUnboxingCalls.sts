@@ -37,18 +37,18 @@ function main(): void {
     let a: int = 1;
     let b: Int = 2;
     let c: int = intParam(a);
-    assertEQ( c, 0)
+    assertEQ(c, 0)
     let d: int = intParam(b);
-    assertEQ( d, 1)
+    assertEQ(d, 1)
     let e: Int = intParam(a);
-    assertEQ( c, 0)
+    assertEQ(c, 0)
     let f: Int = intParam(b);
-    assertEQ( d, 1)
+    assertEQ(d, 1)
     let g: int = objParam(a);
-    assertEQ( g, 2)
+    assertEQ(g, 2)
     let h: int = objParam(b);
-    assertEQ( h, 2)
+    assertEQ(h, 2)
     let i: Object = b;
     let j: int = retInt(retRefInt(5));
-    assertEQ( j, 5)
+    assertEQ(j, 5)
 }

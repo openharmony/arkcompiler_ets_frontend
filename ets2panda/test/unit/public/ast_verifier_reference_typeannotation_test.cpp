@@ -61,7 +61,7 @@ TEST_F(ASTVerifierTest, RefAnnotationNullDefaultParam)
         }
 
         function main() {
-            assert pair(1.0) == 8.0
+            assertEQ(pair(1.0), 8.0)
         }
     )";
 

@@ -20,14 +20,14 @@ function assert_ccexc(f: () => void) {
         assertTrue(e instanceof ClassCastError)
         return;
     }
-    assertTrue( false ,  "exception expected")
+    assertTrue(false, "exception expected")
 }
 
 function assert_nothrow(f: () => void) {
     try {
         f();
     } catch (e) {
-        assertTrue( false ,  "unexpected exception")
+        assertTrue(false, "unexpected exception")
     }
 }
 

@@ -22,7 +22,7 @@ function main() : void {
   let c: String = cond ? a : b;
   assertEQ(c, "foo")
 
-  // Check assertTrue( statement)
+  // Check assertTrue(statement)
   assertTrue(cond)
 
   // Check if statement
