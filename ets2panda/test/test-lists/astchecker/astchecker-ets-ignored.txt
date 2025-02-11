@@ -50,6 +50,10 @@ ast/compiler/ts/varRedeclaration9.ts
 ast/parser/ets/InvalidLexer.sts
 ast/parser/ts/InvalidLexer.ts
 
+# Issue #22206
+ast/compiler/ets/expression/this_expression/undefined_class_for_this_1.sts
+ast/compiler/ets/expression/this_expression/undefined_class_for_this_2.sts
+
 # Issue #18241
 ast/compiler/ets/implicit_package_import/package_test_5/package_module_1.sts
 ast/parser/ets/ambient_indexer_4.sts
