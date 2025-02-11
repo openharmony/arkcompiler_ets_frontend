@@ -58,14 +58,8 @@ private:
     const uint32_t id_;
     const std::string_view message_;
 };
-% error_types = {
-%     :syntax => 'SYNTAX',
-%     :semantic => 'SEMANTIC',
-%     :warning => 'WARNING',
-%     :fatal => 'FATAL'
-% }
 % Diagnostic::diagnostics.each do |desc|
-    constexpr static DiagnosticKind <%= desc.name %> {util::DiagnosticType::<%= error_types[desc.type] %>, <%= desc.id %>, "<%= desc.message %>"};
+    constexpr static DiagnosticKind <%= desc.name %> {util::DiagnosticType::<%= desc.type.upcase %>, <%= desc.id %>, "<%= desc.message %>"};
 % end
 } // namespace ark::es2panda::diagnostic
 

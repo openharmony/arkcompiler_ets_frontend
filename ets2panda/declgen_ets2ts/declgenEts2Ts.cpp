@@ -15,6 +15,7 @@
 
 #include "declgenEts2Ts.h"
 
+#include "generated/diagnostic.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
@@ -38,11 +39,6 @@ static void DebugPrint([[maybe_unused]] const std::string &msg)
 #if DEBUG_PRINT
     std::cerr << msg << std::endl;
 #endif
-}
-
-static void Warning(const std::string &msg)
-{
-    std::cerr << "Warning declgen ets2ts: " << msg << std::endl;
 }
 
 void TSDeclGen::Generate()
@@ -104,19 +100,23 @@ void TSDeclGen::GenSeparated(const T &container, const CB &cb, const char *separ
     }
 }
 
-void TSDeclGen::ThrowError(const std::string_view message, const lexer::SourcePosition &pos = lexer::SourcePosition())
+void TSDeclGen::LogError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params = {},
+                         const lexer::SourcePosition &pos = lexer::SourcePosition())
 {
-    lexer::LineIndex index(program_->SourceCode());
-    const lexer::SourceLocation loc = index.GetLocation(pos);
+    diagnosticEngine_.LogDiagnostic(kind, params, program_, pos);
+}
 
-    throw util::ThrowableDiagnostic {util::DiagnosticType::FATAL, "declgen ets2ts: " + std::string(message),
-                                     program_->SourceFilePath().Utf8(), loc.line, loc.col};
+void TSDeclGen::LogWarning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params = {},
+                           const lexer::SourcePosition &pos = lexer::SourcePosition())
+{
+    ASSERT(kind.Type() == util::DiagnosticType::DECLGEN_ETS2TS_WARNING);
+    LogError(kind, params, pos);
 }
 
 const ir::Identifier *TSDeclGen::GetKeyIdent(const ir::Expression *key)
 {
     if (!key->IsIdentifier()) {
-        ThrowError("Not identifier keys are not supported", key->Start());
+        LogError(diagnostic::IDENT_KEY_SUPPORT, {}, key->Start());
     }
 
     return key->AsIdentifier();
@@ -177,14 +177,14 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
             GenUnionType(checkerType->AsETSUnionType());
             return;
         default:
-            ThrowError(std::string("Unsupported type: '") + GetDebugTypeName(checkerType));
+            LogError(diagnostic::UNSUPPORTED_TYPE, {GetDebugTypeName(checkerType)});
     }
 }
 
 void TSDeclGen::GenLiteral(const ir::Literal *literal)
 {
     if (!literal->IsNumberLiteral()) {
-        ThrowError("Unsupported literal type", literal->Start());
+        LogError(diagnostic::UNSUPPORTED_LITERAL_TYPE, {}, literal->Start());
     }
 
     const auto number = literal->AsNumberLiteral()->Number();
@@ -205,7 +205,7 @@ void TSDeclGen::GenLiteral(const ir::Literal *literal)
         return;
     }
 
-    ThrowError("Unexpected number literal type", literal->Start());
+    LogError(diagnostic::UNEXPECTED_NUMBER_LITERAL_TYPE, {}, literal->Start());
 }
 
 void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType, const ir::MethodDefinition *methodDef)
@@ -219,7 +219,7 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
         }
         if (!etsFunctionType->IsETSArrowType()) {
             const auto loc = methodDef != nullptr ? methodDef->Start() : lexer::SourcePosition();
-            ThrowError("Method overloads are not supported", loc);
+            LogError(diagnostic::NOT_OVERLOAD_SUPPORT, {}, loc);
         }
         return etsFunctionType->CallSignatures()[0];
     }();
@@ -260,7 +260,7 @@ void TSDeclGen::GenEnumType(const checker::ETSIntEnumType *enumType)
     for (auto *member : enumType->GetMembers()) {
         OutDts(INDENT);
         if (!member->IsTSEnumMember()) {
-            ThrowError("Member of enum not of type TSEnumMember", member->Start());
+            LogError(diagnostic::INCORRECT_ENUM_MEMBER, {}, member->Start());
         }
 
         const auto *enumMember = member->AsTSEnumMember();
@@ -270,7 +270,7 @@ void TSDeclGen::GenEnumType(const checker::ETSIntEnumType *enumType)
             OutDts(" = ");
 
             if (!init->IsLiteral()) {
-                ThrowError("Only literal enum initializers are supported", member->Start());
+                LogError(diagnostic::NOT_LITERAL_ENUM_INITIALIZER, {}, member->Start());
             }
 
             GenLiteral(init->AsLiteral());
@@ -311,7 +311,7 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
 
     auto typeName = objectType->Name();
     if (typeName.Empty()) {
-        Warning("Object type name is empty");
+        LogWarning(diagnostic::EMPTY_TYPE_NAME);
         OutDts("any");
     } else {
         objectArguments_.insert(typeName.Mutf8());
@@ -425,14 +425,14 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
     OutDts("import { ");
     GenSeparated(specifiers, [this, &importDeclaration](ir::AstNode *specifier) {
         if (!specifier->IsImportSpecifier()) {
-            ThrowError("Only import specifiers are supported", importDeclaration->Start());
+            LogError(diagnostic::IMPORT_SPECIFIERS_SUPPORT, {}, importDeclaration->Start());
         }
 
         const auto local = specifier->AsImportSpecifier()->Local()->Name();
         const auto imported = specifier->AsImportSpecifier()->Imported()->Name();
         OutDts(local);
         if (local != imported) {
-            ThrowError("Imports with local bindings are not supported", importDeclaration->Start());
+            LogError(diagnostic::UNSUPPORTED_LOCAL_BINDINGS, {}, importDeclaration->Start());
         }
     });
 
@@ -638,7 +638,7 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef, cons
     OutDts(methodName);
 
     if (methodDef->TsType() == nullptr) {
-        Warning("Untyped method encountered: " + methodName);
+        LogWarning(diagnostic::UNTYPED_METHOD, {methodName}, methodIdent->Start());
         OutDts(": any");
     } else {
         GenFunctionType(methodDef->TsType()->AsETSFunctionType(), methodDef);
@@ -719,7 +719,7 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::p
 
     std::ofstream outDtsStream(outDtsPath);
     if (outDtsStream.fail()) {
-        std::cerr << "Failed to open file: " << outDtsPath << std::endl;
+        checker->DiagnosticEngine().LogFatalError(util::DiagnosticMessageParams {"Failed to open file: ", outDtsPath});
         return false;
     }
 

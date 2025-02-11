@@ -21,6 +21,7 @@
 #include "libpandabase/os/file.h"
 #include "libpandabase/utils/arena_containers.h"
 #include "util/options.h"
+#include "util/diagnosticEngine.h"
 
 namespace ark::es2panda::declgen_ets2ts {
 
@@ -39,6 +40,7 @@ public:
     TSDeclGen(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program)
         : checker_(checker),
           program_(program),
+          diagnosticEngine_(checker->DiagnosticEngine()),
           allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
           objectArguments_(allocator_.Adapter())
     {
@@ -69,7 +71,11 @@ public:
     static constexpr std::string_view INDENT = "    ";
 
 private:
-    void ThrowError(std::string_view message, const lexer::SourcePosition &pos);
+    void LogError(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params,
+                  const lexer::SourcePosition &pos);
+    void LogWarning(const diagnostic::DiagnosticKind &kind, const util::DiagnosticMessageParams &params,
+                    const lexer::SourcePosition &pos);
+
     const ir::Identifier *GetKeyIdent(const ir::Expression *key);
 
     void GenType(const checker::Type *checkerType);
@@ -148,6 +154,7 @@ private:
     std::stringstream outputTs_;
     checker::ETSChecker *checker_ {};
     const ark::es2panda::parser::Program *program_ {};
+    util::DiagnosticEngine &diagnosticEngine_;
     ArenaAllocator allocator_;
     ArenaSet<std::string> objectArguments_;
     DeclgenOptions declgenOptions_ {};

@@ -1193,11 +1193,15 @@ ark_gen("es2panda_diagnostic_gen") {
     "util/diagnostic/semantic.yaml",
     "util/diagnostic/warning.yaml",
     "util/diagnostic/fatal.yaml",
+    "declgen_ets2ts/declgen_ets2ts_error.yaml",
+    "declgen_ets2ts/declgen_ets2ts_warning.yaml",
   ]
   template_files = [ "diagnostic.h.erb" ]
   sources = "util/diagnostic"
   destination = "$target_gen_dir/generated"
   api = [
+    "util/diagnostic/diagnostic.rb",
+    "util/diagnostic/diagnostic.rb",
     "util/diagnostic/diagnostic.rb",
     "util/diagnostic/diagnostic.rb",
     "util/diagnostic/diagnostic.rb",
