@@ -2399,18 +2399,9 @@ bool ETSChecker::IsInLocalClass(const ir::AstNode *node) const
     return false;
 }
 
-ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
-                                                           const std::string &className)
+ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(const std::string &className)
 {
-    auto callSignatures = instantiateMethod->TsType()->AsETSFunctionType()->CallSignatures();
-    ASSERT(!callSignatures.empty());
-    auto methodOwner = std::string(callSignatures[0]->Owner()->Name());
-    std::string implicitInstantiateArgument = "()=>{return new " + className + "()";
-    if (methodOwner != className) {
-        implicitInstantiateArgument.append(" as " + methodOwner);
-    }
-    implicitInstantiateArgument.append("}");
-
+    std::string implicitInstantiateArgument = "()=>{return new " + className + "()}";
     parser::Program program(Allocator(), VarBinder());
     auto parser = parser::ETSParser(&program, nullptr, DiagnosticEngine());
     auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
@@ -2733,7 +2724,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
 
     if (instantiateMethod != nullptr) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *argExpr = GenerateImplicitInstantiateArg(instantiateMethod, std::string(className));
+        auto *argExpr = GenerateImplicitInstantiateArg(std::string(className));
 
         argExpr->SetParent(callExpr);
         argExpr->SetRange(ident->Range());
