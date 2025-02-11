@@ -16,7 +16,7 @@
 #include "ETSparser.h"
 #include "ETSNolintParser.h"
 #include <utility>
-
+#include "generated/diagnostic.h"
 #include "macros.h"
 #include "parser/parserFlags.h"
 #include "parser/parserStatusContext.h"
@@ -767,6 +767,7 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
         Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         // without ClassBody
         bodyRange = lexer::SourceRange {Lexer()->GetToken().Start(), Lexer()->GetToken().Start()};
+        LogError(diagnostic::AMBIENT_CLASS_MISSING_BODY);
     } else {
         ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
 
