@@ -198,6 +198,7 @@ conditionalExpression2.sts
 conditionalExpressionGenericLUB.sts
 conditionalExpressionLUB.sts
 constructor_overload_sig_with_ref_type.sts
+constructor-issue.sts
 declare_class.sts
 default_generic_function_1.sts
 default_generic_method_1.sts

@@ -1367,7 +1367,8 @@ checker::Type *ETSAnalyzer::GetCallExpressionReturnType(ir::CallExpression *expr
         checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
 
-    if (signature->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+    if (signature->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
+        !(signature->HasSignatureFlag(checker::SignatureFlags::CONSTRUCTOR))) {
         auto owner = const_cast<ETSObjectType *>(util::Helpers::GetContainingObjectType(signature->Function()));
         SavedCheckerContext savedCtx(ReconstructOwnerClassContext(checker, owner));
         signature->OwnerVar()->Declaration()->Node()->Check(checker);
