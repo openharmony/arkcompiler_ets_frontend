@@ -22,7 +22,7 @@ GenericsTest.sts
 # panda#11327
 objectEquality.sts
 
-# FailKind.ES2PANDA_FAIL # panda#12518
+# FailKind.ES2PANDA_FAIL # panda#19809
 conditionalExpressionGenericLUB.sts
 
 # Failed due to lambda captures

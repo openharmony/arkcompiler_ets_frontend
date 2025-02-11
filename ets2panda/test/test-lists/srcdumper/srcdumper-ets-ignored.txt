@@ -243,15 +243,6 @@ runtime/ets/struct_implements.sts
 runtime/ets/top_level_03.sts
 ast/compiler/ets/DeclareIndexerTest.sts
 
-# Issue #20937
-ast/compiler/ets/type_error_processing/type_handlers.sts
-
-# issue20682
-runtime/ets/SpreadExpressionsforFunctionCall_primitive_type.sts
-
-# issue #20916
-runtime/ets/interfacePropertyFunctionType.sts
-
 #Issue 21065
 runtime/ets/implementsClassPropertyUnionType1.sts
 runtime/ets/implementsClassPropertyUnionType2.sts
