@@ -59,3 +59,4 @@ test262/data/test/built-ins/TypedArray/prototype/fill/coerced-indexes.js
 test262/data/test/built-ins/TypedArray/prototype/set/array-arg-offset-tointeger.js
 test262/data/test/built-ins/TypedArray/prototype/every/callbackfn-not-callable-throws.js
 test262/data/test/built-ins/TypedArray/prototype/set/typedarray-arg-set-values-diff-buffer-other-type-conversions.js
+test262/data/test/built-ins/TypedArray/prototype/set/typedarray-arg-offset-tointeger.js
