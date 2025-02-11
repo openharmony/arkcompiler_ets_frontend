@@ -1022,7 +1022,7 @@ bool ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType 
 {
     // Don't necessary to check overload for invalid functions
     if (func->Name().Is(ERROR_LITERAL)) {
-        ASSERT(IsAnyError());
+        ES2PANDA_ASSERT(IsAnyError());
         return false;
     }
 
@@ -1794,7 +1794,7 @@ static void CreateFuncDecl(ETSChecker *checker, ir::MethodDefinition *func, varb
     varbinder::Variable *var = scope->FindLocal(func->Id()->Name(), varbinder::ResolveBindingOptions::ALL_DECLARATION);
     if (var == nullptr) {
         var = std::get<1>(
-            varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Start(), allocator, func->Id()->Name(), func));
+            varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Id()->Start(), allocator, func->Id()->Name(), func));
     }
     var->AddFlag(varbinder::VariableFlags::METHOD);
     var->SetScope(ctx.GetScope());
@@ -1893,15 +1893,10 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expr
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         auto *const paramNew = paramOld->Clone(Allocator(), paramOld->Parent())->AsETSParameterExpression();
 
-        varbinder::Variable *var = nullptr;
-        Type *paramType = GlobalTypeError();
-
-        if (paramOld->Ident()->Variable() != nullptr) {
-            var = std::get<1>(VarBinder()->AddParamDecl(paramNew));
-            paramType = paramOld->Ident()->Variable()->TsType();
-            var->SetTsType(paramType);
-            var->SetScope(paramCtx.GetScope());
-        }
+        varbinder::Variable *var = VarBinder()->AddParamDecl(paramNew);
+        Type *paramType = paramOld->Variable()->TsType();
+        var->SetTsType(paramType);
+        var->SetScope(paramCtx.GetScope());
 
         paramNew->SetVariable(var);
         paramNew->SetTsType(paramType);

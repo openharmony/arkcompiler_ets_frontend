@@ -55,6 +55,7 @@ class VarBinder {
 public:
     explicit VarBinder(ArenaAllocator *allocator) : allocator_(allocator), functionScopes_(allocator_->Adapter()) {}
 
+    VarBinder() = delete;
     NO_COPY_SEMANTIC(VarBinder);
     NO_MOVE_SEMANTIC(VarBinder);
     virtual ~VarBinder() = default;
@@ -71,19 +72,19 @@ public:
     template <typename T, typename... Args>
     std::tuple<T *, varbinder::Variable *> NewVarDecl(const lexer::SourcePosition &pos, Args &&...args);
 
-    std::tuple<ParameterDecl *, Variable *> AddParamDecl(ir::AstNode *param);
+    Variable *AddParamDecl(ir::Expression *param);
 
-    void SetProgram(parser::Program *program)
+    void SetProgram(parser::Program *program) noexcept
     {
         program_ = program;
     }
 
-    parser::Program *Program()
+    [[nodiscard]] parser::Program *Program() noexcept
     {
         return program_;
     }
 
-    const parser::Program *Program() const
+    [[nodiscard]] const parser::Program *Program() const
     {
         ES2PANDA_ASSERT(program_);
         return program_;
@@ -95,28 +96,28 @@ public:
         context_ = context;
     }
 
-    public_lib::Context *GetContext() const
+    [[nodiscard]] public_lib::Context *GetContext() const
     {
         ES2PANDA_ASSERT(context_);
         return context_;
     }
 
-    void SetGenStdLib(bool genStdLib)
+    void SetGenStdLib(bool genStdLib) noexcept
     {
         genStdLib_ = genStdLib;
     }
 
-    bool IsGenStdLib()
+    [[nodiscard]] bool IsGenStdLib() noexcept
     {
         return genStdLib_;
     }
 
-    Scope *GetScope() const
+    [[nodiscard]] Scope *GetScope() const noexcept
     {
         return scope_;
     }
 
-    void ResetAllScopes(GlobalScope *topScope, VariableScope *varScope, Scope *scope)
+    void ResetAllScopes(GlobalScope *topScope, VariableScope *varScope, Scope *scope) noexcept
     {
         topScope_ = topScope;
         varScope_ = varScope;
@@ -131,28 +132,28 @@ public:
         scope_ = topScope_;
     }
 
-    GlobalScope *TopScope() const
+    [[nodiscard]] GlobalScope *TopScope() const noexcept
     {
         return topScope_;
     }
 
-    VariableScope *VarScope() const
+    [[nodiscard]] VariableScope *VarScope() const noexcept
     {
         return varScope_;
     }
 
-    bool IsETSBinder() const
+    [[nodiscard]] bool IsETSBinder() const noexcept
     {
         return Extension() == ScriptExtension::STS;
     }
 
-    const ETSBinder *AsETSBinder() const
+    [[nodiscard]] const ETSBinder *AsETSBinder() const
     {
-        ASSERT(Extension() == ScriptExtension::STS);
+        ES2PANDA_ASSERT(Extension() == ScriptExtension::STS);
         return reinterpret_cast<const ETSBinder *>(this);
     }
 
-    ETSBinder *AsETSBinder()
+    [[nodiscard]] ETSBinder *AsETSBinder()
     {
         ES2PANDA_ASSERT(Extension() == ScriptExtension::STS);
         return reinterpret_cast<ETSBinder *>(this);
@@ -160,60 +161,59 @@ public:
 
     void ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    void ThrowUnresolvableVariable(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const;
     void ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const;
-    virtual void ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const;
+    virtual void ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const;
 
     void PropagateDirectEval() const;
 
     template <typename T>
     friend class LexicalScope;
 
-    inline ArenaAllocator *Allocator() const
+    [[nodiscard]] ArenaAllocator *Allocator() const noexcept
     {
         return allocator_;
     }
 
-    const ArenaVector<FunctionScope *> &Functions() const
+    [[nodiscard]] const ArenaVector<FunctionScope *> &Functions() const noexcept
     {
         return functionScopes_;
     }
 
-    ArenaVector<FunctionScope *> &Functions()
+    [[nodiscard]] ArenaVector<FunctionScope *> &Functions() noexcept
     {
         return functionScopes_;
     }
 
-    virtual ScriptExtension Extension() const
+    [[nodiscard]] virtual ScriptExtension Extension() const noexcept
     {
         return ScriptExtension::JS;
     }
 
-    virtual ResolveBindingOptions BindingOptions() const
+    [[nodiscard]] virtual ResolveBindingOptions BindingOptions() const noexcept
     {
         return ResolveBindingOptions::BINDINGS;
     }
 
     LocalVariable *AddMandatoryParam(const std::string_view &name);
 
-    static constexpr std::string_view FUNCTION_ARGUMENTS = "arguments";
-    static constexpr std::string_view MANDATORY_PARAM_FUNC = "=f";
-    static constexpr std::string_view MANDATORY_PARAM_NEW_TARGET = "=nt";
-    static constexpr std::string_view MANDATORY_PARAM_THIS = "=t";
+    inline static constexpr std::string_view const FUNCTION_ARGUMENTS = "arguments";
+    inline static constexpr std::string_view const MANDATORY_PARAM_FUNC = "=f";
+    inline static constexpr std::string_view const MANDATORY_PARAM_NEW_TARGET = "=nt";
+    inline static constexpr std::string_view const MANDATORY_PARAM_THIS = "=t";
 
-    static constexpr uint32_t MANDATORY_PARAM_FUNC_REG = 0;
-    static constexpr uint32_t MANDATORY_PARAMS_NUMBER = 3;
+    inline static constexpr std::uint32_t const MANDATORY_PARAM_FUNC_REG = 0U;
+    inline static constexpr std::uint32_t const MANDATORY_PARAMS_NUMBER = 3U;
 
-    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_FUNC = "!f";
-    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_NEW_TARGET = "!nt";
-    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_THIS = "!t";
+    inline static constexpr std::string_view const LEXICAL_MANDATORY_PARAM_FUNC = "!f";
+    inline static constexpr std::string_view const LEXICAL_MANDATORY_PARAM_NEW_TARGET = "!nt";
+    inline static constexpr std::string_view const LEXICAL_MANDATORY_PARAM_THIS = "!t";
 
-    static constexpr std::string_view LEXICAL_CONTEXT_PARAM = "=eval";
-    static constexpr std::string_view MAIN = "main";
-    static constexpr uint32_t LEXICAL_CONTEXT_PARAM_REG = MANDATORY_PARAMS_NUMBER;
-    static constexpr std::string_view STAR_IMPORT = "*";
+    inline static constexpr std::string_view const LEXICAL_CONTEXT_PARAM = "=eval";
+    inline static constexpr std::string_view const MAIN = "main";
+    inline static constexpr std::uint32_t const LEXICAL_CONTEXT_PARAM_REG = MANDATORY_PARAMS_NUMBER;
+    inline static constexpr std::string_view const STAR_IMPORT = "*";
 
     void ResolveReferenceDoWhileHelper(ir::AstNode *childNode);
     void ResolveReferenceWhileHelper(ir::AstNode *childNode);
@@ -241,7 +241,7 @@ protected:
     void AddMandatoryParams();
     void LookupReference(const util::StringView &name);
     void InstantiateArguments();
-    bool InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::AstNode *node);
+    [[nodiscard]] bool InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::AstNode *node);
     void InstantiatePrivateContext(const ir::Identifier *ident) const;
     void BuildVarDeclarator(ir::VariableDeclarator *varDecl);
     void BuildVarDeclaratorId(ir::AstNode *childNode);
@@ -253,7 +253,7 @@ protected:
     void ResolveReferences(const ir::AstNode *parent);
     void VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func);
     void VisitScriptFunction(ir::ScriptFunction *func);
-    util::StringView BuildFunctionName(util::StringView name, uint32_t idx);
+    [[nodiscard]] util::StringView BuildFunctionName(util::StringView name, uint32_t idx);
 
     void AddCompilableFunctionScope(varbinder::FunctionScope *funcScope);
 
@@ -268,7 +268,7 @@ protected:
     virtual void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *typeNode) {};
     virtual void BuildClassDefinition(ir::ClassDefinition *classDef);
     virtual void BuildClassProperty(const ir::ClassProperty *prop);
-    virtual bool BuildInternalName(ir::ScriptFunction *scriptFunc);
+    [[nodiscard]] virtual bool BuildInternalName(ir::ScriptFunction *scriptFunc);
     virtual void AddCompilableFunction(ir::ScriptFunction *func);
 
 private:
@@ -362,7 +362,7 @@ void VarBinder::AddMandatoryParams(const MandatoryParams<N> &params)
 
     auto scopeCtx = LexicalScope<FunctionParamScope>::Enter(this, scope_->AsFunctionVariableScope()->ParamScope());
 
-    for (auto iter = params.rbegin(); iter != params.rend(); iter++) {
+    for (auto iter = params.rbegin(); iter != params.rend(); ++iter) {
         AddMandatoryParam(*iter);
     }
 }
@@ -399,10 +399,11 @@ std::tuple<T *, varbinder::Variable *> VarBinder::NewVarDecl(const lexer::Source
 
     if (var == nullptr) {
         ThrowRedeclaration(pos, decl->Name());
+        var = scope_->FindLocal(decl->Name(), ResolveBindingOptions::BINDINGS);
     }
 
+    ES2PANDA_ASSERT(var != nullptr);
     return {decl, var};
 }
 }  // namespace ark::es2panda::varbinder
-
 #endif

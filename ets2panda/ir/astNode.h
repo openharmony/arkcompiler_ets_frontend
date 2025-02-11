@@ -513,7 +513,7 @@ public:
     ir::ClassElement *AsClassElement();
     const ir::ClassElement *AsClassElement() const;
 
-    static varbinder::Scope *EnclosingScope(const ir::AstNode *expr);
+    [[nodiscard]] static varbinder::Scope *EnclosingScope(const ir::AstNode *expr) noexcept;
 
     [[nodiscard]] virtual bool IsScopeBearer() const noexcept;
     [[nodiscard]] virtual varbinder::Scope *Scope() const noexcept;

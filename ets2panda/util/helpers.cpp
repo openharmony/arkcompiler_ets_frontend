@@ -14,42 +14,40 @@
  */
 
 #include "helpers.h"
+#include <iomanip>
 
-#include "generated/signatures.h"
 #include "varbinder/privateBinding.h"
-#include "checker/types/ets/types.h"
-#include "ir/astNode.h"
+#include "lexer/token/letters.h"
+
 #include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/property.h"
 #include "ir/base/scriptFunction.h"
+#include "ir/base/classProperty.h"
+#include "ir/base/property.h"
 #include "ir/base/spreadElement.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/functionExpression.h"
+#include "ir/base/methodDefinition.h"
+
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/expressions/literals/nullLiteral.h"
+#include "ir/expressions/functionExpression.h"
 #include "ir/expressions/objectExpression.h"
-#include "ir/statements/returnStatement.h"
-#include "ir/statements/variableDeclaration.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/assignmentExpression.h"
+
 #include "ir/statements/variableDeclarator.h"
+
 #include "ir/module/importSpecifier.h"
+#include "ir/module/importDefaultSpecifier.h"
+
 #include "ir/ets/etsImportDeclaration.h"
+#include "ir/ets/etsParameterExpression.h"
+
 #include "ir/ts/tsParameterProperty.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsEnumDeclaration.h"
-#include "ir/ets/etsParameterExpression.h"
-#include "ir/module/importDeclaration.h"
-#include "lexer/token/letters.h"
+
 #include "libpandabase/utils/utf.h"
-#include "libpandabase/os/filesystem.h"
-#include "ir/module/importDefaultSpecifier.h"
-#include <iomanip>
 
 namespace ark::es2panda::util {
 // Helpers
@@ -442,7 +440,7 @@ static void CollectBindingName(ir::AstNode *node, std::vector<ir::Identifier *> 
     }
 }
 
-std::vector<ir::Identifier *> Helpers::CollectBindingNames(ir::AstNode *node)
+std::vector<ir::Identifier *> Helpers::CollectBindingNames(ir::Expression *node)
 {
     std::vector<ir::Identifier *> bindings;
     CollectBindingName(node, &bindings);
@@ -588,8 +586,8 @@ util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::Scri
     return FunctionNameFromParent(parent, allocator);
 }
 
-std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
-                                                      uint32_t index)
+std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator, const ir::Expression *param,
+                                                      std::uint32_t index)
 {
     switch (param->Type()) {
         case ir::AstNodeType::IDENTIFIER: {

@@ -16,11 +16,12 @@
 #ifndef ES2PANDA_COMPILER_LOWERING_UTIL_H
 #define ES2PANDA_COMPILER_LOWERING_UTIL_H
 
-#include "ir/astNode.h"
-#include "checker/types/ets/etsObjectType.h"
 #include "varbinder/ETSBinder.h"
 
 namespace ark::es2panda::compiler {
+
+inline constexpr std::string_view const GENSYM_CORE = "gensym%%_";
+inline constexpr std::string_view const DUMMY_ID = "_";
 
 varbinder::Scope *NearestScope(const ir::AstNode *ast);
 checker::ETSObjectType const *ContainingClass(const ir::AstNode *ast);

@@ -17,6 +17,7 @@
 
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "public/public.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::varbinder {
 
@@ -87,18 +88,39 @@ bool ETSBinder::LookupInDebugInfoPlugin(ir::Identifier *ident)
     return false;
 }
 
+//  Auxiliary method extracted from LookupTypeReference(...) to avoid too large size
+static void CreateDummyVariable(ETSBinder *varBinder, ir::Identifier *ident)
+{
+    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, varBinder->VarScope());
+    auto [decl, var] =
+        varBinder->NewVarDecl<varbinder::LetDecl>(ident->Start(), compiler::GenName(varBinder->Allocator()).View());
+    var->SetScope(varBinder->GetScope());
+    ident->SetVariable(var);
+    ident->SetTsType(var->SetTsType(varBinder->GetContext()->checker->AsETSChecker()->GlobalTypeError()));
+    decl->BindNode(ident);
+}
+
 void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces)
 {
-    const auto &name = ident->Name();
-    if (IsSpecialName(name) || ident->IsErrorPlaceHolder()) {
+    if (ident->Variable() != nullptr && ident->Variable()->Declaration()->Node() == ident) {
         return;
     }
-    auto *iter = GetScope();
 
-    while (iter != nullptr) {
+    auto const &name = ident->Name();
+    if (IsSpecialName(name)) {
+        return;
+    }
+
+    if (ident->IsErrorPlaceHolder()) {
+        CreateDummyVariable(this, ident);
+        return;
+    }
+
+    auto *scope = GetScope();
+    while (scope != nullptr) {
         auto options = ResolveBindingOptions::DECLARATION | ResolveBindingOptions::TYPE_ALIASES |
                        ResolveBindingOptions::STATIC_DECLARATION;
-        auto res = iter->Find(name, options);
+        auto res = scope->Find(name, options);
         if (res.variable == nullptr) {
             break;
         }
@@ -121,7 +143,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
                 return;
             }
             default: {
-                iter = iter->Parent();
+                scope = scope->Parent();
             }
         }
     }
@@ -130,8 +152,8 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
         return;
     }
 
-    ident->SetTsType(GetContext()->checker->AsETSChecker()->GlobalTypeError());
     ThrowUnresolvableType(ident->Start(), name);
+    CreateDummyVariable(this, ident);
 }
 
 void ETSBinder::ResolveReferencesForScope(ir::AstNode const *const parent, Scope *const scope)
@@ -183,7 +205,7 @@ void ETSBinder::ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *s
 }
 
 bool ETSBinder::AddSelectiveExportAlias(util::StringView const &path, util::StringView const &key,
-                                        util::StringView const &value, ir::AstNode const *decl)
+                                        util::StringView const &value, ir::AstNode const *decl) noexcept
 {
     if (auto foundMap = selectiveExportAliasMultimap_.find(path); foundMap != selectiveExportAliasMultimap_.end()) {
         return foundMap->second.insert({key, std::make_pair(value, decl)}).second;
@@ -485,7 +507,7 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
                 fieldVar->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);
             }
         } else {
-            ASSERT(GetContext()->diagnosticEngine->IsAnyError());
+            ES2PANDA_ASSERT(GetContext()->diagnosticEngine->IsAnyError());
             auto *checker = GetContext()->checker->AsETSChecker();
             prop->SetTsType(checker->GlobalTypeError());
             prop->Id()->SetTsType(checker->GlobalTypeError());
@@ -539,8 +561,8 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
         return specifier->AsImportSpecifier()->Local()->Name();
     }();
 
-    ES2PANDA_ASSERT(GetScope()->Find(name, ResolveBindingOptions::DECLARATION).variable != nullptr);
     auto specDecl = GetScope()->Find(name, ResolveBindingOptions::DECLARATION);
+    ES2PANDA_ASSERT(specDecl.variable != nullptr);
     dynamicImportVars_.emplace(specDecl.variable, DynamicImportData {import, specifier, specDecl.variable});
 
     if (specifier->IsImportSpecifier()) {
@@ -616,6 +638,8 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
                                          const varbinder::GlobalScope *const importGlobalScope,
                                          const ir::ETSImportDeclaration *const import)
 {
+    bool const isStdLib = util::Helpers::IsStdLib(Program());
+
     for (const auto [bindingName, var] : globalBindings) {
         if (bindingName.Is(compiler::Signatures::ETS_GLOBAL)) {
             const auto *const classDef = var->Declaration()->Node()->AsClassDeclaration()->Definition();
@@ -628,17 +652,13 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
              var->AsLocalVariable()->Declaration()->Node()->IsExportedType())) {
             auto variable = Program()->GlobalClassScope()->FindLocal(bindingName, ResolveBindingOptions::ALL);
-            if (variable != nullptr && var != variable && variable->Declaration()->IsFunctionDecl() &&
-                var->Declaration()->IsFunctionDecl()) {
-                bool isStdLib = util::Helpers::IsStdLib(Program());
+            if (variable == nullptr || var == variable) {
+                InsertForeignBinding(specifier, import, bindingName, var);
+            } else if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
                 AddOverloadFlag(Allocator(), isStdLib, var, variable);
-                continue;
-            }
-            if (variable != nullptr && var != variable) {
+            } else {
                 ThrowError(import->Source()->Start(), RedeclarationErrorMessageAssembler(var, variable, bindingName));
-                continue;
             }
-            InsertForeignBinding(specifier, import, bindingName, var);
         }
     }
 
@@ -1380,7 +1400,7 @@ void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef
     }
 }
 
-const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var) const
+const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var) const noexcept
 {
     auto it = dynamicImportVars_.find(var);
     if (it == dynamicImportVars_.cend()) {
@@ -1390,7 +1410,7 @@ const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var)
     return &it->second;
 }
 
-ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &path) const
+ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView &path) const noexcept
 {
     auto const *globalProgram = globalRecordTable_.Program();
 
@@ -1414,7 +1434,7 @@ ArenaVector<parser::Program *> ETSBinder::GetProgramList(const util::StringView 
     return ArenaVector<parser::Program *>(Allocator()->Adapter());
 }
 
-bool ETSBinder::IsDynamicModuleVariable(const Variable *var) const
+bool ETSBinder::IsDynamicModuleVariable(const Variable *var) const noexcept
 {
     auto *data = DynamicImportDataForVar(var);
     if (data == nullptr) {
@@ -1424,7 +1444,7 @@ bool ETSBinder::IsDynamicModuleVariable(const Variable *var) const
     return data->specifier->IsImportSpecifier();
 }
 
-bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const
+bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const noexcept
 {
     auto *data = DynamicImportDataForVar(var);
     if (data == nullptr) {
@@ -1434,7 +1454,7 @@ bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const
     return data->specifier->IsImportNamespaceSpecifier();
 }
 
-void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
+void ETSBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view msg) const
 {
     GetContext()->diagnosticEngine->LogSemanticError(msg, pos);
 }

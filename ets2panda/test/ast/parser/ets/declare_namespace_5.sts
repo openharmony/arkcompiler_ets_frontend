@@ -14,10 +14,10 @@
  */
 
 class A {
-    /* @@ label */namespace ns {
+    namespace ns {
         dfdfsfdf
     }
-    /* @@ label1 */namespace hehe {
+    namespace hehe {
 
     }
     time: number = foo();
@@ -33,10 +33,10 @@ class A {
 }
 
 class B {
-    /* @@ label2 */namespace ns {
+    namespace ns {
 
     }ddddddd
-    /* @@ label3 */time: number = foo();
+    time: number = foo();
     private uri: string;
 
     private routerssdsds() {
@@ -48,11 +48,11 @@ class B {
     }
 }
 
-/* @@@ label Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
-/* @@@ label1 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
-/* @@@ label2 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace.  */
-/* @@@ label3 Error SyntaxError: Field type annotation expected.  */
+/* @@? 17:5 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace. */
+/* @@? 20:5 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace. */
 /* @@? 23:20 Error TypeError: Unresolved reference foo */
-/* @@? 39:35 Error TypeError: Unresolved reference foo */
-/* @@? 43:11 Error TypeError: Property 'getInstance' does not exist on type 'B' */
 /* @@? 27:11 Error TypeError: Property 'getInstance' does not exist on type 'B' */
+/* @@? 36:5 Error SyntaxError: Namespace is allowed only at the top level or inside a namespace. */
+/* @@? 39:5 Error SyntaxError: Field type annotation expected. */
+/* @@? 39:20 Error TypeError: This expression is not callable. */
+/* @@? 43:11 Error TypeError: Property 'getInstance' does not exist on type 'B' */

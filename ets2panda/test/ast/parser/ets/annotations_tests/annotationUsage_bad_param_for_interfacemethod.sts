@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,11 +20,11 @@ class A{}
 }
 
 interface itf {
-    @MyAnno({testProperty1: A})
+    @MyAnno({testProperty1: /* @@ label */A})
     foo() : string
 }
 
 
-/* @@? 23:29 Error TypeError: Unresolved reference A  */
-/* @@? 23:29 Error TypeError: Type 'A' cannot be assigned to type 'String'  */
-/* @@? 23:29 Error TypeError: Invalid value for annotation field, expected a constant literal.  */
+/* @@@ label Error TypeError: Class name 'A' used in the wrong context */
+/* @@@ label Error TypeError: Type 'A' cannot be assigned to type 'String' */
+/* @@@ label Error TypeError: Invalid value for annotation field, expected a constant literal. */

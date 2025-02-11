@@ -167,7 +167,7 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, ir::Arrow
             allocator, capturedVar->Name(), allocator->New<ir::OpaqueTypeNode>(newType, allocator), allocator);
         auto param =
             util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, newId, false, allocator);
-        auto *var = std::get<1U>(varBinder->AddParamDecl(param));
+        auto *var = varBinder->AddParamDecl(param);
         var->SetTsType(newType);
         var->SetScope(paramScope);
         param->SetVariable(var);
@@ -187,7 +187,7 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, ir::Arrow
         newParam->Ident()->SetTsTypeAnnotation(allocator->New<ir::OpaqueTypeNode>(newParamType, allocator));
         newParam->Ident()->TypeAnnotation()->SetParent(newParam->Ident());
         newParam->Ident()->SetVariable(nullptr);  // Remove the cloned variable.
-        auto *var = std::get<1U>(varBinder->AddParamDecl(newParam));
+        auto *var = varBinder->AddParamDecl(newParam);
         var->SetTsType(newParamType);
         var->SetScope(paramScope);
         newParam->SetVariable(var);
@@ -275,8 +275,8 @@ static ir::MethodDefinition *SetUpCalleeMethod(public_lib::Context *ctx, LambdaI
     calleeClass->Definition()->Body().push_back(method);
     method->SetParent(calleeClass->Definition());
 
-    auto [_, var] = varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Start(), allocator, cmInfo->calleeName, func);
-    (void)_;
+    auto *var =
+        std::get<1>(varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Start(), allocator, cmInfo->calleeName, func));
     var->AddFlag(varbinder::VariableFlags::METHOD);
     var->SetScope(scopeForMethod);
     func->Id()->SetVariable(var);

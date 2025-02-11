@@ -15,8 +15,6 @@
 
 #include "ETSAnalyzer.h"
 
-#include <type_traits>
-
 #include "generated/diagnostic.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
@@ -79,13 +77,16 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
     if (st->TsType() != nullptr) {
         return st->TsType();
     }
-    ETSChecker *checker = GetETSChecker();
 
     ES2PANDA_ASSERT(st->Id() != nullptr);
-    if (st->Id()->IsErrorPlaceHolder() || st->Id()->Variable() == nullptr) {
-        st->Id()->SetTsType(checker->GlobalTypeError());
-        return st->SetTsType(checker->GlobalTypeError());
+
+    ETSChecker *checker = GetETSChecker();
+
+    if (st->Id()->Variable() == nullptr) {
+        st->Id()->Check(checker);
     }
+
+    ES2PANDA_ASSERT(st->Id()->Variable() != nullptr);
 
     checker->CheckAnnotations(st->Annotations());
     if (st->TypeAnnotation() != nullptr) {
@@ -118,7 +119,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
     auto *func = st->Function();
     checker->BuildFunctionSignature(func);
 
-    if (func->Signature() == nullptr || func->Id()->Variable() == nullptr) {
+    if (func->Signature() == nullptr) {
         st->SetTsType(checker->GlobalTypeError());
     } else {
         st->SetTsType(checker->BuildMethodType(func));
@@ -1012,18 +1013,25 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
     }
 
     auto [rightType, relationNode] = CheckAssignmentExprOperatorType(expr, leftType);
-    if (rightType == nullptr) {
-        expr->SetTsType(checker->GlobalTypeError());
-        return checker->GlobalTypeError();
+    if (rightType->IsTypeError()) {
+        return expr->SetTsType(checker->GlobalTypeError());
     }
 
-    checker::AssignmentContext(checker->Relation(), relationNode, rightType, leftType, expr->Right()->Start(),
-                               {"Type '", rightType, "' cannot be assigned to type '", leftType, "'"});
+    checker::Type *smartType = leftType;
+    if (!leftType->IsTypeError()) {
+        if (auto ctx = checker::AssignmentContext(
+                // CC-OFFNXT(G.FMT.06-CPP) project code style
+                checker->Relation(), relationNode, rightType, leftType, expr->Right()->Start(),
+                // CC-OFFNXT(G.FMT.06-CPP) project code style
+                {"Type '", rightType, "' cannot be assigned to type '", leftType, "'"});
+            ctx.IsAssignable()) {
+            smartType = GetSmartType(expr, leftType, rightType);
+        }
+    } else {
+        smartType = rightType;
+    }
 
-    checker::Type *smartType = GetSmartType(expr, leftType, rightType);
-
-    expr->SetTsType(smartType);
-    return expr->TsType();
+    return expr->SetTsType(smartType);
 }
 
 std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr,
@@ -1549,14 +1557,11 @@ checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
 
     ETSChecker *checker = GetETSChecker();
 
-    if (expr->IsErrorPlaceHolder()) {
-        return expr->SetTsType(checker->GlobalTypeError());
-    }
-
     auto *identType = TransformTypeForMethodReference(checker, expr, checker->ResolveIdentifier(expr));
 
-    if (expr->Variable() != nullptr && (expr->Parent() == nullptr || !expr->Parent()->IsAssignmentExpression() ||
-                                        expr != expr->Parent()->AsAssignmentExpression()->Left())) {
+    ES2PANDA_ASSERT(expr->Variable() != nullptr);
+    if (expr->Parent() == nullptr || !expr->Parent()->IsAssignmentExpression() ||
+        expr != expr->Parent()->AsAssignmentExpression()->Left()) {
         auto *const smartType = checker->Context().GetSmartCast(expr->Variable());
         if (smartType != nullptr) {
             identType = smartType;
@@ -2369,8 +2374,7 @@ checker::Type *ETSAnalyzer::Check(ir::AnnotationUsage *st) const
     ETSChecker *checker = GetETSChecker();
     st->Expr()->Check(checker);
 
-    if (st->GetBaseName()->Variable() == nullptr ||
-        !st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
+    if (!st->GetBaseName()->Variable()->Declaration()->Node()->IsAnnotationDeclaration()) {
         checker->LogError(diagnostic::NOT_AN_ANNOTATION, {st->GetBaseName()->Name()}, st->GetBaseName()->Start());
         return ReturnTypeForStatement(st);
     }
@@ -2460,12 +2464,6 @@ static bool ValidateAndProcessIteratorType(ETSChecker *checker, Type *elemType, 
     relation->SetNode(nullptr);
     relation->SetFlags(checker::TypeRelationFlag::NONE);
 
-    if (iterType->Variable() == nullptr && !iterType->IsETSObjectType() && elemType->IsETSObjectType() &&
-        st->Left()->IsVariableDeclaration()) {
-        for (auto &declarator : st->Left()->AsVariableDeclaration()->Declarators()) {
-            checker->AddBoxingUnboxingFlagsToNode(declarator->Id(), iterType);
-        }
-    }
     return true;
 }
 
@@ -2855,9 +2853,7 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
 
     // Processing possible parser errors
     if (ident->Variable() == nullptr) {
-        ES2PANDA_ASSERT(checker->IsAnyError());
-        ident->SetTsType(checker->GlobalTypeError());
-        return st->SetTsType(variableType);
+        ident->Check(checker);
     }
 
     //  Now try to define the actual type of Identifier so that smart cast can be used in further checker processing

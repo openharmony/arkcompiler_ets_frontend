@@ -13,14 +13,7 @@
  * limitations under the License.
  */
 
-for ( Fi of typeof `k` as ()  => bigint  | long )
+for ( Fi of /* @@ label */typeof `k` as ()  => bigint  | long )
 await this instanceof int
 
-/* @@? 16:13 Error TypeError: Object type doesn't have proper iterator method.  */
-/* @@? 16:13 Error TypeError: 'For-of' statement source expression is not of iterable type.  */
-/* @@? 1:3 Error TypeError: Property '$_iterator' does not exist on type 'Function0'  */
-/* @@? 1:1 Error TypeError: Bad operand type, the type of the operand must be boolean type.  */
-/* @@? 1:3 Error TypeError: Unresolved reference Fi  */
-/* @@? 17:7 Error TypeError: Cannot reference 'this' in this context.  */
-/* @@? 17:7 Error TypeError: Bad operand type, the types of the operands must be same type.  */
-/* @@? 17:7 Error TypeError: 'await' expressions require Promise object as argument.  */
+/* @@@ label Error TypeError: 'For-of' statement source expression is not of iterable type.  */

@@ -86,7 +86,10 @@ ir::FunctionSignature InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
         auto *const paramExpression =
             checker->AllocNode<ir::ETSParameterExpression>(paramIdent, false, checker->Allocator());
         paramExpression->SetRange(paramIdent->Range());
-        auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
+        auto [paramVar, node] = paramScope->AddParamDecl(checker->Allocator(), paramExpression);
+        if (node != nullptr) {
+            varbinder->ThrowRedeclaration(node->Start(), paramVar->Name());
+        }
 
         paramIdent->SetVariable(paramVar);
         paramExpression->SetVariable(paramVar);
@@ -121,14 +124,14 @@ ir::MethodDefinition *InterfacePropertyDeclarationsPhase::GenerateGetterOrSetter
                                   isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER, flags});
 
     func->SetRange(field->Range());
-
     func->SetScope(functionScope);
 
     auto const &name = field->Key()->AsIdentifier()->Name();
     auto methodIdent = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
+
     auto *decl = checker->Allocator()->New<varbinder::VarDecl>(name);
     auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::STS);
-
+    ES2PANDA_ASSERT(var != nullptr);
     methodIdent->SetVariable(var);
 
     auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);

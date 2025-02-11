@@ -540,8 +540,7 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ir::MethodDefinition *nullishAccessor = accessor->Clone(Allocator(), interface->Body());
 
-    auto *decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), nullishAccessor->Key()->AsIdentifier()->Name(),
-                                                           nullishAccessor);
+    auto *decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), nullishAccessor->Id()->Name(), nullishAccessor);
     auto *var = Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
     var->AddFlag(varbinder::VariableFlags::METHOD);
     nullishAccessor->Id()->SetVariable(var);
@@ -550,8 +549,8 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
     functionScope->BindName(interface->InternalName());
 
     auto *function = nullishAccessor->Function();
-
     function->SetVariable(var);
+
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     function->SetIdent(nullishAccessor->Id()->Clone(Allocator(), function));
     function->SetScope(functionScope);
@@ -562,12 +561,11 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
         auto *propTypeAnn = function->ReturnTypeAnnotation();
 
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        auto *unionType = AllocNode<ir::ETSUnionType>(
+        function->SetReturnTypeAnnotation(AllocNode<ir::ETSUnionType>(
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             ArenaVector<ir::TypeNode *>({propTypeAnn, AllocNode<ir::ETSUndefinedType>(Allocator())},
                                         Allocator()->Adapter()),
-            Allocator());
-        function->SetReturnTypeAnnotation(unionType);
+            Allocator()));
     } else {
         for (auto *params : function->Params()) {
             auto *paramExpr = params->AsETSParameterExpression();
@@ -583,12 +581,16 @@ ir::MethodDefinition *ETSChecker::CreateNullishAccessor(ir::MethodDefinition *co
             paramExpr->Ident()->SetTsTypeAnnotation(unionType);
             unionType->SetParent(paramExpr->Ident());
 
-            auto *const paramVar = std::get<2>(paramScope->AddParamDecl(Allocator(), paramExpr));
+            auto [paramVar, node] = paramScope->AddParamDecl(Allocator(), paramExpr);
+            if (node != nullptr) {
+                VarBinder()->ThrowRedeclaration(node->Start(), paramVar->Name());
+            }
+
             paramExpr->SetVariable(paramVar);
         }
     }
-    ArenaVector<ir::MethodDefinition *> overloads(Allocator()->Adapter());
-    nullishAccessor->SetOverloads(std::move(overloads));
+
+    nullishAccessor->SetOverloads(ArenaVector<ir::MethodDefinition *>(Allocator()->Adapter()));
 
     return nullishAccessor;
 }

@@ -31,6 +31,8 @@ this file will contain parse error, but compilation of 'package_module_1' is not
 /* @@? 20:30 Error SyntaxError: Unexpected token 'error'. */
 /* @@? 20:30 Error TypeError: Unresolved reference error */
 /* @@? 20:35 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:35 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:35 Error SyntaxError: Unexpected token ','. */
 /* @@? 20:37 Error TypeError: Unresolved reference but */
 /* @@? 20:41 Error SyntaxError: Unexpected token 'compilation'. */
 /* @@? 20:41 Error TypeError: Unresolved reference compilation */
@@ -44,9 +46,9 @@ this file will contain parse error, but compilation of 'package_module_1' is not
 /* @@? 20:82 Error SyntaxError: Unexpected token 'aborted'. */
 /* @@? 20:82 Error TypeError: Unresolved reference aborted */
 /* @@? 20:89 Error SyntaxError: Unexpected token ','. */
-/* @@? 20:91 Error TypeError: Unresolved reference file */
+/* @@? 20:89 Error SyntaxError: Unexpected token ','. */
+/* @@? 20:89 Error SyntaxError: Unexpected token ','. */
 /* @@? 20:96 Error SyntaxError: Unexpected token 'is'. */
-/* @@? 20:96 Error TypeError: Unresolved reference is */
 /* @@? 20:99 Error SyntaxError: Unexpected token 'just'. */
 /* @@? 20:99 Error TypeError: Unresolved reference just */
 /* @@? 20:104 Error SyntaxError: Unexpected token 'ignored'. */

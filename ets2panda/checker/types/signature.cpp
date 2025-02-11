@@ -17,6 +17,7 @@
 
 #include "checker/ETSchecker.h"
 #include "ets/etsObjectType.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::checker {
 
@@ -148,7 +149,7 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
     ss << "(";
 
     for (auto it = signatureInfo_->params.begin(); it != signatureInfo_->params.end(); it++) {
-        ss << (*it)->Name();
+        ss << (!(*it)->Name().StartsWith(compiler::GENSYM_CORE) ? (*it)->Name().Utf8() : compiler::DUMMY_ID);
 
         if ((*it)->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
             ss << "?";
@@ -169,7 +170,9 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
         }
 
         ss << "...";
-        ss << signatureInfo_->restVar->Name();
+        ss << (!signatureInfo_->restVar->Name().StartsWith(compiler::GENSYM_CORE)
+                   ? signatureInfo_->restVar->Name().Utf8()
+                   : compiler::DUMMY_ID);
         ss << ": ";
         signatureInfo_->restVar->TsType()->ToString(ss, precise);
     }

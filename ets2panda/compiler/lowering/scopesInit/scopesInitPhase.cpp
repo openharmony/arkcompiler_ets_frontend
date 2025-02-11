@@ -15,6 +15,7 @@
 
 #include "scopesInitPhase.h"
 #include "util/diagnosticEngine.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::compiler {
 
@@ -209,14 +210,10 @@ void ScopesInitPhase::VisitCatchClause(ir::CatchClause *catchClause)
     CallNode(param);
 
     if (param != nullptr) {
-        if (auto *const var = std::get<1>(VarBinder()->AddParamDecl(param)); var != nullptr) {
-            if (param->IsIdentifier()) {
-                var->SetScope(catchParamScope);
-                param->AsIdentifier()->SetVariable(var);
-            }
-        } else {
-            ASSERT(Context()->diagnosticEngine->IsAnyError());
-            param->SetTsType(Context()->checker->AsETSChecker()->GlobalTypeError());
+        auto *const var = VarBinder()->AddParamDecl(param);
+        if (param->IsIdentifier()) {
+            var->SetScope(catchParamScope);
+            param->AsIdentifier()->SetVariable(var);
         }
     }
 
@@ -238,10 +235,8 @@ void ScopesInitPhase::VisitVariableDeclarator(ir::VariableDeclarator *varDecl)
     auto init = varDecl->Id();
     std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(init);
     for (auto *binding : bindings) {
-        auto [decl, var] = AddOrGetVarDecl(varDecl->Flag(), varDecl->Start(), binding);
-        if (var != nullptr) {
-            BindVarDecl(binding, init, decl, var);
-        }
+        auto [decl, var] = AddOrGetVarDecl(varDecl->Flag(), binding);
+        BindVarDecl(binding, init, decl, var);
     }
     Iterate(varDecl);
 }
@@ -473,7 +468,6 @@ void ScopesInitPhase::BindClassDefinition(ir::ClassDefinition *classDef)
 }
 
 std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVarDecl(ir::VariableDeclaratorFlag flag,
-                                                                                      lexer::SourcePosition startLoc,
                                                                                       const ir::Identifier *id)
 {
     if (auto var = id->Variable(); var != nullptr) {
@@ -482,16 +476,22 @@ std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVa
 
     auto name = id->Name();
     if (name.Is(ERROR_LITERAL)) {
-        return {nullptr, nullptr};
+        name = compiler::GenName(Allocator()).View();
+    } else if (VarBinder()->IsETSBinder()) {
+        if (auto var = VarBinder()->GetScope()->FindLocal(name, varbinder::ResolveBindingOptions::ALL_VARIABLES);
+            var != nullptr) {
+            VarBinder()->ThrowRedeclaration(id->Start(), name);
+            return {var->Declaration(), var};
+        }
     }
 
     switch (flag) {
         case ir::VariableDeclaratorFlag::LET:
-            return VarBinder()->NewVarDecl<varbinder::LetDecl>(startLoc, name);
+            return VarBinder()->NewVarDecl<varbinder::LetDecl>(id->Start(), name);
         case ir::VariableDeclaratorFlag::VAR:
-            return VarBinder()->NewVarDecl<varbinder::VarDecl>(startLoc, name);
+            return VarBinder()->NewVarDecl<varbinder::VarDecl>(id->Start(), name);
         case ir::VariableDeclaratorFlag::CONST:
-            return VarBinder()->NewVarDecl<varbinder::ConstDecl>(startLoc, name);
+            return VarBinder()->NewVarDecl<varbinder::ConstDecl>(id->Start(), name);
         default:
             UNREACHABLE();
     }
@@ -873,12 +873,15 @@ void InitScopesPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock
         return;
     }
 
-    auto *var = std::get<1>(VarBinder()->NewVarDecl<varbinder::FunctionDecl>(staticBlock->Start(), Allocator(),
-                                                                             func->Id()->Name(), staticBlock));
-    if (var != nullptr) {
+    varbinder::Variable *var;
+    if (var = VarBinder()->GetScope()->FindLocal(func->Id()->Name(), varbinder::ResolveBindingOptions::STATIC_METHODS);
+        var == nullptr) {
+        var = std::get<1>(VarBinder()->NewVarDecl<varbinder::FunctionDecl>(func->Id()->Start(), Allocator(),
+                                                                           func->Id()->Name(), staticBlock));
         var->AddFlag(varbinder::VariableFlags::METHOD);
-        func->Id()->SetVariable(var);
     }
+
+    func->Id()->SetVariable(var);
 }
 
 void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec)
@@ -897,8 +900,8 @@ void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
 void InitScopesPhaseETS::VisitImportSpecifier(ir::ImportSpecifier *importSpec)
 {
     if (importSpec->Parent()->AsETSImportDeclaration()->IsPureDynamic()) {
-        auto [decl, var] =
-            VarBinder()->NewVarDecl<varbinder::LetDecl>(importSpec->Start(), importSpec->Local()->Name(), importSpec);
+        auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(importSpec->Local()->Start(),
+                                                                       importSpec->Local()->Name(), importSpec);
         var->AddFlag(varbinder::VariableFlags::INITIALIZED);
     }
     Iterate(importSpec);
@@ -988,14 +991,11 @@ void InitScopesPhaseETS::VisitETSReExportDeclaration(ir::ETSReExportDeclaration 
 
 void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr)
 {
-    if (auto *const var = std::get<1>(VarBinder()->AddParamDecl(paramExpr)); var != nullptr) {
-        paramExpr->Ident()->SetVariable(var);
-        var->SetScope(VarBinder()->GetScope());
-        var->AddFlag(varbinder::VariableFlags::INITIALIZED);
-        Iterate(paramExpr);
-    } else {
-        paramExpr->SetTsType(paramExpr->Ident()->SetTsType(Context()->checker->AsETSChecker()->GlobalTypeError()));
-    }
+    auto *const var = VarBinder()->AddParamDecl(paramExpr);
+    paramExpr->SetVariable(var);
+    var->SetScope(VarBinder()->GetScope());
+    var->AddFlag(varbinder::VariableFlags::INITIALIZED);
+    Iterate(paramExpr);
 }
 
 void InitScopesPhaseETS::VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl)
@@ -1014,15 +1014,21 @@ void InitScopesPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
         return;
     }
 
-    auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
-    if (var == nullptr) {
-        return;
+    auto const &name = ident->Name();
+    varbinder::Variable *var = nullptr;
+
+    if (var = VarBinder()->GetScope()->FindLocal(name, varbinder::ResolveBindingOptions::STATIC_VARIABLES);
+        var == nullptr) {
+        varbinder::Decl *decl = nullptr;
+        std::tie(decl, var) = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), name);
+        var->SetScope(VarBinder()->GetScope());
+        var->AddFlag(varbinder::VariableFlags::STATIC);
+        decl->BindNode(enumMember);
+    } else {
+        VarBinder()->ThrowRedeclaration(ident->Start(), name);
     }
 
-    var->SetScope(VarBinder()->GetScope());
-    var->AddFlag(varbinder::VariableFlags::STATIC);
     ident->SetVariable(var);
-    decl->BindNode(enumMember);
     Iterate(enumMember);
 }
 

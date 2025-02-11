@@ -46,10 +46,8 @@ ir::Identifier *Gensym(ArenaAllocator *const allocator)
 
 util::UString GenName(ArenaAllocator *const allocator)
 {
-    static std::string const GENSYM_CORE = "gensym%%_";
     static std::size_t gensymCounter = 0U;
-
-    return util::UString {GENSYM_CORE + std::to_string(++gensymCounter), allocator};
+    return util::UString {std::string(GENSYM_CORE) + std::to_string(++gensymCounter), allocator};
 }
 
 void SetSourceRangesRecursively(ir::AstNode *node, const lexer::SourceRange &range)

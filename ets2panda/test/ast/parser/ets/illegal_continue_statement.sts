@@ -15,39 +15,38 @@
 
 let a1: number = 10;
 function foo() {
-    /* @@ label1 */continue
+    continue
     let a: number = 10
     console.log(a + 5)
 }
 
 let a2: number = 10;
 function foo2() {
-    /* @@ label2 */continue;
+    continue;
     let a2: number = 10
     console.log(a + 5)
 }
 
 let a3: number = 10;
 function foo3() {
-    /* @@ label3 */break
+    break
     let a: number = 10
     console.log(a + 5)
 }
 
 let a4: number = 10;
 function foo4() {
-    /* @@ label4 */break;
+    break;
     let a2: number = 10
     console.log(a + 5)
 }
 
-/* @@@ label1 Error SyntaxError: Illegal continue statement. */
-/* @@@ label2 Error SyntaxError: Illegal continue statement. */
-/* @@@ label3 Error SyntaxError: Illegal break statement. */
-/* @@@ label4 Error SyntaxError: Illegal break statement. */
-/* @@? 18:20 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */
-/* @@? 25:20 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */
+/* @@? 18:5 Error SyntaxError: Illegal continue statement. */
+/* @@? 18:5 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */
+/* @@? 25:5 Error SyntaxError: Illegal continue statement. */
+/* @@? 25:5 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */
 /* @@? 27:17 Error TypeError: Unresolved reference a */
-/* @@? 32:20 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */
-/* @@? 39:20 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */
-/* @@? 41:17 Error TypeError: Unresolved reference a */
+/* @@? 32:5 Error SyntaxError: Illegal break statement. */
+/* @@? 32:5 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */
+/* @@? 39:5 Error SyntaxError: Illegal break statement. */
+/* @@? 39:5 Error TypeError: Control flow redirection statement can not be used out of loop or switch statement. */

@@ -125,12 +125,12 @@ private:
     std::tuple<ir::Identifier *, varbinder::LocalVariable *const> GenerateSymbol(checker::Type *const type) const
     {
         auto *gensym = Gensym(checker_->Allocator());
-        auto *const tmpVar = NearestScope(update_)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
+        auto [variable, _] = NearestScope(update_)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
             checker_->Allocator(), gensym->Name(), varbinder::VariableFlags::LOCAL);
-        tmpVar->SetTsType(type);
-        gensym->SetVariable(tmpVar);
-        gensym->SetTsType(tmpVar->TsType());
-        return std::make_tuple(gensym, tmpVar);
+        gensym->SetVariable(variable);
+        variable->SetTsType(type);
+        gensym->SetTsType(type);
+        return std::make_tuple(gensym, variable->AsLocalVariable());
     }
 
     std::tuple<ir::MemberExpression *const, ir::MemberExpression *const> CloneArgument(

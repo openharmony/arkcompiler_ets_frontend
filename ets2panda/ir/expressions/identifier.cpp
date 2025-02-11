@@ -453,7 +453,7 @@ bool Identifier::CheckDeclarationsPart2(const ir::AstNode *parent, ScriptExtensi
 
 std::string Identifier::ToString() const
 {
-    if (!Name().Empty() && Name() != ERROR_LITERAL) {
+    if (!Name().Empty() && !Name().Is(ERROR_LITERAL)) {
         return std::string {Name().Utf8()};
     }
 

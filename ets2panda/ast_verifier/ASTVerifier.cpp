@@ -200,7 +200,7 @@ void ASTVerifier::DumpMessages() const
     }
 
     if (hasErrors_) {
-        LOG(FATAL, ES2PANDA) << errMsg;
+        LOG(ERROR, ES2PANDA) << errMsg;
     } else if (hasWarnings_) {
         LOG(WARNING, ES2PANDA) << errMsg;
     }

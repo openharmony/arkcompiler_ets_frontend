@@ -245,15 +245,12 @@ bool ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, Typ
         if (node->IsETSTypeReferencePart()) {
             ir::ETSTypeReferencePart *defaultTypePart = node->AsETSTypeReferencePart();
             auto *const variable = defaultTypePart->Name()->Variable();
-            if (variable == nullptr) {
-                ES2PANDA_ASSERT(IsAnyError());
-                ok = false;
-                return;
-            }
             if (variable->TsType() == nullptr && (variable->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
                 typeParameterDecls.count(variable) == 0U) {
                 LogError(diagnostic::TYPE_PARAM_USE_BEFORE_DEFINE,
                          {defaultTypePart->Name()->AsIdentifier()->Name().Utf8()}, node->Start());
+                ok = false;
+            } else if (variable->TsType() != nullptr && variable->TsType()->IsTypeError()) {
                 ok = false;
             }
         }
@@ -320,9 +317,11 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
 
 ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const param)
 {
-    if (param->Name()->Variable() != nullptr && param->Name()->Variable()->TsType() != nullptr) {
-        ES2PANDA_ASSERT(param->Name()->Variable()->TsType()->IsETSTypeParameter());
-        return param->Name()->Variable()->TsType()->AsETSTypeParameter();
+    auto *const var = param->Name()->Variable();
+    ES2PANDA_ASSERT(var != nullptr);
+
+    if (var->TsType() != nullptr) {
+        return var->TsType()->AsETSTypeParameter();
     }
 
     auto *const paramType = CreateTypeParameter();
@@ -333,7 +332,7 @@ ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const para
     // NOTE: #15026 recursive type parameter workaround
     paramType->SetConstraintType(GlobalETSNullishObjectType());
 
-    param->Name()->Variable()->SetTsType(paramType);
+    var->SetTsType(paramType);
     return paramType;
 }
 
@@ -1822,6 +1821,8 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
 
     if (targetRef != nullptr &&
         (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) ||
+         //  NOTE (DZ):  need to investigate when and why `targetRef->TsType()->Variable()` can be `nullptr`
+         //              (see ast/parser/ets/union_static_method.sts)
          (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) && targetRef->TsType()->Variable() != nullptr &&
           targetRef->TsType()->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)))) {
         searchFlag &= ~PropertySearchFlags::SEARCH_INSTANCE;
