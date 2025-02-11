@@ -23,7 +23,7 @@ function funcWithThrowsParam(f: () => void throws) {
 }
 
 function funcThrows(): void throws {
-    throw new NullPointerException()
+    throw new Exception()
 }
 
 function funcRethrows(f: () => void throws) rethrows {
