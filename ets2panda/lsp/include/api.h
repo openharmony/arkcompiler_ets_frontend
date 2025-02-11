@@ -138,6 +138,7 @@ typedef struct CommentRange {
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
     References (*getFileReferences)(char const *fileName);
+    References (*getReferencesAtPosition)(char const *fileName, size_t position);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(char const *fileName, size_t position);
     TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);

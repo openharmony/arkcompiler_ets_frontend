@@ -89,7 +89,6 @@ TEST_F(LSPAPITests, DiagnosticConstructorAndField)
 {
     int const errorCode = 404;
     int const defaultCharacter = 10;
-    Initializer initializer = Initializer();
     std::vector<DiagnosticTag> tags {};
     std::vector<DiagnosticRelatedInformation> relatedInfoList {};
     Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Error, errorCode, message_);
@@ -106,7 +105,6 @@ TEST_F(LSPAPITests, DiagnosticCodeDescriptionOptional)
     CodeDescription codeDesc;
     codeDesc.href_ = "http://example.com/error/404";
     int const errorCode = 404;
-    Initializer initializer = Initializer();
     std::vector<DiagnosticTag> tags {};
     std::vector<DiagnosticRelatedInformation> relatedInfoList {};
 
@@ -118,7 +116,6 @@ TEST_F(LSPAPITests, DiagnosticCodeDescriptionOptional)
 
 TEST_F(LSPAPITests, DiagnosticTagsAndRelatedInformation)
 {
-    Initializer initializer = Initializer();
     std::vector<DiagnosticTag> tags {};
     tags.push_back(DiagnosticTag::Unnecessary);
     std::vector<DiagnosticRelatedInformation> relatedInfoList {};
@@ -147,7 +144,6 @@ TEST_F(LSPAPITests, DiagnosticDataField)
     std::variant<int, std::string> data = dataValue;
     int const errorCode = 400;
     int const dataResult = 42;
-    Initializer initializer = Initializer();
     std::vector<DiagnosticTag> tags {};
     std::vector<DiagnosticRelatedInformation> relatedInfoList {};
 
