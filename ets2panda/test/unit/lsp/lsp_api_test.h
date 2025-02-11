@@ -17,12 +17,31 @@
 #define ES2PANDA_TEST_LSP_API_TEST_H
 
 #include "lsp/include/api.h"
-#include "lsp/include/internal_api.h"
+#include "public/public.h"
 #include <gtest/gtest.h>
-#include "test/utils/ast_verifier_test.h"
 
-class LSPAPITests : public test::utils::AstVerifierTest {
+class LSPAPITests : public testing::Test {
 public:
+    LSPAPITests() = default;
+    ~LSPAPITests() override = default;
+
+    NO_COPY_SEMANTIC(LSPAPITests);
+    NO_MOVE_SEMANTIC(LSPAPITests);
+
+    es2panda_ContextState ContextState(es2panda_Context *context)
+    {
+        auto *s = reinterpret_cast<ark::es2panda::public_lib::Context *>(context);
+        return s->state;
+    }
+
+    template <typename Ast>
+    Ast *GetAstFromContext(es2panda_Context *context)
+    {
+        auto ctx = reinterpret_cast<ark::es2panda::public_lib::Context *>(context);
+        auto ast = reinterpret_cast<Ast *>(ctx->parserProgram->Ast());
+        return ast;
+    }
+
     std::vector<std::string> CreateTempFile(std::vector<std::string> files, std::vector<std::string> texts)
     {
         std::vector<std::string> result = {};

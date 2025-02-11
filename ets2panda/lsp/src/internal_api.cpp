@@ -14,6 +14,7 @@
  */
 
 #include <string>
+#include <vector>
 #include "api.h"
 #include "internal_api.h"
 #include "checker/types/type.h"
@@ -35,6 +36,7 @@ Initializer::Initializer()
 
 Initializer::~Initializer()
 {
+    delete allocator_;
     impl_->DestroyConfig(cfg_);
 }
 
@@ -64,8 +66,8 @@ __attribute__((unused)) char *StdStringToCString(ArenaAllocator *allocator, cons
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic, readability-simplify-subscript-expr)
 }
 
-void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *referenceFileContext,
-                           char const *searchFileName, bool isPackageModule, FileReferences *fileReferences)
+void GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *searchFileName, bool isPackageModule,
+                           References *fileReferences)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(referenceFileContext);
     auto statements = ctx->parserProgram->Ast()->Statements();
@@ -84,11 +86,9 @@ void GetFileReferencesImpl(ark::ArenaAllocator *allocator, es2panda_Context *ref
         auto fileDirectory = std::string(searchFileName).substr(0, pos);
         if ((!isPackageModule && importFileName == searchFileName) ||
             (isPackageModule && importFileName == fileDirectory)) {
-            auto fileRef = allocator->New<FileReferenceInfo>();
-            fileRef->fileName = StdStringToCString(allocator, ctx->sourceFileName);
-            fileRef->start = start;
-            fileRef->length = end - start;
-            fileReferences->referenceInfos->push_back(fileRef);
+            auto fileName = ctx->sourceFileName;
+            auto fileRef = ReferenceInfo(fileName, start, end - start);
+            fileReferences->referenceInfos.push_back(fileRef);
         }
     }
 }
@@ -284,8 +284,8 @@ ir::AstNode *FindRightToken(const size_t pos, const ArenaVector<ir::AstNode *> &
     return result;
 }
 
-CommentRange *GetRangeOfCommentFromContext(std::string const &sourceCode, size_t leftPos, size_t rightPos, size_t pos,
-                                           ArenaAllocator *allocator)
+void GetRangeOfCommentFromContext(std::string const &sourceCode, size_t leftPos, size_t rightPos, size_t pos,
+                                  CommentRange *result)
 {
     constexpr size_t BLOCK_COMMENT_START_LENGTH = 2;
     std::vector<CommentRange> commentRanges;
@@ -320,23 +320,25 @@ CommentRange *GetRangeOfCommentFromContext(std::string const &sourceCode, size_t
         startIndex = lineCommentEnd;
     }
     for (const auto &range : commentRanges) {
-        if (range.GetPos() <= pos && range.GetEnd() >= pos && range.GetPos() >= leftPos && range.GetEnd() <= rightPos) {
-            return allocator->New<CommentRange>(range.GetPos(), range.GetEnd(), range.GetKind());
+        if (range.pos_ <= pos && range.end_ >= pos && range.pos_ >= leftPos && range.end_ <= rightPos) {
+            result->pos_ = range.pos_;
+            result->kind_ = range.kind_;
+            result->end_ = range.end_;
+            break;
         }
     }
-    return nullptr;
 }
 
-CommentRange *GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, ArenaAllocator *allocator)
+void GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, CommentRange *result)
 {
     auto touchingNode = GetTouchingToken(context, pos, false);
     if (touchingNode != nullptr && IsToken(touchingNode)) {
-        return nullptr;
+        return;
     }
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto ast = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
     ir::AstNode *parent = touchingNode != nullptr ? touchingNode : ast;
-    auto children = GetChildren(parent, allocator);
+    auto children = GetChildren(parent, ctx->allocator);
     std::sort(children.begin(), children.end(), [](ir::AstNode *a, ir::AstNode *b) {
         if (a->Start().index < b->Start().index) {
             return true;
@@ -351,8 +353,7 @@ CommentRange *GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, 
     size_t leftPos = leftToken != nullptr ? leftToken->End().index : parent->Start().index;
     size_t rightPos = rightToken != nullptr ? rightToken->Start().index : parent->End().index;
     std::string sourceCode(ctx->parserProgram->SourceCode());
-    CommentRange *result = GetRangeOfCommentFromContext(sourceCode, leftPos, rightPos, pos, allocator);
-    return result;
+    GetRangeOfCommentFromContext(sourceCode, leftPos, rightPos, pos, result);
 }
 
 // convert from es2panda error type to LSP severity
@@ -368,7 +369,7 @@ DiagnosticSeverity GetSeverity(ErrorType errorType)
     throw std::runtime_error("Unknown error type!");
 }
 
-Diagnostic *CreateDiagnosticForError(es2panda_Context *context, const Error &error, ArenaAllocator *allocator)
+Diagnostic CreateDiagnosticForError(es2panda_Context *context, const Error &error)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto index = lexer::LineIndex(ctx->parserProgram->SourceCode());
@@ -377,50 +378,26 @@ Diagnostic *CreateDiagnosticForError(es2panda_Context *context, const Error &err
     lexer::SourceRange sourceRange;
     lexer::SourceLocation sourceStartLocation;
     lexer::SourceLocation sourceEndLocation;
-    char *source;
+    std::string source;
     if (touchingToken == nullptr) {
         sourceStartLocation = index.GetLocation(lexer::SourcePosition(error.Offset(), error.Line()));
         sourceEndLocation = index.GetLocation(lexer::SourcePosition(error.Offset(), error.Line()));
-        source = StdStringToCString(allocator, "");
+        source = "";
     } else {
         sourceRange = touchingToken->Range();
         sourceStartLocation = index.GetLocation(sourceRange.start);
         sourceEndLocation = index.GetLocation(sourceRange.end);
-        source = StdStringToCString(allocator, touchingToken->DumpEtsSrc());
+        source = touchingToken->DumpEtsSrc();
     }
     auto range = Range(Position(sourceStartLocation.line, sourceStartLocation.col),
                        Position(sourceEndLocation.line, sourceEndLocation.col));
     auto severity = GetSeverity(error.Type());
     auto code = 1;
-    const char *message = StdStringToCString(allocator, error.Message());
+    std::string message = error.Message();
     auto codeDescription = CodeDescription("test code description");
-    auto tags = ArenaVector<DiagnosticTag>(allocator->Adapter());
-    auto relatedInformation = ArenaVector<DiagnosticRelatedInformation>(allocator->Adapter());
-    auto diagnostic =
-        allocator->New<Diagnostic>(range, tags, relatedInformation, severity, code, message, codeDescription, source);
-    return diagnostic;
-}
-
-ArenaVector<Diagnostic *> GetSemanticDiagnosticsForFile(es2panda_Context *context, ArenaAllocator *allocator)
-{
-    ArenaVector<Diagnostic *> semanticDiagnostics(allocator->Adapter());
-    auto ctx = reinterpret_cast<public_lib::Context *>(context);
-    auto diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(ErrorType::SEMANTIC);
-    for (const auto &diagnostic : diagnostics) {
-        semanticDiagnostics.push_back(CreateDiagnosticForError(context, diagnostic, allocator));
-    }
-    return semanticDiagnostics;
-}
-
-ArenaVector<Diagnostic *> GetSyntacticDiagnosticsForFile(es2panda_Context *context, ArenaAllocator *allocator)
-{
-    ArenaVector<Diagnostic *> syntacticDiagnostics(allocator->Adapter());
-    auto ctx = reinterpret_cast<public_lib::Context *>(context);
-    auto diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(ErrorType::SYNTAX);
-    for (const auto &diagnostic : diagnostics) {
-        syntacticDiagnostics.push_back(CreateDiagnosticForError(context, diagnostic, allocator));
-    }
-    return syntacticDiagnostics;
+    auto tags = std::vector<DiagnosticTag>();
+    auto relatedInformation = std::vector<DiagnosticRelatedInformation>();
+    return Diagnostic(range, tags, relatedInformation, severity, code, message, codeDescription, source);
 }
 
 size_t GetTokenPosOfNode(const ir::AstNode *astNode)

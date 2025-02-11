@@ -21,10 +21,10 @@
 //
 
 #include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <variant>
 #include <vector>
-#include "utils/arena_containers.h"
 #include "public/es2panda_lib.h"
 
 #ifdef __cplusplus
@@ -35,19 +35,17 @@ typedef struct DefinitionInfo {
     char *fileName;
 } DefinitionInfo;
 
-typedef struct FileReferenceInfo {
-    char const *fileName;
+typedef struct ReferenceInfo {
+    ReferenceInfo() = default;
+    ReferenceInfo(std::string f, size_t s, size_t l) : fileName(f), start(s), length(l) {}
+    std::string fileName;
     size_t start;
     size_t length;
-} FileReferenceInfo;
+} ReferenceInfo;
 
-typedef struct FileReferences {
-    ark::ArenaVector<FileReferenceInfo *> *referenceInfos;
-    FileReferences(ark::ArenaVector<FileReferenceInfo *> *referenceInfos_)
-    {
-        this->referenceInfos = referenceInfos_;
-    }
-} FileReferences;
+typedef struct References {
+    std::vector<ReferenceInfo> referenceInfos;
+} References;
 
 typedef struct TextSpan {
     size_t start;
@@ -70,9 +68,9 @@ typedef struct Range {
 } Range;
 
 typedef struct Location {
-    const char *uri_;  // The URI of the document
+    std::string uri_;  // The URI of the document
     Range range_;      // The range of the diagnostic in the document
-    Location(const char *uri = "", const Range &range = Range()) : uri_(uri), range_(range) {}
+    Location(std::string uri = "", const Range range = Range()) : uri_(uri), range_(range) {}
 } Location;
 
 enum class DiagnosticSeverity { Error = 1, Warning = 2, Information = 3, Hint = 4 };
@@ -80,37 +78,37 @@ enum class DiagnosticSeverity { Error = 1, Warning = 2, Information = 3, Hint = 
 enum class DiagnosticTag { Unnecessary = 1, Deprecated = 2 };
 
 typedef struct CodeDescription {
-    const char *href_;
-    CodeDescription(const char *href = "") : href_(href) {}
+    std::string href_;
+    CodeDescription(std::string href = "") : href_(href) {}
 } CodeDescription;
 
 typedef struct DiagnosticRelatedInformation {
     Location location_;
     std::string message_;
 
-    DiagnosticRelatedInformation(const Location &location = Location(), const std::string &message = "")
+    DiagnosticRelatedInformation(const Location location = Location(), const std::string message = "")
         : location_(location), message_(message)
     {
     }
 } DiagnosticRelatedInformation;
 
 typedef struct Diagnostic {
-    Range range_;                                                        // The range at which the message applies.
-    DiagnosticSeverity severity_;                                        // The diagnostic's severity.
-    std::variant<int, const char *> code_;                               // The diagnostic's code.
-    CodeDescription codeDescription_;                                    // The error code description.
-    const char *source_;                                                 // The source of the diagnostic.
-    const char *message_;                                                // The diagnostic's message.
-    ark::ArenaVector<DiagnosticTag> tags_;                               // Additional metadata about the diagnostic.
-    ark::ArenaVector<DiagnosticRelatedInformation> relatedInformation_;  // Related diagnostics.
-    std::variant<int, const char *> data_;                               // Additional data.
+    Range range_;                                                   // The range at which the message applies.
+    DiagnosticSeverity severity_;                                   // The diagnostic's severity.
+    std::variant<int, std::string> code_;                           // The diagnostic's code.
+    CodeDescription codeDescription_;                               // The error code description.
+    std::string source_;                                            // The source of the diagnostic.
+    std::string message_;                                           // The diagnostic's message.
+    std::vector<DiagnosticTag> tags_;                               // Additional metadata about the diagnostic.
+    std::vector<DiagnosticRelatedInformation> relatedInformation_;  // Related diagnostics.
+    std::variant<int, std::string> data_;                           // Additional data.
 
-    Diagnostic(const Range &range, const ark::ArenaVector<DiagnosticTag> &tags,
-               const ark::ArenaVector<DiagnosticRelatedInformation> &relatedInformation,
+    Diagnostic(const Range range, const std::vector<DiagnosticTag> tags,
+               const std::vector<DiagnosticRelatedInformation> relatedInformation,
                DiagnosticSeverity severity = DiagnosticSeverity::Warning,
-               const std::variant<int, const char *> &code = 100, const char *message = "default message",
-               const CodeDescription &codeDescription = {}, const char *source = "default source",
-               const std::variant<int, const char *> &data = {})
+               const std::variant<int, std::string> code = 100, std::string message = "default message",
+               const CodeDescription codeDescription = {}, std::string source = "default source",
+               const std::variant<int, std::string> data = {})
         : range_(range),
           severity_(severity),
           code_(code),
@@ -125,52 +123,26 @@ typedef struct Diagnostic {
 } Diagnostic;
 
 typedef struct DiagnosticReferences {
-    ark::ArenaVector<Diagnostic *> *diagnostic_;
-    DiagnosticReferences(ark::ArenaVector<Diagnostic *> *diagnostic)
-    {
-        this->diagnostic_ = diagnostic;
-    }
+    std::vector<Diagnostic> diagnostic;
 } DiagnosticReferences;
 
 enum class CommentKind { SINGLE_LINE, MULTI_LINE };
 
 typedef struct CommentRange {
-private:
+    CommentRange() {}
+    CommentRange(size_t p, size_t e, CommentKind k) : pos_(p), end_(e), kind_(k) {}
     size_t pos_;
     size_t end_;
     CommentKind kind_;
-
-public:
-    CommentRange(size_t p, size_t e, CommentKind k) : pos_(p), end_(e), kind_(k) {}
-    size_t GetPos() const
-    {
-        return pos_;
-    }
-    size_t GetEnd() const
-    {
-        return end_;
-    }
-    CommentKind GetKind() const
-    {
-        return kind_;
-    }
-    void SetPos(size_t p)
-    {
-        pos_ = p;
-    }
-    void SetKind(CommentKind k)
-    {
-        kind_ = k;
-    }
 } CommentRange;
 typedef struct LSPAPI {
     DefinitionInfo *(*getDefinitionAtPosition)(char const *fileName, size_t position);
-    FileReferences *(*getFileReferences)(char const *fileName);
+    References (*getFileReferences)(char const *fileName);
     es2panda_AstNode *(*getPrecedingToken)(es2panda_Context *context, const size_t pos);
     std::string (*getCurrentTokenValue)(char const *fileName, size_t position);
-    TextSpan *(*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
-    DiagnosticReferences *(*getSemanticDiagnostics)(char const *fileName);
-    DiagnosticReferences *(*getSyntacticDiagnostics)(char const *fileName);
+    TextSpan (*getSpanOfEnclosingComment)(char const *fileName, size_t pos, bool onlyMultiLine);
+    DiagnosticReferences (*getSemanticDiagnostics)(char const *fileName);
+    DiagnosticReferences (*getSyntacticDiagnostics)(char const *fileName);
 } LSPAPI;
 
 LSPAPI const *GetImpl();

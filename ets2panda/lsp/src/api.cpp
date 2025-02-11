@@ -14,11 +14,11 @@
  */
 
 #include "api.h"
+#include <cstddef>
 #include "internal_api.h"
 #include "public/es2panda_lib.h"
 #include "public/public.h"
 #include "util/options.h"
-#include "utils/arena_containers.h"
 
 namespace ark::es2panda::lsp {
 
@@ -28,24 +28,21 @@ extern "C" DefinitionInfo *GetDefinitionAtPosition([[maybe_unused]] char const *
     return nullptr;
 }
 
-extern "C" FileReferences *GetFileReferences(char const *fileName)
+extern "C" References GetFileReferences(char const *fileName)
 {
-    Initializer &initializer = Initializer::GetInstance();
+    Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     bool isPackageModule = reinterpret_cast<public_lib::Context *>(context)->parserProgram->IsPackage();
     auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
-    auto files = options->ArkTSConfig()->Files();
+    auto compilationList = FindProjectSources(options->ArkTSConfig());
     initializer.DestroyContext(context);
 
-    auto allocator = initializer.Allocator();
-    FileReferences *result =
-        allocator->New<FileReferences>(allocator->New<ArenaVector<FileReferenceInfo *>>(allocator->Adapter()));
-    for (auto const &referenceFile : files) {
-        auto referenceContext = initializer.CreateContext(referenceFile.c_str(), ES2PANDA_STATE_CHECKED);
-        GetFileReferencesImpl(allocator, referenceContext, fileName, isPackageModule, result);
+    auto result = References();
+    for (auto const &referenceFile : compilationList) {
+        auto referenceContext = initializer.CreateContext(referenceFile.first.c_str(), ES2PANDA_STATE_CHECKED);
+        GetFileReferencesImpl(referenceContext, fileName, isPackageModule, &result);
         initializer.DestroyContext(referenceContext);
     }
-
     return result;
 }
 
@@ -58,46 +55,50 @@ extern "C" es2panda_AstNode *GetPrecedingToken(es2panda_Context *context, const 
 
 extern "C" std::string GetCurrentTokenValue(char const *fileName, size_t position)
 {
-    Initializer &initializer = Initializer::GetInstance();
+    Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     auto result = GetCurrentTokenValueImpl(ctx, position);
     initializer.DestroyContext(ctx);
     return result;
 }
 
-extern "C" TextSpan *GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMultiLine)
+extern "C" TextSpan GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMultiLine)
 {
-    Initializer &initializer = Initializer::GetInstance();
+    Initializer initializer = Initializer();
     auto ctx = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    auto allocator = initializer.Allocator();
-    auto range = GetRangeOfEnclosingComment(ctx, pos, allocator);
+    auto *range = initializer.Allocator()->New<CommentRange>();
+    GetRangeOfEnclosingComment(ctx, pos, range);
     initializer.DestroyContext(ctx);
-    return (range != nullptr) && (!onlyMultiLine || range->GetKind() == CommentKind::MULTI_LINE)
-               ? allocator->New<TextSpan>(range->GetPos(), range->GetEnd() - range->GetPos())
-               : nullptr;
+    return (range != nullptr) && (!onlyMultiLine || range->kind_ == CommentKind::MULTI_LINE)
+               ? TextSpan(range->pos_, range->end_ - range->pos_)
+               : TextSpan(0, 0);
 }
 
-extern "C" DiagnosticReferences *GetSemanticDiagnostics(char const *fileName)
+extern "C" DiagnosticReferences GetSemanticDiagnostics(char const *fileName)
 {
-    Initializer &initializer = Initializer::GetInstance();
-    auto allocator = initializer.Allocator();
+    Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    auto semanticDiagnostics = GetSemanticDiagnosticsForFile(context, allocator);
-    DiagnosticReferences *result = allocator->New<DiagnosticReferences>(&semanticDiagnostics);
+    DiagnosticReferences result {};
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(ErrorType::SEMANTIC);
+    for (const auto &diagnostic : diagnostics) {
+        result.diagnostic.push_back(CreateDiagnosticForError(context, diagnostic));
+    }
     initializer.DestroyContext(context);
-
     return result;
 }
 
-extern "C" DiagnosticReferences *GetSyntacticDiagnostics(char const *fileName)
+extern "C" DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
 {
-    Initializer &initializer = Initializer::GetInstance();
-    auto allocator = initializer.Allocator();
+    Initializer initializer = Initializer();
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
-    auto synctacticDiagnostics = GetSyntacticDiagnosticsForFile(context, allocator);
-    DiagnosticReferences *result = allocator->New<DiagnosticReferences>(&synctacticDiagnostics);
+    DiagnosticReferences result {};
+    auto ctx = reinterpret_cast<public_lib::Context *>(context);
+    auto diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(ErrorType::SYNTAX);
+    for (const auto &diagnostic : diagnostics) {
+        result.diagnostic.push_back(CreateDiagnosticForError(context, diagnostic));
+    }
     initializer.DestroyContext(context);
-
     return result;
 }
 
