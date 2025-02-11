@@ -3,7 +3,6 @@ slotNum = 0x0
 .function any .#1016906796659230483#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -13,7 +12,6 @@ slotNum = 0x0
 .function any .#1016906796659230483_1#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -23,7 +21,6 @@ slotNum = 0x0
 .function any .#1471473088249306135#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -33,7 +30,6 @@ slotNum = 0x0
 .function any .#5496465400387880830#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -43,7 +39,6 @@ slotNum = 0x0
 .function any .#7640569466637989364#aa(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -53,7 +48,6 @@ slotNum = 0x0
 .function any .aa(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -87,7 +81,6 @@ label_0:
 	definefieldbyname 0xe, \testcase, v0
 	lda v0
 	sttoglobalrecord 0x10, objBackslash
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -97,7 +90,6 @@ slotNum = 0x0
 .function any .name1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }

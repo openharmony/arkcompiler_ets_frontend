@@ -153,7 +153,6 @@ label_17:
 	lda v2
 	throw
 label_16: 
-	ldundefined
 	returnundefined
 label_46: 
 }
@@ -712,7 +711,6 @@ label_44:
 	lda v15
 	throw
 label_43: 
-	ldundefined
 	returnundefined
 label_72: 
 }
@@ -768,7 +766,6 @@ label_11:
 	tryldglobalbyname 0x9, print
 	callarg1 0xa, v0
 label_2: 
-	ldundefined
 	returnundefined
 label_13: 
 }

@@ -38,7 +38,6 @@ label_1:
 label_0: 
 	lda.str private
 	callruntime.defineprivateproperty 0x0, 0x0, 0x0, a2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -87,7 +86,6 @@ label_1:
 	sta v1
 	lda v0
 	callarg1 0xb, v1
-	ldundefined
 	returnundefined
 label_8: 
 }

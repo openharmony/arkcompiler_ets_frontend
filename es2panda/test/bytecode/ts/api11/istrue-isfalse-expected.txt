@@ -13,7 +13,6 @@ label_1:
 	ldfalse
 label_3: 
 	isfalse
-	ldundefined
 	returnundefined
 label_6: 
 }

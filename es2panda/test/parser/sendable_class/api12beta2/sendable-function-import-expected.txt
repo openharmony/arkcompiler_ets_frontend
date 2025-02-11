@@ -10,7 +10,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -39,7 +38,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x3, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -57,7 +55,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x2, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -75,7 +72,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x2, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -86,7 +82,6 @@ slotNum = 0x1
 label_1: 
 label_0: 
 	definefunc 0x0, .t, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -102,7 +97,6 @@ label_0:
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x3, .A, _2, 0x0, v0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -119,7 +113,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -136,7 +129,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -154,7 +146,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x2, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -171,7 +162,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -188,7 +178,6 @@ label_0:
 	throw.undefinedifholewithname x
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }

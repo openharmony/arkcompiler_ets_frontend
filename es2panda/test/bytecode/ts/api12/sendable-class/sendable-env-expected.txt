@@ -32,7 +32,6 @@ label_0:
 	sta v0
 	callruntime.definesendableclass 0x1, .#~A=#A, _3, 0x0, v0
 	callruntime.stsendablevar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }

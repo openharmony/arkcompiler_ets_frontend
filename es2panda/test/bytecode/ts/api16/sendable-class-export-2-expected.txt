@@ -3,7 +3,6 @@ slotNum = 0x0
 .function any .#*#fun(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -30,7 +29,6 @@ label_0:
 	newobjrange 0x0, 0x1, v1
 	callruntime.ldsendablelocalmodulevar 0x1
 	callarg0 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -50,7 +48,6 @@ slotNum = 0x4
 .function any .#~B>#foo2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	callruntime.ldsendablelocalmodulevar 0x0
 	sta v0
 	throw.undefinedifholewithname A
@@ -58,7 +55,6 @@ label_0:
 	newobjrange 0x0, 0x1, v1
 	callruntime.ldsendablelocalmodulevar 0x1
 	callarg0 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -81,7 +77,6 @@ label_0:
 	throw.undefinedifholewithname A
 	mov v1, v0
 	newobjrange 0x6, 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -103,7 +98,6 @@ label_0:
 	sta v0
 	definemethod 0x3, .#~B>#static_initializer, 0x0
 	callthis0 0x4, v0
-	ldundefined
 	returnundefined
 label_2: 
 }

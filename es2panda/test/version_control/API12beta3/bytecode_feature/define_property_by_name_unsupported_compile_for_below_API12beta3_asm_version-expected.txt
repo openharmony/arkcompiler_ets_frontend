@@ -21,7 +21,6 @@ label_0:
 	sta v0
 	defineclasswithbuffer 0x0, .PropertyByName, _2, 0x2, v0
 	ldobjbyname 0x1, prototype
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -44,7 +43,6 @@ label_0:
 	definefieldbyname 0x6, value, v3
 	lda v1
 	callthis3 0x8, v0, a2, v2, v3
-	ldundefined
 	returnundefined
 label_2: 
 }

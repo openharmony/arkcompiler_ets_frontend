@@ -24,7 +24,6 @@ label_0:
 	stobjbyvalue 0xa, a3, v0
 	lda.str c
 	stobjbyvalue 0xc, a3, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -55,7 +54,6 @@ label_0:
 	stobjbyvalue 0xa, a3, v0
 	lda.str e
 	stobjbyvalue 0xc, a3, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -133,7 +131,6 @@ label_5:
 label_6: 
 	lda v1
 	callarg1 0x6, v0
-	ldundefined
 	returnundefined
 label_8: 
 }

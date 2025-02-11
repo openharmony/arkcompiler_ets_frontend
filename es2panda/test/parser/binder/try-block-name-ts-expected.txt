@@ -3,7 +3,6 @@ slotNum = 0x0
 .function any .#*#tryFoo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -13,7 +12,6 @@ slotNum = 0x0
 .function any .#*#tryFoo^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -23,7 +21,6 @@ slotNum = 0x0
 .function any .#*#tryFoo^2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -71,7 +68,6 @@ label_6:
 	lda v1
 	throw
 label_5: 
-	ldundefined
 	returnundefined
 label_16: 
 }

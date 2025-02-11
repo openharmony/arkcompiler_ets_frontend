@@ -28,7 +28,6 @@ label_0:
 	throw.undefinedifholewithname A
 	mov v1, v0
 	newobjrange 0x0, 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -49,7 +48,6 @@ label_0:
 	sta v0
 	defineclasswithbuffer 0x3, .B, _2, 0x0, v0
 	ldobjbyname 0x4, prototype
-	ldundefined
 	returnundefined
 label_2: 
 }

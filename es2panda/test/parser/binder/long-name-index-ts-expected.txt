@@ -20,7 +20,6 @@ label_3:
 	sta v0
 	defineclasswithbuffer 0x4, .#&@0~@2=#LongClass, _2, 0x0, v0
 	ldobjbyname 0x5, prototype
-	ldundefined
 	returnundefined
 label_5: 
 }
@@ -43,7 +42,6 @@ label_0:
 	stobjbyvalue 0x3, a3, v0
 	lda.str b
 	stobjbyvalue 0x5, a3, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -74,7 +72,6 @@ slotNum = 0x1
 label_1: 
 label_0: 
 	definefunc 0x0, .#&@0~@2>@3*#LongFunction2, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -84,7 +81,6 @@ slotNum = 0x0
 .function any .#&@0~@2>@3*#LongFunction2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -107,7 +103,6 @@ label_2:
 label_3: 
 	lda v1
 	callarg1 0x2, v0
-	ldundefined
 	returnundefined
 label_5: 
 }

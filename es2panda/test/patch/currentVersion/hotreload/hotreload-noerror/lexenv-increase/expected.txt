@@ -60,7 +60,6 @@ label_0:
 	wide.stpatchvar 0x0
 	ldai 0x2
 	wide.stpatchvar 0x1
-	ldundefined
 	returnundefined
 label_2: 
 }

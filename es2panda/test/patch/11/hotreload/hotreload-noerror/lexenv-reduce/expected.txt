@@ -44,7 +44,6 @@ label_0:
 	stlexvar 0x0, 0x0
 	lda v0
 	stlexvar 0x0, 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }

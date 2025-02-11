@@ -54,7 +54,6 @@ label_0:
 	ldobjbyname 0x6, prototype
 	lda v0
 	sttoglobalrecord 0x8, B
-	ldundefined
 	returnundefined
 label_2: 
 }

@@ -271,7 +271,6 @@ label_0:
 	sta v0
 	ldai 0x0
 	stricteq 0x7f, v0
-	ldundefined
 	returnundefined
 label_129: 
 }
@@ -288,7 +287,6 @@ label_0:
 	ldobjbyname 0x1, prototype
 	lda v0
 	sttoglobalrecord 0x3, A
-	ldundefined
 	returnundefined
 label_2: 
 }

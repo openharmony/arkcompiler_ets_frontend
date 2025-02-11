@@ -35,7 +35,6 @@ label_1:
 label_0: 
 	lda a3
 	stlexvar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -46,8 +45,6 @@ slotNum = 0x17
 label_5: 
 label_0: 
 	newlexenv 0x1
-	ldundefined
-	ldundefined
 	ldundefined
 	stlexvar 0x0, 0x0
 	tryldglobalbyname 0x0, Object
@@ -106,7 +103,6 @@ label_0:
 	sta v0
 	lda.str via set
 	stobjbyname 0x15, false, v0
-	ldundefined
 	returnundefined
 label_6: 
 }

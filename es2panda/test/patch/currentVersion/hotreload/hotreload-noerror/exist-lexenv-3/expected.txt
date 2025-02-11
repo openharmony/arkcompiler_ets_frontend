@@ -28,7 +28,6 @@ label_0:
 	throw.undefinedifholewithname c
 	ldai 0x3
 	stlexvar 0x0, 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -48,7 +47,6 @@ label_0:
 	stlexvar 0x0, 0x1
 	lda v0
 	stlexvar 0x0, 0x2
-	ldundefined
 	returnundefined
 label_2: 
 }

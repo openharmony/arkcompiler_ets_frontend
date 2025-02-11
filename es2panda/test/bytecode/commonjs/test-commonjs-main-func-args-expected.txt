@@ -9,7 +9,6 @@ label_0:
 	sta v1
 	lda v0
 	definepropertybyname 0x1, a, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -39,7 +38,6 @@ label_0:
 	stownbyindex 0xd, v3, 0x4
 	lda v1
 	callthis3 0xf, v0, v2, a3, v3
-	ldundefined
 	returnundefined
 label_2: 
 }

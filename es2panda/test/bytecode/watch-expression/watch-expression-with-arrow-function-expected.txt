@@ -3,7 +3,6 @@ slotNum = 0x0
 .function any .#*#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }

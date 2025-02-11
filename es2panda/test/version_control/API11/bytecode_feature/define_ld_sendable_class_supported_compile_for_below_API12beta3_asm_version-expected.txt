@@ -8,7 +8,6 @@ label_0:
 	sta v0
 	callruntime.definesendableclass 0x0, .TestTypeA, _2, 0x0, v0
 	stlexvar 0x0, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -49,7 +48,6 @@ label_2:
 label_3: 
 	lda v1
 	callarg1 0x1, v0
-	ldundefined
 	returnundefined
 label_5: 
 }

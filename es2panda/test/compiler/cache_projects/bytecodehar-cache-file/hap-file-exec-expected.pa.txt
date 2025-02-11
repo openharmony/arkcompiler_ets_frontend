@@ -21,7 +21,6 @@ slotNum = 0x3
 	callarg1 0x1, v1
 	lda.str @normalized:N&&&sourcehar/sourcehar-file1&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
@@ -30,7 +29,6 @@ slotNum = 0x1
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
@@ -113,7 +111,6 @@ slotNum = 0x3
 	callarg1 0x1, v1
 	lda.str @normalized:N&&&sourcehar/sourcehar-file2&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
@@ -122,7 +119,6 @@ slotNum = 0x1
 .function any &bytecodehar1/bytecodehar1-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
@@ -215,7 +211,6 @@ slotNum = 0x3
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 }
 
@@ -224,7 +219,6 @@ slotNum = 0x1
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
@@ -285,7 +279,6 @@ slotNum = 0x3
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 }
 
@@ -294,7 +287,6 @@ slotNum = 0x1
 .function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
@@ -368,7 +360,6 @@ label_0:
 	throw.undefinedifholewithname test
 	lda v0
 	callarg0 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -379,7 +370,6 @@ slotNum = 0x1
 label_1: 
 label_0: 
 	definefunc 0x0, &myapp/hap-file-exec&.#*#main, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -453,7 +443,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -465,7 +454,6 @@ label_1:
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -549,7 +537,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -561,7 +548,6 @@ label_1:
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -625,7 +611,6 @@ slotNum = 0x3
 	callarg1 0x1, v1
 	lda.str @normalized:N&&&sourcehar/sourcehar-file1&2.0.0
 	dynamicimport
-	ldundefined
 	returnundefined
 }
 
@@ -634,7 +619,6 @@ slotNum = 0x1
 .function any &bytecodehar1/bytecodehar1-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
@@ -715,7 +699,6 @@ slotNum = 0x3
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 }
 
@@ -724,7 +707,6 @@ slotNum = 0x1
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 }
 
@@ -786,7 +768,6 @@ label_0:
 	throw.undefinedifholewithname test
 	lda v0
 	callarg0 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -797,7 +778,6 @@ slotNum = 0x1
 label_1: 
 label_0: 
 	definefunc 0x0, &myapp/hap-file-exec&.#*#main, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -871,7 +851,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -883,7 +862,6 @@ label_1:
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file1&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -967,7 +945,6 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -979,7 +956,6 @@ label_1:
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }

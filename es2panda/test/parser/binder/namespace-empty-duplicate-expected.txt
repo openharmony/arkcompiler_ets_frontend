@@ -4,7 +4,6 @@ slotNum = 0x1
 label_1: 
 label_0: 
 	definefunc 0x0, .#&A^1*#B, 0x0
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -14,7 +13,6 @@ slotNum = 0x0
 .function any .#&A^1*#B(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldundefined
 	returnundefined
 label_2: 
 }
@@ -37,7 +35,6 @@ label_2:
 label_3: 
 	lda v1
 	callarg1 0x2, v0
-	ldundefined
 	returnundefined
 label_5: 
 }

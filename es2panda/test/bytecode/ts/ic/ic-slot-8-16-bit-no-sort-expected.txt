@@ -269,7 +269,6 @@ label_0:
 	callruntime.isfalse 0x7e
 	ldfalse
 	callruntime.isfalse 0x7f
-	ldundefined
 	returnundefined
 label_128: 
 }
@@ -286,7 +285,6 @@ label_0:
 	ldobjbyname 0x1, prototype
 	lda v0
 	sttoglobalrecord 0x3, A
-	ldundefined
 	returnundefined
 label_2: 
 }
