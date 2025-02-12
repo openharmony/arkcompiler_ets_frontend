@@ -168,8 +168,9 @@ ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefin
                                                             std::move(funcCallArgs), paramInst, false, false);
     callExpression->SetRange(method->Range());  // NOTE: Used to locate the original node when an error occurs
     ir::Statement *stmt = nullptr;
-    if ((method->Function()->ReturnTypeAnnotation() != nullptr) ||
-        ((method->Function()->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
+    if (!method->IsConstructor() &&
+        ((method->Function()->ReturnTypeAnnotation() != nullptr) ||
+         ((method->Function()->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0))) {
         if ((method->Function()->ReturnTypeAnnotation() != nullptr) &&
             method->Function()->ReturnTypeAnnotation()->IsTSThisType()) {
             // NOTE: special case if parent function has return type set as 'this'
