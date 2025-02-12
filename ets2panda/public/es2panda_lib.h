@@ -178,6 +178,7 @@ struct es2panda_Impl {
     void (*AstNodeRecheck)(es2panda_Context *ctx, es2panda_AstNode *node);
     Es2pandaEnum (*Es2pandaEnumFromString)(es2panda_Context *ctx, const char *str);
     char *(*Es2pandaEnumToString)(es2panda_Context *ctx, Es2pandaEnum id);
+    es2panda_AstNode *(*DeclarationFromIdentifier)(es2panda_Context *ctx, es2panda_AstNode *node);
 
 // CC-OFFNXT(G.INC.08) project code style
 #include "generated/es2panda_lib/es2panda_lib_decl.inc"

@@ -35,6 +35,9 @@ varbinder::Scope *Rebind(varbinder::ETSBinder *varBinder, ir::AstNode *node);
 // Rerun varbinder and checker on the node.
 void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
 
+// NOTE: used to get the declaration from identifier in Plugin API and LSP
+ir::AstNode *DeclarationFromIdentifier(ir::Identifier *node);
+
 // Note: run varbinder and checker on the new node generated in lowering phases
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
 bool IsAnonymousClassType(const checker::Type *type);

@@ -947,6 +947,42 @@ Signature *ETSChecker::ResolvePotentialTrailingLambdaWithReceiver(ir::CallExpres
                               TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_CHECK_TRAILING_LAMBDA);
 }
 
+void ETSChecker::UpdateDeclarationFromSignature(ir::CallExpression *expr, checker::Signature *signature)
+{
+    if (signature == nullptr) {
+        return;
+    }
+
+    ir::AstNode *callIdentifier = expr->Callee();
+    while (callIdentifier != nullptr && callIdentifier->IsMemberExpression()) {
+        callIdentifier = callIdentifier->AsMemberExpression()->Property();
+    }
+    if (callIdentifier == nullptr || !callIdentifier->IsIdentifier()) {
+        return;
+    }
+
+    auto signatureVar = callIdentifier->Variable();
+    if (signatureVar == nullptr || !signatureVar->HasFlag(varbinder::VariableFlags::METHOD) ||
+        signature->Function() == nullptr || signature->Function()->IsDynamic()) {
+        return;
+    }
+
+    auto sigName = signature->Function()->Id()->Name();
+    if (callIdentifier->AsIdentifier()->Name() != sigName) {
+        return;
+    }
+
+    ir::AstNode *declNode = signature->Function();
+    while (!declNode->IsMethodDefinition()) {
+        declNode = declNode->Parent();
+    }
+    auto allocator = Allocator();
+    auto newDecl = allocator->New<varbinder::FunctionDecl>(allocator, sigName, declNode);
+    auto newVar = allocator->New<varbinder::LocalVariable>(newDecl, varbinder::VariableFlags::METHOD |
+                                                                        varbinder::VariableFlags::SYNTHETIC);
+    callIdentifier->SetVariable(newVar);
+}
+
 Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
                                                               ir::CallExpression *callExpr,
                                                               const lexer::SourcePosition &pos,
@@ -955,6 +991,7 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
     Signature *sig = nullptr;
     if (callExpr->TrailingBlock() == nullptr) {
         sig = ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", reportFlag);
+        UpdateDeclarationFromSignature(callExpr, sig);
         return sig;
     }
 
@@ -965,6 +1002,7 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         TransformTraillingLambda(callExpr, sig);
         TypeInference(sig, callExpr->Arguments());
+        UpdateDeclarationFromSignature(callExpr, sig);
         return sig;
     }
 
@@ -973,6 +1011,7 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
         EnsureValidCurlyBrace(callExpr);
     }
 
+    UpdateDeclarationFromSignature(callExpr, sig);
     return sig;
 }
 

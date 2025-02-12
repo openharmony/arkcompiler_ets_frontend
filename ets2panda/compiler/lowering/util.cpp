@@ -138,6 +138,20 @@ void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::
     node->Check(checker);
 }
 
+// NOTE: used to get the declaration from identifier in Plugin API and LSP
+ir::AstNode *DeclarationFromIdentifier(ir::Identifier *node)
+{
+    auto idVar = node->Variable();
+    if (idVar == nullptr) {
+        return nullptr;
+    }
+    auto decl = idVar->Declaration();
+    if (decl == nullptr) {
+        return nullptr;
+    }
+    return decl->Node();
+}
+
 // Note: run varbinder and checker on the new node generated in lowering phases (without ClearTypesVariablesAndScopes)
 void CheckLoweredNode(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
 {

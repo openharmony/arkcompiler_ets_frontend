@@ -22,6 +22,7 @@
 #include "lexer/token/sourceLocation.h"
 #include "macros.h"
 #include "public/public.h"
+#include "compiler/lowering/util.h"
 
 namespace ark::es2panda::lsp {
 
@@ -405,6 +406,20 @@ size_t GetTokenPosOfNode(const ir::AstNode *astNode)
     ASSERT(astNode);
 
     return astNode->Start().index;
+}
+
+ir::AstNode *GetDefinitionAtPosition(es2panda_Context *context, size_t pos)
+{
+    auto node = GetTouchingToken(context, pos, false);
+    if (node == nullptr || !node->IsIdentifier()) {
+        return nullptr;
+    }
+    return compiler::DeclarationFromIdentifier(node->AsIdentifier());
+}
+
+ir::AstNode *GetImplementationAtPosition(es2panda_Context *context, size_t pos)
+{
+    return GetDefinitionAtPosition(context, pos);
 }
 
 }  // namespace ark::es2panda::lsp

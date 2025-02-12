@@ -146,6 +146,21 @@ bool ETSObjectType::IsDescendantOf(const ETSObjectType *ascendant) const
     return this->SuperType()->IsDescendantOf(ascendant);
 }
 
+static void UpdateDeclarationForGetterSetter(varbinder::LocalVariable *res, const ETSFunctionType *funcType,
+                                             const PropertySearchFlags &flags)
+{
+    if ((flags & (PropertySearchFlags::IS_GETTER | PropertySearchFlags::IS_SETTER)) == 0 ||
+        res->Declaration() != nullptr) {
+        return;
+    }
+    auto var = funcType->CallSignatures().front()->OwnerVar();
+    auto decl = var->Declaration();
+    if (decl == nullptr || decl->Node() == nullptr) {
+        return;
+    }
+    res->Reset(decl, var->Flags());
+}
+
 varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                               PropertySearchFlags flags) const
 {
@@ -165,6 +180,9 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
 
     res->SetTsType(funcType);
     funcType->SetVariable(res);
+
+    UpdateDeclarationForGetterSetter(res, funcType, flags);
+
     return res;
 }
 

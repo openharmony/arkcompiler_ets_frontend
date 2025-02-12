@@ -568,7 +568,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
             baseProp = node->AsClassProperty()->Id()->Variable();
             break;
         case ir::AstNodeType::METHOD_DEFINITION:
-            baseProp = node->AsMethodDefinition()->Variable();
+            baseProp = node->AsMethodDefinition()->Id()->Variable();
             break;
             // NOTE(vpukhov): should not be a case of unchecked access
         case ir::AstNodeType::CLASS_DEFINITION:

@@ -70,6 +70,9 @@ std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position)
 void GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, CommentRange *result);
 Diagnostic CreateDiagnosticForError(es2panda_Context *context, const Error &error);
 size_t GetTokenPosOfNode(const ir::AstNode *astNode);
+ir::AstNode *GetDefinitionAtPosition(es2panda_Context *context, size_t pos);
+// NOTE: now GetImplementation return same as GetDefinition
+ir::AstNode *GetImplementationAtPosition(es2panda_Context *context, size_t pos);
 
 }  // namespace ark::es2panda::lsp
 
