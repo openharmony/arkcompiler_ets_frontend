@@ -400,6 +400,7 @@ referenceThisEquality.sts
 return-type-deduction.sts
 spreadExprInNewExpr.sts
 static-invoke.sts
+static-invoke2.sts
 string_literals_inference.sts
 thisIntanceof.sts
 this_type.sts

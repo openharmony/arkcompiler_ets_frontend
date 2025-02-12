@@ -657,8 +657,7 @@ public:
     Type *TryGettingFunctionTypeFromInvokeFunction(Type *type);
 
     ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
-    ir::Expression *GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
-                                                   const std::string &className);
+    ir::Expression *GenerateImplicitInstantiateArg(const std::string &className);
     void GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                   ir::ClassProperty *field, varbinder::FunctionParamScope *paramScope, bool isSetter);
     static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *property, ir::ClassProperty *field,
