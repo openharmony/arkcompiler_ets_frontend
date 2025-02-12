@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -143,4 +143,21 @@ void SwitchCaseStatement::CheckAndTestCase(checker::ETSChecker *checker, checker
         caseStmt->Check(checker);
     }
 }
+
+SwitchCaseStatement *SwitchCaseStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const test = test_->Clone(allocator, nullptr)->AsExpression();
+    ArenaVector<Statement *> consequent(allocator->Adapter());
+
+    for (auto *statement : consequent_) {
+        consequent.push_back(statement->Clone(allocator, nullptr)->AsStatement());
+    }
+
+    auto clone = util::NodeAllocator::ForceSetParent<ir::SwitchCaseStatement>(allocator, test, std::move(consequent));
+
+    clone->SetParent(parent);
+    clone->SetRange(Range());
+    return clone;
+}
+
 }  // namespace ark::es2panda::ir

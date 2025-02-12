@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -89,6 +89,22 @@ checker::Type *SwitchStatement::Check(checker::TSChecker *checker)
 checker::VerifiedType SwitchStatement::Check(checker::ETSChecker *const checker)
 {
     return {this, checker->GetAnalyzer()->Check(this)};
+}
+
+SwitchStatement *SwitchStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const discriminant = discriminant_->Clone(allocator, nullptr)->AsExpression();
+    ArenaVector<SwitchCaseStatement *> cases(allocator->Adapter());
+
+    for (auto currentCase : cases_) {
+        cases.push_back(currentCase->Clone(allocator, nullptr));
+    }
+
+    auto clone = util::NodeAllocator::ForceSetParent<ir::SwitchStatement>(allocator, discriminant, std::move(cases));
+
+    clone->SetParent(parent);
+    clone->SetRange(Range());
+    return clone;
 }
 
 }  // namespace ark::es2panda::ir
