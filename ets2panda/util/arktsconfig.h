@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +22,9 @@
 #include <vector>
 
 #include "util/language.h"
+#include "util/diagnostic.h"
+#include "libpandabase/utils/json_builder.h"
+#include "libpandabase/utils/json_parser.h"
 
 // NOTE(ivagin): If ARKTSCONFIG_USE_FILESYSTEM is not defined part of ArkTsConfig functionality is disabled.
 //       Only build configuration which prevents us from usage of std::filesystem is "MOBILE" build
@@ -31,9 +34,29 @@
 #define ARKTSCONFIG_USE_FILESYSTEM
 #endif
 
+#ifndef ARKTSCONFIG_USE_FILESYSTEM
+#include <dirent.h>
+#include <sys/types.h>
+#include <unistd.h>
+#else
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#endif
+#endif
+
+namespace ark::es2panda::util {
+class DiagnosticEngine;
+}  // namespace ark::es2panda::util
+
 namespace ark::es2panda {
 
 class ArkTsConfig {
+    using PathsMap = std::unordered_map<std::string, std::vector<std::string>>;
+
 public:
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     // Pattern describes arktsconfig path pattern for 'include' or 'exclude' properties
@@ -77,7 +100,10 @@ public:
         bool hasDecl_;
     };
 
-    explicit ArkTsConfig(std::string_view configPath) : configPath_(configPath) {}
+    explicit ArkTsConfig(std::string_view configPath, util::DiagnosticEngine &de)
+        : configPath_(configPath), diagnosticEngine_(de)
+    {
+    }
     bool Parse();
 
     std::optional<std::string> ResolvePath(const std::string &path) const;
@@ -107,7 +133,7 @@ public:
     {
         return files_;
     }
-    const std::unordered_map<std::string, std::vector<std::string>> &Paths() const
+    const PathsMap &Paths() const
     {
         return paths_;
     }
@@ -124,7 +150,19 @@ public:
     {
         return exclude_;
     }
+    fs::path ComputeDestination(const fs::path &src, const fs::path &rootDir, const fs::path &outDir);
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
+    bool Check(bool cond, const diagnostic::DiagnosticKind &diag, const util::DiagnosticMessageParams &params);
+
+private:
+    std::optional<ArkTsConfig> ParseExtends(const std::string &configPath, const std::string &extends,
+                                            const std::string &configDir);
+    bool ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap &pathsMap, const std::string &baseUrl);
+    bool ParseDynamicPaths(const JsonObject::JsonObjPointer *options,
+                           std::unordered_map<std::string, DynamicImportData> &dynamicPathsMap);
+    template <class Collection, class Function>
+    bool ParseCollection(const JsonObject *config, Collection &out, const std::string &target, Function &&constructor);
+    std::optional<std::string> ReadConfig(const std::string &path);
 
 private:
     static constexpr const char *PACKAGE = "package";  // CC-OFF(G.NAM.03,G.NAM.03-CPP) project code style
@@ -146,13 +184,14 @@ private:
     std::string baseUrl_ {};
     std::string outDir_ {};
     std::string rootDir_ {};
-    std::unordered_map<std::string, std::vector<std::string>> paths_ {};
+    PathsMap paths_ {};
     std::unordered_map<std::string, DynamicImportData> dynamicPaths_ {};
     std::vector<std::string> files_ {};
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     std::vector<Pattern> include_ {};
     std::vector<Pattern> exclude_ {};
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
+    util::DiagnosticEngine &diagnosticEngine_;
 };
 
 // Find source files and compute destination locations

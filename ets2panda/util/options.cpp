@@ -382,7 +382,7 @@ bool Options::ProcessEtsSpecificOptions()
 
 std::optional<ArkTsConfig> Options::ParseArktsConfig()
 {
-    auto config = ArkTsConfig {GetArktsconfig()};
+    auto config = ArkTsConfig {GetArktsconfig(), diagnosticEngine_};
     if (!config.Parse()) {
         diagnosticEngine_.LogFatalError(
             util::DiagnosticMessageParams {"Invalid ArkTsConfig path: ", util::StringView(GetArktsconfig())});
