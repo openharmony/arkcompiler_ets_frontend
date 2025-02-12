@@ -1,9 +1,9 @@
 # Known failures list for test262-other-fastverify-x64-int
 
-#20112
+#20456
 test262/data/other_tests/language/statements/generators/dstr/dflt-ary-ptrn-elem-id-init-fn-name-arrow.js
 
-#20321
+#21819
 test262/data/other_tests/built-ins/decodeURIComponent/S15.1.3.2_A2.1_T1.js
 test262/data/other_tests/built-ins/decodeURIComponent/S15.1.3.2_A2.4_T1.js
 test262/data/other_tests/built-ins/encodeURIComponent/S15.1.3.4_A2.3_T1.js

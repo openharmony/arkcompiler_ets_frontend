@@ -2,16 +2,10 @@
 #18892
 test262/data/test_es2021/intl402/RelativeTimeFormat/constructor/constructor/locales-valid.js
 
-#18912
+#21819
 test262/data/test_es2021/intl402/Intl/getCanonicalLocales/invalid-tags.js
-
-#18963
 test262/data/test_es2021/language/expressions/optional-chaining/short-circuiting.js
-
-#18961
 test262/data/test_es2021/built-ins/RegExp/S15.10.2.15_A1_T41.js
-
-#17827
 test262/data/test_es2021/built-ins/TypedArrayConstructors/internals/HasProperty/key-is-not-canonical-index.js
 test262/data/test_es2021/built-ins/TypedArrayConstructors/internal/HasProperty/key-is-not-canonical.js
 test262/data/test/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-region.js
@@ -26,19 +20,8 @@ test262/data/test_es2021/built-ins/TypedArray/prototype/slice/speciesctor-get-ct
 test262/data/test/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-calendar.js
 test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
 test262/data/test_es2021/language/statements/for/S12.6.3_A10_T2.js
-# --- end of Issue #17827
-
-#18438
-
-# --- end of Issue #18438
-
-#18441
-
-# --- end of Issue #18441
-
-#19182
 test262/data/test_es2021/language/statements/async-generator/dstr/ary-ptrn-elem-obj-val-null.js
-# --- end of Issue #19182
+# --- end of Issue #21819
 
 #19208
 test262/data/test/language/module-code/instn-iee-err-circular-as.js
