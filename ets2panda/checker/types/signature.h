@@ -315,6 +315,7 @@ private:
     [[nodiscard]] bool CheckGeneralData(TypeRelation *relation, Signature *other) const noexcept;
     [[nodiscard]] bool CheckParameter(TypeRelation *relation, Type const *type1, Type const *type2) const noexcept;
     [[nodiscard]] bool CheckReturnType(TypeRelation *relation, Type const *other) const noexcept;
+    Signature *CreateSignatureForSubstitute(ArenaAllocator *allocator, SignatureInfo *sigInfo, Type *returnType);
 
     checker::SignatureInfo *signatureInfo_;
     Type *returnType_;
