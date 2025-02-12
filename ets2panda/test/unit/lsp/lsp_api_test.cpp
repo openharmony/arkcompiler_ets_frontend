@@ -157,6 +157,98 @@ TEST_F(LSPAPITests, DiagnosticDataField)
     EXPECT_EQ(std::get<int>(diagnosticData), dataResult);
 }
 
+TEST_F(LSPAPITests, CreateDiagnosticForNode1)
+{
+    using ark::es2panda::ir::AstNode;
+    using ark::es2panda::public_lib::Context;
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "function main() {}");
+    auto astNode = GetAstFromContext<es2panda_AstNode>(ctx);
+    int const dataValue = 42;
+    std::variant<int, std::string> data = dataValue;
+    int const errorCode = 400;
+    std::string message = "Diagnostic";
+    std::vector<DiagnosticTag> tags {};
+    std::vector<DiagnosticRelatedInformation> relatedInfoList {};
+
+    Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Error, errorCode, message, {}, {}, data);
+    FileDiagnostic result = ark::es2panda::lsp::CreateDiagnosticForNode(astNode, diagnostic);
+
+    int const startLine = 0;
+    int const endLine = 0;
+    int const startChar = 0;
+    int const endChar = 18;
+    ASSERT_EQ(result.diagnostic.message_, "Diagnostic");
+    ASSERT_EQ(result.diagnostic.range_.start.line_, startLine);
+    ASSERT_EQ(result.diagnostic.range_.end.line_, endLine);
+    ASSERT_EQ(result.diagnostic.range_.start.character_, startChar);
+    ASSERT_EQ(result.diagnostic.range_.end.character_, endChar);
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, CreateDiagnosticForNode2)
+{
+    using ark::es2panda::ir::AstNode;
+    using ark::es2panda::public_lib::Context;
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx = initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "function main() {}");
+    auto astNode = GetAstFromContext<es2panda_AstNode>(ctx);
+    int const dataValue = 42;
+    std::variant<int, std::string> data = dataValue;
+    int const errorCode = 400;
+    std::string message = "Diagnostic {0}, for the {1}, and {2}";
+    std::vector<std::string> args = {"Error1", "Error2", "Error3"};
+    std::vector<DiagnosticTag> tags {};
+    std::vector<DiagnosticRelatedInformation> relatedInfoList {};
+
+    Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Error, errorCode, message, {}, {}, data);
+    FileDiagnostic result = ark::es2panda::lsp::CreateDiagnosticForNode(astNode, diagnostic, args);
+
+    int const startLine = 0;
+    int const endLine = 0;
+    int const startChar = 0;
+    int const endChar = 18;
+    ASSERT_EQ(result.diagnostic.message_, "Diagnostic Error1, for the Error2, and Error3");
+    ASSERT_EQ(result.diagnostic.range_.start.line_, startLine);
+    ASSERT_EQ(result.diagnostic.range_.end.line_, endLine);
+    ASSERT_EQ(result.diagnostic.range_.start.character_, startChar);
+    ASSERT_EQ(result.diagnostic.range_.end.character_, endChar);
+    initializer.DestroyContext(ctx);
+}
+
+TEST_F(LSPAPITests, CreateDiagnosticForNode3)
+{
+    using ark::es2panda::ir::AstNode;
+    using ark::es2panda::public_lib::Context;
+    Initializer initializer = Initializer();
+    es2panda_Context *ctx =
+        initializer.CreateContext("file1.sts", ES2PANDA_STATE_CHECKED, "let a =     () => {\n  return 1;\n}");
+    auto astNode = reinterpret_cast<AstNode *>(GetAstFromContext<ark::es2panda::ir::AstNode>(ctx));
+    astNode = astNode->FindChild([](ark::es2panda::ir::AstNode *child) { return child->IsArrowFunctionExpression(); });
+    int const dataValue = 42;
+    std::variant<int, std::string> data = dataValue;
+    int const errorCode = 400;
+    std::string message = "Diagnostic {0}, for the {1}, and {2}";
+    std::vector<std::string> args = {"Error1", "Error2", "Error3"};
+    std::vector<DiagnosticTag> tags {};
+    std::vector<DiagnosticRelatedInformation> relatedInfoList {};
+
+    Diagnostic diagnostic(range_, tags, relatedInfoList, DiagnosticSeverity::Error, errorCode, message, {}, {}, data);
+    FileDiagnostic result =
+        ark::es2panda::lsp::CreateDiagnosticForNode(reinterpret_cast<es2panda_AstNode *>(astNode), diagnostic, args);
+
+    int const startLine = 0;
+    int const endLine = 2;
+    int const startChar = 12;
+    int const endChar = 33;
+    ASSERT_EQ(result.diagnostic.message_, "Diagnostic Error1, for the Error2, and Error3");
+    ASSERT_EQ(result.diagnostic.range_.start.line_, startLine);
+    ASSERT_EQ(result.diagnostic.range_.end.line_, endLine);
+    ASSERT_EQ(result.diagnostic.range_.start.character_, startChar);
+    ASSERT_EQ(result.diagnostic.range_.end.character_, endChar);
+    initializer.DestroyContext(ctx);
+}
+
 TEST_F(LSPAPITests, GetFileReferencesImpl1)
 {
     using ark::es2panda::public_lib::Context;

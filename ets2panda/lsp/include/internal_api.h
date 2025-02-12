@@ -66,6 +66,8 @@ void GetFileReferencesImpl(es2panda_Context *referenceFileContext, char const *s
 ir::AstNode *FindPrecedingToken(const size_t pos, const ir::AstNode *startNode, ArenaAllocator *allocator);
 ir::AstNode *GetOriginalNode(ir::AstNode *astNode);
 checker::VerifiedType GetTypeOfSymbolAtLocation(checker::ETSChecker *checker, ir::AstNode *astNode);
+FileDiagnostic CreateDiagnosticForNode(es2panda_AstNode *node, Diagnostic diagnostic,
+                                       const std::vector<std::string> &args = std::vector<std::string>());
 std::string GetCurrentTokenValueImpl(es2panda_Context *context, size_t position);
 void GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, CommentRange *result);
 Diagnostic CreateDiagnosticForError(es2panda_Context *context, const Error &error);
