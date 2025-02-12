@@ -183,6 +183,7 @@ declare_ambient_class_implement_interface.sts
 assignment_lowering.sts
 async-func-overload-and-type-infer.sts
 async_optional.sts
+async_scope_fix.sts
 boxing.sts
 boxingUnboxingCalls.sts
 call_static_with_type_alias.sts

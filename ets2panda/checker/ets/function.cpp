@@ -19,6 +19,7 @@
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -2059,6 +2060,11 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expr
 
         paramNew->SetVariable(var);
         paramNew->SetTsType(paramType);
+
+        if (auto *newTypeAnno = paramNew->TypeAnnotation(); newTypeAnno != nullptr) {
+            newTypeAnno->SetTsType(paramOld->TypeAnnotation()->TsType());
+            compiler::InitScopesPhaseETS::RunExternalNode(newTypeAnno, VarBinder()->AsETSBinder());
+        }
 
         outParams.emplace_back(paramNew);
     }
