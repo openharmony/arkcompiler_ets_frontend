@@ -12,6 +12,7 @@
 # limitations under the License.
 
 ets2panda_add_gtest(lsp_api_test CPP_SOURCES
+    quick_info_test.cpp
     lsp_api_test.cpp
     classifier_test.cpp
     cancellation_token_test.cpp
