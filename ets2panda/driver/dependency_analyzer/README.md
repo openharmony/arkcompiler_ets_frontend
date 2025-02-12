@@ -22,12 +22,23 @@ If any imported file was not found, the program returns with an error, otherwise
 ## Usage
 
 ```
-dependency_analyzer [input_file]
+dependency_analyzer [input_file] [OPTIONS]
 ```
 
 ## Arguments
 
 - `input`: input file
+
+### Optional arguments
+- `--output`: dump output file. 
+Type of dump to a output file:
+
+```
+<Input file absolute path>
+<First include-file absolute path>
+<Second include-file absolute path>
+...
+```
 
 ## Running the tests
 
