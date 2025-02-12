@@ -20,5 +20,3 @@ class C {
 let c: C = /* @@ label */{};
 
 /* @@@ label Error TypeError: Signature constructor(): void is not visible here.  */
-/* @@? 1:3 Error TypeError: Signature constructor(): void is not visible here. */
-/* @@? 1:3 Error TypeError: No matching construct signature */

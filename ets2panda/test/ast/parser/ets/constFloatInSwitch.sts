@@ -32,4 +32,3 @@ function main(): void {
 }
 
 /* @@@ label Error TypeError: Unexpected type double  */
-/* @@? 25:27 Error TypeError: Constant expression required */

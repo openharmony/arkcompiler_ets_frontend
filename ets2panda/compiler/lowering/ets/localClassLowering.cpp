@@ -195,8 +195,7 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
     };
 
     for (auto *it : classDef->Body()) {
-        if (it->IsMethodDefinition() && !it->AsMethodDefinition()->TsType()->IsTypeError() &&
-            !it->AsMethodDefinition()->IsConstructor()) {
+        if (it->IsMethodDefinition() && !it->AsMethodDefinition()->IsConstructor()) {
             LOG(DEBUG, ES2PANDA) << "  - Rebinding variable rerferences in: "
                                  << it->AsMethodDefinition()->Id()->Name().Mutf8().c_str();
             it->AsMethodDefinition()->Function()->Body()->IterateRecursively(remapCapturedVariables);
@@ -238,8 +237,7 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
         ctx->allocator->Adapter()};
 
     program->Ast()->IterateRecursivelyPostorder([&](ir::AstNode *ast) {
-        if (ast->IsClassDefinition() && ast->AsClassDefinition()->IsLocal() &&
-            !ast->AsClassDefinition()->TsType()->IsTypeError()) {
+        if (ast->IsClassDefinition() && ast->AsClassDefinition()->IsLocal()) {
             HandleLocalClass(ctx, capturedVarsMap, ast->AsClassDefinition());
         }
     });
@@ -267,13 +265,13 @@ bool LocalClassConstructionPhase::PerformForModule(public_lib::Context *ctx, par
         if (ast->IsETSNewClassInstanceExpression()) {
             auto *newExpr = ast->AsETSNewClassInstanceExpression();
             checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
-            if (!calleeType->IsETSObjectType()) {
-                return;
-            }
+
+            ASSERT(calleeType->IsETSObjectType());
             auto *calleeObj = calleeType->AsETSObjectType();
             if (!calleeObj->GetDeclNode()->IsClassDefinition()) {
                 return;
             }
+
             auto *classDef = calleeObj->GetDeclNode()->AsClassDefinition();
             if (classDef->IsLocal()) {
                 handleLocalClassInstantiation(classDef, newExpr);

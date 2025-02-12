@@ -28,6 +28,8 @@
 #include "compiler/core/JSemitter.h"
 #include "compiler/core/ETSemitter.h"
 #include "compiler/lowering/phase.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
+#include "compiler/lowering/checkerPhase.h"
 #include "evaluate/scopedDebugInfoPlugin.h"
 #include "parser/parserImpl.h"
 #include "parser/JSparser.h"
@@ -119,12 +121,16 @@ static bool CheckOptionsAfterPhase(const util::Options &options, const parser::P
     return options.GetExitAfterPhase() == name;
 }
 
-static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context &context,
-                                 const std::vector<Phase *> &phases, parser::Program &program)
+static bool RunVerifierAndPhases(public_lib::Context &context, const std::vector<Phase *> &phases,
+                                 parser::Program &program)
 {
-    ast_verifier::ASTVerifier verifier(context, program);
     const auto &options = *context.config->options;
     const auto verifierEachPhase = options.IsAstVerifierEachPhase();
+
+    ast_verifier::ASTVerifier verifier(context, program);
+    if (context.diagnosticEngine->IsAnyError()) {
+        verifier.Suppress();
+    }
 
     for (auto *phase : phases) {
         const auto name = std::string {phase->Name()};
@@ -136,22 +142,31 @@ static bool RunVerifierAndPhases(CompilerImpl *compilerImpl, public_lib::Context
             return false;
         }
 
-        if (!phase->Apply(&context, &program) || context.diagnosticEngine->IsAnyError()) {
-            compilerImpl->SetIsAnyError(true);
-            // Silence ASTVerifier since an error was already reported:
-            verifier.Suppress();
-        } else {
-            verifier.IntroduceNewInvariants(name);
+        if (!phase->Apply(&context, &program)) {
+            //  Seems that some critical error happened inside lowering and code refactoring required.
+            //  For normal processing this call shouldn't return false!
+            return false;
         }
 
-        if (!compilerImpl->IsAnyError() && (verifierEachPhase || options.HasVerifierPhase(name))) {
+        if (name == compiler::ScopesInitPhase::NAME && context.diagnosticEngine->IsAnyError()) {
+            verifier.Suppress();
+        }
+
+        if (verifierEachPhase || options.HasVerifierPhase(name)) {
             verifier.Verify(name);
         }
+        verifier.IntroduceNewInvariants(name);
 
         if (CheckOptionsAfterPhase(options, program, name)) {
             return false;
         }
+
+        // Stop lowerings processing after Checker phase if any error happened.
+        if (name == compiler::CheckerPhase::NAME && context.diagnosticEngine->IsAnyError()) {
+            return false;
+        }
     }
+
     return true;
 }
 
@@ -237,21 +252,25 @@ static pandasm::Program *Compile(const CompilationUnit &unit, const PhaseListGet
     varbinder->SetContext(&context);
 
     parser.ParseScript(unit.input, unit.options.GetCompilationMode() == CompilationMode::GEN_STD_LIB);
-    compilerImpl->SetIsAnyError(context.diagnosticEngine->IsAnyError());
 
+    //  We have to check the return status of 'RunVerifierAndPhase` and 'RunPhases` separately because there can be
+    //  some internal errors (say, in Post-Conditional check) or terminate options (say in 'CheckOptionsAfterPhase')
+    //  that were not reported to the log.
     if (unit.ext == ScriptExtension::STS) {
-        if (!RunVerifierAndPhases(compilerImpl, context, getPhases(unit.ext), program)) {
+        if (!RunVerifierAndPhases(context, getPhases(unit.ext), program)) {
             return nullptr;
         }
-    } else if (compilerImpl->IsAnyError()) {
+    } else if (context.diagnosticEngine->IsAnyError()) {
         if (unit.options.IsDumpAst()) {
             std::cout << program.Dump() << std::endl;
         }
     } else {
-        compilerImpl->SetIsAnyError(!RunPhases(context, getPhases(unit.ext), program));
+        if (!RunPhases(context, getPhases(unit.ext), program)) {
+            return nullptr;
+        }
     }
 
-    if (compilerImpl->IsAnyError()) {
+    if (context.diagnosticEngine->IsAnyError()) {
         return nullptr;
     }
 

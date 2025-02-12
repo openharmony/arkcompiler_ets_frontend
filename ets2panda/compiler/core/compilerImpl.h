@@ -69,22 +69,11 @@ public:
         return &queue_;
     }
 
-    [[nodiscard]] bool IsAnyError() const noexcept
-    {
-        return isAnyError_;
-    }
-
-    void SetIsAnyError(bool const value) noexcept
-    {
-        isAnyError_ |= value;
-    }
-
 private:
     static void HandleContextLiterals(public_lib::Context *context);
 
     CompileQueue queue_;
     std::vector<util::Plugin> const *plugins_;
-    bool isAnyError_ = false;
 };
 }  // namespace ark::es2panda::compiler
 

@@ -52,4 +52,3 @@ class A extends B {
 /* @@@ label Error SyntaxError: Unexpected token. A constructor, method, accessor, or property was expected.  */
 /* @@? 16:33 Error TypeError: Overloaded function identifier "max" can not be used as value */
 /* @@? 47:12 Error TypeError: Property 'b' does not exist on type 'C' */
-/* @@? 16:33 Error TypeError: Cannot deduce call signature */

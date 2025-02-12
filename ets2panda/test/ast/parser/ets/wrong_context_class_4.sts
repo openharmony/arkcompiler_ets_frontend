@@ -28,4 +28,3 @@ function main()
 
 /* @@? 26:5 Error TypeError: Class name "a" used in the wrong context  */
 /* @@? 26:5 Error TypeError: Object type doesn't have proper index access method.  */
-/* @@? 1:3 Error TypeError: Property '$_get' does not exist on type 'a' */

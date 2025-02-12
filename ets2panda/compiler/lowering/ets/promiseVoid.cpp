@@ -205,7 +205,7 @@ bool PromiseVoidInferencePhase::PostconditionForModule(public_lib::Context *ctx,
         if (!CheckForPromiseVoid(returnAnn)) {
             return;
         }
-        if (function->HasBody()) {
+        if (function->HasBody() && function->Body()->IsBlockStatement()) {
             if (!checkFunctionBody(function->Body()->AsBlockStatement())) {
                 isOk = false;
                 return;

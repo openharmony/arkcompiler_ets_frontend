@@ -24,5 +24,3 @@ function main(): void {
 
 /* @@@ label Error TypeError: Type Double is not assignable to constraint type String  */
 /* @@@ label1 Error TypeError: Type '"25"' is not compatible with type 'Double' at property 'age'  */
-/* @@? 22:49 Error TypeError: Type Double is not assignable to constraint type String */
-/* @@? 22:83 Error TypeError: Type '"25"' cannot be assigned to type 'Double' */

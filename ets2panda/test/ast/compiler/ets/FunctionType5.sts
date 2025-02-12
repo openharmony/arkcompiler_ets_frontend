@@ -21,5 +21,3 @@ let cb = foo;
 /* @@? 19:10 Error TypeError: Overloaded function identifier "foo" can not be used as value */
 /* @@? 19:10 Error TypeError: Ambiguous function initialization because of multiple overloads */
 /* @@? 19:10 Error TypeError: Overloaded function identifier "foo" can not be used as value */
-/* @@? 19:10 Error TypeError: Cannot deduce call signature */
-/* @@? 19:10 Error TypeError: Cannot deduce call signature */

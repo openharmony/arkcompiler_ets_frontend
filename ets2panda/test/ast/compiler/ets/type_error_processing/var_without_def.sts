@@ -24,8 +24,6 @@ function foo() {
     void = [([...asyncGenerator])]
 }
 
-/* @@? 21:9 Error TypeError: Unresolved reference a */
-/* @@? 21:17 Error TypeError: Unresolved reference c */
 /* @@? 16:1 Error TypeError: Unresolved reference a */
 /* @@? 17:1 Error TypeError: Unresolved reference a */
 /* @@? 18:1 Error TypeError: Unresolved reference a */
@@ -34,5 +32,3 @@ function foo() {
 /* @@? 21:17 Error TypeError: Unresolved reference c */
 /* @@? 24:5 Error TypeError: Unresolved reference void */
 /* @@? 24:18 Error TypeError: Unresolved reference asyncGenerator */
-/* @@? 24:13 Error TypeError: Unresolved reference asyncGenerator */
-/* @@? 24:13 Error TypeError: 'For-of' statement source expression is not of iterable type. */

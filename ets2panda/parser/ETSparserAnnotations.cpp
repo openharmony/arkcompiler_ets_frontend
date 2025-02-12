@@ -185,8 +185,7 @@ ir::AstNode *ETSParser::ParseAnnotationProperty(ir::Identifier *fieldName, ir::M
 
     if (typeAnnotation == nullptr && (memberModifiers & ir::ModifierFlags::ANNOTATION_DECLARATION) != 0 &&
         !fieldName->IsErrorPlaceHolder()) {
-        auto const logField = std::string {" '"}.append(fieldName->Name().Utf8()).append("'");
-        LogError(diagnostic::MISSING_TYPE_ANNOTATION, {logField}, Lexer()->GetToken().Start());
+        LogError(diagnostic::MISSING_TYPE_ANNOTATION, {fieldName->Name().Mutf8()}, Lexer()->GetToken().Start());
     }
 
     if (typeAnnotation != nullptr) {

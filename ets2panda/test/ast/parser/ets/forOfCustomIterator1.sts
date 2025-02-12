@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,6 +52,3 @@ function main(): void {
 /* @@? 48:19 Error TypeError: Iterator method must return an object which implements Iterator<T> */
 /* @@? 48:19 Error TypeError: 'For-of' statement source expression is not of iterable type. */
 /* @@? 18:15 Error TypeError: The return type of '$_iterator' must be a type that implements Iterator interface. */
-/* @@? 1:3 Error TypeError: Property 'next' does not exist on type 'B' */
-/* @@? 1:1 Error TypeError: Bad operand type, the type of the operand must be boolean type. */
-/* @@? 1:3 Error TypeError: Property 'next' does not exist on type 'B' */

@@ -23,4 +23,3 @@ function main(): void {
 }
 
 /* @@@ label Error TypeError: Type String is not assignable to constraint type Double  */
-/* @@? 22:41 Error TypeError: Type String is not assignable to constraint type Double */

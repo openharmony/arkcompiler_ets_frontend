@@ -22,4 +22,3 @@ function main(){
     } 
 }
 /* @@@ label Error TypeError: Type A|Double is not assignable to constraint type Numeric|String  */
-/* @@? 1:3 Error TypeError: Type A|Double is not assignable to constraint type Numeric|String */

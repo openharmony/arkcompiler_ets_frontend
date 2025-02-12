@@ -90,12 +90,7 @@ static ArenaSet<varbinder::Variable *> FindModified(public_lib::Context *ctx, ir
         }
 
         auto expr = ast->AsAssignmentExpression();
-        auto *const exprType = expr->TsType();
-        if (exprType == nullptr || exprType->IsTypeError()) {
-            return;
-        }
-
-        if (expr->Left()->IsIdentifier() && !expr->Left()->AsIdentifier()->TsType()->IsTypeError()) {
+        if (expr->Left()->IsIdentifier()) {
             ASSERT(expr->Left()->Variable() != nullptr);
             auto *var = expr->Left()->Variable();
             var->AddFlag(varbinder::VariableFlags::INITIALIZED);
@@ -283,15 +278,11 @@ static ir::AstNode *HandleAssignment(public_lib::Context *ctx, ir::AssignmentExp
     // Should be true after opAssignment lowering
     ASSERT(ass->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
-    auto *oldVar = ass->Left()->AsIdentifier()->Variable();
-    if (oldVar->TsType()->IsTypeError()) {
-        return ass;
-    }
-
     auto *parser = ctx->parser->AsETSParser();
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
     auto *checker = ctx->checker->AsETSChecker();
 
+    auto *oldVar = ass->Left()->Variable();
     auto *newVar = varsMap.find(oldVar)->second;
     auto *scope = newVar->GetScope();
     newVar->AddFlag(varbinder::VariableFlags::INITIALIZED);

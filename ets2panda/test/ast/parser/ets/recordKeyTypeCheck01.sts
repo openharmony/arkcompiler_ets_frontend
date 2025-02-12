@@ -20,4 +20,3 @@ function main(){
     } 
 }
 /* @@@ label Error TypeError: Type Char|String is not assignable to constraint type Numeric|String  */
-/* @@? 1:3 Error TypeError: Type Char|String is not assignable to constraint type Numeric|String */

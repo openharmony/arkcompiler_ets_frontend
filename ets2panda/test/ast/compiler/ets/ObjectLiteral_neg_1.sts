@@ -38,8 +38,3 @@ const router:RouterT = {
 
 
 /* @@? 32:5 Error TypeError: Method 'back' cannot be used as a key of object literal. */
-/* @@? 31:24 Error TypeError: Interface has methods */
-/* @@? 32:5 Error TypeError: Method used in wrong context */
-/* @@? 32:5 Error TypeError: Type 'LambdaObject-ETSGLOBAL$lambda$invoke$0' cannot be assigned to type '(options: RouterOptions|undefined, mode: #RouterMode|undefined) => void & (options: RouterOptions|undefined) => void & () => void' */
-/* @@? 33:5 Error TypeError: Method used in wrong context */
-/* @@? 33:5 Error TypeError: Type 'LambdaObject-ETSGLOBAL$lambda$invoke$1' cannot be assigned to type '() => Object' */

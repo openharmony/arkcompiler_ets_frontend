@@ -213,10 +213,6 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return false;
     }
 
-    if (ctx->diagnosticEngine->IsAnyError()) {
-        return false;
-    }
-
 #ifndef NDEBUG
     if (!Postcondition(ctx, program)) {
         ctx->checker->LogTypeError({"Postcondition check failed for ", util::StringView {Name()}},

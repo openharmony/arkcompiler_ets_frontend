@@ -27,4 +27,3 @@ function main(): void {
 
 /* @@@ label Error TypeError: Function foo is already declared.  */
 /* @@@ label1 Error TypeError: Reference to foo is ambiguous  */
-/* @@? 23:25 Error TypeError: The type of parameter 'x' cannot be determined */

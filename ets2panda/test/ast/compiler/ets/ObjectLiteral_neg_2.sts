@@ -21,5 +21,3 @@ let a:A = {back:()=>{}}
 
 
 /* @@? 20:12 Error TypeError: Method 'back' cannot be used as a key of object literal. */
-/* @@? 20:12 Error TypeError: Method used in wrong context */
-/* @@? 20:12 Error TypeError: Type 'LambdaObject-ETSGLOBAL$lambda$invoke$0' cannot be assigned to type '() => void' */

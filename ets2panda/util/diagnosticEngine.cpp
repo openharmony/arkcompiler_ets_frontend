@@ -226,14 +226,32 @@ void DiagnosticEngine::FlushDiagnostic()
     }
 }
 
-bool DiagnosticEngine::IsAnyError() const
+bool DiagnosticEngine::IsAnyError(std::optional<ErrorType> errorType) const noexcept
 {
-    for (size_t i = ErrorType::BEGIN; i < ErrorType::COUNT; ++i) {
+    auto const beg = static_cast<std::size_t>(errorType ? *errorType : ErrorType::BEGIN);
+    auto const end = errorType ? beg + 1U : static_cast<std::size_t>(ErrorType::COUNT);
+
+    for (size_t i = beg; i < end; ++i) {
         if (IsError(static_cast<ErrorType>(i)) && !diagnostics_[i].empty()) {
             return true;
         }
     }
     return false;
+}
+
+std::size_t DiagnosticEngine::ErrorCount(std::optional<ErrorType> errorType) const noexcept
+{
+    auto const beg = static_cast<std::size_t>(errorType ? *errorType : ErrorType::BEGIN);
+    auto const end = errorType ? beg + 1U : static_cast<std::size_t>(ErrorType::COUNT);
+    std::size_t errorCount = 0U;
+
+    for (size_t i = beg; i < end; ++i) {
+        if (IsError(static_cast<ErrorType>(i))) {
+            errorCount += diagnostics_[i].size();
+        }
+    }
+
+    return errorCount;
 }
 
 Error DiagnosticEngine::GetAnyError() const

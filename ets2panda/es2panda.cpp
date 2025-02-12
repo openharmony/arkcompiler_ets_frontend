@@ -16,9 +16,6 @@
 #include "compiler/core/compilerImpl.h"
 #include "generated/diagnostic.h"
 
-#include <iostream>
-#include <thread>
-
 namespace ark::es2panda {
 constexpr size_t DEFAULT_THREAD_COUNT = 2;
 
@@ -116,11 +113,6 @@ pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options
         error_ = e;
         return nullptr;
     }
-}
-
-bool Compiler::IsAnyError() const noexcept
-{
-    return compiler_->IsAnyError();
 }
 
 std::string Compiler::GetPhasesList() const
