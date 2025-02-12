@@ -440,7 +440,9 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
     if (baseType->IsETSDynamicType()) {
-        checker->ValidateArrayIndex(property_);
+        if (!property_->Check(checker)->IsETSStringType()) {
+            checker->ValidateArrayIndex(property_);
+        }
         return checker->GlobalBuiltinDynamicType(baseType->AsETSDynamicType()->Language());
     }
 

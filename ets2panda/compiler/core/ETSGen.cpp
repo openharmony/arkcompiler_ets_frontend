@@ -520,7 +520,7 @@ void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *
 }
 
 void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                                 const util::StringView &propName)
+                                 std::variant<util::StringView, const ark::es2panda::ir::Expression *> property)
 {
     auto const lang = GetVRegType(objReg)->AsETSDynamicType()->Language();
     auto *type = propType;
@@ -552,13 +552,21 @@ void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *p
 
     RegScope rs(this);
 
-    // Load property name
-    LoadAccumulatorString(node, propName);
-    VReg propNameObject = AllocReg();
+    VReg propNameObject;
+
+    if (node->IsMemberExpression() && node->AsMemberExpression()->IsComputed()) {
+        (std::get<const ark::es2panda::ir::Expression *>(property))->Compile(this);
+    } else {
+        // Load property name
+        LoadAccumulatorString(node, std::get<util::StringView>(property));
+    }
+
+    propNameObject = AllocReg();
     StoreAccumulator(node, propNameObject);
 
-    // Get property by name
+    // Get property
     Ra().Emit<CallShort, 2U>(node, methodName, objReg, propNameObject);
+
     SetAccumulatorType(type);
 
     if (propType != type && !propType->IsETSDynamicType()) {
