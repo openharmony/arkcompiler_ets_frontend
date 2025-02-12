@@ -1782,8 +1782,10 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
     }
 
     // should be valid only for Object and [] types, other are workarounds
+    // the DefinitelyETSNullish function has been used to add handling for null and undefined cases,
+    // and this function will need to be refactored in the future.
     if (targetType->IsETSArrayType() || targetType->IsETSObjectType() || targetType->IsETSTypeParameter() ||
-        targetType->IsETSUnionType()) {
+        targetType->IsETSUnionType() || targetType->DefinitelyETSNullish()) {
         auto lang = GetAccumulatorType()->AsETSDynamicType()->Language();
         auto methodName = compiler::Signatures::Dynamic::GetObjectBuiltin(lang);
 
