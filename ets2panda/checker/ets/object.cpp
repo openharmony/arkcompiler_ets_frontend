@@ -1117,19 +1117,13 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 void ETSChecker::CheckClassElement(ir::ClassDefinition *classDef)
 {
     for (auto *it : classDef->Body()) {
-        if (it->IsClassProperty()) {
-            it->Check(this);
-        }
-    }
-
-    for (auto *it : classDef->Body()) {
         if (!it->IsClassProperty()) {
             if (it->IsETSModule() && it->AsETSModule()->IsNamespace()) {
                 ES2PANDA_ASSERT(IsAnyError());
                 continue;
             }
-            it->Check(this);
         }
+        it->Check(this);
     }
 }
 
