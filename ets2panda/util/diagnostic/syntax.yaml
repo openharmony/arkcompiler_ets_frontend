@@ -23,3 +23,7 @@ syntax:
 - name: IMPROPER_NESTING_INTERFACE
   id: 3
   message: Property or signature expected.
+
+- name: AMBIENT_CLASS_MISSING_BODY
+  id: 4
+  message: Ambient class declarations must have a body.

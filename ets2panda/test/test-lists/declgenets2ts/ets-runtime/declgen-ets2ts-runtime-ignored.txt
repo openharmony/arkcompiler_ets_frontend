@@ -178,6 +178,8 @@ annotation_tests/annotationUsageSingleFileds07.sts
 annotation_tests/annotationUsage_scope_check02.sts
 annotation_tests/annotationUsage_scope_check03.sts
 array_inf.sts
+declare_ambient_class.sts
+declare_ambient_class_implement_interface.sts
 assignment_lowering.sts
 async-func-overload-and-type-infer.sts
 async_optional.sts
