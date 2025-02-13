@@ -46,6 +46,7 @@ faultsAttrs[FaultID.IndexedAccessType] = new FaultAttributes(28);
 faultsAttrs[FaultID.PropertyAccessByIndex] = new FaultAttributes(29);
 faultsAttrs[FaultID.StructuralIdentity] = new FaultAttributes(30);
 faultsAttrs[FaultID.GenericCallNoTypeArgs] = new FaultAttributes(34);
+faultsAttrs[FaultID.RegularExpressionLiteral] = new FaultAttributes(37);
 faultsAttrs[FaultID.ObjectLiteralNoContextType] = new FaultAttributes(38);
 faultsAttrs[FaultID.ObjectTypeLiteral] = new FaultAttributes(40);
 faultsAttrs[FaultID.ArrayLiteralNoContextType] = new FaultAttributes(43);

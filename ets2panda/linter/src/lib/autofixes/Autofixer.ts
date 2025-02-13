@@ -2007,4 +2007,34 @@ export class Autofixer {
   private static needParenthesesForVoidOperator(expr: ts.Expression): boolean {
     return ts.isObjectLiteralExpression(expr) || ts.isFunctionExpression(expr) || ts.isClassExpression(expr);
   }
+
+  fixRegularExpressionLiteral(regexpLiteral: ts.RegularExpressionLiteral): Autofix[] {
+    const srcFile = regexpLiteral.getSourceFile();
+    const literalText = regexpLiteral.getText();
+    const { pattern, flag } = Autofixer.extractRegexParts(literalText);
+    const args = [ts.factory.createStringLiteral(pattern)];
+    if (flag) {
+      args.push(ts.factory.createStringLiteral(flag));
+    }
+    const newExpression = ts.factory.createNewExpression(ts.factory.createIdentifier('RegExp'), undefined, args);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpression, srcFile);
+    return [{ start: regexpLiteral.getStart(), end: regexpLiteral.getEnd(), replacementText: text }];
+  }
+
+  private static extractRegexParts(literalText: string): {
+    pattern: string;
+    flag: string | undefined;
+  } {
+    let pattern: string = '';
+    let flag: string | undefined;
+    const lastSlashIndex = literalText.lastIndexOf('/');
+    const afterLastSlash = literalText.slice(lastSlashIndex + 1);
+    if (afterLastSlash !== '') {
+      pattern = literalText.slice(1, lastSlashIndex);
+      flag = afterLastSlash;
+    } else {
+      pattern = literalText.slice(1, lastSlashIndex);
+    }
+    return { pattern, flag };
+  }
 }
