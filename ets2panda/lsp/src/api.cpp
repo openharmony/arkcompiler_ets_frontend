@@ -22,6 +22,7 @@
 #include "cancellation_token.h"
 #include "public/public.h"
 #include "util/options.h"
+#include "quick_info.h"
 
 namespace ark::es2panda::lsp {
 
@@ -93,6 +94,15 @@ extern "C" std::string GetCurrentTokenValue(char const *fileName, size_t positio
     auto result = GetCurrentTokenValueImpl(ctx, position);
     initializer.DestroyContext(ctx);
     return result;
+}
+
+extern "C" QuickInfo GetQuickInfoAtPosition(const char *fileName, size_t position)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    auto res = GetQuickInfoAtPositionImpl(context, position, fileName);
+    initializer.DestroyContext(context);
+    return res;
 }
 
 extern "C" TextSpan GetSpanOfEnclosingComment(char const *fileName, size_t pos, bool onlyMultiLine)
@@ -185,9 +195,11 @@ extern "C" DocumentHighlightsReferences GetDocumentHighlights(char const *fileNa
     return result;
 }
 
-LSPAPI g_lspImpl = {GetDefinitionAtPosition, GetFileReferences,       GetReferencesAtPosition,
-                    GetPrecedingToken,       GetCurrentTokenValue,    GetSpanOfEnclosingComment,
-                    GetSemanticDiagnostics,  GetSyntacticDiagnostics, GetReferenceLocationAtPosition,
+LSPAPI g_lspImpl = {GetDefinitionAtPosition,   GetFileReferences,
+                    GetReferencesAtPosition,   GetPrecedingToken,
+                    GetCurrentTokenValue,      GetQuickInfoAtPosition,
+                    GetSpanOfEnclosingComment, GetSemanticDiagnostics,
+                    GetSyntacticDiagnostics,   GetReferenceLocationAtPosition,
                     GetDocumentHighlights};
 }  // namespace ark::es2panda::lsp
 
