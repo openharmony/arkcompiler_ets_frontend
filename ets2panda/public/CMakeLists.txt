@@ -99,7 +99,6 @@ set (HEADERS_TO_BE_PARSED
     ${ES2PANDA_ROOT}/checker/types/ts/arrayType.h
     ${ES2PANDA_ROOT}/ir/astNode.h
     ${ES2PANDA_ROOT}/ir/typed.h
-    ${ES2PANDA_ROOT}/ir/annotationAllowed.h
     ${ES2PANDA_ROOT}/ir/statements/ifStatement.h
     ${ES2PANDA_ROOT}/ir/ets/etsTuple.h
     ${ES2PANDA_ROOT}/ir/module/exportSpecifier.h
@@ -294,6 +293,8 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/options.yaml
     ${LIBGEN_DIR}/gen/headers/ir/astNodeMapping.yaml
     ${LIBGEN_DIR}/gen/headers/varbinder/variableFlags.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/typed.yaml
+    ${LIBGEN_DIR}/gen/headers/ir/annotationAllowed.yaml
     ${LIBGEN_DIR}/gen/headers/es2panda.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/labelledStatement.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ts/unknownType.yaml
@@ -378,7 +379,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/checker/types/globalTypesHolder.yaml
     ${LIBGEN_DIR}/gen/headers/checker/types/ets/longType.yaml
     ${LIBGEN_DIR}/gen/headers/ir/astNode.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/typed.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/unaryExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/forInStatement.yaml
     ${LIBGEN_DIR}/gen/headers/ir/expressions/thisExpression.yaml
@@ -426,7 +426,6 @@ set (ES2PANDA_API_GENERATED
     ${LIBGEN_DIR}/gen/headers/ir/statements/loopStatement.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/annotationDeclaration.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/annotationUsage.yaml
-    ${LIBGEN_DIR}/gen/headers/ir/annotationAllowed.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/emptyStatement.yaml
     ${LIBGEN_DIR}/gen/headers/ir/ets/etsLaunchExpression.yaml
     ${LIBGEN_DIR}/gen/headers/ir/statements/whileStatement.yaml

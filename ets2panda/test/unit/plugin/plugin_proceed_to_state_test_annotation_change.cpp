@@ -57,7 +57,7 @@ static void CollectDeclarations(es2panda_AstNode *node)
 static es2panda_AstNode *GetAnnotationUsage(es2panda_Context *context, es2panda_AstNode *functionDecl)
 {
     size_t n;
-    auto **annotations = impl->AnnotationAllowedAnnotations(context, functionDecl, &n);
+    auto **annotations = impl->ScriptFunctionAnnotations(context, functionDecl, &n);
     if (n != 1) {
         return nullptr;
     }

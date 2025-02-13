@@ -60,7 +60,7 @@ module Es2pandaLibApi
                           @es2panda_arg['type'].respond_to?('other_modifiers') &&
                           @es2panda_arg['type']['other_modifiers'].include?('const') ||
                           @es2panda_arg['type'].respond_to?('const') &&
-                          @es2panda_arg['type']['const'].include?('const')
+                          @es2panda_arg['type']['const']&.include?('const')
     end
 
     def set_const_modifier(args, value)
@@ -624,14 +624,13 @@ module Es2pandaLibApi
   class ClassData < SimpleDelegator
     @class_base_namespace = ''
     @extends_classname = nil
+    @template_extends = []
     @ast_node_type_value = nil
 
-    attr_reader :class_base_namespace
-    attr_writer :class_base_namespace
-    attr_reader :extends_classname
-    attr_writer :extends_classname
-    attr_reader :ast_node_type_value
-    attr_writer :ast_node_type_value
+    attr_accessor :class_base_namespace
+    attr_accessor :extends_classname
+    attr_accessor :template_extends
+    attr_accessor :ast_node_type_value
 
     def class_name
       Es2pandaLibApi.classes&.each do |namespace_name, namespace_classes|
@@ -910,7 +909,12 @@ module Es2pandaLibApi
       function_overload = {}
       idl_function_overload = {}
       usings = usings_map
-      dig(:methods)&.each do |method|
+      methods = dig(:methods)
+      return res unless methods
+      template_extends.each do |template_extend|
+        methods += Es2pandaLibApi.classes['ir'][template_extend]['methods']
+      end
+      methods.each do |method|
         if check_no_gen_method(method)
           begin
             return_type = Type.new(add_base_namespace(replace_with_usings(method.return_type, usings)),
@@ -1226,6 +1230,10 @@ module Es2pandaLibApi
     ]
   end
 
+  def template_extends_classes
+    %w[Annotated Typed AnnotationAllowed]
+  end
+
   def primitive_types
     %w[
       char
@@ -1334,6 +1342,15 @@ module Es2pandaLibApi
     extends.gsub(/[<>]/, ' ').split.last.split('::').last
   end
 
+  def template_extends(extends)
+    res = []
+    return res unless extends
+    template_extends_classes.each do |extend|
+      res << extend if extends.include?(extend)
+    end
+    res
+  end
+
   def wrap_data(data)
     return unless data
 
@@ -1384,6 +1401,7 @@ module Es2pandaLibApi
       class_data = ClassData.new(class_definition&.public)
       class_data.class_base_namespace = 'ir'
       class_data.extends_classname = extends_to_idl(class_definition.extends)
+      class_data.template_extends = template_extends(class_definition.extends)
       flag_name = @ast_node_mapping.find { |elem| elem[1] == class_definition.name }&.first
       class_data.ast_node_type_value = Enums.get_astnodetype_value(flag_name)
       @classes['ir'][class_definition.name] = class_data
@@ -1396,6 +1414,7 @@ module Es2pandaLibApi
         class_data = ClassData.new(class_definition&.public)
         class_data.class_base_namespace = 'checker'
         class_data.extends_classname = extends_to_idl(class_definition.extends)
+        class_data.template_extends = []
         @classes['checker'][class_definition.name] = class_data
       end
     end
@@ -1408,6 +1427,7 @@ module Es2pandaLibApi
         class_data = ClassData.new(class_definition&.public)
         class_data.class_base_namespace = 'varbinder'
         class_data.extends_classname = extends_to_idl(class_definition.extends)
+        class_data.template_extends = []
         @classes['varbinder'][class_definition.name] = class_data
       end
     end
@@ -1418,6 +1438,7 @@ module Es2pandaLibApi
         class_data = ClassData.new(class_definition&.public)
         class_data.class_base_namespace = 'parser'
         class_data.extends_classname = extends_to_idl(class_definition.extends)
+        class_data.template_extends = []
         @classes['parser'][class_definition.name] = class_data
       end
     end
@@ -1425,15 +1446,19 @@ module Es2pandaLibApi
     @classes['ast_verifier'] = {} unless @classes['ast_verifier']
     data['ast_verifier']&.class_definitions&.each do |class_definition|
       if additional_classes_to_generate.include?(class_definition.name)
-        @classes['ast_verifier'][class_definition.name] = ClassData.new(class_definition&.public)
-        @classes['ast_verifier'][class_definition.name].class_base_namespace = 'compiler::ast_verifier'
+        class_data = ClassData.new(class_definition&.public)
+        class_data.class_base_namespace = 'compiler::ast_verifier'
+        class_data.template_extends = []
+        @classes['ast_verifier'][class_definition.name] = class_data
       end
     end
 
     data['es2panda']&.structs&.each do |struct|
       if structs_to_generate.include?(struct.name)
-        @structs[struct.name] = ClassData.new(struct)
-        @structs[struct.name].class_base_namespace = 'es2panda'
+        struct_data = ClassData.new(struct)
+        struct_data.template_extends = []
+        struct_data.class_base_namespace = 'es2panda'
+        @structs[struct.name] = struct_data
       end
     end
   end
@@ -1444,7 +1469,7 @@ module Es2pandaLibApi
                   :additional_classes_to_generate, :ast_type_additional_children, :scopes, :ast_variables, :deep_to_h,
                   :no_usings_replace_info, :declarations, :check_template_type_presents, :structs, :structs_to_generate,
                   :additional_containers, :stat_add_constructor_type, :stat_add_method_type, :check_class_type,
-                  :extends_to_idl
+                  :extends_to_idl, :template_extends, :template_extends_classes
 end
 
 def Gen.on_require(data)
