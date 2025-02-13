@@ -61,17 +61,23 @@ import { ApiExtractor } from './common/ApiExtractor';
 import esInfo from './configs/preset/es_reserved_properties.json';
 import optimizeEsInfo from './configs/preset/es_reserved_properties_optimized.json';
 import {
-  EventList,
   TimeSumPrinter,
   TimeTracker,
+  endFilesEvent,
   endSingleFileEvent,
   initPerformancePrinter,
+  startFilesEvent,
   startSingleFileEvent,
 } from './utils/PrinterUtils';
 import { ObConfigResolver } from './initialization/ConfigResolver';
+import {
+  EventList,
+  TimeAndMemTimeTracker,
+  clearTimeAndMemPrinterData,
+  initPerformanceTimeAndMemPrinter,
+} from './utils/PrinterTimeAndMemUtils';
 
 export {
-  EventList,
   TimeSumPrinter,
   blockPrinter,
   endFilesEvent,
@@ -81,6 +87,12 @@ export {
   startFilesEvent,
   startSingleFileEvent,
 } from './utils/PrinterUtils';
+export {
+  EventList,
+  TimeAndMemTimeTracker,
+  enableTimeAndMemoryPrint,
+  blockTimeAndMemPrinter,
+} from './utils/PrinterTimeAndMemUtils';
 import { Extension, type ProjectInfo, type FilePathObj } from './common/type';
 export { type HvigorErrorInfo } from './common/type';
 export { FileUtils } from './utils/FileUtils';
@@ -99,7 +111,7 @@ export { separateUniversalReservedItem, containWildcards, wildcardTransformer } 
 export type { ReservedNameInfo } from './utils/TransformUtil';
 export type { ReseverdSetForArkguard } from './common/ApiReader';
 
-export { initObfuscationConfig } from './initialization/Initializer';
+export { initObfuscationConfig, initPrinterTimeAndMemConfig, printerTimeAndMemConfig, printerTimeAndMemDataConfig } from './initialization/Initializer';
 export { nameCacheMap, unobfuscationNamesObj } from './initialization/CommonObject';
 export {
   collectResevedFileNameInIDEConfig, // For running unit test.
@@ -132,10 +144,20 @@ export interface PerformancePrinter {
   singleFilePrinter?: TimeTracker;
   timeSumPrinter?: TimeSumPrinter;
 }
+// TimeAndMem performance printer interface
+export interface PerformanceTimeAndMemPrinter {
+  filesPrinter?: TimeAndMemTimeTracker;
+  singleFilePrinter?: TimeAndMemTimeTracker;
+}
 export let performancePrinter: PerformancePrinter = {
   filesPrinter: new TimeTracker(),
   singleFilePrinter: new TimeTracker(),
   timeSumPrinter: new TimeSumPrinter(),
+};
+// Create instance of the TimeAndMem performance printer
+export let performanceTimeAndMemPrinter: PerformanceTimeAndMemPrinter = {
+  filesPrinter: new TimeAndMemTimeTracker(),
+  singleFilePrinter: new TimeAndMemTimeTracker(),
 };
 
 // When the module is compiled, call this function to clear global collections.
@@ -147,6 +169,7 @@ export function clearGlobalCaches(): void {
   renameFileNameModule.clearCaches();
   clearUnobfuscationNamesObj();
   clearHistoryUnobfuscatedMap();
+  clearTimeAndMemPrinterData();
   ApiExtractor.mConstructorPropertySet.clear();
   ApiExtractor.mEnumMemberSet.clear();
 }
@@ -337,6 +360,8 @@ export class ArkObfuscator {
     this.mTransformers = new TransformerManager(this.mCustomProfiles).getTransformers();
 
     initPerformancePrinter(this.mCustomProfiles);
+    
+    initPerformanceTimeAndMemPrinter(this.mCustomProfiles);
 
     if (needReadApiInfo(this.mCustomProfiles)) {
       // if -enable-property-obfuscation or -enable-export-obfuscation, collect language reserved keywords.
@@ -466,15 +491,18 @@ export class ArkObfuscator {
     originalFilePath?: string,
     projectInfo?: ProjectInfo,
   ): Promise<ObfuscationResultType> {
+    startFilesEvent(EventList.CONFIG_INITIALIZATION);
     ArkObfuscator.projectInfo = projectInfo;
     let result: ObfuscationResultType = { content: undefined };
     if (this.isObfsIgnoreFile(sourceFilePathObj.buildFilePath)) {
       // need add return value
+      endFilesEvent(EventList.CONFIG_INITIALIZATION);
       return result;
     }
 
     let ast: SourceFile = this.createAst(content, sourceFilePathObj.buildFilePath);
     if (ast.statements.length === 0) {
+      endFilesEvent(EventList.CONFIG_INITIALIZATION);
       return result;
     }
 
@@ -494,12 +522,15 @@ export class ArkObfuscator {
       orignalFilePathForSearching = originalFilePath;
     }
     ArkObfuscator.isKeptCurrentFile = this.isCurrentFileInKeepPaths(this.mCustomProfiles, originalFilePath);
+    endFilesEvent(EventList.CONFIG_INITIALIZATION);
 
     this.handleDeclarationFile(ast);
 
     ast = this.obfuscateAst(ast);
 
+    startSingleFileEvent(EventList.WRITE_OBFUSCATION_RESULT);
     this.writeObfuscationResult(ast, sourceFilePathObj.buildFilePath, result, previousStageSourceMap, originalFilePath);
+    endSingleFileEvent(EventList.WRITE_OBFUSCATION_RESULT);
 
     this.clearCaches();
     return result;
@@ -565,26 +596,30 @@ export class ArkObfuscator {
       endSingleFileEvent(EventList.GET_SOURCEMAP_GENERATOR, performancePrinter.timeSumPrinter);
     }
 
-    startSingleFileEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
     if (sourceFilePath.endsWith('.js')) {
       TypeUtils.tsToJs(ast);
     }
     this.handleTsHarComments(ast, originalFilePath);
     const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.CREATE_PRINTER);
+    startSingleFileEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
     this.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, this.mTextWriter, sourceMapGenerator);
     endSingleFileEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
     ArkObfuscator.stopRecordStage(recordInfo);
 
+    startSingleFileEvent(EventList.GET_OBFUSCATED_CODE);
     result.filePath = ast.fileName;
     result.content = this.mTextWriter.getText();
+    endSingleFileEvent(EventList.GET_OBFUSCATED_CODE);
 
     if (this.mCustomProfiles.mUnobfuscationOption?.mPrintKeptNames) {
       this.handleUnobfuscationNames(result);
     }
 
+    startSingleFileEvent(EventList.PROCESS_SOURCEMAP);
     if (this.mCustomProfiles.mEnableSourceMap && sourceMapGenerator) {
       this.handleSourceMapAndNameCache(sourceMapGenerator, sourceFilePath, result, previousStageSourceMap);
     }
+    endSingleFileEvent(EventList.PROCESS_SOURCEMAP);
   }
 
   private handleUnobfuscationNames(result: ObfuscationResultType): void {

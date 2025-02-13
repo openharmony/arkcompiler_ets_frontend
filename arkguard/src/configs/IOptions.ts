@@ -16,6 +16,7 @@
 import type {
   IFileNameObfuscationOption,
   IPrinterOption,
+  IPrinterTimeAndMemOption,
   INameObfuscationOption,
   IKeepSourcePathsAndDependency,
   IDeclarationCommentOption,
@@ -60,6 +61,9 @@ export interface IOptions {
 
   // Time&Memory printer option
   readonly mPerformancePrinter?: IPrinterOption;
+
+  // Time&Memory performance printer option
+  readonly mPerformanceTimeAndMemPrinter?: IPrinterTimeAndMemOption;
 
   // The code of the file is not obfuscated, except for file name obfuscation
   mKeepFileSourceCode?: IKeepSourcePathsAndDependency

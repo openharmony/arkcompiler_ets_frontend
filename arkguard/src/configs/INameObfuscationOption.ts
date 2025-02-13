@@ -87,6 +87,14 @@ export interface IPrinterOption {
   readonly mOutputPath?: string;
 }
 
+export interface IPrinterTimeAndMemOption {
+  // Print obfuscation time&memory performance data of files 
+  readonly mFilesPrinter?: boolean;
+
+  // Print obfuscation time&memory performance data of single file
+  readonly mSingleFilePrinter?: boolean;
+}
+
 /**
  * It records which files cannot be obfuscated (except for file name obfuscation) and their dependent files.
  * The names and properties exported in the dependent files are put into the whitelist.

@@ -218,6 +218,7 @@ export class ObConfigResolver {
     if (!sourceObConfig) {
       return new MergedConfig();
     }
+    startFilesEvent(EventList.RESOLVE_OBFUSCATION_CONFIGS);
     let enableObfuscation: boolean = sourceObConfig.selfConfig.ruleOptions.enable;
 
     let selfConfig: MergedConfig = new MergedConfig();
@@ -247,7 +248,8 @@ export class ObConfigResolver {
     }
     const mergedConfigs: MergedConfig = this.getMergedConfigs(selfConfig, this.dependencyConfigs);
     this.handleReservedArray(mergedConfigs);
-
+    endFilesEvent(EventList.RESOLVE_OBFUSCATION_CONFIGS);
+   
     let needKeepSystemApi =
       enableObfuscation &&
       (mergedConfigs.options.enablePropertyObfuscation ||
@@ -256,7 +258,9 @@ export class ObConfigResolver {
     if (needKeepSystemApi && sourceObConfig.obfuscationCacheDir) {
       const systemApiCachePath: string = path.join(sourceObConfig.obfuscationCacheDir, 'systemApiCache.json');
       if (isFileExist(systemApiCachePath)) {
+        startFilesEvent(EventList.GET_SYSTEM_API_CONFIGS_BY_CACHE);
         this.getSystemApiConfigsByCache(systemApiCachePath);
+        endFilesEvent(EventList.GET_SYSTEM_API_CONFIGS_BY_CACHE);
       } else {
         const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.SCAN_SYS_API);
         startFilesEvent(EventList.SCAN_SYSTEMAPI, performancePrinter.timeSumPrinter);
@@ -276,8 +280,10 @@ export class ObConfigResolver {
   public emitConsumerConfigFiles(): void {
     if (this.needConsumerConfigs) {
       let selfConsumerConfig = new MergedConfig();
+      startFilesEvent(EventList.GEN_CONSUMER_CONFIG);
       this.getSelfConsumerConfig(selfConsumerConfig);
       this.genConsumerConfigFiles(this.sourceObConfig, selfConsumerConfig, this.dependencyConfigs);
+      endFilesEvent(EventList.GEN_CONSUMER_CONFIG);
     }
   }
 

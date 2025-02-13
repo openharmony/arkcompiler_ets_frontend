@@ -56,7 +56,8 @@ import { FileUtils, BUNDLE, NORMALIZE } from '../../utils/FileUtils';
 import { NodeUtils } from '../../utils/NodeUtils';
 import { orignalFilePathForSearching, performancePrinter, ArkObfuscator } from '../../ArkObfuscator';
 import type { PathAndExtension, ProjectInfo } from '../../common/type';
-import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { endFilesEvent, endSingleFileEvent, startFilesEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileForMoreTimeEvent, startSingleFileForMoreTimeEvent } from '../../utils/PrinterTimeAndMemUtils';
 import { needToBeReserved } from '../../utils/TransformUtil';
 import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 namespace secharmony {
@@ -86,8 +87,10 @@ namespace secharmony {
    * @param option obfuscation options
    */
   const createRenameFileNameFactory = function (options: IOptions): TransformerFactory<Node> | null {
+    startFilesEvent(EventList.FILENAME_OBFUSCATION_INITIALIZATION);
     profile = options?.mRenameFileName;
     if (!profile || !profile.mEnable) {
+      endFilesEvent(EventList.FILENAME_OBFUSCATION_INITIALIZATION);
       return null;
     }
 
@@ -98,6 +101,7 @@ namespace secharmony {
     const tempReservedName: string[] = ['.', '..', ''];
     configReservedFileNameOrPath.map(fileNameOrPath => {
       if (!fileNameOrPath || fileNameOrPath.length === 0) {
+        endFilesEvent(EventList.FILENAME_OBFUSCATION_INITIALIZATION);
         return;
       }
       const directories = FileUtils.splitFilePath(fileNameOrPath);
@@ -112,6 +116,7 @@ namespace secharmony {
     });
     reservedFileNames = new Set<string>(tempReservedName);
     universalReservedFileNames = profile?.mUniversalReservedFileNames ?? [];
+    endFilesEvent(EventList.FILENAME_OBFUSCATION_INITIALIZATION);
     return renameFileNameFactory;
 
     function renameFileNameFactory(context: TransformationContext): Transformer<Node> {
@@ -136,19 +141,26 @@ namespace secharmony {
           const mangledAbsPath: string = getMangleCompletePath(orignalAbsPath);
           ret.fileName = mangledAbsPath;
         }
-        let parentNodes = setParentRecursive(ret, true);
         endSingleFileEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.UPDATE_PARENT_NODE);
+        let parentNodes = setParentRecursive(ret, true);
+        endSingleFileEvent(EventList.UPDATE_PARENT_NODE);
         ArkObfuscator.stopRecordStage(recordInfo);
         return parentNodes;
       }
 
       function updateNodeInfo(node: Node): Node {
         if (isImportDeclaration(node) || isExportDeclaration(node)) {
-          return updateImportOrExportDeclaration(node);
+          startSingleFileForMoreTimeEvent(EventList.UPDATE_IMPORT_OR_EXPORT);
+          const updatedNode = updateImportOrExportDeclaration(node);
+          endSingleFileForMoreTimeEvent(EventList.UPDATE_IMPORT_OR_EXPORT);
+          return updatedNode;
         }
-
         if (isImportCall(node)) {
-          return tryUpdateDynamicImport(node);
+          startSingleFileForMoreTimeEvent(EventList.UPDATE_DYNAMIC_IMPORT);
+          const tryUpdatedNode = tryUpdateDynamicImport(node);
+          endSingleFileForMoreTimeEvent(EventList.UPDATE_DYNAMIC_IMPORT);
+          return tryUpdatedNode;
         }
 
         return visitEachChild(node, updateNodeInfo, context);

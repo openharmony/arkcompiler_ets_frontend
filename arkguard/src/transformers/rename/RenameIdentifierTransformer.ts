@@ -100,7 +100,8 @@ import {
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
 import {performancePrinter, ArkObfuscator, cleanFileMangledNames} from '../../ArkObfuscator';
-import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { EventList, endSingleFileForMoreTimeEvent, startSingleFileForMoreTimeEvent } from '../../utils/PrinterTimeAndMemUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
 import {
   AtKeepCollections,
@@ -144,7 +145,9 @@ namespace secharmony {
     return renameIdentifierFactory;
 
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
+      startSingleFileEvent(EventList.INIT_WHITELIST);
       initWhitelist();
+      endSingleFileEvent(EventList.INIT_WHITELIST);
       let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
       let mangledPropertyParameterSymbolNames: Map<Declaration, MangledSymbolInfo> = new Map<Declaration, MangledSymbolInfo>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
@@ -210,11 +213,15 @@ namespace secharmony {
 
         const obfuscateNodesRecordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.OBFUSCATE_NODES);
         startSingleFileEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.RENAME_IDENTIFIERS);
         let updatedNode: Node = renameIdentifiers(node);
+        endSingleFileEvent(EventList.RENAME_IDENTIFIERS);
 
         // obfuscate property parameter declaration
         if (profile.mRenameProperties) {
+          startSingleFileEvent(EventList.VISIT_PROPERTY_PARAMETER);
           updatedNode = visitPropertyParameter(updatedNode);
+          endSingleFileEvent(EventList.VISIT_PROPERTY_PARAMETER);
         }
 
         let parentNodes = setParentRecursive(updatedNode, true);
@@ -261,7 +268,9 @@ namespace secharmony {
           });
         }
 
+        startSingleFileEvent(EventList.RENAME);
         renames(scope, scope.defs, globalGenerator);
+        endSingleFileEvent(EventList.RENAME);   
       }
 
       // process property parameters symbols in class scope
@@ -583,11 +592,13 @@ namespace secharmony {
        * @param node
        */
       function renameIdentifiers(node: Node): Node {
+        startSingleFileForMoreTimeEvent(EventList.HANDLE_POSITION_INFO);
         let needHandlePositionInfo: boolean = isFunctionLike(node) || nodeHasFunctionLikeChild(node);
         if (needHandlePositionInfo) {
           // Obtain line info for nameCache.
           handlePositionInfo(node);
         }
+        endSingleFileForMoreTimeEvent(EventList.HANDLE_POSITION_INFO);
 
         if (!isIdentifier(node) || !node.parent) {
           return visitEachChild(node, renameIdentifiers, context);
@@ -597,7 +608,10 @@ namespace secharmony {
           return updateLabelNode(node);
         }
 
-        return updateNameNode(node);
+        startSingleFileForMoreTimeEvent(EventList.UPDATE_NAME_NODE);
+        const updatedNode = updateNameNode(node);   
+        endSingleFileForMoreTimeEvent(EventList.UPDATE_NAME_NODE);
+        return updatedNode;
       }
 
       /**

@@ -15,8 +15,9 @@
 
 import * as fs from 'fs';
 import type { IOptions } from '../configs/IOptions';
-import { performancePrinter } from '../ArkObfuscator';
+import { performancePrinter, performanceTimeAndMemPrinter } from '../ArkObfuscator';
 import type { IPrinterOption } from '../configs/INameObfuscationOption';
+import { eventListTimeAndMemValues } from './PrinterTimeAndMemUtils';
 
 export enum EventList {
   OBFUSCATION_INITIALIZATION = 'Obfuscation initialization',
@@ -88,6 +89,8 @@ export interface TimeAndMemInfo {
   memoryUsage: number;
   filePath?: string;
 }
+
+const eventListValues = new Set<string>(Object.values(EventList));
 
 const MILLISECOND_TO_SECOND = 1000;
 const BYTE_TO_MB = 1024 * 1024;
@@ -365,7 +368,11 @@ export function blockPrinter(): void {
  * Start recording singleFilePrinter event
  */
 export function startSingleFileEvent(eventName: string, timeSumPrinter?: TimeSumPrinter, currentFile?: string): void {
-  performancePrinter.singleFilePrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+  // The second conditional statement ensures that when the input eventName is a path, the current statement is executed
+  if (eventListValues.has(eventName) || !eventListTimeAndMemValues.has(eventName)) {
+    performancePrinter.singleFilePrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+  }
+  performanceTimeAndMemPrinter.singleFilePrinter?.startEvent(eventName);
 }
 
 /**
@@ -377,14 +384,20 @@ export function endSingleFileEvent(
   isFilesPrinter?: boolean,
   triggerSingleFilePrinter?: boolean,
 ): void {
-  performancePrinter.singleFilePrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+  if (eventListValues.has(eventName) || !eventListTimeAndMemValues.has(eventName)) {
+    performancePrinter.singleFilePrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+  }
+  performanceTimeAndMemPrinter.singleFilePrinter?.endEvent(eventName);
 }
 
 /**
  * Start recording filesPrinter event
  */
 export function startFilesEvent(eventName: string, timeSumPrinter?: TimeSumPrinter, currentFile?: string): void {
-  performancePrinter.filesPrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+  if (eventListValues.has(eventName) || !eventListTimeAndMemValues.has(eventName)) {
+    performancePrinter.filesPrinter?.startEvent(eventName, timeSumPrinter, currentFile);
+  }
+  performanceTimeAndMemPrinter.filesPrinter?.startEvent(eventName);
 }
 
 /**
@@ -396,7 +409,10 @@ export function endFilesEvent(
   isFilesPrinter?: boolean,
   triggerSingleFilePrinter?: boolean,
 ): void {
-  performancePrinter.filesPrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+  if (eventListValues.has(eventName) || !eventListTimeAndMemValues.has(eventName)) {
+    performancePrinter.filesPrinter?.endEvent(eventName, timeSumPrinter, isFilesPrinter, triggerSingleFilePrinter);
+  }
+  performanceTimeAndMemPrinter.filesPrinter?.endEvent(eventName);
 }
 
 /**

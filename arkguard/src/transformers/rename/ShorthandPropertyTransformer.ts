@@ -44,7 +44,8 @@ import {TransformerOrder} from '../TransformPlugin';
 import type {IOptions} from '../../configs/IOptions';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ArkObfuscator, performancePrinter} from '../../ArkObfuscator';
-import { EventList, endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { endSingleFileEvent, startSingleFileEvent } from '../../utils/PrinterUtils';
+import { EventList } from '../../utils/PrinterTimeAndMemUtils';
 import { MemoryDottingDefine } from '../../utils/MemoryDottingDefine';
 
 namespace secharmony {
@@ -66,7 +67,9 @@ namespace secharmony {
 
         const recordInfo = ArkObfuscator.recordStage(MemoryDottingDefine.SHORTHAND_OBFUSCATION);
         startSingleFileEvent(EventList.SHORT_HAND_OBFUSCATION, performancePrinter.timeSumPrinter);
+        startSingleFileEvent(EventList.TRANSFORM_SHORT_HAND_PROPERTY);
         let ret = transformShortHandProperty(node);
+        endSingleFileEvent(EventList.TRANSFORM_SHORT_HAND_PROPERTY);
         let parentNodes = setParentRecursive(ret, true);
         endSingleFileEvent(EventList.SHORT_HAND_OBFUSCATION, performancePrinter.timeSumPrinter);
         ArkObfuscator.stopRecordStage(recordInfo);
