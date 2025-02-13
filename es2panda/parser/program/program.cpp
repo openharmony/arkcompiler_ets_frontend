@@ -39,7 +39,7 @@ Program::Program(Program &&other)
       formatedRecordName_(other.formatedRecordName_),
       kind_(other.kind_),
       extension_(other.extension_),
-      lineIndex_(other.lineIndex_),
+      lineIndex_(std::move(other.lineIndex_)),
       moduleRecord_(other.moduleRecord_),
       typeModuleRecord_(other.typeModuleRecord_),
       patchFixHelper_(other.patchFixHelper_),
