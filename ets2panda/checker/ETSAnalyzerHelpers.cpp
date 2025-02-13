@@ -846,7 +846,7 @@ bool CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
                                         checker::TypeRelationFlag::DIRECT_RETURN | checker::TypeRelationFlag::NO_THROW)
                  // CC-OFFNXT(G.FMT.02) project code style
                  .IsAssignable()) {
-            checker->LogTypeError({"Return statement type is not compatible with the enclosing method's return type."},
+            checker->LogTypeError("Return statement type is not compatible with the enclosing method's return type.",
                                   stArgument->Start());
             return false;
         }

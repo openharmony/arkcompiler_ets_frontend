@@ -88,7 +88,8 @@ void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_v
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error(ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), msg, loc.line, loc.col);
+    throw util::ThrowableDiagnostic(util::DiagnosticType::SYNTAX, msg, program_->SourceFilePath().Utf8(), loc.line,
+                                    loc.col);
 }
 
 void VarBinder::IdentifierAnalysis()

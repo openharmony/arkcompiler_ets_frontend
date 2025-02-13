@@ -18,13 +18,14 @@
 #ifndef ES2PANDA_UTIL_DIAGNOSTIC_KIND_H
 #define ES2PANDA_UTIL_DIAGNOSTIC_KIND_H
 
-#include "es2panda.h"
+#include "util/diagnostic.h"
+#include <tuple>
 
 namespace ark::es2panda::diagnostic {
 
 class DiagnosticKind {
 public:
-    constexpr DiagnosticKind(ErrorType type, uint32_t id, std::string_view message) :
+    constexpr DiagnosticKind(util::DiagnosticType type, uint32_t id, std::string_view message) :
         type_(type), id_(id), message_(message) {}
 
     bool operator==(const DiagnosticKind &other) const
@@ -37,7 +38,7 @@ public:
         return std::tie(type_, id_) < std::tie(other.type_, other.id_);
     }
 
-    ErrorType Type() const
+    util::DiagnosticType Type() const
     {
         return type_;
     }
@@ -53,7 +54,7 @@ public:
     }
 
 private:
-    const ErrorType type_;
+    const util::DiagnosticType type_;
     const uint32_t id_;
     const std::string_view message_;
 };
@@ -64,7 +65,7 @@ private:
 %     :fatal => 'FATAL'
 % }
 % Diagnostic::diagnostics.each do |desc|
-    constexpr static DiagnosticKind <%= desc.name %> {ErrorType::<%= error_types[desc.type] %>, <%= desc.id %>, "<%= desc.message %>"};
+    constexpr static DiagnosticKind <%= desc.name %> {util::DiagnosticType::<%= error_types[desc.type] %>, <%= desc.id %>, "<%= desc.message %>"};
 % end
 } // namespace ark::es2panda::diagnostic
 

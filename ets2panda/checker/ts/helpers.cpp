@@ -276,7 +276,7 @@ bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbi
     return false;
 }
 
-void TSChecker::ThrowTypeError(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &pos)
+void TSChecker::ThrowTypeError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos)
 {
     DiagnosticEngine().ThrowSemanticError(Program(), list, pos);
 }
@@ -483,11 +483,9 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
 
     varbinder::Decl *decl = var->Declaration();
 
-    TypeStackElement tse(
-        this, decl->Node(),
-        std::initializer_list<DiagnosticMessageElement> {
-            "'", var->Name(), "' is referenced directly or indirectly in its ", "own initializer ot type annotation."},
-        decl->Node()->Start());
+    util::DiagnosticMessageParams params {"'", var->Name(), "' is referenced directly or indirectly in its ",
+                                          "own initializer ot type annotation."};
+    TypeStackElement tse(this, decl->Node(), params, decl->Node()->Start());
     if (tse.HasTypeError()) {
         return GlobalErrorType();
     }

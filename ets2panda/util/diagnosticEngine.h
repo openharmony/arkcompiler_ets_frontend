@@ -16,41 +16,14 @@
 #ifndef ES2PANDA_UTIL_DIAGNOSTIC_ENGINE_H
 #define ES2PANDA_UTIL_DIAGNOSTIC_ENGINE_H
 
+#include <memory>
+#include <utility>
 #include "es2panda.h"
-#include "lexer/token/tokenType.h"
 #include "generated/diagnostic.h"
+#include "macros.h"
+#include "util/diagnostic.h"
 
-namespace ark::es2panda::lexer {
-class SourcePosition;
-class SourceLocation;
-}  // namespace ark::es2panda::lexer
-
-namespace ark::es2panda::parser {
-class Program;
-}  // namespace ark::es2panda::parser
-
-namespace ark::es2panda::checker {
-class Type;
-class Signature;
-}  // namespace ark::es2panda::checker
 namespace ark::es2panda::util {
-
-class AsSrc {
-public:
-    explicit AsSrc(const checker::Type *type) : type_(const_cast<checker::Type *>(type)) {}
-
-    const checker::Type *GetType() const
-    {
-        return type_;
-    }
-
-private:
-    checker::Type *type_;
-};
-
-using DiagnosticMessageElement = std::variant<const checker::Type *, AsSrc, char *, util::StringView, lexer::TokenType,
-                                              size_t, const checker::Signature *>;
-using DiagnosticMessageParams = std::initializer_list<DiagnosticMessageElement>;
 
 class DiagnosticPrinter {
 public:
@@ -59,7 +32,7 @@ public:
     NO_MOVE_SEMANTIC(DiagnosticPrinter);
     virtual ~DiagnosticPrinter() = default;
 
-    virtual void Print(const Error &diagnostic) const = 0;
+    virtual void Print(const DiagnosticBase &diagnostic) const = 0;
 };
 
 class CLIDiagnosticPrinter : public DiagnosticPrinter {
@@ -69,8 +42,10 @@ public:
     NO_MOVE_SEMANTIC(CLIDiagnosticPrinter);
     ~CLIDiagnosticPrinter() override = default;
 
-    void Print(const Error &diagnostic) const override;
+    void Print(const DiagnosticBase &diagnostic) const override;
 };
+
+using DiagnosticStorage = std::vector<std::unique_ptr<DiagnosticBase>>;
 
 class DiagnosticEngine {
 public:
@@ -87,50 +62,59 @@ public:
     }
 
     // NOTE(schernykh): should be removed
-    Error GetAnyError() const;
+    const DiagnosticBase &GetAnyError() const;
 
-    [[nodiscard]] bool IsAnyError(std::optional<ErrorType> errorType = std::nullopt) const noexcept;
-    [[nodiscard]] std::size_t ErrorCount(std::optional<ErrorType> errorType = std::nullopt) const noexcept;
+    [[nodiscard]] bool IsAnyError() const noexcept;
 
     template <typename... T>
-    void LogDiagnostic(const es2panda::diagnostic::DiagnosticKind *diagnosticKind, T &&...args)
+    void LogDiagnostic(T &&...args)
     {
-        diagnostics_[diagnosticKind->Type()].emplace_back(diagnosticKind, std::forward<T>(args)...);
+        LogDiagnostic<Diagnostic>(std::forward<T>(args)...);
     }
-    // NOTE(schernykh): should be removed
-    void Log(const Error &error);
 
-    // NOTE(schernykh): revisit after implementing yaml files
-    void LogSyntaxError(const parser::Program *program, std::string_view errorMessage,
-                        const lexer::SourceLocation &pos);
-    void LogSyntaxError(const parser::Program *program, std::string_view errorMessage,
-                        const lexer::SourcePosition &pos);
-    void LogSyntaxError(const parser::Program *program, DiagnosticMessageParams errorMessageParts,
-                        const lexer::SourcePosition &pos);
-    void LogFatalError(std::string_view errorMessage);
-    void LogFatalError(DiagnosticMessageParams errorMessageParts);
-    void LogFatalError(const parser::Program *program, std::string_view errorMessage, const lexer::SourcePosition &pos);
-    void LogFatalError(const parser::Program *program, DiagnosticMessageParams errorMessageParts,
-                       const lexer::SourcePosition &pos);
-    void LogSemanticError(const parser::Program *program, std::string_view errorMessage,
-                          const lexer::SourcePosition &pos);
-    void LogSemanticError(const parser::Program *program, DiagnosticMessageParams errorMessageParts,
-                          const lexer::SourcePosition &pos);
-    void LogWarning(std::string_view errorMessage);
-    void LogWarning(DiagnosticMessageParams errorMessageParts);
-    void LogWarning(const parser::Program *program, std::string_view errorMessage, const lexer::SourcePosition &pos);
-    void LogWarning(const parser::Program *program, DiagnosticMessageParams errorMessageParts,
-                    const lexer::SourcePosition &pos);
+    // NOTE(schernykh): should be removed
+    void Log([[maybe_unused]] const ThrowableDiagnostic &error)
+    {
+        printer_->Print(error);
+    };
+
+    template <typename... T>
+    void LogSyntaxError(T &&...args)
+    {
+        LogThrowableDiagnostic(DiagnosticType::SYNTAX, std::forward<T>(args)...);
+    }
+    template <typename... T>
+    void LogSemanticError(T &&...args)
+    {
+        LogThrowableDiagnostic(DiagnosticType::SEMANTIC, std::forward<T>(args)...);
+    }
+    template <typename... T>
+    void LogFatalError(T &&...args)
+    {
+        LogThrowableDiagnostic(DiagnosticType::FATAL, std::forward<T>(args)...);
+    }
+    template <typename... T>
+    void LogWarning(T &&...args)
+    {
+        LogThrowableDiagnostic(DiagnosticType::WARNING, std::forward<T>(args)...);
+    }
 
     // NOTE(schernykh): should not be able from STS
-    [[noreturn]] void ThrowFatalError(const parser::Program *program, std::string_view errorMessage,
-                                      const lexer::SourcePosition &pos);
-    [[noreturn]] void ThrowFatalError(const parser::Program *program, DiagnosticMessageParams errorMessageParts,
-                                      const lexer::SourcePosition &pos);
-    [[noreturn]] void ThrowSemanticError(const parser::Program *program, std::string_view errorMessage,
-                                         const lexer::SourcePosition &pos);
-    [[noreturn]] void ThrowSemanticError(const parser::Program *program, DiagnosticMessageParams errorMessageParts,
-                                         const lexer::SourcePosition &pos);
+    template <typename... T>
+    [[noreturn]] void ThrowSyntaxError(T &&...args)
+    {
+        ThrowDiagnostic(DiagnosticType::SYNTAX, std::forward<T>(args)...);
+    }
+    template <typename... T>
+    [[noreturn]] void ThrowSemanticError(T &&...args)
+    {
+        ThrowDiagnostic(DiagnosticType::SEMANTIC, std::forward<T>(args)...);
+    }
+    template <typename... T>
+    [[noreturn]] void ThrowFatalError(T &&...args)
+    {
+        ThrowDiagnostic(DiagnosticType::FATAL, std::forward<T>(args)...);
+    }
 
     void FlushDiagnostic();
     void SetWError(bool wError)
@@ -138,22 +122,36 @@ public:
         wError_ = wError;
     }
 
-    std::vector<Error> &GetDiagnosticStorage(ErrorType type);
+    const DiagnosticStorage &GetDiagnosticStorage(DiagnosticType type);
 
 private:
-    bool IsError(ErrorType type) const;
-    std::vector<Error> GetAllDiagnostic();
-    std::string Format(DiagnosticMessageParams list);
-    void LogDiagnostic(ErrorType type, const parser::Program *program, std::string_view errorMessage,
-                       const lexer::SourcePosition &pos);
-    void LogDiagnostic(ErrorType type, const parser::Program *program, std::string_view errorMessage,
-                       const lexer::SourceLocation &pos);
-    [[noreturn]] void ThrowDiagnostic(ErrorType type, const parser::Program *program, std::string_view errorMessage,
-                                      const lexer::SourcePosition &pos);
-    void WriteLog(const Error &error);
+    template <typename DIAGNOSTIC, typename... T>
+    void LogDiagnostic(T &&...args)
+    {
+        auto diag = std::make_unique<DIAGNOSTIC>(std::forward<T>(args)...);
+        auto type = diag->Type();
+        diagnostics_[type].push_back(std::move(diag));
+    }
+
+    template <typename... T>
+    void LogThrowableDiagnostic(T &&...args)
+    {
+        LogDiagnostic<ThrowableDiagnostic>(std::forward<T>(args)...);
+    }
+
+    template <typename... T>
+    [[noreturn]] void ThrowDiagnostic(T &&...args) const
+    {
+        Throw(ThrowableDiagnostic {std::forward<T>(args)...});
+    }
+    [[noreturn]] void Throw(ThrowableDiagnostic diag) const;
+
+    bool IsError(DiagnosticType type) const;
+    DiagnosticStorage GetAllDiagnostic();
+    void WriteLog(const DiagnosticBase &error);
 
 private:
-    std::array<std::vector<Error>, static_cast<size_t>(ErrorType::COUNT)> diagnostics_;
+    std::array<DiagnosticStorage, static_cast<size_t>(DiagnosticType::COUNT)> diagnostics_;
     std::unique_ptr<const DiagnosticPrinter> printer_;
     bool wError_ {false};
 };

@@ -77,7 +77,7 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
         return;
     }
 
-    std::ignore = TypeError(ident->Variable(), {"This expression is not callable."}, ident->Start());
+    std::ignore = TypeError(ident->Variable(), "This expression is not callable.", ident->Start());
 }
 
 void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident)
@@ -325,8 +325,8 @@ bool ETSChecker::ValidateTupleMinElementSize(ir::ArrayExpression *const arrayExp
     }
 
     if (size < static_cast<size_t>(tuple->GetMinTupleSize())) {
-        LogTypeError({"Few elements in array initializer for tuple with size of ",
-                      static_cast<size_t>(tuple->GetMinTupleSize())},
+        LogTypeError(util::DiagnosticMessageParams {"Few elements in array initializer for tuple with size of ",
+                                                    static_cast<size_t>(tuple->GetMinTupleSize())},
                      arrayExpr->Start());
         return false;
     }

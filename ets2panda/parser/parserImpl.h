@@ -178,9 +178,10 @@ protected:
     friend class ETSNolintParser;
     friend class lexer::RegExpParser;
 
-    void LogError(ErrorType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
-    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams = {});
-    void LogError(const diagnostic::DiagnosticKind &diagnostic, std::vector<std::string> diagnosticParams,
+    void LogError(util::DiagnosticType errorType, std::string_view errorMessage, const lexer::SourcePosition &pos);
+    void LogError(const diagnostic::DiagnosticKind &diagnostic,
+                  const util::DiagnosticMessageParams &diagnosticParams = {});
+    void LogError(const diagnostic::DiagnosticKind &diagnostic, const util::DiagnosticMessageParams &diagnosticParams,
                   const lexer::SourcePosition &pos);
     void LogExpectedToken(lexer::TokenType tokenType);
     void LogUnexpectedToken(lexer::TokenType tokenType);
@@ -188,9 +189,9 @@ protected:
 
 public:
     void LogSyntaxError(std::string_view errorMessage);
-    void LogSyntaxError(util::DiagnosticMessageParams list);
+    void LogSyntaxError(const util::DiagnosticMessageParams &list);
     void LogSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos);
-    void LogSyntaxError(util::DiagnosticMessageParams list, const lexer::SourcePosition &pos);
+    void LogSyntaxError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &pos);
 
 protected:
     void LogParameterModifierError(ir::ModifierFlags status);

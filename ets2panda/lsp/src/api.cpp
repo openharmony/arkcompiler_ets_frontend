@@ -80,9 +80,9 @@ extern "C" DiagnosticReferences GetSemanticDiagnostics(char const *fileName)
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
-    auto diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(ErrorType::SEMANTIC);
+    const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SEMANTIC);
     for (const auto &diagnostic : diagnostics) {
-        result.diagnostic.push_back(CreateDiagnosticForError(context, diagnostic));
+        result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
     }
     initializer.DestroyContext(context);
     return result;
@@ -94,9 +94,9 @@ extern "C" DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
     auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
     DiagnosticReferences result {};
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
-    auto diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(ErrorType::SYNTAX);
+    const auto &diagnostics = ctx->diagnosticEngine->GetDiagnosticStorage(util::DiagnosticType::SYNTAX);
     for (const auto &diagnostic : diagnostics) {
-        result.diagnostic.push_back(CreateDiagnosticForError(context, diagnostic));
+        result.diagnostic.push_back(CreateDiagnosticForError(context, *diagnostic));
     }
     initializer.DestroyContext(context);
     return result;

@@ -463,6 +463,7 @@ libes2panda_sources = [
   "parser/statementTSParser.cpp",
   "util/arktsconfig.cpp",
   "util/bitset.cpp",
+  "util/diagnostic.cpp",
   "util/diagnosticEngine.cpp",
   "util/dtoa_helper.cpp",
   "util/errorRecovery.cpp",

@@ -304,8 +304,8 @@ public:
     bool IsLegalBoxedPrimitiveConversion(Type *target, Type *source);
     bool IsSupertypeOf(Type *super, Type *sub);
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
-    void RaiseError(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &loc) const;
-    void LogError(std::initializer_list<DiagnosticMessageElement> list, const lexer::SourcePosition &loc) const;
+    void RaiseError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
+    void LogError(const util::DiagnosticMessageParams &list, const lexer::SourcePosition &loc) const;
 
     bool Result(bool res)
     {

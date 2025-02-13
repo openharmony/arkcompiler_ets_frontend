@@ -756,7 +756,7 @@ bool ETSChecker::CheckAmbientAnnotationFieldInitializer(ir::Expression *init, ir
             if (CheckAmbientAnnotationFieldInitializerValue(init, expected)) {
                 break;
             }
-            LogTypeError({"The initial value does not match the expected value."}, init->Start());
+            LogTypeError("The initial value does not match the expected value.", init->Start());
             return false;
         }
         default:
@@ -915,9 +915,10 @@ void ETSChecker::CheckAnnotationPropertyType(ir::ClassProperty *property)
 {
     // typeAnnotation check
     if (!ValidateAnnotationPropertyType(property->TsType())) {
-        LogTypeError({"Invalid annotation field type. Only numeric, boolean, string, enum, or "
-                      "arrays of these types are permitted for annotation fields."},
-                     property->Start());
+        LogTypeError(
+            "Invalid annotation field type. Only numeric, boolean, string, enum, or "
+            "arrays of these types are permitted for annotation fields.",
+            property->Start());
     }
 
     // The type of the Initializer has been check in the parser,
@@ -1361,9 +1362,9 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
             Type *const argumentType = arrowFuncExpr->Check(this);
             const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(parameterType);
-            const std::initializer_list<DiagnosticMessageElement> list = {
-                "Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1};
-            LogTypeError(list, arrowFuncExpr->Start());
+            LogTypeError(
+                {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1},
+                arrowFuncExpr->Start());
             return false;
         }
 

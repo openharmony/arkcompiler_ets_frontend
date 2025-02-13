@@ -60,7 +60,7 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
     if (program == nullptr) {
         const auto &err = compiler.GetError();
 
-        if (err.Type() == ErrorType::INVALID) {
+        if (err.Type() == util::DiagnosticType::INVALID) {
             if (diagnosticEngine.IsAnyError()) {
                 return 1;
             }
@@ -88,7 +88,7 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
     for (auto &[src, dst] : compilationList) {
         std::ifstream inputStream(src);
         if (inputStream.fail()) {
-            diagnosticEngine.LogFatalError({"Failed to open file: ", util::StringView(src)});
+            diagnosticEngine.LogFatalError(util::DiagnosticMessageParams {"Failed to open file: ", src});
             return 1;
         }
 
@@ -103,8 +103,7 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
 
         auto res = CompileFromSource(compiler, input, *options, diagnosticEngine);
         if (res != 0) {
-            diagnosticEngine.LogFatalError(
-                {"Failed to compile from ", util::StringView(src), " to ", util::StringView(dst)});
+            diagnosticEngine.LogFatalError(util::DiagnosticMessageParams {"Failed to compile from ", src, " to ", dst});
             overallRes |= static_cast<unsigned>(res);
         }
     }
@@ -119,8 +118,9 @@ static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<st
     for (auto &name : names) {
         auto plugin = util::Plugin(util::StringView {name});
         if (!plugin.IsOk()) {
-            diagnosticEngine.LogFatalError({"Failed to load plugin ", util::StringView(name)});
-            return {};
+            diagnosticEngine.LogFatalError(
+                util::DiagnosticMessageParams {"Failed to load plugin ", util::StringView(name)});
+            return std::nullopt;
         }
         plugin.Initialize();
         res.push_back(std::move(plugin));

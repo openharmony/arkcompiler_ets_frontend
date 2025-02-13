@@ -961,7 +961,7 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
         }
     }
 
-    checker->LogTypeError({"Cannot deduce call signature"}, ast->Start());
+    checker->LogTypeError("Cannot deduce call signature", ast->Start());
     return nullptr;
 }
 

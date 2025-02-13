@@ -470,8 +470,8 @@ ir::AstNode *ETSParser::ParseInnerConstructorDeclaration(ir::ModifierFlags membe
     if ((memberModifiers & (~(ir::ModifierFlags::ACCESS | ir::ModifierFlags::DECLARE | ir::ModifierFlags::NATIVE))) !=
         0) {
         LogSyntaxError(
-            {"The modifier for a constructor should be limited to access modifiers (private, internal, protected, "
-             "public),and 'native' modifiers."});
+            "The modifier for a constructor should be limited to access modifiers (private, internal, protected, "
+            "public),and 'native' modifiers.");
     }
     auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     memberModifiers |= ir::ModifierFlags::CONSTRUCTOR;

@@ -31,8 +31,7 @@ public:
     };
     // NOLINTEND(cppcoreguidelines-pro-type-member-init)
 
-    CastingContext(TypeRelation *relation, std::initializer_list<DiagnosticMessageElement> list,
-                   ConstructorData &&data);
+    CastingContext(TypeRelation *relation, const util::DiagnosticMessageParams &list, ConstructorData &&data);
 
     [[nodiscard]] bool UncheckedCast() const noexcept;
 

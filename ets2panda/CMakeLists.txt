@@ -583,6 +583,7 @@ set(ES2PANDA_LIB_SRC
   util/arktsconfig.cpp
   util/bitset.cpp
   util/dtoa_helper.cpp
+  util/diagnostic.cpp
   util/diagnosticEngine.cpp
   util/errorRecovery.cpp
   util/helpers.cpp

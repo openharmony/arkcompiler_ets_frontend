@@ -192,9 +192,9 @@ ETSEnumType *ETSEnumType::LookupConstant(ETSChecker *const checker, const ir::Ex
     if (!IsEnumTypeExpression(expression)) {
         if (expression->IsIdentifier() &&
             expression->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
-            checker->LogTypeError({"Cannot refer to enum members through type alias."}, prop->Start());
+            checker->LogTypeError("Cannot refer to enum members through type alias.", prop->Start());
         } else if (IsLiteralType()) {
-            checker->LogTypeError({"Cannot refer to enum members through variable."}, prop->Start());
+            checker->LogTypeError("Cannot refer to enum members through variable.", prop->Start());
         } else {
             checker->LogTypeError({"Enum constant does not have property '", prop->Name(), "'."}, prop->Start());
         }
