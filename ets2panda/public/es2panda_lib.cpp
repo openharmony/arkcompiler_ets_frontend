@@ -787,6 +787,12 @@ extern "C" char *Es2pandaEnumToString(es2panda_Context *ctx, Es2pandaEnum id)
     return StringViewToCString(allocator, es2panda::util::gen::ast_verifier::ToString(E2pToIrEnum(id)));
 }
 
+extern "C" es2panda_AstNode *DeclarationFromIdentifier([[maybe_unused]] es2panda_Context *ctx, es2panda_AstNode *node)
+{
+    auto E2pNode = reinterpret_cast<ir::Identifier *>(node);
+    return reinterpret_cast<es2panda_AstNode *>(compiler::DeclarationFromIdentifier(E2pNode));
+}
+
 es2panda_Impl g_impl = {
     ES2PANDA_LIB_VERSION,
 
@@ -831,6 +837,7 @@ es2panda_Impl g_impl = {
     AstNodeRecheck,
     Es2pandaEnumFromString,
     Es2pandaEnumToString,
+    DeclarationFromIdentifier,
 
 #include "generated/es2panda_lib/es2panda_lib_list.inc"
 

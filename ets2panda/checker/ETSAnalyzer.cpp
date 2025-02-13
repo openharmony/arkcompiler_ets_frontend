@@ -1204,7 +1204,10 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
                                                   bool isUnionTypeWithFunctionalInterface) const
 {
     if (calleeType->IsETSExtensionFuncHelperType()) {
-        return ResolveCallForETSExtensionFuncHelperType(calleeType->AsETSExtensionFuncHelperType(), checker, expr);
+        auto *signature =
+            ResolveCallForETSExtensionFuncHelperType(calleeType->AsETSExtensionFuncHelperType(), checker, expr);
+        GetChecker()->AsETSChecker()->UpdateDeclarationFromSignature(expr, signature);
+        return signature;
     }
 
     if (checker->IsExtensionETSFunctionType(calleeType)) {
