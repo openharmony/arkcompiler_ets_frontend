@@ -2200,7 +2200,7 @@ bool ETSChecker::CheckNumberOfTypeArguments(ETSObjectType *const type, ir::TSTyp
     }
 
     size_t minimumTypeArgs = std::count_if(typeParams.begin(), typeParams.end(), [](Type *param) {
-        return param->AsETSTypeParameter()->GetDefaultType() == nullptr;
+        return param->IsETSTypeParameter() && param->AsETSTypeParameter()->GetDefaultType() == nullptr;
     });
     if (typeArgs == nullptr && minimumTypeArgs > 0) {
         LogTypeError({"Type '", type, "' is generic but type argument were not provided."}, pos);

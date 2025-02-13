@@ -93,7 +93,14 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     }
 
     while (typeArgTypes.size() < type->TypeArguments().size()) {
-        auto *defaultType = type->TypeArguments().at(typeArgTypes.size())->AsETSTypeParameter()->GetDefaultType();
+        Type *defaultType = nullptr;
+
+        if (type->TypeArguments().at(typeArgTypes.size())->IsETSTypeParameter()) {
+            defaultType = type->TypeArguments().at(typeArgTypes.size())->AsETSTypeParameter()->GetDefaultType();
+        } else {
+            defaultType = type->TypeArguments().at(typeArgTypes.size());
+        }
+
         if (defaultType != nullptr && !defaultType->IsTypeError()) {
             typeArgTypes.emplace_back(defaultType);
         } else {

@@ -248,6 +248,7 @@ runtime/ets/struct_implements.sts
 runtime/ets/top_level_03.sts
 ast/compiler/ets/DeclareIndexerTest.sts
 ast/parser/ets/import_tests/import_class_with_static_field/import_class_with_static_field.sts
+runtime/ets/ArrowFunctionWithNestedNameSpace.sts
 
 #Issue 21065
 runtime/ets/implementsClassPropertyUnionType1.sts
