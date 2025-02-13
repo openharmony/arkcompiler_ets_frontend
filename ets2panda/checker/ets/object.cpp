@@ -2251,6 +2251,9 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
     if (classType->SuperType() == nullptr) {
         return;
     }
+    if (classType->SuperType()->IsETSDynamicType()) {
+        LogError(diagnostic::EXTEND_DYNAMIC, {classDef->Ident()->Name()}, classDef->Start());
+    }
 
     const auto &allProps = classType->GetAllProperties();
 

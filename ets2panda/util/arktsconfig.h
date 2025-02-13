@@ -39,7 +39,6 @@
 #ifndef ARKTSCONFIG_USE_FILESYSTEM
 #include <dirent.h>
 #include <sys/types.h>
-#include <unistd.h>
 #else
 #if __has_include(<filesystem>)
 #include <filesystem>

@@ -264,12 +264,18 @@ void ImportExportDecls::VerifyType(ir::Statement *stmt, std::set<util::StringVie
                                    std::map<util::StringView, ir::AstNode *> &typesMap)
 {
     if (stmt->IsClassDeclaration()) {
+        if (!stmt->IsDeclare() && stmt->AsClassDeclaration()->Definition()->Language().IsDynamic()) {
+            parser_->LogError(diagnostic::EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE, {}, stmt->Start());
+        }
         typesMap.insert({stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt});
         return HandleSimpleType(exportedTypes, exportedStatements, stmt,
                                 stmt->AsClassDeclaration()->Definition()->Ident()->Name(), stmt->Start());
     }
 
     if (stmt->IsTSInterfaceDeclaration()) {
+        if (!stmt->IsDeclare() && stmt->AsTSInterfaceDeclaration()->Language().IsDynamic()) {
+            parser_->LogError(diagnostic::EXPORT_WITHOUT_DECLARE_IN_DECL_MODULE, {}, stmt->Start());
+        }
         typesMap.insert({stmt->AsTSInterfaceDeclaration()->Id()->Name(), stmt});
         return HandleSimpleType(exportedTypes, exportedStatements, stmt, stmt->AsTSInterfaceDeclaration()->Id()->Name(),
                                 stmt->Start());
