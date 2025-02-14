@@ -11,6 +11,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ets2panda_add_gtest(lsp_api_test_1 CPP_SOURCES
+    get_file_references_test.cpp
+    get_references_at_position_test.cpp
+)
+
 ets2panda_add_gtest(lsp_api_test CPP_SOURCES
     quick_info_test.cpp
     lsp_api_test.cpp
