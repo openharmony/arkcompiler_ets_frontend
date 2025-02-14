@@ -19,6 +19,7 @@
 #include "internal_api.h"
 #include "references.h"
 #include "public/es2panda_lib.h"
+#include "cancellation_token.h"
 #include "public/public.h"
 #include "util/options.h"
 
@@ -134,9 +135,49 @@ extern "C" DiagnosticReferences GetSyntacticDiagnostics(char const *fileName)
     return result;
 }
 
-LSPAPI g_lspImpl = {GetDefinitionAtPosition, GetFileReferences,      GetReferencesAtPosition,
-                    GetPrecedingToken,       GetCurrentTokenValue,   GetSpanOfEnclosingComment,
-                    GetSemanticDiagnostics,  GetSyntacticDiagnostics};
+extern "C" ReferenceLocationList GetReferenceLocationAtPosition(char const *fileName, size_t pos,
+                                                                const std::vector<std::string> &autoGenerateFolders,
+                                                                CancellationToken cancellationToken)
+{
+    Initializer initializer = Initializer();
+    auto context = initializer.CreateContext(fileName, ES2PANDA_STATE_CHECKED);
+    if (context == nullptr) {
+        return {};
+    }
+
+    auto options = reinterpret_cast<public_lib::Context *>(context)->config->options;
+
+    auto files = options->ArkTSConfig()->Files();
+    if (files.empty()) {
+        return {};
+    }
+
+    RemoveFromFiles(files, autoGenerateFolders);
+
+    auto node = GetTouchingToken(context, pos, false);
+    if (node == nullptr) {
+        return {};
+    }
+
+    auto tokenId = ark::es2panda::lsp::GetOwnerId(node);
+    auto tokenName = ark::es2panda::lsp::GetIdentifierName(node);
+    FileNodeInfo fileNameInfo(tokenName, tokenId);
+    auto list = ReferenceLocationList();
+    initializer.DestroyContext(context);
+    for (const std::string &file : files) {
+        if (cancellationToken.IsCancellationRequested()) {
+            return list;
+        }
+        auto ctx = initializer.CreateContext(file.c_str(), ES2PANDA_STATE_CHECKED);
+        ark::es2panda::lsp::GetReferenceLocationAtPositionImpl(fileNameInfo, ctx, &list);
+        initializer.DestroyContext(ctx);
+    }
+    return list;
+}
+
+LSPAPI g_lspImpl = {GetDefinitionAtPosition, GetFileReferences,       GetReferencesAtPosition,
+                    GetPrecedingToken,       GetCurrentTokenValue,    GetSpanOfEnclosingComment,
+                    GetSemanticDiagnostics,  GetSyntacticDiagnostics, GetReferenceLocationAtPosition};
 }  // namespace ark::es2panda::lsp
 
 LSPAPI const *GetImpl()

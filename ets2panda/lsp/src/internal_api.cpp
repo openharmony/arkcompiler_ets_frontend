@@ -421,6 +421,110 @@ void GetRangeOfEnclosingComment(es2panda_Context *context, size_t pos, CommentRa
     GetRangeOfCommentFromContext(sourceCode, leftPos, rightPos, pos, result);
 }
 
+void RemoveFromFiles(std::vector<std::string> &files, const std::vector<std::string> &autoGenerateFolders)
+{
+    auto rm = [&autoGenerateFolders](const std::string &file) {
+        return std::any_of(autoGenerateFolders.begin(), autoGenerateFolders.end(),
+                           [&file](const std::string &folder) { return file.find(folder) != std::string::npos; });
+    };
+
+    files.erase(std::remove_if(files.begin(), files.end(), rm), files.end());
+    if (files.empty()) {
+        return;
+    }
+}
+
+void SaveNode(ir::AstNode *node, public_lib::Context *ctx, ReferenceLocationList *result)
+{
+    auto uri = ctx->sourceFileName;
+    auto start = node->Range().start.index;
+    auto end = node->Range().end.index;
+    auto accessKind = node->IsReadonly() ? AccessKind::READ : AccessKind::WRITE;
+    auto isDefinition = node->IsClassDefinition() && node->IsMethodDefinition();
+    auto isImport = node->IsImportDeclaration();
+    auto ref = ReferenceLocation {uri, start, end, isDefinition, accessKind, isImport};
+    auto it =
+        std::find_if(result->referenceLocation.begin(), result->referenceLocation.end(),
+                     [&](const ReferenceLocation &loc) { return (loc.uri == ref.uri) && (loc.start == ref.start); });
+    if (it == result->referenceLocation.end()) {
+        result->referenceLocation.push_back(ref);
+    }
+}
+
+ir::AstNode *GetIdentifier(ir::AstNode *node)
+{
+    if (!node->IsIdentifier()) {
+        return node->FindChild([](ir::AstNode *node1) { return node1->IsIdentifier(); });
+    }
+    return node;
+}
+
+std::string GetIdentifierName(ir::AstNode *node)
+{
+    auto id = GetIdentifier(node);
+    if (id == nullptr) {
+        return "";
+    }
+    return std::string {id->AsIdentifier()->Name()};
+}
+
+ir::AstNode *GetOwner(ir::AstNode *node)
+{
+    auto id = GetIdentifier(node);
+    if (id == nullptr) {
+        return nullptr;
+    }
+    auto var = id->AsIdentifier()->Variable();
+    if (var == nullptr) {
+        return nullptr;
+    }
+    auto decl = id->AsIdentifier()->Variable()->Declaration();
+    if (decl == nullptr) {
+        return nullptr;
+    }
+    return decl->Node();
+}
+
+std::string GetOwnerId(ir::AstNode *node)
+{
+    auto owner = GetOwner(node);
+    if (owner == nullptr) {
+        return "";
+    }
+    return owner->DumpJSON();
+}
+
+void GetReferenceLocationAtPositionImpl(FileNodeInfo fileNodeInfo, es2panda_Context *referenceFileContext,
+                                        ReferenceLocationList *list)
+{
+    auto ctx = reinterpret_cast<public_lib::Context *>(referenceFileContext);
+    if (ctx == nullptr) {
+        return;
+    }
+    auto *parent = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
+    if (parent == nullptr) {
+        return;
+    }
+
+    auto cb = [list, &fileNodeInfo, ctx](ir::AstNode *node) {
+        auto nodeId = GetIdentifier(node);
+        if (nodeId == nullptr) {
+            return false;
+        }
+        auto nodeName = GetIdentifierName(nodeId);
+        if (nodeName != fileNodeInfo.tokenName) {
+            return false;
+        }
+        auto ownerId = GetOwnerId(node);
+        if (ownerId == fileNodeInfo.tokenId) {
+            SaveNode(nodeId, ctx, list);
+        }
+        return false;
+    };
+
+    parent->FindChild(cb);
+}
+
 // convert from es2panda error type to LSP severity
 DiagnosticSeverity GetSeverity(util::DiagnosticType errorType)
 {
