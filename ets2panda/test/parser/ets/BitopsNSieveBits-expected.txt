@@ -2928,31 +2928,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "sum",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 53,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 53,
-                              "column": 15
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "BitopsNSieveBits",
+                            "name": "sum",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 17
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "BitopsNSieveBits",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 53,
+                                  "column": 19
+                                },
+                                "end": {
+                                  "line": 53,
+                                  "column": 35
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 53,
+                                  "column": 36
+                                },
+                                "end": {
+                                  "line": 53,
+                                  "column": 44
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 53,
@@ -2960,60 +3003,34 @@
                               },
                               "end": {
                                 "line": 53,
-                                "column": 35
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 53,
-                                "column": 36
-                              },
-                              "end": {
-                                "line": 53,
                                 "column": 44
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 53,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 53,
-                              "column": 44
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 53,
+                                "column": 47
+                              },
+                              "end": {
+                                "line": 53,
+                                "column": 65
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 53,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 53,
-                            "column": 44
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 53,
-                            "column": 46
-                          },
-                          "end": {
-                            "line": 53,
-                            "column": 64
+                            "column": 66
                           }
                         }
                       },
@@ -3024,7 +3041,7 @@
                         },
                         "end": {
                           "line": 53,
-                          "column": 65
+                          "column": 67
                         }
                       }
                     }

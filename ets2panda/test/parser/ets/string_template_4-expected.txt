@@ -440,18 +440,17 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "v",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 20,
-                              "column": 9
+                              "column": 2
                             },
                             "end": {
                               "line": 20,
@@ -459,33 +458,50 @@
                             }
                           }
                         },
-                        "right": {
-                          "type": "Identifier",
-                          "name": "expected",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 20,
-                              "column": 14
-                            },
-                            "end": {
-                              "line": 20,
-                              "column": 22
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "v",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 11
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 12
+                              }
+                            }
+                          },
+                          {
+                            "type": "Identifier",
+                            "name": "expected",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 22
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 20,
-                            "column": 9
+                            "column": 2
                           },
                           "end": {
                             "line": 20,
-                            "column": 22
+                            "column": 23
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 20,
@@ -493,7 +509,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 22
+                          "column": 24
                         }
                       }
                     }

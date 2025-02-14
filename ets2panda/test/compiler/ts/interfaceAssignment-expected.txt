@@ -4101,3 +4101,4 @@
     }
   }
 }
+TypeError: Type '(a: number, b: string) => [1, 2]' is not assignable to type '(a: number, b: string) => number[]'. [interfaceAssignment.ts:30:31]

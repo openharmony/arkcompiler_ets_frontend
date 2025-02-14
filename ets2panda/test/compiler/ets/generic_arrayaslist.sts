@@ -90,7 +90,7 @@ class ArrayAsListt<T> implements Listt<T> {
     }
 
     public override popFront(): T {
-        assert (this.curSize > 0): "No data to popFront from ArrayAsList!"
+        assertLT(0, this.curSize, "No data to popFront from ArrayAsList!");
         let res: T = this.data[0] as T;
         for (let i = 1; i < this.curSize; ++i) {
             this.data[i-1] = this.data[i];
@@ -112,7 +112,7 @@ class ArrayAsListt<T> implements Listt<T> {
     }
 
     public override popBack(): T {
-        assert (this.curSize > 0): "No data to popBack in ArrayAsList!"
+        assertTrue(0, this.curSize, "No data to popBack in ArrayAsList!");
         --this.curSize;
         return this.data[this.curSize] as T;
     }
@@ -126,7 +126,7 @@ class ArrayAsListt<T> implements Listt<T> {
     }
 
     public override has(e: T): boolean {
-        assert false: "Not implemented: internal issue with calling equals";
+        assertTrue(false)
 
         for (let i = 0; i < this.curSize; ++i) {
             if (__runtimeEquals(this.data[i], e)) {

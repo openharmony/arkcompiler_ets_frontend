@@ -135,8 +135,8 @@
                     "type": "Identifier",
                     "name": "a",
                     "typeAnnotation": {
-                      "type": "TSTypeReference",
-                      "typeName": {
+                      "type": "NamedType",
+                      "name": {
                         "type": "Identifier",
                         "name": "i32",
                         "decorators": [],
@@ -151,6 +151,7 @@
                           }
                         }
                       },
+                      "isNullable": false,
                       "loc": {
                         "start": {
                           "line": 18,
@@ -176,8 +177,8 @@
                   }
                 ],
                 "returnType": {
-                  "type": "TSTypeReference",
-                  "typeName": {
+                  "type": "NamedType",
+                  "name": {
                     "type": "Identifier",
                     "name": "i32",
                     "decorators": [],
@@ -192,6 +193,7 @@
                       }
                     }
                   },
+                  "isNullable": false,
                   "loc": {
                     "start": {
                       "line": 18,

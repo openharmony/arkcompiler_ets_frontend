@@ -104,7 +104,7 @@ function foo(... a: byte): void {}
 native function foo(... b: byte): long;
 
 function min(v: double, u: double): double {
-    assert false
+    assertTrue(false)
     return v < u ? v : u;
 }
 
@@ -138,12 +138,12 @@ function main(): void {
         //Do something.
     }
 
-    assert foo() == undefined
+    assertTrue(foo(), undefined);
 
     f(0);
 
     let a10: A = new A();
-    assert(a10.getInner().i == 2);
+    assertTrue(a10.getInner().i ==  2); // #22840 assertEQ incorrect check types of operands
 
     let instance_A: A = new A(2, 3);
     let instanc_A: A = new A(2);
@@ -155,7 +155,7 @@ function main(): void {
     instance1.getValue();
 
     let b: A = new A();
-    assert(b.getInner().foo() == 1);
+    assertTrue(b.getInner().foo() == 1); // #22840 assertEQ incorrect check types of operands
 
     min(1.0, 1.0)
     let let = 0;
@@ -251,12 +251,12 @@ function main(): void {
 /* @@? 137:16 Error SyntaxError: Unexpected token '=', expected ')'. */
 /* @@? 137:16 Error SyntaxError: Catch clause variable cannot have an initializer */
 /* @@? 137:19 Error SyntaxError: Unexpected token ')'. */
-/* @@? 141:12 Error TypeError: This expression is not callable. */
+/* @@? 141:16 Error TypeError: This expression is not callable. */
 /* @@? 143:5 Error TypeError: This expression is not callable. */
 /* @@? 145:18 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 145:18 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 145:18 Error TypeError: No matching construct signature */
-/* @@? 146:11 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 146:16 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 148:25 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 148:25 Error TypeError: Expected 1 arguments, got 2. */
 /* @@? 148:25 Error TypeError: No matching construct signature for MultipleParserErrors.A(int, int) */
@@ -266,7 +266,7 @@ function main(): void {
 /* @@? 157:16 Error TypeError: A is abstract therefore cannot be instantiated. */
 /* @@? 157:16 Error TypeError: Expected 1 arguments, got 0. */
 /* @@? 157:16 Error TypeError: No matching construct signature */
-/* @@? 158:11 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
+/* @@? 158:16 Error TypeError: Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type. */
 /* @@? 161:9 Error SyntaxError: Identifier expected, got 'let'. */
 /* @@? 162:9 Error SyntaxError: Identifier expected, got 'const'. */
 /* @@? 163:9 Error SyntaxError: Identifier expected, got 'new'. */

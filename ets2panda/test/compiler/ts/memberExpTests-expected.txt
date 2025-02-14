@@ -24,6 +24,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -1461,6 +1462,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 43,
@@ -2222,6 +2224,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 61,
@@ -2807,6 +2810,7 @@
                   }
                 }
               },
+              "annotations": [],
               "loc": {
                 "start": {
                   "line": 71,
@@ -4654,6 +4658,7 @@
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 96,
@@ -4780,6 +4785,7 @@
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 96,
@@ -4819,6 +4825,7 @@
                         }
                       }
                     },
+                    "annotations": [],
                     "loc": {
                       "start": {
                         "line": 96,
@@ -5227,6 +5234,7 @@
                         }
                       }
                     },
+                    "annotations": [],
                     "loc": {
                       "start": {
                         "line": 99,
@@ -5931,3 +5939,4 @@
     }
   }
 }
+TypeError: Type '(a: number[]) => ["foo", "bar", "baz"]' is not assignable to type '(a: number[]) => string[]'. [memberExpTests.ts:99:1]

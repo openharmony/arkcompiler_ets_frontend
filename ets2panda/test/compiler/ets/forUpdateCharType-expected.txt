@@ -506,43 +506,60 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "mystring",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 23,
-                              "column": 10
+                              "column": 3
                             },
                             "end": {
                               "line": 23,
-                              "column": 18
+                              "column": 11
                             }
                           }
                         },
-                        "right": {
-                          "type": "StringLiteral",
-                          "value": "abcd",
-                          "loc": {
-                            "start": {
-                              "line": 23,
-                              "column": 22
-                            },
-                            "end": {
-                              "line": 23,
-                              "column": 28
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "mystring",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 20
+                              }
+                            }
+                          },
+                          {
+                            "type": "StringLiteral",
+                            "value": "abcd",
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 22
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 28
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 9
+                            "column": 3
                           },
                           "end": {
                             "line": 23,
@@ -550,7 +567,6 @@
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 23,

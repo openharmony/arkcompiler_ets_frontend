@@ -1221,31 +1221,59 @@
                         "type": "BlockStatement",
                         "statements": [
                           {
-                            "type": "AssertStatement",
-                            "test": {
-                              "type": "BinaryExpression",
-                              "operator": "==",
-                              "left": {
-                                "type": "MemberExpression",
-                                "object": {
-                                  "type": "Identifier",
-                                  "name": "x",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 31,
-                                      "column": 16
-                                    },
-                                    "end": {
-                                      "line": 31,
-                                      "column": 17
-                                    }
+                            "type": "ExpressionStatement",
+                            "expression": {
+                              "type": "CallExpression",
+                              "callee": {
+                                "type": "Identifier",
+                                "name": "assertEQ",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 31,
+                                    "column": 9
+                                  },
+                                  "end": {
+                                    "line": 31,
+                                    "column": 17
                                   }
-                                },
-                                "property": {
-                                  "type": "Identifier",
-                                  "name": "num",
-                                  "decorators": [],
+                                }
+                              },
+                              "arguments": [
+                                {
+                                  "type": "MemberExpression",
+                                  "object": {
+                                    "type": "Identifier",
+                                    "name": "x",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 31,
+                                        "column": 18
+                                      },
+                                      "end": {
+                                        "line": 31,
+                                        "column": 19
+                                      }
+                                    }
+                                  },
+                                  "property": {
+                                    "type": "Identifier",
+                                    "name": "num",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 31,
+                                        "column": 20
+                                      },
+                                      "end": {
+                                        "line": 31,
+                                        "column": 23
+                                      }
+                                    }
+                                  },
+                                  "computed": false,
+                                  "optional": false,
                                   "loc": {
                                     "start": {
                                       "line": 31,
@@ -1253,59 +1281,48 @@
                                     },
                                     "end": {
                                       "line": 31,
-                                      "column": 21
+                                      "column": 23
                                     }
                                   }
                                 },
-                                "computed": false,
-                                "optional": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 31,
-                                    "column": 16
-                                  },
-                                  "end": {
-                                    "line": 31,
-                                    "column": 21
+                                {
+                                  "type": "NumberLiteral",
+                                  "value": 42,
+                                  "loc": {
+                                    "start": {
+                                      "line": 31,
+                                      "column": 25
+                                    },
+                                    "end": {
+                                      "line": 31,
+                                      "column": 27
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "StringLiteral",
+                                  "value": "Error! num field must be 42",
+                                  "loc": {
+                                    "start": {
+                                      "line": 31,
+                                      "column": 29
+                                    },
+                                    "end": {
+                                      "line": 31,
+                                      "column": 58
+                                    }
                                   }
                                 }
-                              },
-                              "right": {
-                                "type": "NumberLiteral",
-                                "value": 42,
-                                "loc": {
-                                  "start": {
-                                    "line": 31,
-                                    "column": 25
-                                  },
-                                  "end": {
-                                    "line": 31,
-                                    "column": 27
-                                  }
-                                }
-                              },
+                              ],
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 31,
-                                  "column": 16
+                                  "column": 9
                                 },
                                 "end": {
                                   "line": 31,
-                                  "column": 27
-                                }
-                              }
-                            },
-                            "second": {
-                              "type": "StringLiteral",
-                              "value": "Error! num field must be 42",
-                              "loc": {
-                                "start": {
-                                  "line": 31,
-                                  "column": 29
-                                },
-                                "end": {
-                                  "line": 31,
-                                  "column": 58
+                                  "column": 59
                                 }
                               }
                             },
@@ -1316,7 +1333,7 @@
                               },
                               "end": {
                                 "line": 31,
-                                "column": 59
+                                "column": 60
                               }
                             }
                           }
@@ -1408,31 +1425,59 @@
                           "type": "BlockStatement",
                           "statements": [
                             {
-                              "type": "AssertStatement",
-                              "test": {
-                                "type": "BinaryExpression",
-                                "operator": "==",
-                                "left": {
-                                  "type": "MemberExpression",
-                                  "object": {
-                                    "type": "Identifier",
-                                    "name": "x",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 33,
-                                        "column": 16
-                                      },
-                                      "end": {
-                                        "line": 33,
-                                        "column": 17
-                                      }
+                              "type": "ExpressionStatement",
+                              "expression": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "Identifier",
+                                  "name": "assertEQ",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 33,
+                                      "column": 9
+                                    },
+                                    "end": {
+                                      "line": 33,
+                                      "column": 17
                                     }
-                                  },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "num",
-                                    "decorators": [],
+                                  }
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "MemberExpression",
+                                    "object": {
+                                      "type": "Identifier",
+                                      "name": "x",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 33,
+                                          "column": 18
+                                        },
+                                        "end": {
+                                          "line": 33,
+                                          "column": 19
+                                        }
+                                      }
+                                    },
+                                    "property": {
+                                      "type": "Identifier",
+                                      "name": "num",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 33,
+                                          "column": 20
+                                        },
+                                        "end": {
+                                          "line": 33,
+                                          "column": 23
+                                        }
+                                      }
+                                    },
+                                    "computed": false,
+                                    "optional": false,
                                     "loc": {
                                       "start": {
                                         "line": 33,
@@ -1440,59 +1485,48 @@
                                       },
                                       "end": {
                                         "line": 33,
-                                        "column": 21
+                                        "column": 23
                                       }
                                     }
                                   },
-                                  "computed": false,
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 33,
-                                      "column": 16
-                                    },
-                                    "end": {
-                                      "line": 33,
-                                      "column": 21
+                                  {
+                                    "type": "NumberLiteral",
+                                    "value": 43,
+                                    "loc": {
+                                      "start": {
+                                        "line": 33,
+                                        "column": 25
+                                      },
+                                      "end": {
+                                        "line": 33,
+                                        "column": 27
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "StringLiteral",
+                                    "value": "Error! num field must be 43",
+                                    "loc": {
+                                      "start": {
+                                        "line": 33,
+                                        "column": 29
+                                      },
+                                      "end": {
+                                        "line": 33,
+                                        "column": 58
+                                      }
                                     }
                                   }
-                                },
-                                "right": {
-                                  "type": "NumberLiteral",
-                                  "value": 43,
-                                  "loc": {
-                                    "start": {
-                                      "line": 33,
-                                      "column": 25
-                                    },
-                                    "end": {
-                                      "line": 33,
-                                      "column": 27
-                                    }
-                                  }
-                                },
+                                ],
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 33,
-                                    "column": 16
+                                    "column": 9
                                   },
                                   "end": {
                                     "line": 33,
-                                    "column": 27
-                                  }
-                                }
-                              },
-                              "second": {
-                                "type": "StringLiteral",
-                                "value": "Error! num field must be 43",
-                                "loc": {
-                                  "start": {
-                                    "line": 33,
-                                    "column": 29
-                                  },
-                                  "end": {
-                                    "line": 33,
-                                    "column": 58
+                                    "column": 59
                                   }
                                 }
                               },
@@ -1503,7 +1537,7 @@
                                 },
                                 "end": {
                                   "line": 33,
-                                  "column": 59
+                                  "column": 60
                                 }
                               }
                             }
@@ -1523,32 +1557,63 @@
                           "type": "BlockStatement",
                           "statements": [
                             {
-                              "type": "AssertStatement",
-                              "test": {
-                                "type": "BooleanLiteral",
-                                "value": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 35,
-                                    "column": 16
-                                  },
-                                  "end": {
-                                    "line": 35,
-                                    "column": 21
+                              "type": "ExpressionStatement",
+                              "expression": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "Identifier",
+                                  "name": "assertTrue",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 35,
+                                      "column": 9
+                                    },
+                                    "end": {
+                                      "line": 35,
+                                      "column": 19
+                                    }
                                   }
-                                }
-                              },
-                              "second": {
-                                "type": "StringLiteral",
-                                "value": "Error! x must be instanceof B|C",
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "BooleanLiteral",
+                                    "value": false,
+                                    "loc": {
+                                      "start": {
+                                        "line": 35,
+                                        "column": 20
+                                      },
+                                      "end": {
+                                        "line": 35,
+                                        "column": 25
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "StringLiteral",
+                                    "value": "Error! x must be instanceof B|C",
+                                    "loc": {
+                                      "start": {
+                                        "line": 35,
+                                        "column": 27
+                                      },
+                                      "end": {
+                                        "line": 35,
+                                        "column": 60
+                                      }
+                                    }
+                                  }
+                                ],
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 35,
-                                    "column": 23
+                                    "column": 9
                                   },
                                   "end": {
                                     "line": 35,
-                                    "column": 56
+                                    "column": 61
                                   }
                                 }
                               },
@@ -1559,7 +1624,7 @@
                                 },
                                 "end": {
                                   "line": 35,
-                                  "column": 57
+                                  "column": 62
                                 }
                               }
                             }
@@ -1980,33 +2045,61 @@
                         "type": "BlockStatement",
                         "statements": [
                           {
-                            "type": "AssertStatement",
-                            "test": {
-                              "type": "BinaryExpression",
-                              "operator": "==",
-                              "left": {
-                                "type": "MemberExpression",
-                                "object": {
+                            "type": "ExpressionStatement",
+                            "expression": {
+                              "type": "CallExpression",
+                              "callee": {
+                                "type": "Identifier",
+                                "name": "assertEQ",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 41,
+                                    "column": 9
+                                  },
+                                  "end": {
+                                    "line": 41,
+                                    "column": 17
+                                  }
+                                }
+                              },
+                              "arguments": [
+                                {
                                   "type": "MemberExpression",
                                   "object": {
-                                    "type": "Identifier",
-                                    "name": "x",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 41,
-                                        "column": 16
-                                      },
-                                      "end": {
-                                        "line": 41,
-                                        "column": 17
+                                    "type": "MemberExpression",
+                                    "object": {
+                                      "type": "Identifier",
+                                      "name": "x",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 41,
+                                          "column": 18
+                                        },
+                                        "end": {
+                                          "line": 41,
+                                          "column": 19
+                                        }
                                       }
-                                    }
-                                  },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "union0",
-                                    "decorators": [],
+                                    },
+                                    "property": {
+                                      "type": "Identifier",
+                                      "name": "union0",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 41,
+                                          "column": 20
+                                        },
+                                        "end": {
+                                          "line": 41,
+                                          "column": 26
+                                        }
+                                      }
+                                    },
+                                    "computed": false,
+                                    "optional": false,
                                     "loc": {
                                       "start": {
                                         "line": 41,
@@ -2014,7 +2107,22 @@
                                       },
                                       "end": {
                                         "line": 41,
-                                        "column": 24
+                                        "column": 26
+                                      }
+                                    }
+                                  },
+                                  "property": {
+                                    "type": "Identifier",
+                                    "name": "num",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 41,
+                                        "column": 27
+                                      },
+                                      "end": {
+                                        "line": 41,
+                                        "column": 30
                                       }
                                     }
                                   },
@@ -2023,78 +2131,52 @@
                                   "loc": {
                                     "start": {
                                       "line": 41,
-                                      "column": 16
+                                      "column": 18
                                     },
                                     "end": {
                                       "line": 41,
-                                      "column": 24
+                                      "column": 30
                                     }
                                   }
                                 },
-                                "property": {
-                                  "type": "Identifier",
-                                  "name": "num",
-                                  "decorators": [],
+                                {
+                                  "type": "NumberLiteral",
+                                  "value": 42,
                                   "loc": {
                                     "start": {
                                       "line": 41,
-                                      "column": 25
+                                      "column": 32
                                     },
                                     "end": {
                                       "line": 41,
-                                      "column": 28
+                                      "column": 34
                                     }
                                   }
                                 },
-                                "computed": false,
-                                "optional": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 41,
-                                    "column": 16
-                                  },
-                                  "end": {
-                                    "line": 41,
-                                    "column": 28
+                                {
+                                  "type": "StringLiteral",
+                                  "value": "Error! x.union0.num field must be 42",
+                                  "loc": {
+                                    "start": {
+                                      "line": 41,
+                                      "column": 36
+                                    },
+                                    "end": {
+                                      "line": 41,
+                                      "column": 74
+                                    }
                                   }
                                 }
-                              },
-                              "right": {
-                                "type": "NumberLiteral",
-                                "value": 42,
-                                "loc": {
-                                  "start": {
-                                    "line": 41,
-                                    "column": 32
-                                  },
-                                  "end": {
-                                    "line": 41,
-                                    "column": 34
-                                  }
-                                }
-                              },
+                              ],
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 41,
-                                  "column": 16
+                                  "column": 9
                                 },
                                 "end": {
                                   "line": 41,
-                                  "column": 34
-                                }
-                              }
-                            },
-                            "second": {
-                              "type": "StringLiteral",
-                              "value": "Error! x.union0.num field must be 42",
-                              "loc": {
-                                "start": {
-                                  "line": 41,
-                                  "column": 36
-                                },
-                                "end": {
-                                  "line": 41,
-                                  "column": 74
+                                  "column": 75
                                 }
                               }
                             },
@@ -2105,7 +2187,7 @@
                               },
                               "end": {
                                 "line": 41,
-                                "column": 75
+                                "column": 76
                               }
                             }
                           }
@@ -2227,33 +2309,61 @@
                           "type": "BlockStatement",
                           "statements": [
                             {
-                              "type": "AssertStatement",
-                              "test": {
-                                "type": "BinaryExpression",
-                                "operator": "==",
-                                "left": {
-                                  "type": "MemberExpression",
-                                  "object": {
+                              "type": "ExpressionStatement",
+                              "expression": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "Identifier",
+                                  "name": "assertEQ",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 43,
+                                      "column": 9
+                                    },
+                                    "end": {
+                                      "line": 43,
+                                      "column": 17
+                                    }
+                                  }
+                                },
+                                "arguments": [
+                                  {
                                     "type": "MemberExpression",
                                     "object": {
-                                      "type": "Identifier",
-                                      "name": "x",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 43,
-                                          "column": 16
-                                        },
-                                        "end": {
-                                          "line": 43,
-                                          "column": 17
+                                      "type": "MemberExpression",
+                                      "object": {
+                                        "type": "Identifier",
+                                        "name": "x",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 43,
+                                            "column": 18
+                                          },
+                                          "end": {
+                                            "line": 43,
+                                            "column": 19
+                                          }
                                         }
-                                      }
-                                    },
-                                    "property": {
-                                      "type": "Identifier",
-                                      "name": "union0",
-                                      "decorators": [],
+                                      },
+                                      "property": {
+                                        "type": "Identifier",
+                                        "name": "union0",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 43,
+                                            "column": 20
+                                          },
+                                          "end": {
+                                            "line": 43,
+                                            "column": 26
+                                          }
+                                        }
+                                      },
+                                      "computed": false,
+                                      "optional": false,
                                       "loc": {
                                         "start": {
                                           "line": 43,
@@ -2261,7 +2371,22 @@
                                         },
                                         "end": {
                                           "line": 43,
-                                          "column": 24
+                                          "column": 26
+                                        }
+                                      }
+                                    },
+                                    "property": {
+                                      "type": "Identifier",
+                                      "name": "num",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 43,
+                                          "column": 27
+                                        },
+                                        "end": {
+                                          "line": 43,
+                                          "column": 30
                                         }
                                       }
                                     },
@@ -2270,78 +2395,52 @@
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 16
+                                        "column": 18
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 24
+                                        "column": 30
                                       }
                                     }
                                   },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "num",
-                                    "decorators": [],
+                                  {
+                                    "type": "NumberLiteral",
+                                    "value": 43,
                                     "loc": {
                                       "start": {
                                         "line": 43,
-                                        "column": 25
+                                        "column": 32
                                       },
                                       "end": {
                                         "line": 43,
-                                        "column": 28
+                                        "column": 34
                                       }
                                     }
                                   },
-                                  "computed": false,
-                                  "optional": false,
-                                  "loc": {
-                                    "start": {
-                                      "line": 43,
-                                      "column": 16
-                                    },
-                                    "end": {
-                                      "line": 43,
-                                      "column": 28
+                                  {
+                                    "type": "StringLiteral",
+                                    "value": "Error! x.union0.num field must be 43",
+                                    "loc": {
+                                      "start": {
+                                        "line": 43,
+                                        "column": 36
+                                      },
+                                      "end": {
+                                        "line": 43,
+                                        "column": 74
+                                      }
                                     }
                                   }
-                                },
-                                "right": {
-                                  "type": "NumberLiteral",
-                                  "value": 43,
-                                  "loc": {
-                                    "start": {
-                                      "line": 43,
-                                      "column": 32
-                                    },
-                                    "end": {
-                                      "line": 43,
-                                      "column": 34
-                                    }
-                                  }
-                                },
+                                ],
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 43,
-                                    "column": 16
+                                    "column": 9
                                   },
                                   "end": {
                                     "line": 43,
-                                    "column": 34
-                                  }
-                                }
-                              },
-                              "second": {
-                                "type": "StringLiteral",
-                                "value": "Error! x.union0.num field must be 43",
-                                "loc": {
-                                  "start": {
-                                    "line": 43,
-                                    "column": 36
-                                  },
-                                  "end": {
-                                    "line": 43,
-                                    "column": 74
+                                    "column": 75
                                   }
                                 }
                               },
@@ -2352,7 +2451,7 @@
                                 },
                                 "end": {
                                   "line": 43,
-                                  "column": 75
+                                  "column": 76
                                 }
                               }
                             }
@@ -2372,32 +2471,63 @@
                           "type": "BlockStatement",
                           "statements": [
                             {
-                              "type": "AssertStatement",
-                              "test": {
-                                "type": "BooleanLiteral",
-                                "value": false,
-                                "loc": {
-                                  "start": {
-                                    "line": 45,
-                                    "column": 16
-                                  },
-                                  "end": {
-                                    "line": 45,
-                                    "column": 21
+                              "type": "ExpressionStatement",
+                              "expression": {
+                                "type": "CallExpression",
+                                "callee": {
+                                  "type": "Identifier",
+                                  "name": "assertTrue",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 45,
+                                      "column": 9
+                                    },
+                                    "end": {
+                                      "line": 45,
+                                      "column": 19
+                                    }
                                   }
-                                }
-                              },
-                              "second": {
-                                "type": "StringLiteral",
-                                "value": "Error! x.union0 must be instanceof B|C",
+                                },
+                                "arguments": [
+                                  {
+                                    "type": "BooleanLiteral",
+                                    "value": false,
+                                    "loc": {
+                                      "start": {
+                                        "line": 45,
+                                        "column": 20
+                                      },
+                                      "end": {
+                                        "line": 45,
+                                        "column": 25
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "StringLiteral",
+                                    "value": "Error! x.union0 must be instanceof B|C",
+                                    "loc": {
+                                      "start": {
+                                        "line": 45,
+                                        "column": 27
+                                      },
+                                      "end": {
+                                        "line": 45,
+                                        "column": 67
+                                      }
+                                    }
+                                  }
+                                ],
+                                "optional": false,
                                 "loc": {
                                   "start": {
                                     "line": 45,
-                                    "column": 23
+                                    "column": 9
                                   },
                                   "end": {
                                     "line": 45,
-                                    "column": 63
+                                    "column": 68
                                   }
                                 }
                               },
@@ -2408,7 +2538,7 @@
                                 },
                                 "end": {
                                   "line": 45,
-                                  "column": 64
+                                  "column": 69
                                 }
                               }
                             }

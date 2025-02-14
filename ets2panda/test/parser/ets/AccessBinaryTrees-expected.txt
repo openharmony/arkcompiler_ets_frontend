@@ -4479,31 +4479,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "ret",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 75,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 75,
-                              "column": 15
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "AccessBinaryTrees",
+                            "name": "ret",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 75,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 75,
+                                "column": 17
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "AccessBinaryTrees",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 75,
+                                  "column": 19
+                                },
+                                "end": {
+                                  "line": 75,
+                                  "column": 36
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 75,
+                                  "column": 37
+                                },
+                                "end": {
+                                  "line": 75,
+                                  "column": 45
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 75,
@@ -4511,60 +4554,34 @@
                               },
                               "end": {
                                 "line": 75,
-                                "column": 36
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 75,
-                                "column": 37
-                              },
-                              "end": {
-                                "line": 75,
                                 "column": 45
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 75,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 75,
-                              "column": 45
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 75,
+                                "column": 48
+                              },
+                              "end": {
+                                "line": 75,
+                                "column": 66
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 75,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 75,
-                            "column": 45
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 75,
-                            "column": 47
-                          },
-                          "end": {
-                            "line": 75,
-                            "column": 65
+                            "column": 67
                           }
                         }
                       },
@@ -4575,7 +4592,7 @@
                         },
                         "end": {
                           "line": 75,
-                          "column": 65
+                          "column": 68
                         }
                       }
                     }

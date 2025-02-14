@@ -4991,31 +4991,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "ret",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 86,
-                              "column": 16
+                              "column": 9
                             },
                             "end": {
                               "line": 86,
-                              "column": 19
+                              "column": 17
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "AccessFannkuch",
+                            "name": "ret",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 86,
+                                "column": 18
+                              },
+                              "end": {
+                                "line": 86,
+                                "column": 21
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "AccessFannkuch",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 86,
+                                  "column": 23
+                                },
+                                "end": {
+                                  "line": 86,
+                                  "column": 37
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 86,
+                                  "column": 38
+                                },
+                                "end": {
+                                  "line": 86,
+                                  "column": 46
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 86,
@@ -5023,60 +5066,34 @@
                               },
                               "end": {
                                 "line": 86,
-                                "column": 37
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 86,
-                                "column": 38
-                              },
-                              "end": {
-                                "line": 86,
                                 "column": 46
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 86,
-                              "column": 23
-                            },
-                            "end": {
-                              "line": 86,
-                              "column": 46
+                          {
+                            "type": "StringLiteral",
+                            "value": "Invalid result",
+                            "loc": {
+                              "start": {
+                                "line": 86,
+                                "column": 49
+                              },
+                              "end": {
+                                "line": 86,
+                                "column": 65
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 86,
-                            "column": 16
+                            "column": 9
                           },
                           "end": {
                             "line": 86,
-                            "column": 46
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Invalid result",
-                        "loc": {
-                          "start": {
-                            "line": 86,
-                            "column": 48
-                          },
-                          "end": {
-                            "line": 86,
-                            "column": 64
+                            "column": 66
                           }
                         }
                       },
@@ -5087,7 +5104,7 @@
                         },
                         "end": {
                           "line": 86,
-                          "column": 65
+                          "column": 67
                         }
                       }
                     }

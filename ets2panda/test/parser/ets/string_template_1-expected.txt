@@ -1053,18 +1053,17 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "x",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 31,
-                              "column": 10
+                              "column": 3
                             },
                             "end": {
                               "line": 31,
@@ -1072,25 +1071,43 @@
                             }
                           }
                         },
-                        "right": {
-                          "type": "Identifier",
-                          "name": "z",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 31,
-                              "column": 15
-                            },
-                            "end": {
-                              "line": 31,
-                              "column": 16
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "x",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 31,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 31,
+                                "column": 13
+                              }
+                            }
+                          },
+                          {
+                            "type": "Identifier",
+                            "name": "z",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 31,
+                                "column": 15
+                              },
+                              "end": {
+                                "line": 31,
+                                "column": 16
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 31,
-                            "column": 9
+                            "column": 3
                           },
                           "end": {
                             "line": 31,
@@ -1098,7 +1115,6 @@
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 31,
@@ -1106,49 +1122,66 @@
                         },
                         "end": {
                           "line": 31,
-                          "column": 17
+                          "column": 18
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "v1",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 32,
-                              "column": 10
+                              "column": 3
                             },
                             "end": {
                               "line": 32,
-                              "column": 12
+                              "column": 11
                             }
                           }
                         },
-                        "right": {
-                          "type": "Identifier",
-                          "name": "v2",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 32,
-                              "column": 16
-                            },
-                            "end": {
-                              "line": 32,
-                              "column": 18
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "v1",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 32,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 32,
+                                "column": 14
+                              }
+                            }
+                          },
+                          {
+                            "type": "Identifier",
+                            "name": "v2",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 32,
+                                "column": 16
+                              },
+                              "end": {
+                                "line": 32,
+                                "column": 18
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 32,
-                            "column": 9
+                            "column": 3
                           },
                           "end": {
                             "line": 32,
@@ -1156,7 +1189,6 @@
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 32,
@@ -1164,7 +1196,7 @@
                         },
                         "end": {
                           "line": 32,
-                          "column": 19
+                          "column": 20
                         }
                       }
                     }

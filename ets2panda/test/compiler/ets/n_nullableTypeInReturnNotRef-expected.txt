@@ -252,18 +252,17 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "f",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 18,
-                              "column": 10
+                              "column": 3
                             },
                             "end": {
                               "line": 18,
@@ -271,32 +270,49 @@
                             }
                           }
                         },
-                        "right": {
-                          "type": "CharLiteral",
-                          "value": "F",
-                          "loc": {
-                            "start": {
-                              "line": 18,
-                              "column": 15
-                            },
-                            "end": {
-                              "line": 18,
-                              "column": 19
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "f",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 18,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 13
+                              }
+                            }
+                          },
+                          {
+                            "type": "CharLiteral",
+                            "value": "F",
+                            "loc": {
+                              "start": {
+                                "line": 18,
+                                "column": 15
+                              },
+                              "end": {
+                                "line": 18,
+                                "column": 19
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 18,
-                            "column": 10
+                            "column": 3
                           },
                           "end": {
                             "line": 18,
-                            "column": 19
+                            "column": 20
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 18,
@@ -304,7 +320,7 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 20
+                          "column": 21
                         }
                       }
                     }

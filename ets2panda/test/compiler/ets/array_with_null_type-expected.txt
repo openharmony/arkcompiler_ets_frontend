@@ -351,80 +351,96 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "goo",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 19,
-                                "column": 12
-                              },
-                              "end": {
-                                "line": 19,
-                                "column": 15
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "NumberLiteral",
-                            "value": 1,
-                            "loc": {
-                              "start": {
-                                "line": 19,
-                                "column": 16
-                              },
-                              "end": {
-                                "line": 19,
-                                "column": 17
-                              }
-                            }
-                          },
-                          "computed": true,
-                          "optional": false,
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 19,
-                              "column": 18
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "NullLiteral",
-                          "value": null,
-                          "loc": {
-                            "start": {
-                              "line": 19,
-                              "column": 22
+                        "arguments": [
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "goo",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 19,
+                                  "column": 14
+                                },
+                                "end": {
+                                  "line": 19,
+                                  "column": 17
+                                }
+                              }
                             },
-                            "end": {
-                              "line": 19,
-                              "column": 26
+                            "property": {
+                              "type": "NumberLiteral",
+                              "value": 1,
+                              "loc": {
+                                "start": {
+                                  "line": 19,
+                                  "column": 18
+                                },
+                                "end": {
+                                  "line": 19,
+                                  "column": 19
+                                }
+                              }
+                            },
+                            "computed": true,
+                            "optional": false,
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 20
+                              }
+                            }
+                          },
+                          {
+                            "type": "NullLiteral",
+                            "value": null,
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 22
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 26
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 19,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 19,
-                            "column": 26
+                            "column": 27
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 19,
@@ -432,7 +448,7 @@
                         },
                         "end": {
                           "line": 19,
-                          "column": 26
+                          "column": 28
                         }
                       }
                     }

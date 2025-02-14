@@ -628,30 +628,58 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "x",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 23,
-                                "column": 11
-                              },
-                              "end": {
-                                "line": 23,
-                                "column": 12
-                              }
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 4
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 12
                             }
-                          },
-                          "property": {
-                            "type": "NumberLiteral",
-                            "value": 0,
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "x",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 13
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 14
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "NumberLiteral",
+                              "value": 0,
+                              "loc": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 15
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 16
+                                }
+                              }
+                            },
+                            "computed": true,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 23,
@@ -659,49 +687,37 @@
                               },
                               "end": {
                                 "line": 23,
-                                "column": 14
+                                "column": 17
                               }
                             }
                           },
-                          "computed": true,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 23,
-                              "column": 11
-                            },
-                            "end": {
-                              "line": 23,
-                              "column": 15
+                          {
+                            "type": "NumberLiteral",
+                            "value": 12,
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 19
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 23
+                              }
                             }
                           }
-                        },
-                        "right": {
-                          "type": "NumberLiteral",
-                          "value": 12,
-                          "loc": {
-                            "start": {
-                              "line": 23,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 23,
-                              "column": 23
-                            }
-                          }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 11
+                            "column": 4
                           },
                           "end": {
                             "line": 23,
-                            "column": 23
+                            "column": 24
                           }
                         }
                       },
-                      "second": null,
                       "loc": {
                         "start": {
                           "line": 23,
@@ -709,7 +725,7 @@
                         },
                         "end": {
                           "line": 23,
-                          "column": 24
+                          "column": 25
                         }
                       }
                     }

@@ -46,7 +46,7 @@ function main(): void {
     let res = "";
     let a = new A();
     for (let x of a) res += x;
-    assert(res == "abc");
+    assertEQ(res, "abc");
 }
 
 /* @@? 48:19 Error TypeError: Iterator method must return an object which implements Iterator<T> */

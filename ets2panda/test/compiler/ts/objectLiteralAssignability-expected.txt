@@ -6652,6 +6652,7 @@
                                 }
                               }
                             },
+                            "annotations": [],
                             "loc": {
                               "start": {
                                 "line": 69,
@@ -6778,6 +6779,7 @@
                                 }
                               }
                             },
+                            "annotations": [],
                             "loc": {
                               "start": {
                                 "line": 69,
@@ -6817,6 +6819,7 @@
                             }
                           }
                         },
+                        "annotations": [],
                         "loc": {
                           "start": {
                             "line": 69,
@@ -7679,6 +7682,7 @@
                               }
                             }
                           },
+                          "annotations": [],
                           "loc": {
                             "start": {
                               "line": 74,
@@ -8851,3 +8855,4 @@
     }
   }
 }
+TypeError: Type '() => true' is not assignable to type '() => boolean'. [objectLiteralAssignability.ts:28:69]

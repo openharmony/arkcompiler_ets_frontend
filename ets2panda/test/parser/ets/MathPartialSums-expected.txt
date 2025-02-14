@@ -4284,31 +4284,74 @@
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "BinaryExpression",
-                        "operator": "==",
-                        "left": {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
                           "type": "Identifier",
-                          "name": "sum",
+                          "name": "assertEQ",
                           "decorators": [],
                           "loc": {
                             "start": {
                               "line": 78,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 78,
-                              "column": 15
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "MemberExpression",
-                          "object": {
+                        "arguments": [
+                          {
                             "type": "Identifier",
-                            "name": "MathPartialSums",
+                            "name": "sum",
                             "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 78,
+                                "column": 14
+                              },
+                              "end": {
+                                "line": 78,
+                                "column": 17
+                              }
+                            }
+                          },
+                          {
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "MathPartialSums",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 78,
+                                  "column": 19
+                                },
+                                "end": {
+                                  "line": 78,
+                                  "column": 34
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "expected",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 78,
+                                  "column": 35
+                                },
+                                "end": {
+                                  "line": 78,
+                                  "column": 43
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 78,
@@ -4316,60 +4359,34 @@
                               },
                               "end": {
                                 "line": 78,
-                                "column": 34
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "expected",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 78,
-                                "column": 35
-                              },
-                              "end": {
-                                "line": 78,
                                 "column": 43
                               }
                             }
                           },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 78,
-                              "column": 19
-                            },
-                            "end": {
-                              "line": 78,
-                              "column": 43
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect result",
+                            "loc": {
+                              "start": {
+                                "line": 78,
+                                "column": 46
+                              },
+                              "end": {
+                                "line": 78,
+                                "column": 64
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 78,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 78,
-                            "column": 43
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect result",
-                        "loc": {
-                          "start": {
-                            "line": 78,
-                            "column": 45
-                          },
-                          "end": {
-                            "line": 78,
-                            "column": 63
+                            "column": 65
                           }
                         }
                       },
@@ -4380,137 +4397,163 @@
                         },
                         "end": {
                           "line": 78,
-                          "column": 63
+                          "column": 66
                         }
                       }
                     },
                     {
-                      "type": "AssertStatement",
-                      "test": {
-                        "type": "LogicalExpression",
-                        "operator": "||",
-                        "left": {
-                          "type": "BinaryExpression",
-                          "operator": "==",
-                          "left": {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "MathPartialSums",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 79,
-                                  "column": 12
-                                },
-                                "end": {
-                                  "line": 79,
-                                  "column": 27
-                                }
-                              }
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "g_flag",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 79,
-                                  "column": 28
-                                },
-                                "end": {
-                                  "line": 79,
-                                  "column": 34
-                                }
-                              }
-                            },
-                            "computed": false,
-                            "optional": false,
-                            "loc": {
-                              "start": {
-                                "line": 79,
-                                "column": 12
-                              },
-                              "end": {
-                                "line": 79,
-                                "column": 34
-                              }
-                            }
-                          },
-                          "right": {
-                            "type": "NumberLiteral",
-                            "value": 1,
-                            "loc": {
-                              "start": {
-                                "line": 79,
-                                "column": 38
-                              },
-                              "end": {
-                                "line": 79,
-                                "column": 39
-                              }
-                            }
-                          },
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "Identifier",
+                          "name": "assertEQ",
+                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 79,
-                              "column": 12
+                              "column": 5
                             },
                             "end": {
                               "line": 79,
-                              "column": 39
+                              "column": 13
                             }
                           }
                         },
-                        "right": {
-                          "type": "BinaryExpression",
-                          "operator": "==",
-                          "left": {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "Identifier",
-                              "name": "MathPartialSums",
-                              "decorators": [],
+                        "arguments": [
+                          {
+                            "type": "LogicalExpression",
+                            "operator": "||",
+                            "left": {
+                              "type": "BinaryExpression",
+                              "operator": "==",
+                              "left": {
+                                "type": "MemberExpression",
+                                "object": {
+                                  "type": "Identifier",
+                                  "name": "MathPartialSums",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 79,
+                                      "column": 14
+                                    },
+                                    "end": {
+                                      "line": 79,
+                                      "column": 29
+                                    }
+                                  }
+                                },
+                                "property": {
+                                  "type": "Identifier",
+                                  "name": "g_flag",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 79,
+                                      "column": 30
+                                    },
+                                    "end": {
+                                      "line": 79,
+                                      "column": 36
+                                    }
+                                  }
+                                },
+                                "computed": false,
+                                "optional": false,
+                                "loc": {
+                                  "start": {
+                                    "line": 79,
+                                    "column": 14
+                                  },
+                                  "end": {
+                                    "line": 79,
+                                    "column": 36
+                                  }
+                                }
+                              },
+                              "right": {
+                                "type": "NumberLiteral",
+                                "value": 1,
+                                "loc": {
+                                  "start": {
+                                    "line": 79,
+                                    "column": 40
+                                  },
+                                  "end": {
+                                    "line": 79,
+                                    "column": 41
+                                  }
+                                }
+                              },
                               "loc": {
                                 "start": {
                                   "line": 79,
-                                  "column": 43
+                                  "column": 14
                                 },
                                 "end": {
                                   "line": 79,
-                                  "column": 58
+                                  "column": 41
                                 }
                               }
                             },
-                            "property": {
-                              "type": "Identifier",
-                              "name": "g_flag",
-                              "decorators": [],
+                            "right": {
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "MathPartialSums",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 79,
+                                    "column": 45
+                                  },
+                                  "end": {
+                                    "line": 79,
+                                    "column": 60
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "g_flag",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 79,
+                                    "column": 61
+                                  },
+                                  "end": {
+                                    "line": 79,
+                                    "column": 67
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 79,
-                                  "column": 59
+                                  "column": 45
                                 },
                                 "end": {
                                   "line": 79,
-                                  "column": 65
+                                  "column": 67
                                 }
                               }
                             },
-                            "computed": false,
-                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 79,
-                                "column": 43
+                                "column": 14
                               },
                               "end": {
                                 "line": 79,
-                                "column": 65
+                                "column": 67
                               }
                             }
                           },
-                          "right": {
+                          {
                             "type": "NumberLiteral",
                             "value": 2,
                             "loc": {
@@ -4524,39 +4567,30 @@
                               }
                             }
                           },
-                          "loc": {
-                            "start": {
-                              "line": 79,
-                              "column": 43
-                            },
-                            "end": {
-                              "line": 79,
-                              "column": 70
+                          {
+                            "type": "StringLiteral",
+                            "value": "Incorrect g_flag",
+                            "loc": {
+                              "start": {
+                                "line": 79,
+                                "column": 73
+                              },
+                              "end": {
+                                "line": 79,
+                                "column": 91
+                              }
                             }
                           }
-                        },
+                        ],
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 79,
-                            "column": 12
+                            "column": 5
                           },
                           "end": {
                             "line": 79,
-                            "column": 70
-                          }
-                        }
-                      },
-                      "second": {
-                        "type": "StringLiteral",
-                        "value": "Incorrect g_flag",
-                        "loc": {
-                          "start": {
-                            "line": 79,
-                            "column": 72
-                          },
-                          "end": {
-                            "line": 79,
-                            "column": 90
+                            "column": 92
                           }
                         }
                       },
@@ -4567,7 +4601,7 @@
                         },
                         "end": {
                           "line": 79,
-                          "column": 91
+                          "column": 93
                         }
                       }
                     }

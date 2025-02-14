@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,11 +22,11 @@ class B {}
 
 function main() {
     let x : String | short | A = 5 as short;
-    assert (x as short) * 2 == 10: "Error! Must be 10";
+    assertEQ((x as short) * 2, 10, "Error! Must be 10");
     x = "STRSTR";
-    assert (x as String).equals("STRSTR"): "Error! Must be `STRSTR`";
+    assertTrue((x as String).equals("STRSTR"), "Error! Must be `STRSTR`")
     x = new A();
-    assert (x as A).num == 42: "Error! Field of A must be `42`";
+    assertEQ((x as A).num, 42, "Error! Field of A must be `42`");
     x = /* @@ label */new B();  // CTE
 }
 
