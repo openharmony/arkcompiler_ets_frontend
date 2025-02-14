@@ -18,6 +18,7 @@ set(ES2PANDA_LSP_SRC
   ./src/cancellation_token.cpp
   ./src/quick_info.cpp
   ./src/references.cpp
+  ./src/get_adjusted_location.cpp
 )
 
 panda_add_library(${LSP_LIB} SHARED ${ES2PANDA_LSP_SRC})
