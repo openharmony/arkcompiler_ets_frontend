@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_LSP_INCLUDE_REFERENCES_H
 #define ES2PANDA_LSP_INCLUDE_REFERENCES_H
 
-#include <cstddef>
 #include <tuple>
 #include "api.h"
 #include "ir/astNode.h"
@@ -24,16 +23,17 @@
 
 namespace ark::es2panda::lsp {
 
+using DeclInfoType = std::tuple<std::string, std::string>;
+
 bool IsValidReference(ir::AstNode *astNode);
-std::tuple<std::string, size_t, size_t> GetDeclInfo(ir::AstNode *astNode);
+DeclInfoType GetDeclInfo(ir::AstNode *astNode);
 template <typename T, typename Compare>
 void RemoveDuplicates(std::vector<T> &vec, Compare comp)
 {
     std::set<T, Compare> uniqueSet(vec.begin(), vec.end(), comp);
     vec.assign(uniqueSet.begin(), uniqueSet.end());
 }
-void GetReferencesAtPositionImpl(es2panda_Context *context, const std::tuple<std::string, size_t, size_t> &declInfo,
-                                 References *result);
+void GetReferencesAtPositionImpl(es2panda_Context *context, const DeclInfoType &declInfo, References *result);
 
 }  // namespace ark::es2panda::lsp
 

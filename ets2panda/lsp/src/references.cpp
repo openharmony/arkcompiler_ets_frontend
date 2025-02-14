@@ -15,8 +15,8 @@
 
 #include "references.h"
 #include <cstddef>
-#include <string>
 #include "api.h"
+#include "compiler/lowering/util.h"
 #include "ir/astNode.h"
 #include "public/es2panda_lib.h"
 #include "public/public.h"
@@ -33,21 +33,24 @@ bool IsValidReference(ir::AstNode *astNode)
     }
 }
 
-std::tuple<std::string, size_t, size_t> GetDeclInfo(ir::AstNode *astNode)
+DeclInfoType GetDeclInfo(ir::AstNode *astNode)
 {
-    if (astNode == nullptr || !IsValidReference(astNode) || astNode->Variable() == nullptr ||
-        astNode->Variable()->Declaration() == nullptr) {
+    if (astNode == nullptr || !astNode->IsIdentifier()) {
         return {};
     }
-    auto decl = astNode->Variable()->Declaration();
-    auto declName = decl->Name();
-    auto declStart = decl->Node()->Start().index;
-    auto declEnd = decl->Node()->End().index;
-    return std::make_tuple(std::string(declName), declStart, declEnd);
+    auto declNode = compiler::DeclarationFromIdentifier(astNode->AsIdentifier());
+    auto node = declNode;
+    while (node != nullptr) {
+        if (node->IsETSModule()) {
+            auto name = std::string(node->AsETSModule()->Program()->SourceFilePath());
+            return std::make_tuple(name, declNode->DumpEtsSrc());
+        }
+        node = node->Parent();
+    }
+    return {};
 }
 
-void GetReferencesAtPositionImpl(es2panda_Context *context, const std::tuple<std::string, size_t, size_t> &declInfo,
-                                 References *result)
+void GetReferencesAtPositionImpl(es2panda_Context *context, const DeclInfoType &declInfo, References *result)
 {
     auto ctx = reinterpret_cast<public_lib::Context *>(context);
     auto astNode = reinterpret_cast<ir::AstNode *>(ctx->parserProgram->Ast());
