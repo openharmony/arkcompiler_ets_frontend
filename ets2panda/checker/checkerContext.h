@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 #define ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 
+#include "generated/tokenType.h"
 #include "lexer/token/sourceLocation.h"
-#include "lexer/token/tokenType.h"
 #include "util/enumbitops.h"
 
 namespace ark::es2panda::ir {

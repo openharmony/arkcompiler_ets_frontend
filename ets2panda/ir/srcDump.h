@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Device Co., Ltd. 2021 - 2023. All rights reserved.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd. All rights reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@
 
 #include <ir/astNode.h>
 #include <lexer/token/sourceLocation.h>
-#include <lexer/token/tokenType.h>
+#include "generated/tokenType.h"
 #include <util/ustring.h>
 
 #include <sstream>

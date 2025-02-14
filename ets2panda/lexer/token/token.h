@@ -17,7 +17,7 @@
 #define ES2PANDA_PARSER_CORE_TOKEN_H
 
 #include "lexer/token/sourceLocation.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 #include "lexer/token/number.h"
 #include "macros.h"
 #include "util/enumbitops.h"

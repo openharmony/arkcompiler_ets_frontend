@@ -15,6 +15,8 @@
 
 #include "arithmetic.h"
 
+#include "lexer/token/token.h"
+
 namespace ark::es2panda::checker {
 
 struct BinaryArithmOperands {
@@ -1117,9 +1119,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     Type *unboxedR =
         isLogicalExtendedOperator ? MaybeUnboxConditionalInRelation(rightType) : MaybeUnboxInRelation(rightType);
 
-    bool isEqualOp = (operationType > lexer::TokenType::PUNCTUATOR_SUBSTITUTION &&
-                      operationType < lexer::TokenType::PUNCTUATOR_ARROW) &&
-                     !forcePromotion;
+    ASSERT(operationType != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    bool isEqualOp = lexer::Token::IsBinaryLvalueToken(operationType) && !forcePromotion;
 
     if (CheckBinaryOperatorForBigInt(leftType, rightType, operationType)) {
         return ResolveCheckBinaryOperatorForBigInt(this, leftType, rightType, operationType);

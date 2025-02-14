@@ -19,7 +19,7 @@
 #include "forwardDeclForParserImpl.h"
 #include "ir/base/scriptFunctionSignature.h"
 #include "lexer/token/sourceLocation.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 #include "parser/context/classPrivateContext.h"
 #include "parser/context/parserContext.h"
 #include "parser/parserFlags.h"

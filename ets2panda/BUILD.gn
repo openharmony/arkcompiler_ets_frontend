@@ -494,7 +494,6 @@ HEADERS_TO_BE_PARSED = [
   "varbinder/variableFlags.h",
   "lexer/regexp/regexp.h",
   "util/language.h",
-  "lexer/token/tokenType.h",
   "ir/astNodeFlags.h",
   "ir/module/exportDefaultDeclaration.h",
   "ir/statements/forInStatement.h",
@@ -835,7 +834,7 @@ ES2PANDA_API_GENERATED = [
   "$LIBGEN_DIR/gen/headers/ir/ts/tsConditionalType.yaml",
   "$LIBGEN_DIR/gen/headers/ir/statements/variableDeclarator.yaml",
   "$LIBGEN_DIR/gen/headers/ir/statements/throwStatement.yaml",
-  "$LIBGEN_DIR/gen/headers/lexer/token/tokenType.yaml",
+  "$LIBGEN_DIR/gen/headers/tokenType.yaml",
   "$LIBGEN_DIR/gen/headers/ir/module/exportNamedDeclaration.yaml",
   "$LIBGEN_DIR/gen/headers/ir/ts/tsNamedTupleMember.yaml",
   "$LIBGEN_DIR/gen/headers/checker/types/ts/typeParameter.yaml",
@@ -1032,7 +1031,15 @@ foreach(i, ES2PANDA_API) {
 action("libes2panda_public_parse_headers") {
   script = "./public/headers_parser/main.py"
 
-  deps = [ ":es2panda_options_gen_options_h" ]
+  deps = [
+    ":es2panda_options_gen_options_h",
+    ":gen_es2panda_lexer_tokenType_h",
+  ]
+
+  generated_headers = [
+    "$target_gen_dir/generated/options.h",
+    "$target_gen_dir/generated/tokenType.h",
+  ]
 
   args = [
            "--es2panda-root",
@@ -1041,7 +1048,7 @@ action("libes2panda_public_parse_headers") {
            rebase_path(LIBGEN_DIR, root_build_dir),
            "--headers",
          ] + rebase_path(HEADERS_TO_BE_PARSED, "") +
-         [ rebase_path("$target_gen_dir/generated/options.h", "") ]
+         rebase_path(generated_headers, "")
 
   sources = HEADERS_TO_BE_PARSED
   outputs = ES2PANDA_API_GENERATED
@@ -1120,6 +1127,8 @@ ohos_source_set("libes2panda_frontend_static") {
     ":gen_${LIB_NAME}_list_inc",
     ":gen_es2panda_compiler_signatures_h",
     ":gen_es2panda_lexer_keywords_h",
+    ":gen_es2panda_lexer_tokenType_h",
+    ":gen_es2panda_lexer_token_inl",
     ":isa_gen_es2panda_formats_h",
     ":isa_gen_es2panda_isa_h",
     "$ark_third_party_root/icu/icu4c:static_icui18n",
@@ -1198,11 +1207,21 @@ ark_gen("es2panda_diagnostic_gen") {
 }
 
 ark_gen("gen_es2panda_lexer") {
-  data = [ "lexer/scripts/keywords.yaml" ]
-  template_files = [ "keywords.h.erb" ]
+  data = [
+    "lexer/scripts/keywords.yaml",
+    "lexer/scripts/tokens.yaml",
+  ]
+  template_files = [
+    "keywords.h.erb",
+    "token.inl.erb",
+    "tokenType.h.erb",
+  ]
   sources = "lexer/templates"
   destination = "$target_gen_dir/generated"
-  api = [ "lexer/scripts/keywords.rb" ]
+  api = [
+    "lexer/scripts/keywords.rb",
+    "lexer/scripts/tokens.rb",
+  ]
 }
 
 ark_gen("gen_es2panda_compiler") {

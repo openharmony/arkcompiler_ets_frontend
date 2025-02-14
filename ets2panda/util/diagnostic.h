@@ -20,7 +20,7 @@
 #include <vector>
 #include "macros.h"
 #include "util/ustring.h"
-#include "lexer/token/tokenType.h"
+#include "generated/tokenType.h"
 
 namespace ark::es2panda::diagnostic {
 class DiagnosticKind;
