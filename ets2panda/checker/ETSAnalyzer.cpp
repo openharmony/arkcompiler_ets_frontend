@@ -1106,25 +1106,6 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
     return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ImportExpression *expr) const
-{
-    ETSChecker *checker = GetETSChecker();
-    if (expr->TsType() != nullptr) {
-        return expr->TsType();
-    }
-
-    Type *const argType = expr->Source()->Check(checker);
-    if (argType->IsTypeError()) {
-        return checker->InvalidateType(expr);
-    }
-    if (!checker->Relation()->IsSupertypeOf(checker->GlobalBuiltinETSStringType(), argType)) {
-        return checker->TypeError(expr, "'import' expressions require string as argument.", expr->Start());
-    }
-
-    expr->SetTsType(checker->CreatePromiseOf(checker->GlobalBuiltinJSValueType()));
-    return expr->TsType();
-}
-
 checker::Type *ETSAnalyzer::UnwrapPromiseType(checker::Type *type) const
 {
     ETSChecker *checker = GetETSChecker();

@@ -113,6 +113,11 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::FunctionExpression *expr)
     UNREACHABLE();
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) const
+{
+    UNREACHABLE();
+}
+
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::NewExpression *expr) const
 {
     UNREACHABLE();

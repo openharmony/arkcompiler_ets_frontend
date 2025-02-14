@@ -88,7 +88,6 @@ let a = [1, 2, 3);
 /* @@? 30:13 Error SyntaxError: Import declarations can only be used on the top level and before any other declaration, top level statement or directive. */
 /* @@? 30:13 Error SyntaxError: Unexpected token 'import'. */
 /* @@? 30:13 Error SyntaxError: Invalid Type. */
-/* @@? 30:13 Error TypeError: 'import' expressions require string as argument. */
 /* @@? 32:10 Error TypeError: Variable 'f' has already been declared. */
 /* @@? 32:10 Error TypeError: Variable 'f' has already been declared. */
 /* @@? 33:5 Error TypeError: No matching call signature for std.core.Object(int) */
